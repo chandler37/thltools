@@ -327,9 +327,9 @@ public class DuffPane extends TibetanPane implements FocusListener {
 					if (key != null) {
 						if (isTibetan) processTibetanChar(key.charAt(0), true);
 						else {
-							MutableAttributeSet inputAtts = DuffPane.this.getInputAttributes();
-							inputAtts.addAttributes(romanAttributeSet);
-							processRomanChar(key, inputAtts);
+							//MutableAttributeSet inputAtts = DuffPane.this.getInputAttributes();
+							//inputAtts.addAttributes(romanAttributeSet);
+							processRomanChar(key, romanAttributeSet);//, inputAtts);
 						}
 					}
 				}
