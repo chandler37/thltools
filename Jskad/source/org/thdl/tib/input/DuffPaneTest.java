@@ -1349,6 +1349,7 @@ pag 41).
         enableEWTSKeyboard();
         e("dga'o");
         e("'da'i");
+        e("bsad");
     }
 
 }

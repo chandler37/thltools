@@ -45,7 +45,6 @@ public class TinyTest extends DuffPaneTestBase {
      */
     public void testBug998476() {
         enableEWTSKeyboard();
-        // DLC FIXME 998476: make e("bsad") pass.
         e("lM");
     }
 }

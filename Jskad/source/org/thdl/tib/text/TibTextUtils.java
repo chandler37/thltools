@@ -1433,6 +1433,7 @@ public class TibTextUtils implements THDLWylieConstants {
                  * the second list are ambiguous because ra na sa and
                  * la are not prefixes):
                  *
+                 * <quote>
                  * I'm posting this upon David Chandler's
                  * request. According to Lobsang Thonden in Modern
                  * Tibetan Grammar Language (page 42), with regards to
@@ -1456,7 +1457,12 @@ public class TibTextUtils implements THDLWylieConstants {
                  * As I mentioned before, I think that the best
                  * solution for now is to hard-wire these cases. Even
                  * if the list is not exhaustive, at least we'll have
-                 * most cases covered.  */
+                 * most cases covered.
+                 * </quote>
+                 *
+                 * But there's more to the rule, as bug 998476 shows:
+                 * bsad is correct, not bas.d, so we have to interpret
+                 * as prefix-root-suffix. */
 
                 leftover = 3;
                 /* FIXME: these constants are hard-wired here, rather
@@ -1467,32 +1473,43 @@ public class TibTextUtils implements THDLWylieConstants {
                 String acip1 = (EWTSNotACIP) ? null : ((TGCPair)gcs.get(0)).getACIP();
                 String acip2 = (EWTSNotACIP) ? null : ((TGCPair)gcs.get(1)).getACIP();
                 String acip3 = (EWTSNotACIP) ? null : ((TGCPair)gcs.get(2)).getACIP();
-                if ((wylie1.equals("g") && (wylie2.equals("d") || wylie2.equals("n") || wylie2.equals("s")))
-                    || (wylie1.equals("d") && (wylie2.equals("g") || wylie2.equals("m")))
-                    || (wylie1.equals("b") && wylie2.equals("d"))
-                    || (wylie1.equals("m") && wylie2.equals("d"))
-                    || (wylie1.equals("'") && (wylie2.equals("g") || wylie2.equals("d") || wylie2.equals("b")))) {
-                    if (TibetanMachineWeb.isAmbiguousWylie(wylie1, wylie2))
-                        if (EWTSNotACIP)
+                if (wylie3.equals("d")
+                    || ((wylie1.equals("g") && (wylie2.equals("d")
+                                                || wylie2.equals("n")
+                                                || wylie2.equals("s")))
+                        || (wylie1.equals("d") && (wylie2.equals("g")
+                                                   || wylie2.equals("m")))
+                        || (wylie1.equals("b") && wylie2.equals("d"))
+                        || (wylie1.equals("m") && wylie2.equals("d"))
+                        || (wylie1.equals("'") && (wylie2.equals("g")
+                                                   || wylie2.equals("d")
+                                                   || wylie2.equals("b"))))) {
+                    // prefix-root-suffix
+                    if (TibetanMachineWeb.isAmbiguousWylie(wylie1, wylie2)) {
+                        if (EWTSNotACIP) {
                             translitBuffer.append(wylie1
                                                   + WYLIE_DISAMBIGUATING_KEY
                                                   + wylie2,
                                                   fontSize);
-                        else
+                        } else {
                             translitBuffer.append(acip1 + '-' + acip2,
                                                   fontSize);
-                    else
-                        if (EWTSNotACIP)
+                        }
+                    } else {
+                        if (EWTSNotACIP) {
                             translitBuffer.append(wylie1 + wylie2,
                                                   fontSize);
-                        else
+                        } else {
                             translitBuffer.append(acip1 + acip2,
                                                   fontSize);
+                        }
+                    }
 
                     translitBuffer.append(aVowelToUseAfter(EWTSNotACIP, wylie2)
                                           + (EWTSNotACIP ? wylie3 : acip3),
                                           fontSize);
                 } else {
+                    // root-suffix-postsuffix
                     if (EWTSNotACIP)
                         translitBuffer.append(wylie1
                                               + aVowelToUseAfter(EWTSNotACIP, wylie1)
