@@ -331,22 +331,17 @@ public class Jskad extends JPanel implements DocumentListener {
 		aboutItem.addActionListener(new ThdlActionListener() {
 			public void theRealActionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(Jskad.this,
-					"Copyright 2001-2002 Tibetan and Himalayan Digital Library\n"+
-					"Programmed by Edward Garrett\n\n"+
-					"This software is protected by the terms of the\n"+
-					"THDL Open Community License, Version 1.0.\n"+ /* FIXME HARD-CODED VERSION NUMBER */
-					"It uses Tibetan Computer Company (http://www.tibet.dk/tcc/)\n"+
-					"fonts created by Tony Duff and made available by the\n"+
-					"Trace Foundation (http://trace.org/).\n\n"+
+					"Copyright 2001-2002 Tibetan and Himalayan Digital Library\n\n"+
+					"Jskad is protected by the THDL Open Community License.\n\n"+ /* FIXME HARD-CODED VERSION NUMBER */
+			
 					"For more information, or to download the source code\n"+
-					"for Jskad, see our web site:\n"+
+					"for Jskad, visit our web site:\n"+
 					"     http://www.thdl.org/\n" +
                     "\n" +
                     "When submitting bug reports, please indicate that the\n" +
                     "time of compilation is "
                         + ThdlVersion.getTimeOfCompilation() + "\n",
-                    "About Jskad 1.0", /* FIXME HARD-CODED VERSION NUMBER */
-					JOptionPane.PLAIN_MESSAGE);
+                    "About Jskad", JOptionPane.PLAIN_MESSAGE);
 			}
 		});
 
