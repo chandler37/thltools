@@ -74,15 +74,15 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 
 		m = new Menu ("Edit");		
 		mnuCut = new MenuItem("Cut");
-		mnuCut.setShortcut(new MenuShortcut(KeyEvent.VK_X));
+		//mnuCut.setShortcut(new MenuShortcut(KeyEvent.VK_X));
 		m.add(mnuCut);
 		mnuCut.addActionListener(this);
 		mnuCopy = new MenuItem("Copy");
-		mnuCopy.setShortcut(new MenuShortcut(KeyEvent.VK_C));
+		//mnuCopy.setShortcut(new MenuShortcut(KeyEvent.VK_C));
 		m.add(mnuCopy);
 		mnuCopy.addActionListener(this);
 		mnuPaste = new MenuItem("Paste");
-		mnuPaste.setShortcut(new MenuShortcut(KeyEvent.VK_V));
+		//mnuPaste.setShortcut(new MenuShortcut(KeyEvent.VK_V));
 		m.add(mnuPaste);
 		mnuPaste.addActionListener(this);		
 		mnuDelete = new MenuItem("Delete");
@@ -90,7 +90,7 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		mnuDelete.addActionListener(this);		
 		m.add("-");
 		mnuSelectAll = new MenuItem("Select all");
-		mnuSelectAll.setShortcut(new MenuShortcut(KeyEvent.VK_A));
+		//mnuSelectAll.setShortcut(new MenuShortcut(KeyEvent.VK_A));
 		m.add(mnuSelectAll);
 		mnuSelectAll.addActionListener(this);
 		mnuClear = new MenuItem("Clear all");
