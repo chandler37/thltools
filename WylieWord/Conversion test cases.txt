@@ -37,6 +37,9 @@ mnags
 gdams
 'gams
 
+// All the compound native-Tibetan stacks
+rka rga rnga rja rnya rta rda rna rba rma rtsa rdza lka lga lnga lca lja lta lda lpa lba lha ska sga snga snya sta sda sna spa sba sma stsa kwa khwa gwa cwa nywa twa dwa tswa tshwa zhwa zwa rwa shwa swa hwa kya khya gya pya phya bya mya kra khra gra tra thra dra pra phra bra mra shra sra hra kla gla bla zla rla sla rkya rgya rmya rgwa rtswa skya sgya spya sbya smya skra sgra snra spra sbra smra grwa drwa phywa
+
 // Random things known to be hard
 
 // Difficult to parse deterministically
@@ -205,7 +208,9 @@ wa~M`ba~MthangumaM
 ragyada
 'agarma
 gayaradasa
-// WylieWord 2.0 got this wrong (and I didn't have a test for it then)
+// This has been discussed on tibetscript@list.mail.virginia.edu.  Currently WW gets it wrong.
+// Plausibly WW can be fixed by disallowing b as a prefix for r unless it has a subscript
+// (maybe unless it has an l subscript specifically).
 baraga
 // There's special-case code for lng in Sanskrit
 lngaTa
