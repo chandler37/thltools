@@ -609,16 +609,16 @@ public class Jskad extends JPanel implements DocumentListener {
 // I used this when I validated the TM<->TMW mappings; I made
 // dp.romanAttributeSet public to do so:
 //
-//          if (ThdlOptions.getBooleanOption("thdl.add.developer.options.to.menu")) {
-//              toolsMenu.addSeparator();
-//              JMenuItem DevelItem = new JMenuItem("Insert All TM Glyphs in Doc");
-//              DevelItem.addActionListener(new ThdlActionListener() {
-//                      public void theRealActionPerformed(ActionEvent e) {
-//                          ((TibetanDocument)dp.getDocument()).insertAllTMGlyphs2(dp.romanAttributeSet);
-//                      }
-//                  });
-//              toolsMenu.add(DevelItem);
-//          }
+//            if (ThdlOptions.getBooleanOption("thdl.add.developer.options.to.menu")) {
+//                toolsMenu.addSeparator();
+//                JMenuItem DevelItem = new JMenuItem("Insert All TM Glyphs in Doc");
+//                DevelItem.addActionListener(new ThdlActionListener() {
+//                        public void theRealActionPerformed(ActionEvent e) {
+//                            ((TibetanDocument)dp.getDocument()).insertAllTMGlyphs2();
+//                        }
+//                    });
+//                toolsMenu.add(DevelItem);
+//            }
 
         if (ThdlOptions.getBooleanOption("thdl.add.developer.options.to.menu")) {
             toolsMenu.addSeparator();
