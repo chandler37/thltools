@@ -31,7 +31,7 @@ import org.thdl.tib.text.DuffCode;
 
 /**
 * This class is able to convert an ACIP file into Tibetan Machine Web
-* and an ACIP file into TMW.  ACIP->Unicode should yield the same
+* and an ACIP file into Unicode.  ACIP->Unicode should yield the same
 * results as ACIP->TMW followed by TMW->Unicode (FIXME: test it!)
 * @author David Chandler
 */
@@ -225,15 +225,15 @@ public class ACIPConverter {
                          writeWarningsToOut, warningLevel, false);
     }
 
-    private static boolean peekaheadFindsSpacesAndComma(ArrayList /* of ACIPString */ scan,
+    private static boolean peekaheadFindsSpacesAndComma(ArrayList /* of TString */ scan,
                                                         int pos) {
         int sz = scan.size();
         while (pos < sz) {
-            ACIPString s = (ACIPString)scan.get(pos++);
-            if (s.getType() == ACIPString.TIBETAN_PUNCTUATION && s.getText().equals(" ")) {
+            TString s = (TString)scan.get(pos++);
+            if (s.getType() == TString.TIBETAN_PUNCTUATION && s.getText().equals(" ")) {
                 // keep going
             } else {
-                if (s.getType() == ACIPString.TIBETAN_PUNCTUATION && s.getText().equals(",")) {
+                if (s.getType() == TString.TIBETAN_PUNCTUATION && s.getText().equals(",")) {
                     return true;
                 } else {
                     return false;
@@ -286,16 +286,16 @@ public class ACIPConverter {
         Color lastColor = Color.BLACK;
         Color color = Color.BLACK;
         for (int i = 0; i < sz; i++) {
-            ACIPString s = (ACIPString)scan.get(i);
+            TString s = (TString)scan.get(i);
             int stype = s.getType();
-            if (stype == ACIPString.ERROR) {
+            if (stype == TString.ERROR) {
                 lastGuyWasNonPunct = false;
                 lastGuy = null;
                 hasErrors = true;
                 String text = "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: " + s.getText() + "]";
                 if (null != writer) writer.write(text);
                 if (null != tdoc) tdoc.appendRoman(text, Color.RED);
-            } else if (stype == ACIPString.TSHEG_BAR_ADORNMENT) {
+            } else if (stype == TString.TSHEG_BAR_ADORNMENT) {
                 if (lastGuyWasNonPunct) {
                     String err = "[#ERROR CONVERTING ACIP DOCUMENT: This converter cannot yet convert " + s.getText() + " because the converter's author is unclear what the result should be.]";
                     if (null != writer) {
@@ -322,7 +322,7 @@ public class ACIPConverter {
                 }
                 lastGuyWasNonPunct = true; // this stuff is not really punctuation
                 lastGuy = null;
-            } else if (stype == ACIPString.WARNING) {
+            } else if (stype == TString.WARNING) {
                 lastGuyWasNonPunct = false;
                 lastGuy = null;
                 if (writeWarningsToOut) {
@@ -341,15 +341,15 @@ public class ACIPConverter {
                     lastGuyWasNonPunct = false;
                     lastGuy = null;
                     String text
-                        = (((stype == ACIPString.FOLIO_MARKER) ? "{" : "")
+                        = (((stype == TString.FOLIO_MARKER) ? "{" : "")
                            + s.getText()
-                           + ((stype == ACIPString.FOLIO_MARKER) ? "}" : ""));
+                           + ((stype == TString.FOLIO_MARKER) ? "}" : ""));
                     if (null != writer) writer.write(text);
                     if (null != tdoc) tdoc.appendRoman(text, Color.BLACK);
                 } else {
                     String unicode = null;
                     DuffCode[] duff = null;
-                    if (stype == ACIPString.TIBETAN_NON_PUNCTUATION) {
+                    if (stype == TString.TIBETAN_NON_PUNCTUATION) {
                         lastGuyWasNonPunct = true;
                         TPairList pl = TPairListFactory.breakACIPIntoChunks(s.getText());
                         String acipError;
@@ -424,13 +424,13 @@ public class ACIPConverter {
                         }
                     } else {
                         color = Color.BLACK;
-                        if (stype == ACIPString.START_SLASH) {
+                        if (stype == TString.START_SLASH) {
                             if (null != writer) unicode = "\u0F3C";
                             if (null != tdoc) duff = new DuffCode[] { TibetanMachineWeb.getGlyph("(") };
-                        } else if (stype == ACIPString.END_SLASH) {
+                        } else if (stype == TString.END_SLASH) {
                             if (null != writer) unicode = "\u0F3D";
                             if (null != tdoc) duff = new DuffCode[] { TibetanMachineWeb.getGlyph(")") };
-                        } else if (stype == ACIPString.TIBETAN_PUNCTUATION) {
+                        } else if (stype == TString.TIBETAN_PUNCTUATION) {
                             // For ACIP, tshegs are used as both
                             // tshegs and whitespace.  We treat a
                             // space as a tsheg if and only if it
@@ -452,7 +452,8 @@ public class ACIPConverter {
                                         // space.
                                         && ((lpl.get(0).getLeft().equals("G")
                                              || lpl.get(0).getLeft().equals("K"))
-                                            && (lpl.get(0).getRight().indexOf('U') < 0))
+                                            && (null == lpl.get(0).getRight()
+                                                || lpl.get(0).getRight().indexOf('U') < 0))
                                         &&
                                         // it's (G . anything)
                                         // followed by some number of
@@ -500,12 +501,12 @@ public class ACIPConverter {
                                     }
                                 }
                             }
-                        } else if (stype == ACIPString.START_PAREN) {
+                        } else if (stype == TString.START_PAREN) {
                             if (null != tdoc) {
                                 tdoc.setTibetanFontSize(smallFontSize);
                             }
                             continue;
-                        } else if (stype == ACIPString.END_PAREN) {
+                        } else if (stype == TString.END_PAREN) {
                             if (null != tdoc) {
                                 tdoc.setTibetanFontSize(regularFontSize);
                             }

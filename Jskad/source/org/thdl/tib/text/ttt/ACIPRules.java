@@ -174,6 +174,7 @@ public class ACIPRules {
         if (null == wylieToACIP) {
             wylieToACIP = new HashMap(75);
             wylieToACIP.put("_", " "); // oddball.
+            wylieToACIP.put("o'i", "O'I"); // oddball for TMW9.61.
         }
         wylieToACIP.put(EWTS, ACIP);
     }

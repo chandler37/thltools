@@ -70,7 +70,7 @@ public class ACIPTshegBarScanner {
 
     /** Scans an ACIP file with path fname into tsheg bars.  If errors
      *  is non-null, error messages will be appended to it.  Returns a
-     *  list of ACIPStrings that is the scan. <p>FIXME: not so
+     *  list of TStrings that is the scan. <p>FIXME: not so
      *  efficient; copies the whole file into memory first.
      *  @throws IOException if we cannot read in the ACIP input file */
     public static ArrayList scanFile(String fname, StringBuffer errors, int maxErrors)
@@ -83,7 +83,7 @@ public class ACIPTshegBarScanner {
     /** Scans a stream of ACIP into tsheg bars.  If errors is
      *  non-null, error messages will be appended to it.  You can
      *  recover both errors and warnings (modulo offset information)
-     *  from the result, though.  Returns a list of ACIPStrings that
+     *  from the result, though.  Returns a list of TStrings that
      *  is the scan, or null if more than maxErrors occur. <p>FIXME:
      *  not so efficient; copies the whole file into memory first.
      *  @throws IOException if we cannot read the whole ACIP stream */
@@ -104,7 +104,7 @@ public class ACIPTshegBarScanner {
         return scan(s.toString(), errors, maxErrors);
     }
 
-    /** Returns a list of {@link ACIPString ACIPStrings} corresponding
+    /** Returns a list of {@link TString TStrings} corresponding
      *  to s, possibly the empty list (when the empty string is the
      *  input).  Each String is either a Latin comment, some Latin
      *  text, a tsheg bar (minus the tsheg or shad or whatever), a
@@ -112,16 +112,16 @@ public class ACIPTshegBarScanner {
      *
      *  <p>This not only scans; it finds all the errors and warnings a
      *  parser would too, like "NYA x" and "(" and ")" and "/NYA" etc.
-     *  It puts those in as ACIPStrings with type {@link
-     *  ACIPString#ERROR} or {@link ACIPString#WARNING}, and also, if
+     *  It puts those in as TStrings with type {@link
+     *  TString#ERROR} or {@link TString#WARNING}, and also, if
      *  errors is non-null, appends helpful messages to errors, each
      *  followed by a '\n'.
      *  @param s the ACIP text
      *  @param errors if non-null, the buffer to which to append error
      *  messages (DLC FIXME: cludge, just get this info by scanning
-     *  the result for ACIPString.ERROR (and maybe ACIPString.WARNING,
+     *  the result for TString.ERROR (and maybe TString.WARNING,
      *  if you care about warnings), but then we'd have to put the
-     *  Offset info in the ACIPString)
+     *  Offset info in the TString)
      *  @param maxErrors if nonnegative, then scanning will stop when
      *  more than maxErrors errors occur.  In this event, null is
      *  returned.
@@ -138,7 +138,7 @@ public class ACIPTshegBarScanner {
         
         boolean waitingForMatchingIllegalClose = false;
         int sl = s.length();
-        int currentType = ACIPString.ERROR;
+        int currentType = TString.ERROR;
         int startOfString = 0;
         Stack bracketTypeStack = new Stack();
         int startSlashIndex = -1;
@@ -149,10 +149,10 @@ public class ACIPTshegBarScanner {
             char ch;
             ch = s.charAt(i);
             if (ch == '\n') ++numNewlines;
-            if (ACIPString.COMMENT == currentType && ch != ']') {
+            if (TString.COMMENT == currentType && ch != ']') {
                 if ('[' == ch) {
-                    al.add(new ACIPString("Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n",
-                                          ACIPString.ERROR));
+                    al.add(new TString("Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n",
+                                       TString.ERROR));
                     if (null != errors)
                         errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                       + "Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n");
@@ -166,12 +166,12 @@ public class ACIPTshegBarScanner {
                 if (bracketTypeStack.empty()) {
                     // Error.
                     if (startOfString < i) {
-                        al.add(new ACIPString(s.substring(startOfString, i),
-                                              currentType));
+                        al.add(new TString(s.substring(startOfString, i),
+                                           currentType));
                     }
                     if (!waitingForMatchingIllegalClose) {
-                        al.add(new ACIPString("Found a truly unmatched close bracket, " + s.substring(i, i+1),
-                                              ACIPString.ERROR));
+                        al.add(new TString("Found a truly unmatched close bracket, " + s.substring(i, i+1),
+                                           TString.ERROR));
                         if (null != errors) {
                             errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                           + "Found a truly unmatched close bracket, ] or }.\n");
@@ -179,19 +179,19 @@ public class ACIPTshegBarScanner {
                         if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     }
                     waitingForMatchingIllegalClose = false;
-                    al.add(new ACIPString("Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.",
-                                          ACIPString.ERROR));
+                    al.add(new TString("Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.",
+                                       TString.ERROR));
                     if (null != errors)
                         errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                       + "Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
                     if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     startOfString = i+1;
-                    currentType = ACIPString.ERROR;
+                    currentType = TString.ERROR;
                 } else {
                     int stackTop = ((Integer)bracketTypeStack.pop()).intValue();
 
                     int end = startOfString;
-                    if (ACIPString.CORRECTION_START == stackTop) {
+                    if (TString.CORRECTION_START == stackTop) {
 
                         // This definitely indicates a new token.
                         char prevCh = s.charAt(i-1);
@@ -200,19 +200,19 @@ public class ACIPTshegBarScanner {
                         else
                             end = i;
                         if (startOfString < end) {
-                            al.add(new ACIPString(s.substring(startOfString, end),
-                                                  currentType));
+                            al.add(new TString(s.substring(startOfString, end),
+                                               currentType));
                         }
 
                         if ('?' != prevCh) {
-                            currentType = ACIPString.PROBABLE_CORRECTION;
+                            currentType = TString.PROBABLE_CORRECTION;
                         } else {
-                            currentType = ACIPString.POSSIBLE_CORRECTION;
+                            currentType = TString.POSSIBLE_CORRECTION;
                         }
                     }
-                    al.add(new ACIPString(s.substring(end, i+1), currentType));
+                    al.add(new TString(s.substring(end, i+1), currentType));
                     startOfString = i+1;
-                    currentType = ACIPString.ERROR;
+                    currentType = TString.ERROR;
                 }
                 break; // end ']','}' case
 
@@ -222,10 +222,10 @@ public class ACIPTshegBarScanner {
             case '[':
                 // This definitely indicates a new token.
                 if (startOfString < i) {
-                    al.add(new ACIPString(s.substring(startOfString, i),
-                                          currentType));
+                    al.add(new TString(s.substring(startOfString, i),
+                                       currentType));
                     startOfString = i;
-                    currentType = ACIPString.ERROR;
+                    currentType = TString.ERROR;
                 }
                 String thingy = null;
 
@@ -233,57 +233,57 @@ public class ACIPTshegBarScanner {
                     && (s.substring(i, i + "[DD]".length()).equals("[DD]")
                         || s.substring(i, i + "[DD]".length()).equals("{DD}"))) {
                     thingy = "[DD]";
-                    currentType = ACIPString.DD;
+                    currentType = TString.DD;
                 } else if (i + "[DD1]".length() <= sl
                            && (s.substring(i, i + "[DD1]".length()).equals("[DD1]")
                                || s.substring(i, i + "[DD1]".length()).equals("{DD1}"))) {
                     thingy = "[DD1]";
-                    currentType = ACIPString.DD;
+                    currentType = TString.DD;
                 } else if (i + "[DD2]".length() <= sl
                            && (s.substring(i, i + "[DD2]".length()).equals("[DD2]")
                                || s.substring(i, i + "[DD2]".length()).equals("{DD2}"))) {
                     thingy = "[DD2]";
-                    currentType = ACIPString.DD;
+                    currentType = TString.DD;
                 } else if (i + "[DDD]".length() <= sl
                            && (s.substring(i, i + "[DDD]".length()).equals("[DDD]")
                                || s.substring(i, i + "[DDD]".length()).equals("{DDD}"))) {
                     thingy = "[DDD]";
-                    currentType = ACIPString.DD;
+                    currentType = TString.DD;
                 } else if (i + "[DR]".length() <= sl
                            && (s.substring(i, i + "[DR]".length()).equals("[DR]")
                                || s.substring(i, i + "[DR]".length()).equals("{DR}"))) {
                     thingy = "[DR]";
-                    currentType = ACIPString.DR;
+                    currentType = TString.DR;
                 } else if (i + "[LS]".length() <= sl
                            && (s.substring(i, i + "[LS]".length()).equals("[LS]")
                                || s.substring(i, i + "[LS]".length()).equals("{LS}"))) {
                     thingy = "[LS]";
-                    currentType = ACIPString.LS;
+                    currentType = TString.LS;
                 } else if (i + "[BP]".length() <= sl
                            && (s.substring(i, i + "[BP]".length()).equals("[BP]")
                                || s.substring(i, i + "[BP]".length()).equals("{BP}"))) {
                     thingy = "[BP]";
-                    currentType = ACIPString.BP;
+                    currentType = TString.BP;
                 } else if (i + "[BLANK PAGE]".length() <= sl
                            && (s.substring(i, i + "[BLANK PAGE]".length()).equals("[BLANK PAGE]")
                                || s.substring(i, i + "[BLANK PAGE]".length()).equals("{BLANK PAGE}"))) {
                     thingy = "[BLANK PAGE]";
-                    currentType = ACIPString.BP;
+                    currentType = TString.BP;
                 } else if (i + "[ BP ]".length() <= sl
                            && (s.substring(i, i + "[ BP ]".length()).equals("[ BP ]")
                                || s.substring(i, i + "[ BP ]".length()).equals("{ BP }"))) {
                     thingy = "{ BP }"; // found in TD3790E2.ACT
-                    currentType = ACIPString.BP;
+                    currentType = TString.BP;
                 } else if (i + "[ DD ]".length() <= sl
                            && (s.substring(i, i + "[ DD ]".length()).equals("[ DD ]")
                                || s.substring(i, i + "[ DD ]".length()).equals("{ DD }"))) {
                     thingy = "{ DD }"; // found in TD3790E2.ACT
-                    currentType = ACIPString.DD;
+                    currentType = TString.DD;
                 } else if (i + "[?]".length() <= sl
                            && (s.substring(i, i + "[?]".length()).equals("[?]")
                                || s.substring(i, i + "[?]".length()).equals("{?}"))) {
                     thingy = "[?]";
-                    currentType = ACIPString.QUESTION;
+                    currentType = TString.QUESTION;
                 } else {
                     //  We see comments appear not as [#COMMENT], but
                     //  as [COMMENT] sometimes.  We make special cases
@@ -329,8 +329,8 @@ public class ACIPTshegBarScanner {
                         if (i + 2 + englishComments[ec].length() <= sl
                             && (s.substring(i, i + 2 + englishComments[ec].length()).equals("[" + englishComments[ec] + "]")
                                 || s.substring(i, i + 2 + englishComments[ec].length()).equals("[" + englishComments[ec] + "]"))) {
-                            al.add(new ACIPString("[#" + englishComments[ec] + "]",
-                                                  ACIPString.COMMENT));
+                            al.add(new TString("[#" + englishComments[ec] + "]",
+                                               TString.COMMENT));
                             startOfString = i + 2 + englishComments[ec].length();
                             i = startOfString - 1;
                             foundOne = true;
@@ -386,16 +386,16 @@ public class ACIPTshegBarScanner {
                                 = s.substring(begin, realEnd);
                             for (int ec = 0; ec < englishCorrections.length; ec++) {
                                 if (interestingSubstring.startsWith(englishCorrections[ec])) {
-                                    al.add(new ACIPString(s.substring(i, i+2),
-                                                          ACIPString.CORRECTION_START));
-                                    al.add(new ACIPString(s.substring(i+2, realEnd),
-                                                          ACIPString.LATIN));
+                                    al.add(new TString(s.substring(i, i+2),
+                                                       TString.CORRECTION_START));
+                                    al.add(new TString(s.substring(i+2, realEnd),
+                                                       TString.LATIN));
                                     if (s.charAt(end - 1) == '?') {
-                                        al.add(new ACIPString(s.substring(end-1, end+1),
-                                                              ACIPString.POSSIBLE_CORRECTION));
+                                        al.add(new TString(s.substring(end-1, end+1),
+                                                           TString.POSSIBLE_CORRECTION));
                                     } else {
-                                        al.add(new ACIPString(s.substring(end, end+1),
-                                                              ACIPString.PROBABLE_CORRECTION));
+                                        al.add(new TString(s.substring(end, end+1),
+                                                           TString.PROBABLE_CORRECTION));
                                     }
                                     foundOne = true;
                                     startOfString = end+1;
@@ -409,24 +409,24 @@ public class ACIPTshegBarScanner {
                         break;
                 }
                 if (null != thingy) {
-                    al.add(new ACIPString(thingy,
-                                          currentType));
+                    al.add(new TString(thingy,
+                                       currentType));
                     startOfString = i + thingy.length();
                     i = startOfString - 1;
                 } else {
                     if (i + 1 < sl) {
                         char nextCh = s.charAt(i+1);
                         if ('*' == nextCh) {
-                            currentType = ACIPString.CORRECTION_START;
+                            currentType = TString.CORRECTION_START;
                             bracketTypeStack.push(new Integer(currentType));
-                            al.add(new ACIPString(s.substring(i, i+2),
-                                                  ACIPString.CORRECTION_START));
-                            currentType = ACIPString.ERROR;
+                            al.add(new TString(s.substring(i, i+2),
+                                               TString.CORRECTION_START));
+                            currentType = TString.ERROR;
                             startOfString = i+2;
                             i = startOfString - 1;
                             break;
                         } else if ('#' == nextCh) {
-                            currentType = ACIPString.COMMENT;
+                            currentType = TString.COMMENT;
                             bracketTypeStack.push(new Integer(currentType));
                             break;
                         }
@@ -435,8 +435,8 @@ public class ACIPTshegBarScanner {
                     // WITHOUT # MARKS].  Though "... [" could cause
                     // this too.
                     if (waitingForMatchingIllegalClose) {
-                        al.add(new ACIPString("Found a truly unmatched open bracket, [ or {, prior to this current illegal open bracket.",
-                                              ACIPString.ERROR));
+                        al.add(new TString("Found a truly unmatched open bracket, [ or {, prior to this current illegal open bracket.",
+                                           TString.ERROR));
                         if (null != errors) {
                             errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                           + "Found a truly unmatched open bracket, [ or {, prior to this current illegal open bracket.\n");
@@ -455,24 +455,24 @@ public class ACIPTshegBarScanner {
                                 inContext = inContext + "...";
                             }
                         }
-                        al.add(new ACIPString("Found an illegal open bracket (in context, this is " + inContext + ").  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?",
-                                              ACIPString.ERROR));
+                        al.add(new TString("Found an illegal open bracket (in context, this is " + inContext + ").  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?",
+                                           TString.ERROR));
                         errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                       + "Found an illegal open bracket (in context, this is " + inContext + ").  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\n");
                         if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     }
                     startOfString = i + 1;
-                    currentType = ACIPString.ERROR;
+                    currentType = TString.ERROR;
                 }
                 break; // end '[','{' case
 
             case '@':
                 // This definitely indicates a new token.
                 if (startOfString < i) {
-                    al.add(new ACIPString(s.substring(startOfString, i),
-                                          currentType));
+                    al.add(new TString(s.substring(startOfString, i),
+                                       currentType));
                     startOfString = i;
-                    currentType = ACIPString.ERROR;
+                    currentType = TString.ERROR;
                 }
 
                 // We look for {@N{AB}, @NN{AB}, ..., @NNNNNN{AB}},
@@ -509,15 +509,15 @@ public class ACIPTshegBarScanner {
                                             inContext = inContext + "...";
                                         }
                                     }
-                                    al.add(new ACIPString("Found an illegal at sign, @ (in context, this is " + inContext + ").  This folio marker has a period, '.', at the end of it, which is illegal.",
-                                                          ACIPString.ERROR));
+                                    al.add(new TString("Found an illegal at sign, @ (in context, this is " + inContext + ").  This folio marker has a period, '.', at the end of it, which is illegal.",
+                                                       TString.ERROR));
                                     if (null != errors)
                                         errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                                       + "Found an illegal at sign, @ (in context, this is " + inContext + ").  This folio marker has a period, '.', at the end of it, which is illegal.\n");
                                     if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                                     startOfString = i+numdigits+3;
                                     i = startOfString - 1;
-                                    currentType = ACIPString.ERROR;
+                                    currentType = TString.ERROR;
                                     break;
                                 }
                                 if (i+numdigits+4 < sl && (s.charAt(i+numdigits+4) == '.' || s.charAt(i+numdigits+4) == 'A' || s.charAt(i+numdigits+4) == 'B' || s.charAt(i+numdigits+4) == 'a' || s.charAt(i+numdigits+4) == 'b' || isNumeric(s.charAt(i+numdigits+4)))) {
@@ -531,25 +531,25 @@ public class ACIPTshegBarScanner {
                                             inContext = inContext + "...";
                                         }
                                     }
-                                    al.add(new ACIPString("Found an illegal at sign, @ (in context, this is " + inContext + ").  This folio marker is not followed by whitespace, as is expected.",
-                                                          ACIPString.ERROR));
+                                    al.add(new TString("Found an illegal at sign, @ (in context, this is " + inContext + ").  This folio marker is not followed by whitespace, as is expected.",
+                                                       TString.ERROR));
                                     if (null != errors)
                                         errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                                       + "Found an illegal at sign, @ (in context, this is " + inContext + ").  This folio marker is not followed by whitespace, as is expected.\n");
                                     if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                                     startOfString = i+1; // DLC FIXME: skip over more?
-                                    currentType = ACIPString.ERROR;
+                                    currentType = TString.ERROR;
                                     break;
                                 }
                                 extra = 4;
                             } else {
                                 extra = 2;
                             }
-                            al.add(new ACIPString(s.substring(i, i+numdigits+extra),
-                                                  ACIPString.FOLIO_MARKER));
+                            al.add(new TString(s.substring(i, i+numdigits+extra),
+                                               TString.FOLIO_MARKER));
                             startOfString = i+numdigits+extra;
                             i = startOfString - 1;
-                            currentType = ACIPString.ERROR;
+                            currentType = TString.ERROR;
                             break;
                         }
                     }
@@ -565,11 +565,11 @@ public class ACIPTshegBarScanner {
                             }
                         }
                         if (allAreNumeric) {
-                            al.add(new ACIPString(s.substring(i, i+numdigits+2),
-                                                  ACIPString.FOLIO_MARKER));
+                            al.add(new TString(s.substring(i, i+numdigits+2),
+                                               TString.FOLIO_MARKER));
                             startOfString = i+numdigits+2;
                             i = startOfString - 1;
-                            currentType = ACIPString.ERROR;
+                            currentType = TString.ERROR;
                             break;
                         }
                     }
@@ -586,11 +586,11 @@ public class ACIPTshegBarScanner {
                             }
                         }
                         if (allAreNumeric) {
-                            al.add(new ACIPString(s.substring(i, i+numdigits+4),
-                                                  ACIPString.FOLIO_MARKER));
+                            al.add(new TString(s.substring(i, i+numdigits+4),
+                                               TString.FOLIO_MARKER));
                             startOfString = i+numdigits+4;
                             i = startOfString - 1;
-                            currentType = ACIPString.ERROR;
+                            currentType = TString.ERROR;
                             break;
                         }
                     }
@@ -607,11 +607,11 @@ public class ACIPTshegBarScanner {
                             }
                         }
                         if (allAreNumeric) {
-                            al.add(new ACIPString(s.substring(i, i+numdigits+1),
-                                                  ACIPString.FOLIO_MARKER));
+                            al.add(new TString(s.substring(i, i+numdigits+1),
+                                               TString.FOLIO_MARKER));
                             startOfString = i+numdigits+1;
                             i = startOfString - 1;
-                            currentType = ACIPString.ERROR;
+                            currentType = TString.ERROR;
                             break;
                         }
                     }
@@ -627,24 +627,24 @@ public class ACIPTshegBarScanner {
                             inContext = inContext + "...";
                         }
                     }
-                    al.add(new ACIPString("Found an illegal at sign, @ (in context, this is " + inContext + ").  @012B is an example of a legal folio marker.",
-                                          ACIPString.ERROR));
+                    al.add(new TString("Found an illegal at sign, @ (in context, this is " + inContext + ").  @012B is an example of a legal folio marker.",
+                                       TString.ERROR));
                     if (null != errors)
                         errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                       + "Found an illegal at sign, @ (in context, this is " + inContext + ").  @012B is an example of a legal folio marker.\n");
                     if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     startOfString = i+1;
-                    currentType = ACIPString.ERROR;
+                    currentType = TString.ERROR;
                 }
                 break; // end '@' case
 
             case '/':
                 // This definitely indicates a new token.
                 if (startOfString < i) {
-                    al.add(new ACIPString(s.substring(startOfString, i),
-                                          currentType));
+                    al.add(new TString(s.substring(startOfString, i),
+                                       currentType));
                     startOfString = i;
-                    currentType = ACIPString.ERROR;
+                    currentType = TString.ERROR;
                 }
 
                 if (startSlashIndex >= 0) {
@@ -653,25 +653,25 @@ public class ACIPTshegBarScanner {
                          * it means /NYA/.  We warn about // for this
                          * reason.  \\ causes a tsheg-bar error (DLC
                          * FIXME: verify this is so). */
-                        al.add(new ACIPString("Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.",
-                                              ACIPString.ERROR));
+                        al.add(new TString("Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.",
+                                           TString.ERROR));
                         if (errors != null) {
                             errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                           + "Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\n");
                         }
                         if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     }
-                    al.add(new ACIPString(s.substring(i, i+1),
-                                          ACIPString.END_SLASH));
+                    al.add(new TString(s.substring(i, i+1),
+                                       TString.END_SLASH));
                     startOfString = i+1;
-                    currentType = ACIPString.ERROR;
+                    currentType = TString.ERROR;
                     startSlashIndex = -1;
                 } else {
                     startSlashIndex = i;
-                    al.add(new ACIPString(s.substring(i, i+1),
-                                          ACIPString.START_SLASH));
+                    al.add(new TString(s.substring(i, i+1),
+                                       TString.START_SLASH));
                     startOfString = i+1;
-                    currentType = ACIPString.ERROR;
+                    currentType = TString.ERROR;
                 }
                 break; // end '/' case
 
@@ -679,42 +679,42 @@ public class ACIPTshegBarScanner {
             case ')':
                 // This definitely indicates a new token.
                 if (startOfString < i) {
-                    al.add(new ACIPString(s.substring(startOfString, i),
-                                          currentType));
+                    al.add(new TString(s.substring(startOfString, i),
+                                       currentType));
                     startOfString = i;
-                    currentType = ACIPString.ERROR;
+                    currentType = TString.ERROR;
                 }
 
                 // We do not support nesting like (NYA (BA)).
 
                 if (startParenIndex >= 0) {
                     if (ch == '(') {
-                        al.add(new ACIPString("Found an illegal open parenthesis, (.  Nesting of parentheses is not allowed.",
-                                              ACIPString.ERROR));
+                        al.add(new TString("Found an illegal open parenthesis, (.  Nesting of parentheses is not allowed.",
+                                           TString.ERROR));
                         if (null != errors)
                             errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                           + "Found an illegal open parenthesis, (.  Nesting of parentheses is not allowed.\n");
                         if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     } else {
-                        al.add(new ACIPString(s.substring(i, i+1), ACIPString.END_PAREN));
+                        al.add(new TString(s.substring(i, i+1), TString.END_PAREN));
                         startParenIndex = -1;
                     }
                     startOfString = i+1;
-                    currentType = ACIPString.ERROR;
+                    currentType = TString.ERROR;
                 } else {
                     if (ch == ')') {
-                        al.add(new ACIPString("Unexpected closing parenthesis, ), found.",
-                                              ACIPString.ERROR));
+                        al.add(new TString("Unexpected closing parenthesis, ), found.",
+                                           TString.ERROR));
                         if (null != errors)
                             errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                           + "Unexpected closing parenthesis, ), found.\n");
                         if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     } else {
                         startParenIndex = i;
-                        al.add(new ACIPString(s.substring(i, i+1), ACIPString.START_PAREN));
+                        al.add(new TString(s.substring(i, i+1), TString.START_PAREN));
                     }
                     startOfString = i+1;
-                    currentType = ACIPString.ERROR;
+                    currentType = TString.ERROR;
                 }
                 break; // end '(',')' case
 
@@ -723,13 +723,13 @@ public class ACIPTshegBarScanner {
                     || (s.charAt(i+1) != ']' && s.charAt(i+1) != '}')) {
                     // The tsheg bar ends here; new token.
                     if (startOfString < i) {
-                        al.add(new ACIPString(s.substring(startOfString, i),
-                                              currentType));
+                        al.add(new TString(s.substring(startOfString, i),
+                                           currentType));
                     }
-                    al.add(new ACIPString(s.substring(i, i+1),
-                                          ACIPString.QUESTION));
+                    al.add(new TString(s.substring(i, i+1),
+                                       TString.QUESTION));
                     startOfString = i+1;
-                    currentType = ACIPString.ERROR;
+                    currentType = TString.ERROR;
                 } // else this is [*TR'A ?] or the like.
                 break; // end '?' case
 
@@ -737,23 +737,23 @@ public class ACIPTshegBarScanner {
             case '.':
                 // This definitely indicates a new token.
                 if (startOfString < i) {
-                    al.add(new ACIPString(s.substring(startOfString, i),
-                                          currentType));
+                    al.add(new TString(s.substring(startOfString, i),
+                                       currentType));
                     startOfString = i;
-                    currentType = ACIPString.ERROR;
+                    currentType = TString.ERROR;
                 }
                 // . is used for a non-breaking tsheg, such as in
                 // {NGO.,} and {....,DAM}.  We give a warning unless ,
                 // or ., or [A-Za-z] follows '.'.
-                al.add(new ACIPString(s.substring(i, i+1),
-                                      ACIPString.TIBETAN_PUNCTUATION));
+                al.add(new TString(s.substring(i, i+1),
+                                   TString.TIBETAN_PUNCTUATION));
                 if (!(i + 1 < sl
                       && (s.charAt(i+1) == '.' || s.charAt(i+1) == ','
                           || (s.charAt(i+1) == '\r' || s.charAt(i+1) == '\n')
                           || (s.charAt(i+1) >= 'a' && s.charAt(i+1) <= 'z')
                           || (s.charAt(i+1) >= 'A' && s.charAt(i+1) <= 'Z')))) {
-                    al.add(new ACIPString("A non-breaking tsheg, '.', appeared, but not like \"...,\" or \".,\" or \".dA\" or \".DA\".",
-                                          ACIPString.WARNING));
+                    al.add(new TString("A non-breaking tsheg, '.', appeared, but not like \"...,\" or \".,\" or \".dA\" or \".DA\".",
+                                       TString.WARNING));
                 }
                 startOfString = i+1;
                 break; // end '.' case
@@ -775,11 +775,11 @@ public class ACIPTshegBarScanner {
                 boolean legalTshegBarAdornment = false;
                 // The tsheg bar ends here; new token.
                 if (startOfString < i) {
-                    if (currentType == ACIPString.TIBETAN_NON_PUNCTUATION
+                    if (currentType == TString.TIBETAN_NON_PUNCTUATION
                         && isTshegBarAdornment(ch))
                         legalTshegBarAdornment = true;
-                    al.add(new ACIPString(s.substring(startOfString, i),
-                                          currentType));
+                    al.add(new TString(s.substring(startOfString, i),
+                                       currentType));
                 }
 
                 // Insert a tsheg if necessary.  ACIP files aren't
@@ -788,22 +788,22 @@ public class ACIPTshegBarScanner {
                 if (('\r' == ch
                      || ('\n' == ch && i > 0 && s.charAt(i - 1) != '\r'))
                     && !al.isEmpty()
-                    && (((ACIPString)al.get(al.size() - 1)).getType() == ACIPString.TIBETAN_NON_PUNCTUATION
-                        || ((ACIPString)al.get(al.size() - 1)).getType() == ACIPString.TSHEG_BAR_ADORNMENT)) {
-                    al.add(new ACIPString(" ", ACIPString.TIBETAN_PUNCTUATION));
+                    && (((TString)al.get(al.size() - 1)).getType() == TString.TIBETAN_NON_PUNCTUATION
+                        || ((TString)al.get(al.size() - 1)).getType() == TString.TSHEG_BAR_ADORNMENT)) {
+                    al.add(new TString(" ", TString.TIBETAN_PUNCTUATION));
                 }
 
                 // "DANG,\nLHAG" is really "DANG, LHAG".  But always?  Not if you have "MDO,\n\nKA...".
                 if (('\r' == ch
                      || ('\n' == ch && i > 0 && s.charAt(i - 1) != '\r'))
                     && !al.isEmpty()
-                    && (((ACIPString)al.get(al.size() - 1)).getType() == ACIPString.TIBETAN_PUNCTUATION
-                        || ((ACIPString)al.get(al.size() - 1)).getType() == ACIPString.TSHEG_BAR_ADORNMENT)
-                    && ((ACIPString)al.get(al.size() - 1)).getText().equals(",")
+                    && (((TString)al.get(al.size() - 1)).getType() == TString.TIBETAN_PUNCTUATION
+                        || ((TString)al.get(al.size() - 1)).getType() == TString.TSHEG_BAR_ADORNMENT)
+                    && ((TString)al.get(al.size() - 1)).getText().equals(",")
                     && s.charAt(i-1) == ','
                     && (i + (('\r' == ch) ? 2 : 1) < sl
                         && (s.charAt(i+(('\r' == ch) ? 2 : 1)) != ch))) {
-                    al.add(new ACIPString(" ", ACIPString.TIBETAN_PUNCTUATION));
+                    al.add(new TString(" ", TString.TIBETAN_PUNCTUATION));
                 }
 
                 // Don't add in a "\r\n" or "\n" unless there's a
@@ -816,24 +816,24 @@ public class ACIPTshegBarScanner {
                            || ('\n' == ch && i >= 1 && s.charAt(i-1) == '\n')))) {
                     for (int h = 0; h < (realNewline ? 2 : 1); h++) {
                         if (isTshegBarAdornment(ch) && !legalTshegBarAdornment) {
-                            al.add(new ACIPString("The ACIP " + ch + " must be glued to the end of a tsheg bar, but this one was not",
-                                                  ACIPString.ERROR));
+                            al.add(new TString("The ACIP " + ch + " must be glued to the end of a tsheg bar, but this one was not",
+                                               TString.ERROR));
                         } else {
-                            al.add(new ACIPString(rn ? s.substring(i - 1, i+1) : s.substring(i, i+1),
-                                                  (legalTshegBarAdornment
-                                                   ? ACIPString.TSHEG_BAR_ADORNMENT
-                                                   : ACIPString.TIBETAN_PUNCTUATION)));
+                            al.add(new TString(rn ? s.substring(i - 1, i+1) : s.substring(i, i+1),
+                                               (legalTshegBarAdornment
+                                                ? TString.TSHEG_BAR_ADORNMENT
+                                                : TString.TIBETAN_PUNCTUATION)));
                         }
                     }
                 }
                 startOfString = i+1;
-                currentType = ACIPString.ERROR;
+                currentType = TString.ERROR;
                 break; // end TIBETAN_PUNCTUATION case
 
             default:
                 if (!bracketTypeStack.empty()) {
                     int stackTop = ((Integer)bracketTypeStack.peek()).intValue();
-                    if (ACIPString.CORRECTION_START == stackTop && '?' == ch) {
+                    if (TString.CORRECTION_START == stackTop && '?' == ch) {
                         // allow it through...
                         break;
                     }
@@ -844,46 +844,46 @@ public class ACIPTshegBarScanner {
                     break;
                 if (!(isNumeric(ch) || isAlpha(ch))) {
                     if (startOfString < i) {
-                        al.add(new ACIPString(s.substring(startOfString, i),
-                                              currentType));
+                        al.add(new TString(s.substring(startOfString, i),
+                                           currentType));
                     }
                     if ((int)ch == 65533) {
-                        al.add(new ACIPString("Found an illegal, unprintable character.",
-                                              ACIPString.ERROR));
+                        al.add(new TString("Found an illegal, unprintable character.",
+                                           TString.ERROR));
                         if (null != errors)
                             errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                           + "Found an illegal, unprintable character.\n");
                     } else if ('\\' == ch) {
-                        al.add(new ACIPString("Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.",
-                                              ACIPString.ERROR));
+                        al.add(new TString("Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.",
+                                           TString.ERROR));
                         if (null != errors)
                             errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                           + "Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\n");
                     } else {
-                        al.add(new ACIPString("Found an illegal character, " + ch + ", with ordinal " + (int)ch + ".",
-                                              ACIPString.ERROR));
+                        al.add(new TString("Found an illegal character, " + ch + ", with ordinal " + (int)ch + ".",
+                                           TString.ERROR));
                         if (null != errors)
                             errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                           + "Found an illegal character, " + ch + ", with ordinal " + (int)ch + ".\n");
                     }
                     if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     startOfString = i+1;
-                    currentType = ACIPString.ERROR;
+                    currentType = TString.ERROR;
                 } else {
                     // Continue through the loop.
-                    if (ACIPString.ERROR == currentType)
-                        currentType = ACIPString.TIBETAN_NON_PUNCTUATION;
+                    if (TString.ERROR == currentType)
+                        currentType = TString.TIBETAN_NON_PUNCTUATION;
                 }
                 break; // end default case
             }
         }
         if (startOfString < sl) {
-            al.add(new ACIPString(s.substring(startOfString, sl),
-                                  currentType));
+            al.add(new TString(s.substring(startOfString, sl),
+                               currentType));
         }
         if (waitingForMatchingIllegalClose) {
-            al.add(new ACIPString("UNEXPECTED END OF INPUT",
-                                  ACIPString.ERROR));
+            al.add(new TString("UNEXPECTED END OF INPUT",
+                               TString.ERROR));
             if (null != errors) {
                 errors.append("Offset END: "
                               + "Truly unmatched open bracket found.\n");
@@ -891,25 +891,25 @@ public class ACIPTshegBarScanner {
             if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
         }
         if (!bracketTypeStack.empty()) {
-            al.add(new ACIPString("Unmatched open bracket found.  A " + ((ACIPString.COMMENT == currentType) ? "comment" : "correction") + " does not terminate.",
-                                  ACIPString.ERROR));
+            al.add(new TString("Unmatched open bracket found.  A " + ((TString.COMMENT == currentType) ? "comment" : "correction") + " does not terminate.",
+                               TString.ERROR));
             if (null != errors) {
                 errors.append("Offset END: "
-                              + "Unmatched open bracket found.  A " + ((ACIPString.COMMENT == currentType) ? "comment" : "correction") + " does not terminate.\n");
+                              + "Unmatched open bracket found.  A " + ((TString.COMMENT == currentType) ? "comment" : "correction") + " does not terminate.\n");
             }
             if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
         }
         if (startSlashIndex >= 0) {
-            al.add(new ACIPString("Slashes are supposed to occur in pairs, but the input had an unmatched '/' character.",
-                                  ACIPString.ERROR));
+            al.add(new TString("Slashes are supposed to occur in pairs, but the input had an unmatched '/' character.",
+                               TString.ERROR));
             if (null != errors)
                 errors.append("Offset END: "
                               + "Slashes are supposed to occur in pairs, but the input had an unmatched '/' character.\n");
             if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
         }
         if (startParenIndex >= 0) {
-            al.add(new ACIPString("Parentheses are supposed to occur in pairs, but the input had an unmatched parenthesis.",
-                                  ACIPString.ERROR));
+            al.add(new TString("Parentheses are supposed to occur in pairs, but the input had an unmatched parenthesis.",
+                               TString.ERROR));
             if (null != errors)
                 errors.append("Offset END: "
                               + "Unmatched open parenthesis, (, found.\n");

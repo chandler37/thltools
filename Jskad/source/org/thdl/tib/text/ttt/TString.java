@@ -19,18 +19,18 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.text.ttt;
 
 /**
-* An ACIPString is some Latin text and a type, the type stating
-* whether said text is Latin (usually English) or transliteration of
-* Tibetan and which particular kind.  Scanning errors are also encoded
-* as ACIPStrings using a special type.
+* An TString is some Latin text and a type, the type stating whether
+* said text is Latin (usually English) or transliteration of Tibetan,
+* which transliteration system (ACIP or EWTS), and which particular
+* kind.  Scanning errors are also encoded as TStrings using a special
+* type.
 *
-* @author David Chandler
-*/
-public class ACIPString {
+* @author David Chandler */
+public class TString {
     private int type;
     private String text;
 
-    /** Returns true if and only if an ACIPString with type type is to
+    /** Returns true if and only if an TString with type type is to
      *  be converted to Latin, not Tibetan, text. */
     public static boolean isLatin(int type) {
         return (type != TIBETAN_NON_PUNCTUATION
@@ -42,45 +42,45 @@ public class ACIPString {
                 && type != END_SLASH);
     }
 
-    /** For [#COMMENTS] */
+    /** For ACIP [#COMMENTS] and EWTS (DLC FIXME) */
     public static final int COMMENT = 0;
-    /** For Folio markers like @012B */
+    /** For Folio markers like @012B in ACIP */
     public static final int FOLIO_MARKER = 1;
     /** For Latin letters and numbers etc.  [*LINE BREAK?] uses this,
-     *  for example. */
+     *  for example.  Or in EWTS, \f uses this. */
     public static final int LATIN = 2;
     /** For Tibetan letters and numbers etc. */
     public static final int TIBETAN_NON_PUNCTUATION = 3;
     /** For tshegs, whitespace and the like, but not combining
-     *  punctutation like %, o, :, m, and x */
+     *  punctutation like ACIP %, o, :, m, and x */
     public static final int TIBETAN_PUNCTUATION = 4;
-    /** For the start of a [*probable correction] or [*possible correction?] */
+    /** For the start of a [*probable correction] or [*possible correction?] in ACIP */
     public static final int CORRECTION_START = 5;
-    /** Denotes the end of a [*probable correction] */
+    /** Denotes the end of a [*probable correction] in ACIP */
     public static final int PROBABLE_CORRECTION = 6;
-    /** Denotes the end of a [*possible correction?] */
+    /** Denotes the end of a [*possible correction?] in ACIP*/
     public static final int POSSIBLE_CORRECTION = 7;
-    /** For [BP] -- blank page */
+    /** For [BP] -- blank page in ACIP*/
     public static final int BP = 8;
-    /** For [LS] -- Lanycha script on page */
+    /** For [LS] -- Lanycha script on page in ACIP*/
     public static final int LS = 9;
-    /** For [DR] -- picture (without caption) on page */
+    /** For [DR] -- picture (without caption) on page in ACIP*/
     public static final int DR = 10;
-    /** For [DD], [DDD], [DD1], [DD2], et cetera -- picture with caption on page */
+    /** For [DD], [DDD], [DD1], [DD2], et cetera -- picture with caption on page in ACIP */
     public static final int DD = 11;
-    /** For [?] */
+    /** For [?] in ACIP */
     public static final int QUESTION = 12;
-    /** For the first / in /NYA/ */
+    /** For the first / in /NYA/ in ACIP */
     public static final int START_SLASH = 13;
-    /** For the last / in /NYA/ */
+    /** For the last / in /NYA/ in ACIP */
     public static final int END_SLASH = 14;
-    /** For the opening ( in (NYA) */
+    /** For the opening ( in (NYA) in ACIP */
     public static final int START_PAREN = 15;
-    /** For the closing ) in (NYA) */
+    /** For the closing ) in (NYA) in ACIP */
     public static final int END_PAREN = 16;
     /** For things that may not be legal syntax, such as {KA . KHA} */
     public static final int WARNING = 17;
-    /** For ACIP %, o, and x */
+    /** For ACIP %, o, and x or EWTS (DLC FIXME) */
     public static final int TSHEG_BAR_ADORNMENT = 18;
     /** For things that are not legal syntax, such as a file that
      * contains just "[# HALF A COMMEN" */
@@ -112,11 +112,11 @@ public class ACIPString {
     }
 
     /** Don't instantiate me. */
-    private ACIPString() { }
+    private TString() { }
 
-    /** Creates a new ACIPString with source text <i>text</i> and type
+    /** Creates a new TString with source text <i>text</i> and type
      *  <i>type</i> being a characterization like {@link #DD}. */
-    public ACIPString(String text, int type) {
+    public TString(String text, int type) {
         setType(type);
         setText(text);
     }
