@@ -35,7 +35,7 @@ public class BinaryFileGenerator extends LinkedList
 {
 	private long posHijos;
 	private String sil, def[];
-        private static char delimiter;
+    private static String delimiter;
 
 	/** Number of dictionary. If 0, partial word (no definition).
 	*/
@@ -47,7 +47,7 @@ public class BinaryFileGenerator extends LinkedList
 	{
 		wordRaf = null;
 		defRaf = null;
-                delimiter = '-';
+        delimiter = " - ";
 	}
 
 	public BinaryFileGenerator()
@@ -110,7 +110,7 @@ public class BinaryFileGenerator extends LinkedList
 		boolean markerNotFound;
         
         // used for acip dict 
-        if (delimiter==' ')
+        if (delimiter==null)
         {
 		    outAHere:
 		    while (true)
@@ -544,53 +544,53 @@ public class BinaryFileGenerator extends LinkedList
 		    return;
 		}
 		BinaryFileGenerator sl = new BinaryFileGenerator();
-                if (args[0].charAt(0)=='-')
-                {
-                  if (args[0].equals("-tab"))
-                    delimiter='\t';
-                  else if (args[0].equals("-acip"))
-                    delimiter=' ';
-                  else
-                    delimiter=args[0].charAt(1);
-                  if (args.length>2)
-                  {
-                    printSintax();
-                    return;
-                  }
-                  sl.addFile(args[1] + ".txt",0);
-                  a=1;
-                }
-                else
-                {
-                  a=0;
-		  if (args.length==1)
-		  {
-                    sl.addFile(args[0] + ".txt",0);
-		  }
-		  else
-                  {
-                    i=1;
+        if (args[0].charAt(0)=='-')
+        {
+            if (args[0].equals("-tab"))
+                delimiter="\t";
+            else if (args[0].equals("-acip"))
+                delimiter=null;
+            else
+                delimiter=args[0].substring(1);
+            if (args.length>2)
+            {
+                printSintax();
+                return;
+            }
+            sl.addFile(args[1] + ".txt",0);
+            a=1;
+        }
+        else
+        {
+            a=0;
+		    if (args.length==1)
+		    {
+                sl.addFile(args[0] + ".txt",0);
+		    }
+		    else
+            {
+                i=1;
 
-                    while(i< args.length)
+                while(i< args.length)
+                {
+                    if (args[i].charAt(0)=='-')
                     {
-                      if (args[i].charAt(0)=='-')
-                      {
                         if (args[i].equals("-tab"))
-                          delimiter='\t';
+                        delimiter="\t";
                         else if (args[i].equals("-acip"))
-                          delimiter=' ';
+                            delimiter=null;
                         else
-                          delimiter=args[i].charAt(1);
+                            delimiter=args[i].substring(1);
                         i++;
-                      }
-                      else delimiter='-';
-                      sl.addFile(args[i] + ".txt", n);
-                      n++; i++;
                     }
-                  }
+                    else delimiter=" -";
+                    sl.addFile(args[i] + ".txt", n);
+                    n++; i++;
+                }
+            }
 		}
-                File wordF = new File(args[a] + ".wrd"), defF = new File(args[a] + ".def");
-                wordF.delete();
+        File wordF = new File(args[a] + ".wrd"), defF = new File(args[a] + ".def");
+        wordF.delete();
 		defF.delete();
 		wordRaf = new RandomAccessFile(wordF,"rw");
 		defRaf = new RandomAccessFile(defF,"rw");
