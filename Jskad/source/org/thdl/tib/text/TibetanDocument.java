@@ -26,6 +26,7 @@ import java.io.*;
 
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlOptions;
+import org.thdl.util.ThdlLazyException;
 
 /** Represents a character meant to be rendered in a certain font.
  *  @author David Chandler
@@ -196,11 +197,10 @@ public class TibetanDocument extends DefaultStyledDocument {
 	/** Replacing can be more efficient than inserting and then
         removing. This replaces the glyphs at position [startOffset,
         endOffset) with unicode.  The font size for the new unicode is
-        fontSize.  Which particular Unicode font is used depends on
-        TibetanMachineWeb.getUnicodeAttributeSet().
+        fontSize.  Which particular Unicode font is used is specified
+        by unicodeFont.
     
-        @see TibetanMachineWeb#getUnicodeAttributeSet()
-    */
+        @see TibetanMachineWeb#getUnicodeAttributeSet(String) */
     private void replaceDuffsWithUnicode(int fontSize, int startOffset,
                                          int endOffset, String unicode,
                                          String unicodeFont) {
@@ -233,6 +233,8 @@ public class TibetanDocument extends DefaultStyledDocument {
             mas = ((asTMW)
                    ? TibetanMachineWeb.getAttributeSet(glyphs[i].font)
                    : TibetanMachineWeb.getAttributeSetTM(glyphs[i].font));
+            if (null == mas)
+                throw new Error("Cannot insert that DuffData; the font number is too low or too high; perhaps the programmer has asTMW set incorrectly?");
 			appendDuff(fontSize, pos, glyphs[i].text, mas);
 			pos += glyphs[i].text.length();
 		}
@@ -701,9 +703,9 @@ public class TibetanDocument extends DefaultStyledDocument {
         cases will be appended to this StringBuffer
         @return false on 100% success, true if any exceptional case
         was encountered
-        @see convertToUnicode(int,int) 
-        @see convertToTMW(int,int) 
-        @see convertToTM(int,int) */
+        @see #convertToUnicode(int,int,StringBuffer,String)
+        @see #convertToTMW(int,int,StringBuffer) 
+        @see #convertToTM(int,int,StringBuffer) */
     private boolean convertHelper(int begin, int end, boolean toTM,
                                   boolean toUnicode, StringBuffer errors,
                                   String unicodeFont) {
@@ -724,7 +726,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 
         ConversionErrorHelper ceh = new ConversionErrorHelper();
         int pl = 0;
-        pl = getParagraphs(begin, end).length;
+        pl = getParagraphs(begin, finalEndPos.getOffset()).length;
         boolean warn = false;
         int lastTimeWeExamined = -1; // must be -1
         boolean noMore = false;
@@ -748,12 +750,79 @@ public class TibetanDocument extends DefaultStyledDocument {
         if (!ceh.errorReturn
             && pl != getParagraphs(begin, finalEndPos.getOffset()).length) {
             System.err.println("Conversion WARNING: the number of paragraphs changed from "
-                               + pl + " to " + getParagraphs(begin, end).length
+                               + pl + " to " + getParagraphs(begin, finalEndPos.getOffset()).length
                                + ", indicating that formatting may have been lost.");
+            /* You'll see this with this document:
+               
+               {\rtf1\ansi\deff0\deftab720{\fonttbl{\f10\fnil\fprq2 TibetanMachine;}}
+               \deflang1033\pard\plain\f10\fs48\cf0 \u0156\par }
+               
+               You'll see it coming (TM->TMW) and going (if you do
+               TMW->TM again).  I wonder if finalEndPos isn't one shy
+               of where you'd think it would be.  FIXME */
             ThdlDebug.noteIffyCode();
         }
-
         return ceh.errorReturn;
+    }
+
+    /** Appends to sb a text representation of the characters (glyphs)
+        in this document in the range [begin, end).  In this
+        representation, \tmwXYYY and \tmXYYY are used for TMW and TM
+        glyphs, respectively.  \otherYYY is used for all other
+        characters.  X is zero-based; Y is the decimal glyph number.
+        After every 10 characters, '\n' is added.  Note well that some
+        TM oddballs (see TibetanMachineWeb.getUnusualTMtoTMW(int,
+        int)) are not handled well, so you may get \tm08222 etc. */
+    public void getTextRepresentation(int begin, int end, StringBuffer sb) {
+        if (end < 0)
+            end = getLength();
+        if (begin >= end)
+            return; // nothing to do
+
+        // For speed, do as few replaces as possible.  To preserve
+        // formatting, we'll try to replace one paragraph at a time.
+        // But we *must* replace when we hit a different font (TMW3 as
+        // opposed to TMW2, e.g.), so we'll likely replace many times
+        // per paragraph.  One very important optimization is that we
+        // don't have to treat TMW3.45 or TMW3.32 as a different font
+        // than TMW.33 -- that's because each of the ten TMW fonts has
+        // the same glyph at position 32 (space) and the same glyph at
+        // position 45 (tsheg).  Note that we're building up a big
+        // StringBuffer; we're trading space for time.
+        try {
+            int i = begin;
+            int tenCount = 0;
+            while (i < end) {
+                AttributeSet attr = getCharacterElement(i).getAttributes();
+                String fontName = StyleConstants.getFontFamily(attr);
+				int tmwFontNum
+                    = TibetanMachineWeb.getTMWFontNumber(fontName);
+                int tmFontNum;
+                if (tmwFontNum != 0) {
+                    sb.append("\\tmw" + (tmwFontNum - 1));
+                } else if ((tmFontNum
+                            = TibetanMachineWeb.getTMFontNumber(fontName))
+                           != 0) {
+                    sb.append("\\tm" + (tmFontNum - 1));
+                } else {
+                    // non-tmw, non-tm character:
+                    sb.append("\\other");
+                }
+                int ordinal = (int)getText(i,1).charAt(0);
+                if (ordinal < 100)
+                    sb.append('0');
+                if (ordinal < 10)
+                    sb.append('0');
+                sb.append("" + ordinal);
+                if ((++tenCount) % 10 == 0) {
+                    tenCount = 0;
+                    sb.append('\n');
+                }
+                i++;
+            }
+        } catch (BadLocationException e) {
+            throw new ThdlLazyException(e);
+        }
     }
 
     /** See the sole caller, convertHelper. */
@@ -763,7 +832,7 @@ public class TibetanDocument extends DefaultStyledDocument {
                                      String unicodeFont) {
         final boolean debug = false;
         if (debug)
-            System.err.println("cHH: [" + begin + ", " + end + ")");
+            System.out.println("cHH: [" + begin + ", " + end + ")");
         // DLC FIXME: here's an idea, a compressor -- use the '-' (ord
         // 45) or ' ' (ord 32) glyph from the same font as the
         // preceding glyph, never others.  This reduces the size of a
@@ -866,7 +935,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 
                         // i += numnewchars - numoldchars;
                         if (debug)
-                            System.err.println("Incrementing i by " + (replacementQueue.length()
+                            System.out.println("Incrementing i by " + (replacementQueue.length()
                               - (endIndex - replacementStartIndex)) + "; replaced a patch with font size " + replacementFontSize + ", fontindex " + replacementFontIndex);
                         i += (replacementQueue.length()
                               - (endIndex - replacementStartIndex));
@@ -923,10 +992,18 @@ public class TibetanDocument extends DefaultStyledDocument {
                                 insertDuff(72, ceh.errorGlyphLocation++,
                                            equivalent, toUnicode || toTM);
                                 ++i;
+                                // Don't later replace this last guy:
+                                if (replacementStartIndex < ceh.errorGlyphLocation) {
+                                    ++replacementStartIndex;
+                                }
                                 equivalent[0].setData(getText(i,1), fontNum);
                                 insertDuff(72, ceh.errorGlyphLocation++,
                                            equivalent, toUnicode || toTM);
                                 ++i;
+                                // Don't later replace this last guy:
+                                if (replacementStartIndex < ceh.errorGlyphLocation) {
+                                    ++replacementStartIndex;
+                                }
                             }
                         }
 
@@ -939,7 +1016,7 @@ public class TibetanDocument extends DefaultStyledDocument {
                         }
                     }
                 } else {
-                    if (debug) System.err.println("non-tm/tmw found at offset " + i + "; font=" + fontName + " ord " + (int)getText(i,1).charAt(0));
+                    if (debug) System.out.println("non-tm/tmw found at offset " + i + "; font=" + fontName + " ord " + (int)getText(i,1).charAt(0));
                     if (replacementQueue.length() > 0) {
                         if (!mustReplace) {
                             mustReplaceUntil = i;
@@ -969,6 +1046,27 @@ public class TibetanDocument extends DefaultStyledDocument {
             }
             ceh.lastOffsetExamined = endPos.getOffset() - 1;
 
+            if (ceh.doErrorWrapup && ceh.errorGlyphLocation > 0) {
+                // Bracket the bad stuff with U+0F3C on the left
+                // and U+0F3D on the right:
+                if (!(toUnicode || toTM)) {
+                    equivalent[0].setData((char)209, 1);
+                    insertDuff(72, ceh.errorGlyphLocation++,
+                               equivalent, false);
+                    equivalent[0].setData((char)208, 1);
+                    insertDuff(72, 0,
+                               equivalent, false);
+                    ceh.errorGlyphLocation++;
+                } else {
+                    equivalent[0].setData((char)94, 9);
+                    insertDuff(72, ceh.errorGlyphLocation++,
+                               equivalent, true);
+                    equivalent[0].setData((char)93, 9);
+                    insertDuff(72, 0,
+                               equivalent, true);
+                    ceh.errorGlyphLocation++;
+                }
+            }
             if (!ThdlOptions.getBooleanOption("thdl.leave.bad.tm.tmw.conversions.in.place")) {
                 // Remove all characters other than the oddballs:
                 if (ceh.doErrorWrapup && ceh.errorGlyphLocation > 0) {
