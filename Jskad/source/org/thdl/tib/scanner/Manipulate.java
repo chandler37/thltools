@@ -20,7 +20,7 @@ package org.thdl.tib.scanner;
 
 import java.io.*;
 
-/** Miscelaneous methods for the manipulation of Tibetan text.
+/** Miscelaneous static methods for the manipulation of Tibetan text.
 	
     @author Andr&eacute;s Montano Pellegrini
 */
@@ -218,56 +218,6 @@ public class Manipulate
 		return linea;
 	}
 	
-	/** Not really important.
-	
-	Sintaxis: java Manipulate [word-file] < source-dic-entries > dest-dic-entries
-	
-    Takes the output of ConsoleScannerFilter
-	(in RY format), converts the Wylie to Acip
-	and displays the result in csv format.	 
-	 * arch-palabras es usado solo cuando deseamos las palabras cambiadas
-	 * a otro archivo.
-	 */
-	
-	public static void main (String[] args) throws Exception												   
-	{
-		String linea, palabra, definicion, nuevaPalabra;
-		int marker;
-		PrintWriter psPalabras = null;
-		
-		BufferedReader keyb = new BufferedReader(new InputStreamReader(System.in));
-		
-		if (args.length==1)
-			psPalabras = new PrintWriter(new FileOutputStream(args[0]));		
-		
-		while ((linea=keyb.readLine())!=null)
-		{
-			if (linea.trim().equals("")) continue;
-			marker = linea.indexOf('-');
-			if (marker<0) // linea tiene error
-			{
-				palabra = linea;
-				definicion = "";
-			}
-			else
-			{
-				palabra = linea.substring(0, marker).trim();
-				definicion = linea.substring(marker+1).trim();
-			}
-			
-			nuevaPalabra = wylieToAcip(palabra);
-			
-			if (psPalabras!=null)
-				psPalabras.println(nuevaPalabra);
-			else System.out.print(nuevaPalabra + '\t');
-			if (definicion.equals(""))
-				System.out.println(palabra);
-			else
-				System.out.println(palabra + '\t' + definicion);
-		}
-      if (psPalabras!=null) psPalabras.flush();
-	}
-	
 	/** Returns the base letter of a syllable. Does not include the vowel!
 	Ignoring cases for now. */
 	public static String getBaseLetter (String sil)
@@ -333,4 +283,52 @@ public class Manipulate
 	    return sil.substring(i,i+1);
 	}
 	
+	
+	/** Syntax: java Manipulate [word-file] < source-dic-entries > dest-dic-entries
+	
+    Takes the output of ConsoleScannerFilter
+	(in RY format), converts the Wylie to Acip
+	and displays the result in csv format.	 
+	arch-palabras es usado solo cuando deseamos las palabras cambiadas
+	a otro archivo.
+	
+	
+	public static void main (String[] args) throws Exception												   
+	{
+		String linea, palabra, definicion, nuevaPalabra;
+		int marker;
+		PrintWriter psPalabras = null;
+		
+		BufferedReader keyb = new BufferedReader(new InputStreamReader(System.in));
+		
+		if (args.length==1)
+			psPalabras = new PrintWriter(new FileOutputStream(args[0]));		
+		
+		while ((linea=keyb.readLine())!=null)
+		{
+			if (linea.trim().equals("")) continue;
+			marker = linea.indexOf('-');
+			if (marker<0) // linea tiene error
+			{
+				palabra = linea;
+				definicion = "";
+			}
+			else
+			{
+				palabra = linea.substring(0, marker).trim();
+				definicion = linea.substring(marker+1).trim();
+			}
+			
+			nuevaPalabra = wylieToAcip(palabra);
+			
+			if (psPalabras!=null)
+				psPalabras.println(nuevaPalabra);
+			else System.out.print(nuevaPalabra + '\t');
+			if (definicion.equals(""))
+				System.out.println(palabra);
+			else
+				System.out.println(palabra + '\t' + definicion);
+		}
+      if (psPalabras!=null) psPalabras.flush();
+	}*/	
 }
