@@ -106,6 +106,7 @@ public class LexActionServlet extends HttpServlet
 	 */
 	public void service( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException
 	{
+		res.setContentType( "text/html; charset=UTF-8" );
 		/*
 		    LexLogger.debug( "Checking Request state at start of LexActionServlet.service()" );
 		    LexLogger.logRequestState( req );

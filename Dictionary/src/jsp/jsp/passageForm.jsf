@@ -61,7 +61,7 @@ Spelling: <c:out value='<input type="text" value="${ spelling }" name="spelling"
 
 <c:out value="${ originalPagination } " escapeXml='false' />
 Pagination: <br />
-<textarea name="pagination" rows="8" cols="90"><c:out value='${ pagination }' /> </textarea> <br />
+<textarea name="pagination" rows="8" cols="90"><c:out value='${ pagination }' /></textarea><br />
 
 <c:out value="${ originalPassage }" escapeXml='false' />
 Passage: <br />

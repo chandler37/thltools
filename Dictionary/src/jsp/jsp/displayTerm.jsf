@@ -9,7 +9,7 @@
 <!--TERM-->
 <h1><c:out value="${ query.entry.term }" /></h1>
 <p class="data" >
-<c:out value='<a name="${ query.entry.label }" ></a>' escapeXml="false" />
+<c:out value='<a name="${ query.entry }" ></a>' escapeXml="false" />
 		<c:if test="${ editMode }">
 		<span class="compEditOptions">
 			<c:out value='<a href="/lex/action?cmd=getUpdateTermForm&amp;comp=term&amp;metaId=${ query.entry.metaId }" label="Edit Term"><img alt="Edit Term" src="/lex/images/edit.gif"/></a>' escapeXml="false" />

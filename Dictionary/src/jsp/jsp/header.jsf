@@ -11,6 +11,14 @@
 <link rel="stylesheet" type="text/css" media="screen" href="/lex/css/lex.css" />
 
 <title>THDL Tibetan Collaborative Dictionaries</title>
+<style type="text/css">
+<c:if test="${ ! sessionScope.helper.showEditOptions }">
+p.data
+{
+border: none;
+}
+</c:if>
+</style>
 </head>
 <body> 
 

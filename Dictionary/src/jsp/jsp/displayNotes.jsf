@@ -3,8 +3,13 @@
 
 <!--displayNotes.jsf-->
 <c:if test="${ sessionScope.helper.showNotes }">
+
+<c:set value="${sessionScope.helper.component.analyticalNotes}" target="${sessionScope.helper}" property="collection"/>
+<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<h3>Notes</h3>
+<ol class="notes">
 <c:forEach var="note" items="${ sessionScope.helper.component.analyticalNotes }">
-<a class="meta" href="#"><img src="/lex/images/note.gif" alt="analysis" />
+<li>
 <span class="analysis">
 <c:out value="${ note.analyticalNote }" escapeXml="false" /><br />
 
@@ -17,6 +22,9 @@
 
 <c:set target="${ sessionScope.helper }" property="component" value="${ parent }" />
 </span>
-</a>
+</li>
 </c:forEach>
+</ol>
+
+</c:if>
 </c:if>

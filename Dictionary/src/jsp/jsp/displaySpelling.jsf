@@ -1,34 +1,27 @@
 <%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
-<!--displayTree.jsf-->
 
-
-
-<!--SPELLINGS-->
-<c:forEach var="spelling" items="${ query.entry.spellings }">
+<c:set var="spelling" value="${ sessionScope.helper.component }"/>
 	<p class="data">
-		<c:if test="${ editMode }">
-		<span class="compEditOptions">			
-			<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=spelling&amp;metaId=${ spelling.metaId }" label="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
-			<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=spelling&amp;metaId=${ spelling.metaId }" label="Edit this component"><img alt="Edit this component" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
-			</span>
-		</c:if>
+<c:if test="${ editMode }">
+<span class="compEditOptions">			
+<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=spelling&amp;metaId=${ spelling.metaId }" label="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=spelling&amp;metaId=${ spelling.metaId }" label="Edit this component"><img alt="Edit this component" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+</span>
+</c:if>
 
-	<c:out value='<a name="${ spelling.label }" ></a>' escapeXml="false" />
-	<!--<span class="label">Spelling:</span> --> <c:out value="${ spelling.spelling }" escapeXml="false" />   <br />
-		<!--<span class="label">Spelling Type:</span> --> <c:out value="${ applicationScope.flatData.spellingTypes[ spelling.spellingType ] }" escapeXml="false" />   <br />
-		
-		
-		<!--metadata--> 
-		<c:set target="${ sessionScope.helper }" property="component" value="${spelling}" />
-		<jsp:include page="displayMeta.jsf" />
-		
+<c:out value='<a name="${ spelling }" ></a>' escapeXml="false" />
+<!--<span class="label">Spelling:</span> --> 
+<c:out value="${ spelling.spelling }" escapeXml="false" />   <br />
+<!--<span class="label">Spelling Type:</span> --> 
+<c:out value="${ applicationScope.flatData.spellingTypes[ spelling.spellingType ] }" escapeXml="false" />   <br />
 
-		<!--notes-->
-		<jsp:include page="displayNotes.jsf" />
+<!--metadata--> 
 
-	</p>
-</c:forEach>
-<!--END SPELLINGS-->
+<jsp:include page="displayMeta.jsf" />
 
 
+<!--notes-->
+<jsp:include page="displayNotes.jsf" />
+
+</p>

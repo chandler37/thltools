@@ -1,11 +1,12 @@
 <%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
-<!--displayTree.jsf-->
 
 
 
+
+	<c:set var="modelSentence" value="${ sessionScope.helper.component }"/>
 	<p class="data">
-<c:out value='<a name="${ modelSentence.label }" ></a>' escapeXml="false" />
+<c:out value='<a name="${ modelSentence }" ></a>' escapeXml="false" />
 		<c:if test="${ editMode }">
 	<span class="compEditOptions">
 		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }" label="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
@@ -20,26 +21,40 @@
 	
 		
 		<!--metadata--> 
-		<c:set target="${ sessionScope.helper }" property="component" value="${modelSentence}" />
+		
 		<jsp:include page="displayMeta.jsf" />
 		
 
 		<!--translation-->
 		<c:if test="${sessionScope.helper.showTranslations }">
+
+		<c:set value="${modelSentence.translations}" target="${sessionScope.helper}" property="collection"/>
+		<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+		<h3>Translations</h3>
+		<ul>
+
 		<c:forEach var="translation" items="${ modelSentence.translations }" >
+		<li>
+		<%-- 
 		<c:set var='href' value='#'/>
 		<c:if test="${ editMode }">
 			<c:set var='href' value='/lex/action?cmd=getUpdateForm&amp;comp=modelSentence&amp;metaId=${ translation.metaId }'  />
 		</c:if>
-		<c:out value='<a class="meta" href="${href} ">'escapeXml="false" /><img src="/lex/images/trans.gif" alt="view/edit translation" />
+		<c:out value='<a class="meta" href="${href} ">'escapeXml="false" /><img src="/lex/images/trans.gif" alt="view/edit translation" /> --%>
 		<span class="translation">
 		<!--<span class="label">Model Sentence:</span>-->  
 		<c:out value="${ translation.modelSentence }" escapeXml="false" /> <br />  
-		 </span> </a>
+		 </span> 
 		<!--metadata--> 
+		<c:set var="originalComponent" value="${ modelSentence }" />
+
 		<c:set target="${ sessionScope.helper }" property="component" value="${ translation }" />
 		<jsp:include page="displayMeta.jsf" />
+		<c:set target="${ sessionScope.helper }" property="component" value="${ originalComponent }" />
+		</li>
 		</c:forEach>
+		</ul>
+		</c:if>
 		</c:if>
 		
 		<!--notes-->

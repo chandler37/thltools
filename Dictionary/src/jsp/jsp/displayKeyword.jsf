@@ -1,11 +1,12 @@
 <%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
-<!--displayTree.jsf-->
 
 
 
+
+	<c:set var="keyword" value="${ sessionScope.helper.component }"/>
 	<p class="data">
-<c:out value='<a name="${ keyword.label }" ></a>' escapeXml="false" />
+<c:out value='<a name="${ keyword }" ></a>' escapeXml="false" />
 		<c:if test="${ editMode }">
 			<span class="compEditOptions">
 		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=keyword&amp;metaId=${ keyword.metaId }" label="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
@@ -18,7 +19,7 @@
  <br /> 
 		
 		<!--metadata--> 
-		<c:set target="${ sessionScope.helper }" property="component" value="${keyword}" />
+		
 		<jsp:include page="displayMeta.jsf" />
 
 

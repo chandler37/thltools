@@ -55,16 +55,20 @@
 <!--DEFINITION LOOP-->
 <c:set value="${query.entry.definitions}" target="${sessionScope.helper}" property="collection"/>
 <c:if test="${ sessionScope.helper.collectionSize > 0 }">
-<c:out value='<li><a href="#${query.entry.definitions}">Definitions</a></li>' escapeXml='false' />					
 <c:forEach var="definition" items="${query.entry.definitions}">
+<li>
+<c:out value='<a href="#${definition}">Definition ${ definition.precedence + 1}</a>' escapeXml='false' />					
 
+<ol>
 
 <!--SUBDEFINITION-->
 <c:set value="${definition.subdefinitions}" target="${sessionScope.helper}" property="collection"/>
 <c:if test="${ sessionScope.helper.collectionSize > 0 }">
-<c:out value='<li><a href="#${definition.subdefinitions}">Subdefinitions</a></li>' escapeXml='false' />					
 <c:forEach var="subdefinition" items="${ definition.subdefinitions }">
+<li>
+<c:out value='<a href="#${subdefinition}">Subdefinition ${ subdefinition.precedence + 1 }</a>' escapeXml='false' />					
 
+<ol>
 
 <!--KEYWORD-->
 <c:set value="${subdefinition.keywords}" target="${sessionScope.helper}" property="collection"/>
@@ -108,9 +112,20 @@
 <c:forEach var="register" items="${ subdefinition.registers }"></c:forEach>
 </c:if>
 
-</c:forEach>
+</ol>
+</li>
+
+</c:forEach><!--END SUB-DEFINITIONS-->
 </c:if>
-</c:forEach>
+
+</ol>
+</li>
+
+</c:forEach><!--END DEFINITIONS-->
 </c:if>
+
+</ol>
+</li>
+
 </ol>	
 

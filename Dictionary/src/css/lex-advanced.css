@@ -17,6 +17,13 @@
 {
 	padding: 0;
 }
+
+#helper
+{
+	background-color: #99ccff;
+	border: solid 1px gray;
+	padding: 2px 0 2px 2px;
+}
 #entry
 {
 }
@@ -25,8 +32,9 @@
 {
 }
 
-#columnMain textarea
+#columnCenter p
 {
+	text-align: justify;
 } 
 
 #newCompForm, #preferencesForm
@@ -78,7 +86,7 @@ margin-bottom: 0;
 margin-right: 2px;
 }
 
-.metadata, .translation, .analysis
+.metadata
 {
 display: none;
 margin-left: 1.5em;
@@ -102,17 +110,17 @@ background-color: white;
 color: #003366;
 }
 
-p.data a:link span.metadata, p.data a:link span.translation, p.data a:link span.analysis
+p.data a:link span.metadata
 {
 display: none;
 }
 
-p.data a:visited span.metadata, p.data a:visited span.translation, p.data a:visited span.analysis
+p.data a:visited span.metadata
 {
 display: none;
 }
 
-p.data a:hover span.metadata, p.data a:hover span.translation, p.data a:hover span.analysis
+p.data a:hover span.metadata
 {
 text-decoration: none !important;
 position: absolute;
@@ -125,10 +133,10 @@ text-align:left;
 display: block;
 }
 
-p.data a:hover span.translation span.metadata, p.data a:hover span.analysis span.metadata
+/* p.data a:hover span.translation span.metadata, p.data a:hover span.analysis span.metadata
 {
 	width: 300px;
-}
+} */
 
 
 /* END OF CSS*/

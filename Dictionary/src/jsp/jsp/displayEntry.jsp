@@ -1,4 +1,4 @@
-<%@ page  buffer="512kb" autoFlush="false" import="org.thdl.lex.*,org.thdl.lex.component.*" errorPage="/jsp/error.jsp" %>
+<%@ page  buffer="512kb" autoFlush="false" import="org.thdl.lex.*,org.thdl.lex.component.*" errorPage="/jsp/error.jsp" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 
 <jsp:include page="header.jsf" flush="false" />
@@ -8,7 +8,7 @@
 <c:if test="${ ! sessionScope.user.guest && sessionScope.helper.showEditOptions }">
 	<c:set var="editMode" value="${ true }" scope="request"/>
 </c:if>
-
+<%-- 
 <c:set var="showNotes" value="${ false }" scope="request" />
 <c:if test="${ sessionScope.helper.showNotes }">
 	<c:set var="showNotes" value="${ true }" scope="request"/>
@@ -22,9 +22,9 @@
 <c:set var="showTranslations" value="${ false }" scope="request" />
 <c:if test="${ sessionScope.helper.showTranslations }">
 	<c:set var="showTranslations" value="${ true }" scope="request"/>
-</c:if>
+</c:if> --%>
 
-<div id="columnLeft">
+<div id="columnRight">
 	<div id="results" class="highlightBox">
 	<h2>	Search Results </h2>	
 		<ol>
@@ -40,13 +40,18 @@
 		</ol>
 	</div><!--END MENU-->
 
+</div>
+
+<div id="columnLeft">
+
 	<div id="toc" class="highlightBox">
 	<jsp:include page="displayTreeToc.jsf"/>
 	</div><!--END TOC-->
-	
+
 </div><!--END COLUMN LEFT-->
 
-<div id="columnMain">
+
+<div id="columnCenter">
 <p id="navLinks"><jsp:include page="navLinks.jsf" /></p>
 
 <p id="message">

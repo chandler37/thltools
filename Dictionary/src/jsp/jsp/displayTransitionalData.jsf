@@ -6,8 +6,9 @@
 
 <!--TRANSITIONAL DATA-->
 <c:forEach var="transitionalData" items="${ query.entry.transitionalData }">
-<p class="data">
-<c:out value='<a name="${ transitionalData.label }" ></a>' escapeXml="false" />
+<c:set var="transitionalData" value="${ sessionScope.helper.component }"/>
+	<p class="data">
+<c:out value='<a name="${ transitionalData }" ></a>' escapeXml="false" />
 
 		<c:if test="${ editMode }">
 		<span class="compEditOptions">
@@ -22,7 +23,7 @@
 		
 		
 		<!--metadata--> 
-		<c:set target="${ sessionScope.helper }" property="component" value="${transitionalData}" />
+		
 		<jsp:include page="displayMeta.jsf" />
 		<!--notes--> 
 		<!--notes-->
