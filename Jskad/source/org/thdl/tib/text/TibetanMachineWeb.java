@@ -233,6 +233,23 @@ public class TibetanMachineWeb implements THDLWylieConstants {
         }
     }
 
+    /** Returns the next token in st with the first occurrence of
+        __TILDE__ replaced with ~.  Needed because the DELIMITER is ~.
+        Appends the escaped token to sb iff an escape sequence
+        occurred. */
+    private static String getEscapedToken(StringTokenizer st,
+                                          StringBuffer sb) {
+        String unescaped = st.nextToken();
+        int start;
+        if ((start = unescaped.indexOf("__TILDE__")) >= 0) {
+            StringBuffer x = new StringBuffer(unescaped);
+            x.replace(start, "__TILDE__".length(), "~");
+            sb.append(x.toString());
+            return x.toString();
+        } else {
+            return unescaped;
+        }
+    }
 /**
 * This method reads the data file ("tibwn.ini"), constructs
 * the character, punctuation, and vowel lists, as well as
@@ -379,14 +396,21 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 
 					int k = 0;
 
+                    StringBuffer escapedToken = new StringBuffer("");
+                    ThdlDebug.verify(escapedToken.length() == 0);
 					while (st.hasMoreTokens()
                            && (!ignore || (k <= 3 /* 3 from 'case 3:' */))) {
-						String val = st.nextToken();
+						String val = getEscapedToken(st, escapedToken);
 
-						if (val.equals(DELIMITER))
+						if (val.equals(DELIMITER)
+                            && escapedToken.length() == 0) {
 							k++;
+                        } else if (!val.equals("")) {
+                            if (escapedToken.length() != 0) {
+                                escapedToken = new StringBuffer("");
+                                ThdlDebug.verify(escapedToken.length() == 0);
+                            }
 
-						else if (!val.equals("")) {							
 							switch (k) {
 								case 0: //wylie key
                                     if (!ignore) {
@@ -476,8 +500,11 @@ public class TibetanMachineWeb implements THDLWylieConstants {
                             tibHash.put(wylie, duffCodes);
                         }
 
-                        int font = duffCodes[2].getFontNum();
-                        int code = duffCodes[2].getCharNum()-32;
+                        if (null == duffCodes[TMW])
+                            throw new Error(fileName
+                                            + " has a line with wylie " + wylie + " but no TMW; that's not allowed");
+                        int font = duffCodes[TMW].getFontNum();
+                        int code = duffCodes[TMW].getCharNum()-32;
                         toHashKey[font][code] = wylie;
                     }
 				}
@@ -863,9 +890,8 @@ public static boolean hasGlyph(String hashKey) {
 */
 public static DuffCode getGlyph(String hashKey) {
 	DuffCode[] dc = (DuffCode[])tibHash.get(hashKey);
-    // If dc is null, then likely you misconfigured tibwn.ini such
-    // that, say, M is expected (i.e., it is listed as,
-    // e.g. punctuation), but no 'M~...' line appears.
+    if (null == dc)
+        throw new Error("It is likely that you misconfigured tibwn.ini such that, say, M is expected (i.e., it is listed as, e.g. punctuation), but no 'M~...' line appears.");
 	return dc[TMW];
 }
 
