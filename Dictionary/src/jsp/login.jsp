@@ -16,9 +16,9 @@ Please login to use the THDL Tibetan Collaborative Dictionaries
 
 <form action='/lex/login' method="post">
 <p>
-Username: <c:out value="<input type='text' name='username' size='16' value='${ usernameValue }'>" escapeXml="false" />
+Username: <c:out value="<input type='text' id='username' size='16' value='${ usernameValue }'>" escapeXml="false" />
 <br />
-Password: <input type='password' name='password' size='20' value=''>
+Password: <input type='password' id='password' size='20' value=''>
 <br />
 <input type='submit' value='Log in'>
 </p>

@@ -13,17 +13,9 @@
   <!-- Configure the context path for this application -->
 	<property name="path" value="/lex"/>
 
-  <!-- Configure the path to $CATALINA_HOME for this application 
-  			This is used  in the classpath to bring in servlet.jar and the jdbc-driver
-			-->
-	<property name="catalina.home" value="/usr/local/tomcat8080"/>
-	<property name="catalina.base" value="/usr/local/tomcat2020"/>
-
-  <!-- Configure properties to access the Manager application 
-  			user /pass combo should be in $TOMCAT_HOME/conf/tomcat-users.xml with manager role.-->
-	<property name="url" value="http://localhost:2020/manager"/>
-	<property name="username" value="travis"/>
-	<property name="password" value="bavis"/>
+	<property file="${user.home}/.${ant.project.name}-build.properties"/>
+	<property file="${user.home}/.build.properties"/>
+	<property file="build.properties"/> 
 
   <!-- Configure the custom Ant tasks for the Manager application 
   			These tasks require catalina-ant.jar in $ANT_HOME/lib-->
@@ -101,7 +93,7 @@
 				<include name="*.tld"/>
 			</fileset>
 		</copy>
-		
+
 		<copy todir="${build}/WEB-INF/lib">
 			<fileset dir="${basedir}/lib/jstl">
 				<include name="*.jar"/>
@@ -111,11 +103,14 @@
 			</fileset>			
 			<fileset dir="${basedir}/lib/thdl">
 				<include name="*.jar"/>
+			</fileset>	
+			<fileset dir="${basedir}/lib/jwebunit">
+				<include name="*.jar"/>
 			</fileset>
 		</copy>
-	
+
 	</target>
-	
+
 	<target name="compile" description="Compile web application" depends="copy">
 		<mkdir dir="${build}/WEB-INF/classes"/>
 		<javac  destdir="${build}/WEB-INF/classes" classpathref="classpath" debug="on" listfiles="no">
