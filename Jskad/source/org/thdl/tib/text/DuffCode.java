@@ -36,17 +36,17 @@ import org.thdl.util.ThdlDebug;
 * @author Edward Garrett, Tibetan and Himalayan Digital Library
 * @author David Chandler */
 
-public final class DuffCode {
+public final /* immutable */ class DuffCode {
 /**
 * the font number in which this glyph can be found, from 1
 * (TibetanMachineWeb/TibetanMachine) ... to 5
 * (TibetanMachineWeb4/TibetanMachineSkt4) ... to 10
 * (TibetanMachineWeb9/[Invalid for TM family]).  */
-    private byte fontNum;
+    private /* final if the compiler were smarter */ byte fontNum;
 /**
 * the character value of this glyph, as an integer (that is, ordinal)
 */
-    private byte charNum;
+    private /* final if the compiler were smarter */ byte charNum;
 
 /**
 * Called by {@link TibetanMachineWeb} to generate

@@ -382,69 +382,69 @@ public class TibetanDocument extends DefaultStyledDocument {
         return getTranslit(false, begin, end, noSuchACIP);
     }
 
-	private String getTranslit(boolean EWTSNotACIP, int begin, int end, boolean noSuch[]) {
-		AttributeSet attr;
-		String fontName;
-		int fontNum;
-		DuffCode dc;
-		char ch;
+    private String getTranslit(boolean EWTSNotACIP, int begin, int end, boolean noSuch[]) {
+        AttributeSet attr;
+        String fontName;
+        int fontNum;
+        char ch;
 
-		if (begin >= end)
-			return "";
+        if (begin >= end)
+            return "";
 
-		java.util.List dcs = new ArrayList();
-		int i = begin;
-		StringBuffer translitBuffer = new StringBuffer();
+        java.util.List dcs = new ArrayList();
+        int i = begin;
+        TranslitList translitBuffer = new TranslitList();
 
-		try {
-			while (i < end) {
-				attr = getCharacterElement(i).getAttributes();
-				fontName = StyleConstants.getFontFamily(attr);
+        try {
+            while (i < end) {
+                attr = getCharacterElement(i).getAttributes();
+                fontName = StyleConstants.getFontFamily(attr);
+                int fsz
+                    = ((Integer)attr.getAttribute(StyleConstants.FontSize)).intValue();
 
-				ch = getText(i,1).charAt(0);
+                ch = getText(i,1).charAt(0);
 
-				//current character is formatting
-				if (ch == '\n' || ch == '\t') {
-					if (dcs.size() > 0) {
-						DuffCode[] dc_array = new DuffCode[0];
-						dc_array = (DuffCode[])dcs.toArray(dc_array);
-						translitBuffer.append(TibTextUtils.getTranslit(EWTSNotACIP, dc_array, noSuch));
-						dcs.clear();
-					}
-					translitBuffer.append(ch);
-				}
+                //current character is formatting
+                if (ch == '\n' || ch == '\t') {
+                    if (dcs.size() > 0) {
+                        SizedDuffCode[] dc_array
+                            = (SizedDuffCode[])dcs.toArray(new SizedDuffCode[0]);
+                        translitBuffer.append(TibTextUtils.getTranslit(EWTSNotACIP, dc_array, noSuch));
+                        dcs.clear();
+                    }
+                    translitBuffer.append(ch, fsz);
+                }
+                //current character isn't TMW
+                else if ((0 == (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName)))) {
+                    if (dcs.size() > 0) {
+                        SizedDuffCode[] dc_array
+                            = (SizedDuffCode[])dcs.toArray(new SizedDuffCode[0]);
+                        translitBuffer.append(TibTextUtils.getTranslit(EWTSNotACIP, dc_array, noSuch));
+                        dcs.clear();
+                    }
+                }
+                //current character is convertable
+                else {
+                    dcs.add(new SizedDuffCode(new DuffCode(fontNum, ch), fsz));
+                }
+                i++;
+            }
+            if (dcs.size() > 0) {
+                SizedDuffCode[] dc_array
+                    = (SizedDuffCode[])dcs.toArray(new SizedDuffCode[0]);
+                translitBuffer.append(TibTextUtils.getTranslit(EWTSNotACIP,
+                                                               dc_array,
+                                                               noSuch));
+            }
+            return translitBuffer.getString();
+        }
+        catch (BadLocationException ble) {
+            ble.printStackTrace();
+            ThdlDebug.noteIffyCode();
+        }
 
-				//current character isn't TMW
-				else if ((0 == (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName)))) {
-					if (dcs.size() > 0) {
-						DuffCode[] dc_array = new DuffCode[0];
-						dc_array = (DuffCode[])dcs.toArray(dc_array);
-						translitBuffer.append(TibTextUtils.getTranslit(EWTSNotACIP, dc_array, noSuch));
-						dcs.clear();
-					}
-				}
-
-				//current character is convertable
-				else {
-					dc = new DuffCode(fontNum, ch);
-					dcs.add(dc);
-				}
-				i++;
-			}
-			if (dcs.size() > 0) {
-				DuffCode[] dc_array = new DuffCode[0];
-				dc_array = (DuffCode[])dcs.toArray(dc_array);
-				translitBuffer.append(TibTextUtils.getTranslit(EWTSNotACIP, dc_array, noSuch));
-			}
-			return translitBuffer.toString();
-		}
-		catch (BadLocationException ble) {
-			ble.printStackTrace();
-			ThdlDebug.noteIffyCode();
-		}
-
-		return "";
-	}
+        return "";
+    }
 
     /** Prints to standard output a list of all the indices of
         characters that are not in a TMW font within the range [start,
@@ -1202,8 +1202,6 @@ public class TibetanDocument extends DefaultStyledDocument {
 
         try {
             boolean noSuchWylie[] = new boolean[] { false };
-            DuffCode[] any_dc_array = new DuffCode[0];
-            DuffCode[] dc_array;
             Position endPos = createPosition(end);
             int i = start;
             java.util.List dcs = new ArrayList();
@@ -1213,39 +1211,46 @@ public class TibetanDocument extends DefaultStyledDocument {
                     = getCharacterElement(i).getAttributes();
                 String fontName = StyleConstants.getFontFamily(attr);
                 int fontNum;
+                int iFontSize = 72; /* the failure ought to be obvious
+                                       at this size */
+                try {
+                    iFontSize
+                        = ((Integer)attr.getAttribute(StyleConstants.FontSize)).intValue();
+                } catch (Exception e) {
+                    // leave it as 72
+                }
 
                 if ((0 == (fontNum
                            = TibetanMachineWeb.getTMWFontNumber(fontName)))
                     || i==endPos.getOffset()) {
                     if (i != start) {
-                        dc_array = (DuffCode[])dcs.toArray(any_dc_array);
-
-                        /* Low-priority FIXME: If the font size
-                           changes within a tsheg bar, the roman
-                           output will not mimic such changes. */
-
-                        // SPEED_FIXME: determining font size might be slow
-                        int fontSize = 72; /* the failure ought to be
-                                              obvious at this size */
-                        try {
-                            fontSize = ((Integer)getCharacterElement(start).getAttributes().getAttribute(StyleConstants.FontSize)).intValue();
-                        } catch (Exception e) {
-                            // leave it as 72
-                        }
+                        SizedDuffCode[] sdc_array
+                            = (SizedDuffCode[])dcs.toArray(new SizedDuffCode[0]);
 
                         remove(start, i-start);
                         ThdlDebug.verify(getRomanAttributeSet() != null);
-                        insertString(start,
-                                     TibTextUtils.getTranslit(EWTSNotACIP,
-                                                              dc_array,
-                                                              noSuchWylie),
-                                     getCopyOfRomanAttributeSet(fontSize));
+                        TranslitList tb
+                            = TibTextUtils.getTranslit(EWTSNotACIP,
+                                                       sdc_array,
+                                                       noSuchWylie);
+                        int lastFontSize = -1;
+                        for (int j = 0; j < tb.length(); j++) {
+                            TranslitTuple tt = tb.get(j);
+                            int thisFontSize;
+                            insertString(start,
+                                         tt.getTranslit(),
+                                         getCopyOfRomanAttributeSet(thisFontSize = tt.getFontSize()));
+                            if (thisFontSize == lastFontSize)
+                                throw new Error("FIXME: make this an assertion");
+                            lastFontSize = thisFontSize;
+                        }
                         dcs.clear();
                     }
                     start = i+1;
                 } else {
                     char ch = getText(i,1).charAt(0);
-                    dcs.add(new DuffCode(fontNum, ch));
+                    dcs.add(new SizedDuffCode(new DuffCode(fontNum, ch),
+                                              iFontSize));
                     ++numAttemptedReplacements[0];
                 }
 
