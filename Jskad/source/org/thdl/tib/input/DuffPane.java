@@ -751,13 +751,15 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * the gigu will depend on "k", not "'".
 * 
 * @param v the vowel (in Wylie) you want to insert
+* @return true if the status bar was updated
 */
-    private void putVowel(String v) {
+    private boolean putVowel(String v) {
+        boolean rv = false;
         if (caret.getDot()==0) {
             if (!TibetanMachineWeb.isAChenRequiredBeforeVowel())
-                printAChenWithVowel(v);
+                return printAChenWithVowel(v);
 
-            return;
+            return false;
         }
 
         AttributeSet attr = getTibDoc().getCharacterElement(caret.getDot()-1).getAttributes();
@@ -770,9 +772,9 @@ public class DuffPane extends TibetanPane implements FocusListener {
                 int k = (int)c2;
                 if (k<32 || k>126) { //if previous character is formatting or some other non-character
                     if (!TibetanMachineWeb.isAChenRequiredBeforeVowel())
-                        printAChenWithVowel(v);
+                        return printAChenWithVowel(v);
 
-                    return;
+                    return false;
                 }
 
                 String wylie
@@ -781,8 +783,7 @@ public class DuffPane extends TibetanPane implements FocusListener {
                                                          TibTextUtils.weDoNotCareIfThereIsCorrespondingWylieOrNot);
                 if (TibetanMachineWeb.isWyliePunc(wylie)) {
                     if (charList.isEmpty() && !TibetanMachineWeb.isAChenRequiredBeforeVowel()) {
-                        printAChenWithVowel(v);
-                        return;
+                        return printAChenWithVowel(v);
                     }
                 }
 
@@ -808,6 +809,8 @@ public class DuffPane extends TibetanPane implements FocusListener {
                     TibTextUtils.getVowel(after_vowel, dc_1, dc_2, v);
                 } catch (IllegalArgumentException e) {
                     // drop this vowel silently.
+                    updateStatus("Dropping vowel as it would displace an existing vowel. [b]");
+                    rv = true;
                 }
                 if (after_vowel.size() >= before_vowel.size()) {
                     setNumberOfGlyphsForLastVowel(after_vowel.size()
@@ -825,8 +828,9 @@ public class DuffPane extends TibetanPane implements FocusListener {
         }
         else { //0 font means not Tibetan font, so begin new Tibetan font section
             if (!TibetanMachineWeb.isAChenRequiredBeforeVowel())
-                printAChenWithVowel(v);
+                return printAChenWithVowel(v);
         }
+        return rv;
     }
 
 
@@ -849,8 +853,10 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * is false, this method is called frequently. 
 *
 * @param v the vowel (in Wylie) which you want to print with ACHEN
+* @return true if and only if the status bar was updated
 */
-    private void printAChenWithVowel(String v) {
+    private boolean printAChenWithVowel(String v) {
+        boolean rv = false;
         DuffCode[] dc_array = (DuffCode[])TibetanMachineWeb.getTibHash().get(TibetanMachineWeb.ACHEN);
         DuffCode dc = dc_array[TibetanMachineWeb.TMW];
         java.util.List achenlist = new ArrayList();
@@ -858,9 +864,12 @@ public class DuffPane extends TibetanPane implements FocusListener {
             TibTextUtils.getVowel(achenlist, dc, v);
         } catch (IllegalArgumentException e) {
             // drop this vowel silently.
+            updateStatus("Dropping vowel as it would displace an existing vowel. [a]");
+            rv = true;
         }
         DuffData[] dd = TibTextUtils.convertGlyphs(achenlist);
         getTibDoc().insertDuff(caret.getDot(), dd);        
+        return rv;
     }
 
 /**
@@ -1299,15 +1308,17 @@ public void paste(int offset) {
                     if (TibetanMachineWeb.isVowel(s)) {
                         s = TibetanMachineWeb.getWylieForVowel(s);
 
+                        int nglv = 0;
                         if (isTypingVowel) {
                             //note: this takes care of multiple keystroke vowels like 'ai'
-                            backSpace(getNumberOfGlyphsForLastVowel());
+                            backSpace(nglv = getNumberOfGlyphsForLastVowel());
                         }
 
-                        putVowel(s);
                         isTypingVowel = true;
                         changedStatus = true;
-                        updateStatus("You typed a vowel (the simple way).");
+                        if (!putVowel(s)) {
+                            updateStatus("You typed a vowel " + s + " (the simple way).  We backspaced " + nglv + " spaces before adding it.");
+                        }
                     } else {
                         if (isTypingVowel) {
                             isTypingVowel = false;
@@ -1317,10 +1328,11 @@ public void paste(int offset) {
 
                         if (TibetanMachineWeb.isVowel(s)) {
                             s = TibetanMachineWeb.getWylieForVowel(s);
-                            putVowel(s);
                             isTypingVowel = true;
                             changedStatus = true;
-                            updateStatus("You typed a vowel (the other way).");
+                            if (!putVowel(s)) {
+                                updateStatus("You typed a vowel (the other way).");
+                            }
                         } else if (TibetanMachineWeb.isChar(s)) {
                             s = TibetanMachineWeb.getWylieForChar(s);
                             charList.add(s);
@@ -1368,11 +1380,17 @@ public void paste(int offset) {
 
                     if (TibetanMachineWeb.isVowel(s)) { //the holding string is a vowel
                         s = TibetanMachineWeb.getWylieForVowel(s);
+                        if (isTypingVowel) {
+                            //note: this takes care of multiple keystroke vowels like 'h>cj'
+                            backSpace(getNumberOfGlyphsForLastVowel());
+                        }
+
                         initKeyboard();
                         isTypingVowel = true;
-                        putVowel(s);
                         changedStatus = true;
-                        updateStatus("You typed another vowel, so the first vowel was discarded.");
+                        if (!putVowel(s)) {
+                            updateStatus("You typed another vowel, so the first vowel was discarded.");
+                        }
                     } else if (TibetanMachineWeb.isChar(s)) { //the holding string is a character
                         String s2 = TibetanMachineWeb.getWylieForChar(s);
 
@@ -1399,10 +1417,11 @@ public void paste(int offset) {
                                 changedStatus = true;
                                 appendStatus(" (because you weren't stacking, and there was a character already)");
                             } else if (TibetanMachineWeb.isAChungConsonant() && s2.equals(TibetanMachineWeb.ACHUNG)) {
-                                putVowel(TibetanMachineWeb.A_VOWEL);
-                                initKeyboard();
                                 changedStatus = true;
-                                appendStatus(" (because you were stacking, and we put a vowel, and there was some achung business)");
+                                if (!putVowel(TibetanMachineWeb.A_VOWEL)) {
+                                    appendStatus(" (because you were stacking, and we put a vowel, and there was some achung business)");
+                                }
+                                initKeyboard();
                                 break key_block;
                             }
 
@@ -1440,10 +1459,13 @@ public void paste(int offset) {
                                     if (!isStackingOn) {
                                         initKeyboard();
                                     } else if (TibetanMachineWeb.isAChungConsonant() && s2.equals(TibetanMachineWeb.ACHUNG)) {
-                                        putVowel(TibetanMachineWeb.A_VOWEL);
-                                        initKeyboard();
                                         changedStatus = true;
-                                        appendStatus(" (because we put a vowel)");
+                                        if (!putVowel(TibetanMachineWeb.A_VOWEL)) {
+                                            updateStatus("You typed an a-chung vowel.");
+                                        }
+                                        setNumberOfGlyphsForLastVowel(1);
+                                        holdCurrent = new StringBuffer(s);
+                                        isTypingVowel = true;
                                         break key_block;
                                     }
 
