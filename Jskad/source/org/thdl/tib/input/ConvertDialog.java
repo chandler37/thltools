@@ -474,7 +474,7 @@ class ConvertDialog extends JDialog
     {
         public boolean accept(File f)
         {
-            return (f.isDirectory() || f.getName().endsWith(".rtf"));
+            return (f.isDirectory() || f.getName().toUpperCase().endsWith(".RTF"));
         }
 
         public String getDescription()
