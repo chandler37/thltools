@@ -43,7 +43,7 @@ import org.thdl.util.StatusBar;
 * @author Edward Garrett, Tibetan and Himalayan Digital Library
 * @version 1.0
 */
-public class DuffPane extends TibetanPane implements KeyListener, FocusListener {
+public class DuffPane extends TibetanPane implements FocusListener, KeyListener {
 /** 
 * The status bar to update with messages about the current input mode.
 * Are we expecting a vowel? a subscript? et cetera.
@@ -192,6 +192,9 @@ public class DuffPane extends TibetanPane implements KeyListener, FocusListener 
 	private MutableAttributeSet romanAttributeSet;
 
     private Clipboard rtfBoard;
+    
+    private Hashtable actions;
+
 
     /** Initializes this object.  All constructors should call
         this. */
@@ -293,8 +296,71 @@ public class DuffPane extends TibetanPane implements KeyListener, FocusListener 
 
 		addKeyListener(this);
 		addFocusListener(this);
+		
+		setupKeymap(); 
 	}
 
+/**
+* This method sets up the keymap used by DuffPane editors.
+* The keymap defines a default behavior for key presses
+* in both Tibetan and Roman mode.
+*/
+	private void setupKeymap() {
+		Action defaultAction = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (!DuffPane.this.isEditable()) return;
+				if (	((e.getModifiers() & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) || 
+						((e.getModifiers() & ActionEvent.ALT_MASK) == ActionEvent.ALT_MASK) ||
+						((e.getModifiers() & ActionEvent.META_MASK) == ActionEvent.META_MASK)) {
+							DuffPane.this.initKeyboard();
+							return;
+				}
+				if (e.getActionCommand() != null) { 
+					String key = e.getActionCommand();
+					if (DuffPane.this.getSelectionStart() < DuffPane.this.getSelectionEnd())
+						DuffPane.this.replaceSelection("");
+					if (key != null) {
+						if (isTibetan) processTibetanChar(key.charAt(0), true);
+						else {
+							MutableAttributeSet inputAtts = DuffPane.this.getInputAttributes();
+							inputAtts.addAttributes(romanAttributeSet);
+							processRomanChar(key, inputAtts);
+						}
+					}
+				}
+			}
+		};
+		createActionTable(this);
+		Keymap keymap = addKeymap("DuffBindings", getKeymap());				
+		keymap.setDefaultAction(defaultAction);
+		setKeymap(keymap);
+	}
+	
+	private void createActionTable(JTextComponent textComponent) {
+	    actions = new Hashtable();
+
+	    Action[] actionsArray = textComponent.getActions();
+
+	    for (int i = 0; i < actionsArray.length; i++) {
+
+		Action a = actionsArray[i];
+
+		actions.put(a.getValue(Action.NAME), a);
+
+		//System.out.println(a.getValue(Action.NAME));
+
+	    }
+
+	}
+
+	
+
+	private Action getActionByName(String name) {
+
+	    return (Action)(actions.get(name));
+
+	}
+	
 /**
 * This method sets up the Tibetan keyboard. Initially it is called
 * by the constructor, but it is also called internally whenever
@@ -885,13 +951,13 @@ class RTFSelection implements ClipboardOwner, Transferable {
 
     /** Copies the current selection to the system clipboard, unless
         cut-and-paste operations are disabled. */
-	public void copyCurrentSelection() {
+	public void copy() {
         copy(getSelectionStart(), getSelectionEnd(), false);
     }
 
     /** If this.isEditable(), then this copies the current selection
         to the system clipboard and then deletes it. */
-	public void cutCurrentSelection() {
+	public void cut() {
         copy(getSelectionStart(), getSelectionEnd(), true);
     }
 
@@ -950,6 +1016,10 @@ class RTFSelection implements ClipboardOwner, Transferable {
 			}
         }
 	}
+
+public void paste() {
+	paste(getSelectionStart());
+}
 
 /**
 * Pastes the contents of the system clipboard into this object's
@@ -1063,197 +1133,63 @@ public void paste(int offset) {
 	public void disableCutAndPaste() {
 		isCutAndPasteEnabled = false;
 	}
+						
 
 /**
-* This method is required as part of the
-* implementation of the KeyListener
-* interface.
-*
-* Basically this method only handles action keys - 
-* Escape, Ctrl-c, Ctrl-x, etc, and TAB and ENTER.
-* Other keystrokes are handled by keyTyped.
+* Required by contract with the KeyListener interface,
+* this method initializes the keyboard
+* when an action key is pressed. It leaves the
+* behavior up to the Keymap of this DuffPane.
 */
 	public void keyPressed(KeyEvent e) {
         // FIXME: exceptions thrown here do not cause the program to fail, even in development mode.
 
 		if (e.isActionKey())
 			initKeyboard();
-
-		switch (e.getKeyCode()) {
-			case KeyEvent.VK_ESCAPE:
-				e.consume();
-				initKeyboard();
-				break;
-
-			case KeyEvent.VK_A:
-				if (e.isControlDown() && isCutAndPasteEnabled) {
-					e.consume();
-					setSelectionStart(0);
-					setSelectionEnd(getTibDoc().getLength());
-				}
-				break;
-
-			case KeyEvent.VK_C:
-				if (e.isControlDown() && isCutAndPasteEnabled) {
-					e.consume();
-					copy(getSelectionStart(), getSelectionEnd(), false);
-				}
-				break;
-
-			case KeyEvent.VK_X:
-				if (e.isControlDown() && isCutAndPasteEnabled) {
-					e.consume();
-					copy(getSelectionStart(), getSelectionEnd(), true);
-				}
-				break;
-
-			case KeyEvent.VK_V:
-				if (e.isControlDown() && isCutAndPasteEnabled) {
-					e.consume();
-                    // since paste is substituting selected text, first delete
-                    deleteCurrentSelection();
-					paste(caret.getDot());
-				}
-				break;
-
-			case KeyEvent.VK_TAB:
-				e.consume();
-                if (this.isEditable()) {
-                    initKeyboard();
-                    if (isTibetan)
-                        getTibDoc().appendDuff(caret.getDot(),"\t",TibetanMachineWeb.getAttributeSet(1));
-                    else
-                        append("\t", romanAttributeSet);
-                }
-				break;
-
-			case KeyEvent.VK_ENTER:
-				e.consume();
-                if (this.isEditable()) {
-                    initKeyboard();
-                    if (isTibetan)
-                        getTibDoc().appendDuff(caret.getDot(),"\n",TibetanMachineWeb.getAttributeSet(1)); // FIXME does this work on all platforms?
-                    else
-                        append("\n", romanAttributeSet); // FIXME does this work on all platforms?
-                }
-				break;
-		}
 	}
 
+
 /**
-* Required of implementations of the Key Listener interface,
-* this method does (almost) nothing.
+* Required by contract with the KeyListener interface,
+* this method does nothing.
+*
+* @param e a KeyEvent
+*/
+	public void keyTyped(KeyEvent e) { }
+	
+
+/**
+* Required by contract with the Key Listener interface,
+* this method initializes the keyboard if the user presses
+* backspace.
 *
 * @param e the KeyEvent
 */
 	public void keyReleased(KeyEvent e) {
         // FIXME: exceptions thrown here do not cause the program to fail, even in development mode.
 
-/*
-* Apparently it works best to check for backspace
-* and init the keyboard here in key released
-* though i don't really know why...
-*/
 		if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
 			initKeyboard();
 	}
 
-/**
-* Required of implementations of the KeyListener interface,
-* this method handles the pressing of non-control and non-action keys. If the user
-* is in Tibetan typing mode, then the KeyEvent
-* e is consumed, and passed on to {@link #processTibetan(KeyEvent e)}, which
-* contains the meat of the keyboard logic. If the user is in English mode, then
-* {@link #append(String s, MutableAttributeSet attr) append} is called.
-*
-* @param e a KeyEvent
-*/
-	public void keyTyped(KeyEvent e) {
-        // FIXME: exceptions thrown here do not cause the program to fail, even in development mode.
-
-		e.consume();
-
-        // Respect setEditable(boolean):
-        if (!this.isEditable())
-            return;
-
-		if (isTibetan)
-			processTibetan(e);
-		else {
-			if (e.isControlDown() || e.isAltDown())
-				return;
-
-			char c = e.getKeyChar();
-
-			switch (c) {
-				case KeyEvent.VK_TAB:
-				case KeyEvent.VK_ENTER:
-				case KeyEvent.VK_ESCAPE:
-					break;
-
-				case KeyEvent.VK_BACK_SPACE:
-					backSpace(1);
-					break;
-
-				default:
-					append(String.valueOf(c), romanAttributeSet);
-			}
+	private void processRomanChar(String key, MutableAttributeSet attSet) {
+		switch (key.charAt(0)) {
+			case KeyEvent.VK_BACK_SPACE:
+				break;
+			default:
+				append(key, attSet);
 		}
 	}
 
-/**
-* Interprets a key typed during Tibetan input mode.
-* This method keeps track of which characters the user has and is typing,
-* and also of whether or not the user is in stacking
-* mode. Most of the keyboard logic can be found here.
-*
-* If there is a nonnull status bar to be updated (passed to the
-* constructor), let's explain to the user which mode we're in, why
-* their keypress has changed nothing, etc.  At present, this is really
-* for developers to understand what's going on.  For example, if you
-* type s-g-r, you see a single glyph, a three-letter stack, but if you
-* type s-d-r, you see two glyphs.  If you examine the status bar,
-* you'll see that the thing determining that is
-* TibTextUtils.getGlyphs, which in turn relies on 'tibwn.ini'.
-*
-* @param e a KeyEvent */
-	public void processTibetan(KeyEvent kev) {
-        /* DLC FIXME: in the extended wylie keyboard, there's a
-         * potential problem: typing ai gets you what aai gets you,
-         * not what i gets you.  Typing ae gets you what e gets
-         * you. */
-		boolean shouldIBackSpace = true;
-
-        // We don't handle just any old keypress.  We handle only the
-        // ones that enter text.
-		if (kev.isControlDown() || kev.isAltDown())
-			return;
-
-        {
-            int start = getSelectionStart();
-            int end = getSelectionEnd();
-            if (start != end) {
-                if (kev.getKeyCode() != KeyEvent.VK_ESCAPE) {
-                    try {
-                        initKeyboard();
-                        getTibDoc().remove(start, end-start);
-                        shouldIBackSpace = false;
-                    }
-                    catch (BadLocationException ble) {
-                    }
-                }
-            }
-        }
-		processTibetanChar(kev.getKeyChar(), shouldIBackSpace);
-    }
-
-    /** Utility method used by processTibetan(keyEvent).
+    /** Utility method called by DuffPane's Keymap as the 
+     	default behavior when the user is in Tibetan typing mode.
         @param c the character the user entered in whatever keyboard
         is in use
         @param shouldIBackSpace false iff a press of the backspace key
         should not backspace, such as when you've selected some text
-        and then pressed backspace
-        @see #processTibetan(KeyEvent) */
+        and then pressed backspace ACTUALLY I DONT KNOW IF THIS IS 
+        NECESSARY ANYMORE SINCE BACKSPACE IS NOW HANDLED BY THE 
+        DEFAULT KEYMAP FOR JTEXTCOMPONENT */
 	private void processTibetanChar(char c, boolean shouldIBackSpace) {
 
         // Have we modified the status bar?
@@ -1364,12 +1300,6 @@ public void paste(int offset) {
                 appendStatus(" (because you typed enter, tab, or escape)");
 				break;
 
-			case KeyEvent.VK_BACK_SPACE:
-				if (shouldIBackSpace) {
-					backSpace(1);
-					break;
-				}
-		
 			default:
 				String val = String.valueOf(c);
 

@@ -809,11 +809,11 @@ public class Jskad extends JPanel implements DocumentListener {
 	}
 
 	private void cutSelection() {
-        dp.cutCurrentSelection();
+        dp.cut();
 	}
 
 	private void copySelection() {
-        dp.copyCurrentSelection();
+        dp.copy();
 	}
 
 	private void pasteSelection() {
