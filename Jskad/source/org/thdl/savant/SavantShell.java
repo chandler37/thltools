@@ -23,17 +23,21 @@ import java.awt.*;
 import java.net.*;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.awt.event.*;
 import javax.swing.text.*;
 import javax.swing.text.rtf.*;
 
 import org.thdl.savant.ucuchi.*;
 import org.thdl.savant.tib.*;
+import org.thdl.media.*;
 import org.thdl.util.TeeStream;
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlActionListener;
 import org.thdl.util.RTFPane;
 import org.thdl.util.SimpleFrame;
+import org.thdl.util.ThdlI18n;
+
 
 public class SavantShell extends JFrame
 {
@@ -41,10 +45,12 @@ public class SavantShell extends JFrame
 	private static JScrollPane helpPane = null;
 	private static JScrollPane aboutPane = null;
 	private static String mediaPath = null;
+	private static JFileChooser fileChooser;
 
-	private JFileChooser fileChooser;
-	private javax.swing.filechooser.FileFilter savantFilter;
 	private Savant savant = null;
+
+	static Locale locale = null;
+	ResourceBundle messages = null;
 
 	public static void main(String[] args) {
 		try {
@@ -53,7 +59,7 @@ public class SavantShell extends JFrame
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			} catch (Exception e) { ThdlDebug.noteIffyCode(); }
-            
+          
             try {
                 helpPane = new RTFPane(SavantShell.class, "savanthelp.rtf");
                 aboutPane = new RTFPane(SavantShell.class, "aboutsavant.rtf");
@@ -71,39 +77,34 @@ public class SavantShell extends JFrame
                 ThdlDebug.noteIffyCode();
             }
 
+ 			if (args.length == 2) {
+				locale = new Locale(new String(args[0]), new String(args[1]));
+				ThdlI18n.setLocale(locale);
+			}
+
+			initFileChooser();
 			SavantShell ssh = new SavantShell();
 			ssh.setVisible(true);
-			ssh.initFileChooser();
 		} catch (NoClassDefFoundError err) {
 			ThdlDebug.handleClasspathError("Savant's CLASSPATH", err);
 		}
 	}
 
-	public void initFileChooser() {
+	public static void initFileChooser() {
 		fileChooser = new JFileChooser();
 		fileChooser.setFileView(new SavantFileView());
-		savantFilter = new SavantFilter();
-		fileChooser.addChoosableFileFilter(savantFilter);
-	}
-
-	public void setFileChooser(JFileChooser fc) {
-		fileChooser = fc;
-	}
-
-	private class SavantFilter extends javax.swing.filechooser.FileFilter {
-		// accepts all directories and all savant files
-
-		public boolean accept(File f) {
-			if (f.isDirectory()) {
-				return true;
+		fileChooser.addChoosableFileFilter(new FileFilter() {
+			public boolean accept(File f) {
+				if (f.isDirectory()) {
+					return true;
+				}
+				return f.getName().toLowerCase().endsWith(SavantFileView.getDotSavant());
 			}
-			return f.getName().toLowerCase().endsWith(SavantFileView.getDotSavant());
-		}
-    
-		//the description of this filter
-		public String getDescription() {
-			return "Savant data (.savant)";
-		}
+    			//the description of this filter
+			public String getDescription() {
+				return "Savant data (.savant)";
+			}
+		});
 	}
 
 	/** Closes one open title, if there is one open. Returns true if
@@ -136,11 +137,13 @@ public class SavantShell extends JFrame
 	public SavantShell()
 	{
 		setTitle("Savant");
+		messages = ThdlI18n.getResourceBundle();
+		savant = new Savant();
 
 		JMenuBar menuBar = new JMenuBar();
-		JMenu fileMenu = new JMenu("File");
+		JMenu fileMenu = new JMenu(messages.getString("File"));
 
-		JMenuItem openItem = new JMenuItem("Open");
+		JMenuItem openItem = new JMenuItem(messages.getString("Open"));
 		openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,java.awt.Event.CTRL_MASK));
 		openItem.addActionListener(new ThdlActionListener() {
 			public void theRealActionPerformed(ActionEvent e) {
@@ -165,7 +168,8 @@ public class SavantShell extends JFrame
 			}
 		});
 
-		JMenuItem closeItem = new JMenuItem("Close");
+
+		JMenuItem closeItem = new JMenuItem(messages.getString("Close"));
 		closeItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,java.awt.Event.CTRL_MASK));
 		closeItem.addActionListener(new ThdlActionListener()
 		{
@@ -176,7 +180,7 @@ public class SavantShell extends JFrame
 			}
 		});
 
-		JMenuItem quitItem = new JMenuItem("Quit");
+		JMenuItem quitItem = new JMenuItem(messages.getString("Quit"));
 		quitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,java.awt.Event.CTRL_MASK));
 		quitItem.addActionListener(new ThdlActionListener()
 		{
@@ -209,21 +213,43 @@ public class SavantShell extends JFrame
 		fileMenu.addSeparator();
 		fileMenu.add(quitItem);
 
-		JMenu infoMenu = new JMenu("Information");
-		JMenuItem helpItem = new JMenuItem("Help");
+
+		JMenu mediaPlayerMenu = new JMenu(messages.getString("MediaPlayer"));
+		java.util.List moviePlayers = SmartPlayerFactory.getAllAvailableSmartPlayers();
+		for (int i=0; i<moviePlayers.size(); i++) {
+			final SmartMoviePanel mPlayer = (SmartMoviePanel)moviePlayers.get(i);
+			JMenuItem mItem = new JMenuItem(mPlayer.getIdentifyingName());
+			mItem.addActionListener(new ThdlActionListener() {
+				public void theRealActionPerformed(ActionEvent e) {
+					savant.setMediaPlayer(mPlayer);
+				}
+			});
+			mediaPlayerMenu.add(mItem);
+		}
+
+		JMenu preferencesMenu = new JMenu(messages.getString("Preferences"));
+		if (moviePlayers.size() > 0) {
+			SmartMoviePanel defaultPlayer = (SmartMoviePanel)moviePlayers.get(0);
+			savant.setMediaPlayer(defaultPlayer); //set savant media player to default
+			if (moviePlayers.size() > 1)
+				preferencesMenu.add(mediaPlayerMenu);
+		}
+
+		JMenu infoMenu = new JMenu(messages.getString("InfoShort"));
+		JMenuItem helpItem = new JMenuItem(messages.getString("Help"));
 		helpItem.addActionListener(new ThdlActionListener()
 		{
 			public void theRealActionPerformed(ActionEvent e)
 			{
-				new SimpleFrame("Help", helpPane);
+				new SimpleFrame(messages.getString("Help"), helpPane);
 			}
 		});
-		JMenuItem aboutItem = new JMenuItem("About");
+		JMenuItem aboutItem = new JMenuItem(messages.getString("About"));
 		aboutItem.addActionListener(new ThdlActionListener()
 		{
 			public void theRealActionPerformed(ActionEvent e)
 			{
-				new SimpleFrame("About", aboutPane);
+				new SimpleFrame(messages.getString("About"), aboutPane);
 			}
 		});
 		infoMenu.add(helpItem);
@@ -235,6 +261,7 @@ public class SavantShell extends JFrame
 		infoMenu.getPopupMenu().setLightWeightPopupEnabled(false);
 
 		menuBar.add(fileMenu);
+		menuBar.add(preferencesMenu);
 		menuBar.add(infoMenu);
 		setJMenuBar(menuBar);
 
@@ -269,13 +296,14 @@ public class SavantShell extends JFrame
 	public void newSavantWindow(String project, String titleName, URL trn, URL vid, URL abt)
 	{
 		try {
-			if (numberOfSavantsOpen == 0)
+			if (numberOfSavantsOpen == 0) {
+				setCursor(new Cursor(Cursor.WAIT_CURSOR));
 				openSavant(project, titleName, trn, vid, abt);
-			else {
+			} else {
 				SavantShell scp = new SavantShell();
 				scp.setVisible(true);
+				setCursor(new Cursor(Cursor.WAIT_CURSOR));
 				scp.openSavant(project, titleName, trn, vid, abt);
-				scp.setFileChooser(fileChooser);
 			}
 			numberOfSavantsOpen++;
 		} catch (NoClassDefFoundError err) {
@@ -286,7 +314,6 @@ public class SavantShell extends JFrame
 	public void openSavant(String project, String titleName, URL trn, URL vid, URL abt)
 	{
 		setTitle(titleName);
-		savant = new Savant();
 		setContentPane(savant);
 		validate();
 		savant.paintImmediately(0,0,savant.getWidth(),savant.getHeight());
@@ -324,11 +351,13 @@ public class SavantShell extends JFrame
 
 			if (i!=-1)
 			{
+/*
 				JOptionPane.showMessageDialog(this, 
 					"If you want to see text in Tibetan script, "+
 					"please visit www.thdl.org to download and "+
 					"install the Tibetan Machine Web fonts.",
 					"Note", JOptionPane.INFORMATION_MESSAGE);
+*/
 
 				TranscriptView[] views = new TranscriptView[3];
 				views[0] = new org.thdl.savant.tib.Wylie(isr);

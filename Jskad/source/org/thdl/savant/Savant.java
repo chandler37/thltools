@@ -22,6 +22,8 @@ import java.awt.Font;
 import java.awt.Label;
 import java.awt.Color;
 import java.awt.Frame;
+import java.awt.Cursor;
+import java.awt.Window;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
@@ -42,6 +44,7 @@ import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.ResourceBundle;
 
 import java.io.CharArrayWriter;
 import java.io.CharArrayReader;
@@ -59,12 +62,14 @@ import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.text.rtf.RTFEditorKit;
 
+import org.thdl.media.*;
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlActionListener;
+import org.thdl.util.ThdlI18n;
 
 public class Savant extends JDesktopPane
 {
-	protected SoundPanel sp = null;
+	protected SmartMoviePanel sp = null;
 	protected TwoWayTextPlayer tp = null;
 
 	protected JInternalFrame videoFrame = null;
@@ -75,25 +80,47 @@ public class Savant extends JDesktopPane
 	protected boolean isFullScreen = false;
 	protected Dimension fullScreenSize = null;
 
-	protected JPanel videoPanel = null;
 	protected JPanel textPanel = null;
 	protected JScrollPane vocabPanel = null;
 
+	protected URL mediaURL = null;
 	protected URL extras = null;
+	protected TranscriptView[] transcriptViews;
 
 	protected int orientation = 0;
+
+	protected ResourceBundle messages;
+
 	public final int TOP_TO_BOTTOM = 1;
 	public final int LEFT_TO_RIGHT = 2;
 
 	public Savant()
 	{
+		messages = ThdlI18n.getResourceBundle();
+
 		setBackground(new JFrame().getBackground());
 		setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
-		setLayout(new BorderLayout());
-		String labelString = "Please wait while Savant loads this transcript and media.";
-		JLabel label = new JLabel(labelString, SwingConstants.CENTER);
-		label.setFont(new Font("Serif", Font.PLAIN, 14));
-		add("Center", label);
+
+		//(String title, boolean resizable, boolean closable, boolean maximizable, boolean iconifiable)
+		videoFrame = new JInternalFrame(null, false, false, false, false);
+		videoFrame.setVisible(true);
+		videoFrame.setLocation(0,0);
+		videoFrame.setSize(0,0);
+		add(videoFrame, JLayeredPane.POPUP_LAYER);
+		invalidate();
+		validate();
+		repaint();
+
+		textFrame = new JInternalFrame(messages.getString("Transcript"), false, false, false, true);
+		textPanel = new JPanel(new BorderLayout());
+		textFrame.setVisible(true);
+		textFrame.setLocation(0,0);
+		textFrame.setSize(0,0);
+		textFrame.setContentPane(textPanel);
+		add(textFrame, JLayeredPane.DEFAULT_LAYER);
+		invalidate();
+		validate();
+		repaint();
 
 		addComponentListener(new ComponentAdapter()
 		{
@@ -103,24 +130,13 @@ public class Savant extends JDesktopPane
 					case TOP_TO_BOTTOM:
 						videoFrame.setLocation(getSize().width/2 - videoFrame.getSize().width/2, 0);
 						textFrame.setLocation(0, videoFrame.getSize().height);
-						if (vocabFrame != null)
-						{
-							textFrame.setSize(getSize().width / 2, getSize().height - videoFrame.getSize().height);
-							vocabFrame.setLocation(textFrame.getSize().width, videoFrame.getSize().height);
-							vocabFrame.setSize(getSize().width - textFrame.getSize().width, getSize().height - videoFrame.getSize().height);
-						} else
-							textFrame.setSize(getSize().width, getSize().height - videoFrame.getSize().height);
+						textFrame.setSize(getSize().width, getSize().height - videoFrame.getSize().height);
 						break;
 
 					case LEFT_TO_RIGHT:
 						videoFrame.setLocation(0,0);
 						textFrame.setLocation(videoFrame.getSize().width, 0);
 						textFrame.setSize(getSize().width - videoFrame.getSize().width, getSize().height);
-						if (vocabFrame != null)
-						{
-							vocabFrame.setLocation(0, videoFrame.getSize().height);
-							vocabFrame.setSize(videoFrame.getSize().width, getSize().height - videoFrame.getSize().height);
-						}
 						break;
 
 					default:
@@ -132,8 +148,13 @@ public class Savant extends JDesktopPane
 
 	public void close()
 	{
-		if (sp != null)
-			sp.destroy();
+		if (sp != null) {
+			try {
+				sp.destroy();
+			} catch (SmartMoviePanelException smpe) {
+				smpe.printStackTrace();
+			}
+		}
 	}
 
 	public void open(TranscriptView[] views, String video, String vocabulary)
@@ -149,13 +170,107 @@ public class Savant extends JDesktopPane
 		}
 	}
 
-	public void open(final TranscriptView[] views, final URL video, final URL vocabulary)
-	{
-		videoPanel = new JPanel(new GridLayout(1,1));
-		textPanel = new JPanel(new BorderLayout());
+	public void setMediaPlayer(SmartMoviePanel smp) {
+		if (sp == smp)
+			return;
 
-		sp = new SoundPanel(this, video, views[0].getT1s(), views[0].getT2s(), views[0].getIDs());
+		if (sp != null) {
+			try {
+				sp.destroy();
+				videoFrame.getContentPane().removeAll();
+			} catch (SmartMoviePanelException smpe) {
+				smpe.printStackTrace();
+				ThdlDebug.noteIffyCode();
+			}
+		}
+
+		sp = smp;
+		sp.setParentContainer(Savant.this);	
+		if (mediaURL != null) {
+			String t1s = convertTimesForSmartMoviePanel(transcriptViews[0].getT1s());
+			String t2s = convertTimesForSmartMoviePanel(transcriptViews[0].getT2s());
+			sp.initForSavant(t1s, t2s, transcriptViews[0].getIDs());
+			sp.addAnnotationPlayer(tp);
+			try {
+				sp.loadMovie(mediaURL);
+				startTimer();
+			} catch (SmartMoviePanelException smpe) {
+				smpe.printStackTrace();
+				ThdlDebug.noteIffyCode();
+			}
+		}
+	}
+
+	private void startTimer() {
+		final java.util.Timer timer = new java.util.Timer(true);
+		timer.schedule(new TimerTask() {
+			public void run()
+			{
+				if (sp.isInitialized())
+				{
+					System.out.println("initialized");
+
+					timer.cancel();
+					videoFrame.getContentPane().add(sp);
+					videoFrame.pack();
+					videoFrame.setMaximumSize(videoFrame.getSize());
+					if (videoFrame.getSize().height < 100) //must be audio file, so frame top to bottom
+					{
+						orientation = TOP_TO_BOTTOM;
+						videoFrame.setTitle(messages.getString("Audio"));
+						videoFrame.setLocation(getSize().width/2 - videoFrame.getSize().width/2, 0);
+						textFrame.setLocation(0, videoFrame.getSize().height);
+						textFrame.setSize(getSize().width, getSize().height - videoFrame.getSize().height);
+					} else { //must be video file, so frame left to right
+						orientation = LEFT_TO_RIGHT;
+						videoFrame.setTitle(messages.getString("Video"));
+						videoFrame.setLocation(0,0);
+						textFrame.setLocation(videoFrame.getSize().width, 0);
+						textFrame.setSize(getSize().width - videoFrame.getSize().width, getSize().height);
+					}
+					invalidate();
+					validate();
+					repaint();
+
+					Window rootWindow = (Window)SwingUtilities.getAncestorOfClass(Window.class, Savant.this);
+					rootWindow.setCursor(null);
+				}
+		}}, 0, 50);
+	}
+
+	public SmartMoviePanel getMediaPlayer() {
+		return sp;
+	}
+
+	private String convertTimesForSmartMoviePanel(String s) {
+		StringBuffer sBuff = new StringBuffer();
+		StringTokenizer sTok = new StringTokenizer(s, ",");
+		while (sTok.hasMoreTokens()) {
+			sBuff.append(String.valueOf(new Float(Float.parseFloat(sTok.nextToken()) * 1000).intValue()));
+			sBuff.append(',');
+		}
+		return sBuff.toString();
+	}
+	public void open(TranscriptView[] views, URL video, final URL vocabulary)
+	{
+/* FIXME eventually
+   w/Savant and SoundPanel times were in seconds. QuillDriver's
+   SmartMoviePanel uses milliseconds instead, so here I convert
+   (for the time being anyway - eventually we need the same
+   time code format for both QD and Savant. */
+
+		String t1s = convertTimesForSmartMoviePanel(views[0].getT1s());
+		String t2s = convertTimesForSmartMoviePanel(views[0].getT2s());
+
+		if (sp == null) {
+			JOptionPane.showConfirmDialog(Savant.this, messages.getString("SupportedMediaError"), null, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+			return;
+		}
+
+		sp.initForSavant(t1s, t2s, views[0].getIDs());
 		tp = new TwoWayTextPlayer(sp, views[0], Color.cyan);
+
+		transcriptViews = views;
 
 		JPanel jp = new JPanel();
 		String[] viewNames = new String[views.length];
@@ -167,83 +282,41 @@ public class Savant extends JDesktopPane
 			public void theRealActionPerformed(ActionEvent e)
 			{
 				JComboBox jcb = (JComboBox)e.getSource();
-				setTranscriptView(views[jcb.getSelectedIndex()]);
+				setTranscriptView(transcriptViews[jcb.getSelectedIndex()]);
 			}
 		});
 		jp.add(viewOptions);
 
-		extras = vocabulary;
 		textPanel.add("Center", tp);
 
 		textPanel.add("North", jp);
 		sp.addAnnotationPlayer(tp);
-		sp.start();
-		final Timer timer = new Timer(true);
-		timer.schedule(new TimerTask() {
-			public void run()
-			{
-				if (sp.cmd_isSized())
-				{
-					timer.cancel();
-					//(String title, boolean resizable, boolean closable, boolean maximizable, boolean iconifiable)
-					videoFrame = new JInternalFrame(null, false, false, false, false);
-					textFrame = new JInternalFrame("Transcript", false, false, false, true);
-					textFrame.setVisible(true);
-					videoFrame.setVisible(true);
-					if (vocabulary != null)
-					{
-						try {
-							JTextPane vocabPane = new JTextPane();
-							MouseListener[] mls = (MouseListener[])(vocabPane.getListeners(MouseListener.class));
-							for (int i=0; i<mls.length; i++)
-								vocabPane.removeMouseListener(mls[i]);
-							vocabPane.setEditable(false);
-							vocabPanel = new JScrollPane(vocabPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-							InputStream in = extras.openStream();
-							RTFEditorKit rtf = new RTFEditorKit();
-							rtf.read(in, vocabPane.getDocument(), 0);
-							vocabPane.getCaret().setDot(0);
-						} catch (IOException ioe) {
-							ioe.printStackTrace();
-							ThdlDebug.noteIffyCode();
-						} catch (BadLocationException ble) {
-							ble.printStackTrace();
-							ThdlDebug.noteIffyCode();
-						}
-						vocabFrame = new JInternalFrame("About the Video", false, false, false, true);
-						vocabFrame.setContentPane(vocabPanel);
-						vocabFrame.setVisible(true);
-					}
-					videoPanel.add(sp);
-					videoFrame.setContentPane(videoPanel);
-					videoFrame.pack();
-					videoFrame.setMaximumSize(videoFrame.getSize());
-					textFrame.setContentPane(textPanel);
-					if (videoFrame.getSize().height < 100) //must be audio file, so frame top to bottom
-					{
-						orientation = TOP_TO_BOTTOM;
-						videoFrame.setTitle("Audio");
-						videoFrame.setLocation(getSize().width/2 - videoFrame.getSize().width/2, 0);
-						textFrame.setLocation(0, videoFrame.getSize().height);
-						if (vocabulary != null)
-						{
-							textFrame.setSize(getSize().width / 2, getSize().height - videoFrame.getSize().height);
-							vocabFrame.setLocation(textFrame.getSize().width, videoFrame.getSize().height);
-							vocabFrame.setSize(getSize().width - textFrame.getSize().width, getSize().height - videoFrame.getSize().height);
-						} else
-							textFrame.setSize(getSize().width, getSize().height - videoFrame.getSize().height);
-					} else { //must be video file, so frame left to right
-						orientation = LEFT_TO_RIGHT;
-						videoFrame.setTitle("Video");
-						videoFrame.setLocation(0,0);
-						textFrame.setLocation(videoFrame.getSize().width, 0);
-						textFrame.setSize(getSize().width - videoFrame.getSize().width, getSize().height);
-						if (vocabulary != null)
-						{
-							vocabFrame.setLocation(0, videoFrame.getSize().height);
-							vocabFrame.setSize(videoFrame.getSize().width, getSize().height - videoFrame.getSize().height);
-						}
-					}
+	try {
+		sp.loadMovie(video);
+		mediaURL = video;
+		startTimer();	
+	} catch (SmartMoviePanelException smpe) {
+			smpe.printStackTrace();
+			ThdlDebug.noteIffyCode();
+		}
+	}
+
+	public void setTranscriptView(TranscriptView view)
+	{
+		textPanel.invalidate();
+		textPanel.remove(tp);
+		tp.reset();
+		tp = new TwoWayTextPlayer(sp, view, Color.cyan);
+		sp.addAnnotationPlayer(tp);
+		if (sp.isPlaying())
+			sp.launchAnnotationTimer();
+		textPanel.add("Center", tp);
+		textPanel.validate();
+		textPanel.repaint();
+	}
+}
+
+/*
 					if (sp.getVisualComponent() != null)
 					{ //video, so can be full screen
 						sp.getVisualComponent().addMouseListener(new MouseAdapter()
@@ -256,7 +329,7 @@ public class Savant extends JDesktopPane
 								{
 									fullScreen = new JFrame();
 
-									/* We don't do anything special if this fails: */
+				We don't do anything special if this fails:
 									JdkVersionHacks.undecorateJFrame(fullScreen);
 
 									fullScreen.getContentPane().setBackground(Color.black);
@@ -294,11 +367,11 @@ public class Savant extends JDesktopPane
 									visual = sp.popVisualComponent();
 									fullScreen.show();
 
-									/* FIXME: In SavantShell, we test
+						FIXME: In SavantShell, we test
                                        to see if MAXIMIZE_BOTH is
                                        supported, but we don't
-                                       here. */
-									/* Ignore failure: */
+                                       here. 
+							Ignore failure:
 									JdkVersionHacks.maximizeJFrameInBothDirections(fullScreen);
 
 									fullScreen.getContentPane().add(visual);
@@ -312,36 +385,4 @@ public class Savant extends JDesktopPane
 							}
 						});
 					}
-					removeAll();
-					setLayout(null);
-					add(videoFrame, JLayeredPane.POPUP_LAYER);
-					invalidate();
-					validate();
-					repaint();
-					add(textFrame, JLayeredPane.DEFAULT_LAYER);
-					invalidate();
-					validate();
-					repaint();
-					if (vocabulary != null)
-					{
-						add(vocabFrame, JLayeredPane.DEFAULT_LAYER);
-						invalidate();
-						validate();
-						repaint();
-					}
-				}
-			}}, 0, 50);
-	}
-
-	public void setTranscriptView(TranscriptView view)
-	{
-		textPanel.invalidate();
-		textPanel.remove(tp);
-		tp.reset();
-		tp = new TwoWayTextPlayer(sp, view, Color.cyan);
-		sp.addAnnotationPlayer(tp);
-		textPanel.add("Center", tp);
-		textPanel.validate();
-		textPanel.repaint();
-	}
-}
+*/
