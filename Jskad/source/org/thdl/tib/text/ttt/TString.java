@@ -41,6 +41,7 @@ public class TString {
      *  is to be converted to something other than Tibetan text.
      *  (Chinese Unicode, Latin, etc. all qualify as non-Tibetan.) */
     public boolean isLatin() {
+        char ch;
         return (type != TIBETAN_NON_PUNCTUATION
                 && type != TIBETAN_PUNCTUATION
                 && type != TSHEG_BAR_ADORNMENT
@@ -49,7 +50,10 @@ public class TString {
                 && type != START_SLASH
                 && type != END_SLASH
                 && (type != UNICODE_CHARACTER
-                    || !UnicodeUtils.isInTibetanRange(getText().charAt(0))));
+                    || !(UnicodeUtils.isInTibetanRange(ch = getText().charAt(0))
+                         // EWTS maps some TMW glyphs to this Unicode
+                         // private-use area (PUA):
+                         || (ch >= '\uF021' && ch <= '\uF0FF'))));
     }
 
     /** For ACIP [#COMMENTS] and EWTS (DLC FIXME: what are EWTS comments?) */

@@ -84,6 +84,8 @@ public class TibetanMachineWeb implements THDLWylieConstants {
         use special formatting to get those right (FIXME: warn
         whenever they're used). */
     private static DuffCode[][] UnicodeToTMW = new DuffCode[256][1];
+    /** For mapping codepoints U+F021..U+0FFF to TMW. */
+    private static DuffCode[][] NonUnicodeToTMW = new DuffCode[256][1];
     private static String fileName = "tibwn.ini";
     private static final String DELIMITER = "~";
     /** vowels that appear over the glyph: */
@@ -603,6 +605,14 @@ public class TibetanMachineWeb implements THDLWylieConstants {
                                     // could well be null):
                                     TMWtoTM[duffCodes[TMW].getFontNum()-1][duffCodes[TMW].getCharNum()-32]
                                         = duffCodes[TM]; // TMW->TM mapping
+
+                                    if (wylie.toLowerCase().startsWith("\\uf0")) {
+                                        int x = Integer.parseInt(wylie.substring("\\u".length()), 16);
+                                        ThdlDebug.verify((x >= 0xF000
+                                                          && x <= 0xF0FF));
+                                        NonUnicodeToTMW[x - '\uF000']
+                                            = new DuffCode[] { duffCodes[TMW] };
+                                    }
                                     break;
                                 // Vowels etc. to use with this glyph:
                                 case 4:
@@ -628,8 +638,8 @@ public class TibetanMachineWeb implements THDLWylieConstants {
                                             String subval = uTok.nextToken();
                                             ThdlDebug.verify(subval.length() == 4 || subval.length() == 3);
                                             try {
-                                                int x;
-                                                ThdlDebug.verify(((x = Integer.parseInt(subval, 16)) >= 0x0F00
+                                                int x = Integer.parseInt(subval, 16);
+                                                ThdlDebug.verify((x >= 0x0F00
                                                                   && x <= 0x0FFF)
                                                                  || x == 0x5350
                                                                  || x == 0x534D
@@ -1769,9 +1779,14 @@ private static final String Unicode_tab = "\t";
         } else if ('\u0F81' == ch) {
             return tmwFor0F81;
         } else {
-            DuffCode[] x = UnicodeToTMW[ch - '\u0F00'];
-            if (null == x[0]) return null;
-            return x;
+            if (ch >= '\u0F00' && ch <= '\u0FFF') {
+                DuffCode[] x = UnicodeToTMW[ch - '\u0F00'];
+                if (null != x[0]) return x;
+            } else if (ch >= '\uF021' && ch <= '\uF0FF') {
+                DuffCode[] x = NonUnicodeToTMW[ch - '\uF000'];
+                if (null != x[0]) return x;
+            }
+            return null;
         }
     }
 

@@ -607,8 +607,18 @@ public class ACIPConverter {
                             }
                             continue;
                         } else if (stype == TString.UNICODE_CHARACTER) {
+                            ThdlDebug.verify(1 == s.getText().length());
                             if (null != writer) {
-                                unicode = s.getText();
+                                char ch = s.getText().charAt(0);
+                                if (ch >= '\uF021' && ch <= '\uF0FF') {
+                                    hasErrors = true;
+                                    String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: The Unicode escape '" + ch + "' with ordinal " + (int)ch + " is in the private-use area (PUA) of Unicode and will thus not be written out into the output lest you think other tools will be able to understand this non-standard construction.]";
+                                    writer.write(errorMessage);
+                                    if (null != errors)
+                                        errors.append(errorMessage + "\n");
+                                    continue; // FIXME: dropping output if null != tdoc
+                                } else
+                                    unicode = s.getText();
                             }
                             if (null != tdoc) {
                                 duff = TibetanMachineWeb.mapUnicodeToTMW(s.getText().charAt(0));

@@ -564,6 +564,21 @@
 </p>
 
 <p>
+  The latest <a
+  href="http://iris.lib.virginia.edu/tibet/collections/langling/ewts/">Extended
+  Wylie Transliteration Scheme</a> standard has assigned private-use
+  area (PUA) Unicode codepoints to some TMW glyphs.&nbsp; ACIP
+  documents that have a <a href="#escapes">Unicode escape</a> in the
+  range U+F021 to U+F0FF, inclusive, are interpreted as intending
+  these TMW glyphs.&nbsp; ACIP-&gt;Unicode produces an error for such
+  an escape because it is font-dependent and not standard.&nbsp; Other
+  tools will likely not understand such Unicode, so the converter will
+  not produce it.&nbsp; If you want it in the output, it is there in
+  the error message.
+</p>
+
+
+<p>
   Note well the <a href="#bugs">known bug</a> with regard to
   whitespace in transliteration that follows a Unicode escape.&nbsp;
   In large part, this bug affects characters that can be
@@ -1438,18 +1453,6 @@ Nativeness</h2>
     escape</a> {\u0F14} be used instead.&nbsp; The former is always
     treated as U+0F7F; it should cause a warning in some or all
     contexts.
-  </li>
-  <li>
-    The latest <a
-    href="http://iris.lib.virginia.edu/tibet/collections/langling/ewts/">Extended
-    Wylie Transliteration Scheme</a> standard has assigned private-use
-    area Unicode codepoints to some TMW glyphs.&nbsp; ACIP documents
-    that have a <a href="#escapes">Unicode escape</a> in the range
-    U+F021 to U+F0FF, inclusive, should be interpreted as intending
-    these TMW glyphs.&nbsp; ACIP-&gt;Unicode should by default produce
-    errors for such things (because they are font-dependent and not
-    standard); optionally, the private-use area codepoints should be
-    passed along into the output.
   </li>
   <li>
     The <a href="#sub"><i>tsheg-bar</i> substitution</a> mechanism
