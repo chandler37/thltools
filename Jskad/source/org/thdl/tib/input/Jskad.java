@@ -459,7 +459,7 @@ public class Jskad extends JPanel implements DocumentListener {
         });
         convertSelectionMenu.add(ACIPTMWItem);
 
-        JMenuItem ACIPTMWWarnItem = new JMenuItem("Convert ACIP to Tibetan (with warnings)");
+        JMenuItem ACIPTMWWarnItem = new JMenuItem("Convert ACIP to Tibetan (with pedantic warnings)");
         ACIPTMWWarnItem.addActionListener(new ThdlActionListener() {
             public void theRealActionPerformed(ActionEvent e) {
                 toTibetan(true, true);
