@@ -36,7 +36,7 @@
 
   <description>
     This Jakarta Ant buildfile is used to build Jskad, Savant,
-    QuillDriver, and the Translation Tool.  The docs at
+    QuillDriver, Tibbibl, and the Translation Tool.  The docs at
     http://thdltools.sf.net/api are created using this buildfile, for
     example.  Read the comments of this buildfile to learn more, or
     see http://thdltools.sourceforge.net/BuildSystems.html.
@@ -49,6 +49,7 @@
   <property name="license" location="license"/>
   <property name="bin" location="bin"/>
   <property name="jskadbin" location="bin/jskad"/>
+  <property name="tibbiblbin" location="bin/tibbibl"/>
   <property name="junitbin" location="bin/for-junit"/>
   <property name="qdbin" location="bin/qd"/>
   <property name="ttstandalonebin" location="bin/tt-standalone"/>
@@ -159,6 +160,7 @@
     <mkdir dir="${dist}/source"/>
     <mkdir dir="${bin}"/>
     <mkdir dir="${jskadbin}"/>
+    <mkdir dir="${tibbiblbin}"/>
     <mkdir dir="${junitbin}"/>
     <mkdir dir="${qdbin}"/>
     <mkdir dir="${ttstandalonebin}"/>
@@ -219,16 +221,17 @@
     </zip>
   </target>
 
+  <!-- DLC FIXME: add tibbibl-all-in-one-dist -->
   <target name="self-contained-dist"
           depends="jskad-all-in-one-dist,savant-all-in-one-dist,qd-all-in-one-dist"
           description="JARs up everything into self-contained JARs for double-click, classpath-worry-free joy" />
 
   <target name="dist"
-          depends="jskad-dist,savant-dist,qd-dist,tt-handheld-dist,tt-standalone-dist,tt-applet-plus-jws-dist,tt-servlet-dist"
+          depends="jskad-dist,savant-dist,qd-dist,tt-handheld-dist,tt-standalone-dist,tt-applet-plus-jws-dist,tt-servlet-dist,tibbibl-dist"
           description="JARs up everything" />
 
   <target name="compile"
-          depends="jskad-compile,savant-compile,qd-compile,tt-standalone-compile,tt-handheld-compile,tt-applet-plus-jws-compile,tt-servlet-compile"
+          depends="jskad-compile,savant-compile,qd-compile,tt-standalone-compile,tt-handheld-compile,tt-applet-plus-jws-compile,tt-servlet-compile,tibbibl-compile"
           description="compiles all programs" />
 
 
@@ -279,6 +282,25 @@
 
       </fileset>
     </copy>
+  </target>
+
+  <target name="tibbibl-compile" depends="init"
+          description="compiles Tibbibl" >
+    <antcall target="copy-tmw-fonts-to-bin-dir">
+      <param name="my.bin" value="${tibbiblbin}"/>
+    </antcall>
+    <antcall target="create-timestamp-source-code"/> <!-- DLC NOW! The -run targets are mucking with this! It isn't fatal, but it should be fixed. -->
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${tibbiblbin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/tib/bibl/TiblEdit.java"/>
+    </antcall>
+    <antcall target="copy-ini-files-to-bin-dir-for-jarring">
+      <param name="mybin" value="${tibbiblbin}"/>
+    </antcall>
+    <antcall target="copy-license-etc-to-bin-dir-for-jarring">
+      <param name="mybin" value="${tibbiblbin}"/>
+    </antcall>
   </target>
 
   <target name="compile-junit-tests" depends="init"
@@ -505,6 +527,7 @@
   </target>
 
 
+  <!-- DLC FIXME: add tibbibl-jws -->
   <target name="web-start-releases"
           depends="jskad-jws,savant-jws,qd-jws,tt-jws"
           description="Builds the Java Web Start versions of all applications"/>
@@ -585,6 +608,18 @@
          basedir="${jskadbin}">
       <manifest>
         <attribute name="Main-Class" value="org.thdl.tib.input.Jskad"/>
+      </manifest>
+    </jar>
+  </target>
+
+
+  <target name="tibbibl-dist" depends="tibbibl-compile"
+          description="generates the bare Tibbibl binary distribution" >
+    <!-- Put everything in ${tibbiblbin} into the JAR file -->
+    <jar jarfile="${lib}/Tibbibl${my.jar.suffix}.jar"
+         basedir="${tibbiblbin}">
+      <manifest>
+        <attribute name="Main-Class" value="org.thdl.tib.bibl.TiblEdit"/>
       </manifest>
     </jar>
   </target>
@@ -838,6 +873,22 @@
     <java classname="org.thdl.tib.input.Jskad" fork="yes">
       <classpath>
         <pathelement location="${lib}/Jskad${my.jar.suffix}.jar"/>
+        <path refid="entire.class.path"/>
+      </classpath>
+      <jvmarg value="-Dthdl.debug=${thdl.debug}"/>
+    </java>
+  </target>
+
+  <target name="tibbibl-run" depends="tibbibl-dist" description="runs Tibbibl">
+    <available classname="org.jdom.Document"
+               classpathref="entire.class.path"
+               ignoresystemclasses="true"
+               property="jdom.present"/>
+    <fail message="Can't find JDOM.  Drop jdom.jar into extensions."
+          unless="jdom.present"/>
+    <java classname="org.thdl.tib.bibl.TiblEdit" fork="yes">
+      <classpath>
+        <pathelement location="${lib}/Tibbibl${my.jar.suffix}.jar"/>
         <path refid="entire.class.path"/>
       </classpath>
       <jvmarg value="-Dthdl.debug=${thdl.debug}"/>
