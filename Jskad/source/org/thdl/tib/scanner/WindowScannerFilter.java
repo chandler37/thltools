@@ -63,13 +63,16 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		mb.add(m);
 
 		m = new Menu ("Edit");		
-		mnuCut = new MenuItem("Cut");		
+		mnuCut = new MenuItem("Cut");
+		mnuCut.setShortcut(new MenuShortcut(KeyEvent.VK_X));
 		m.add(mnuCut);
-		mnuCut.addActionListener(this);		
+		mnuCut.addActionListener(this);
 		mnuCopy = new MenuItem("Copy");
+		mnuCopy.setShortcut(new MenuShortcut(KeyEvent.VK_C));
 		m.add(mnuCopy);
 		mnuCopy.addActionListener(this);
 		mnuPaste = new MenuItem("Paste");
+		mnuPaste.setShortcut(new MenuShortcut(KeyEvent.VK_V));
 		m.add(mnuPaste);
 		mnuPaste.addActionListener(this);		
 		mnuDelete = new MenuItem("Delete");
@@ -77,6 +80,7 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		mnuDelete.addActionListener(this);		
 		m.add("-");
 		mnuSelectAll = new MenuItem("Select all");
+		mnuSelectAll.setShortcut(new MenuShortcut(KeyEvent.VK_A));
 		m.add(mnuSelectAll);
 		mnuSelectAll.addActionListener(this);
 		mnuClear = new MenuItem("Clear all");
@@ -116,7 +120,7 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 	{
 		if (args.length!=1 && args.length!=2)
 		{
-			System.out.println("Sintaxis: java SimpleScannerPanel [options] arch-dict");
+			System.out.println("Sintaxis: java WindowScannerFilter [options] arch-dict");
 			System.out.println("Options:");
 			System.out.println("  -simple: runs the non-swing version.");
 			System.out.println(TibetanScanner.copyrightASCII);

@@ -69,7 +69,6 @@ public class DuffScannerPanel extends ScannerPanel
 
 		fullDef = new TextArea("",0,0,TextArea.SCROLLBARS_VERTICAL_ONLY);
 		fullDef.setEditable(false);
-
 		model = new DictionaryTableModel(null);
 		table = new DictionaryTable(model, fullDef);
 		table.activateTibetan(true);
@@ -199,5 +198,5 @@ public class DuffScannerPanel extends ScannerPanel
 			showingTibetan = false;
 	    }
 		table.repaint();
-	}
+	}	
 }
