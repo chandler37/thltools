@@ -97,18 +97,18 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
     }
 
 
-    private void helper(String mode, String extension, int erc) {
+    private void helper(String testName, String mode, String extension, int erc) {
         String[] args = new String[] {
             "--colors",
             "no",
             "--warning-level",
             "All",
             mode,
-            getTestFileName("Test1")
+            getTestFileName(testName)
         };
         boolean fileNotFound = false;
         try {
-            int rc = TibetanConverter.realMain(args, new PrintStream(new FileOutputStream("bin/for-junit/TMW_RTF_TO_THDL_WYLIETest1Result" + extension + ".out")));
+            int rc = TibetanConverter.realMain(args, new PrintStream(new FileOutputStream("bin/for-junit/TMW_RTF_TO_THDL_WYLIE" + testName + "Result" + extension + ".out")));
             if (erc != rc) System.out.println("erc: rc is " + rc);
             assertTrue(rc == erc);
         } catch (FileNotFoundException e) {
@@ -116,7 +116,7 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
         }
         assertTrue(!fileNotFound);
 
-        testActualAndExpected("Test1Result" + extension);
+        testActualAndExpected(testName + "Result" + extension);
     }
 
     private static String getTestFileName(String testName) {
@@ -132,24 +132,27 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
     /** Tests the --find-some-non-tmw mode of {@link
      *  org.thdl.tib.input.TibetanConverter}. */
     public void testFindSomeNonTMWMode() {
-        helper("--find-some-non-tmw", "FindSome", 1);
+        helper("Test1", "--find-some-non-tmw", "FindSome", 1);
     }
 
     /** Tests the --find-all-non-tmw mode of {@link
      *  org.thdl.tib.input.TibetanConverter}. */
     public void testFindAllNonTMWMode() {
-        helper("--find-all-non-tmw", "FindAll", 1);
+        helper("Test1", "--find-all-non-tmw", "FindAll", 1);
     }
 
     /** Tests the --to-wylie converter mode of {@link
      *  org.thdl.tib.input.TibetanConverter}. */
     public void testConverterMode() {
-        helper("--to-wylie", "Conversion", 0);
+        helper("Test1", "--to-wylie", "Conversion", 0);
+        helper("Test2", "--to-wylie", "Conversion", 44);
     }
 
     /** Tests the --to-tibetan-machine converter mode of {@link
      *  org.thdl.tib.input.TibetanConverter}. */
     public void testTMConverterMode() {
-        helper("--to-tibetan-machine", "TM", 0);
+        helper("Test1", "--to-tibetan-machine", "TM", 0);
+        helper("Test2", "--to-tibetan-machine", "TM", 0);
+        helper("Test2", "--to-tibetan-machine-web", "TMW", 0);
     }
 }
