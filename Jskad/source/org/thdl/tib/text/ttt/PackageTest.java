@@ -35,9 +35,9 @@ import junit.framework.TestCase;
 public class PackageTest extends TestCase {
 
     /** Invokes a text UI and runs all this class's tests. */
-	public static void main(String[] args) {
-		junit.textui.TestRunner.run(PackageTest.class);
-	}
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(PackageTest.class);
+    }
 
     protected void setUp() {
         // We don't want to use options.txt:
@@ -51,6 +51,37 @@ public class PackageTest extends TestCase {
 
 
     public PackageTest() { }
+
+    /** Converts ACIP to TMW with no warnings.  If errors occur there,
+        returns null.  Otherwise, returns the result of TMW->ACIP,
+        which may be an error message. */
+    static String ACIP2TMW2ACIP(String ACIP) {
+        StringBuffer errors = new StringBuffer();
+        ArrayList al = ACIPTshegBarScanner.scan(ACIP, errors, -1);
+        if (null == al || errors.length() > 0)
+            return null;
+        org.thdl.tib.text.TibetanDocument tdoc
+            = new org.thdl.tib.text.TibetanDocument();
+        int loc[] = new int[] { 0 };
+        try {
+            if (!ACIPConverter.convertToTMW(al,
+                                            tdoc,
+                                            null,
+                                            null,
+                                            null,
+                                            false,
+                                            "None",
+                                            false,
+                                            loc))
+                return null;
+        } catch (java.io.IOException e) {
+            assertTrue("I/O exception?", false);
+        }
+        boolean noSuchACIP[] = new boolean[] { false };
+        return tdoc.getACIP(noSuchACIP);
+    }
+
+
     static void tstHelper(String acip) {
         tstHelper2(acip, null, false, null, null, null, 0);
     }
@@ -7448,6 +7479,8 @@ M+NA
     }
 
     public void testACIPConversion() {
+        uhelp("RTSNYA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP RTSNYA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.][#WARNING CONVERTING ACIP DOCUMENT: The ACIP {R+TS+NYA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f62\u0faa\u0f99"); // FIXME 936998
+
         uhelp("KO&HAm,", "\u0F40\u0F7C\u0F85\u0F67\u0F7E\u0F0D");
         uhelp("x", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP x must be glued to the end of a tsheg bar, but this one was not]");
         uhelp("o", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP o must be glued to the end of a tsheg bar, but this one was not]");
@@ -7646,7 +7679,921 @@ M+NA
               + "\u0f40\u0fb5\u0fbc\u0f7b\u0f0b" // K+sh+REE
               + "\u0f4e\u0f9c\u0fbb\u0f0b" // ndY
               + "\u0f4e\u0f9c\u0fbb\u0f7b\u0f0d" // n+d+YEE
-              ); // DLC FIXME: test the TMW for these, too, it was broken once.
+              );
+    }
+
+    private static void a2ahelp(String ACIP) {
+        a2ahelp(ACIP, ACIP); /* perfect round-trip */
+    }
+
+    private static void a2ahelp(String ACIP, String expectedACIP) {
+        String roundTrip = ACIP2TMW2ACIP(ACIP);
+        if (!expectedACIP.equals(roundTrip)) {
+            assertTrue("\n\nACIP {" + ACIP + "} converted to TMW and then back to ACIP yielded " + ((roundTrip == null) ? "errors" : ("{" + roundTrip + "}")) + ",\nnot the expected {" + expectedACIP + "}.\n",
+                       false);
+        }
+    }
+
+    public void testACIP2TMW2ACIP__misc() {
+        a2ahelp("KA");
+        a2ahelp("K", "KA");
+        a2ahelp("/KA/");
+        a2ahelp("/AA/");
+        a2ahelp("/'A/");
+        a2ahelp("/1/");
+        a2ahelp("/1/");
+        assertTrue(ACIP2TMW2ACIP("RTSNYA") == null); // R+TS+NYA is thought of, not R+T+S+N+YA -- FIXME 936998
+        a2ahelp("N+DZY", "N+DZ+YA"); // R+TS+NYA is not thought of as R+T+S+N+YA; note the (documented and necessary) inconsistency
+    }
+
+    public void testACIP2TMW2ACIP__KA_with_vowels_etc() {
+        a2ahelp("KA");
+        a2ahelp("KE");
+        a2ahelp("KI");
+        a2ahelp("KO");
+        a2ahelp("KU");
+        a2ahelp("KOO");
+        a2ahelp("KEE");
+        a2ahelp("Ki");
+        a2ahelp("Km");
+
+        a2ahelp("KAm", "Km");
+        a2ahelp("KEm");
+        a2ahelp("KIm");
+        a2ahelp("KOm");
+        a2ahelp("KUm");
+        a2ahelp("KOOm");
+        a2ahelp("KEEm");
+        a2ahelp("Kim");
+
+        a2ahelp("KA:");
+        a2ahelp("KE:");
+        a2ahelp("KI:");
+        a2ahelp("KO:");
+        a2ahelp("KU:");
+        a2ahelp("KOO:");
+        a2ahelp("KEE:");
+        a2ahelp("Ki:");
+
+        a2ahelp("KAm:", "Km:");
+        a2ahelp("KEm:");
+        a2ahelp("KIm:");
+        a2ahelp("KOm:");
+        a2ahelp("KUm:");
+        a2ahelp("KOOm:");
+        a2ahelp("KEEm:");
+        a2ahelp("Kim:");
+
+        a2ahelp("KA:o");
+        a2ahelp("KE:o");
+        a2ahelp("KI:o");
+        a2ahelp("KO:o");
+        a2ahelp("KU:o");
+        a2ahelp("KOO:o");
+        a2ahelp("KEE:o");
+        a2ahelp("Ki:o");
+
+        a2ahelp("KA:%");
+        a2ahelp("KE:%");
+        a2ahelp("KI:%");
+        a2ahelp("KO:%");
+        a2ahelp("KU:%");
+        a2ahelp("KOO:%");
+        a2ahelp("KEE:%");
+        a2ahelp("Ki:%");
+
+        a2ahelp("KA%");
+        a2ahelp("KE%");
+        a2ahelp("KI%");
+        a2ahelp("KO%");
+        a2ahelp("KU%");
+        a2ahelp("KOO%");
+        a2ahelp("KEE%");
+        a2ahelp("Ki%");
+    }
+
+    public void testACIP2TMW2ACIP__RDDHYA_with_vowels() {
+        a2ahelp("RDDHYA", "R+D+D+H+YA");
+        a2ahelp("RDDHYE", "R+D+D+H+YE");
+        a2ahelp("RDDHYI", "R+D+D+H+YI");
+        a2ahelp("RDDHYO", "R+D+D+H+YO");
+        a2ahelp("RDDHYU", "R+D+D+H+YU");
+        a2ahelp("RDDHYOO", "R+D+D+H+YOO");
+        a2ahelp("RDDHYEE", "R+D+D+H+YEE");
+        a2ahelp("RDDHYi", "R+D+D+H+Yi");
+        a2ahelp("RDDHYm", "R+D+D+H+Ym");
+
+        a2ahelp("RDDHYAm", "R+D+D+H+Ym");
+        a2ahelp("RDDHYEm", "R+D+D+H+YEm");
+        a2ahelp("RDDHYIm", "R+D+D+H+YIm");
+        a2ahelp("RDDHYOm", "R+D+D+H+YOm");
+        a2ahelp("RDDHYUm", "R+D+D+H+YUm");
+        a2ahelp("RDDHYOOm", "R+D+D+H+YOOm");
+        a2ahelp("RDDHYEEm", "R+D+D+H+YEEm");
+        a2ahelp("RDDHYim", "R+D+D+H+Yim");
+
+        a2ahelp("RDDHYA:", "R+D+D+H+YA:");
+        a2ahelp("RDDHYE:", "R+D+D+H+YE:");
+        a2ahelp("RDDHYI:", "R+D+D+H+YI:");
+        a2ahelp("RDDHYO:", "R+D+D+H+YO:");
+        a2ahelp("RDDHYU:", "R+D+D+H+YU:");
+        a2ahelp("RDDHYOO:", "R+D+D+H+YOO:");
+        a2ahelp("RDDHYEE:", "R+D+D+H+YEE:");
+        a2ahelp("RDDHYi:", "R+D+D+H+Yi:");
+
+        a2ahelp("RDDHYAm:", "R+D+D+H+Ym:");
+        a2ahelp("RDDHYEm:", "R+D+D+H+YEm:");
+        a2ahelp("RDDHYIm:", "R+D+D+H+YIm:");
+        a2ahelp("RDDHYOm:", "R+D+D+H+YOm:");
+        a2ahelp("RDDHYUm:", "R+D+D+H+YUm:");
+        a2ahelp("RDDHYOOm:", "R+D+D+H+YOOm:");
+        a2ahelp("RDDHYEEm:", "R+D+D+H+YEEm:");
+        a2ahelp("RDDHYim:", "R+D+D+H+Yim:");
+    }
+
+    public void testACIP2TMW2ACIP__R_T_S_N_YA_with_vowels() {
+        a2ahelp("R+T+S+N+YA");
+        a2ahelp("R+T+S+N+YE");
+        a2ahelp("R+T+S+N+YI");
+        a2ahelp("R+T+S+N+YO");
+        a2ahelp("R+T+S+N+YU");
+        a2ahelp("R+T+S+N+YOO");
+        a2ahelp("R+T+S+N+YEE");
+        a2ahelp("R+T+S+N+Yi");
+        a2ahelp("R+T+S+N+Ym");
+
+        a2ahelp("R+T+S+N+YAm", "R+T+S+N+Ym");
+        a2ahelp("R+T+S+N+YEm");
+        a2ahelp("R+T+S+N+YIm");
+        a2ahelp("R+T+S+N+YOm");
+        a2ahelp("R+T+S+N+YUm");
+        a2ahelp("R+T+S+N+YOOm");
+        a2ahelp("R+T+S+N+YEEm");
+        a2ahelp("R+T+S+N+Yim");
+
+        a2ahelp("R+T+S+N+YA:");
+        a2ahelp("R+T+S+N+YE:");
+        a2ahelp("R+T+S+N+YI:");
+        a2ahelp("R+T+S+N+YO:");
+        a2ahelp("R+T+S+N+YU:");
+        a2ahelp("R+T+S+N+YOO:");
+        a2ahelp("R+T+S+N+YEE:");
+        a2ahelp("R+T+S+N+Yi:");
+
+        a2ahelp("R+T+S+N+YAm:", "R+T+S+N+Ym:");
+        a2ahelp("R+T+S+N+YEm:");
+        a2ahelp("R+T+S+N+YIm:");
+        a2ahelp("R+T+S+N+YOm:");
+        a2ahelp("R+T+S+N+YUm:");
+        a2ahelp("R+T+S+N+YOOm:");
+        a2ahelp("R+T+S+N+YEEm:");
+        a2ahelp("R+T+S+N+Yim:");
+    }
+
+    public void testACIP2TMW2ACIP__achen_with_vowels() {
+        a2ahelp("AA");
+        a2ahelp("AE");
+        a2ahelp("AI");
+        a2ahelp("AO");
+        a2ahelp("AU");
+        a2ahelp("AOO");
+        a2ahelp("AEE");
+        a2ahelp("Ai");
+        a2ahelp("Am");
+
+        a2ahelp("AAm", "Am");
+        a2ahelp("AEm");
+        a2ahelp("AIm");
+        a2ahelp("AOm");
+        a2ahelp("AUm");
+        a2ahelp("AOOm");
+        a2ahelp("AEEm");
+        a2ahelp("Aim");
+
+        a2ahelp("AA:");
+        a2ahelp("AE:");
+        a2ahelp("AI:");
+        a2ahelp("AO:");
+        a2ahelp("AU:");
+        a2ahelp("AOO:");
+        a2ahelp("AEE:");
+        a2ahelp("Ai:");
+
+        a2ahelp("AAm:", "Am:");
+        a2ahelp("AEm:");
+        a2ahelp("AIm:");
+        a2ahelp("AOm:");
+        a2ahelp("AUm:");
+        a2ahelp("AOOm:");
+        a2ahelp("AEEm:");
+        a2ahelp("Aim:");
+    }
+
+    public void testACIP2TMW2ACIP__achung_with_vowels() {
+        a2ahelp("'A");
+        a2ahelp("'E");
+        a2ahelp("'I");
+        a2ahelp("'O");
+        a2ahelp("'U");
+        a2ahelp("'OO");
+        a2ahelp("'EE");
+        a2ahelp("'i");
+        a2ahelp("'m");
+
+        a2ahelp("'Am", "'m");
+        a2ahelp("'Em");
+        a2ahelp("'Im");
+        a2ahelp("'Om");
+        a2ahelp("'Um");
+        a2ahelp("'OOm");
+        a2ahelp("'EEm");
+        a2ahelp("'im");
+
+        a2ahelp("'A:");
+        a2ahelp("'E:");
+        a2ahelp("'I:");
+        a2ahelp("'O:");
+        a2ahelp("'U:");
+        a2ahelp("'OO:");
+        a2ahelp("'EE:");
+        a2ahelp("'i:");
+
+        a2ahelp("'Am:", "'m:");
+        a2ahelp("'Em:");
+        a2ahelp("'Im:");
+        a2ahelp("'Om:");
+        a2ahelp("'Um:");
+        a2ahelp("'OOm:");
+        a2ahelp("'EEm:");
+        a2ahelp("'im:");
+    }
+
+    /** The following tests ACIP->TMW->ACIP conversions for a list of
+        ACIP that I got by converting every TM glyph into TMW and then
+        into ACIP.  (This leaves out one TMW glyph only.)  Some lines
+        are commented out because, alone at least, they will not
+        convert into TMW without error. */
+    public void testACIP2TMW2ACIP__from_TMW2ACIP() {
+        a2ahelp(" ");
+        a2ahelp("KA");
+        a2ahelp("KHA");
+        a2ahelp("GA");
+        a2ahelp("NGA");
+        a2ahelp("CA");
+        a2ahelp("CHA");
+        a2ahelp("JA");
+        a2ahelp("NYA");
+        a2ahelp("TA");
+        a2ahelp("THA");
+        a2ahelp("DA");
+        a2ahelp("NA");
+        a2ahelp("PHA");
+        a2ahelp("BA");
+        a2ahelp("MA");
+        a2ahelp("TZA");
+        a2ahelp("TSA");
+        a2ahelp("DZA");
+        a2ahelp("WA");
+        a2ahelp("ZHA");
+        a2ahelp("ZA");
+        a2ahelp("'A");
+        a2ahelp("YA");
+        a2ahelp("RA");
+        a2ahelp("LA");
+        a2ahelp("SHA");
+        a2ahelp("SA");
+        a2ahelp("HA");
+        a2ahelp("AA");
+        a2ahelp("RKA");
+        a2ahelp("RGA");
+        a2ahelp("RNGA");
+        a2ahelp("RJA");
+        a2ahelp("RNYA");
+        a2ahelp("RTA");
+        a2ahelp("RDA");
+        a2ahelp("RNA");
+        a2ahelp("RBA");
+        a2ahelp("RMA");
+        a2ahelp("RTZA");
+        a2ahelp("RDZA");
+        a2ahelp("LKA");
+        a2ahelp("LGA");
+        a2ahelp("LNGA");
+        a2ahelp("LCA");
+        a2ahelp("LJA");
+        a2ahelp("LTA");
+        a2ahelp("LDA");
+        a2ahelp("LPA");
+        a2ahelp("LBA");
+        a2ahelp("LHA");
+        a2ahelp("SKA");
+        a2ahelp("SGA");
+        a2ahelp("SNGA");
+        a2ahelp("SNYA");
+        a2ahelp("STA");
+        a2ahelp("SDA");
+        a2ahelp("SNA");
+        a2ahelp("SPA");
+        a2ahelp("SBA");
+        a2ahelp("SMA");
+        a2ahelp("STZA");
+        a2ahelp("KYA");
+        a2ahelp("KHYA");
+        a2ahelp("GYA");
+        a2ahelp("PYA");
+        a2ahelp("PHYA");
+        a2ahelp("BYA");
+        a2ahelp("MYA");
+        a2ahelp("KRA");
+        a2ahelp("KHRA");
+        a2ahelp("GRA");
+        a2ahelp("TRA");
+        a2ahelp("THRA");
+        a2ahelp("DRA");
+        a2ahelp("PRA");
+        a2ahelp("PHRA");
+        a2ahelp("BRA");
+        a2ahelp("MRA");
+        a2ahelp("SHRA");
+        a2ahelp("SRA");
+        a2ahelp("HRA");
+        a2ahelp("KLA");
+        a2ahelp("GLA");
+        a2ahelp("BLA");
+        a2ahelp("ZLA");
+        a2ahelp("RLA");
+        a2ahelp("SLA");
+        a2ahelp("RKYA");
+        a2ahelp("RGYA");
+        a2ahelp("RMYA");
+        a2ahelp("RGVA");
+        a2ahelp("RTZVA");
+        a2ahelp("SGYA");
+        a2ahelp("SPYA");
+        a2ahelp("SBYA");
+        a2ahelp("SMYA");
+        a2ahelp("SKRA");
+        a2ahelp("SGRA");
+        a2ahelp("SNRA");
+        a2ahelp("SPRA");
+        a2ahelp("SBRA");
+        a2ahelp("SMRA");
+        a2ahelp("KVA");
+        a2ahelp("KHVA");
+        a2ahelp("GVA");
+        a2ahelp("CVA");
+        a2ahelp("TVA");
+        a2ahelp("DVA");
+        a2ahelp("TZVA");
+        a2ahelp("TSVA");
+        a2ahelp("ZHVA");
+        a2ahelp("ZVA");
+        a2ahelp("RVA");
+        a2ahelp("SHVA");
+        a2ahelp("SVA");
+        a2ahelp("HVA");
+        a2ahelp("GRVA");
+        a2ahelp("DRVA");
+        a2ahelp("PHYVA");
+        a2ahelp("HA");
+        a2ahelp("NYVA");
+        //        a2ahelp("VA");
+        a2ahelp("'A");
+        a2ahelp("'U");
+        a2ahelp("tA");
+        a2ahelp("thA");
+        a2ahelp("dA");
+        a2ahelp("nA");
+        a2ahelp("shA");
+        a2ahelp("KshA");
+        a2ahelp("KA");
+        a2ahelp("GA");
+        a2ahelp("NYA");
+        a2ahelp("TA");
+        a2ahelp("DA");
+        a2ahelp("NA");
+        a2ahelp("ZHA");
+        a2ahelp("SHA");
+        a2ahelp("HA");
+        a2ahelp("RTA");
+        a2ahelp("0");
+        a2ahelp("1");
+        a2ahelp("2");
+        a2ahelp("3");
+        a2ahelp("4");
+        a2ahelp("5");
+        a2ahelp("6");
+        a2ahelp("7");
+        a2ahelp("8");
+        a2ahelp("9");
+        a2ahelp("*");
+        a2ahelp(",");
+        a2ahelp(";");
+        a2ahelp("`");
+        //        a2ahelp("/");
+//          a2ahelp("I");
+        //        a2ahelp("i");
+        //        a2ahelp("U");
+        //        a2ahelp("E");
+//          a2ahelp("EE");
+//          a2ahelp("O");
+//          a2ahelp("OO");
+//          a2ahelp("m");
+//          a2ahelp(":");
+//          a2ahelp("Im");
+//          a2ahelp("im");
+//          a2ahelp("Em");
+//          a2ahelp("EEm");
+//          a2ahelp("Om");
+//          a2ahelp("OOm");
+//          a2ahelp("\\");
+        a2ahelp("PA");
+        a2ahelp("SKYA");
+        a2ahelp("K+KA");
+        a2ahelp("K+KHA");
+        a2ahelp("K+NGA");
+        a2ahelp("K+TZA");
+        a2ahelp("K+TA");
+        a2ahelp("K+T+YA");
+        a2ahelp("K+T+RA");
+        a2ahelp("K+T+R+YA");
+        a2ahelp("K+T+VA");
+        a2ahelp("K+THA");
+        a2ahelp("K+TH+YA");
+        a2ahelp("K+nA");
+        a2ahelp("K+N+YA");
+        a2ahelp("K+PHA");
+        a2ahelp("K+MA");
+        a2ahelp("K+M+YA");
+        a2ahelp("K+R+YA");
+        a2ahelp("K+SHA");
+        a2ahelp("K+SA");
+        a2ahelp("K+S+NA");
+        a2ahelp("K+S+MA");
+        a2ahelp("K+S+YA");
+        a2ahelp("K+S+VA");
+        a2ahelp("KH+KHA");
+        a2ahelp("KH+NA");
+        a2ahelp("KH+LA");
+        a2ahelp("G+GA");
+        a2ahelp("G+G+HA");
+        a2ahelp("G+NYA");
+        a2ahelp("G+DA");
+        a2ahelp("G+D+HA");
+        a2ahelp("G+D+H+YA");
+        a2ahelp("G+D+H+VA");
+        a2ahelp("G+NA");
+        a2ahelp("G+N+YA");
+        a2ahelp("G+PA");
+        a2ahelp("G+B+HA");
+        a2ahelp("G+B+H+YA");
+        a2ahelp("G+MA");
+        a2ahelp("G+M+YA");
+        a2ahelp("G+R+YA");
+        a2ahelp("GHA");
+        a2ahelp("G+H+G+HA");
+        a2ahelp("G+H+NYA");
+        a2ahelp("G+H+NA");
+        a2ahelp("G+H+N+YA");
+        a2ahelp("G+H+MA");
+        a2ahelp("G+H+LA");
+        a2ahelp("G+H+YA");
+        a2ahelp("G+H+RA");
+        a2ahelp("G+H+VA");
+        a2ahelp("NG+KA");
+        a2ahelp("NG+K+TA");
+        a2ahelp("NG+K+T+YA");
+        a2ahelp("NG+K+YA");
+        a2ahelp("NG+KHA");
+        a2ahelp("NG+KH+YA");
+        a2ahelp("NG+GA");
+        a2ahelp("NG+G+RA");
+        a2ahelp("NG+G+YA");
+        a2ahelp("NG+G+HA");
+        a2ahelp("NG+G+H+YA");
+        a2ahelp("NG+G+H+RA");
+        a2ahelp("NG+NGA");
+        a2ahelp("NG+TA");
+        a2ahelp("NG+NA");
+        a2ahelp("NG+MA");
+        a2ahelp("NG+YA");
+        a2ahelp("NG+LA");
+        a2ahelp("NG+SHA");
+        a2ahelp("NG+HA");
+        a2ahelp("NG+K+shA");
+        a2ahelp("NG+K+sh+VA");
+        a2ahelp("NG+K+sh+YA");
+        a2ahelp("TZ+TZA");
+        a2ahelp("TZ+TSA");
+        a2ahelp("TZ+TS+VA");
+        a2ahelp("TZ+TS+RA");
+        a2ahelp("TZ+NYA");
+        a2ahelp("TZ+N+YA");
+        a2ahelp("TZ+MA");
+        a2ahelp("TZ+YA");
+        a2ahelp("TZ+RA");
+        a2ahelp("TZ+LA");
+        a2ahelp("TZ+H+YA");
+        a2ahelp("TS+THA");
+        a2ahelp("TS+TSA");
+        a2ahelp("TS+YA");
+        a2ahelp("TS+RA");
+        a2ahelp("TS+LA");
+        a2ahelp("DZ+DZA");
+        a2ahelp("DZ+DZ+VA");
+        a2ahelp("DZ+DZ+HA");
+        a2ahelp("DZ+H+DZ+HA");
+        a2ahelp("DZ+NYA");
+        a2ahelp("DZ+NY+YA");
+        a2ahelp("DZ+NA");
+        a2ahelp("DZ+N+VA");
+        a2ahelp("DZ+MA");
+        a2ahelp("DZ+YA");
+        a2ahelp("DZ+RA");
+        a2ahelp("DZ+VA");
+        a2ahelp("DZHA");
+        a2ahelp("DZ+H+YA");
+        a2ahelp("DZ+H+RA");
+        a2ahelp("DZ+H+VA");
+        a2ahelp("NY+TZA");
+        a2ahelp("NY+TZ+MA");
+        a2ahelp("NY+TZ+YA");
+        a2ahelp("NY+TSA");
+        a2ahelp("NY+DZA");
+        a2ahelp("NY+DZ+YA");
+        a2ahelp("NY+DZ+HA");
+        a2ahelp("NY+NYA");
+        a2ahelp("NY+PA");
+        a2ahelp("NY+PHA");
+        a2ahelp("NY+YA");
+        a2ahelp("NY+RA");
+        a2ahelp("NY+LA");
+        a2ahelp("NY+SHA");
+        a2ahelp("t+tA");
+        a2ahelp("t+PA");
+        a2ahelp("t+MA");
+        a2ahelp("t+YA");
+        a2ahelp("t+VA");
+        a2ahelp("t+SA");
+        a2ahelp("th+RA");
+        a2ahelp("d+GA");
+        a2ahelp("d+G+YA");
+        a2ahelp("d+G+HA");
+        a2ahelp("d+G+H+RA");
+        a2ahelp("d+dA");
+        a2ahelp("d+d+HA");
+        a2ahelp("d+d+H+YA");
+        a2ahelp("d+NA");
+        a2ahelp("d+MA");
+        a2ahelp("d+YA");
+        a2ahelp("d+RA");
+        a2ahelp("d+VA");
+        a2ahelp("dHA");
+        a2ahelp("d+H+d+HA");
+        a2ahelp("d+H+MA");
+        a2ahelp("d+H+YA");
+        a2ahelp("d+H+RA");
+        a2ahelp("d+H+VA");
+        a2ahelp("n+tA");
+        a2ahelp("n+thA");
+        a2ahelp("n+dA");
+        a2ahelp("n+d+HA");
+        a2ahelp("n+nA");
+        a2ahelp("n+D+RA");
+        a2ahelp("n+MA");
+        a2ahelp("n+YA");
+        a2ahelp("n+VA");
+        a2ahelp("T+KA");
+        a2ahelp("T+K+RA");
+        a2ahelp("T+K+SA");
+        a2ahelp("DZ+H+LA");
+        a2ahelp("t+KA");
+        a2ahelp("th+YA");
+        a2ahelp("K+NA");
+        a2ahelp("DZ+DZ+NYA");
+        a2ahelp("t+t+HA");
+        a2ahelp("T+K+VA");
+        a2ahelp("T+NYA");
+        a2ahelp("T+thA");
+        a2ahelp("T+TA");
+        a2ahelp("T+T+YA");
+        a2ahelp("T+T+RA");
+        a2ahelp("T+T+VA");
+        a2ahelp("T+THA");
+        a2ahelp("T+TH+YA");
+        a2ahelp("T+NA");
+        a2ahelp("T+N+YA");
+        a2ahelp("T+PA");
+        a2ahelp("T+PHA");
+        a2ahelp("T+MA");
+        a2ahelp("T+M+YA");
+        a2ahelp("T+YA");
+        a2ahelp("T+R+NA");
+        a2ahelp("T+SA");
+        a2ahelp("T+S+THA");
+        a2ahelp("T+S+NA");
+        a2ahelp("T+S+N+YA");
+        a2ahelp("T+S+MA");
+        a2ahelp("T+S+M+YA");
+        a2ahelp("T+S+YA");
+        a2ahelp("T+S+RA");
+        a2ahelp("T+S+VA");
+        a2ahelp("T+R+YA");
+        a2ahelp("T+V+YA");
+        a2ahelp("T+K+shA");
+        a2ahelp("TH+YA");
+        a2ahelp("TH+VA");
+        a2ahelp("D+GA");
+        a2ahelp("D+G+YA");
+        a2ahelp("D+G+RA");
+        a2ahelp("D+G+HA");
+        a2ahelp("D+G+H+RA");
+        a2ahelp("D+DZA");
+        a2ahelp("D+DA");
+        a2ahelp("D+D+YA");
+        a2ahelp("D+D+RA");
+        a2ahelp("D+D+VA");
+        a2ahelp("D+D+HA");
+        a2ahelp("D+D+H+NA");
+        a2ahelp("D+D+H+YA");
+        a2ahelp("D+D+H+RA");
+        a2ahelp("D+D+H+VA");
+        a2ahelp("D+NA");
+        a2ahelp("D+BA");
+        a2ahelp("D+B+RA");
+        a2ahelp("D+B+HA");
+        a2ahelp("D+B+H+YA");
+        a2ahelp("D+B+H+RA");
+        a2ahelp("D+MA");
+        a2ahelp("D+YA");
+        a2ahelp("D+R+YA");
+        a2ahelp("D+V+YA");
+        a2ahelp("DHA");
+        a2ahelp("D+H+NA");
+        a2ahelp("D+H+N+YA");
+        a2ahelp("D+H+MA");
+        a2ahelp("D+H+YA");
+        a2ahelp("D+H+RA");
+        a2ahelp("D+H+R+YA");
+        a2ahelp("D+H+VA");
+        a2ahelp("N+KA");
+        a2ahelp("N+K+TA");
+        a2ahelp("N+G+HA");
+        a2ahelp("N+NGA");
+        a2ahelp("N+DZA");
+        a2ahelp("N+DZ+YA");
+        a2ahelp("N+dA");
+        a2ahelp("N+TA");
+        a2ahelp("N+T+YA");
+        a2ahelp("N+T+RA");
+        a2ahelp("N+T+R+YA");
+        a2ahelp("N+T+VA");
+        a2ahelp("N+T+SA");
+        a2ahelp("N+THA");
+        a2ahelp("N+DA");
+        a2ahelp("N+D+DA");
+        a2ahelp("N+D+D+RA");
+        a2ahelp("N+D+YA");
+        a2ahelp("N+D+RA");
+        a2ahelp("N+D+HA");
+        a2ahelp("N+D+H+RA");
+        a2ahelp("N+D+H+YA");
+        a2ahelp("N+NA");
+        a2ahelp("N+N+YA");
+        a2ahelp("N+PA");
+        a2ahelp("N+P+RA");
+        a2ahelp("N+PHA");
+        a2ahelp("N+B+H+YA");
+        a2ahelp("N+TZA");
+        a2ahelp("N+YA");
+        a2ahelp("N+RA");
+        a2ahelp("N+VA");
+        a2ahelp("N+V+YA");
+        a2ahelp("N+SA");
+        a2ahelp("N+S+YA");
+        a2ahelp("N+HA");
+        a2ahelp("N+H+RA");
+        a2ahelp("P+TA");
+        a2ahelp("P+T+YA");
+        a2ahelp("P+T+R+YA");
+        a2ahelp("P+NA");
+        a2ahelp("P+PA");
+        a2ahelp("P+MA");
+        a2ahelp("P+LA");
+        a2ahelp("P+VA");
+        a2ahelp("P+SA");
+        a2ahelp("P+S+N+YA");
+        a2ahelp("P+S+VA");
+        a2ahelp("P+S+YA");
+        a2ahelp("B+G+HA");
+        a2ahelp("B+DZA");
+        a2ahelp("B+DA");
+        a2ahelp("B+D+DZA");
+        a2ahelp("B+D+HA");
+        a2ahelp("B+D+H+VA");
+        a2ahelp("B+TA");
+        a2ahelp("B+BA");
+        a2ahelp("B+B+H+YA");
+        a2ahelp("B+MA");
+        a2ahelp("BHA");
+        a2ahelp("B+H+nA");
+        a2ahelp("B+H+NA");
+        a2ahelp("B+H+YA");
+        a2ahelp("B+H+RA");
+        a2ahelp("B+H+VA");
+        a2ahelp("M+NYA");
+        a2ahelp("M+nA");
+        a2ahelp("M+NA");
+        a2ahelp("M+N+YA");
+        a2ahelp("M+PA");
+        a2ahelp("M+P+RA");
+        a2ahelp("M+PHA");
+        a2ahelp("M+BA");
+        a2ahelp("M+B+HA");
+        a2ahelp("M+B+H+YA");
+        a2ahelp("M+MA");
+        a2ahelp("M+LA");
+        a2ahelp("M+VA");
+        a2ahelp("M+SA");
+        a2ahelp("M+HA");
+        a2ahelp("Y+RA");
+        a2ahelp("Y+VA");
+        a2ahelp("Y+SA");
+        a2ahelp("R+KHA");
+        a2ahelp("R+G+HA");
+        a2ahelp("R+G+H+YA");
+        a2ahelp("R+TZ+YA");
+        a2ahelp("R+TSA");
+        a2ahelp("R+DZ+NYA");
+        a2ahelp("R+DZ+YA");
+        a2ahelp("R+tA");
+        a2ahelp("R+thA");
+        a2ahelp("R+dA");
+        a2ahelp("R+nA");
+        a2ahelp("P+N+YA");
+        a2ahelp("B+NA");
+        a2ahelp("B+H+MA");
+        a2ahelp("T+P+RA");
+        a2ahelp("N+MA");
+        a2ahelp("B+B+HA");
+        a2ahelp("R+T+VA");
+        a2ahelp("R+T+TA");
+        a2ahelp("R+T+SA");
+        a2ahelp("R+T+S+NA");
+        a2ahelp("R+T+S+N+YA");
+        a2ahelp("R+THA");
+        a2ahelp("R+TH+YA");
+        a2ahelp("R+D+D+HA");
+        a2ahelp("R+D+D+H+YA");
+        a2ahelp("R+D+YA");
+        a2ahelp("R+D+HA");
+        a2ahelp("R+D+H+MA");
+        a2ahelp("R+D+H+RA");
+        a2ahelp("R+PA");
+        a2ahelp("R+B+PA");
+        a2ahelp("R+B+BA");
+        a2ahelp("R+B+HA");
+        a2ahelp("R+M+MA");
+        a2ahelp("R+HA");
+        a2ahelp("R+K+shA");
+        a2ahelp("L+G+VA");
+        a2ahelp("L+B+YA");
+        a2ahelp("L+MA");
+        a2ahelp("L+YA");
+        a2ahelp("L+VA");
+        a2ahelp("L+LA");
+        a2ahelp("W+YA");
+        a2ahelp("W+RA");
+        a2ahelp("SH+TZA");
+        a2ahelp("SH+TZ+YA");
+        a2ahelp("SH+TSA");
+        a2ahelp("SH+nA");
+        a2ahelp("SH+NA");
+        a2ahelp("SH+PA");
+        a2ahelp("SH+B+YA");
+        a2ahelp("SH+MA");
+        a2ahelp("SH+YA");
+        a2ahelp("SH+R+YA");
+        a2ahelp("SH+LA");
+        a2ahelp("SH+V+GA");
+        a2ahelp("SH+V+YA");
+        a2ahelp("SH+SHA");
+        a2ahelp("sh+KA");
+        a2ahelp("sh+K+RA");
+        a2ahelp("sh+tA");
+        a2ahelp("sh+t+YA");
+        a2ahelp("sh+t+RA");
+        a2ahelp("sh+t+R+YA");
+        a2ahelp("sh+t+VA");
+        a2ahelp("sh+thA");
+        a2ahelp("sh+th+YA");
+        a2ahelp("sh+nA");
+        a2ahelp("sh+n+YA");
+        a2ahelp("sh+dA");
+        a2ahelp("sh+PA");
+        a2ahelp("sh+P+RA");
+        a2ahelp("sh+MA");
+        a2ahelp("sh+YA");
+        a2ahelp("sh+VA");
+        a2ahelp("sh+shA");
+        a2ahelp("S+K+SA");
+        a2ahelp("S+KHA");
+        a2ahelp("S+TZ+YA");
+        a2ahelp("S+tA");
+        a2ahelp("S+thA");
+        a2ahelp("S+T+YA");
+        a2ahelp("S+T+RA");
+        a2ahelp("S+T+VA");
+        a2ahelp("S+THA");
+        a2ahelp("S+TH+YA");
+        a2ahelp("S+N+YA");
+        a2ahelp("S+N+VA");
+        a2ahelp("S+PHA");
+        a2ahelp("S+PH+YA");
+        a2ahelp("S+YA");
+        a2ahelp("S+R+VA");
+        a2ahelp("S+SA");
+        a2ahelp("S+S+VA");
+        a2ahelp("S+HA");
+        a2ahelp("S+V+YA");
+        a2ahelp("H+NYA");
+        a2ahelp("H+nA");
+        a2ahelp("H+TA");
+        a2ahelp("H+NA");
+        a2ahelp("H+PA");
+        a2ahelp("H+PHA");
+        a2ahelp("H+MA");
+        a2ahelp("H+YA");
+        a2ahelp("H+LA");
+        a2ahelp("H+SA");
+        a2ahelp("H+S+VA");
+        a2ahelp("H+V+YA");
+        a2ahelp("K+sh+nA");
+        a2ahelp("K+sh+MA");
+        a2ahelp("K+sh+M+YA");
+        a2ahelp("K+sh+YA");
+        a2ahelp("K+sh+LA");
+        a2ahelp("A+YA");
+        a2ahelp("A+RA");
+        a2ahelp("A+R+YA");
+        a2ahelp("RA");
+        a2ahelp("YA");
+        a2ahelp("RA");
+        a2ahelp("&");
+        a2ahelp("t+NA");
+        a2ahelp("T+GA");
+        a2ahelp("P+DA");
+        a2ahelp("sh+THA");
+        a2ahelp("K+V+YA");
+        a2ahelp("n+d+RA");
+        a2ahelp("W+WA");
+        a2ahelp("W+NA");
+        a2ahelp("L+H+VA");
+        a2ahelp("K+sh+VA");
+        a2ahelp("R+D+H+YA");
+        a2ahelp("H+N+YA");
+//          a2ahelp("o");
+//          a2ahelp("%");
+//          a2ahelp("^");
+//          a2ahelp("O'I");
+        a2ahelp("KA");
+        a2ahelp("KHA");
+        a2ahelp("GA");
+        a2ahelp("GHA");
+        a2ahelp("NGA");
+        a2ahelp("CA");
+        a2ahelp("CHA");
+        a2ahelp("JA");
+        a2ahelp("NYA");
+        a2ahelp("tA");
+        a2ahelp("thA");
+        a2ahelp("dA");
+        a2ahelp("dHA");
+        a2ahelp("nA");
+        a2ahelp("TA");
+        a2ahelp("THA");
+        a2ahelp("DA");
+        a2ahelp("DHA");
+        a2ahelp("NA");
+        a2ahelp("PA");
+        a2ahelp("PHA");
+        a2ahelp("BA");
+        a2ahelp("BHA");
+        a2ahelp("MA");
+        a2ahelp("TZA");
+        a2ahelp("TSA");
+        a2ahelp("DZA");
+        a2ahelp("DZHA");
+        a2ahelp("WA");
+        a2ahelp("ZHA");
+        a2ahelp("ZA");
+        a2ahelp("LA");
+        a2ahelp("SHA");
+        a2ahelp("shA");
+        a2ahelp("SA");
+        a2ahelp("HA");
+        a2ahelp("AA");
+        a2ahelp("KshA");
     }
 
     /** Tests some more tsheg bars, these from Dr. Lacey's critical
