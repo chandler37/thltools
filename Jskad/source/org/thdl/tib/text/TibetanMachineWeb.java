@@ -66,7 +66,7 @@ public class TibetanMachineWeb {
 	private static Set farRightSet = null;
 	private static Map tibHash = new HashMap();
 	private static Map binduMap = new HashMap();
-	private static String[][] toHashKey = new String[11][95]; //note: 0 slot is not used
+	private static String[][] toHashKey = new String[11][95]; //note: toHashKey[0][..] is not used
 	private static DuffCode[][] TMtoTMW = new DuffCode[5][255-32];
 	private static String fileName = "tibwn.ini";
 	private static final String DELIMITER = "~";
@@ -83,26 +83,28 @@ public class TibetanMachineWeb {
 	private static boolean hasAVowel;
 	private static String aVowel;
 
+    // We use .intern() explicitly here so the code is easier to
+    // understand, but all string literals are interned.
 	public static final String[] tmFontNames = {
 		null,
-		"TibetanMachine",
-		"TibetanMachineSkt1",
-		"TibetanMachineSkt2",
-		"TibetanMachineSkt3",
-		"TibetanMachineSkt4"
+		"TibetanMachine".intern(),
+		"TibetanMachineSkt1".intern(),
+		"TibetanMachineSkt2".intern(),
+		"TibetanMachineSkt3".intern(),
+		"TibetanMachineSkt4".intern()
 	};
 	public static final String[] tmwFontNames = {
 		null,
-		"TibetanMachineWeb",
-		"TibetanMachineWeb1",
-		"TibetanMachineWeb2",
-		"TibetanMachineWeb3",
-		"TibetanMachineWeb4",
-		"TibetanMachineWeb5",
-		"TibetanMachineWeb6",
-		"TibetanMachineWeb7",
-		"TibetanMachineWeb8",
-		"TibetanMachineWeb9"
+		"TibetanMachineWeb".intern(),
+		"TibetanMachineWeb1".intern(),
+		"TibetanMachineWeb2".intern(),
+		"TibetanMachineWeb3".intern(),
+		"TibetanMachineWeb4".intern(),
+		"TibetanMachineWeb5".intern(),
+		"TibetanMachineWeb6".intern(),
+		"TibetanMachineWeb7".intern(),
+		"TibetanMachineWeb8".intern(),
+		"TibetanMachineWeb9".intern()
 	};
 /**
 * the Wylie for bindu/anusvara
@@ -286,6 +288,12 @@ public class TibetanMachineWeb {
      *  @param path a path within the JAR containing this class file
      *  @throws Error if that assumption does not hold */
     private static void readInFontFile(String path) {
+
+        // Note that the TM and TMW fonts do not have hanging
+        // baselines.  They have Roman baselines.  Tony Duff said this
+        // is subtly necessary and that only an OpenType font can
+        // support baselines properly.
+
         try {
             InputStream is = TibetanMachineWeb.class.getResourceAsStream(path);
             if (null == is) {
@@ -500,7 +508,7 @@ public class TibetanMachineWeb {
 public static boolean setKeyboard(TibetanKeyboard kb) {
 	keyboard = kb;
 
-	if (keyboard == null) { //wylie keyboard
+	if (currentKeyboardIsExtendedWylie()) { //wylie keyboard
 		hasDisambiguatingKey = true;
 		disambiguating_key = WYLIE_DISAMBIGUATING_KEY;
 		hasSanskritStackingKey = true;
@@ -605,7 +613,7 @@ public static boolean isFormatting(char c) {
 * false if not
 */
 public static boolean isChar(String s) {
-	if (keyboard == null) {
+	if (currentKeyboardIsExtendedWylie()) {
 		if (charSet.contains(s))
 			return true;
 		else
@@ -640,7 +648,7 @@ public static boolean isWylieChar(String s) {
 * keyboard, false if not
 */
 public static boolean isPunc(String s) {
-	if (keyboard == null) {
+	if (currentKeyboardIsExtendedWylie()) {
 		if (puncSet.contains(s))
 			return true;
 		else
@@ -675,7 +683,7 @@ public static boolean isWyliePunc(String s) {
 * keyboard, false if not
 */
 public static boolean isVowel(String s) {
-	if (keyboard == null) {
+	if (currentKeyboardIsExtendedWylie()) {
 		if (vowelSet.contains(s))
 			return true;
 		else
@@ -764,11 +772,17 @@ public static boolean isWylieFarRight(String s) {
 * @see TibetanKeyboard
 */
 public static String getWylieForChar(String s) {
-	if (keyboard == null)
+	if (currentKeyboardIsExtendedWylie())
 		return s;
 
 	return keyboard.getWylieForChar(s);
 }
+
+    /** Returns true iff the currently active keyboard is the
+     *  built-in, extended Wylie keyboard. */
+    public static boolean currentKeyboardIsExtendedWylie() {
+        return (null == getKeyboard());
+    }
 
 /**
  *  Returns the current keyboard, or, if the current keyboard is the
@@ -787,7 +801,7 @@ public static String getWylieForChar(String s) {
 * @see TibetanKeyboard
 */
 public static String getWylieForPunc(String s) {
-	if (keyboard == null)
+	if (currentKeyboardIsExtendedWylie())
 		return s;
 
 	return keyboard.getWylieForPunc(s);
@@ -803,7 +817,7 @@ public static String getWylieForPunc(String s) {
 * @see TibetanKeyboard
 */
 public static String getWylieForVowel(String s) {
-	if (keyboard == null)
+	if (currentKeyboardIsExtendedWylie())
 		return s;
 
 	return keyboard.getWylieForVowel(s);
@@ -906,8 +920,9 @@ private static DuffCode getTMtoTMW(int font, int code) {
 }
 
 private static int getTMFontNumber(String name) {
+    String internedName = name.intern();
 	for (int i=1; i<tmFontNames.length; i++) {
-		if (name.equals(tmFontNames[i]))
+		if (internedName == tmFontNames[i])
 			return i;
 	}
 	return 0;
@@ -920,8 +935,10 @@ private static int getTMFontNumber(String name) {
 * of the TibetanMachineWeb fonts, otherwise 0
 */
 public static int getTMWFontNumber(String name) {
+    String internedName = name.intern();
 	for (int i=1; i<tmwFontNames.length; i++) {
-		if (name.equals(tmwFontNames[i]))
+        // Thanks to interning, we can use == rather than .equals().
+		if (internedName == tmwFontNames[i])
 			return i;
 	}
 	return 0;
@@ -1010,7 +1027,7 @@ public static String getWylieForGlyph(DuffCode dc) {
      *  legal input, ("Sh" + y) is not valid input for any non-empty
      *  String y. */
     public static boolean hasInputPrefix(String s) {
-        if (null != keyboard) {
+        if (!currentKeyboardIsExtendedWylie()) {
             return keyboard.hasInputPrefix(s);
         } else {
             return validInputSequences.hasPrefix(s);
