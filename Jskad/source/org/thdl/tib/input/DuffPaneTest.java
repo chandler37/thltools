@@ -213,6 +213,10 @@ public class DuffPaneTest extends TestCase {
 
         ensureKeysGiveCorrectWylie("gyg",
                                    "g.yag");
+        ensureKeysGiveCorrectWylie("gyug",
+                                   "gyug");
+        ensureKeysGiveCorrectWylie("gayug",
+                                   "g.yug");
         ensureKeysGiveCorrectWylie("g.yag");
         ensureKeysGiveCorrectWylie("gyag");
         ensureKeysGiveCorrectWylie("gy.g",
