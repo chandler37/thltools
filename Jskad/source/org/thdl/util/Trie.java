@@ -228,7 +228,6 @@ public class Trie
                         // the key is not 7-bit ASCII so we won't find it here
                         node = null;
 
-                        ThdlDebug.noteIffyCode();
                     }
 
                 if (node == null)
