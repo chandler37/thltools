@@ -71,12 +71,10 @@ class ConvertDialog extends JDialog
             public void theRealActionPerformed(ActionEvent e) {
                 ConvertDialog.this.theRealActionPerformed(e);
             }};
-    private void updateWarningLevels() {
-        if (choices.getSelectedItem() == ACIP_TO_UNI_TEXT
-            || choices.getSelectedItem() == ACIP_TO_TMW)
-            this.warningLevels.enable();
-        else
-            this.warningLevels.disable();
+    private void updateWarningLevels()
+    {
+        this.warningLevels.setEnabled(choices.getSelectedItem() == ACIP_TO_UNI_TEXT
+        || choices.getSelectedItem() == ACIP_TO_TMW);
     }
     private void init()
     {
