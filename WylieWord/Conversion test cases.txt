@@ -766,8 +766,9 @@ a_tsal852ja$)@#%(!Ta)0daM)%!@sa
 // test special handing for @#
 @# #@ @a#
 
-// English insert
+// English inserts
 rta'i [(of horse)] mgrin
+// It would be nice to have a test of the \ syntax, but that doesn't translate back to itself, so we can't pass it.
 
 <?Reject?>
 
