@@ -35,8 +35,10 @@ import java.util.ArrayList;
  *  Unicode, or to Tibetan Machine (TM).  It also converts to TMW from
  *  TM or ACIP.  Some conversions use RTF (rich text format); some use
  *  text.  Invoke it with no parameters for usage information.  Full
- *  documentation is available at {@link
- *  http://thdltools.sourceforge.net/TMW_RTF_TO_THDL_WYLIE.html}.
+ *  documentation is available at the website listed below.
+ *
+ *  @see <a href="http://thdltools.sourceforge.net/TMW_RTF_TO_THDL_WYLIE.html">End-user documentation</a>
+ *
  *  @author David Chandler */
 public class TibetanConverter implements FontConverterConstants {
     private static final boolean debug = false;
