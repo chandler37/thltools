@@ -136,20 +136,17 @@ ub up
 ; pronunciation (which may also contain spaces).  A semicolon 
 ; precedes a comment.  Blank lines are OK.
 
-mkha' 'gro > khandro
+; Exceptions to nasalization rule:
+skyabs 'gro > kyamdro
+rten 'brel > tendrel
+lam 'bras > lamdré
+
+; Other exceptions:
 sprul sku > tulku
 rta mgrin > tamdrin
-dga' ldan > ganden
-dge 'dun  > gendün
 a mdo > amdo
-bka' 'gyur > kangyur
-rgyu 'bras > gyundré
-ngos 'dzin > ngöndzin
 chab mdo > chamdo
 dpal ldan > penden
-dpal 'bar > pembar
-rig 'dzin > rindzin
-skyabs 'gro > kyamdro
 'bri ru > biru
 sbra nag zhol > banakzhöl
 rdo rje > dorjé
