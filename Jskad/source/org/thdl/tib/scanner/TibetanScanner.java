@@ -285,11 +285,11 @@ public abstract class TibetanScanner
 
 	public Token[] getTokenArray()
 	{
-		int i=0;
-		Token token[] = new Token[wordList.size()];
+		int n=wordList.size();
+		Token token[] = new Token[n];
 		SimplifiedListIterator li = wordList.listIterator();
 		while(li.hasNext())
-			token[i++] = (Token)li.next();
+			token[--n] = (Token)li.next();
 		return token;
 	}
 

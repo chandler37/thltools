@@ -339,7 +339,7 @@ outAHere:
 			*/
 			
 		    fin = init+1;
-			while (true)
+			while (fin < linea.length())
 			{
 			    ch = linea.charAt(fin);
 			    if (endOfParagraphMarks.indexOf(ch)>=0)

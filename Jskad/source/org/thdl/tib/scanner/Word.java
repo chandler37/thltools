@@ -91,7 +91,17 @@ public class Word extends Token
 	public String getBookmark(boolean tibetan)
 	{
 	    String localWord;
-	    if (tibetan) localWord = TibetanHTML.getHTML(super.token + " ");
+	    if (tibetan) 
+	    {
+	        try
+	        {
+	            localWord = TibetanHTML.getHTML(super.token + " ");
+	        }
+	        catch (Exception e)
+	        {
+	            localWord = "<b>" + super.token + "</b>";
+	        }
+	    }
 	    else localWord = "<b>" + super.token + "</b>";
 		return "<a name=\"" + super.token + "\">" + localWord + "</a>";
 	}
@@ -103,16 +113,27 @@ public class Word extends Token
 	
 	public String getLink(boolean tibetan)
 	{
-	    String localWord;
+	    String localWord, result=null;
 	    // String result;
 		if (wordSinDec==null) localWord = super.token;
 		else localWord = wordSinDec;
-		if (tibetan) localWord = TibetanHTML.getHTML(localWord + " ");
+		if (tibetan) 
+		{
+		    try
+		    {
+		        result = TibetanHTML.getHTML(localWord + " ");
+		    }
+		    catch (Exception e)
+		    {
+		        result = localWord;
+		    }
+		}
+		else result = localWord;
 /*		result = "<a href=\"#" + word + "\">" + localWord;
 		if (tibetan) result+= "</a>";
 		else result+= "</a> ";
 		return result;*/
-		return "<a href=\"#" + super.token + "\">" + localWord + "</a> ";
+		return "<a href=\"#" + super.token + "\">" + result + "</a> ";
 	}
 	
 	/** Called in order to redisplay the text with links keeping

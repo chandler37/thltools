@@ -58,15 +58,30 @@ public class OnLineScannerFilter extends HttpServlet {
         PrintWriter out = response.getWriter();
 		String parrafo = request.getParameter("parrafo"), checkboxName, script;
 		DictionarySource ds=null;
-		boolean checkedDicts[], allUnchecked, wantsTibetan;
+		boolean checkedDicts[], allUnchecked, wantsTibetan, useTHDLBanner = (request.getParameter("thdlBanner")!=null);
 		// int percent=100;
 		
-        out.println("<html>");
+		if (useTHDLBanner)
+		{
+		    out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"> <html xmlns=\"http://www.w3.org/1999/xhtml\">");
+		}
+		else out.println("<html>");
+		
         out.println("<head>");
-        out.println("<META name=\"keywords\" content=\"tibetan, english, dictionary, jim valby, rangjung yeshe, jeffrey hopkins, tsig mdzod chen mo, online, translation, scanner, parser, buddhism, language, processing, font, dharma, chos, tibet\">");
-        out.println("<META NAME=\"Description\" CONTENT=\"This Java tool takes Tibetan language passages and divides the passages up into their component phrases and words, and displays corresponding dictionary definitions.\">");
-        out.println("<meta name=\"MSSmartTagsPreventParsing\" content=\"TRUE\">");
-        out.println("<title>The Online Tibetan to English Translation/Dictionary Tool</title>");
+		if (useTHDLBanner)
+		{
+            out.println(" <title>Tibetan and Himalayan Digital Library - The Online Tibetan to English Translation/Dictionary Tool</title>");
+            out.println(" <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />");
+            out.println(" <script type=\"text/javascript\" src=\"/tibet/scripts/thdl_scripts.js\"></script>");
+            out.println(" <link rel=\"stylesheet\" type=\"text/css\" href=\"/tibet/style/thdl-styles.css\"/>");
+        }
+        else
+            out.println(" <title>The Online Tibetan to English Translation/Dictionary Tool</title>");
+            
+        out.println(" <META name=\"keywords\" content=\"tibetan, english, dictionary, jim valby, rangjung yeshe, jeffrey hopkins, tsig mdzod chen mo, online, translation, scanner, parser, buddhism, language, processing, font, dharma, chos, tibet\">");
+        out.println(" <META NAME=\"Description\" CONTENT=\"This Java tool takes Tibetan language passages and divides the passages up into their component phrases and words, and displays corresponding dictionary definitions.\">");
+        out.println(" <meta name=\"MSSmartTagsPreventParsing\" content=\"TRUE\">");
+		
         script = request.getParameter("script");
         
         /* script==null || makes default tibetan
@@ -90,6 +105,43 @@ public class OnLineScannerFilter extends HttpServlet {
         }
         out.println("</head>");
         out.println("<body>");
+        
+        
+		if (useTHDLBanner)
+		{
+            out.println("<div id=\"banner\">");
+            out.println(" <a id=\"logo\" href=\"/tibet/index.html\"><img id=\"test\" alt=\"THDL Logo\" src=\"/tibet/images/logo.png\"/></a>");
+            out.println(" <h1>Tibetan and Himalayan Digital Library</h1>");
+            out.println("  <div id=\"menubar\">");
+            out.println(" <script type=\'text/javascript\'>function Go(){return}</script>");
+            out.println(" <script type=\'text/javascript\' src=\'/tibet/scripts/new/thdl_menu_config.js\'></script>");
+            out.println(" <script type=\'text/javascript\' src=\'/tibet/scripts/new/menu_new.js\'></script>");
+            out.println(" <script type=\'text/javascript\' src=\'/tibet/scripts/new/menu9_com.js\'></script>");
+            out.println(" <noscript><p>Your browser does not support javascript.</p></noscript>");
+            out.println(" <div id=\'MenuPos\' >Menu Loading... </div>");
+            
+            out.println(" </div><!--END menubar-->");
+            out.println("</div><!--END banner-->");
+
+            out.println("<div id=\"sub_banner\">");
+            out.println("<div id=\"search\">");
+            out.println("  <form method=\"get\" action=\"http://www.google.com/u/thdl\">");
+            out.println("   <p>");
+            out.println("    <input type=\"text\" name=\"q\" id=\"q\" size=\"15\" maxlength=\"255\" value=\"\" />");
+            out.println("    <input type=\"submit\" name=\"sa\" id=\"sa\" value=\"Search\"/>");
+            out.println("    <input type=\"hidden\" name=\"hq\" id=\"hq\" value=\"inurl:iris.lib.virginia.edu\"/>");
+            out.println("   </p>");
+            out.println("  </form>");
+            out.println(" </div>");
+            out.println(" <div id=\"breadcrumbs\">");
+            out.println("  <a href=\"/tibet/index.html\">Home</a> &gt; <a href=\"/tibet/reference/index.html\">Reference</a> &gt; Translation Tool |");
+            out.println("  <a href=\"http://www.people.virginia.edu/~am2zb/tibetan/TibetanEnglishTranslationTool.jnlp\">Tibetan Script Input Version </a> (<a target=\"_blank\" href=\"http://java.sun.com/getjava/\">Java</a> needed) |");
+            out.println("  <a href=\"http://www.people.virginia.edu/~am2zb/tibetan/\" target=\"_blank\">Documentation</a>");
+            out.println(" </div>");
+            out.println("</div><!--END sub_banner-->");
+            out.println("<div id=\"main\">");
+        }
+        
         out.println("<h3 align=\"center\">The Online Tibetan to English Translation/Dictionary Tool</h3>");
         out.println("<form action=\"org.thdl.tib.scanner.OnLineScannerFilter\" method=POST>");
         out.println("<table border=\"0\" width=\"100%\">");
@@ -180,6 +232,7 @@ public class OnLineScannerFilter extends HttpServlet {
         		desglosar(parrafo, out, wantsTibetan);
 		
 		out.println(TibetanScanner.copyrightHTML);
+		if (useTHDLBanner) out.println("</div><!--END main-->");
         out.println("</body>");
         out.println("</html>");
     }
