@@ -209,20 +209,12 @@ public class Jskad extends JPanel implements DocumentListener {
 				closeItem.addActionListener(new ThdlActionListener() {
 					public void theRealActionPerformed(ActionEvent e) {
 						if (!hasChanged || hasChanged && checkSave()) {
-							numberOfTibsRTFOpen--;
-
-							if (numberOfTibsRTFOpen == 0)
-								System.exit(0);
-							else {
-								final JFrame parentFrame = (JFrame)parentObject;
-								parentFrame.dispose();
-							}
+                            Jskad.this.realCloseAction(true);
 						}
 					}
 				});
 				fileMenu.add(closeItem);
-			}
-
+            }
 			JMenuItem saveItem = new JMenuItem("Save");
 //			saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,java.awt.Event.CTRL_MASK)); //Ctrl-s
 			saveItem.addActionListener(new ThdlActionListener() {
@@ -244,6 +236,17 @@ public class Jskad extends JPanel implements DocumentListener {
 				}
 			});
 			fileMenu.add(saveAsItem);
+
+			if (parentObject instanceof JFrame) {
+				JMenuItem exitItem = new JMenuItem("Exit");	
+				exitItem.addActionListener(new ThdlActionListener() {
+					public void theRealActionPerformed(ActionEvent e) {
+                        exitAction();
+					}
+				});
+				fileMenu.addSeparator();
+				fileMenu.add(exitItem);
+			}
 
 			menuBar.add(fileMenu);
 		}
@@ -718,7 +721,9 @@ public class Jskad extends JPanel implements DocumentListener {
 			Point point = parentFrame.getLocationOnScreen();
 			newFrame.setSize(parentFrame.getSize().width, parentFrame.getSize().height);
 			newFrame.setLocation(point.x+50, point.y+50);
-			newFrame.getContentPane().add(new Jskad(newFrame));
+            Jskad jskad = new Jskad(newFrame);
+            jskads.add(jskad);
+			newFrame.getContentPane().add(jskad);
 			newFrame.setVisible(true);
 		}
 		else {
@@ -765,6 +770,7 @@ public class Jskad extends JPanel implements DocumentListener {
                 newFrame.setSize(x_size, y_size);
                 newFrame.setLocation(point.x+50, point.y+50);
                 Jskad newRTF = new Jskad(newFrame);
+                jskads.add(newRTF);
                 newFrame.getContentPane().add(newRTF);
                 boolean error = false;
                 try {
@@ -838,7 +844,8 @@ public class Jskad extends JPanel implements DocumentListener {
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 
-	private void saveFile() {
+	/** Returns true iff the save was successful. */
+	private boolean saveFile() {
 		String s = getSave(fileName);
 		if (null != s) {
 			if (parentObject instanceof JFrame) {
@@ -851,10 +858,14 @@ public class Jskad extends JPanel implements DocumentListener {
 				parentFrame.setTitle("Jskad: " + s);
 				fileName = new String(s);
 			}
+			return true;
+		} else {
+			return false;
 		}
 	}
 
-	private void saveAsFile() {
+	/** Returns true iff the save was successful. */
+	private boolean saveAsFile() {
 		String s = getSaveAs();
 		if (null != s) {
 			if (parentObject instanceof JFrame) {
@@ -867,27 +878,33 @@ public class Jskad extends JPanel implements DocumentListener {
 				parentFrame.setTitle("Jskad: " + s);
 				fileName = new String(s);
 			}
+			return true;
 		}
+		return false;
 	}
 
+    /** Returns true iff the user says (possibly after a successful
+        save) that it is OK to destroy this Jskad widget. */
 	private boolean checkSave() {
-        if (ThdlOptions.getBooleanOption("thdl.Jskad.do.not.confirm.quit")) {
-            return true;
-        }
+		if (ThdlOptions.getBooleanOption("thdl.Jskad.do.not.confirm.quit")) {
+			return true;
+		}
 
-		int saveFirst = JOptionPane.showConfirmDialog(this, "Do you want to save your changes?", "Please select", JOptionPane.YES_NO_CANCEL_OPTION);
+		int saveFirst
+			= JOptionPane.showConfirmDialog(this,
+											"Do you want to save your changes?",
+											"Please select",
+											JOptionPane.YES_NO_CANCEL_OPTION);
 
 		switch (saveFirst) {
 			case JOptionPane.NO_OPTION: //don't save but do continue
 				return true;
 
 			case JOptionPane.YES_OPTION: //save and continue
-				if (fileName == null) {
-					saveAsFile();
-}
+				if (fileName == null)
+					return saveAsFile();
 				else
-					saveFile();
-				return true;
+					return saveFile();
 
 			default:
 				return false;
@@ -1180,6 +1197,54 @@ public class Jskad extends JPanel implements DocumentListener {
 		}
 	}
 
+    /** Closes this Jskad session without saving.  If deleteFromList
+        is true, the jskads vector is updated so that it no longer
+        contains this instance.  If this is the last instance open,
+        the program exits. */
+    private void realCloseAction(boolean deleteFromList) {
+        numberOfTibsRTFOpen--;
+
+        // Delete this Jskad from jskads.
+        if (deleteFromList) {
+            int i, sz = jskads.size();
+            for (i = 0; i < sz; i++) {
+                if (jskads.elementAt(i) == this) {
+                    jskads.removeElementAt(i);
+                    break;
+                }
+            }
+            if (i == sz)
+                throw new Error("Couldn't find the Jskad session being closed in our list of open Jskad sessions! This is a bug.");
+        }
+
+        if (numberOfTibsRTFOpen == 0)
+            System.exit(0);
+        else {
+            final JFrame parentFrame = (JFrame)parentObject;
+            parentFrame.dispose();
+        }
+    }
+
+    /** Stores all open Jskad sessions. */
+    private static Vector jskads = new Vector();
+
+    /** Closes all Jskad windows after asking "Do you want to save?"
+        for the modified windows.  If you don't cancel for any unsaved
+        session, then all sessions are closed. */
+    private static void exitAction() {
+        int sz = jskads.size();
+        for (int i = 0; i < sz; i++) {
+            Jskad j = (Jskad)jskads.elementAt(i);
+            if (j.hasChanged && !j.checkSave()) {
+                return;
+            }
+        }
+        for (int i = 0; i < sz; i++) {
+            Jskad j = (Jskad)jskads.elementAt(i);
+            j.realCloseAction(false);
+        }
+    }
+
 
 
 /**
@@ -1205,6 +1270,7 @@ public class Jskad extends JPanel implements DocumentListener {
             f.setSize(x_size, y_size);
             f.setLocation(d.width/8, d.height/8);
             final Jskad jskad = new Jskad(f);
+            jskads.add(jskad);
             f.getContentPane().add(jskad);
             f.setVisible(true);
 
