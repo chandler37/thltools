@@ -171,8 +171,8 @@
 <p>
   When a TMW-&gt;ACIP conversion fails, a message such as
   <tt>[#&nbsp;JSKAD_TMW_TO_ACIP_ERROR_NO_SUCH_ACIP: Cannot convert
-  &lt;glyph font=TibetanMachineWeb8 charNum=38 character=&/&gt; to
-  ACIP.  Please transcribe this yourself.]</tt> will appear in your
+  &lt;glyph font=TibetanMachineWeb8 charNum=39 character='/&gt; to
+  ACIP.&nbsp; Please transcribe this yourself.]</tt> will appear in your
   output, but it will be amidst the successfully converted text.
 </p>
 
@@ -314,6 +314,13 @@ Non-TMW character newline [decimal 10] in the font Times New Roman appears first
     TMW to Unicode fails subtly when the TMW for {\u0F28\u0F3E} is
     converted: {\u0F3E\u0F28} appears instead.&nbsp; [<a
     href="http://sourceforge.net/tracker/index.php?func=detail&aid=855480&group_id=61934&atid=502515">855480</a>]
+  </li>
+  <li>
+    TMW-&gt;ACIP will sometimes produce spaces (i.e., the '&nbsp;'
+    character, U+0020) that are supposed to indicate tshegs (i.e., the
+    character U+0F0B) but will instead be interpreted as Tibetan
+    whitespace.&nbsp; [<a
+    href="http://sourceforge.net/tracker/index.php?func=detail&aid=932897&group_id=61934&atid=502515">932897</a>]
   </li>
 </ul>
 

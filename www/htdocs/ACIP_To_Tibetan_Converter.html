@@ -1486,6 +1486,12 @@ Nativeness</h2>
     incorrect; a <i>tsheg</i> is inserted right now after the
     visarga.<!-- DLC FIXME -->
   </li>
+  <li>
+    <!--DLC FIXME: --> The number of errors after which processing is
+    aborted (under the assumption that the input is probably not ACIP)
+    is absolute, not a per capita measurement (i.e., one error per 100
+    characters of input) and is not easily configured.
+  </li>
 </ul>
 
 
@@ -1507,6 +1513,26 @@ Nativeness</h2>
 </p>
 
 <ul>
+  <li>
+    Some warnings are false alarms (false positives).&nbsp; The only
+    known false positive is the warning <tt>[#WARNING CONVERTING ACIP
+    DOCUMENT: There is a chance that the ACIP KshA was intended to
+    represent more consonants than we parsed it as representing --
+    NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and
+    typing NNYA for it too.]</tt> when it is given for ACIP
+    constructions that cannot possibly be interpreted any other
+    way.&nbsp; See issue <a
+    href="http://sourceforge.net/tracker/index.php?func=detail&aid=932896&group_id=61934&atid=502515">932896</a>.
+  </li>
+  <li>
+    The only time Unicode output will contain U+0F6A, full-formed RA,
+    instead of U+0F62, RA (possibly superscribed), is when a Unicode
+    escape sequence for U+0F6A is used or when one of the ten stacks
+    RY, RW, RSH, RSHY, Rsh, Rshn, RshnY, RshM, RshY, or RS
+    appears.&nbsp; The Unicode standard is not as clear as it could be
+    on the issue of when to use full-formed code points like U+0F6A,
+    so this treatment might not be the best.
+  </li>
   <li>
     The glyph TibetanMachineWeb9.61 -- the {O'I} special combination
     (i.e., the glyph for the Unicode string U+0F7C,U+0F60,U+0F72) --
