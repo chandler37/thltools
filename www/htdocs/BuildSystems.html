@@ -827,8 +827,16 @@ module<a name="daytoday"></a></h4>
 </p>
 
 <p>
-  Now run <code>'ant -Dkeystore=foo -Dkeystore.password=foo
-  -Ddgkey.password=foo -Dkey.alias=foo <i>program</i>-jws'</code>,
+  Now run
+</p>
+<blockquote><code>ant -Dkeystore="file:///c:/thdl/sandboxes/Jskad/your.keystore"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-Dkeystore.password=baz<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-Ddgkey.password=foo<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-Dkey.alias="Johnny Developer"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-Djnlp.codebase="http://your.web.server/THDL_STUFF"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<i>program</i>-jws'</code>
+</blockquote>
+<p>
   where <i>program</i> is one of <code>jskad</code>, <code>tt</code>,
   <code>savant</code>, or <code>qd</code>.  This cleans first, so your
   changes will be respected.  This then creates a WAR file
@@ -869,11 +877,11 @@ module<a name="daytoday"></a></h4>
   If you're deploying to a plain-vanilla web server, first ensure that
   its MIME type associations are correct (see <a
   href="#webstartserver">above</a>).  Now ignore the <code>.war</code>
-  file and copy the appropriate <code>.jnlp</code> file(s) from
-  <code>Jskad/dist/</code> to the webserver, and copy the appropriate
-  JAR(s) from <code>Jskad/dist/java-web-start/</code> to the
-  webserver.  Those two files are all you need, but you must edit the
-  <code>.jnlp</code> file appropriately for your webserver.
+  file and copy the appropriate <code>.jnlp</code> file(s) and the
+  appropriate JAR(s) from <code>Jskad/dist/java-web-start/</code> to
+  the webserver.  Those two files are all you need, and you don't need
+  to edit the <code>.jnlp</code> file because you specified the
+  <code>jnlp.codebase</code> property.
 </p>
 
 <p>
