@@ -1166,7 +1166,7 @@ public static DuffCode mapTMtoTMW(int font, int ordinal, int suggestedFont) {
         return null;
     if (ordinal >= 255) {
         DuffCode rv = getUnusualTMtoTMW(font, ordinal);
-        if (null != rv && !ThdlOptions.getBooleanOption("thdl.do.not.fix.rtf.hex.escapes"))
+        if (false && /* DLC FIXME: we now have \bullet issues, etc. */ null != rv && !ThdlOptions.getBooleanOption("thdl.do.not.fix.rtf.hex.escapes"))
             throw new Error("oddballs still found after fixing RTF hex escapes");
         return rv;
     }
@@ -1393,8 +1393,32 @@ private static DuffCode getUnusualTMtoTMW(int font, int code) {
         case 8126: // 0=r-w
             return TMtoTMW[font][149 - 32];
 
+        case 8211: // \endash, following number assumes this is a
+                   // Windows or OS/2 RTF file, not a Mac RTF file:
+            return TMtoTMW[font][150 - 32];
+
+        case 8212: // \emdash, following number assumes this is a
+                   // Windows or OS/2 RTF file, not a Mac RTF file:
+            return TMtoTMW[font][151 - 32];
+
+        case 8216: // \lquote, following number assumes this is a
+                   // Windows or OS/2 RTF file, not a Mac RTF file:
+            return TMtoTMW[font][145 - 32];
+
+        case 8217: // \rquote, following number assumes this is a
+                   // Windows or OS/2 RTF file, not a Mac RTF file:
+            return TMtoTMW[font][146 - 32];
+
         case 8218: // 0=s-b-y 2=n-y
             return TMtoTMW[font][130 - 32];
+
+        case 8220: // \ldblquote, following number assumes this is a
+                   // Windows or OS/2 RTF file, not a Mac RTF file:
+            return TMtoTMW[font][147 - 32];
+
+        case 8221: // \rdblquote, following number assumes this is a
+                   // Windows or OS/2 RTF file, not a Mac RTF file:
+            return TMtoTMW[font][148 - 32];
 
         case 8222: // 0=s-k-r
             return TMtoTMW[font][132 - 32];
@@ -1404,6 +1428,10 @@ private static DuffCode getUnusualTMtoTMW(int font, int code) {
 
         case 8225: // 0=s-p-r
             return TMtoTMW[font][135 - 32];
+
+        case 8226: // \bullet, following number assumes this is a
+                   // Windows or OS/2 RTF file, not a Mac RTF file:
+            return TMtoTMW[font][149 - 32];
 
         case 8230: // 0=s-g-r
             return TMtoTMW[font][133 - 32];
