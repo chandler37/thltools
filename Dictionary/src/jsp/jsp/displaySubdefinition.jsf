@@ -20,7 +20,7 @@
 			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=relatedTerm&amp;parentId=${subdefinition.metaId}" title="Add a Related Term"><img alt="Add a Related Term" src="/lex/images/rel-term.gif"/></a>' escapeXml="false" />
 			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=passage&amp;parentId=${subdefinition.metaId}" title="Add a Passage"><img alt="Add a Passage" src="/lex/images/pass.gif"/></a>' escapeXml="false" />
 			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=speechRegister&amp;parentId=${subdefinition.metaId}" title="Add a Speech Register"><img alt="Add a Speech Register" src="/lex/images/reg.gif"/></a>' escapeXml="false" />			
-			<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=subdefinition&amp;metaId=${ subdefinition.metaId }" title="Remove this subdefinition"><img alt="Remove this subdefinition" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=subdefinition&amp;metaId=${ subdefinition.metaId }&amp;parentId=${subdefinition.parentId}" title="Remove this subdefinition"><img alt="Remove this subdefinition" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
 
 			</span>
 		</c:if>

@@ -14,7 +14,7 @@
 			<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=definition&amp;metaId=${ definition.metaId }" title="Edit this Definition"><img alt="Edit this Definition" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
 			<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=definition&amp;parentId=${definition.parentId}&amp;translationOf=${definition.metaId}" title="Translate this Definition"><img alt="Translate this Definition" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
 			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=subdefinition&amp;parentId=${definition.metaId}" title="Add a Subdefinition"><img alt="Add a Subdefinition" src="/lex/images/subdef.gif"/></a>' escapeXml="false" />
-			<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=definition&amp;metaId=${ definition.metaId }" title="Remove this Definition"><img alt="Remove this Definition" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=definition&amp;metaId=${ definition.metaId }&amp;parentId=${definition.parentId}" title="Remove this Definition"><img alt="Remove this Definition" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
 		</span>
 </c:if>
 

@@ -227,6 +227,14 @@ public abstract class LexComponent extends BaseLexComponent implements Serializa
 		{
 			label = "transitionalData";
 		}
+		else if ( label.equals( "grammaticalFunction" ) )
+		{
+			label = "functions";
+		}
+		else if ( label.equals( "speechRegister" ) )
+		{
+			label = "registers";
+		}
 		else
 		{
 			label = label + "s";

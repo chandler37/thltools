@@ -11,7 +11,7 @@
 		<span class="compEditOptions">
 		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=speechRegister&amp;metaId=${ register.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
 		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=speechRegister&amp;metaId=${ register.metaId }" title="Edit this speechRegister"><img alt="Edit this speechRegister" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
-		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=speechRegister&amp;metaId=${ register.metaId }" title="Remove this speechRegister"><img alt="Remove this speechRegister" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=speechRegister&amp;metaId=${ register.metaId }&amp;parentId=${register.parentId}" title="Remove this speechRegister"><img alt="Remove this speechRegister" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
 		</span>
 		</c:if>
 	<!--<span class="label">Speech Register:</span>-->

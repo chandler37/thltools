@@ -11,7 +11,7 @@
 		<span class="compEditOptions">
 		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=translationEquivalent&amp;metaId=${ translationEquivalent.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
 		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=translationEquivalent&amp;metaId=${ translationEquivalent.metaId }" title="Edit this translationEquivalent"><img alt="Edit this translationEquivalent" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
-		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=translationEquivalent&amp;metaId=${ translationEquivalent.metaId }" title="Remove this translationEquivalent"><img alt="Remove this translationEquivalent" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=translationEquivalent&amp;metaId=${ translationEquivalent.metaId }&amp;parentId=${translationEquivalent.parentId}" title="Remove this translationEquivalent"><img alt="Remove this translationEquivalent" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
 		</span>
 	</c:if>
 

@@ -12,7 +12,7 @@
 		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
 		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }" title="Edit this modelSentence"><img alt="Edit this modelSentence" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
 		<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=modelSentence&amp;parentId=${modelSentence.parentId}&amp;translationOf=${modelSentence.metaId}" title="Translate this modelSentence"><img alt="Translate this modelSentence" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
-		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }" title="Remove this modelSentence"><img alt="Remove this modelSentence" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }&amp;parentId=${modelSentence.parentId}" title="Remove this modelSentence"><img alt="Remove this modelSentence" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
 		</span>
 	</c:if>
 

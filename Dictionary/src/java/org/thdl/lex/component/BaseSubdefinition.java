@@ -192,15 +192,6 @@ public abstract class BaseSubdefinition extends LexComponent implements org.thdl
 	 */
 	public void setPrecedence( java.lang.Integer precedence )
 	{
-		if ( null == precedence )
-		{
-			int i = getGlosses().size();
-		}
-		if ( ( new Integer( -1 ) ).equals( precedence ) )
-		{
-			Object o = new String();
-			Integer i = (Integer) o;
-		}
 		this.precedence = precedence;
 	}
 

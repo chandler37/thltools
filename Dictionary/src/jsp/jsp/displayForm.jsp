@@ -48,7 +48,9 @@ Back to:
 <c:out value='<input type="hidden" name="comp" value="${param.comp}"/>' escapeXml="false"/>
 <c:out value='<input type="hidden" name="metaId" value="${ param.metaId }"/>' escapeXml="false"/>
 <c:out value='<input type="hidden" name="parentId" value="${ param.parentId }"/>' escapeXml="false"/>
+<c:if test="${ null != param.translationOf }">
 <c:out value='<input type="hidden" name="translationOf" value="${ param.translationOf }"/>' escapeXml="false"/>
+</c:if>
 <c:out value='<input type="hidden" name="token" value="${ sessionScope.visit.token }" />' escapeXml="false" />
 <strong>Warning!!</strong> This is your last chance. Are you sure you want to remove this component and all of its sub-components?
 <input type="submit" value="Yes, I am sure. Delete Now"/>

@@ -93,6 +93,9 @@ public class RemoveCommand extends LexCommand implements Command
 				else if ( component instanceof Translatable && null != ( (Translatable) component ).getTranslationOf() )
 				{
 					Translatable translation = (Translatable) component;
+					LexLogger.debug( "Checking translation state before looking for its source" );
+					LexLogger.debugComponent( translation );
+
 					Translatable source = null;
 					try
 					{
@@ -105,6 +108,9 @@ public class RemoveCommand extends LexCommand implements Command
 					source.setMetaId( translation.getTranslationOf() );
 					source.setParentId( translation.getParentId() );
 					source = (Translatable) term.findChild( source );
+					LexLogger.debug( "Checking source state before looking for its translation list" );
+					LexLogger.debugComponent( source );
+
 					List translationList = source.getTranslations();
 					ILexComponent doomedComponent = (ILexComponent) translationList.get( translationList.indexOf( translation ) );
 					doomedComponent.setDeleted( Boolean.TRUE );

@@ -7,7 +7,7 @@
 <span class="compEditOptions">			
 <c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=grammaticalFunction&amp;metaId=${ function.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
 <c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=grammaticalFunction&amp;metaId=${ function.metaId }" title="Edit this component"><img alt="Edit this component" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
-<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=grammaticalFunction&amp;metaId=${ function.metaId }" title="Remove this component"><img alt="Remove this component" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=grammaticalFunction&amp;metaId=${ function.metaId }&amp;parentId=${function.parentId}" title="Remove this component"><img alt="Remove this component" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
 </span>
 </c:if>
 

@@ -10,7 +10,7 @@
 		<span class="compEditOptions">
 		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=relatedTerm&amp;metaId=${ relatedTerm.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
 		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=relatedTerm&amp;metaId=${ relatedTerm.metaId }" title="Edit this relatedTerm"><img alt="Edit this relatedTerm" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
-		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=relatedTerm&amp;metaId=${ relatedTerm.metaId }" title="Remove this relatedTerm"><img alt="Remove this relatedTerm" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=relatedTerm&amp;metaId=${ relatedTerm.metaId }&amp;parentId=${relatedTerm.parentId}" title="Remove this relatedTerm"><img alt="Remove this relatedTerm" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
 		</span>
 	</c:if>
 
