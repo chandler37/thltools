@@ -179,9 +179,8 @@ sat+t+wa
 sarma
 
 // bug ticklers
-ragyad
-'garma
-'garama
+ragyada
+'agarma
 gayaradasa
 
 // Taken from THDL Sechen text collection
@@ -738,3 +737,9 @@ r+ra
 
 tat
 sbla
+
+// Skt can't end in vowel
+ragyad
+
+// no vowel between ' and g
+'garma
