@@ -452,6 +452,7 @@ public class TibetanDocument extends DefaultStyledDocument {
             Position endPos = createPosition(end);
             DuffData[] equivalent = new DuffData[1];
             equivalent[0] = new DuffData();
+            int errorGlyphLocation = 0;
             while (i < endPos.getOffset()) {
                 AttributeSet attr = getCharacterElement(i).getAttributes();
                 String fontName = StyleConstants.getFontFamily(attr);
@@ -494,7 +495,10 @@ public class TibetanDocument extends DefaultStyledDocument {
                         // this, details are ...]]>>" (For now, I'm
                         // inserting the alphabet in a big font in TMW
                         // to try and get some attention.  And I've
-                        // *documented* this on the website.)
+                        // *documented* this on the website.  I'm also
+                        // putting the oddballs at the start of the
+                        // document, but I haven't documented that
+                        // (FIXME).)
                         
                         errorReturn = true;
                         CharacterInAGivenFont cgf
@@ -513,17 +517,31 @@ public class TibetanDocument extends DefaultStyledDocument {
                                 if (toStdout) {
                                     System.out.print(err);
                                 }
+
+                                // Now also put this problem glyph at
+                                // the beginning of the document:
+                                equivalent[0].setData(getText(i,1), fontNum);
+                                insertDuff(72, errorGlyphLocation++,
+                                           equivalent, toTM);
+                                ++i;
                             }
                         }
 
                         String trickyTMW
                             = "!-\"-#-$-%-&-'-(-)-*-+-,-.-/-0-1-2-3-4-5-6-7-8-9-:-;-<-=->-?-";
-                        equivalent[0] = new DuffData(trickyTMW, 1);
+                        equivalent[0].setData(trickyTMW, 1);
                         insertDuff(72, i, equivalent, true);
                         i += trickyTMW.length();
                     }
                 }
                 i++;
+            }
+
+            if (!ThdlOptions.getBooleanOption("thdl.leave.bad.tm.tmw.conversions.in.place")) {
+                // Remove all characters other than the oddballs:
+                if (errorGlyphLocation > 0) {
+                    remove(errorGlyphLocation, getLength()-errorGlyphLocation-1);
+                }
             }
         } catch (BadLocationException ble) {
             ble.printStackTrace();
