@@ -700,16 +700,16 @@ public class DuffPaneTest extends TestCase {
         e("r+b+ba"); e("r+b+b", "r+b+ba"); e("r+b+bi"); e("r+b+bu"); e("r+b+be"); e("r+b+bo"); e("r+b+bU"); e("r+b+bM"); e("r+b+bau"); e("r+b+bai"); e("r+b+bI"); e("r+b+b-i");
         e("r+b+ha"); e("r+b+h", "r+b+ha"); e("r+b+hi"); e("r+b+hu"); e("r+b+he"); e("r+b+ho"); e("r+b+hU"); e("r+b+hM"); e("r+b+hau"); e("r+b+hai"); e("r+b+hI"); e("r+b+h-i");
         e("r+m+ma"); e("r+m+m", "r+m+ma"); e("r+m+mi"); e("r+m+mu"); e("r+m+me"); e("r+m+mo"); e("r+m+mU"); e("r+m+mM"); e("r+m+mau"); e("r+m+mai"); e("r+m+mI"); e("r+m+m-i");
-        e("r+Ya"); e("r+Y", "r+Ya"); e("r+Yi"); e("r+Yu"); e("r+Ye"); e("r+Yo"); e("r+YU"); e("r+YM"); e("r+Yau"); e("r+Yai"); e("r+YI"); e("r+Y-i");
-        e("r+Wa"); e("r+W", "r+Wa"); e("r+Wi"); e("r+Wu"); e("r+We"); e("r+Wo"); e("r+WU"); e("r+WM"); e("r+Wau"); e("r+Wai"); e("r+WI"); e("r+W-i");
-        e("r+sha"); e("r+sh", "r+sha"); e("r+shi"); e("r+shu"); e("r+she"); e("r+sho"); e("r+shU"); e("r+shM"); e("r+shau"); e("r+shai"); e("r+shI"); e("r+sh-i");
-        e("r+sh+ya"); e("r+sh+y", "r+sh+ya"); e("r+sh+yi"); e("r+sh+yu"); e("r+sh+ye"); e("r+sh+yo"); e("r+sh+yU"); e("r+sh+yM"); e("r+sh+yau"); e("r+sh+yai"); e("r+sh+yI"); e("r+sh+y-i");
-        e("r+Sha"); e("r+Sh", "r+Sha"); e("r+Shi"); e("r+Shu"); e("r+She"); e("r+Sho"); e("r+ShU"); e("r+ShM"); e("r+Shau"); e("r+Shai"); e("r+ShI"); e("r+Sh-i");
-        e("r+Sh+Na"); e("r+Sh+N", "r+Sh+Na"); e("r+Sh+Ni"); e("r+Sh+Nu"); e("r+Sh+Ne"); e("r+Sh+No"); e("r+Sh+NU"); e("r+Sh+NM"); e("r+Sh+Nau"); e("r+Sh+Nai"); e("r+Sh+NI"); e("r+Sh+N-i");
-        e("r+Sh+N+ya"); e("r+Sh+N+y", "r+Sh+N+ya"); e("r+Sh+N+yi"); e("r+Sh+N+yu"); e("r+Sh+N+ye"); e("r+Sh+N+yo"); e("r+Sh+N+yU"); e("r+Sh+N+yM"); e("r+Sh+N+yau"); e("r+Sh+N+yai"); e("r+Sh+N+yI"); e("r+Sh+N+y-i");
-        e("r+Sh+ma"); e("r+Sh+m", "r+Sh+ma"); e("r+Sh+mi"); e("r+Sh+mu"); e("r+Sh+me"); e("r+Sh+mo"); e("r+Sh+mU"); e("r+Sh+mM"); e("r+Sh+mau"); e("r+Sh+mai"); e("r+Sh+mI"); e("r+Sh+m-i");
-        e("r+Sh+ya"); e("r+Sh+y", "r+Sh+ya"); e("r+Sh+yi"); e("r+Sh+yu"); e("r+Sh+ye"); e("r+Sh+yo"); e("r+Sh+yU"); e("r+Sh+yM"); e("r+Sh+yau"); e("r+Sh+yai"); e("r+Sh+yI"); e("r+Sh+y-i");
-        e("r+sa"); e("r+s", "r+sa"); e("r+si"); e("r+su"); e("r+se"); e("r+so"); e("r+sU"); e("r+sM"); e("r+sau"); e("r+sai"); e("r+sI"); e("r+s-i");
+        e("R+Ya"); e("R+Y", "R+Ya"); e("R+Yi"); e("R+Yu"); e("R+Ye"); e("R+Yo"); e("R+YU"); e("R+YM"); e("R+Yau"); e("R+Yai"); e("R+YI"); e("R+Y-i");
+        e("R+Wa"); e("R+W", "R+Wa"); e("R+Wi"); e("R+Wu"); e("R+We"); e("R+Wo"); e("R+WU"); e("R+WM"); e("R+Wau"); e("R+Wai"); e("R+WI"); e("R+W-i");
+        e("R+sha"); e("R+sh", "R+sha"); e("R+shi"); e("R+shu"); e("R+she"); e("R+sho"); e("R+shU"); e("R+shM"); e("R+shau"); e("R+shai"); e("R+shI"); e("R+sh-i");
+        e("R+sh+ya"); e("R+sh+y", "R+sh+ya"); e("R+sh+yi"); e("R+sh+yu"); e("R+sh+ye"); e("R+sh+yo"); e("R+sh+yU"); e("R+sh+yM"); e("R+sh+yau"); e("R+sh+yai"); e("R+sh+yI"); e("R+sh+y-i");
+        e("R+Sha"); e("R+Sh", "R+Sha"); e("R+Shi"); e("R+Shu"); e("R+She"); e("R+Sho"); e("R+ShU"); e("R+ShM"); e("R+Shau"); e("R+Shai"); e("R+ShI"); e("R+Sh-i");
+        e("R+Sh+Na"); e("R+Sh+N", "R+Sh+Na"); e("R+Sh+Ni"); e("R+Sh+Nu"); e("R+Sh+Ne"); e("R+Sh+No"); e("R+Sh+NU"); e("R+Sh+NM"); e("R+Sh+Nau"); e("R+Sh+Nai"); e("R+Sh+NI"); e("R+Sh+N-i");
+        e("R+Sh+N+ya"); e("R+Sh+N+y", "R+Sh+N+ya"); e("R+Sh+N+yi"); e("R+Sh+N+yu"); e("R+Sh+N+ye"); e("R+Sh+N+yo"); e("R+Sh+N+yU"); e("R+Sh+N+yM"); e("R+Sh+N+yau"); e("R+Sh+N+yai"); e("R+Sh+N+yI"); e("R+Sh+N+y-i");
+        e("R+Sh+ma"); e("R+Sh+m", "R+Sh+ma"); e("R+Sh+mi"); e("R+Sh+mu"); e("R+Sh+me"); e("R+Sh+mo"); e("R+Sh+mU"); e("R+Sh+mM"); e("R+Sh+mau"); e("R+Sh+mai"); e("R+Sh+mI"); e("R+Sh+m-i");
+        e("R+Sh+ya"); e("R+Sh+y", "R+Sh+ya"); e("R+Sh+yi"); e("R+Sh+yu"); e("R+Sh+ye"); e("R+Sh+yo"); e("R+Sh+yU"); e("R+Sh+yM"); e("R+Sh+yau"); e("R+Sh+yai"); e("R+Sh+yI"); e("R+Sh+y-i");
+        e("R+sa"); e("R+s", "R+sa"); e("R+si"); e("R+su"); e("R+se"); e("R+so"); e("R+sU"); e("R+sM"); e("R+sau"); e("R+sai"); e("R+sI"); e("R+s-i");
         e("r+ha"); e("r+h", "r+ha"); e("r+hi"); e("r+hu"); e("r+he"); e("r+ho"); e("r+hU"); e("r+hM"); e("r+hau"); e("r+hai"); e("r+hI"); e("r+h-i");
         e("r+k+Sha"); e("r+k+Sh", "r+k+Sha"); e("r+k+Shi"); e("r+k+Shu"); e("r+k+She"); e("r+k+Sho"); e("r+k+ShU"); e("r+k+ShM"); e("r+k+Shau"); e("r+k+Shai"); e("r+k+ShI"); e("r+k+Sh-i");
         e("l+g+wa"); e("l+g+w", "l+g+wa"); e("l+g+wi"); e("l+g+wu"); e("l+g+we"); e("l+g+wo"); e("l+g+wU"); e("l+g+wM"); e("l+g+wau"); e("l+g+wai"); e("l+g+wI"); e("l+g+w-i");
@@ -1111,7 +1111,7 @@ public class DuffPaneTest extends TestCase {
             // r-w and r+w are tricky cases in tibwn.ini -- the only ones
             // like this according to bug #800166.
             e("rwa");
-            e("r+Wa");
+            e("R+Wa");
             // e("r+wa"); should be the same as e("rwa") but is not, FIXME
         }
     }

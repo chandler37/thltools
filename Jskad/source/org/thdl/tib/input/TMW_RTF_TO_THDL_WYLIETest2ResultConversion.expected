@@ -613,15 +613,15 @@
 \f1\fs144 >\f5 1\f1 >\f2\fs28\i0\b0\ul0 r+b+ba\i0\b0\ul0\cf0  font 4; ord 49\par
 \f1\fs144 >\f5 2\f1 >\f2\fs28\i0\b0\ul0 r+b+ha\i0\b0\ul0\cf0  font 4; ord 50\par
 \f1\fs144 >\f5 3\f1 >\f2\fs28\i0\b0\ul0 r+m+ma\i0\b0\ul0\cf0  font 4; ord 51\par
-\f1\fs144 >\f5 4\f1 >\f2\fs28\i0\b0\ul0 r+Ya\i0\b0\ul0\cf0  font 4; ord 52\par
-\f1\fs144 >\f5 5\f1 >\f2\fs28\i0\b0\ul0 r+sha\i0\b0\ul0\cf0  font 4; ord 53\par
-\f1\fs144 >\f5 6\f1 >\f2\fs28\i0\b0\ul0 r+sh+ya\i0\b0\ul0\cf0  font 4; ord 54\par
-\f1\fs144 >\f5 7\f1 >\f2\fs28\i0\b0\ul0 r+Sha\i0\b0\ul0\cf0  font 4; ord 55\par
-\f1\fs144 >\f5 8\f1 >\f2\fs28\i0\b0\ul0 r+Sh+Na\i0\b0\ul0\cf0  font 4; ord 56\par
-\f1\fs144 >\f5 9\f1 >\f2\fs28\i0\b0\ul0 r+Sh+N+ya\i0\b0\ul0\cf0  font 4; ord 57\par
-\f1\fs144 >\f5 :\f1 >\f2\fs28\i0\b0\ul0 r+Sh+ma\i0\b0\ul0\cf0  font 4; ord 58\par
-\f1\fs144 >\f5 ;\f1 >\f2\fs28\i0\b0\ul0 r+Sh+ya\i0\b0\ul0\cf0  font 4; ord 59\par
-\f1\fs144 >\f5 <\f1 >\f2\fs28\i0\b0\ul0 r+sa\i0\b0\ul0\cf0  font 4; ord 60\par
+\f1\fs144 >\f5 4\f1 >\f2\fs28\i0\b0\ul0 R+Ya\i0\b0\ul0\cf0  font 4; ord 52\par
+\f1\fs144 >\f5 5\f1 >\f2\fs28\i0\b0\ul0 R+sha\i0\b0\ul0\cf0  font 4; ord 53\par
+\f1\fs144 >\f5 6\f1 >\f2\fs28\i0\b0\ul0 R+sh+ya\i0\b0\ul0\cf0  font 4; ord 54\par
+\f1\fs144 >\f5 7\f1 >\f2\fs28\i0\b0\ul0 R+Sha\i0\b0\ul0\cf0  font 4; ord 55\par
+\f1\fs144 >\f5 8\f1 >\f2\fs28\i0\b0\ul0 R+Sh+Na\i0\b0\ul0\cf0  font 4; ord 56\par
+\f1\fs144 >\f5 9\f1 >\f2\fs28\i0\b0\ul0 R+Sh+N+ya\i0\b0\ul0\cf0  font 4; ord 57\par
+\f1\fs144 >\f5 :\f1 >\f2\fs28\i0\b0\ul0 R+Sh+ma\i0\b0\ul0\cf0  font 4; ord 58\par
+\f1\fs144 >\f5 ;\f1 >\f2\fs28\i0\b0\ul0 R+Sh+ya\i0\b0\ul0\cf0  font 4; ord 59\par
+\f1\fs144 >\f5 <\f1 >\f2\fs28\i0\b0\ul0 R+sa\i0\b0\ul0\cf0  font 4; ord 60\par
 \f1\fs144 >\f5 =\f1 >\f2\fs28\i0\b0\ul0 r+ha\i0\b0\ul0\cf0  font 4; ord 61\par
 \f1\fs144 >\f5 >\f1 >\f2\fs28\i0\b0\ul0 r+k+Sha\i0\b0\ul0\cf0  font 4; ord 62\par
 \f1\fs144 >\f5 ?\f1 >\f2\fs28\i0\b0\ul0 l+g+wa\i0\b0\ul0\cf0  font 4; ord 63\par
@@ -728,7 +728,7 @@
 \f1\fs144 >\f5\'c1\f1 >\f2\fs28\i0\b0\ul0 N+D+ra\i0\b0\ul0\cf0  font 4; ord 193\par
 \f1\fs144 >\f5\'c2\f1 >\f2\fs28\i0\b0\ul0 w+Wa\i0\b0\ul0\cf0  font 4; ord 194\par
 \f1\fs144 >\f5\'c3\f1 >\f2\fs28\i0\b0\ul0 w+na\i0\b0\ul0\cf0  font 4; ord 195\par
-\f1\fs144 >\f5\'c4\f1 >\f2\fs28\i0\b0\ul0 r+Wa\i0\b0\ul0\cf0  font 4; ord 196\par
+\f1\fs144 >\f5\'c4\f1 >\f2\fs28\i0\b0\ul0 R+Wa\i0\b0\ul0\cf0  font 4; ord 196\par
 \f1\fs144 >\f5\'c5\f1 >\f2\fs28\i0\b0\ul0 l+h+wa\i0\b0\ul0\cf0  font 4; ord 197\par
 \f1\fs144 >\f5\'c9\f1 >\f2\fs28\i0\b0\ul0 A\i0\b0\ul0\cf0  font 4; ord 201\par
 \f1\fs144 >\f5\'ca\f1 >\f2\fs28\i0\b0\ul0 A\i0\b0\ul0\cf0  font 4; ord 202\par
