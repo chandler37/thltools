@@ -128,6 +128,9 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 	public boolean isInitialized() {
 		return isSized;
 	}
+	//public Dimension getSize() {
+	//	return player.getControlPanelComponent().getSize(); //tester avant si player exist
+	//}
 /*-----------------------------------------------------------------------*/
 	private void showMediaComponent() {
 		if (isRealized && isCached) {
@@ -166,10 +169,10 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 			} else if (isCached) //must be http
 				showMediaComponent();
 		} else if (event instanceof StartEvent) {
+			System.out.println("received StartEvent event");
 			launchAnnotationTimer(); //FIXME should have upper limit (stop time)
 
-			if (timer != null)
-			{
+			if (timer != null) {
 				timer.cancel();
 				timer = null;
 			}
@@ -182,7 +185,6 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 							player.stop();
 				}}, 0, 15);
 		} else if (event instanceof StopEvent) {
-			System.out.println("received StopEvent");
 			pauseTime = player.getMediaTime();
 			cancelAnnotationTimer();
 
@@ -199,16 +201,28 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 				time.*/
 
 			if (!(event instanceof RestartingEvent)) {
+				//player.setMediaTime(pauseTime);
+				//player.prefetch();
+			}
+
+			if (event instanceof StopAtTimeEvent) {
+				System.out.println("received StopAtTimeEvent");
+			} else if (event instanceof StopByRequestEvent) {
+				System.out.println("received StopByRequestEvent");
+			} else if (event instanceof RestartingEvent) {
 				System.out.println("received RestartingEvent");
-				player.setMediaTime(pauseTime);
-				player.prefetch();
+			} else if (event instanceof DataStarvedEvent) {
+				System.out.println("received DataStarvedEvent");
+			} else if (event instanceof DeallocateEvent) {
+				System.out.println("received DeallocateEvent");
+			} else if (event instanceof EndOfMediaEvent) {
+				System.out.println("received EndOfMediaEvent");
 			}
 
 			stopTime = null;
 
 
-			if (timer != null)
-			{
+			if (timer != null) {
 				timer.cancel();
 				timer = null;
 			}

@@ -161,25 +161,21 @@ public abstract class SmartMoviePanel extends Panel
 		System.out.println(hashStart.containsKey(theID));
 		return hashStart.containsKey(theID);
 	}
-	public boolean cmd_playFrom(String fromID) {
+	public void cmd_playFrom(String fromID) {
 		Integer from  = (Integer)hashStart.get(fromID);
 		try {
 			cmd_playSegment(from, null);
-			return true;
 		} catch (SmartMoviePanelException smpe) {
 			smpe.printStackTrace();
-			return false;
 		}
 	}
-	public boolean cmd_playS(String fromID) {
+	public void cmd_playS(String fromID) {
 		Integer from = (Integer)hashStart.get(fromID);
 		Integer to   = (Integer)hashEnd.get(fromID);
 		try {
 			cmd_playSegment(from, to);
-			return true;
 		} catch (SmartMoviePanelException smpe) {
 			smpe.printStackTrace();
-			return false;
 		}
 	}
 	public void launchAnnotationTimer() { //FIXME: should have upper limit - stop time else end time
