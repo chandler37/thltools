@@ -12,9 +12,8 @@ The THDL Tibetan Collaborative Dictionary requires the following:
 5. If you are using the DictionaryImporter class, copy dictionary-importer.properties.sample to dictionary.properties and update also the user and password.
 
 6. The package includes a pre-configured tomcat server. If you would rather use your own installation of tomcat:
-- Copy from tomcat/common/lib to your tomcat installation the following files: commons-dbcp-1.2.1.jar, commons-pool-1.2.jar, commons-collections-3.1.jar.
 - Modify build.xml so that tomcat/common/lib folder points to your tomcat installation.
-- Copy lex.xml from tomcat/conf/Catalina/localhost to your tomcat installation. Then modify update the workdir property.
+- Copy lex.xml from tomcat/conf/Catalina/localhost to your tomcat installation. Then update the workdir property.
 
 To get a copy of the database, contact Steve Weinberger ( snw8f@virginia.edu ).
 
