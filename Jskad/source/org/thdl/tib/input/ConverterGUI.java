@@ -88,10 +88,6 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
             final ConvertDialog convDialog
                 = new ConvertDialog(new ConverterGUI(),
                                     new String[]{
-                                        // DLC FIXME: use variables
-                                        // for these, because they're
-                                        // used in
-                                        // TibetanConverter.java too.
                                         TM_TO_TMW,
                                         TMW_TO_UNI,
                                         TMW_TO_WYLIE,

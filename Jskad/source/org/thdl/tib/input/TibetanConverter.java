@@ -32,7 +32,9 @@ import org.thdl.tib.text.*;
  *  more specifically, as well as converting from TM to TMW.  Invoke
  *  it with no parameters for usage information.
  *  @author David Chandler */
-public class TibetanConverter {
+public class TibetanConverter implements FontConverterConstants {
+    private static final boolean debug = false;
+
     /** Default constructor; does nothing */
     TibetanConverter() { }
 
@@ -140,23 +142,23 @@ public class TibetanConverter {
             
             String conversionTag = null;
             if (findAllNonTMWMode) {
-                conversionTag = "Find all non-TMW";
+                conversionTag = FIND_ALL_NON_TMW;
             } else if (findSomeNonTMWMode) {
-                conversionTag = "Find some non-TMW";
+                conversionTag = FIND_SOME_NON_TMW;
             } else if (findSomeNonTMMode) {
-                conversionTag = "Find some non-TM";
+                conversionTag = FIND_SOME_NON_TM;
             } else if (findAllNonTMMode) {
-                conversionTag = "Find all non-TM";
+                conversionTag = FIND_ALL_NON_TM;
             } else { // conversion {to Wylie or TM} mode
                 if (convertToWylieMode) {
-                    conversionTag = "TMW to Wylie";
+                    conversionTag = TMW_TO_WYLIE;
                 } else if (convertToUnicodeMode) {
-                    conversionTag = "TMW to Unicode";
+                    conversionTag = TMW_TO_UNI;
                 } else if (convertToTMWMode) {
-                    conversionTag = "TM to TMW";
+                    conversionTag = TM_TO_TMW;
                 } else {
                     ThdlDebug.verify(convertToTMMode);
-                    conversionTag = "TMW to TM";
+                    conversionTag = TM_TO_TMW;
                 }
             }
             return reallyConvert(in, out, conversionTag);
@@ -180,7 +182,9 @@ public class TibetanConverter {
         DuffPane dp = new DuffPane();
         try {
             // Read in the rtf file.
+            if (debug) System.err.println("Start: reading in old RTF file");
             dp.rtfEd.read(in, dp.getDocument(), 0);
+            if (debug) System.err.println("End  : reading in old RTF file");
         } catch (Exception e) {
             out.println("TibetanConverter:\n"
                         + rtfErrorMessage);
@@ -195,28 +199,28 @@ public class TibetanConverter {
         }
 
 
-        if ("Find all non-TMW" == ct) {
+        if (FIND_ALL_NON_TMW == ct) {
             // 0, -1 is the entire document.
             int exitCode
                 = ((TibetanDocument)dp.getDocument()).findAllNonTMWCharacters(0, -1, out);
             if (out.checkError())
                 exitCode = 41;
             return exitCode;
-        } else if ("Find some non-TMW" == ct) {
+        } else if (FIND_SOME_NON_TMW == ct) {
             // 0, -1 is the entire document.
             int exitCode
                 = ((TibetanDocument)dp.getDocument()).findSomeNonTMWCharacters(0, -1, out);
             if (out.checkError())
                 exitCode = 41;
             return exitCode;
-        } else if ("Find some non-TM" == ct) {
+        } else if (FIND_SOME_NON_TM == ct) {
             // 0, -1 is the entire document.
             int exitCode
                 = ((TibetanDocument)dp.getDocument()).findSomeNonTMCharacters(0, -1, out);
             if (out.checkError())
                 exitCode = 41;
             return exitCode;
-        } else if ("Find all non-TM" == ct) {
+        } else if (FIND_ALL_NON_TM == ct) {
             // 0, -1 is the entire document.
             int exitCode
                 = ((TibetanDocument)dp.getDocument()).findAllNonTMCharacters(0, -1, out);
@@ -225,21 +229,23 @@ public class TibetanConverter {
             return exitCode;
         } else { // conversion {to Wylie or TM} mode
             // Fix curly braces in the entire document if the input is TMW:
-            if ("TMW to TM" != ct) {
+            if (TM_TO_TMW != ct) {
                 // DLC make me optional
+                if (debug) System.err.println("Start: solving curly brace problem");
                 ((TibetanDocument)dp.getDocument()).replaceTahomaCurlyBracesAndBackslashes(0, -1);
+                if (debug) System.err.println("End  : solving curly brace problem");
             }
                 
             int exitCode = 0;
-            ThdlDebug.verify((("TMW to TM" == ct) ? 1 : 0)
-                             + (("TMW to Unicode" == ct) ? 1 : 0)
-                             + (("TM to TMW" == ct) ? 1 : 0)
-                             + (("TMW to Wylie" == ct) ? 1 : 0)
+            ThdlDebug.verify(((TM_TO_TMW == ct) ? 1 : 0)
+                             + ((TMW_TO_UNI == ct) ? 1 : 0)
+                             + ((TM_TO_TMW == ct) ? 1 : 0)
+                             + ((TMW_TO_WYLIE == ct) ? 1 : 0)
                              == 1);
-            if ("TMW to Wylie" == ct) {
+            if (TMW_TO_WYLIE == ct) {
                 // Convert to THDL Wylie:
                 dp.toWylie(0, dp.getDocument().getLength());
-            } else if ("TMW to Unicode" == ct) {
+            } else if (TMW_TO_UNI == ct) {
                 StringBuffer errors = new StringBuffer();
                 // Convert to Unicode:
                 if (((TibetanDocument)dp.getDocument()).convertToUnicode(0,
@@ -249,7 +255,7 @@ public class TibetanConverter {
                     System.err.println(errors);
                     exitCode = 42;
                 }
-            } else if ("TM to TMW" == ct) {
+            } else if (TM_TO_TMW == ct) {
                 StringBuffer errors = new StringBuffer();
                 // Convert to TibetanMachineWeb:
                 if (((TibetanDocument)dp.getDocument()).convertToTMW(0, dp.getDocument().getLength(), errors)) {
@@ -257,7 +263,7 @@ public class TibetanConverter {
                     exitCode = 42;
                 }
             } else {
-                ThdlDebug.verify("TMW to TM" == ct);
+                ThdlDebug.verify(TM_TO_TMW == ct);
                 StringBuffer errors = new StringBuffer();
                 // Convert to TibetanMachine:
                 if (((TibetanDocument)dp.getDocument()).convertToTM(0, dp.getDocument().getLength(), errors)) {
