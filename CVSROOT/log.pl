@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#! /usr/bin/perl
 
 # Modified by woods@web.apc.org to add support for mailing	3/29/93
 #	use '-m user' for each user to receive cvs log reports
