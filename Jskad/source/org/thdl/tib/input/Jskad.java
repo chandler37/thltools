@@ -403,7 +403,8 @@ public class Jskad extends JPanel implements DocumentListener {
                     public void theRealActionPerformed(ActionEvent e) {
                         StringBuffer errors = new StringBuffer();
                         boolean errorReturn
-                            = ((TibetanDocument)dp.getDocument()).convertToUnicode(0, -1, errors); // entire document
+                            = ((TibetanDocument)dp.getDocument()).convertToUnicode(0, -1, errors,
+                                                                                   ThdlOptions.getStringOption("thdl.tmw.to.unicode.font").intern()); // entire document
                         if (errorReturn) {
                             JOptionPane.showMessageDialog(Jskad.this,
                                                           "At least one error occurred while converting Tibetan Machine Web\nto Unicode.  Your document is mostly converted,\nexcept for the following glyphs, which you should replace manually\nbefore retrying:\n"

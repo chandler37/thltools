@@ -93,7 +93,8 @@ public final class DuffCode {
 	}
 
     private void setFontNum(int font) {
-        ThdlDebug.verify(font >= 1 && font <= 10);
+        if (!(font >= 1 && font <= 10))
+            throw new IllegalArgumentException("DuffCodes work with font numbers in the range [1, 5] or [1, 10].  This isn't in the range [1, 10]: " + font);
         fontNum = font;
     }
 

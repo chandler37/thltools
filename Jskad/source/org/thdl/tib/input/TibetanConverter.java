@@ -177,7 +177,10 @@ public class TibetanConverter {
                 } else if (convertToUnicodeMode) {
                     StringBuffer errors = new StringBuffer();
                     // Convert to Unicode:
-                    if (((TibetanDocument)dp.getDocument()).convertToUnicode(0, dp.getDocument().getLength(), errors)) {
+                    if (((TibetanDocument)dp.getDocument()).convertToUnicode(0,
+                                                                             dp.getDocument().getLength(),
+                                                                             errors,
+                                                                             ThdlOptions.getStringOption("thdl.tmw.to.unicode.font").intern())) {
                         System.err.println(errors);
                         exitCode = 42;
                     }

@@ -202,9 +202,10 @@ public class TibetanDocument extends DefaultStyledDocument {
         @see TibetanMachineWeb#getUnicodeAttributeSet()
     */
     private void replaceDuffsWithUnicode(int fontSize, int startOffset,
-                                         int endOffset, String unicode) {
+                                         int endOffset, String unicode,
+                                         String unicodeFont) {
 		MutableAttributeSet mas
-            = TibetanMachineWeb.getUnicodeAttributeSet();
+            = TibetanMachineWeb.getUnicodeAttributeSet(unicodeFont);
         StyleConstants.setFontSize(mas, fontSize);
 		try {
             replace(startOffset, endOffset - startOffset, unicode, mas);
@@ -512,7 +513,7 @@ public class TibetanDocument extends DefaultStyledDocument {
         cases will be appended to this StringBuffer
     */
     public boolean convertToTM(int begin, int end, StringBuffer errors) {
-        return convertHelper(begin, end, true, false, errors);
+        return convertHelper(begin, end, true, false, errors, null);
     }
 
     /** Converts all TibetanMachine glyphs in the document to
@@ -528,7 +529,7 @@ public class TibetanDocument extends DefaultStyledDocument {
         cases will be appended to this StringBuffer
     */
     public boolean convertToTMW(int begin, int end, StringBuffer errors) {
-        return convertHelper(begin, end, false, false, errors);
+        return convertHelper(begin, end, false, false, errors, null);
     }
 
     /** Converts all TibetanMachineWeb glyphs in the document to
@@ -541,9 +542,13 @@ public class TibetanDocument extends DefaultStyledDocument {
         @return false on 100% success, true if any exceptional case
         was encountered
         @param errors if non-null, then notes about all exceptional
-        cases will be appended to this StringBuffer */
-    public boolean convertToUnicode(int begin, int end, StringBuffer errors) {
-        return convertHelper(begin, end, false, true, errors);
+        cases will be appended to this StringBuffer
+        @param unicodeFont the name of the Unicode font to use;
+        defaults to Arial Unicode MS if null
+    */
+    public boolean convertToUnicode(int begin, int end, StringBuffer errors,
+                                    String unicodeFont) {
+        return convertHelper(begin, end, false, true, errors, unicodeFont);
     }
 
     /** For debugging only.  Start with an empty document, and call
@@ -690,7 +695,8 @@ public class TibetanDocument extends DefaultStyledDocument {
         @see convertToTMW(int,int) 
         @see convertToTM(int,int) */
     private boolean convertHelper(int begin, int end, boolean toTM,
-                                  boolean toUnicode, StringBuffer errors) {
+                                  boolean toUnicode, StringBuffer errors,
+                                  String unicodeFont) {
         // To preserve formatting, we go paragraph by paragraph.
 
         // Use positions, not offsets, because our work on paragraph K
@@ -726,7 +732,8 @@ public class TibetanDocument extends DefaultStyledDocument {
                                 ((finalEndPos.getOffset() < p_end)
                                  ? finalEndPos.getOffset()
                                  : p_end),
-                                toTM, toUnicode, errors, ceh);
+                                toTM, toUnicode, errors, ceh,
+                                unicodeFont);
         }
         if (!ceh.errorReturn
             && pl != getParagraphs(begin, finalEndPos.getOffset()).length) {
@@ -742,7 +749,8 @@ public class TibetanDocument extends DefaultStyledDocument {
     /** See the sole caller, convertHelper. */
     private void convertHelperHelper(int begin, int end, boolean toTM,
                                      boolean toUnicode, StringBuffer errors,
-                                     ConversionErrorHelper ceh) {
+                                     ConversionErrorHelper ceh,
+                                     String unicodeFont) {
         final boolean debug = false;
         if (debug)
             System.err.println("cHH: [" + begin + ", " + end + ")");
@@ -835,7 +843,8 @@ public class TibetanDocument extends DefaultStyledDocument {
                             replaceDuffsWithUnicode(replacementFontSize,
                                                     replacementStartIndex,
                                                     endIndex,
-                                                    replacementQueue.toString());
+                                                    replacementQueue.toString(),
+                                                    unicodeFont);
                         } else {
                             replaceDuffs(replacementFontSize,
                                          replacementStartIndex,
@@ -937,7 +946,8 @@ public class TibetanDocument extends DefaultStyledDocument {
                     replaceDuffsWithUnicode(replacementFontSize,
                                             replacementStartIndex,
                                             endIndex,
-                                            replacementQueue.toString());
+                                            replacementQueue.toString(),
+                                            unicodeFont);
                 } else {
                     replaceDuffs(replacementFontSize,
                                  replacementStartIndex,

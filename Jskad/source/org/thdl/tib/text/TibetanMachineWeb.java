@@ -76,7 +76,7 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 	private static final String DELIMITER = "~";
 	private static Set top_vowels;
     /** the font we use when we convert TMW->Unicode: */
-	private static SimpleAttributeSet unicodeFontAttributeSet = null;
+	private static SimpleAttributeSet defaultUnicodeFontAttributeSet = null;
     /** a way of encoding the choice of TibetanMachineWeb font from
         that family of 10 fonts: */
 	private static SimpleAttributeSet[] webFontAttributeSet = new SimpleAttributeSet[11];
@@ -283,10 +283,9 @@ public class TibetanMachineWeb implements THDLWylieConstants {
             readInTMFontFiles();
         }
 
-        unicodeFontAttributeSet = new SimpleAttributeSet();
-        StyleConstants.setFontFamily(unicodeFontAttributeSet,
-                                     ThdlOptions.getStringOption("thdl.tmw.to.unicode.font",
-                                                                 "Arial Unicode MS"));
+        defaultUnicodeFontAttributeSet = new SimpleAttributeSet();
+        StyleConstants.setFontFamily(defaultUnicodeFontAttributeSet,
+                                     "Arial Unicode MS");
 
 		webFontAttributeSet[0] = null;
 		for (int i=1; i<webFontAttributeSet.length; i++) {
@@ -665,11 +664,26 @@ public static SimpleAttributeSet getAttributeSet(int font) {
 * in our TMW->Unicode conversion.  This information is required in
 * order to be able to put styled text into {@link TibetanDocument
 * TibetanDocument}.
+* @param unicodeFont the interned name of the Unicode font to use;
+* defaults to Arial Unicode MS if null
 * @return a SimpleAttributeSet for the Unicode font - that is, a way
 * of encoding the font itself */
-public static SimpleAttributeSet getUnicodeAttributeSet() {
-    return unicodeFontAttributeSet;
+public static SimpleAttributeSet getUnicodeAttributeSet(String unicodeFont) {
+    if (null == unicodeFont
+        || "Arial Unicode MS" == unicodeFont)
+        return defaultUnicodeFontAttributeSet;
+    else {
+        SimpleAttributeSet cached
+            = (SimpleAttributeSet)unicodeAttributeSets.get(unicodeFont);
+        if (null == cached) {
+            cached = new SimpleAttributeSet();
+            StyleConstants.setFontFamily(cached, unicodeFont);
+            unicodeAttributeSets.put(unicodeFont, cached);
+        }
+        return cached;
+    }
 }
+private static HashMap unicodeAttributeSets = new HashMap();
 
 /**
 * Gets the AttributeSet for the given TibetanMachine font.
@@ -1008,25 +1022,25 @@ public static DuffCode mapTMtoTMW(int font, int ordinal, int suggestedFont) {
             if (0 == suggestedFont)
                 return TMW_cr;
             else
-                return new DuffCode(suggestedFont, (char)ordinal);
+                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it wastes heap
         } else if (ordinal == (int)'\n') {
             if (0 == suggestedFont)
                 return TMW_lf;
             else
-                return new DuffCode(suggestedFont, (char)ordinal);
+                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it wastes heap
         } else if (ordinal == (int)'\t') {
             if (0 == suggestedFont)
                 return TMW_tab;
             else
-                return new DuffCode(suggestedFont, (char)ordinal);
+                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it wastes heap
         } else {
             // for robustness, just return font 1, char ordinal.
             ThdlDebug.noteIffyCode();
             return null;
         }
     }
-    if (0 != suggestedFont && 32 == ordinal || 45 == ordinal) {
-        return new DuffCode(suggestedFont, (char)ordinal);
+    if ((0 != suggestedFont) && (32 == ordinal || 45 == ordinal)) {
+        return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it wastes heap
     }
 	return TMtoTMW[font][ordinal-32];
 }
@@ -1061,25 +1075,25 @@ public static DuffCode mapTMWtoTM(int font, int ordinal, int suggestedFont) {
             if (0 == suggestedFont)
                 return TM_cr;
             else
-                return new DuffCode(suggestedFont, (char)ordinal);
+                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it wastes heap
         } else if (ordinal == (int)'\n') {
             if (0 == suggestedFont)
                 return TM_lf;
             else
-                return new DuffCode(suggestedFont, (char)ordinal);
+                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it wastes heap
         } else if (ordinal == (int)'\t') {
             if (0 == suggestedFont)
                 return TM_tab;
             else
-                return new DuffCode(suggestedFont, (char)ordinal);
+                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it wastes heap
         } else {
             // for robustness, just return font 1, char ordinal.
             ThdlDebug.noteIffyCode();
             return null;
         }
     }
-    if (0 != suggestedFont && 32 == ordinal || 45 == ordinal) {
-        return new DuffCode(suggestedFont, (char)ordinal);
+    if ((0 != suggestedFont) && (32 == ordinal || 45 == ordinal)) {
+        return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it wastes heap
     }
     DuffCode ans = TMWtoTM[font][ordinal-32];
 	return ans;
