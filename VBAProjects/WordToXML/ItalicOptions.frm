@@ -5,7 +5,7 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ItalicOptions
    ClientLeft      =   30
    ClientTop       =   480
    ClientWidth     =   7125
-   OleObjectBlob   =   "ItalicOptions062504.frx":0000
+   OleObjectBlob   =   "ItalicOptions080204.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
 Attribute VB_Name = "ItalicOptions"

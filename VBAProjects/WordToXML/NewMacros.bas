@@ -473,9 +473,12 @@ Function iterateRange(ByVal rng)
     If InStr(outStr, "HYPERLINK") Then
         sInd = InStr(outStr, "HYPERLINK")
         hind = InStr(outStr, "http")
-        eInd = InStr(hind, outStr, """")
-        linkURL = Mid(outStr, hind, eInd - hind)
-        outStr = "<xref n=""" & linkURL & """>" & Mid(outStr, (eInd + 2)) & "</xref>"
+        If hind = 0 Then hind = InStr(outStr, """")
+        If Not hind = 0 Then
+            eInd = InStr(hind, outStr, """")
+            linkURL = Mid(outStr, hind, eInd - hind)
+            outStr = "<xref n=""" & linkURL & """>" & Mid(outStr, (eInd + 2)) & "</xref>"
+        End If
     End If
     iterateRange = outStr & closeTag
 End Function
