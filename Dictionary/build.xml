@@ -29,8 +29,9 @@
 
   <!-- Configure up the classpath -->
 	<path id="lex-classpath">
-		<fileset dir="${basedir}/lib/compiletime">
+		<fileset dir="${basedir}/lib">
 			<include name="**/*.jar"/>
+			<exclude name="compiletime/**/*.jar"/>
 		</fileset>
 		<pathelement location="${build}/WEB-INF/classes"/>
 	</path>
@@ -75,7 +76,7 @@
 		</copy>
 		
 		<copy todir="${build}/WEB-INF/tld">
-			<fileset dir="${basedir}/lib/runtime/tld">
+			<fileset dir="${basedir}/tld">
 				<include name="*.tld"/>
 			</fileset>
 		</copy>
