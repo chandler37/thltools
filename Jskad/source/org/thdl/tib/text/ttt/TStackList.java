@@ -168,7 +168,7 @@ class TStackList {
     private static final boolean ddebug = false;
 
     /** Returns true if and only if this stack list contains a clearly
-     *  illegal construct, such as an TPair (V . something). */
+     *  illegal construct.  An example of such is a TPair (V . something). */
     boolean isClearlyIllegal() {
         // check for {D}{VA} sorts of things:
         for (int i = 0; i < size(); i++) {

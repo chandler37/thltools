@@ -1163,7 +1163,7 @@ public static String getWylieForVowel(String s) {
 /**
 * Gets the DuffCode required for a vowel, if affixed to the given
 * hashKey.  Not as pretty as {@link
-* TibTextUtils#getVowel(DuffCode,DuffCode,String)}.
+* TibTextUtils#getVowel(List,DuffCode,DuffCode,String)}.
 * @param hashKey the key for the character the vowel is to be affixed
 * to; see {@link #getGlyph(String)} to learn about hash keys.
 * @param vowel the vowel you want the DuffCode for
@@ -1171,7 +1171,7 @@ public static String getWylieForVowel(String s) {
 * context, or null if there is no such vowel in
 * the context
 * @see DuffCode
-* @see TibTextUtils#getVowel(DuffCode,DuffCode,String) */
+* @see TibTextUtils#getVowel(List,DuffCode,DuffCode,String) */
 public static DuffCode getVowel(String hashKey, int vowel) {
 	DuffCode[] dc = (DuffCode[])tibHash.get(hashKey);
 	

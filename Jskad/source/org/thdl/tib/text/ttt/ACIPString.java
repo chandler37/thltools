@@ -66,7 +66,7 @@ public class ACIPString {
     public static final int LS = 9;
     /** For [DR] -- picture (without caption) on page */
     public static final int DR = 10;
-    /** For [DD], [DDD], [DD1], [DD2], etc. -- picture with caption on page */
+    /** For [DD], [DDD], [DD1], [DD2], et cetera -- picture with caption on page */
     public static final int DD = 11;
     /** For [?] */
     public static final int QUESTION = 12;
@@ -115,7 +115,7 @@ public class ACIPString {
     private ACIPString() { }
 
     /** Creates a new ACIPString with source text <i>text</i> and type
-     *  <i>type</i> being a characterization like {@link DD}. */
+     *  <i>type</i> being a characterization like {@link #DD}. */
     public ACIPString(String text, int type) {
         setType(type);
         setText(text);

@@ -21,7 +21,7 @@ package org.thdl.tib.text.ttt;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-/** A list of {@link #TStackList} objects, each of which is for a
+/** A list of {@link TStackList} objects, each of which is for a
  *  stack (a grapheme cluster), typically corresponding to one
  *  ambiguous section of a tsheg bar.
  *

@@ -29,7 +29,7 @@ import junit.framework.TestCase;
 
 
 /** Tests this package, especially {@link #TPairListFactory} and
- *  {@link #TPairList}.
+ *  {@link TPairList}.
  *
  *  @author David Chandler */
 public class PackageTest extends TestCase {
@@ -7262,6 +7262,7 @@ tstHelper("ZUR");
     }
 
     public void testACIPConversion() {
+        uhelp("KA \nKHA\n\nGA", "\u0f40\u0f0b\u0f41\u0f0b\n\n\u0f42");
         uhelp("KA%\nKHA", "\u0f40\u0f35\u0f0b\u0f41");
         uhelp("KA%", "\u0f40\u0f35");
         uhelp("KAo", "\u0f40[#ERROR CONVERTING ACIP DOCUMENT: This converter cannot yet convert o because the converter's author is unclear what the result should be.]");

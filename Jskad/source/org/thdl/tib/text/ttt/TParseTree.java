@@ -20,7 +20,7 @@ package org.thdl.tib.text.ttt;
 
 import java.util.ArrayList;
 
-/** A list of non-empty list of {@link #TStackListList
+/** A list of non-empty list of {@link TStackListList
  *  TStackListLists} representing all the ways you could break up a
  *  tsheg bar of ACIP into stacks (i.e., grapheme clusters).
  *
@@ -61,7 +61,7 @@ class TParseTree {
         return k;
     }
         
-    /** Returns the number of {@link #TPair pairs} that are in a
+    /** Returns the number of {@link TPair pairs} that are in a
      *  parse of this tree. */
     public int numberOfPairs() {
         if (al.isEmpty()) return 0;

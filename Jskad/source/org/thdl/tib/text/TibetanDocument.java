@@ -174,7 +174,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 * @param s the string you want to insert
 * @param color the color in which to insert, which is used if and only
 * if {@link #colorsEnabled() colors are enabled}
-* @see #setRomanAttributeSet(AttributeSet)
+* @see #setRomanAttributeSet(MutableAttributeSet)
 */
 	public void appendRoman(int offset, String s, Color color) throws BadLocationException {
         ThdlDebug.verify(getRomanAttributeSet() != null);
@@ -189,7 +189,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 * @param s the string you want to insert
 * @param color the color in which to insert, which is used if and only
 * if {@link #colorsEnabled() colors are enabled}
-* @see #setRomanAttributeSet(AttributeSet)
+* @see #setRomanAttributeSet(MutableAttributeSet)
 */
 	public void appendRoman(String s, Color color) {
         try {
@@ -200,15 +200,16 @@ public class TibetanDocument extends DefaultStyledDocument {
     }
 
     private void appendDuff(int fontSize, int offset, String s, MutableAttributeSet attr, Color color) {
-		try {
-			StyleConstants.setFontSize(attr, fontSize);
-            if (allowColors) StyleConstants.setForeground(attr, color);
-			insertString(offset, s, attr);
-		}
-		catch (BadLocationException ble) {
+        try {
+            StyleConstants.setFontSize(attr, fontSize);
+            if (allowColors)
+                StyleConstants.setForeground(attr, color);
+            insertString(offset, s, attr);
+        }
+        catch (BadLocationException ble) {
             ThdlDebug.noteIffyCode();
-		}
-	}
+        }
+    }
 
 /**
 * Inserts a stretch of TibetanMachineWeb data into the document.
@@ -374,7 +375,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 * conversion stops at the first non-Tibetan font.
 * @param begin the beginning of the region to convert
 * @param end the end of the region to convert
-* @param noSuchWylie an array which will not be touched if this is
+* @param noSuchACIP an array which will not be touched if this is
 * successful; however, if there is no ACIP corresponding to one of
 * these glyphs, then noSuchACIP[0] will be set to true
 * @return the string of ACIP corresponding to this document */

@@ -77,7 +77,7 @@ class TPair {
      *  right side, first and from l, the left side, second.  The pair
      *  returned may be illegal, such as the (A . ') you can get from
      *  ACIP {A'AAMA}.
-     *  @throw IllegalArgumentException if N is out of range */
+     *  @throws IllegalArgumentException if N is out of range */
     TPair minusNRightmostACIPCharacters(int N)
         throws IllegalArgumentException
     {
