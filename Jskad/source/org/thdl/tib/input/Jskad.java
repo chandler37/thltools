@@ -440,7 +440,7 @@ public class Jskad extends JPanel implements DocumentListener {
         convertSelectionMenu.add(TMWACIPItem);
         toolsMenu.add(convertSelectionMenu);
 
-        JMenuItem wylieTMWItem = new JMenuItem("Convert Wylie to Tibetan");
+        JMenuItem wylieTMWItem = new JMenuItem("(Buggy) Convert Wylie to Tibetan");
         wylieTMWItem.addActionListener(new ThdlActionListener() {
             public void theRealActionPerformed(ActionEvent e) {
                 toTibetan(false, true);
