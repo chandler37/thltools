@@ -87,7 +87,7 @@ public class ThdlUserRepository
 			{
 				rs.next();
 				thdlUser = user;
-				thdlUser.setId( rs.getInt( "id" ) );
+				thdlUser.setId( new Integer( rs.getInt( "id" ) ) );
 				thdlUser.setFirstname( rs.getString( "firstname" ) );
 				thdlUser.setLastname( rs.getString( "lastname" ) );
 				thdlUser.setMiddlename( rs.getString( "middlename" ) );
@@ -264,7 +264,7 @@ public class ThdlUserRepository
 			{
 				ResultSet rs = stmt.executeQuery( "SELECT LAST_INSERT_ID()" );
 				rs.next();
-				thdlUser.setId( rs.getInt( 1 ) );
+				thdlUser.setId( new Integer( rs.getInt( 1 ) ) );
 				returnVal = true;
 			}
 			else

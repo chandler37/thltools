@@ -7,12 +7,12 @@ import java.util.*;
 /**
  *  Description of the Class
  *
- *@author     travis
- *@created    October 2, 2003
+ * @author     travis
+ * @created    October 2, 2003
  */
 public class ThdlUser implements Serializable
 {
-	private int id;
+	private Integer id;
 	private String firstname;
 	private String lastname;
 	private String middlename;
@@ -27,8 +27,8 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Sets the roles attribute of the ThdlUser object
 	 *
-	 *@param  roles  The new roles value
-	 *@since
+	 * @param  roles  The new roles value
+	 * @since
 	 */
 	public void setRoles( String roles )
 	{
@@ -39,8 +39,8 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Sets the creditAttributionTag attribute of the ThdlUser object
 	 *
-	 *@param  creditAttributionTag  The new creditAttributionTag value
-	 *@since
+	 * @param  creditAttributionTag  The new creditAttributionTag value
+	 * @since
 	 */
 	public void setCreditAttributionTag( String creditAttributionTag )
 	{
@@ -51,10 +51,10 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Sets the id attribute of the ThdlUser object
 	 *
-	 *@param  id  The new id value
-	 *@since
+	 * @param  id  The new id value
+	 * @since
 	 */
-	public void setId( int id )
+	public void setId( Integer id )
 	{
 		this.id = id;
 	}
@@ -63,8 +63,8 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Sets the firstname attribute of the ThdlUser object
 	 *
-	 *@param  firstname  The new firstname value
-	 *@since
+	 * @param  firstname  The new firstname value
+	 * @since
 	 */
 	public void setFirstname( String firstname )
 	{
@@ -75,8 +75,8 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Sets the lastname attribute of the ThdlUser object
 	 *
-	 *@param  lastname  The new lastname value
-	 *@since
+	 * @param  lastname  The new lastname value
+	 * @since
 	 */
 	public void setLastname( String lastname )
 	{
@@ -87,8 +87,8 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Sets the middlename attribute of the ThdlUser object
 	 *
-	 *@param  middlename  The new middlename value
-	 *@since
+	 * @param  middlename  The new middlename value
+	 * @since
 	 */
 	public void setMiddlename( String middlename )
 	{
@@ -99,8 +99,8 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Sets the email attribute of the ThdlUser object
 	 *
-	 *@param  email  The new email value
-	 *@since
+	 * @param  email  The new email value
+	 * @since
 	 */
 	public void setEmail( String email )
 	{
@@ -111,8 +111,8 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Sets the username attribute of the ThdlUser object
 	 *
-	 *@param  username  The new username value
-	 *@since
+	 * @param  username  The new username value
+	 * @since
 	 */
 	public void setUsername( String username )
 	{
@@ -123,8 +123,8 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Sets the password attribute of the ThdlUser object
 	 *
-	 *@param  password  The new password value
-	 *@since
+	 * @param  password  The new password value
+	 * @since
 	 */
 	public void setPassword( String password )
 	{
@@ -135,8 +135,8 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Sets the passwordHint attribute of the ThdlUser object
 	 *
-	 *@param  passwordHint  The new passwordHint value
-	 *@since
+	 * @param  passwordHint  The new passwordHint value
+	 * @since
 	 */
 	public void setPasswordHint( String passwordHint )
 	{
@@ -147,8 +147,8 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Gets the roles attribute of the ThdlUser object
 	 *
-	 *@return    The roles value
-	 *@since
+	 * @return    The roles value
+	 * @since
 	 */
 	public String getRoles()
 	{
@@ -163,8 +163,8 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Gets the creditAttributionTag attribute of the ThdlUser object
 	 *
-	 *@return    The creditAttributionTag value
-	 *@since
+	 * @return    The creditAttributionTag value
+	 * @since
 	 */
 	public String getCreditAttributionTag()
 	{
@@ -175,10 +175,10 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Gets the id attribute of the ThdlUser object
 	 *
-	 *@return    The id value
-	 *@since
+	 * @return    The id value
+	 * @since
 	 */
-	public int getId()
+	public Integer getId()
 	{
 		return id;
 	}
@@ -187,8 +187,8 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Gets the firstname attribute of the ThdlUser object
 	 *
-	 *@return    The firstname value
-	 *@since
+	 * @return    The firstname value
+	 * @since
 	 */
 	public String getFirstname()
 	{
@@ -199,8 +199,8 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Gets the lastname attribute of the ThdlUser object
 	 *
-	 *@return    The lastname value
-	 *@since
+	 * @return    The lastname value
+	 * @since
 	 */
 	public String getLastname()
 	{
@@ -211,8 +211,8 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Gets the middlename attribute of the ThdlUser object
 	 *
-	 *@return    The middlename value
-	 *@since
+	 * @return    The middlename value
+	 * @since
 	 */
 	public String getMiddlename()
 	{
@@ -223,8 +223,8 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Gets the email attribute of the ThdlUser object
 	 *
-	 *@return    The email value
-	 *@since
+	 * @return    The email value
+	 * @since
 	 */
 	public String getEmail()
 	{
@@ -235,8 +235,8 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Gets the username attribute of the ThdlUser object
 	 *
-	 *@return    The username value
-	 *@since
+	 * @return    The username value
+	 * @since
 	 */
 	public String getUsername()
 	{
@@ -247,8 +247,8 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Gets the password attribute of the ThdlUser object
 	 *
-	 *@return    The password value
-	 *@since
+	 * @return    The password value
+	 * @since
 	 */
 	protected String getPassword()
 	{
@@ -259,8 +259,8 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Gets the passwordHint attribute of the ThdlUser object
 	 *
-	 *@return    The passwordHint value
-	 *@since
+	 * @return    The passwordHint value
+	 * @since
 	 */
 	public String getPasswordHint()
 	{
@@ -272,9 +272,9 @@ public class ThdlUser implements Serializable
 	/**
 	 *  Description of the Method
 	 *
-	 *@param  userRole  Description of Parameter
-	 *@return           Description of the Returned Value
-	 *@since
+	 * @param  userRole  Description of Parameter
+	 * @return           Description of the Returned Value
+	 * @since
 	 */
 	public boolean hasRole( String userRole )
 	{
