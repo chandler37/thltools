@@ -895,6 +895,23 @@ class RTFSelection implements ClipboardOwner, Transferable {
         copy(getSelectionStart(), getSelectionEnd(), true);
     }
 
+    /** If this.isEditable(), then this deletes the current selection. */
+	public void deleteCurrentSelection()
+	{
+        int start=getSelectionStart(), end=getSelectionEnd();
+        
+        if (!this.isEditable())
+            return;
+        try
+        {
+            getDocument().remove(start, end-start);
+        } catch (BadLocationException ble) {
+            ble.printStackTrace();
+            ThdlDebug.noteIffyCode();
+        }
+    }
+
+
 /**
 * Cuts or copies the specified portion of this object's document
 * to the system clipboard. What is cut/copied is Wylie text -
@@ -948,6 +965,7 @@ public void paste(int offset) {
     // Respect setEditable(boolean):
     if (!this.isEditable())
         return;
+                
 	try {
 		Transferable contents = rtfBoard.getContents(this);
 
@@ -1092,6 +1110,8 @@ public void paste(int offset) {
 			case KeyEvent.VK_V:
 				if (e.isControlDown() && isCutAndPasteEnabled) {
 					e.consume();
+                    // since paste is substituting selected text, first delete
+                    deleteCurrentSelection();
 					paste(caret.getDot());
 				}
 				break;
