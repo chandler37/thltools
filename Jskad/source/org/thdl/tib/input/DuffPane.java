@@ -59,7 +59,7 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * or some action or function key. Later, when glyphs are printed to the
 * screen, the {@link #newGlyphList} is computed on the basis of charList.
 */
-	private java.util.ArrayList charList;
+    private java.util.ArrayList charList;
 /**
 * This field holds a copy of the last {@link #newGlyphList}.
 * Then, when a key is pressed, {@link #charList} is updated, a new
@@ -67,7 +67,7 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * this field. The text on the screen is then modified to reflect
 * the new newGlyphList.
 */
-	private java.util.List oldGlyphList;
+    private java.util.List oldGlyphList;
 /**
 * A central component of the Tibetan input method. While {@link #charList charList}
 * keeps track of the characters that have been entered, it does not organize them
@@ -78,7 +78,7 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * @link #recomputeGlyphs(boolean areStacksOnRight, boolean definitelyTibetan, boolean definitelySanskrit) recomputeGlyphs},
 * which constructs an optimal arrangement of glyphs from the charList.
 */
-	private java.util.List newGlyphList;
+    private java.util.List newGlyphList;
 /** 
 * This field keeps track of what is currently being typed, to account
 * for characters (such as Wylie 'tsh') which correspond to more than one
@@ -87,7 +87,7 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * user types 'khr', holdCurrent will contain only 'r', since 'khr' is not
 * a valid character.
 */
-	private StringBuffer holdCurrent;
+    private StringBuffer holdCurrent;
 /**
 * This field says whether or not the character atop {@link #charList}
 * has been finalized, and therefore whether subsequent keystrokes are
@@ -98,22 +98,22 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * In short, is the top character on {@link #charList} a fact or just a
 * hypothesis?
 */
-	private boolean isTopHypothesis;
+    private boolean isTopHypothesis;
 /**
 * Is the user in the process of typing a vowel?
 */
-	private boolean isTypingVowel;
+    private boolean isTypingVowel;
 /**
 * Is it definitely the case that the user is typing Tibetan, rather than
 * Sanskrit?
 */
-	private boolean isDefinitelyTibetan;
+    private boolean isDefinitelyTibetan;
 /**
 * According to the active keyboard, what value
 * {@link #isDefinitelyTibetan} should be assigned by default when the 
 * keyboard is initialized by {@link #initKeyboard() initKeyboard}
 */
-	private boolean isDefinitelyTibetan_default;
+    private boolean isDefinitelyTibetan_default;
 /**
 * According to the active keyboard, what value {@link
 * #isDefinitelyTibetan} should be assigned if the user has initiated a
@@ -121,18 +121,18 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * there is a Sanskrit stacking key ('+'), but no Tibetan stacking key.
 * Therefore, if the user is stacking with '+', this field should be
 * false, since what the user is typing must be Sanskrit, not Tibetan.  */
-	private boolean isDefinitelyTibetan_withStackKey;
+    private boolean isDefinitelyTibetan_withStackKey;
 /**
 * True iff it is definitely the case that the user is typing Sanskrit
 * (for example a Sanskrit stack), rather than Tibetan 
 */
-	private boolean isDefinitelySanskrit;
+    private boolean isDefinitelySanskrit;
 /**
 * According to the active keyboard, the value {@link
 * #isDefinitelySanskrit} should be assigned by default when the
 * keyboard is initialized by {@link #initKeyboard() initKeyboard} 
 */
-	private boolean isDefinitelySanskrit_default;
+    private boolean isDefinitelySanskrit_default;
 /**
 * According to the active keyboard, the value that should
 * be assigned to {@link #isDefinitelySanskrit} if the
@@ -143,7 +143,7 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * should be true, since what the user is typing must
 * be Sanskrit, not Tibetan.
 */
-	private boolean isDefinitelySanskrit_withStackKey;
+    private boolean isDefinitelySanskrit_withStackKey;
 /**
 * True iff consonant stacking is allowed at the moment. In the Wylie
 * keyboard, consonant stacking is usually on, since stacking
@@ -151,12 +151,12 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * stacking is off by default, since you can only stack when
 * you've pressed a stacking key.
 */
-	private boolean isStackingOn;
+    private boolean isStackingOn;
 /**
 * True iff, according to the active keyboard, stacking is on by
 * default assuming no stack key has been pressed.
 */
-	private boolean isStackingOn_default;
+    private boolean isStackingOn_default;
 /**
 * Automatic stacking in Wylie is from right to left. For
 * example, if the user types 'brg', the resulting glyph
@@ -164,32 +164,32 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * stacking results from the use of a stack key,
 * it is from left to right.
 */
-	private boolean isStackingRightToLeft;
+    private boolean isStackingRightToLeft;
 /**
 * used for tracking changes in Wylie to TMW conversion
 */
-	private int lastStart;
+    private int lastStart;
 /**
 * true iff the user is in Tibetan typing mode.  This is true
 * by default.
 */
-	private boolean isTibetan = true;
+    private boolean isTibetan = true;
 /**
 * true iff the user is allowed to type non-Tibetan.  This is true
 * by default
 */
-	private boolean isRomanEnabled = true;
+    private boolean isRomanEnabled = true;
 /**
 * The caret of {@link #doc}, used to keep track of the
 * current entry/edit/deletion position.
 */
-	private Caret caret;
-	private Style rootStyle;
-	private boolean skipUpdate = false;
-	private boolean isCutAndPasteEnabled = true;
+    private Caret caret;
+    private Style rootStyle;
+    private boolean skipUpdate = false;
+    private boolean isCutAndPasteEnabled = true;
 
-	private String romanFontFamily;
-	private int romanFontSize;
+    private String romanFontFamily;
+    private int romanFontSize;
 
     private Clipboard rtfBoard;
     
@@ -202,39 +202,39 @@ public class DuffPane extends TibetanPane implements FocusListener {
                             TibetanKeyboard keyboard,
                             java.net.URL keyboardURL)
     {
-		if (null != keyboard)
+        if (null != keyboard)
             TibetanMachineWeb.setKeyboard(keyboard);
-		if (null != keyboardURL)
+        if (null != keyboardURL)
             TibetanMachineWeb.setKeyboard(keyboardURL);
-		setupKeyboard();
-		setupEditor();
+        setupKeyboard();
+        setupEditor();
         if (null != sb)
             setStatusBar(sb);
-//		this(new StyledEditorKit(), keyboardURL);
+//        this(new StyledEditorKit(), keyboardURL);
     }
 
     /** Creates a new DuffPane that updates sb, if sb is not null,
         with messages about how the users' keypresses are being
         interpreted. */
-	public DuffPane(StatusBar sb) {
-		super();
-		initialize(sb, null, null);
-	}
+    public DuffPane(StatusBar sb) {
+        super();
+        initialize(sb, null, null);
+    }
 
-	public DuffPane() {
-		super();
-		initialize(null, null, null);
-	}
+    public DuffPane() {
+        super();
+        initialize(null, null, null);
+    }
 
-	public DuffPane(TibetanKeyboard keyboard) {
-		super();
-		initialize(null, keyboard, null);
-	}
+    public DuffPane(TibetanKeyboard keyboard) {
+        super();
+        initialize(null, keyboard, null);
+    }
 
-	public DuffPane(java.net.URL keyboardURL) {
-		super();
-		initialize(null, null, keyboardURL);
-	}
+    public DuffPane(java.net.URL keyboardURL) {
+        super();
+        initialize(null, null, keyboardURL);
+    }
 
     /** For testing purposes, it's useful to create a DuffPane and not
      *  hook it up to the UI. If this is true, this DuffPane will
@@ -292,27 +292,27 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * This method sets up the editor, assigns fonts and point sizes,
 * sets the document, the caret, and adds key and focus listeners.
 */
-	private void setupEditor() {
-		rtfBoard = getToolkit().getSystemClipboard();
+    private void setupEditor() {
+        rtfBoard = getToolkit().getSystemClipboard();
 
-		romanFontFamily = ThdlOptions.getStringOption("thdl.default.roman.font.face",
+        romanFontFamily = ThdlOptions.getStringOption("thdl.default.roman.font.face",
                                                       "Serif");
-		romanFontSize = defaultRomanFontSize();
+        romanFontSize = defaultRomanFontSize();
 
-		newDocument();
+        newDocument();
 
-		caret = getCaret();
+        caret = getCaret();
 
-		addFocusListener(this);
-		addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent kev) {
-				if (kev.isActionKey() || kev.getKeyCode() == KeyEvent.VK_BACK_SPACE)
-					initKeyboard();
-			}
-		});
+        addFocusListener(this);
+        addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent kev) {
+                if (kev.isActionKey() || kev.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+                    initKeyboard();
+            }
+        });
 
-		setupKeymap(); 
-	}
+        setupKeymap(); 
+    }
 
     /** Performs the keystroke key with selected ActionEvent-style
      *  modifiers modifiers. */
@@ -363,19 +363,19 @@ public class DuffPane extends TibetanPane implements FocusListener {
         keymap.setDefaultAction(defaultAction);
         setKeymap(keymap);
     }
-	
-	private void createActionTable(JTextComponent textComponent) {
-	    actions = new Hashtable();
-	    Action[] actionsArray = textComponent.getActions();
-	    for (int i = 0; i < actionsArray.length; i++) {
-		Action a = actionsArray[i];
-		actions.put(a.getValue(Action.NAME), a);
-	    }
-	}
-	private Action getActionByName(String name) {
-	    return (Action)(actions.get(name));
-	}
-	
+    
+    private void createActionTable(JTextComponent textComponent) {
+        actions = new Hashtable();
+        Action[] actionsArray = textComponent.getActions();
+        for (int i = 0; i < actionsArray.length; i++) {
+        Action a = actionsArray[i];
+        actions.put(a.getValue(Action.NAME), a);
+        }
+    }
+    private Action getActionByName(String name) {
+        return (Action)(actions.get(name));
+    }
+    
 /**
 * This method sets up the Tibetan keyboard. Initially it is called
 * by the constructor, but it is also called internally whenever
@@ -383,39 +383,39 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * respect to stacking, and concerning the differences between
 * Tibetan and Sanskrit; and then it initializes the input method.
 */
-	private void setupKeyboard() {
-		if (TibetanMachineWeb.hasTibetanStackingKey()) {
-			if (TibetanMachineWeb.hasSanskritStackingKey()) {
-				isDefinitelyTibetan_default = false;
-				isDefinitelySanskrit_default = false;
-				isStackingOn_default = false;
-				isDefinitelyTibetan_withStackKey = false;
-				isDefinitelySanskrit_withStackKey = false;
-			} else {
-				isDefinitelyTibetan_default = false;
-				isDefinitelySanskrit_default = false; // DLC FIXME: trying to make ACIP keyboard happy.
-				isStackingOn_default = true;
-				isDefinitelyTibetan_withStackKey = false; // DLC FIXME: trying to make ACIP keyboard happy.
-				isDefinitelySanskrit_withStackKey = false;
-			}
-		} else {
-			if (TibetanMachineWeb.hasSanskritStackingKey()) {
-				isDefinitelyTibetan_default = true;
-				isDefinitelySanskrit_default = false;
-				isStackingOn_default = true;
-				isDefinitelyTibetan_withStackKey = false;
-				isDefinitelySanskrit_withStackKey = true;
-			} else { //no stacking key at all
-				isDefinitelyTibetan_default = false;
-				isDefinitelySanskrit_default = false;
-				isStackingOn_default = true;
-			}
-		}
-		charList = new ArrayList();
-		oldGlyphList = new ArrayList();
-		newGlyphList = new ArrayList();
-		initKeyboard();
-	}
+    private void setupKeyboard() {
+        if (TibetanMachineWeb.hasTibetanStackingKey()) {
+            if (TibetanMachineWeb.hasSanskritStackingKey()) {
+                isDefinitelyTibetan_default = false;
+                isDefinitelySanskrit_default = false;
+                isStackingOn_default = false;
+                isDefinitelyTibetan_withStackKey = false;
+                isDefinitelySanskrit_withStackKey = false;
+            } else {
+                isDefinitelyTibetan_default = false;
+                isDefinitelySanskrit_default = false; // DLC FIXME: trying to make ACIP keyboard happy.
+                isStackingOn_default = true;
+                isDefinitelyTibetan_withStackKey = false; // DLC FIXME: trying to make ACIP keyboard happy.
+                isDefinitelySanskrit_withStackKey = false;
+            }
+        } else {
+            if (TibetanMachineWeb.hasSanskritStackingKey()) {
+                isDefinitelyTibetan_default = true;
+                isDefinitelySanskrit_default = false;
+                isStackingOn_default = true;
+                isDefinitelyTibetan_withStackKey = false;
+                isDefinitelySanskrit_withStackKey = true;
+            } else { //no stacking key at all
+                isDefinitelyTibetan_default = false;
+                isDefinitelySanskrit_default = false;
+                isStackingOn_default = true;
+            }
+        }
+        charList = new ArrayList();
+        oldGlyphList = new ArrayList();
+        newGlyphList = new ArrayList();
+        initKeyboard();
+    }
 
 /**
 * Registers the Extended Wylie keyboard, and sets it as
@@ -424,9 +424,9 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * if you set the keyboard in {@link org.thdl.tib.text.TibetanMachineWeb TibetanMachineWeb}
 * but don't register it here.
 */
-	public void registerKeyboard() {
-		registerKeyboard((TibetanKeyboard)null);
-	}
+    public void registerKeyboard() {
+        registerKeyboard((TibetanKeyboard)null);
+    }
 
 /**
 * Registers a keyboard, and sets it as the active keyboard.
@@ -434,10 +434,10 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * org.thdl.tib.text.TibetanMachineWeb TibetanMachineWeb} but don't
 * register it in here.
 * @param keyboardURL the URL of the keyboard you want to install */
-	public void registerKeyboard(java.net.URL keyboardURL) {
-		TibetanMachineWeb.setKeyboard(keyboardURL);
-		setupKeyboard();
-	}
+    public void registerKeyboard(java.net.URL keyboardURL) {
+        TibetanMachineWeb.setKeyboard(keyboardURL);
+        setupKeyboard();
+    }
 
 /**
 * Registers a keyboard, and sets it as
@@ -447,37 +447,37 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * but don't register it in here.
 * @param keyboard the keyboard you want to install
 */
-	public void registerKeyboard(TibetanKeyboard keyboard) {
-		TibetanMachineWeb.setKeyboard(keyboard);
-		setupKeyboard();
-	}
+    public void registerKeyboard(TibetanKeyboard keyboard) {
+        TibetanMachineWeb.setKeyboard(keyboard);
+        setupKeyboard();
+    }
 
 /**
 * Clears the current document.
 */
-	public void newDocument() {
-		StyleContext styleContext = new StyleContext();
+    public void newDocument() {
+        StyleContext styleContext = new StyleContext();
 
-		doc = new TibetanDocument(styleContext);
-		doc.setTibetanFontSize(defaultTibFontSize());
+        doc = new TibetanDocument(styleContext);
+        doc.setTibetanFontSize(defaultTibFontSize());
 
         // Something about the order in which you do this step
         // relative to the others in this method matters.  You'll get
         // a small cursor, though most everything else will be normal,
         // if you call setDocument(doc) at the end of this method.
-		setDocument(doc);
-		ThdlDebug.verify(getTibDoc() == doc);
+        setDocument(doc);
+        ThdlDebug.verify(getTibDoc() == doc);
 
-		Style defaultStyle = styleContext.getStyle(StyleContext.DEFAULT_STYLE);
-		StyleConstants.setFontFamily(defaultStyle, "TibetanMachineWeb");
-		StyleConstants.setFontSize(defaultStyle, defaultTibFontSize());
+        Style defaultStyle = styleContext.getStyle(StyleContext.DEFAULT_STYLE);
+        StyleConstants.setFontFamily(defaultStyle, "TibetanMachineWeb");
+        StyleConstants.setFontSize(defaultStyle, defaultTibFontSize());
 
-		setRomanAttributeSet(romanFontFamily, romanFontSize);
+        setRomanAttributeSet(romanFontFamily, romanFontSize);
 
 
-		newGlyphList.clear();
+        newGlyphList.clear();
         initKeyboard();
-	}
+    }
 
 /**
 * Initializes the keyboard input interpreter, setting all properties
@@ -487,51 +487,51 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * could be part of a stack, or require manipulation of glyphs - e.g.
 * backspacing, redrawing, etc.
 */
-	private void initKeyboard() {
-		charList.clear();
-		oldGlyphList.clear();
-		holdCurrent = new StringBuffer();
-		updateStatus("Jskad is in its basic input mode");
-		isTopHypothesis = false;
-		isTypingVowel = false;
+    private void initKeyboard() {
+        charList.clear();
+        oldGlyphList.clear();
+        holdCurrent = new StringBuffer();
+        updateStatus("Jskad is in its basic input mode");
+        isTopHypothesis = false;
+        isTypingVowel = false;
 
-		//for keyboard
-		isStackingOn = isStackingOn_default;
-		isStackingRightToLeft = true;
-		isDefinitelyTibetan = isDefinitelyTibetan_default;
-		isDefinitelySanskrit = isDefinitelySanskrit_default;
-	}
+        //for keyboard
+        isStackingOn = isStackingOn_default;
+        isStackingRightToLeft = true;
+        isDefinitelyTibetan = isDefinitelyTibetan_default;
+        isDefinitelySanskrit = isDefinitelySanskrit_default;
+    }
 
 /**
 * Enables typing of Roman (non-Tibetan) text along
 * with Tibetan.
 */
-	public void enableRoman() {
-		isRomanEnabled = true;
-	}
+    public void enableRoman() {
+        isRomanEnabled = true;
+    }
 
 /**
 * Disables typing of Roman (non-Tibetan) text.
 */
-	public void disableRoman() {
-		isRomanEnabled = false;
-	}
+    public void disableRoman() {
+        isRomanEnabled = false;
+    }
 
 /**
 * Checks to see if Roman input is enabled.
 * @return true if so, false if not
 */
-	public boolean isRomanEnabled() {
-		return isRomanEnabled;
-	}
+    public boolean isRomanEnabled() {
+        return isRomanEnabled;
+    }
 
 /**
 * Checks to see if currently in Roman input mode.
 * @return true if so, false if not
 */
-	public boolean isRomanMode() {
-		return !isTibetan;
-	}
+    public boolean isRomanMode() {
+        return !isTibetan;
+    }
 
 /**
 * Toggles between Tibetan and Roman input modes.
@@ -539,12 +539,12 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * @see #enableRoman()
 * @see #disableRoman()
 */
-	public void toggleLanguage() {
-		if (isTibetan && isRomanEnabled)
-			isTibetan = false;
-		else
-			isTibetan = true;
-	}
+    public void toggleLanguage() {
+        if (isTibetan && isRomanEnabled)
+            isTibetan = false;
+        else
+            isTibetan = true;
+    }
 
 /**
 * Inserts Roman text into this object's document,
@@ -552,9 +552,9 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * @param attr the attributes for the text to insert
 * @param s the string of text to insert
 */
-	public void append(String s, AttributeSet attr) {
-		append(caret.getDot(), s, attr);
-	}
+    public void append(String s, AttributeSet attr) {
+        append(caret.getDot(), s, attr);
+    }
 
 /**
 * Inserts Roman text into this object's document.
@@ -562,23 +562,23 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * @param attr the attributes for the text to insert
 * @param s the string of text to insert
 */
-	public void append(int offset, String s, AttributeSet attr) {
-		try {
-			getTibDoc().insertString(offset, s, attr);
-		}
-		catch (BadLocationException ble) {
-		}
-	}
+    public void append(int offset, String s, AttributeSet attr) {
+        try {
+            getTibDoc().insertString(offset, s, attr);
+        }
+        catch (BadLocationException ble) {
+        }
+    }
 
 /**
 * Changes the default font size for Tibetan text entry mode.
 *
 * @param size a point size
 */
-	public void setTibetanFontSize(int size) {
-		if (size > 0)
-			getTibDoc().setTibetanFontSize(size);
-	}
+    public void setTibetanFontSize(int size) {
+        if (size > 0)
+            getTibDoc().setTibetanFontSize(size);
+    }
 
     /**
      * Like {@link #setTibetanFontSize(int)}, but should be called only
@@ -589,29 +589,29 @@ public class DuffPane extends TibetanPane implements FocusListener {
      *
      * @param size a point size
      */
-	public void setByUserTibetanFontSize(int size) {
-		ThdlOptions.setUserPreference("thdl.default.tibetan.font.size", size);
-		setTibetanFontSize(size);
-	}
+    public void setByUserTibetanFontSize(int size) {
+        ThdlOptions.setUserPreference("thdl.default.tibetan.font.size", size);
+        setTibetanFontSize(size);
+    }
 
 /**
 * Gets the current point size for Tibetan text.
 * @return the current default font size for Tibetan
 * text entry mode
 */
-	public int getTibetanFontSize() {
-		return getTibDoc().getTibetanFontSize();
-	}
+    public int getTibetanFontSize() {
+        return getTibDoc().getTibetanFontSize();
+    }
 
 /**
 * Overrides JTextComponent.setFont(). This method 
 * calls setRomanAttributeSet(), otherwise DuffPane
 * would ignore calls to setFont().
 */
-	public void setFont(Font font) {
-		setRomanAttributeSet(font.getName(), font.getSize());
-	}
-	
+    public void setFont(Font font) {
+        setRomanAttributeSet(font.getName(), font.getSize());
+    }
+    
 /**
 * Changes the default font and font size for 
 * non-Tibetan (Roman) text entry mode.
@@ -619,12 +619,12 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * @param font a font name
 * @param size a point size
 */
-	public void setRomanAttributeSet(String font, int size) {
+    public void setRomanAttributeSet(String font, int size) {
         if (getTibDoc() != null) {
             getTibDoc().setRomanAttributeSet(romanFontFamily = font,
                                              romanFontSize = size);
         }
-	}
+    }
 
     /** Like {@link #setRomanAttributeSet}, but allows for noting the
      *  (explicit or implicit) choice in the user's preferences
@@ -640,35 +640,35 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * @return the current default font size for non-Tibetan
 * (Roman) text entry mode
 */
-	public int getRomanFontSize() {
-		return romanFontSize;
-	}
+    public int getRomanFontSize() {
+        return romanFontSize;
+    }
 
 /**
 * Gets the current font used for non-Tibetan text.
 * @return the current default font for non-Tibetan
 * (Roman) text entry mode
 */
-	public String getRomanFontFamily() {
-		return romanFontFamily;
-	}
+    public String getRomanFontFamily() {
+        return romanFontFamily;
+    }
 
 /**
 * Backspace and remove k elements from the current caret position.
 *
 * @param k the number of glyphs to remove by backspace
 */
-	private void backSpace(int k) {
-		try {
+    private void backSpace(int k) {
+        try {
             int newEnd = caret.getDot()-k;
             if (newEnd >= 0) {
                 getTibDoc().remove(newEnd, k);
                 if (manageCaret) caret.setDot(newEnd);
             }
-		} catch (BadLocationException ble) {
+        } catch (BadLocationException ble) {
             ThdlDebug.noteIffyCode();
-		}
-	}
+        }
+    }
 
 /**
 * Takes an old glyph list, which should be the currently visible set
@@ -686,59 +686,59 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * 'l' and 'n', and newGlyphList contains a single glyph, 'lng'.  In
 * this case, redrawGlyphs will be instructed to backspace over both
 * 'l' and 'n', and then insert 'lng'.  */
-	private java.util.List redrawGlyphs(java.util.List oldGlyphList, java.util.List newGlyphList) {
-		if (newGlyphList.isEmpty())
-			return newGlyphList;
+    private java.util.List redrawGlyphs(java.util.List oldGlyphList, java.util.List newGlyphList) {
+        if (newGlyphList.isEmpty())
+            return newGlyphList;
 
-		Iterator newIter = newGlyphList.iterator();
-		DuffCode newDc = (DuffCode)newIter.next();
+        Iterator newIter = newGlyphList.iterator();
+        DuffCode newDc = (DuffCode)newIter.next();
 
-		int oldGlyphCount = oldGlyphList.size();
-		int newGlyphCount = newGlyphList.size();
-		int beginDifference = -1; //at what point does the new glyph list begin to differ from the old one?
-		int k=0;
+        int oldGlyphCount = oldGlyphList.size();
+        int newGlyphCount = newGlyphList.size();
+        int beginDifference = -1; //at what point does the new glyph list begin to differ from the old one?
+        int k=0;
 
-		if (oldGlyphCount!=0) {
-			int smallerGlyphCount;
-			DuffCode oldDc;
+        if (oldGlyphCount!=0) {
+            int smallerGlyphCount;
+            DuffCode oldDc;
 
-			if (oldGlyphCount < newGlyphCount)
-				smallerGlyphCount = oldGlyphCount;
-			else
-				smallerGlyphCount = newGlyphCount;
+            if (oldGlyphCount < newGlyphCount)
+                smallerGlyphCount = oldGlyphCount;
+            else
+                smallerGlyphCount = newGlyphCount;
 
-			Iterator oldIter = oldGlyphList.iterator();
+            Iterator oldIter = oldGlyphList.iterator();
 
-			for (; k<smallerGlyphCount; k++) {
-				oldDc = (DuffCode)oldIter.next();
+            for (; k<smallerGlyphCount; k++) {
+                oldDc = (DuffCode)oldIter.next();
 
-				if (!oldDc.equals(newDc)) {
-					beginDifference = k;
-					break;
-				}
-				if (newIter.hasNext())
-					newDc = (DuffCode)newIter.next();
-			}
+                if (!oldDc.equals(newDc)) {
+                    beginDifference = k;
+                    break;
+                }
+                if (newIter.hasNext())
+                    newDc = (DuffCode)newIter.next();
+            }
 
-			if (beginDifference == -1)
-				beginDifference = smallerGlyphCount;
+            if (beginDifference == -1)
+                beginDifference = smallerGlyphCount;
 
-			if (beginDifference == newGlyphCount) {
-				if (oldGlyphCount > newGlyphCount)
-					backSpace(oldGlyphCount-newGlyphCount); //deals with 'pd+m' problem
+            if (beginDifference == newGlyphCount) {
+                if (oldGlyphCount > newGlyphCount)
+                    backSpace(oldGlyphCount-newGlyphCount); //deals with 'pd+m' problem
 
-				return newGlyphList; //there is no difference between new and old glyph lists
-			}
-		}
+                return newGlyphList; //there is no difference between new and old glyph lists
+            }
+        }
 
-		if (beginDifference != -1)
-			backSpace(oldGlyphCount - beginDifference);
+        if (beginDifference != -1)
+            backSpace(oldGlyphCount - beginDifference);
 
-		java.util.List sublist = newGlyphList.subList(k, newGlyphCount);
-		DuffData[] dd = TibTextUtils.convertGlyphs(sublist);
-		getTibDoc().insertDuff(caret.getDot(), dd);
-		return newGlyphList;
-	}
+        java.util.List sublist = newGlyphList.subList(k, newGlyphCount);
+        DuffData[] dd = TibTextUtils.convertGlyphs(sublist);
+        getTibDoc().insertDuff(caret.getDot(), dd);
+        return newGlyphList;
+    }
 
 /**
 * Tries to insert the vowel v at the position of the caret.
@@ -835,7 +835,7 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * the vowel was composed of.  (Some vowels, such as Wylie 'I', consist
 * of two glyphs.)  We use the getter and setter for this variable and
 * never the variable itself. */
-	private int numberOfGlyphsForLastVowel;
+    private int numberOfGlyphsForLastVowel;
     private int getNumberOfGlyphsForLastVowel() {
         return numberOfGlyphsForLastVowel;
     }
@@ -860,7 +860,7 @@ public class DuffPane extends TibetanPane implements FocusListener {
             // drop this vowel silently.
         }
         DuffData[] dd = TibTextUtils.convertGlyphs(achenlist);
-        getTibDoc().insertDuff(caret.getDot(), dd);		
+        getTibDoc().insertDuff(caret.getDot(), dd);        
     }
 
 /**
@@ -870,52 +870,52 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * single glyph. This method deals with the problem of
 * correctly displaying a bindu given this complication.
 */
-	private void putBindu() {
-		special_bindu_block: {
-			if (caret.getDot()==0)
-				break special_bindu_block;
+    private void putBindu() {
+        special_bindu_block: {
+            if (caret.getDot()==0)
+                break special_bindu_block;
 
-			AttributeSet attr = getTibDoc().getCharacterElement(caret.getDot()-1).getAttributes();
-			String fontName = StyleConstants.getFontFamily(attr);
-			int fontNum;
+            AttributeSet attr = getTibDoc().getCharacterElement(caret.getDot()-1).getAttributes();
+            String fontName = StyleConstants.getFontFamily(attr);
+            int fontNum;
 
-			if (0 == (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName)))
-				break special_bindu_block;
+            if (0 == (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName)))
+                break special_bindu_block;
 
-			try {
-				char c2 = getTibDoc().getText(caret.getDot()-1, 1).charAt(0);
-				int k = (int)c2;
-				if (k<32 || k>126) //if previous character is formatting or some other non-character
-					break special_bindu_block;
+            try {
+                char c2 = getTibDoc().getText(caret.getDot()-1, 1).charAt(0);
+                int k = (int)c2;
+                if (k<32 || k>126) //if previous character is formatting or some other non-character
+                    break special_bindu_block;
 
-				String wylie
+                String wylie
                     = TibetanMachineWeb.getWylieForGlyph(fontNum,
                                                          k,
                                                          TibTextUtils.weDoNotCareIfThereIsCorrespondingWylieOrNot);
-				if (!TibetanMachineWeb.isWylieVowel(wylie))
-					break special_bindu_block;
+                if (!TibetanMachineWeb.isWylieVowel(wylie))
+                    break special_bindu_block;
 
-				DuffCode dc = new DuffCode(fontNum, c2);
-				java.util.List beforecaret = new ArrayList();
-				beforecaret.add(dc);
-				java.util.List bindulist = new LinkedList();
+                DuffCode dc = new DuffCode(fontNum, c2);
+                java.util.List beforecaret = new ArrayList();
+                beforecaret.add(dc);
+                java.util.List bindulist = new LinkedList();
                                 TibTextUtils.getBindu(bindulist, dc);
-				redrawGlyphs(beforecaret, bindulist);
-				initKeyboard();
-				return;
-			}
-			catch(BadLocationException ble) {
-				System.out.println("no--can't do this bindu maneuver");
+                redrawGlyphs(beforecaret, bindulist);
+                initKeyboard();
+                return;
+            }
+            catch(BadLocationException ble) {
+                System.out.println("no--can't do this bindu maneuver");
                 ThdlDebug.noteIffyCode();
-			}
-		}
+            }
+        }
 
                 java.util.List binduList = new LinkedList();
                 TibTextUtils.getBindu(binduList, null);
-		DuffData[] dd = TibTextUtils.convertGlyphs(binduList);
-		getTibDoc().insertDuff(caret.getDot(), dd);
-		initKeyboard();
-	}
+        DuffData[] dd = TibTextUtils.convertGlyphs(binduList);
+        getTibDoc().insertDuff(caret.getDot(), dd);
+        initKeyboard();
+    }
 
 /**
 * Required by implementations of the
@@ -925,8 +925,8 @@ public class DuffPane extends TibetanPane implements FocusListener {
 *
 * @param e a FocusEvent
 */
-	public void focusGained(FocusEvent e) {
-	}
+    public void focusGained(FocusEvent e) {
+    }
 
 /**
 * Required by implementations of the
@@ -935,27 +935,27 @@ public class DuffPane extends TibetanPane implements FocusListener {
 *
 * @param e a FocusEvent
 */
-	public void focusLost(FocusEvent e) {
-		initKeyboard();
-		setNumberOfGlyphsForLastVowel(0);
+    public void focusLost(FocusEvent e) {
+        initKeyboard();
+        setNumberOfGlyphsForLastVowel(0);
         appendStatus(" (because the window focus was lost)");
-	}
+    }
 
     /** Copies the current selection to the system clipboard, unless
         cut-and-paste operations are disabled. */
-	public void copy() {
+    public void copy() {
         copy(getSelectionStart(), getSelectionEnd(), false);
     }
 
     /** If this.isEditable(), then this copies the current selection
         to the system clipboard and then deletes it. */
-	public void cut() {
+    public void cut() {
         copy(getSelectionStart(), getSelectionEnd(), true);
     }
 
     /** If this.isEditable(), then this deletes the current selection. */
-	public void deleteCurrentSelection()
-	{
+    public void deleteCurrentSelection()
+    {
         int start=getSelectionStart(), end=getSelectionEnd();
         
         if (!this.isEditable())
@@ -982,40 +982,40 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * @param remove this should be true if the operation is 'cut',
 * false if it is 'copy'
 */
-	private void copy(int start, int end, boolean remove) {
+    private void copy(int start, int end, boolean remove) {
         updateStatus("Copied to clipboard");
-		int p1 = start;
-		int p2 = end;
-		if (p1 != p2) {
+        int p1 = start;
+        int p2 = end;
+        if (p1 != p2) {
             ThdlDebug.verify(getDocument() == getTibDoc());
-			RTFSelection rtfSelection = new RTFSelection((StyledDocument)getDocument(), p1, p2-p1);
-			try {
-				rtfBoard.setContents(rtfSelection, rtfSelection);
-			} catch (IllegalStateException ise) {
-				ise.printStackTrace();
-				ThdlDebug.noteIffyCode();
-			}
-		}
-		if (remove) {
+            RTFSelection rtfSelection = new RTFSelection((StyledDocument)getDocument(), p1, p2-p1);
+            try {
+                rtfBoard.setContents(rtfSelection, rtfSelection);
+            } catch (IllegalStateException ise) {
+                ise.printStackTrace();
+                ThdlDebug.noteIffyCode();
+            }
+        }
+        if (remove) {
             // Respect setEditable(boolean):
             if (!this.isEditable())
                 return;
 
-			try {
+            try {
                 ThdlDebug.verify(getDocument() == getTibDoc());
-				getDocument().remove(p1, p2-p1);
-			} catch (BadLocationException ble) {
-				ble.printStackTrace();
-				ThdlDebug.noteIffyCode();
-			}
+                getDocument().remove(p1, p2-p1);
+            } catch (BadLocationException ble) {
+                ble.printStackTrace();
+                ThdlDebug.noteIffyCode();
+            }
         }
-	}
+    }
 
 public void paste() {
     /* added by AM. If we are pasting over selected text, such text
     such be substituted by the text to be pasted. */
     deleteCurrentSelection();
-	paste(getSelectionStart());
+    paste(getSelectionStart());
 }
 
 /**
@@ -1033,25 +1033,25 @@ public void paste(int offset) {
     if (!this.isEditable())
         return;
                 
-	try {
-		Transferable contents = rtfBoard.getContents(this);
+    try {
+        Transferable contents = rtfBoard.getContents(this);
 
 /*
-		if (!isRomanEnabled) {
-			if (contents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-				String data = (String)contents.getTransferData(DataFlavor.stringFlavor);
-				toTibetanMachineWeb(data, offset);
-			}
-		} else if (contents.isDataFlavorSupported(rtfFlavor)) {
+        if (!isRomanEnabled) {
+            if (contents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                String data = (String)contents.getTransferData(DataFlavor.stringFlavor);
+                toTibetanMachineWeb(data, offset);
+            }
+        } else if (contents.isDataFlavorSupported(rtfFlavor)) {
 */
 
-		if (contents.isDataFlavorSupported(rtfFlavor)){
+        if (contents.isDataFlavorSupported(rtfFlavor)){
 
-			InputStream in = (InputStream)contents.getTransferData(rtfFlavor);
-			int p1 = offset;
+            InputStream in = (InputStream)contents.getTransferData(rtfFlavor);
+            int p1 = offset;
 
-			//construct new document that contains only portion of text you want to paste
-			StyledDocument sd = new DefaultStyledDocument();
+            //construct new document that contains only portion of text you want to paste
+            StyledDocument sd = new DefaultStyledDocument();
 
             // I swear this happened once when I pasted in some
             // random junk just after Jskad started up.
@@ -1079,7 +1079,7 @@ public void paste(int offset) {
                     && contents.isDataFlavorSupported(DataFlavor.stringFlavor))
                     {
                         String data = (String)contents.getTransferData(DataFlavor.stringFlavor);
-                        toTibetanMachineWeb(data, offset);			    
+                        toTibetanMachineWeb(data, offset);                
                     }
                 else
                     {
@@ -1096,41 +1096,41 @@ public void paste(int offset) {
                         }
                     }
             }
-		} else if (contents.isDataFlavorSupported(DataFlavor.stringFlavor))
-		{
-		    if (!isRomanEnabled) {
-				String data = (String)contents.getTransferData(DataFlavor.stringFlavor);
-				toTibetanMachineWeb(data, offset);
+        } else if (contents.isDataFlavorSupported(DataFlavor.stringFlavor))
+        {
+            if (!isRomanEnabled) {
+                String data = (String)contents.getTransferData(DataFlavor.stringFlavor);
+                toTibetanMachineWeb(data, offset);
             }
             else
             {
-			    String s = (String)contents.getTransferData(DataFlavor.stringFlavor);
-			    replaceSelection(s);
-			}
-		}
-	} catch (UnsupportedFlavorException ufe) {
-		ufe.printStackTrace();
-		ThdlDebug.noteIffyCode();
-	} catch (IOException ioe) {
-		ioe.printStackTrace();
-		ThdlDebug.noteIffyCode();
-	} catch (IllegalStateException ise) {
-		ise.printStackTrace();
-		ThdlDebug.noteIffyCode();
-	}
+                String s = (String)contents.getTransferData(DataFlavor.stringFlavor);
+                replaceSelection(s);
+            }
+        }
+    } catch (UnsupportedFlavorException ufe) {
+        ufe.printStackTrace();
+        ThdlDebug.noteIffyCode();
+    } catch (IOException ioe) {
+        ioe.printStackTrace();
+        ThdlDebug.noteIffyCode();
+    } catch (IllegalStateException ise) {
+        ise.printStackTrace();
+        ThdlDebug.noteIffyCode();
+    }
 }
 
 /**
 * Enables cutting and pasting of Tibetan text.
 */
-	public void enableCutAndPaste() {
-		isCutAndPasteEnabled = true;
-	}
+    public void enableCutAndPaste() {
+        isCutAndPasteEnabled = true;
+    }
 
     /** Returns true iff cut-and-paste operations are enabled. */
-	public boolean isCutAndPasteOn() {
-		return isCutAndPasteEnabled;
-	}
+    public boolean isCutAndPasteOn() {
+        return isCutAndPasteEnabled;
+    }
 
 /**
 * Disables cutting and pasting of Tibetan text.
@@ -1139,197 +1139,197 @@ public void paste(int offset) {
 * Java security sandbox to cut and paste from an
 * applet to the system clipboard.
 */
-	public void disableCutAndPaste() {
-		isCutAndPasteEnabled = false;
-	}
+    public void disableCutAndPaste() {
+        isCutAndPasteEnabled = false;
+    }
 
-	private void processRomanChar(String key, AttributeSet attSet) {
-		switch (key.charAt(0)) {
-			case KeyEvent.VK_TAB:
-			case KeyEvent.VK_ENTER:
-			case KeyEvent.VK_ESCAPE:
-			case KeyEvent.VK_DELETE:
-			case KeyEvent.VK_BACK_SPACE:
-				break;
-			default:
-				append(key, attSet);
-		}
-	}
+    private void processRomanChar(String key, AttributeSet attSet) {
+        switch (key.charAt(0)) {
+            case KeyEvent.VK_TAB:
+            case KeyEvent.VK_ENTER:
+            case KeyEvent.VK_ESCAPE:
+            case KeyEvent.VK_DELETE:
+            case KeyEvent.VK_BACK_SPACE:
+                break;
+            default:
+                append(key, attSet);
+        }
+    }
 
     /** Utility method called by DuffPane's Keymap as the 
-     	default behavior when the user is in Tibetan typing mode.
+         default behavior when the user is in Tibetan typing mode.
         @param c the character the user entered in whatever keyboard
         is in use
     */
-	private void processTibetanChar(char c) {
+    private void processTibetanChar(char c) {
 
         // Have we modified the status bar?
-		boolean changedStatus = false;
+        boolean changedStatus = false;
 
-		key_block: 
-		{
+        key_block: 
+        {
 
-		if (TibetanMachineWeb.hasDisambiguatingKey())
-			if (c == TibetanMachineWeb.getDisambiguatingKey()) {
-				initKeyboard();
+        if (TibetanMachineWeb.hasDisambiguatingKey())
+            if (c == TibetanMachineWeb.getDisambiguatingKey()) {
+                initKeyboard();
                 changedStatus = true;
                 appendStatus(" (because you pressed the disambiguating key)");
-				break key_block;
-			};
+                break key_block;
+            };
 
-		if (TibetanMachineWeb.hasSanskritStackingKey() || TibetanMachineWeb.hasTibetanStackingKey()) {
-			if (c == TibetanMachineWeb.getStackingKey()) {
-				if (TibetanMachineWeb.isStackingMedial()) {
-					int size = charList.size();
+        if (TibetanMachineWeb.hasSanskritStackingKey() || TibetanMachineWeb.hasTibetanStackingKey()) {
+            if (c == TibetanMachineWeb.getStackingKey()) {
+                if (TibetanMachineWeb.isStackingMedial()) {
+                    int size = charList.size();
 
-					if (size == 0) {
-						initKeyboard();
+                    if (size == 0) {
+                        initKeyboard();
                         changedStatus = true;
                         appendStatus(" (because you pressed the stacking key with nothing to stack on)");
-					} else if (size > 1 && isStackingRightToLeft) {
-						String s = (String)charList.remove(charList.size() - 1);
-						newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
-						oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
-						initKeyboard();
-						charList.add(s);
-						newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
-						oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
-						holdCurrent = new StringBuffer();
-						isTopHypothesis = false;
-						isStackingOn = true;
-						isStackingRightToLeft = false;
-						isDefinitelyTibetan = isDefinitelyTibetan_withStackKey;
-						isDefinitelySanskrit = isDefinitelySanskrit_withStackKey;
+                    } else if (size > 1 && isStackingRightToLeft) {
+                        String s = (String)charList.remove(charList.size() - 1);
+                        newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
+                        oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
+                        initKeyboard();
+                        charList.add(s);
+                        newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
+                        oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
+                        holdCurrent = new StringBuffer();
+                        isTopHypothesis = false;
+                        isStackingOn = true;
+                        isStackingRightToLeft = false;
+                        isDefinitelyTibetan = isDefinitelyTibetan_withStackKey;
+                        isDefinitelySanskrit = isDefinitelySanskrit_withStackKey;
                         changedStatus = true;
                         updateStatus("You have stacked a letter atop another.");
-					} else {
-						holdCurrent = new StringBuffer();
-						isTopHypothesis = false;
-						isStackingOn = true;
-						isStackingRightToLeft = false;
-						isDefinitelyTibetan = isDefinitelyTibetan_withStackKey;
-						isDefinitelySanskrit = isDefinitelySanskrit_withStackKey;
+                    } else {
+                        holdCurrent = new StringBuffer();
+                        isTopHypothesis = false;
+                        isStackingOn = true;
+                        isStackingRightToLeft = false;
+                        isDefinitelyTibetan = isDefinitelyTibetan_withStackKey;
+                        isDefinitelySanskrit = isDefinitelySanskrit_withStackKey;
                         changedStatus = true;
                         updateStatus("Some sort of stack-fu is happening/has happened.");
-					}
-					break key_block;
-				}
-				else { //stacking must be pre/post
-					if (!isStackingOn || (isStackingOn && isDefinitelyTibetan==isDefinitelyTibetan_default)) {
-						initKeyboard();
-						isStackingOn = true;
-						isStackingRightToLeft = false;
-						isDefinitelyTibetan = isDefinitelyTibetan_withStackKey;
-						isDefinitelySanskrit = isDefinitelySanskrit_withStackKey;
+                    }
+                    break key_block;
+                }
+                else { //stacking must be pre/post
+                    if (!isStackingOn || (isStackingOn && isDefinitelyTibetan==isDefinitelyTibetan_default)) {
+                        initKeyboard();
+                        isStackingOn = true;
+                        isStackingRightToLeft = false;
+                        isDefinitelyTibetan = isDefinitelyTibetan_withStackKey;
+                        isDefinitelySanskrit = isDefinitelySanskrit_withStackKey;
                         changedStatus = true;
                         updateStatus("!isStackingOn || (isStackingOn && isDefinitelyTibetan==isDefinitelyTibetan_default)");
-					}
-					else {try {
-						char ch = getTibDoc().getText(caret.getDot()-1, 1).charAt(0);
-						AttributeSet attr = getTibDoc().getCharacterElement(caret.getDot()-1).getAttributes();
-						String fontName = StyleConstants.getFontFamily(attr);
-						int fontNum = TibetanMachineWeb.getTMWFontNumber(fontName);
+                    }
+                    else {try {
+                        char ch = getTibDoc().getText(caret.getDot()-1, 1).charAt(0);
+                        AttributeSet attr = getTibDoc().getCharacterElement(caret.getDot()-1).getAttributes();
+                        String fontName = StyleConstants.getFontFamily(attr);
+                        int fontNum = TibetanMachineWeb.getTMWFontNumber(fontName);
 
-						if (0 == fontNum) {
-							initKeyboard();
-							isStackingOn = true;
-							isStackingRightToLeft = false;
-							isDefinitelyTibetan = isDefinitelyTibetan_withStackKey;
-							isDefinitelySanskrit = isDefinitelySanskrit_withStackKey;
+                        if (0 == fontNum) {
+                            initKeyboard();
+                            isStackingOn = true;
+                            isStackingRightToLeft = false;
+                            isDefinitelyTibetan = isDefinitelyTibetan_withStackKey;
+                            isDefinitelySanskrit = isDefinitelySanskrit_withStackKey;
                             changedStatus = true;
                             appendStatus(" (because 0 == fontNum)");
-						} else {
-							initKeyboard();
-							DuffCode dc = new DuffCode(fontNum, ch);
+                        } else {
+                            initKeyboard();
+                            DuffCode dc = new DuffCode(fontNum, ch);
 
-							if (!TibetanMachineWeb.isStack(dc) && !TibetanMachineWeb.isSanskritStack(dc)) {
-								isStackingOn = true;
-								isStackingRightToLeft = false;
-								isDefinitelyTibetan = isDefinitelyTibetan_withStackKey;
-								isDefinitelySanskrit = isDefinitelySanskrit_withStackKey;
-							}
+                            if (!TibetanMachineWeb.isStack(dc) && !TibetanMachineWeb.isSanskritStack(dc)) {
+                                isStackingOn = true;
+                                isStackingRightToLeft = false;
+                                isDefinitelyTibetan = isDefinitelyTibetan_withStackKey;
+                                isDefinitelySanskrit = isDefinitelySanskrit_withStackKey;
+                            }
                             changedStatus = true;
                             appendStatus(" (because 0 != fontNum)");
-						}
-					}
-					catch (BadLocationException ble) {
-						initKeyboard();
+                        }
+                    }
+                    catch (BadLocationException ble) {
+                        initKeyboard();
                         changedStatus = true;
                         appendStatus(" (because a BadLocationException was thrown)");
-					}}
-					break key_block;
-				}
-			}
-		}
+                    }}
+                    break key_block;
+                }
+            }
+        }
 
-		switch (c) {
-			case KeyEvent.VK_TAB:
-			case KeyEvent.VK_ENTER:
-			case KeyEvent.VK_ESCAPE:
-				initKeyboard();
+        switch (c) {
+            case KeyEvent.VK_TAB:
+            case KeyEvent.VK_ENTER:
+            case KeyEvent.VK_ESCAPE:
+                initKeyboard();
                 changedStatus = true;
                 appendStatus(" (because you typed enter, tab, or escape)");
-				break;
+                break;
 
-			default:
-				String val = String.valueOf(c);
+            default:
+                String val = String.valueOf(c);
 
-				if (TibetanMachineWeb.isPunc(val)) { //punctuation
-					val = TibetanMachineWeb.getWylieForPunc(val);
+                if (TibetanMachineWeb.isPunc(val)) { //punctuation
+                    val = TibetanMachineWeb.getWylieForPunc(val);
 
-					if (val.charAt(0) == TibetanMachineWeb.BINDU)
-						putBindu();
+                    if (val.charAt(0) == TibetanMachineWeb.BINDU)
+                        putBindu();
 
-					else {
-						DuffCode puncDc = TibetanMachineWeb.getGlyph(val);
-						MutableAttributeSet mas = TibetanMachineWeb.getAttributeSet(puncDc.getFontNum());
-						getTibDoc().appendDuff(caret.getDot(), String.valueOf(puncDc.getCharacter()), mas);
-					}
+                    else {
+                        DuffCode puncDc = TibetanMachineWeb.getGlyph(val);
+                        MutableAttributeSet mas = TibetanMachineWeb.getAttributeSet(puncDc.getFontNum());
+                        getTibDoc().appendDuff(caret.getDot(), String.valueOf(puncDc.getCharacter()), mas);
+                    }
 
-					initKeyboard();
+                    initKeyboard();
                     changedStatus = true;
                     appendStatus(" (because you typed punctuation)");
-					break key_block;
-				}
+                    break key_block;
+                }
 
-				if (charList.size()==0) { //add current character to charList if possible
-					holdCurrent.append(c);
-					String s = holdCurrent.toString();
+                if (charList.size()==0) { //add current character to charList if possible
+                    holdCurrent.append(c);
+                    String s = holdCurrent.toString();
 
-					if (TibetanMachineWeb.isVowel(s)) {
-						s = TibetanMachineWeb.getWylieForVowel(s);
+                    if (TibetanMachineWeb.isVowel(s)) {
+                        s = TibetanMachineWeb.getWylieForVowel(s);
 
-						if (isTypingVowel) {
+                        if (isTypingVowel) {
                             //note: this takes care of multiple keystroke vowels like 'ai'
-							backSpace(getNumberOfGlyphsForLastVowel());
+                            backSpace(getNumberOfGlyphsForLastVowel());
                         }
 
-						putVowel(s);
-						isTypingVowel = true;
+                        putVowel(s);
+                        isTypingVowel = true;
                         changedStatus = true;
                         updateStatus("You typed a vowel (the simple way).");
-					} else {
-						if (isTypingVowel) {
-							isTypingVowel = false;
-							s = String.valueOf(c);
-							holdCurrent = new StringBuffer(s);
-						}
+                    } else {
+                        if (isTypingVowel) {
+                            isTypingVowel = false;
+                            s = String.valueOf(c);
+                            holdCurrent = new StringBuffer(s);
+                        }
 
-						if (TibetanMachineWeb.isVowel(s)) {
-							s = TibetanMachineWeb.getWylieForVowel(s);
-							putVowel(s);
-							isTypingVowel = true;
+                        if (TibetanMachineWeb.isVowel(s)) {
+                            s = TibetanMachineWeb.getWylieForVowel(s);
+                            putVowel(s);
+                            isTypingVowel = true;
                             changedStatus = true;
                             updateStatus("You typed a vowel (the other way).");
-						} else if (TibetanMachineWeb.isChar(s)) {
-							s = TibetanMachineWeb.getWylieForChar(s);
-							charList.add(s);
-							isTopHypothesis = true;
-							newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
-							oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
+                        } else if (TibetanMachineWeb.isChar(s)) {
+                            s = TibetanMachineWeb.getWylieForChar(s);
+                            charList.add(s);
+                            isTopHypothesis = true;
+                            newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
+                            oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
                             changedStatus = true;
                             updateStatus("You typed a non-vowel, Tibetan character.");
-						} else {
+                        } else {
                             if (TibetanMachineWeb.hasInputPrefix(s)) {
                                 isTopHypothesis = false;
                                 changedStatus = true;
@@ -1361,106 +1361,106 @@ public void paste(int offset) {
                                 // else we'd go into an infinite loop
                             }
                         }
-					}
-				} else { //there is already a character in charList
-					holdCurrent.append(c);
-					String s = holdCurrent.toString();
+                    }
+                } else { //there is already a character in charList
+                    holdCurrent.append(c);
+                    String s = holdCurrent.toString();
 
-					if (TibetanMachineWeb.isVowel(s)) { //the holding string is a vowel
-						s = TibetanMachineWeb.getWylieForVowel(s);
-						initKeyboard();
-						isTypingVowel = true;
-						putVowel(s);
+                    if (TibetanMachineWeb.isVowel(s)) { //the holding string is a vowel
+                        s = TibetanMachineWeb.getWylieForVowel(s);
+                        initKeyboard();
+                        isTypingVowel = true;
+                        putVowel(s);
                         changedStatus = true;
                         updateStatus("You typed another vowel, so the first vowel was discarded.");
-					} else if (TibetanMachineWeb.isChar(s)) { //the holding string is a character
-						String s2 = TibetanMachineWeb.getWylieForChar(s);
+                    } else if (TibetanMachineWeb.isChar(s)) { //the holding string is a character
+                        String s2 = TibetanMachineWeb.getWylieForChar(s);
 
-						if (isTopHypothesis) {
-							if (TibetanMachineWeb.isAChungConsonant() && isStackingOn && charList.size()>1 && s2.equals(TibetanMachineWeb.ACHUNG)) {
-								charList.remove(charList.size() - 1);
-								newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
-								oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
-								putVowel(TibetanMachineWeb.A_VOWEL);
-								initKeyboard();
+                        if (isTopHypothesis) {
+                            if (TibetanMachineWeb.isAChungConsonant() && isStackingOn && charList.size()>1 && s2.equals(TibetanMachineWeb.ACHUNG)) {
+                                charList.remove(charList.size() - 1);
+                                newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
+                                oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
+                                putVowel(TibetanMachineWeb.A_VOWEL);
+                                initKeyboard();
                                 changedStatus = true;
                                 appendStatus(" (because we put a vowel and there's some achung stuff happening)");
-								break key_block;
-							}
-							charList.set(charList.size()-1, s2);
-							newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
-							oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
+                                break key_block;
+                            }
+                            charList.set(charList.size()-1, s2);
+                            newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
+                            oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
                             changedStatus = true;
                             updateStatus("we were holding a hypothesis, and we've updated it");
-						} else {
-							if (!isStackingOn) {
-								initKeyboard();
-								holdCurrent = new StringBuffer(s);
+                        } else {
+                            if (!isStackingOn) {
+                                initKeyboard();
+                                holdCurrent = new StringBuffer(s);
                                 changedStatus = true;
                                 appendStatus(" (because you weren't stacking, and there was a character already)");
-							} else if (TibetanMachineWeb.isAChungConsonant() && s2.equals(TibetanMachineWeb.ACHUNG)) {
-								putVowel(TibetanMachineWeb.A_VOWEL);
-								initKeyboard();
+                            } else if (TibetanMachineWeb.isAChungConsonant() && s2.equals(TibetanMachineWeb.ACHUNG)) {
+                                putVowel(TibetanMachineWeb.A_VOWEL);
+                                initKeyboard();
                                 changedStatus = true;
                                 appendStatus(" (because you were stacking, and we put a vowel, and there was some achung business)");
-								break key_block;
-							}
+                                break key_block;
+                            }
 
-							charList.add(s2);
-							isTopHypothesis = true;
-							newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
-							oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
+                            charList.add(s2);
+                            isTopHypothesis = true;
+                            newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
+                            oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
                             changedStatus = true;
                             updateStatus("we weren't holding a hypothesis, but we are now");
-						}
-					} else { //the holding string is not a character
-						if (isTopHypothesis) { //finalize top character and add new hypothesis to top
-							holdCurrent = new StringBuffer();
-							holdCurrent.append(c);
-							s = holdCurrent.toString();
+                        }
+                    } else { //the holding string is not a character
+                        if (isTopHypothesis) { //finalize top character and add new hypothesis to top
+                            holdCurrent = new StringBuffer();
+                            holdCurrent.append(c);
+                            s = holdCurrent.toString();
 
-							if (TibetanMachineWeb.isVowel(s)) {
-								String s2 = TibetanMachineWeb.getWylieForVowel(s);
-								putVowel(s2);
-								initKeyboard();
-								isTypingVowel = true;
-								holdCurrent = new StringBuffer(s);
+                            if (TibetanMachineWeb.isVowel(s)) {
+                                String s2 = TibetanMachineWeb.getWylieForVowel(s);
+                                putVowel(s2);
+                                initKeyboard();
+                                isTypingVowel = true;
+                                holdCurrent = new StringBuffer(s);
                                 changedStatus = true;
                                 appendStatus(" (because we put a vowel and the previous...)");
-							} else {
-								if (TibetanMachineWeb.isStackingMedial() && !isStackingRightToLeft) {
-									initKeyboard();
+                            } else {
+                                if (TibetanMachineWeb.isStackingMedial() && !isStackingRightToLeft) {
+                                    initKeyboard();
                                     changedStatus = true;
                                     appendStatus(" (because TibetanMachineWeb.isStackingMedial() && !isStackingRightToLeft)");
                                 }
 
-								if (TibetanMachineWeb.isChar(s)) {
-									String s2 = TibetanMachineWeb.getWylieForChar(s);
+                                if (TibetanMachineWeb.isChar(s)) {
+                                    String s2 = TibetanMachineWeb.getWylieForChar(s);
 
-									if (!isStackingOn) {
-										initKeyboard();
-									} else if (TibetanMachineWeb.isAChungConsonant() && s2.equals(TibetanMachineWeb.ACHUNG)) {
-										putVowel(TibetanMachineWeb.A_VOWEL);
-										initKeyboard();
+                                    if (!isStackingOn) {
+                                        initKeyboard();
+                                    } else if (TibetanMachineWeb.isAChungConsonant() && s2.equals(TibetanMachineWeb.ACHUNG)) {
+                                        putVowel(TibetanMachineWeb.A_VOWEL);
+                                        initKeyboard();
                                         changedStatus = true;
                                         appendStatus(" (because we put a vowel)");
-										break key_block;
-									}
+                                        break key_block;
+                                    }
 
-									charList.add(s2);
-									newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
-									oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
+                                    charList.add(s2);
+                                    newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
+                                    oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
                                     changedStatus = true;
                                     updateStatus("added character to charList");
-								} else {
-									holdCurrent = new StringBuffer(s);
-									isTopHypothesis = false;
+                                } else {
+                                    holdCurrent = new StringBuffer(s);
+                                    isTopHypothesis = false;
                                     changedStatus = true;
                                     // FIXME: ring a bell here so the user knows what's up.
                                     updateStatus("semireset (holdCurrent was reset) because you typed something invalid");
-								}
-							}
-						} else {
+                                }
+                            }
+                        } else {
                             // top char is just a guess!  Just keep c
                             // in holdCurrent if it may become valid
                             // input, or reset if we've no hope.
@@ -1495,16 +1495,16 @@ public void paste(int offset) {
                                 }
                                 // else we'd go into an infinite loop
                             }
-						}
-					}
-				}
-		} //end switch
-		} //end key_block
+                        }
+                    }
+                }
+        } //end switch
+        } //end key_block
 
         if (changedStatus == false) {
             updateStatus("THAT KEY DID NOTHING BECAUSE OF THE CURRENT INPUT MODE.");
         }
-	}
+    }
 
 /**
 * Converts a string of Extended Wylie to TibetanMachineWeb, and 
@@ -1513,96 +1513,96 @@ public void paste(int offset) {
 * @param wylie the string of Wylie to convert
 * @param offset the position at which to insert the conversion
 */
-	public void toTibetanMachineWeb(String wylie, int offset) {
-		try {
-			StringTokenizer sTok = new StringTokenizer(wylie, "\n\t", true); // FIXME does this work on all platforms?
-			while (sTok.hasMoreTokens()) {
-				String next = sTok.nextToken();
-				if (next.equals("\n") || next.equals("\t")) { // FIXME does this work on all platforms?
-					try {
-						getTibDoc().insertString(offset, next, null);
-						offset++;
-					} catch (BadLocationException ble) {
-						ble.printStackTrace();
-						ThdlDebug.noteIffyCode();
-					}
-				} else {
-					DuffData[] dd = TibTextUtils.getTibetanMachineWeb(next);
-					offset = getTibDoc().insertDuff(offset, dd);
-				}
-			}
-		}
-		catch (InvalidWylieException iwe) {
-			JOptionPane.showMessageDialog(this,
-				"The Wylie you are trying to convert is invalid, " +
-				"beginning from:\n     " + iwe.getCulpritInContext() + "\n" +
-				"The culprit is probably the character '"+iwe.getCulprit()+"'.");
-		}
-	}
+    public void toTibetanMachineWeb(String wylie, int offset) {
+        try {
+            StringTokenizer sTok = new StringTokenizer(wylie, "\n\t", true); // FIXME does this work on all platforms?
+            while (sTok.hasMoreTokens()) {
+                String next = sTok.nextToken();
+                if (next.equals("\n") || next.equals("\t")) { // FIXME does this work on all platforms?
+                    try {
+                        getTibDoc().insertString(offset, next, null);
+                        offset++;
+                    } catch (BadLocationException ble) {
+                        ble.printStackTrace();
+                        ThdlDebug.noteIffyCode();
+                    }
+                } else {
+                    DuffData[] dd = TibTextUtils.getTibetanMachineWeb(next);
+                    offset = getTibDoc().insertDuff(offset, dd);
+                }
+            }
+        }
+        catch (InvalidWylieException iwe) {
+            JOptionPane.showMessageDialog(this,
+                "The Wylie you are trying to convert is invalid, " +
+                "beginning from:\n     " + iwe.getCulpritInContext() + "\n" +
+                "The culprit is probably the character '"+iwe.getCulprit()+"'.");
+        }
+    }
 
 /**
 * Converts the currently selected text from Extended Wylie to TibetanMachineWeb.
 */
-	public void toTibetanMachineWeb() {
-		int start = getSelectionStart();
-		int end = getSelectionEnd();
+    public void toTibetanMachineWeb() {
+        int start = getSelectionStart();
+        int end = getSelectionEnd();
 
-		toTibetanMachineWeb(start, end);
-	}
+        toTibetanMachineWeb(start, end);
+    }
 
 /**
 * Converts a stretch of text from Extended Wylie to TibetanMachineWeb.
 * @param start the begin point for the conversion
 * @param end the end point for the conversion
 */
-	public void toTibetanMachineWeb(int start, int end) {
-		if (start == end)
-			return;
+    public void toTibetanMachineWeb(int start, int end) {
+        if (start == end)
+            return;
 
-		StringBuffer sb;
-		AttributeSet attr;
-		String fontName;
-		Position endPos;
-		int i;
+        StringBuffer sb;
+        AttributeSet attr;
+        String fontName;
+        Position endPos;
+        int i;
 
-		try {
-			sb = new StringBuffer();
-			endPos = getTibDoc().createPosition(end);
-			i = start;
+        try {
+            sb = new StringBuffer();
+            endPos = getTibDoc().createPosition(end);
+            i = start;
 
-			while (i < endPos.getOffset()+1) {
-				attr = getTibDoc().getCharacterElement(i).getAttributes();
-				fontName = StyleConstants.getFontFamily(attr);
+            while (i < endPos.getOffset()+1) {
+                attr = getTibDoc().getCharacterElement(i).getAttributes();
+                fontName = StyleConstants.getFontFamily(attr);
 
-				if ((0 != TibetanMachineWeb.getTMWFontNumber(fontName)) || i==endPos.getOffset()) {
-					if (i != start) {
-						try {
-							DuffData[] duffdata = TibTextUtils.getTibetanMachineWeb(sb.toString());
-							getTibDoc().remove(start, i-start);
-							getTibDoc().insertDuff(start, duffdata);
-						}
-						catch (InvalidWylieException iwe) {
-							JOptionPane.showMessageDialog(this,
-								"The Wylie you are trying to convert is invalid, " +
-								"beginning from:\n     " + iwe.getCulpritInContext() +
-								"\nThe culprit is probably the character '" +
-								iwe.getCulprit() + "'.");
-							return;
-						}
-					}
-					start = i+1;
-				}
-				else
-					sb.append(getTibDoc().getText(i, 1));
+                if ((0 != TibetanMachineWeb.getTMWFontNumber(fontName)) || i==endPos.getOffset()) {
+                    if (i != start) {
+                        try {
+                            DuffData[] duffdata = TibTextUtils.getTibetanMachineWeb(sb.toString());
+                            getTibDoc().remove(start, i-start);
+                            getTibDoc().insertDuff(start, duffdata);
+                        }
+                        catch (InvalidWylieException iwe) {
+                            JOptionPane.showMessageDialog(this,
+                                "The Wylie you are trying to convert is invalid, " +
+                                "beginning from:\n     " + iwe.getCulpritInContext() +
+                                "\nThe culprit is probably the character '" +
+                                iwe.getCulprit() + "'.");
+                            return;
+                        }
+                    }
+                    start = i+1;
+                }
+                else
+                    sb.append(getTibDoc().getText(i, 1));
 
-				i++;
-			}
-		}
-		catch (BadLocationException ble) {
-			ble.printStackTrace();
-			ThdlDebug.noteIffyCode();
-		}
-	}
+                i++;
+            }
+        }
+        catch (BadLocationException ble) {
+            ble.printStackTrace();
+            ThdlDebug.noteIffyCode();
+        }
+    }
 
 /**
 * Converts the entire associated document into Extended Wylie.  If the
@@ -1623,62 +1623,62 @@ public void paste(int offset) {
 
     // FIXMEDOC
 class RTFSelection implements ClipboardOwner, Transferable {
-	private DataFlavor[] supportedFlavor;
-	private ByteArrayOutputStream rtfOut;
-	private String plainText;
+    private DataFlavor[] supportedFlavor;
+    private ByteArrayOutputStream rtfOut;
+    private String plainText;
 
-	// FIXMEDOC
-	RTFSelection(StyledDocument sdoc, int offset, int length) {
-		supportedFlavor = new DataFlavor[2];
-		supportedFlavor[0] = rtfFlavor;
-		supportedFlavor[1] = DataFlavor.stringFlavor;
-		try {
-			//construct new document that contains only portion of text you want to copy
-			//this workaround is due to bug 4129911, which will not be fixed (see below after source code)
-			StyledDocument newDoc = new DefaultStyledDocument();
-			for (int i=offset; i<offset+length; i++) {
-				try {
-					String s = sdoc.getText(i,1);
-					AttributeSet as = sdoc.getCharacterElement(i).getAttributes();
-					newDoc.insertString(i-offset, s, as);
-				} catch (BadLocationException ble) {
-					ble.printStackTrace();
-					ThdlDebug.noteIffyCode();
-				}
-			}
-			rtfOut = new ByteArrayOutputStream();
-			rtfEd.write(rtfOut, newDoc, 0, newDoc.getLength()); //last two parameters ignored, see bug below
-			plainText = getText(offset, length);
-		} catch (BadLocationException ble) {
-			ble.printStackTrace();
-			ThdlDebug.noteIffyCode();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-			ThdlDebug.noteIffyCode();
-		}
-	}
-	// FIXMEDOC
-	public void lostOwnership(Clipboard clipboard, Transferable contents) {
-	}
-	// FIXMEDOC
-	public Object getTransferData(DataFlavor flavor) {
-		if (flavor.equals(rtfFlavor))
-			return new ByteArrayInputStream(rtfOut.toByteArray());
-		if (flavor.equals(DataFlavor.stringFlavor))
-			return plainText;
-		return null;
-	}
-	// FIXMEDOC
-	public DataFlavor[] getTransferDataFlavors() {
-		return supportedFlavor; 
-	}
-	// FIXMEDOC
-	public boolean isDataFlavorSupported(DataFlavor flavor) {
-		for (int i=0; i<supportedFlavor.length; i++)
-			if (flavor.equals(supportedFlavor[i]))
-				return true;
-		return false;
-	}
+    // FIXMEDOC
+    RTFSelection(StyledDocument sdoc, int offset, int length) {
+        supportedFlavor = new DataFlavor[2];
+        supportedFlavor[0] = rtfFlavor;
+        supportedFlavor[1] = DataFlavor.stringFlavor;
+        try {
+            //construct new document that contains only portion of text you want to copy
+            //this workaround is due to bug 4129911, which will not be fixed (see below after source code)
+            StyledDocument newDoc = new DefaultStyledDocument();
+            for (int i=offset; i<offset+length; i++) {
+                try {
+                    String s = sdoc.getText(i,1);
+                    AttributeSet as = sdoc.getCharacterElement(i).getAttributes();
+                    newDoc.insertString(i-offset, s, as);
+                } catch (BadLocationException ble) {
+                    ble.printStackTrace();
+                    ThdlDebug.noteIffyCode();
+                }
+            }
+            rtfOut = new ByteArrayOutputStream();
+            rtfEd.write(rtfOut, newDoc, 0, newDoc.getLength()); //last two parameters ignored, see bug below
+            plainText = getText(offset, length);
+        } catch (BadLocationException ble) {
+            ble.printStackTrace();
+            ThdlDebug.noteIffyCode();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            ThdlDebug.noteIffyCode();
+        }
+    }
+    // FIXMEDOC
+    public void lostOwnership(Clipboard clipboard, Transferable contents) {
+    }
+    // FIXMEDOC
+    public Object getTransferData(DataFlavor flavor) {
+        if (flavor.equals(rtfFlavor))
+            return new ByteArrayInputStream(rtfOut.toByteArray());
+        if (flavor.equals(DataFlavor.stringFlavor))
+            return plainText;
+        return null;
+    }
+    // FIXMEDOC
+    public DataFlavor[] getTransferDataFlavors() {
+        return supportedFlavor; 
+    }
+    // FIXMEDOC
+    public boolean isDataFlavorSupported(DataFlavor flavor) {
+        for (int i=0; i<supportedFlavor.length; i++)
+            if (flavor.equals(supportedFlavor[i]))
+                return true;
+        return false;
+    }
 } // class RTFSelection
 
 }
