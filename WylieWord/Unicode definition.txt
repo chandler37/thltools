@@ -125,12 +125,12 @@
 0F7C o	Tibetan_vowel
 0F7D au	foreign_vowel
 0F7E M	vowel_modifier
-0F7F H	vowel_modifier
+0F7F H	foreign_word_terminator
 0F80 -i	foreign_vowel
 0F81 -I	combination
 0F82 ~M`	vowel_modifier
 0F83 ~M	vowel_modifier
-0F84 ?	vowel_modifier
+0F84 ?	foreign_word_terminator
 0F85 &	symbol
 0F86 "	symbol
 0F87 "	symbol
