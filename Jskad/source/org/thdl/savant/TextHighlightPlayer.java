@@ -23,6 +23,7 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.event.MouseListener;
+import java.awt.event.ComponentAdapter;
 
 import org.thdl.util.ThdlDebug;
 
@@ -32,6 +33,7 @@ public class TextHighlightPlayer extends JPanel implements AnnotationPlayer
 	protected Hashtable hashStart, hashEnd, highlights;
 	protected Highlighter highlighter;
 	protected Highlighter.HighlightPainter highlightPainter;
+	protected JViewport viewport;
 
 	public TextHighlightPlayer(TranscriptView view, Color highlightcolor)
 	{
@@ -100,12 +102,22 @@ public class TextHighlightPlayer extends JPanel implements AnnotationPlayer
 			int end = endInt.intValue();
 			Object tag = highlighter.addHighlight(start, end, highlightPainter);
 			highlights.put(id, tag);
-			try
-			{
+	
+			// scrolls highlighted text to middle of viewport
+				JViewport viewport = (JViewport)SwingUtilities.getAncestorOfClass(JViewport.class, text);
+				int halfViewHeight = viewport.getExtentSize().height / 2;
+				Rectangle textRectangle = text.modelToView(end);
+				int yFactor = textRectangle.y - halfViewHeight;
+				if (yFactor > 0) {
+					viewport.setViewPosition(new Point(0, yFactor));
+					text.repaint();
+				}
+
+/* this does scrolling at the bottom of the text window
 				Rectangle rect = text.modelToView(end);
 				text.scrollRectToVisible(rect);
 				text.repaint();
-			} catch (BadLocationException ble) {}
+*/
 		}
 		catch (BadLocationException ble)
 		{

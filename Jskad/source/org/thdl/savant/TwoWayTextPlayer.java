@@ -30,17 +30,18 @@ import java.util.Enumeration;
 import java.util.NoSuchElementException;
 import javax.swing.text.JTextComponent;
 
+import org.thdl.media.SmartMoviePanel;
 import org.thdl.util.ThdlDebug;
 
 public class TwoWayTextPlayer extends TextHighlightPlayer
 {
 	protected TreeMap orderedOffsets = null;
-	protected SoundPanel sound = null;
+	protected SmartMoviePanel sound = null;
 	protected long doubleClickDelay = 300L;
 	protected long lastClickTime;
 	protected Point lastClickPoint = null;
 
-	public TwoWayTextPlayer(SoundPanel sp, TranscriptView view, Color highlightColor)
+	public TwoWayTextPlayer(SmartMoviePanel sp, TranscriptView view, Color highlightColor)
 	{
 		super(view, highlightColor);
 		sound = sp;
