@@ -1,4 +1,4 @@
-<!-- @author David Chandler
+<!-- @author David Chandler, dchandler@users.sourceforge.net
 
      We have a document,
      http://thdltools.sourceforge.net/BuildSystems.html, that
@@ -61,6 +61,10 @@
   <property name="ext"  location="extensions"/>
   <property name="publicjavadocs"  location="${docs}/public-javadocs"/>
   <property name="privatejavadocs"  location="${docs}/private-javadocs"/>
+
+  <!-- If you have installed the J2EE SDK, then you can compile servlets.
+       Set this property to the directory containing j2ee.jar: 
+    -->
   <property name="j2ee.sdk.home" location="F:\Program Files\j2sdkee1.3.1\lib"/>
 
   <!-- Set to true for more output when running the tools and if you
@@ -77,6 +81,9 @@
        or something.  -->
   <property name="target.jvm" value="1.1"/>
 
+  <!-- Only the tt-servlet-compile target changes this.  Humans
+       shouldn't mess with this. -->
+  <property name="our.javac.classpathref" value="entire.class.path"/>
 
 
   <!-- To easily add a jar to the CLASSPATH, just drop it into
@@ -92,10 +99,6 @@
     <pathelement location="${ext}/xercesImpl.jar"/>
     <pathelement location="${ext}/xml-apis.jar"/>
     <pathelement location="${ext}/jmf.jar"/>
-
-    <fileset dir="${j2ee.sdk.home}">
-      <include name="j2ee.jar"/>
-    </fileset>
 
     <!-- this gets Ant's jars, so leave it out:
         <pathelement path="${java.class.path}/"/> -->
@@ -147,14 +150,12 @@
           description="JARs up everything into self-contained JARs for double-click, classpath-worry-free joy" />
 
   <target name="dist"
-          depends="jskad-dist,savant-dist,qd-dist,tt-handheld-dist,tt-standalone-dist,tt-applet-plus-jws-dist"
+          depends="jskad-dist,savant-dist,qd-dist,tt-handheld-dist,tt-standalone-dist,tt-applet-plus-jws-dist,tt-servlet-dist"
           description="JARs up everything" />
 
-  <!-- Don't compile tt-servlet by default, since not everyone has the
-       J2EE SDK installed: -->
   <target name="compile"
-          depends="jskad-compile,savant-compile,qd-compile,tt-standalone-compile,tt-handheld-compile,tt-applet-plus-jws-compile"
-          description="compiles all programs except for those that are for J2EE (rather than J2SE)" />
+          depends="jskad-compile,savant-compile,qd-compile,tt-standalone-compile,tt-handheld-compile,tt-applet-plus-jws-compile,tt-servlet-compile"
+          description="compiles all programs" />
 
 
   <target name="jskad-compile" depends="init"
@@ -270,15 +271,23 @@
   </target>
 
 
-  <target name="tt-servlet-compile" depends="init"
-          description="compiles the servlet form of the Translation Tool.  You'd better set the j2ee.sdk.home property first or have j2ee.jar on your CLASSPATH, because this is a J2EE program." >
+  <target name="tt-servlet-compile"
+          depends="ttsc-init"
+          if="found.j2ee.jar"
+          description="compiles the servlet form of the Translation Tool if you've set the j2ee.sdk.home property correctly" >
+    <path id="ttsc.class.path">
+      <pathelement location="${j2ee.sdk.home}/j2ee.jar"/>
+      <path refid="entire.class.path"/>
+    </path>
     <antcall target="our-internal-javac-task">
+      <reference torefid="ttsc.class.path" refid="ttsc.class.path"/>
+      <param name="our.javac.classpathref" value="ttsc.class.path"/>
       <param name="mybin" value="${ttservletbin}"/>
       <param name="my.included.source.file"
              value="org/thdl/tib/scanner/ConsoleScannerFilter.java"/>
     </antcall>
     <antcall target="copy-license-etc-to-bin-dir-for-jarring">
-      <param name="mybin" value="${ttbin}"/>
+      <param name="mybin" value="${ttservletbin}"/>
     </antcall>
   </target>
 
@@ -393,6 +402,7 @@
 
 
   <target name="tt-servlet-dist" depends="tt-servlet-compile"
+          if="found.j2ee.jar"
           description="generates the servlet translation tool's binary distribution." >
     <!-- Put everything in ${ttservletbin} into the JAR file -->
     <jar jarfile="${dist}/lib/DictionarySearchServlet-${my.jar.suffix}.jar"
@@ -639,6 +649,12 @@
   </target>
 
 
+  <target name="ttsc-init" depends="init"
+          description="used internally to set a property when the J2EE SDK is installed in a place where we can find it.  In that case, we can build servlets.">
+    <available file="${j2ee.sdk.home}/j2ee.jar" property="found.j2ee.jar"/>
+  </target>
+
+
   <!-- -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* -->
   <!-- UTILITY TARGETS - targets of antcalls, targets not usually
        directly called. -->
@@ -738,7 +754,7 @@
 
 
     <javac destdir="${mybin}" debug="${javacdashg}" target="${target.jvm}">
-      <classpath refid="entire.class.path"/>
+      <classpath refid="${our.javac.classpathref}"/>
       <src path="${source}"/>
       <include name="${my.included.source.file}" />
 
