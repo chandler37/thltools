@@ -59,6 +59,16 @@ Contributor(s): ______________________________________.
     http://thdltools.sourceforge.net/BuildSystems.html.
   </description>
 
+  <!--
+
+   To customize a property without having to commit something to CVS
+   (or feeling bothered by CVS), create the file build.properties in
+   the same directory as this file.  It's a Java properties file, so
+   you have lines like 'this.property=that' in it.
+
+  -->
+  <property file="build.properties"/>
+
   <!-- set global properties for this build -->
   <property name="my.jar.suffix" value=""/>
   <property name="javacdashg" value="yes"/>
