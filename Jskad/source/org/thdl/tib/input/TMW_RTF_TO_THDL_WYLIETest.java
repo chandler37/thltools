@@ -43,6 +43,12 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
 	}
 
     protected void setUp() {
+
+        // Runs on Linux/Unix boxes without X11 servers:
+        System.setProperty("java.awt.headless", "true");
+        // FIXME: ant check still fails because it doesn't see the
+        // above property early enough.
+
         // We don't want to use options.txt:
         ThdlOptions.forTestingOnlyInitializeWithoutDefaultOptionsFile();
         // We do want debugging assertions:

@@ -51,6 +51,10 @@ public class TibetanConverter implements FontConverterConstants {
     /**
      *  Runs the converter. */
 	public static void main(String[] args) {
+
+        // Runs on Linux/Unix boxes without X11 servers:
+        System.setProperty("java.awt.headless", "true");
+
         System.exit(realMain(args, System.out));
     }
 
