@@ -119,7 +119,7 @@
 		</p>
 	</form>
 	
-	<p><span class="warning">The requires the <a href="http://iris.lib.virginia.edu/tibet/tools/tmw.html">TibetanMachineWeb font</a>  to display Tibetan script.</span></p>
+	<p><span class="warning">This dictionary requires the <a href="http://iris.lib.virginia.edu/tibet/tools/tmw.html">TibetanMachineWeb font</a>  to display Tibetan script.</span></p>
 
 	<div id="entry">
 		<c:choose>

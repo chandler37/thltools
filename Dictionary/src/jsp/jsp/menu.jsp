@@ -81,15 +81,18 @@
 	</p>
 	<c:if test="${ ! empty message }">
 	<p id="message">
-		<c:out value="${ message }" />		
+		<c:out value="${ message }" />
 	</p>
 	</c:if>
-	
+
 	<h2>Recently Modified Terms</h2>
+
 	<div id="recentTerms">
+
+	<p><span class="warning">This dictionary requires the <a href="http://iris.lib.virginia.edu/tibet/tools/tmw.html">TibetanMachineWeb font</a>  to display Tibetan script.</span></p>
+
 	<c:forEach var="term" items="${applicationScope.global.recentTerms }">
 		<p class="tmw-block">
-			<span class="warning">The requires the <a href="http://iris.lib.virginia.edu/tibet/tools/tmw.html">TibetanMachineWeb font</a>  to display Tibetan script.</span><br/>
 		<c:set target="${ sessionScope.visit.helper}" property="wylie" value="${ term.term }"/>
 		<c:set var="tib" value="${ sessionScope.visit.helper.tibetan } " />
 		<c:out value="<a class='tmw-link' href='/lex/action?cmd=displayFull&comp=term&metaId=${term.metaId}'>${ tib } </a>" escapeXml='false' /> 
