@@ -128,6 +128,7 @@ lam 'bras > lamdré
 
 ; Other random tests
 phreng > treng
+snrub > nup
 
 ; Test of second-suffix d removal.  Made-up word because I don't know real ones.
 srand > sen

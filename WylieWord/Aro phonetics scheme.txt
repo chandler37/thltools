@@ -55,6 +55,7 @@ br dr
 
 ; Other bad behavior from R
 mr m
+nr n
 sr s
 
 ; Uniquely random case

@@ -70,6 +70,7 @@ sib sib > sibsib
 lobs pa > lobpa
 grub > drub
 kla col > lachöl
+snrubs > nub
 
 ; Aro-specific exceptions
 mtsho rgyal > tsogyèl
