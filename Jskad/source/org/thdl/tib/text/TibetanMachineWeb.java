@@ -31,6 +31,7 @@ import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlLazyException;
 import org.thdl.util.Trie;
 import org.thdl.util.ThdlOptions;
+import org.thdl.tib.text.tshegbar.UnicodeCodepointToThdlWylie;
 
 /**
 * Interfaces between Extended Wylie and the TibetanMachineWeb fonts.
@@ -388,18 +389,13 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 
 					String wylie = null;
                     DuffCode[] duffCodes;
-                    if (ignore) {
-                        duffCodes = new DuffCode[TMW + 1];
-                    } else {
-                        duffCodes = new DuffCode[11];
-                    }
+                    duffCodes = new DuffCode[11];
 
 					int k = 0;
 
                     StringBuffer escapedToken = new StringBuffer("");
                     ThdlDebug.verify(escapedToken.length() == 0);
-					while (st.hasMoreTokens()
-                           && (!ignore || (k <= 3 /* 3 from 'case 3:' */))) {
+					while (st.hasMoreTokens()) {
 						String val = getEscapedToken(st, escapedToken);
 
 						if (val.equals(DELIMITER)
@@ -413,9 +409,7 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 
 							switch (k) {
 								case 0: //wylie key
-                                    if (!ignore) {
-                                        wylie = val;
-                                    }
+                                    wylie = val;
 									break;
 
 								case 1:
@@ -454,23 +448,50 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 								case 8:
 								case 9:
                                     if (!ignore) {
+                                      try {
                                         duffCodes[k-1] = new DuffCode(val,true);
+                                      } catch (Exception e) {
+                                        System.err.println("Couldn't make a DuffCode out of " + val + "; line is " + line + "; k is " + k);
+                                      }
                                     }
-									break;
+                                    break;
 
 								case 10: //Unicode: ignore for now
-                                    StringTokenizer uTok = new StringTokenizer(val, ",");
-                                    while (uTok.hasMoreTokens()) {
-                                        String subval = uTok.nextToken();
-                                        ThdlDebug.verify(subval.length() == 4);
-                                        try {
-                                            int x;
-                                            ThdlDebug.verify(((x = Integer.parseInt(subval, 16)) >= 0x0F00
-                                                              && x <= 0x0FFF)
-                                                             || x == 0x0020);
-                                        } catch (NumberFormatException e) {
-                                            ThdlDebug.verify(false);
+                                    if (!val.equals("none")) {
+                                        StringBuffer unicodeBuffer = new StringBuffer();
+                                        StringTokenizer uTok = new StringTokenizer(val, ",");
+                                        while (uTok.hasMoreTokens()) {
+                                            String subval = uTok.nextToken();
+                                            ThdlDebug.verify(subval.length() == 4 || subval.length() == 3);
+                                            try {
+                                                int x;
+                                                ThdlDebug.verify(((x = Integer.parseInt(subval, 16)) >= 0x0F00
+                                                                  && x <= 0x0FFF)
+                                                                 || x == 0x0020);
+                                                unicodeBuffer.append((char)x);
+                                            } catch (NumberFormatException e) {
+                                                ThdlDebug.verify(false);
+                                            }
                                         }
+                                        // DLC FIXME: use unicodeBuffer for a TMW->Unicode conversion.
+
+                                        // For V&V:
+
+// DLC FIXME: also check for ^[90-bc] and ^.+[40-6a]
+
+//                                          StringBuffer wylie_minus_plusses_buf
+//                                              = UnicodeCodepointToThdlWylie.getThdlWylieForUnicodeString(unicodeBuffer.toString());
+//                                          String wylie_minus_plusses
+//                                              = ((wylie_minus_plusses_buf == null)
+//                                                 ? null
+//                                                 : wylie_minus_plusses_buf.toString().replaceAll("(.)\\+","$1"));
+//                                          if (null == wylie
+//                                              || null == wylie_minus_plusses
+//                                              || !(wylie.replaceAll("(.)\\+","$1").equals(wylie_minus_plusses)
+//                                                   || wylie.replaceAll("(.)-","$1").equals(wylie_minus_plusses)
+//                                                   || wylie.equals(wylie_minus_plusses))) {
+//                                              System.out.println("wylie: " + wylie + "; wylie_minus_plusses: " + wylie_minus_plusses);
+//                                          }
                                     }
 									break;
 
@@ -486,9 +507,19 @@ public class TibetanMachineWeb implements THDLWylieConstants {
                                         binduMap.put(duffCodes[TMW],binduCode);
                                     }
 									break;
+                                case 13:
+                                    throw new Error("tibwn.ini has only 13 columns, you tried to use a 14th column.");
 							}
-						}
+						} else {
+                          if (k == 10) {
+                            throw new Error("needed none or some unicode; line is " + line);
+                          }
+                        }
 					}
+                    if (k < 10) {
+                        throw new Error("needed none or some unicode; line is " + line);
+                    }
+
 
                     if (!ignore) {
                         if (null == wylie)
