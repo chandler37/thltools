@@ -190,7 +190,7 @@ public class TibetanMachineWeb implements THDLWylieConstants {
     /** comma-delimited list of supported non-Tibetan consonants, such
      *  as Sanskrit consonants: */
 	private static final String otherConsonants // va and fa are treated pretty-much like Sanskrit.
-        = "T,Th,D,N,Sh,v,f,Dz";
+        = "T,Th,D,N,Sh,v,f";
 
     /** comma-delimited list of supported numbers (superscribed,
         subscribed, normal, half-numerals): */
