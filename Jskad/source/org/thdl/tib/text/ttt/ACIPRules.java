@@ -64,10 +64,11 @@ public class ACIPRules {
         if (null == acipVowels) {
             acipVowels = new HashSet(baseVowels.length * 8);
             for (int i = 0; i < baseVowels.length; i++) {
-                // DLC I'm on my own with 'O and 'E and 'OO and 'EE, but
-                // GANG'O appears and I wonder... so here they are.  It's
-                // consistent with 'I and 'A and 'U, at least: all the vowels
-                // may appear as K'vowel.  DLC FIMXE: ask.
+                // I'm on my own with 'O and 'E and 'OO and 'EE, but
+                // GANG'O appears and I wonder... so here they are.
+                // It's consistent with 'I and 'A and 'U, at least:
+                // all the vowels may appear as K'vowel.  DLC FIXME:
+                // ask.
 
                 acipVowels.add(baseVowels[i][0]);
                 acipVowels.add('\'' + baseVowels[i][0]);
@@ -77,10 +78,10 @@ public class ACIPRules {
                 acipVowels.add('\'' + baseVowels[i][0] + ':');
                 acipVowels.add(baseVowels[i][0] + "m:");
                 acipVowels.add('\'' + baseVowels[i][0] + "m:");
-                // DLC keep this code in sync with getUnicodeFor.
-                // DLC keep this code in sync with getWylieForACIPVowel
 
-                // DLC '\' for virama? how shall we do \ the virama? like a vowel or not?
+                // Keep this code in sync with getUnicodeFor.
+                
+                // Keep this code in sync with getWylieForACIPVowel.
             }
         }
         return (acipVowels.contains(s));
@@ -141,6 +142,8 @@ public class ACIPRules {
         return consonants.contains(acip);
     }
 
+    /** A map from wylie to ACIP.  Note that the Wylie "w" maps to
+        both "V" and "W". */
     private static HashMap wylieToACIP = null;
     /** Returns the ACIP transliteration corresponding to the THDL
         Extended Wylie <em>atom</em> EWTS, or null if EWTS is not
@@ -157,8 +160,21 @@ public class ACIPRules {
                 String part, tok = sTok.nextToken();
                 if (tok.equals("-") || tok.equals("+"))
                     part = tok;
-                else
-                    part = (String)wylieToACIP.get(tok);
+                else {
+                    if ("w".equals(tok)) {
+                        // There are only two stacks in TMW that have
+                        // U+0FBA: r+wa and w+wa.  TMW->ACIP fails for
+                        // these unless we handle it here.  (FIXME:
+                        // add an automated test for this).
+                        if ("r+w".equals(EWTS) || "w+w".equals(EWTS)) {
+                            part = "W";
+                        } else {
+                            part = "V";
+                        }
+                    } else {
+                        part = (String)wylieToACIP.get(tok);
+                    }
+                }
                 if (null == part) return null;
                 finalAns.append(part);
             }
@@ -271,7 +287,6 @@ public class ACIPRules {
         if (acipOther2wylie == null) {
             acipOther2wylie = new HashMap(20);
 
-            // DLC FIXME: check all these again.
             putMapping(acipOther2wylie, ",", "/");
             putMapping(acipOther2wylie, " ", " ");
             putMapping(acipOther2wylie, ".", "*");
@@ -477,7 +492,7 @@ public class ACIPRules {
             superACIP2unicode.put("8", "\u0F28");
             superACIP2unicode.put("9", "\u0F29");
 
-            // DLC punctuation
+            // punctuation
             superACIP2unicode.put("&", "\u0F85");
             superACIP2unicode.put(",", "\u0F0D");
             superACIP2unicode.put(" ", "\u0F0B");
@@ -486,17 +501,17 @@ public class ACIPRules {
             superACIP2unicode.put("`", "\u0F08");
             superACIP2unicode.put("*", "\u0F04\u0F05");
             superACIP2unicode.put("#", "\u0F04\u0F05\u0F05");
-            superACIP2unicode.put("%", "\u0F35");
+            superACIP2unicode.put("%", "\u0F35"); // FIXME: could be U+0F37 or U+0F35 according to RC if I understand correctly.
             superACIP2unicode.put(";", "\u0F11");
             superACIP2unicode.put("\r", "\r");
             superACIP2unicode.put("\t", "\t");
             superACIP2unicode.put("\r\n", "\r\n");
             superACIP2unicode.put("\n", "\n");
-            superACIP2unicode.put("\\", "\u0F84"); // DLC FIXME: make this like a vowel
-            // DLC FIXME: what's the Unicode for caret, ^?
-            // DLC FIXME: what's the Unicode for o?
-            // DLC FIXME: what's the Unicode for x?
+            superACIP2unicode.put("\\", "\u0F84");
+            superACIP2unicode.put("^", "\u0F38");
 
+            // DLC FIXME: "^ GONG" is "^GONG", right?
+            // DLC FIXME: what's the Unicode for x? for o? RC said there is none in plain-text Unicode for x.  But what about in RTF Unicode?
         }
         if (subscribed) {
             String u = (String)subACIP2unicode.get(acip);
@@ -546,7 +561,7 @@ public class ACIPRules {
                 TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.reverse_i_VOWEL, context_added);
             }
         }
-        // DLC FIXME: Use TMW9.61, the "o'i" special combination, when appropriate.
+        // FIXME: Use TMW9.61, the "o'i" special combination, when appropriate.
 
         if (vowel.indexOf('m') >= 0) {
             DuffCode last = (DuffCode)duff.get(duff.size() - 1);

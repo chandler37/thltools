@@ -147,24 +147,11 @@ class TPairList {
         return false;
     }
 
-// DLC [THE FOLLOWIN... appears, so [#comment] or [comment] is possible. [BLANK PAGE] [MISSING PAGE] [FIRST] [SECOND] [DD1] [DD2] [46A.2] [THE ... [FOLLOWING... [PAGE ... [THESE ... @[7B] [SW: OK] [A FIRST... [ADDENDUM... [END ... [Additional [Some [Note [MISSING [DDD] [INCOMPLETE [LINE [DATA 
-// [A pair of ... which is part of the text! S0200A.ACE
-// [D] is a correction, eh?
-
-
-// DLC BDE 'BA' ZHIG RGYUN DU BSTEN, ,YENGS KYANG THUB NA [GNYEN PO,)
-//     'BYONGS [BLO,) S0375M.ACT
-
-
-// S0011N.ACT contains [SMON TSIG 'DI'I RTZOM MING MI GSAL,], why the brackets?  IS all this really a correction? DLC?
-// DLC: what are () for?
-
     /** Finds errors so simple that they can be detected without using
      *  the rules of Tibetan spelling (i.e., tsheg bar syntax).
      *  Returns an error message, or null if there is no error that
      *  you can find without the help of tsheg bar syntax rules. */
-    // DLC RENAME
-        // DLC FIXME: 9BLTA is an error, numbers are all or nothing
+    // FIXME: This is needlessly ACIP specific -- rename and change text of messages
     String getACIPError() {
         int sz = size();
         if (0 == sz)
@@ -238,7 +225,7 @@ class TPairList {
             }
         }
 
-        // DLC really this is a warning, not an error:
+        // FIXME: really this is a warning, not an error:
         if ("-".equals(get(sz - 1).getRight())) {
             if (first) {
                 first = false;
@@ -277,8 +264,6 @@ class TPairList {
     private static final int ALWAYS_KEEP_STACKING = 2;
     private static final int ALWAYS_STOP_STACKING = 3;
 
-    // DLC TEST: BA'I has exactly two syntactically legal parses but just one TStackList.
-
     /** Returns a set (as as ArrayList) of all possible TStackLists.
      *  Uses knowledge of Tibetan spelling rules (i.e., tsheg bar
      *  syntax) to do so.  If this list of pairs has something clearly
@@ -290,8 +275,7 @@ class TPairList {
         // We treat [(B . ), (G . +), (K . ), (T . A)] as if it could
         // be {B+G+K+T} or {B}{G+K+T}; we handle prefixes specially
         // this way.  [(T . ), (G . +), (K . ), (T . A)] is clearly
-        // {T+G+K+TA} (and, DLC FIXME, we should warn that there are
-        // some pluses but not all)
+        // {T+G+K+TA}
         //
         // We don't care if T+G+K+T is in TMW or not -- there is no
         // master list of stacks.
@@ -411,7 +395,7 @@ class TPairList {
                 stackStart = i+1;
             }
         }
-        // DLC FIXME: we no longer need all these breakLocations -- we can handle SAM'AM'ANG
+        // FIXME: we no longer need all these breakLocations -- we can handle SAM'AM'ANG without them.
 
         // Now go from hard break (i.e., (* . VOWEL or -)) to hard
         // break (and there's a hard break after the last pair, of
@@ -424,7 +408,7 @@ class TPairList {
         // TStackListList per hard break to pt, the parse tree.
         int startLoc = 0; // which pair starts this hard break?
 
-        // DLC FIXME: assert this
+        // FIXME: assert this
         if ((breakLocations[1] >= 0 && breakLocations[1] <= breakLocations[0])
             || (breakLocations[2] >= 0 && breakLocations[2] <= breakLocations[1]))
             throw new Error("breakLocations is monotonically increasing, ain't it?");
@@ -570,17 +554,20 @@ class TPairList {
             lWylie.append(thislWylie);
             StringBuffer ll = new StringBuffer(lWylie.toString());
             int ww;
-            // DLC NOW: what about fixed-form RA on top???  test it.
             while ((ww = ll.indexOf("+")) >= 0)
                 ll.deleteCharAt(ww);
             boolean isTibetan = TibetanMachineWeb.isWylieTibetanConsonantOrConsonantStack(ll.toString());
             boolean isSanskrit = TibetanMachineWeb.isWylieSanskritConsonantStack(lWylie.toString());
             if (ddebug && !isTibetan && !isSanskrit && !isNumeric) {
-                System.out.println("DLC: OTHER for " + lWylie + " with vowel " + ACIPRules.getWylieForACIPVowel(p.getRight()) + " and p.getRight()=" + p.getRight());
+                System.out.println("OTHER for " + lWylie + " with vowel " + ACIPRules.getWylieForACIPVowel(p.getRight()) + " and p.getRight()=" + p.getRight());
             }
-            if (isTibetan && isSanskrit) isSanskrit = false; // RVA, e.g.
+            if (isTibetan && isSanskrit) {
+                 // RVA, e.g.  It must be Tibetan because RWA is what
+                 // you'd use for RA over fixed-form WA.
+                isSanskrit = false;
+            }
             if (ddebug && hasNonAVowel && ACIPRules.getWylieForACIPVowel(p.getRight()) == null) {
-                System.out.println("DLC: vowel " + ACIPRules.getWylieForACIPVowel(p.getRight()) + " and p.getRight()=" + p.getRight());
+                System.out.println("vowel " + ACIPRules.getWylieForACIPVowel(p.getRight()) + " and p.getRight()=" + p.getRight());
             }
             TGCPair tp;
             indexList.add(new Integer(index));
@@ -603,7 +590,7 @@ class TPairList {
         }
     }
 
-    /** Appends legal Unicode corresponding to this stack to sb.  DLC
+    /** Appends legal Unicode corresponding to this stack to sb.
      *  FIXME: which normalization form, if any? */
     void getUnicode(StringBuffer sb) {
         boolean subscribed = false;
@@ -626,6 +613,21 @@ class TPairList {
         TPair lastPair = get(size() - 1);
         wylieForConsonant.append(lastPair.getWylie(true));
         String hashKey = wylieForConsonant.toString();
+        // r-w and r+w are both known hash keys.  Sort 'em out.  They
+        // are the only things like this according to bug report
+        // #800166.
+        if ("r+w".equals(hashKey)) {
+            boolean sawWazur = false;
+            for (int x = 0; x < size(); x++) {
+                TPair p = get(x);
+                if ("V".equals(get(x).getLeft())) {
+                    sawWazur = true;
+                    break;
+                }
+            }
+            if (sawWazur)
+                hashKey = "r-w";
+        }
         if (!TibetanMachineWeb.isKnownHashKey(hashKey)) {
             hashKey = hashKey.replace('+', '-');
             if (!TibetanMachineWeb.isKnownHashKey(hashKey)) {
@@ -641,7 +643,7 @@ class TPairList {
                                           lastPair.getRight());
         }
         if (previousSize == duffsAndErrors.size())
-            throw new Error("TPairList with no duffs? " + toString()); // DLC FIXME: change to assertion.
+            throw new Error("TPairList with no duffs? " + toString()); // FIXME: change to assertion.
     }
 }
-// DLC FIXME: handle 'o' and 'x', e.g. KAo and NYAx.
+

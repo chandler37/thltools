@@ -47,7 +47,7 @@ public class TString {
                 && type != END_SLASH);
     }
 
-    /** For ACIP [#COMMENTS] and EWTS (DLC FIXME) */
+    /** For ACIP [#COMMENTS] and EWTS (DLC FIXME: what are EWTS comments?) */
     public static final int COMMENT = 0;
     /** For Folio markers like @012B in ACIP */
     public static final int FOLIO_MARKER = 1;
@@ -85,7 +85,7 @@ public class TString {
     public static final int END_PAREN = 16;
     /** For things that may not be legal syntax, such as {KA . KHA} */
     public static final int WARNING = 17;
-    /** For ACIP %, o, and x or EWTS (DLC FIXME) */
+    /** For ACIP %, o, and x or EWTS (DLC FIXME: what are EWTS adornments?) */
     public static final int TSHEG_BAR_ADORNMENT = 18;
     /** For things that are not legal syntax, such as a file that
      * contains just "[# HALF A COMMEN" */
@@ -144,14 +144,20 @@ public class TString {
         }
     }
 
+    /** For generating frequency info: */
     private static boolean outputAllTshegBars
-        = ThdlOptions.getBooleanOption("org.thdl.tib.text.ttt.OutputAllTshegBars"); // DLC DOC -- use me to generate frequency info
+        = ThdlOptions.getBooleanOption("org.thdl.tib.text.ttt.OutputAllTshegBars");
 
+    /** For generating info about which tsheg bars were converted, but
+        not how many times: */
     private static boolean outputUniqueTshegBars
-        = ThdlOptions.getBooleanOption("org.thdl.tib.text.ttt.OutputUniqueTshegBars"); // DLC DOC
+        = ThdlOptions.getBooleanOption("org.thdl.tib.text.ttt.OutputUniqueTshegBars");
 
+    /** Affects what appears on the console when either {@link
+        #outputUniqueTshegBars} or {@link #outputAllTshegBars} is in
+        use. */
     private static String outputTshegBarsPrefix
-        = ThdlOptions.getStringOption("org.thdl.tib.text.ttt.PrefixForOutputTshegBars", ""); // DLC DOC
+        = ThdlOptions.getStringOption("org.thdl.tib.text.ttt.PrefixForOutputTshegBars", "");
 
     private static final HashSet tshegBars = new HashSet();
 

@@ -36,9 +36,6 @@ import org.thdl.tib.text.DuffCode;
 * @author David Chandler
 */
 public class ACIPConverter {
-    // DLC NOW: (KA)'s info is lost when you convert to Unicode text instead of Unicode RTF.  Give an ERROR.
-
-    // DLC NOW: BAo isn't converting.
 
     /** Command-line converter.  Gives error messages on standard
      *  output about why we can't convert the document perfectly and
@@ -148,7 +145,7 @@ public class ACIPConverter {
 
     /** Turns the list of TStrings scan into TibetanMachineWeb and
         Roman warnings and error messages that are inserted at
-        position loc in tdoc.  DLC DOC better
+        position loc in tdoc.  FIXME: DOC better
     
         @param loc an input-output parameter.  On input, loc[0] is the
         offset from zero inside tdoc at which conversion results will
@@ -270,7 +267,7 @@ public class ACIPConverter {
     {
         try {
         if (toUnicode && toRTF)
-            throw new Error("DLC NOW FIXME: support this ACIP->Unicode.rtf mode so that KA (GA) shows up in two different font sizes.");
+            throw new Error("FIXME: support this ACIP->Unicode.rtf mode so that KA (GA) shows up in two different font sizes.  See RFE 838591.");
         if (!toUnicode && !toRTF)
             throw new IllegalArgumentException("ACIP->Uni.rtf, ACIP->Uni.txt, and ACIP->TMW.rtf are supported, but not ACIP->TMW.txt");
         if (toUnicode && toRTF && null == tdoc)
@@ -524,7 +521,7 @@ public class ACIPConverter {
                             // not used after a GA in Tibetan
                             // typesetting.
                             boolean done = false;
-                            // DLC what about after numbers?  marks?
+                            // what about after numbers?  marks? FIXME: test
                             TPairList lpl = null;
                             if (s.getText().equals(" ")) {
                                 if (!lastGuyWasNonPunct
@@ -556,12 +553,6 @@ public class ACIPConverter {
                                         tdocLocation[0] += x.length();
                                         continue;
                                     }
-//  DLC AM I DOING THIS? By normal Tibetan & Dzongkha spelling, writing, and input rules
-//  Tibetan script stacks should be entered and written: 1 headline
-//  consonant (0F40->0F6A), any  subjoined consonant(s) (0F90->
-//  0F9C),  achung (0F71), shabkyu (0F74), any above headline
-//  vowel(s) (0F72 0F7A 0F7B 0F7C 0F7D and 0F80) ; any ngaro (0F7E,
-//  0F82 and 0F83)
                                 }
                             } else if (s.getText().equals(",")
                                        && lastGuyWasNonPunct

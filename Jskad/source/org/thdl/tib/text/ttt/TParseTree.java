@@ -117,8 +117,6 @@ class TParseTree {
      *  unique legal parse, you get it.  If there's not, but there is
      *  a unique non-illegal parse, you get it.  If there's not a
      *  unique answer, null is returned. */
-    // {TZANDRA} is not solved by this, DLC NOW.  Solve PADMA PROBLEM!
-    // DLC by using this we can get rid of single-sanskrit-gc, eh?
     public TStackList getBestParse() {
         TStackListList up = getUniqueParse(false);
         if (up.size() == 1)
@@ -292,7 +290,7 @@ class TParseTree {
 
         TStackListList up = getUniqueParse(false);
         if (null == up || up.size() != 1) {
-            // DLC FIXME: code duplication
+            // FIXME: code duplication
             boolean isLastStack[] = new boolean[1];
             TStackListList nip = getNonIllegalParses();
             if (nip.size() != 1) {

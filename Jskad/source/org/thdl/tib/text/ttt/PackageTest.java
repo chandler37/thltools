@@ -178,7 +178,6 @@ public class PackageTest extends TestCase {
 
                     if (decentParses.size() == 1) {
                         System.out.println("ACIPNoLegalParseError: NO LEGAL PARSE for the unambiguous ACIP {" + acip + "} (i.e., exactly one illegal parse exists, so it's unambiguous)");
-                        // DLC FIXME: it's really unambiguous if one illegal parse has fewer glyphs than any other?  {shthA'I} might be an example...  but NO! because you go left-to-right to make stacks, except think of BRTAN vs. BRAN, they break that rule... ???? DLC ????
                     } else {
                         System.out.println("ACIPNoLegalParseError: NO PARSES for ACIP {" + acip + "}, decent parses are " + decentParses);
                     }
@@ -243,8 +242,6 @@ public class PackageTest extends TestCase {
             }
         }
     }
-
-    // DLC FIXME: warn if we have to use the "what stacks take a GA prefix?" rules to get a unique legal parse.
 
     public void testCutoff() {
         // this would once be exponential running time, so we'd cut it off:
@@ -362,7 +359,7 @@ tstHelper("MSTAN"); // ambiguous with regard to prefix rules
 tstHelper("KA'", "[(K . A), (' . )]",
           new String[] { "{KA}{'}" },
           new String[] { "{KA}{'}" },
-          "{KA}{'}"); // DLC NOW
+          "{KA}{'}");
 
          tstHelper("A'AAMA", "{A}{'}{AA}{MA}"); // FIXME: how should we parse this?
 
@@ -389,17 +386,6 @@ tstHelper("KA'", "[(K . A), (' . )]",
                   new String[] { "{B+DEm}", "{B}{DEm}" },
                   new String[] { "{B}{DEm}" },
                   "{B}{DEm}");
-
-        /* DLC FIXME DOC TEST
-        tstHelper("BDA:", "{B}{DA:}",
-                  new String[] { "{B+DA:}", "{B}{DA:}" },
-                  new String[] { "{B}{DA:}" },
-                  "{B}{DA:}");
-
-        tstHelper("BDEm:", "{B}{DEm:}",
-                  new String[] { "{B+DEm:}", "{B}{DEm:}" },
-                  new String[] { "{B}{DEm:}" },
-                  "{B}{DEm:}"); */
 
         tstHelper("NA+YA", "{N+}{YA}",
                   new String[] { "{N+YA}" },
@@ -502,10 +488,6 @@ tstHelper("KA'", "[(K . A), (' . )]",
                   "{SH+R'I}");
 
 
-        // DLC FIXME: test EWTS {pouM}
-
-        // DLC FIXME: do TMW->ACIP->TMW->ACIP round-trip.
-
         tstHelper("DRUG", "{D}{RU}{G}",
                   new String[] { "{D+RU}{G}", "{D}{RU}{G}" },
                   new String[] { "{D+RU}{G}" },
@@ -566,7 +548,7 @@ tstHelper("KA'", "[(K . A), (' . )]",
         tstHelper("BHE");
         tstHelper("BH'I");
         tstHelper("BH'Im");
-        tstHelper("BH'Im:"); // DLC FIXME: make TibetanMachineWeb see EWTS {H} as an adornment.
+        tstHelper("BH'Im:"); // LOW-PRIORITY FIXME: make TibetanMachineWeb see EWTS {H} as an adornment.
         tstHelper("D-VA");
         tstHelper("DVA");
         tstHelper("SRAS", "{S}{RA}{S}",
@@ -603,7 +585,10 @@ tstHelper("KA'", "[(K . A), (' . )]",
                                                 // that we know the
                                                 // keyboardist was
                                                 // aware of the plus
-                                                // operator.  DLC FIXME: warn in this case!
+                                                // operator.  We warn
+                                                // in such a case.
+                                                // Though R0021F.ACE
+                                                // recommends D+GRA etc.
 
         tstHelper("BRTN--GA",
                   "{B}{R}{T}{N-}{-}{GA}",
@@ -680,7 +665,6 @@ tstHelper("KA'", "[(K . A), (' . )]",
                   new String[] { /* No parses exist. "K:" is illegal. */ });
         tstHelper("'AO", "[(' . ), (A . O)]");
         tstHelper("'AOM", "[(' . ), (A . O), (M . )]");
-        // DLC CHECK: S6814M6.ACT for BA'I and 'AO
 
         tstHelper("BTZVA", "[(B . ), (TZ . ), (V . A)]");
 
@@ -723,7 +707,7 @@ tstHelper("KA'", "[(K . A), (' . )]",
         tstHelper("G'A'I", "[(G . 'A), (' . I)]");
         tstHelper("G'I'I", "[(G . 'I), (' . I)]");
         tstHelper("G'Im:'I", "[(G . 'Im:), (' . I)]");
-        tstHelper("G'Im:'ANG'AM'I", "[(G . 'Im:), (' . A), (NG . 'A), (M . 'I)]"); // DLC FIXME:  'ANG'A is what? 'ANG-'A or 'A-NG'A?
+        tstHelper("G'Im:'ANG'AM'I", "[(G . 'Im:), (' . A), (NG . 'A), (M . 'I)]"); // FIXME:  test that 'ANG'A is {'A}{NG'A}?
 
         tstHelper("BA'AM", "[(B . A), (' . A), (M . )]");
         tstHelper("B'AM", "[(B . 'A), (M . )]");
@@ -2287,7 +2271,6 @@ tstHelper("DBANG");
 tstHelper("DBAR");
 tstHelper("DBAS");
 tstHelper("DBE");
-// DLC NOW: TMW->ACIP doesn't do {KHA (KA)}.
 tstHelper("DBEN");
 tstHelper("DBER");
 tstHelper("DBES");
@@ -7227,7 +7210,6 @@ tstHelper("ZUR");
         shelp("^ GONG SA,",
               "",
               "[TIBETAN_NON_PUNCTUATION:{^}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{GONG}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{SA}, TIBETAN_PUNCTUATION:{,}]");
-        // DLC FIXME: test that ^ and ^GONG are handled correctly on the whole.
         shelp("", "", "[]");
         shelp("[DD]", "");
         shelp("[",
@@ -7273,7 +7255,6 @@ tstHelper("ZUR");
         shelp("[*DATA INCOMPLETE HERE?]", "", "[CORRECTION_START:{[*}, LATIN:{DATA INCOMPLETE HERE}, POSSIBLE_CORRECTION:{?]}]");
         shelp("[*THIS\r\nWAS SUPPOSED TO BE THE SIXTH CATEGORY; THE CATEGORIES MENTIONED\r\nABOVE SEEM TO BE OUT OF ORDER THROUGH THIS SECTION]\r\n", "");
 
-        // DLC test ACIP files containing just "x", "o", ":", "m" and "%"
         shelp("x o % : m", "");
         shelp("AAx AAo AA% AA: AAm", "");
 
@@ -7284,10 +7265,6 @@ tstHelper("ZUR");
         shelp("KHAN~ BAR ", "Offset 4: Found an illegal character, ~, with ordinal 126.\n");
         shelp("[* Correction with []]",
               "Offset 5: Found an illegal character, r, with ordinal 114.\nOffset 6: Found an illegal character, r, with ordinal 114.\nOffset 7: Found an illegal character, e, with ordinal 101.\nOffset 8: Found an illegal character, c, with ordinal 99.\nOffset 14: Found an illegal character, w, with ordinal 119.\nOffset 19: Found an illegal open bracket (in context, this is []]).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset 21: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
-
-        // DLC DOC: the line SDIG PA'I GROGS PO'I LAG TU SON PAR 'GYUR PA is followed by a blank line.  Note that it's "PA", not "PA ", ending it.  We autocorrect to the latter.
-
-        // DLC FIXME: @0B1 isn't handled correctly!
 
         shelp(",NGES ? PA", "", "[TIBETAN_PUNCTUATION:{,}, TIBETAN_NON_PUNCTUATION:{NGES}, TIBETAN_PUNCTUATION:{ }, QUESTION:{?}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{PA}]");
 
@@ -7321,8 +7298,10 @@ tstHelper("ZUR");
         shelp("[text missing]", "", "[COMMENT:{[#text missing]}]");
 
         {
-            // DLC FIXME: in one case, it's a tsheg.  In the other,
-            // it's not a tsheg.  That requires parsing, but test it.
+            // In {G'EEm: ,MDO}, is the space a tsheg?  We say no
+            // right now.  In the other, {G'EEm ,MDO}, it's not a
+            // tsheg because you don't need a tsheg after GA.  But in
+            // the first, do you need a tsheg after {:}? (FIXME)
             shelp("G'EEm: ,MDO",
                   "",
                   "[TIBETAN_NON_PUNCTUATION:{G'EEm:}, TIBETAN_PUNCTUATION:{ }, TIBETAN_PUNCTUATION:{,}, TIBETAN_NON_PUNCTUATION:{MDO}]");
@@ -7344,7 +7323,7 @@ tstHelper("ZUR");
         shelp("@001 ", "", "[FOLIO_MARKER:{@001}, TIBETAN_PUNCTUATION:{ }]");
         shelp("@19-20A",
               "Offset 0: Found an illegal at sign, @ (in context, this is @19-20A).  @012B is an example of a legal folio marker.\n",
-              "[ERROR:{Found an illegal at sign, @ (in context, this is @19-20A).  @012B is an example of a legal folio marker.}, TIBETAN_NON_PUNCTUATION:{19-20A}]");  // DLC FIXME: yes it occurs in the kangyur.
+              "[ERROR:{Found an illegal at sign, @ (in context, this is @19-20A).  @012B is an example of a legal folio marker.}, TIBETAN_NON_PUNCTUATION:{19-20A}]");  // FIXME: yes it occurs in the kangyur.
         shelp("@[7B]", "");
         shelp("@012A.3KA",
               "",
@@ -7366,6 +7345,10 @@ tstHelper("ZUR");
 
         shelp("{ DD }", "", "[DD:{{ DD }}]"); // TD3790E2.ACT
         shelp("{ BP }", "", "[BP:{{ BP }}]"); // TD3790E2.ACT
+        // LOW-PRIORITY FIXME: support nested comments.
+        shelp("[# This is a [# nested comment] don't you know?]KA KHA GA NGA",
+              "Offset 13: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\nOffset 38: Found an illegal character, y, with ordinal 121.\nOffset 40: Found an illegal character, u, with ordinal 117.\nOffset 42: Found an illegal character, k, with ordinal 107.\nOffset 45: Found an illegal character, w, with ordinal 119.\nOffset 47: Found a truly unmatched close bracket, ] or }.\nOffset 47: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n",
+              "[ERROR:{Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n}, COMMENT:{[# This is a [# nested comment]}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{d}, TSHEG_BAR_ADORNMENT:{o}, TIBETAN_NON_PUNCTUATION:{n't}, TIBETAN_PUNCTUATION:{ }, ERROR:{Found an illegal character, y, with ordinal 121.}, ERROR:{The ACIP o must be glued to the end of a tsheg bar, but this one was not}, ERROR:{Found an illegal character, u, with ordinal 117.}, TIBETAN_PUNCTUATION:{ }, ERROR:{Found an illegal character, k, with ordinal 107.}, TIBETAN_NON_PUNCTUATION:{n}, TSHEG_BAR_ADORNMENT:{o}, ERROR:{Found an illegal character, w, with ordinal 119.}, QUESTION:{?}, ERROR:{Found a truly unmatched close bracket, ]}, ERROR:{Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.}, TIBETAN_NON_PUNCTUATION:{KA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{KHA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{GA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{NGA}]");
         shelp("//NYA\\\\",
               "Offset 1: Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\nOffset 5: Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\nOffset 6: Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\n",
               "[START_SLASH:{/}, ERROR:{Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.}, END_SLASH:{/}, TIBETAN_NON_PUNCTUATION:{NYA}, ERROR:{Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.}, ERROR:{Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.}]");
@@ -7417,7 +7400,6 @@ M+NA
         uhelp("BGLA", "\u0f56\u0f42\u0fb3");
         uhelp("BLCAG", "\u0f56\u0f63\u0f95\u0f42");
         uhelp("DBA", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP DBA has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.]\u0f51\u0f56");
-        // DLC FIXME        uhelp("BDEm:", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP BDEm: has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.]\u0f56DLC\u0f7a\u0f7e\u0f7f");
         uhelp("DMAR", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP DMAR has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.]\u0f51\u0f58\u0f62");
         uhelp("D+BA", "\u0f51\u0fa6");
         uhelp("MNA", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP MNA has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.]\u0f58\u0f53");
@@ -7433,7 +7415,7 @@ M+NA
         uhelp(":", "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") : HAS THESE ERRORS: Cannot convert ACIP : because : is not an ACIP consonant]");
         uhelp("m", "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") m HAS THESE ERRORS: Cannot convert ACIP m because m is not an ACIP consonant]");
 
-        uhelp("NA+YA", "\u0f53\u0fb1"); // DLC FIXME: warn about the extra A
+        uhelp("NA+YA", "\u0f53\u0fb1"); // FIXME: warn about the extra A
         uhelp("NE+YA", "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") NE+YA HAS THESE ERRORS: Cannot convert ACIP NE+-YA because + is not an ACIP consonant]");
         uhelp("tRAStA", "\u0f4a\u0fb2\u0f66\u0f9a");
         uhelp("DZHDZHA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP DZHDZHA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f5c\u0fac"); // tricky because DZHDZA is not in TMW but DZHDZHA is
@@ -7483,13 +7465,34 @@ M+NA
         uhelp("K'EE:", "\u0f40\u0f71\u0f7b\u0f7f");
 
         uhelp("K'A:", "\u0f40\u0f71\u0f7f");
+        uhelp("RVA", "\u0f62\u0fad");
+        uhelp("R+VA", "\u0f62\u0fad");
+        uhelp("RWA", "\u0f62\u0fba");
+        uhelp("R+WA", "\u0f62\u0fba");
+
+        uhelp("WWA", "\u0f5d\u0fba");
+        uhelp("W+WA", "\u0f5d\u0fba");
 
         uhelp("/NY'EE/", "\u0f3C\u0f49\u0F71\u0F7B\u0f3D");
         uhelp("*#HUm: G+DHOO GRO`;.,",
               "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b\u0f42\u0fa2\u0f7d\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
         uhelp("*#HUm: K+DHA GRO`;.,",
               "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b\u0f40\u0fa2\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
-        // DLC FIXME: the file ACIP_SHRI should be made into an ACIP->TMW automated test case
+    }
+    public void testFixedFormSubjoinedConsonants() {
+        // Usual subjoined RA:
+        uhelp("n+d+R", "\u0f4e\u0f9c\u0fb2");
+
+        // Full-form subjoined RA:
+        uhelp("K+sh+R", "\u0f40\u0fb5\u0fbc");
+        uhelp("n+d+R+Y",
+              // ... with usual subjoined YA:
+              "\u0f4e\u0f9c\u0fbc\u0fb1");
+
+        // Full-form subjoined YA:
+        uhelp("n+d+Y", "\u0f4e\u0f9c\u0fbb");
+        uhelp("Y+Y", "\u0f61\u0fbb");
+        uhelp("R+Y", "\u0f62\u0fbb");
     }
 
     /** Tests some more tsheg bars, these from Dr. Lacey's critical
@@ -9055,3 +9058,55 @@ tstHelper("shKA");
 
     }
 }
+// S0011N.ACT contains [SMON TSIG 'DI'I RTZOM MING MI GSAL,], why the brackets?  IS all this really a correction? Or were parentheses and not brackets intended?  FIXME
+
+// FIXME: [THE FOLLOWIN... appears, so [#comment] or [comment] is possible. [BLANK PAGE] [MISSING PAGE] [FIRST] [SECOND] [DD1] [DD2] [46A.2] [THE ... [FOLLOWING... [PAGE ... [THESE ... @[7B] [SW: OK] [A FIRST... [ADDENDUM... [END ... [Additional [Some [Note [MISSING [DDD] [INCOMPLETE [LINE [DATA 
+// [A pair of ... which is part of the text! S0200A.ACE
+// [D] is a correction, eh?
+
+
+// FIXME -- HOW DO YOU TREAT THESE?
+//   BDE 'BA' ZHIG RGYUN DU BSTEN, ,YENGS KYANG THUB NA [GNYEN PO,)
+//     'BYONGS [BLO,) S0375M.ACT
+
+
+/* FIXME: BDEm: is different than BDE for us, is that OK?
+        uhelp("BDEm:", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP BDEm: has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.]PLACEHOLDER");
+        tstHelper("BDA:", "{B}{DA:}",
+                  new String[] { "{B+DA:}", "{B}{DA:}" },
+                  new String[] { "{B}{DA:}" },
+                  "{B}{DA:}");
+
+        tstHelper("BDEm:", "{B}{DEm:}",
+                  new String[] { "{B+DEm:}", "{B}{DEm:}" },
+                  new String[] { "{B}{DEm:}" },
+                  "{B}{DEm:}"); */
+
+
+
+// FIXME DOC: the line SDIG PA'I GROGS PO'I LAG TU SON PAR 'GYUR PA is followed by a blank line.  Note that it's "PA", not "PA ", ending it.  We autocorrect to the latter.
+
+        // DLC FIXME: @0B1 isn't handled correctly! DLC
+
+        // FIXME: S6814M6.ACT have BA'I and 'AO, what should these convert to?
+
+        // FIXME: test EWTS {pouM}
+
+// FIXME: TMW->ACIP doesn't do {KHA (KA)}.  Bug 838486
+
+//  FIXME: VERIFY WE DO THIS.
+//
+//  By normal Tibetan & Dzongkha spelling, writing, and input rules
+//  Tibetan script stacks should be entered and written: 1 headline
+//  consonant (0F40->0F6A), any  subjoined consonant(s) (0F90->
+//  0F9C),  achung (0F71), shabkyu (0F74), any above headline
+//  vowel(s) (0F72 0F7A 0F7B 0F7C 0F7D and 0F80) ; any ngaro (0F7E,
+//  0F82 and 0F83)
+
+// FIXME: KAo isn't converting. See bug #838594
+
+// FIXME: NYAx isn't converting. See bug #838595
+
+// FIXME : handle ^GONG, and "^ GONG".  See Bug #838593
+
+// FIXME: the file ACIP_SHRI should be made into an ACIP->TMW automated test case

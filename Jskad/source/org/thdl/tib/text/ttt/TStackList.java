@@ -23,6 +23,7 @@ import org.thdl.tib.text.TGCList;
 import org.thdl.tib.text.DuffCode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.ListIterator;
 
 /** A list of {@link TPairList TPairLists}, each of which is for
@@ -131,7 +132,7 @@ class TStackList {
      *  stack can take every prefix, which is not the case in
      *  reality */
     public BoolTriple isLegalTshegBar(boolean noPrefixTests) {
-        // DLC Should we handle PADMA and other Tibetanized Sanskrit fellows consistently?  Right now we only treat single-stack Sanskrit guys as legal.
+        // FIXME: Should we handle PADMA and other Tibetanized Sanskrit fellows consistently?  Right now we only treat single-stack Sanskrit guys as legal.
 
         TTGCList tgcList = new TTGCList(this);
         StringBuffer warnings = new StringBuffer();
@@ -199,10 +200,9 @@ class TStackList {
      *  @param isLastStack if non-null, then isLastStack[0] will be
      *  set to true if and only if the very last stack is the only
      *  stack not to have a vowel or disambiguator on it */
-    // DLC FIXME: DELETE THIS WARNING and this code unless EWTS will need it...
     boolean hasStackWithoutVowel(TPairList opl, boolean[] isLastStack) {
         int runningSize = 0;
-        // DLC FIXME: MARDA is MARD==MAR-D to us, but is probably MAR+DA, warn
+        // FIXME: MARDA is MARD==MAR-D to us, but is probably MAR+DA, warn -- see 838470
         for (int i = 0; i < size(); i++) {
             TPairList pl = get(i);
             String l;
@@ -225,14 +225,39 @@ class TStackList {
         return false;
     }
 
-    /** Returns legal Unicode corresponding to this tsheg bar.  DLC FIXME: which normalization form, if any? */
+    private static HashMap unicodeExceptionsMap = null;
+
+    /** Returns legal Unicode corresponding to this tsheg bar.  FIXME: which normalization form, if any? */
     String getUnicode() {
+        // The question is this: U+0FB1 or U+0FBB?  U+0FB2 or
+        // U+0FBC?  The answer: always the usual form, not the
+        // full form, except for a few known stacks (all the ones
+        // with full form subjoined consonants in TMW).  Note that
+        // wa-zur, U+0FAD, is never confused for U+0FBA because
+        // "V" and "W" are different transliterations.
+
         StringBuffer u = new StringBuffer(size());
         for (int i = 0; i < size(); i++) {
             get(i).getUnicode(u);
         }
-        return u.toString();
+
+        String us = u.toString();
+        if (null == unicodeExceptionsMap) {
+            unicodeExceptionsMap = new HashMap();
+            unicodeExceptionsMap.put("\u0f69\u0fb2", "\u0f69\u0fbc"); // KshR
+            unicodeExceptionsMap.put("\u0f40\u0fb5\u0fb2", "\u0f40\u0fb5\u0fbc"); // KshR
+            unicodeExceptionsMap.put("\u0f4e\u0f9c\u0fb2\u0fb1", "\u0f4e\u0f9c\u0fbc\u0fb1"); // ndRY
+            unicodeExceptionsMap.put("\u0f4e\u0f9c\u0fb1", "\u0f4e\u0f9c\u0fbb"); // ndY
+            unicodeExceptionsMap.put("\u0f61\u0fb1", "\u0f61\u0fbb"); // YY
+            unicodeExceptionsMap.put("\u0f62\u0fb1", "\u0f62\u0fbb"); // RY
+        }
+        String mapEntry = (String)unicodeExceptionsMap.get(us);
+        if (null != mapEntry)
+            return mapEntry;
+        else
+            return us;
     }
+
     /** Returns the DuffCodes and errors corresponding to this stack
         list. Each element of the array is a DuffCode or a String, the
         latter if and only if the TMW font cannot represent the

@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-// DLC FIXME: document this.
-
 /** MidLexSubstitution is a hack that lets the end user clumsily fix
  *  the EWTS-to-Tibetan and ACIP-to-Tibetan converters without having
  *  to modify the source code.
@@ -222,3 +220,5 @@ class StringMapping {
         this.to = to;
     }
 }
+// DLC NOW: defaults: KAsh=>K+sh, A=>?, '=>? (THESE ARE {A} AND {'} ALONE, NOT AS COMPONENTS OF A TSHEG-BAR.)
+

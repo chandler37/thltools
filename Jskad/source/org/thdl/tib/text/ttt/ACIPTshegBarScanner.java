@@ -1,4 +1,3 @@
-// DLC NOW: KAsh ->Ksh here!  optionally!
 /*
 The contents of this file are subject to the THDL Open Community License
 Version 1.0 (the "License"); you may not use this file except in compliance
@@ -118,7 +117,7 @@ public class ACIPTshegBarScanner {
      *  followed by a '\n'.
      *  @param s the ACIP text
      *  @param errors if non-null, the buffer to which to append error
-     *  messages (DLC FIXME: cludge, just get this info by scanning
+     *  messages (FIXME: kludge, just get this info by scanning
      *  the result for TString.ERROR (and maybe TString.WARNING,
      *  if you care about warnings), but then we'd have to put the
      *  Offset info in the TString)
@@ -340,7 +339,7 @@ public class ACIPTshegBarScanner {
                     if (!foundOne && i+1 < sl && s.charAt(i+1) == '*') {
                         // Identify [*LINE BREAK?] as an English
                         // correction.  Every correction not on this
-                        // list is considered to be Tibetan.  DLC
+                        // list is considered to be Tibetan.
                         // FIXME: make this extensible via a config
                         // file or at least a System property (which
                         // could be a comma-separated list of these
@@ -537,7 +536,7 @@ public class ACIPTshegBarScanner {
                                         errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
                                                       + "Found an illegal at sign, @ (in context, this is " + inContext + ").  This folio marker is not followed by whitespace, as is expected.\n");
                                     if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
-                                    startOfString = i+1; // DLC FIXME: skip over more?
+                                    startOfString = i+1; // FIXME: skip over more?  test this code.
                                     currentType = TString.ERROR;
                                     break;
                                 }
@@ -651,8 +650,7 @@ public class ACIPTshegBarScanner {
                     if (startSlashIndex + 1 == i) {
                         /* //NYA\\ appears in ACIP input, and I think
                          * it means /NYA/.  We warn about // for this
-                         * reason.  \\ causes a tsheg-bar error (DLC
-                         * FIXME: verify this is so). */
+                         * reason.  \\ causes a tsheg-bar error. */
                         al.add(new TString("Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.",
                                            TString.ERROR));
                         if (errors != null) {
@@ -941,7 +939,7 @@ public class ACIPTshegBarScanner {
             || ch == 'm'
             || ch == ':'
             || ch == '^'
-            // DLC FIXME: we must treat this guy like a vowel, a special vowel that numerals can take on.  Until then, warn.            || ch == '\\'
+            // FIXME: we must treat this guy like a vowel, a special vowel that numerals can take on.  Until then, warn.  See bug 838588          || ch == '\\'
 
             || ch == '-'
             || ch == '+'

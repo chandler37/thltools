@@ -27,7 +27,7 @@ import java.util.ArrayList;
 /** An ordered pair used in ACIP-to-TMW conversion.  The left side is
  *  the consonant or empty; the right side is the vowel, '+', or '-'.
  *  @author David Chandler */
-/* DLC BIG FIXME: make this package work for EWTS, not just ACIP. */
+/* BIG FIXME: make this package work for EWTS, not just ACIP. */
 class TPair {
     /** The left side, or null if there is no left side.  That is, the
      *  non-vowel, non-'m', non-':', non-'-', non-'+' guy. */
@@ -118,22 +118,22 @@ class TPair {
         return (null != l
                 && ((null == r || "".equals(r))
                     || "-".equals(r)
-                    || "A".equals(r)) // DLC FIXME: though check for BASKYABS and warn because BSKYABS is more common
+                    || "A".equals(r)) // FIXME: though check for BASKYABS and warn because BSKYABS is more common
                 && ACIPRules.isACIPPrefix(l));
     }
 
     /** Returns true if and only if this pair could be a Tibetan
-     *  secondary sufffix. */
+     *  secondary suffix. */
     boolean isPostSuffix() {
         return (null != l
                 && ((null == r || "".equals(r))
                     || "-".equals(r)
-                    || "A".equals(r)) // DLC FIXME: though warn about GAMASA vs. GAMS
+                    || "A".equals(r)) // FIXME: though warn about GAMASA vs. GAMS
                 && ACIPRules.isACIPPostsuffix(l));
     }
 
     /** Returns true if and only if this pair could be a Tibetan
-     *  sufffix. DLC FIXME: ACIP specific, just like isPostSuffix() and isPrefix() */
+     *  suffix. FIXME: ACIP specific, just like isPostSuffix() and isPrefix() */
     boolean isSuffix() {
         return (null != l
                 && ((null == r || "".equals(r))
@@ -208,7 +208,7 @@ class TPair {
     }
 
     /** Appends legal Unicode corresponding to this (possible
-     *  subscribed) pair to sb.  DLC FIXME: which normalization form,
+     *  subscribed) pair to sb.  FIXME: which normalization form,
      *  if any? */
     void getUnicode(StringBuffer sb, boolean subscribed) {
         if (null != getLeft()) {
