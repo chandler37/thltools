@@ -14,6 +14,7 @@ public class TransitionalDataLabel implements Serializable {
 
 	/** nullable persistent field */
 	private String transitionalDataLabel;
+	private String transitionalDataLabelShort;
 	
 	private Integer priority;
 
@@ -64,5 +65,13 @@ public class TransitionalDataLabel implements Serializable {
 
 	public void setPriority(Integer priority) {
 		this.priority = priority;
+	}
+
+	public String getTransitionalDataLabelShort() {
+		return transitionalDataLabelShort;
+	}
+
+	public void setTransitionalDataLabelShort(String transitionalDataLabelShort) {
+		this.transitionalDataLabelShort = transitionalDataLabelShort;
 	}
 }

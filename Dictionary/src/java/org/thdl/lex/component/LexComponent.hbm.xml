@@ -430,6 +430,7 @@
 			<generator class="native" />
 		</id>
 		<property name="transitionalDataLabel" type="java.lang.String" column="transitionalDataLabel" length="65535"/>
+		<property name="transitionalDataLabelShort" type="java.lang.String" column="transitionalDataLabelShort" length="65535"/>
 		<property name="priority" type="java.lang.Integer" column="priority"/>
 	</class>
 </hibernate-mapping>
