@@ -628,6 +628,10 @@ public static boolean isVowel(String s) {
 * transliteration, false if not
 */
 public static boolean isAmbiguousWylie(String x, String y) {
+    // What about ambiguity between wa-zur and wa? dwa vs. d.wa, e.g.?
+    // Doesn't matter, because that's illegal.  wa doesn't take any
+    // prefixes.
+
 	return (("g".equals(x) && "y".equals(y))
             || ("b".equals(x) && "l".equals(y))
             || ("b".equals(x) && "r".equals(y)));

@@ -85,22 +85,26 @@ public class TibTextUtils implements THDLWylieConstants {
 	}
 
 /**
-* Figures out how to arrange a list of characters into glyphs. For example, if the user types 'bsgr'
-* using the Extended Wylie keyboard, this method figures out that this should be represented
-* as a 'b' glyph followed by a 's-g-r' glyph. If you know that the characters do not
-* contain Sanskrit stacks, or do not contain Tibetan stacks, then you can specify this
-* to speed the process up. Otherwise, the method will first check to see if the characters
-* correspond to any Tibetan stacks, and if not, then it will check for Sanskrit stacks.
-* @param chars the list of Tibetan characters you want to find glyphs for
-* @param areStacksOnRight whether stacking should try to maximize from right to left (true)
-* or from left to right (false). In the Extended Wylie keyboard, you try to stack from
-* right to left. Thus, the character sequence r-g-r would be stacked as r followed by gr,
-* rather than rg followed by r. In the Sambhota and TCC keyboards, the stack direction
-* is reversed.
-* @param definitelyTibetan should be true if the characters are known to be Tibetan and
-* not Sanskrit
-* @param definitelySanskrit should be true if the characters are known to be Sanskrit and
-* not Tibetan
+* Figures out how to arrange a list of characters into glyphs. For
+* example, if the user types 'bsgr' using the Extended Wylie keyboard,
+* this method figures out that this should be represented as a 'b'
+* glyph followed by a 's-g-r' glyph. If you know that the characters
+* do not contain Sanskrit stacks, or do not contain Tibetan stacks,
+* then you can specify this to speed the process up. Otherwise, the
+* method will first check to see if the characters correspond to any
+* Tibetan stacks, and if not, then it will check for Sanskrit stacks.
+* @param chars the list of Tibetan characters you want to find glyphs
+* for
+* @param areStacksOnRight whether stacking should try to maximize from
+* right to left (true) or from left to right (false). In the Extended
+* Wylie keyboard, you try to stack from right to left. Thus, the
+* character sequence r-g-r would be stacked as r followed by gr,
+* rather than rg followed by r. In the Sambhota and TCC keyboards, the
+* stack direction is reversed.
+* @param definitelyTibetan should be true if the characters are known
+* to be Tibetan and not Sanskrit
+* @param definitelySanskrit should be true if the characters are known
+* to be Sanskrit and not Tibetan
 */
 	public static List getGlyphs(List chars, boolean areStacksOnRight, boolean definitelyTibetan, boolean definitelySanskrit) {
 		StringBuffer tibBuffer, sanBuffer;
@@ -233,10 +237,10 @@ public class TibTextUtils implements THDLWylieConstants {
 	}
 
 /**
-* Finds the first meaningful element to occur within a string of Extended Wylie.
-* This could be a character, a vowel,
-* punctuation, or formatting. For example, passed the string 'tshapo',
-* this method will return 'tsh'.
+* Finds the first meaningful element to occur within a string of
+* Extended Wylie.  This could be a character, a vowel, punctuation, or
+* formatting. For example, passed the string 'tshapo', this method
+* will return 'tsh'.
 * @param wylie the String of wylie you want to scan
 * @return the next meaningful subpart of this string, or null if
 * no meaningful subpart can be found (for example 'x' has no equivalent
@@ -867,6 +871,7 @@ public class TibTextUtils implements THDLWylieConstants {
                     // prepend:
                     tailEndWylie.insert(0,
                                         ACHUNG
+                                        + aVowelToUseAfter(ACHUNG)
                                         + TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(effectiveSize + 1)));
                     effectiveSize -= 2;
                 }
@@ -938,28 +943,35 @@ public class TibTextUtils implements THDLWylieConstants {
                                               * 9 words doesn't have
                                               * any ending with d --
                                               * all end with s. */) {
-                        /* Yes, this is ambiguous. How do we handle it?  See this from Andres:
-
-                        I'm posting this upon David Chandler's request. According to Lobsang
-                        Thonden in Modern Tibetan Grammar Language (page 42), with regards to
-                        identifying the root letter in 3 lettered words there are only 23
-                        ambiguous cases. He writes:
-
-                        If the last letter is 'sa' and the first two letters are affixes, then
-                        the SECOND ONE is the root letter in the following 9 WORDS ONLY:
-
-                        gdas gnas gsas dgas dmas bdas mdas 'gas 'das
-
-                        And the FIRST is the root letter in the following 14 WORDS ONLY:
-
-                        rags lags nags bags bangs gangs rangs langs nangs sangs 
-                        babs rabs rams nams
-
-                        As I mentioned before, I think that the best solution for now is to
-                        hard-wire these cases. Even if the list is not exhaustive, at least
-                        we'll have most cases covered.
-
-                        */
+                        /* Yes, this is ambiguous. How do we handle
+                         * it?  See this from Andres:
+                         *
+                         * I'm posting this upon David Chandler's
+                         * request. According to Lobsang Thonden in
+                         * Modern Tibetan Grammar Language (page 42),
+                         * with regards to identifying the root letter
+                         * in 3 lettered words there are only 23
+                         * ambiguous cases. He writes:
+                         *
+                         * If the last letter is 'sa' and the first
+                         * two letters are affixes, then the SECOND
+                         * ONE is the root letter in the following 9
+                         * WORDS ONLY:
+                         *
+                         * gdas gnas gsas dgas dmas bdas mdas 'gas
+                         * 'das
+                         *
+                         * And the FIRST is the root letter in the
+                         * following 14 WORDS ONLY:
+                         *
+                         * rags lags nags bags bangs gangs rangs langs
+                         * nangs sangs babs rabs rams nams
+                         *
+                         * As I mentioned before, I think that the
+                         * best solution for now is to hard-wire these
+                         * cases. Even if the list is not exhaustive,
+                         * at least we'll have most cases covered.
+                         */
 
                         /* FIXME: these constants are hard-wired here,
                          * rather than in TibetanMachineWeb, because
@@ -978,36 +990,6 @@ public class TibTextUtils implements THDLWylieConstants {
                                                                    wylie2));
                         }
 
-                        // DLC FIXME: what about ambiguity between
-                        // wa-zur and wa? dwa vs. d.wa, e.g.?
-
-                        // DLC FIXME: disambiguators are needed for
-                        // this case too, as b.lag vs. blag
-                        // illustrates.  Use something based on this,
-                        // from LegalTshegBar.java:
-                        //
-                        //             boolean disambiguatorNeeded = false;
-                        //             char prefix = getPrefix();
-                        //             sb.append(UnicodeCodepointToThdlWylie.getThdlWylieForUnicodeCodepoint(prefix));
-                        //             if (!hasHeadLetter()) {
-                        //                 if (EWC_ya == rootLetter) {
-                        //                     if (isConsonantThatTakesYaBtags(prefix))
-                        //                         disambiguatorNeeded = true;
-                        //                 } else if (EWC_ra == rootLetter) {
-                        //                     if (isConsonantThatTakesRaBtags(prefix))
-                        //                         disambiguatorNeeded = true;
-                        //                 } else if (EWC_la == rootLetter) {
-                        //                     if (isConsonantThatTakesLaBtags(prefix))
-                        //                         disambiguatorNeeded = true;
-                        //                 } else if (EWC_wa == rootLetter) {
-                        //                     if (isConsonantThatTakesWaZur(prefix))
-                        //                         disambiguatorNeeded = true;
-                        //                 }
-                        //             }
-                        //             if (disambiguatorNeeded)
-                        //                 sb.append(WYLIE_DISAMBIGUATING_KEY);
-
-                            
                     } else {
                         /* no ambiguity. the "a" vowel comes after
                          * wylie1. */
@@ -1075,6 +1057,11 @@ public class TibTextUtils implements THDLWylieConstants {
 				|| (!lastWylie.equals("")
                     && currWylie.equals(ACHEN)))
                 sb.append(WYLIE_DISAMBIGUATING_KEY);
+
+            /* le'ang, not le'ng, to be consistent w.r.t. pa'am
+             * vs. pa'm: */
+            if (lastWylie.equals(ACHUNG))
+                sb.append(WYLIE_aVOWEL);
 
 			sb.append(currWylie);
 
