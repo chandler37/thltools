@@ -83,12 +83,17 @@ public class ThdlOptions {
         // Look to the System first.
         String answer = getSystemValue(optionName);
         if (answer == null) {
-            answer = userProperties.getProperty(optionName, "false");
+            if (null != userProperties) {
+                answer = userProperties.getProperty(optionName, "false");
+            } else {
+                answer = "false";
+            }
         }
         return answer.equalsIgnoreCase("true");
     }
 
-    // FIXMEDOC
+    /** Returns the value of the system property optionName, or null
+        if that value is not set. */
     private static String getSystemValue(String optionName) {
         // Look to the System first.
         String answer = null;
@@ -113,7 +118,9 @@ public class ThdlOptions {
         // Look to the System first.
         String answer = getSystemValue(optionName);
         if (answer == null) {
-            answer = userProperties.getProperty(optionName, null);
+            if (null != userProperties) {
+                answer = userProperties.getProperty(optionName, null);
+            }
         }
         return answer;
     }
@@ -167,7 +174,9 @@ public class ThdlOptions {
         // Look to the System first.
         String answer = getSystemValue(optionName);
         if (answer == null) {
-            answer = userProperties.getProperty(optionName, null);
+            if (null != userProperties) {
+                answer = userProperties.getProperty(optionName, null);
+            }
         }
         if (null == answer) {
             return null;
@@ -262,7 +271,7 @@ public class ThdlOptions {
 
             // Get the user's properties, if they've set any:
             userProperties
-                = tryToGetPropsFromFile("thdl.user.options.directory", // DLC NOW FIXME: put in options.txt
+                = tryToGetPropsFromFile("thdl.user.options.directory",
                                         getUserPreferencesPath(),
                                         systemWideProperties,
                                         suppressErrors);
@@ -326,6 +335,11 @@ public class ThdlOptions {
             props = getPropertiesFromStream(fis,
                                             suppressErrors,
                                             defaultProps);
+            try {
+                fis.close();
+            } catch (IOException e) {
+                // suppress this error.
+            }
         }
         return props;
     }
@@ -345,11 +359,14 @@ public class ThdlOptions {
         return getPropertiesFromStream(in, suppressErrors, defaults);
     }
 
-    // FIXMEDOC
+    /** Returns a Properties object whose default values come from
+        defaults if defaults is non-null.  The properties specified in
+        the properties file from which in is open for reading override
+        the default property values.  If suppressErrors is true, then
+        this routine tries to always avoid failure. */
     private static Properties getPropertiesFromStream(InputStream in,
                                                       boolean suppressErrors,
                                                       Properties defaults)
-        throws NullPointerException
     {
         Properties options;
         if (defaults == null)

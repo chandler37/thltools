@@ -130,36 +130,46 @@ public class Jskad extends JPanel implements DocumentListener {
 
     /** Saves user preferences to disk if possible. */
     private void savePreferencesAction() {
-        try {
-            RecentlyOpenedFilesDatabase.storeRecentlyOpenedFilePreferences();
+        if (!clearedPrefs) {
+            try {
+                RecentlyOpenedFilesDatabase.storeRecentlyOpenedFilePreferences();
 
-            if (!ThdlOptions.saveUserPreferences()) {
+                if (!ThdlOptions.saveUserPreferences()) {
+                    JOptionPane.showMessageDialog(Jskad.this,
+                                                  "You previously cleared preferences,\nso you cannot now save them.",
+                                                  "Cannot Save User Preferences",
+                                                  JOptionPane.PLAIN_MESSAGE);
+                }
+            } catch (IOException ioe) {
                 JOptionPane.showMessageDialog(Jskad.this,
-                                              "You previously cleared preferences,\nso you cannot now save them.",
-                                              "Cannot Save User Preferences",
-                                              JOptionPane.PLAIN_MESSAGE);
+                                              "Could not save to your preferences file!",
+                                              "Error Saving Preferences",
+                                              JOptionPane.ERROR_MESSAGE);
             }
-        } catch (IOException ioe) {
-            System.out.println("IO Exception saving user preferences to " + ThdlOptions.getUserPreferencesPath());
-            ioe.printStackTrace();
-            ThdlDebug.noteIffyCode();
         }
     }
 
+    private static boolean clearedPrefs = false;
     /** Clears user preferences by deleting the preferences file on
         disk.  Prompts the user to quit and reopen Jskad. */
     private void clearPreferencesAction() {
+        clearedPrefs = true;
         try {
             ThdlOptions.clearUserPreferences();
         } catch (IOException ioe) {
-            System.out.println("IO Exception deleting user preferences file " + ThdlOptions.getUserPreferencesPath());
-            ioe.printStackTrace();
-            ThdlDebug.noteIffyCode();
+            JOptionPane.showMessageDialog(Jskad.this,
+                                          "Could not delete your preferences file!",
+                                          "Error Clearing Preferences",
+                                          JOptionPane.ERROR_MESSAGE);
+            return;
         }
-        JOptionPane.showMessageDialog(Jskad.this,
-                                      "You must now exit this application and restart\nbefore default preferences will take effect.",
-                                      "Clearing Preferences",
-                                      JOptionPane.PLAIN_MESSAGE);
+        if (JOptionPane.YES_OPTION
+            == JOptionPane.showConfirmDialog(Jskad.this,
+                                             "You must exit and restart before default preferences\nwill take effect.\n\nExit now?",
+                                             "Clearing Preferences",
+                                             JOptionPane.YES_NO_OPTION)) {
+            exitAction();
+        }
     }
 
     /** the File menu */
