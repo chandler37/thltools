@@ -19,6 +19,9 @@ Contributor(s): ______________________________________.
 
 <!-- @author David Chandler, dchandler@users.sourceforge.net
 
+     FAQ: Getting a java.lang.OutOfMemoryError?  See
+     http://thdltools.sourceforge.net/BuildSystems.html#oom.
+
      FIXME
        Right now, the web-start-releases and self-contained-dist
        targets hard-code the paths of the JARs/ZIPs they need.  Be
