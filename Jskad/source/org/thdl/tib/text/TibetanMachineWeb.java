@@ -27,6 +27,8 @@ import java.awt.event.KeyEvent;
 import javax.swing.text.*;
 import java.awt.font.*;
 
+import org.thdl.util.ThdlDebug;
+
 /**
 * Interfaces between Extended Wylie and the TibetanMachineWeb fonts.
 * To do this this must first read the code table, which lives in "tibwn.ini",
@@ -231,11 +233,12 @@ public class TibetanMachineWeb {
 		URL keyboard_url = TibetanMachineWeb.class.getResource(DEFAULT_KEYBOARD);
 		if (null != keyboard_url) {
 			try {
-				TibetanKeyboard kb = new TibetanKeyboard(keyboard_url);
-				setKeyboard(kb);
+                TibetanKeyboard kb = new TibetanKeyboard(keyboard_url);
+                setKeyboard(kb); // this can't throw the InvalidKeyboardException
 			}
 			catch (TibetanKeyboard.InvalidKeyboardException ike) {
-				System.out.println("invalid keyboard file or file not found");
+				System.out.println("invalid keyboard file or file not found: " + keyboard_url.toString());
+                ThdlDebug.noteIffyCode();
 				setKeyboard(keyboard);
 			}
 		}
@@ -473,17 +476,16 @@ public static boolean setKeyboard(TibetanKeyboard kb) {
 * if there was an error
 */
 public static boolean setKeyboard(URL url) {
-	TibetanKeyboard kb;
-
 	try {
-		kb = new TibetanKeyboard(url);
+        TibetanKeyboard kb = new TibetanKeyboard(url);
 		if (setKeyboard(kb))
 			return true;
 		else
 			return false;
 	}
 	catch (TibetanKeyboard.InvalidKeyboardException ike) {
-		System.out.println("can't create this keyboard");
+		System.out.println("can't create the keyboard associated with " + url);
+        ThdlDebug.noteIffyCode();
 		return false;
 	}
 }
