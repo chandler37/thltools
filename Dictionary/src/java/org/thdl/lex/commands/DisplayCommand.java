@@ -64,18 +64,28 @@ public class DisplayCommand extends LexCommand implements Command
 		try
 		{
 			LexQuery query = visit.getQuery();
-			if ( null != component )
+			if ( component instanceof ITerm )
 			{
-				component.populate( req.getParameterMap() );
-				query.setQueryComponent( component );
-				LexComponentRepository.loadTermByPk( query );
+				ITerm term = (ITerm) component;
+
+				if ( null != query.getEntry() && term.getMetaId().equals( query.getEntry().getMetaId() ) )
+				{
+					LexComponentRepository.update( query.getEntry() );
+				}
+				else
+				{
+					LexComponentRepository.loadTermByPk( term );
+					query.setEntry( term );
+				}
+
+				displayHelper.populate( req.getParameterMap() );
+
 			}
 			else
 			{
-				LexComponentRepository.update( query.getEntry() );
+				setNext( "menu.jsp" );
+				msg = "The component you were trying to display was not a term.";
 			}
-
-			displayHelper.populate( req.getParameterMap() );
 			req.setAttribute( LexConstants.MESSAGE_REQ_ATTR, msg );
 
 			return next;

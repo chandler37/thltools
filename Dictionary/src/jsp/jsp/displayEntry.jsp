@@ -95,8 +95,8 @@ translations
 <c:if test="${ sessionScope.visit.helper.showEditOptions }">
 <c:set var="ckd" value='checked="checked"'/>
 </c:if>
-<c:out value='<input name="showEditOptions" type="checkbox" value="true" ${ckd}/>' escapeXml='false'/>
- | edit options
+ | <c:out value='<input name="showEditOptions" type="checkbox" value="true" ${ckd}/>' escapeXml='false'/>
+edit options
 </c:if>
 
 <input type="hidden" name="cmd" value="displayFull"/>
