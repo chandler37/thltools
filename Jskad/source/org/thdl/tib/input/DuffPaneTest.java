@@ -117,6 +117,7 @@ public class DuffPaneTest extends TestCase {
         happened -- see the errata for the Tibetan! 5.1 docs), this
         will catch it. */
     public void testTibwnIni() {
+        enableEWTSKeyboard();
         /* <?Input:Tibetan?>: */
         e("ka"); e("k", "ka"); e("ki"); e("ku"); e("ke"); e("ko"); e("kU"); e("kM"); e("kau"); e("kai"); e("kI"); e("k-i");
         e("kha"); e("kh", "kha"); e("khi"); e("khu"); e("khe"); e("kho"); e("khU"); e("khM"); e("khau"); e("khai"); e("khI"); e("kh-i");
@@ -811,6 +812,7 @@ public class DuffPaneTest extends TestCase {
     }
 
     public void testNoKeysCrashUs() {
+        enableEWTSKeyboard();
         /* why 130? because we want to try some extended ASCII
            characters to make sure that they don't crash us either */
         char max = (char)130;
@@ -820,9 +822,18 @@ public class DuffPaneTest extends TestCase {
                 noExceptions("" + ch + ch2);
             }
         }
+        // FIXME: test the sambhota and TCC keyboards
+        enableSambhotaKeyboard();
+        for (char ch = 0; ch < max; ch++) {
+            noExceptions("" + ch);
+            for (char ch2 = 0; ch2 < max; ch2++) {
+                noExceptions("" + ch + ch2);
+            }
+        }
     }
 
     public void testDisambiguation() {
+        enableEWTSKeyboard();
         ensureKeysGiveCorrectWylie("gya");
         ensureKeysGiveCorrectWylie("g.ya");
         ensureKeysGiveCorrectWylie("bya");
@@ -854,6 +865,7 @@ public class DuffPaneTest extends TestCase {
      *  keyboard, turning those into our internal representation (IR),
      *  and then converting the result to Extended Wylie. */
     public void testWylieToIRToWylie() {
+        enableEWTSKeyboard();
         // FIXME: test achen when it's not alone -- once Jskad's
         // keyboard supports that!  Right now, you have to type "d
         // a<LEFTARROW><BACKSPACE><RIGHTARROW> " to get EWTS {d.a }.
@@ -1135,9 +1147,21 @@ public class DuffPaneTest extends TestCase {
         }
     }
 
+    private void enableEWTSKeyboard() {
+        new JskadKeyboard("EWTS for DuffPaneTest",
+                          null,
+                          null).activate(dp);
+    }
+        
     private void enableACIPKeyboard() {
         new JskadKeyboard("Asian Classics Input Project (ACIP) FOR DuffPaneTest",
                           "acip_keyboard.ini",
+                          null).activate(dp);
+    }
+
+    private void enableSambhotaKeyboard() {
+        new JskadKeyboard("Sambhota Keymap One FOR DuffPaneTest",
+                          "sambhota_keyboard_1.ini",
                           null).activate(dp);
     }
 
