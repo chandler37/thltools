@@ -89,31 +89,31 @@ public class Jskad extends JPanel implements DocumentListener {
         }
     }
 
-	// private JComboBox fontFamilies, fontSizes;
-	private JFileChooser fileChooser;
-	private javax.swing.filechooser.FileFilter rtfFilter;
-	private javax.swing.filechooser.FileFilter txtFilter;
-	// private int fontSize = 0;
-	private Object parentObject = null;
-	private static int numberOfTibsRTFOpen = 0;
-	private static int x_size;
-	private static int y_size;
+    // private JComboBox fontFamilies, fontSizes;
+    private JFileChooser fileChooser;
+    private javax.swing.filechooser.FileFilter rtfFilter;
+    private javax.swing.filechooser.FileFilter txtFilter;
+    // private int fontSize = 0;
+    private Object parentObject = null;
+    private static int numberOfTibsRTFOpen = 0;
+    private static int x_size;
+    private static int y_size;
 
 /**
 * The text editing window which this Jskad object embeds.
 */
-	public DuffPane dp;
+    public DuffPane dp;
 /**
 * Has the document been saved since it was last changed?
 */
-	public boolean hasChanged = false;
+    public boolean hasChanged = false;
 
 /**
 * The filename, if any, associated with this instance of Jskad.
 */
-	public String fileName = null;
-	
-	private PreferenceWindow prefWindow;
+    public String fileName = null;
+    
+    private PreferenceWindow prefWindow;
 
     /** the status bar for this frame */
     private StatusBar statusBar;
@@ -131,11 +131,11 @@ public class Jskad extends JPanel implements DocumentListener {
     private Jskad(LayoutManager lm, boolean isDB) { super(lm, isDB); }
     
     /** Invokes to window to customize fonts. */
-	private void setPreferences()
-	{
-	    if (prefWindow == null) prefWindow = new PreferenceWindow(this, dp);
-	    prefWindow.show();
-	}    
+    private void setPreferences()
+    {
+        if (prefWindow == null) prefWindow = new PreferenceWindow(this, dp);
+        prefWindow.show();
+    }    
 
     /** Saves user preferences to disk if possible. */
     private void savePreferencesAction() {
@@ -228,7 +228,7 @@ public class Jskad extends JPanel implements DocumentListener {
 * Supported objects include JFrames and JApplets. If the parent
 * is a JApplet then the File menu is omitted from the menu bar.
 */
-	public Jskad(final Object parent) {
+    public Jskad(final Object parent) {
         super();
 
         if (ThdlOptions.getBooleanOption("thdl.Jskad.disable.status.bar")) {
@@ -238,11 +238,11 @@ public class Jskad extends JPanel implements DocumentListener {
                 = new StatusBar(ThdlOptions.getStringOption("thdl.Jskad.initial.status.message",
                                                             "Welcome to Jskad!"));
         }
-		parentObject = parent;
-		numberOfTibsRTFOpen++;
-		JMenuBar menuBar = new JMenuBar();
+        parentObject = parent;
+        numberOfTibsRTFOpen++;
+        JMenuBar menuBar = new JMenuBar();
 
-		if (parentObject instanceof JFrame || parentObject instanceof JInternalFrame) {
+        if (parentObject instanceof JFrame || parentObject instanceof JInternalFrame) {
             String whereToStart
                 = ThdlOptions.getStringOption("thdl.Jskad.working.directory",
                                               null);
@@ -259,34 +259,34 @@ public class Jskad extends JPanel implements DocumentListener {
                 System.err.println("Jskad was not cleanly compiled; please rebuild!");
                 System.exit(1);
             }
-			rtfFilter = new RTFFilter();
-			txtFilter = new TXTFilter();
-			fileChooser.addChoosableFileFilter(rtfFilter);
+            rtfFilter = new RTFFilter();
+            txtFilter = new TXTFilter();
+            fileChooser.addChoosableFileFilter(rtfFilter);
 
-			fileMenu = new JMenu("File");
+            fileMenu = new JMenu("File");
 
-			JMenuItem newItem = new JMenuItem("New");
-//			newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,java.awt.Event.CTRL_MASK)); //Ctrl-n
-			newItem.addActionListener(new ThdlActionListener() {
-				public void theRealActionPerformed(ActionEvent e) {
-					newFile();
-				}
-			});
-			fileMenu.add(newItem);
+            JMenuItem newItem = new JMenuItem("New");
+//            newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,java.awt.Event.CTRL_MASK)); //Ctrl-n
+            newItem.addActionListener(new ThdlActionListener() {
+                public void theRealActionPerformed(ActionEvent e) {
+                    newFile();
+                }
+            });
+            fileMenu.add(newItem);
 
-			JMenuItem openItem = new JMenuItem("Open...");
-//			openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,java.awt.Event.CTRL_MASK)); //Ctrl-o
-			openItem.addActionListener(new ThdlActionListener() {
-				public void theRealActionPerformed(ActionEvent e) {
-					openFile();
-				}
-			});
-			fileMenu.add(openItem);
+            JMenuItem openItem = new JMenuItem("Open...");
+//            openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,java.awt.Event.CTRL_MASK)); //Ctrl-o
+            openItem.addActionListener(new ThdlActionListener() {
+                public void theRealActionPerformed(ActionEvent e) {
+                    openFile();
+                }
+            });
+            fileMenu.add(openItem);
 
-			if (parentObject instanceof JFrame) {
-				JMenuItem closeItem = new JMenuItem("Close");	
-				closeItem.addActionListener(new ThdlActionListener() {
-					public void theRealActionPerformed(ActionEvent e) {
+            if (parentObject instanceof JFrame) {
+                JMenuItem closeItem = new JMenuItem("Close");    
+                closeItem.addActionListener(new ThdlActionListener() {
+                    public void theRealActionPerformed(ActionEvent e) {
                         if (numberOfTibsRTFOpen == 1) {
                             JOptionPane.showMessageDialog(Jskad.this,
                                                           "You cannot close the last Jskad window.\nUse File/Exit if you intend to exit.",
@@ -297,93 +297,93 @@ public class Jskad extends JPanel implements DocumentListener {
                                 Jskad.this.realCloseAction(true);
                             }
                         }
-					}
-				});
-				fileMenu.add(closeItem);
+                    }
+                });
+                fileMenu.add(closeItem);
             }
-			JMenuItem saveItem = new JMenuItem("Save");
-//			saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,java.awt.Event.CTRL_MASK)); //Ctrl-s
-			saveItem.addActionListener(new ThdlActionListener() {
-				public void theRealActionPerformed(ActionEvent e) {
-					if (fileName == null)
-						saveAsFile();
-					else
-						saveFile();
-				}
+            JMenuItem saveItem = new JMenuItem("Save");
+//            saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,java.awt.Event.CTRL_MASK)); //Ctrl-s
+            saveItem.addActionListener(new ThdlActionListener() {
+                public void theRealActionPerformed(ActionEvent e) {
+                    if (fileName == null)
+                        saveAsFile();
+                    else
+                        saveFile();
+                }
 
-			});
-			fileMenu.addSeparator();
-			fileMenu.add(saveItem);
+            });
+            fileMenu.addSeparator();
+            fileMenu.add(saveItem);
 
-			JMenuItem saveAsItem = new JMenuItem("Save as...");
-			saveAsItem.addActionListener(new ThdlActionListener() {
-				public void theRealActionPerformed(ActionEvent e) {
-					saveAsFile();
-				}
-			});
-			fileMenu.add(saveAsItem);
+            JMenuItem saveAsItem = new JMenuItem("Save as...");
+            saveAsItem.addActionListener(new ThdlActionListener() {
+                public void theRealActionPerformed(ActionEvent e) {
+                    saveAsFile();
+                }
+            });
+            fileMenu.add(saveAsItem);
 
-			if (parentObject instanceof JFrame) {
-				JMenuItem exitItem = new JMenuItem("Exit");	
-				exitItem.addActionListener(new ThdlActionListener() {
-					public void theRealActionPerformed(ActionEvent e) {
+            if (parentObject instanceof JFrame) {
+                JMenuItem exitItem = new JMenuItem("Exit");    
+                exitItem.addActionListener(new ThdlActionListener() {
+                    public void theRealActionPerformed(ActionEvent e) {
                         exitAction();
-					}
-				});
-				fileMenu.addSeparator();
-				fileMenu.add(exitItem);
-			}
+                    }
+                });
+                fileMenu.addSeparator();
+                fileMenu.add(exitItem);
+            }
 
             updateRecentlyOpenedFilesMenuItems();
 
-			menuBar.add(fileMenu);
-		}
+            menuBar.add(fileMenu);
+        }
 
-		JMenu editMenu = new JMenu("Edit");
+        JMenu editMenu = new JMenu("Edit");
 
-		if (parentObject instanceof JFrame || parentObject instanceof JInternalFrame) {
-			JMenuItem cutItem = new JMenuItem("Cut");
-			cutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,
+        if (parentObject instanceof JFrame || parentObject instanceof JInternalFrame) {
+            JMenuItem cutItem = new JMenuItem("Cut");
+            cutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,
                                                           java.awt.Event.CTRL_MASK)); //Ctrl-x
-			cutItem.addActionListener(new ThdlActionListener() {
-				public void theRealActionPerformed(ActionEvent e) {
-					cutSelection();					
-				}
-			});
-			editMenu.add(cutItem);
+            cutItem.addActionListener(new ThdlActionListener() {
+                public void theRealActionPerformed(ActionEvent e) {
+                    cutSelection();                    
+                }
+            });
+            editMenu.add(cutItem);
 
-			JMenuItem copyItem = new JMenuItem("Copy");
-			copyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
+            JMenuItem copyItem = new JMenuItem("Copy");
+            copyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
                                                            java.awt.Event.CTRL_MASK)); //Ctrl-c
-			copyItem.addActionListener(new ThdlActionListener() {
-				public void theRealActionPerformed(ActionEvent e) {
-					copySelection();
-				}
-			});
-			editMenu.add(copyItem);
+            copyItem.addActionListener(new ThdlActionListener() {
+                public void theRealActionPerformed(ActionEvent e) {
+                    copySelection();
+                }
+            });
+            editMenu.add(copyItem);
 
-			JMenuItem pasteItem = new JMenuItem("Paste");
-			pasteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
+            JMenuItem pasteItem = new JMenuItem("Paste");
+            pasteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
                                                             java.awt.Event.CTRL_MASK)); //Ctrl-v
-			pasteItem.addActionListener(new ThdlActionListener() {
-				public void theRealActionPerformed(ActionEvent e) {
-					pasteSelection();
-				}
-			});
-			editMenu.add(pasteItem);
-			editMenu.addSeparator();
+            pasteItem.addActionListener(new ThdlActionListener() {
+                public void theRealActionPerformed(ActionEvent e) {
+                    pasteSelection();
+                }
+            });
+            editMenu.add(pasteItem);
+            editMenu.addSeparator();
 
-			JMenuItem selectallItem = new JMenuItem("Select All");
-			selectallItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A,
+            JMenuItem selectallItem = new JMenuItem("Select All");
+            selectallItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A,
                                                                 java.awt.Event.CTRL_MASK)); //Ctrl-a
-			selectallItem.addActionListener(new ThdlActionListener() {
-				public void theRealActionPerformed(ActionEvent e) {
-					dp.setSelectionStart(0);
-					dp.setSelectionEnd(dp.getDocument().getLength());
-				}
-			});
-			editMenu.add(selectallItem);
-		}
+            selectallItem.addActionListener(new ThdlActionListener() {
+                public void theRealActionPerformed(ActionEvent e) {
+                    dp.setSelectionStart(0);
+                    dp.setSelectionEnd(dp.getDocument().getLength());
+                }
+            });
+            editMenu.add(selectallItem);
+        }
 
         {
             JMenuItem preferencesItem = new JMenuItem("Preferences");
@@ -419,25 +419,25 @@ public class Jskad extends JPanel implements DocumentListener {
 
         menuBar.add(editMenu);
 
-		JMenu toolsMenu = new JMenu("Tools");
+        JMenu toolsMenu = new JMenu("Tools");
 
         JMenu convertSelectionMenu = new JMenu("Convert Selection");
-		JMenuItem TMWWylieItem = new JMenuItem("Convert Tibetan to Wylie");
-		TMWWylieItem.addActionListener(new ThdlActionListener() {
-			public void theRealActionPerformed(ActionEvent e) {
-				toWylie();
-			}
-		});
-		convertSelectionMenu.add(TMWWylieItem);
+        JMenuItem TMWWylieItem = new JMenuItem("Convert Tibetan to Wylie");
+        TMWWylieItem.addActionListener(new ThdlActionListener() {
+            public void theRealActionPerformed(ActionEvent e) {
+                toWylie();
+            }
+        });
+        convertSelectionMenu.add(TMWWylieItem);
         toolsMenu.add(convertSelectionMenu);
 
-		JMenuItem wylieTMWItem = new JMenuItem("Convert Wylie to Tibetan");
-		wylieTMWItem.addActionListener(new ThdlActionListener() {
-			public void theRealActionPerformed(ActionEvent e) {
-				toTibetan();
-			}
-		});
-		convertSelectionMenu.add(wylieTMWItem);
+        JMenuItem wylieTMWItem = new JMenuItem("Convert Wylie to Tibetan");
+        wylieTMWItem.addActionListener(new ThdlActionListener() {
+            public void theRealActionPerformed(ActionEvent e) {
+                toTibetan();
+            }
+        });
+        convertSelectionMenu.add(wylieTMWItem);
 
         JMenu convertAllMenu = new JMenu("Convert All");
 
@@ -534,7 +534,7 @@ public class Jskad extends JPanel implements DocumentListener {
         convertAllMenu.add(toUnicodeItem);
         toolsMenu.add(convertAllMenu);
 
-		if (parentObject instanceof JFrame || parentObject instanceof JInternalFrame) {
+        if (parentObject instanceof JFrame || parentObject instanceof JInternalFrame) {
             JMenuItem converterItem = new JMenuItem("Launch Converter...");
             converterItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
@@ -549,23 +549,23 @@ public class Jskad extends JPanel implements DocumentListener {
             toolsMenu.add(converterItem);
 
 
-			JMenuItem importItem = new JMenuItem("Import Wylie as Tibetan...");
-			importItem.addActionListener(new ThdlActionListener() {
-				public void theRealActionPerformed(ActionEvent e) {
-					importWylie();
-				}
-			});
-			toolsMenu.addSeparator();
-			toolsMenu.add(importItem);
+            JMenuItem importItem = new JMenuItem("Import Wylie as Tibetan...");
+            importItem.addActionListener(new ThdlActionListener() {
+                public void theRealActionPerformed(ActionEvent e) {
+                    importWylie();
+                }
+            });
+            toolsMenu.addSeparator();
+            toolsMenu.add(importItem);
 
-			JMenuItem openWithItem = new JMenuItem("Open With External Viewer...");
-			openWithItem.addActionListener(new ThdlActionListener() {
-				public void theRealActionPerformed(ActionEvent e) {
+            JMenuItem openWithItem = new JMenuItem("Open With External Viewer...");
+            openWithItem.addActionListener(new ThdlActionListener() {
+                public void theRealActionPerformed(ActionEvent e) {
                     openWithExternalViewer();
-				}
-			});
-			toolsMenu.addSeparator();
-			toolsMenu.add(openWithItem);
+                }
+            });
+            toolsMenu.addSeparator();
+            toolsMenu.add(openWithItem);
 
         }
 
@@ -619,9 +619,9 @@ public class Jskad extends JPanel implements DocumentListener {
             toolsMenu.add(DevelItem);
         }
 
-		menuBar.add(toolsMenu);
+        menuBar.add(toolsMenu);
 
-		JMenu helpMenu = new JMenu("Help");
+        JMenu helpMenu = new JMenu("Help");
 
         {
             JMenuItem helpItem = new JMenuItem("Help");
@@ -681,7 +681,7 @@ public class Jskad extends JPanel implements DocumentListener {
             }
         }
 
-		helpMenu.addSeparator();
+        helpMenu.addSeparator();
 
         {
             JMenuItem aboutItem = new JMenuItem("About");
@@ -690,7 +690,7 @@ public class Jskad extends JPanel implements DocumentListener {
                         JOptionPane.showMessageDialog(Jskad.this,
                                                       "Copyright 2001-2003 Tibetan and Himalayan Digital Library\n\n"+
                                                       "Jskad is protected by the THDL Open Community License.\n\n"+ /* FIXME UPDATE THE YEAR REGULARLY */
-			
+            
                                                       "For more information, or to download the source code\n"+
                                                       "for Jskad, visit our web site:\n"+
                                                       "     http://thdl.org/\n" +
@@ -707,7 +707,7 @@ public class Jskad extends JPanel implements DocumentListener {
             helpMenu.add(aboutItem);
         }
 
-		menuBar.add(helpMenu);
+        menuBar.add(helpMenu);
 
         /* Initialize dp before calling
            JskadKeyboard.activate(DuffPane) or dp.toggleLanguage(). */
@@ -718,14 +718,14 @@ public class Jskad extends JPanel implements DocumentListener {
         }
 
 
-		JToolBar toolBar = new JToolBar();
-		toolBar.setBorder(null);
-		toolBar.addSeparator();
-		toolBar.add(new JLabel("Input mode:"));
-		toolBar.addSeparator();
+        JToolBar toolBar = new JToolBar();
+        toolBar.setBorder(null);
+        toolBar.addSeparator();
+        toolBar.add(new JLabel("Input mode:"));
+        toolBar.addSeparator();
 
-		String[] input_modes = {"Tibetan","Roman"};
-		final JComboBox inputmethods = new JComboBox(input_modes);
+        String[] input_modes = {"Tibetan","Roman"};
+        final JComboBox inputmethods = new JComboBox(input_modes);
 
         int initialInputMethod
             = ThdlOptions.getIntegerOption("thdl.Jskad.input.method", 0);
@@ -745,34 +745,34 @@ public class Jskad extends JPanel implements DocumentListener {
         if (1 == initialInputMethod && dp.isRomanEnabled())
             dp.toggleLanguage();
 
-		inputmethods.addActionListener(new ThdlActionListener() {
-			public void theRealActionPerformed(ActionEvent e) {
+        inputmethods.addActionListener(new ThdlActionListener() {
+            public void theRealActionPerformed(ActionEvent e) {
                 int si = inputmethods.getSelectedIndex();
                 ThdlOptions.setUserPreference("thdl.Jskad.input.method", si);
-				switch (si) {
-					case 0: //Tibetan
-						if (dp.isRomanMode())
-							dp.toggleLanguage();
+                switch (si) {
+                    case 0: //Tibetan
+                        if (dp.isRomanMode())
+                            dp.toggleLanguage();
                         statusBar.replaceStatus("Now inputting Tibetan script");
-						break;
+                        break;
 
-					case 1: //Roman
-						if (!dp.isRomanMode() && dp.isRomanEnabled())
-							dp.toggleLanguage();
+                    case 1: //Roman
+                        if (!dp.isRomanMode() && dp.isRomanEnabled())
+                            dp.toggleLanguage();
                         statusBar.replaceStatus("Now inputting Roman script");
-						break;
-				}
-			}
-		});
+                        break;
+                }
+            }
+        });
 
 
-		toolBar.add(inputmethods);
-		toolBar.add(Box.createHorizontalGlue());
+        toolBar.add(inputmethods);
+        toolBar.add(Box.createHorizontalGlue());
 
-		toolBar.add(new JLabel("Keyboard:"));
-		toolBar.addSeparator();
+        toolBar.add(new JLabel("Keyboard:"));
+        toolBar.addSeparator();
 
-		final JComboBox keyboards
+        final JComboBox keyboards
             = new JComboBox(keybdMgr.getIdentifyingStrings());
         int initialKeyboard
             = ThdlOptions.getIntegerOption("thdl.default.tibetan.keyboard", 0);
@@ -783,27 +783,27 @@ public class Jskad extends JPanel implements DocumentListener {
             keyboards.setSelectedIndex(initialKeyboard);
         }
         keybdMgr.elementAt(initialKeyboard).activate(dp);
-		keyboards.addActionListener(new ThdlActionListener() {
-			public void theRealActionPerformed(ActionEvent e) {
+        keyboards.addActionListener(new ThdlActionListener() {
+            public void theRealActionPerformed(ActionEvent e) {
                 int ki = keyboards.getSelectedIndex();
                 keybdMgr.elementAt(ki).activate(dp);
                 ThdlOptions.setUserPreference("thdl.default.tibetan.keyboard", ki);
-			}
-		});
-		toolBar.add(keyboards);
-		toolBar.add(Box.createHorizontalGlue());
+            }
+        });
+        toolBar.add(keyboards);
+        toolBar.add(Box.createHorizontalGlue());
 
         JScrollPane scrollingDuffPane
             = new JScrollPane(dp,
                               JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                               JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		dp.getDocument().addDocumentListener(this);
+        dp.getDocument().addDocumentListener(this);
 
-		if (parentObject instanceof JFrame) {
-			final JFrame parentFrame = (JFrame)parentObject;
-			parentFrame.setJMenuBar(menuBar);
-			parentFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-			parentFrame.addWindowListener(new WindowAdapter () {
+        if (parentObject instanceof JFrame) {
+            final JFrame parentFrame = (JFrame)parentObject;
+            parentFrame.setJMenuBar(menuBar);
+            parentFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+            parentFrame.addWindowListener(new WindowAdapter () {
                     // We want the focus to be, at the start of the
                     // program and whenever Jskad gets the focus, on
                     // the DuffPane.
@@ -824,50 +824,50 @@ public class Jskad extends JPanel implements DocumentListener {
                         }
                     }
                 });
-		} else if (parentObject instanceof JInternalFrame) {
-			final JInternalFrame parentFrame = (JInternalFrame)parentObject;
-			parentFrame.setJMenuBar(menuBar);
-		} else if (parentObject instanceof JApplet) {
-			JApplet parentApplet = (JApplet)parentObject;
-			parentApplet.setJMenuBar(menuBar);
-			dp.disableCutAndPaste();
-		}
+        } else if (parentObject instanceof JInternalFrame) {
+            final JInternalFrame parentFrame = (JInternalFrame)parentObject;
+            parentFrame.setJMenuBar(menuBar);
+        } else if (parentObject instanceof JApplet) {
+            JApplet parentApplet = (JApplet)parentObject;
+            parentApplet.setJMenuBar(menuBar);
+            dp.disableCutAndPaste();
+        }
 
-		setLayout(new BorderLayout());
-		add("North", toolBar);
-		add("Center", scrollingDuffPane);
+        setLayout(new BorderLayout());
+        add("North", toolBar);
+        add("Center", scrollingDuffPane);
         if (statusBar != null)
             add("South", statusBar);
-	}
+    }
 
-	private void newFile() {
-		if (dp.getDocument().getLength()>0 && parentObject instanceof JFrame) {
-			JFrame parentFrame = (JFrame)parentObject;
-			JFrame newFrame = new JFrame("Jskad");
-			Point point = parentFrame.getLocationOnScreen();
-			newFrame.setSize(parentFrame.getSize().width, parentFrame.getSize().height);
-			newFrame.setLocation(point.x+50, point.y+50);
+    private void newFile() {
+        if (dp.getDocument().getLength()>0 && parentObject instanceof JFrame) {
+            JFrame parentFrame = (JFrame)parentObject;
+            JFrame newFrame = new JFrame("Jskad");
+            Point point = parentFrame.getLocationOnScreen();
+            newFrame.setSize(parentFrame.getSize().width, parentFrame.getSize().height);
+            newFrame.setLocation(point.x+50, point.y+50);
             Jskad jskad = new Jskad(newFrame);
             jskads.add(jskad);
-			newFrame.getContentPane().add(jskad);
-			newFrame.setVisible(true);
-		}
-		else {
-			if (parentObject instanceof JFrame) {
-				JFrame parentFrame = (JFrame)parentObject;
-				parentFrame.setTitle("Jskad");
-			}
-			else if (parentObject instanceof JInternalFrame) {
-				JInternalFrame parentFrame = (JInternalFrame)parentObject;
-				parentFrame.setTitle("Jskad");
-			}
-			dp.newDocument();
-			dp.getDocument().addDocumentListener(Jskad.this);
-			hasChanged = false;
-		}
-	}
+            newFrame.getContentPane().add(jskad);
+            newFrame.setVisible(true);
+        }
+        else {
+            if (parentObject instanceof JFrame) {
+                JFrame parentFrame = (JFrame)parentObject;
+                parentFrame.setTitle("Jskad");
+            }
+            else if (parentObject instanceof JInternalFrame) {
+                JInternalFrame parentFrame = (JInternalFrame)parentObject;
+                parentFrame.setTitle("Jskad");
+            }
+            dp.newDocument();
+            dp.getDocument().addDocumentListener(Jskad.this);
+            hasChanged = false;
+        }
+    }
 
-	private void openFile() {
+    private void openFile() {
         String whereToStart
             = ThdlOptions.getStringOption("thdl.Jskad.working.directory",
                                           null);
@@ -877,7 +877,7 @@ public class Jskad extends JPanel implements DocumentListener {
                                : (whereToStart.equals("")
                                   ? null
                                   : whereToStart));
-		fileChooser.addChoosableFileFilter(rtfFilter);
+        fileChooser.addChoosableFileFilter(rtfFilter);
 
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
@@ -983,46 +983,46 @@ public class Jskad extends JPanel implements DocumentListener {
                                           JOptionPane.ERROR_MESSAGE);
         }
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-	}
+    }
 
-	/** Returns true iff the save was successful. */
-	private boolean saveFile() {
-		String s = getSave(fileName);
-		if (null != s) {
-			if (parentObject instanceof JFrame) {
-				JFrame parentFrame = (JFrame)parentObject;
-				parentFrame.setTitle("Jskad: " + s);
-				fileName = new String(s);
-			}
-			else if (parentObject instanceof JInternalFrame) {
-				JInternalFrame parentFrame = (JInternalFrame)parentObject;
-				parentFrame.setTitle("Jskad: " + s);
-				fileName = new String(s);
-			}
-			return true;
-		} else {
-			return false;
-		}
-	}
+    /** Returns true iff the save was successful. */
+    private boolean saveFile() {
+        String s = getSave(fileName);
+        if (null != s) {
+            if (parentObject instanceof JFrame) {
+                JFrame parentFrame = (JFrame)parentObject;
+                parentFrame.setTitle("Jskad: " + s);
+                fileName = new String(s);
+            }
+            else if (parentObject instanceof JInternalFrame) {
+                JInternalFrame parentFrame = (JInternalFrame)parentObject;
+                parentFrame.setTitle("Jskad: " + s);
+                fileName = new String(s);
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-	/** Returns true iff the save was successful. */
-	private boolean saveAsFile() {
-		String s = getSaveAs();
-		if (null != s) {
-			if (parentObject instanceof JFrame) {
-				JFrame parentFrame = (JFrame)parentObject;
-				parentFrame.setTitle("Jskad: " + s);
-				fileName = new String(s);
-			}
-			else if (parentObject instanceof JInternalFrame) {
-				JInternalFrame parentFrame = (JInternalFrame)parentObject;
-				parentFrame.setTitle("Jskad: " + s);
-				fileName = new String(s);
-			}
-			return true;
-		}
-		return false;
-	}
+    /** Returns true iff the save was successful. */
+    private boolean saveAsFile() {
+        String s = getSaveAs();
+        if (null != s) {
+            if (parentObject instanceof JFrame) {
+                JFrame parentFrame = (JFrame)parentObject;
+                parentFrame.setTitle("Jskad: " + s);
+                fileName = new String(s);
+            }
+            else if (parentObject instanceof JInternalFrame) {
+                JInternalFrame parentFrame = (JInternalFrame)parentObject;
+                parentFrame.setTitle("Jskad: " + s);
+                fileName = new String(s);
+            }
+            return true;
+        }
+        return false;
+    }
 
     /** Returns true iff the user says (possibly after a successful
         save) that it is OK to destroy this Jskad widget.
@@ -1030,107 +1030,107 @@ public class Jskad extends JPanel implements DocumentListener {
         JOptionPane.YES_NO_OPTION, depending on whether canceling is
         different than saying no.
     */
-	private boolean checkSave(int dialogType) {
-		if (ThdlOptions.getBooleanOption("thdl.Jskad.do.not.confirm.quit")) {
-			return true;
-		}
+    private boolean checkSave(int dialogType) {
+        if (ThdlOptions.getBooleanOption("thdl.Jskad.do.not.confirm.quit")) {
+            return true;
+        }
 
-		int saveFirst
-			= JOptionPane.showConfirmDialog(this,
-											"Do you want to save your changes?",
-											"Please select",
+        int saveFirst
+            = JOptionPane.showConfirmDialog(this,
+                                            "Do you want to save your changes?",
+                                            "Please select",
                                             dialogType);
 
-		switch (saveFirst) {
-			case JOptionPane.NO_OPTION: //don't save but do continue
-				return true;
+        switch (saveFirst) {
+            case JOptionPane.NO_OPTION: //don't save but do continue
+                return true;
 
-			case JOptionPane.YES_OPTION: //save and continue
-				if (fileName == null)
-					return saveAsFile();
-				else
-					return saveFile();
+            case JOptionPane.YES_OPTION: //save and continue
+                if (fileName == null)
+                    return saveAsFile();
+                else
+                    return saveFile();
 
-			default:
-				return false;
-		}
-	}
+            default:
+                return false;
+        }
+    }
 
-	private String getSave(String f_name) {
-		File fileChosen = new File(f_name);
+    private String getSave(String f_name) {
+        File fileChosen = new File(f_name);
 
-		try {
-			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileChosen));
-			dp.rtfEd.write(out, dp.getDocument(), 0, dp.getDocument().getLength());
-			out.flush();
-			out.close();
-			hasChanged = false;
-		} catch (IOException exception) {
+        try {
+            BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileChosen));
+            dp.rtfEd.write(out, dp.getDocument(), 0, dp.getDocument().getLength());
+            out.flush();
+            out.close();
+            hasChanged = false;
+        } catch (IOException exception) {
             JOptionPane.showMessageDialog(Jskad.this,
                                           "Cannot save to that file.",
                                           "Save As Error",
                                           JOptionPane.ERROR_MESSAGE);
 
-			return null;
-		} catch (BadLocationException ble) {
-			ble.printStackTrace();
-			ThdlDebug.noteIffyCode();
-		}
-		return f_name;
-	}
+            return null;
+        } catch (BadLocationException ble) {
+            ble.printStackTrace();
+            ThdlDebug.noteIffyCode();
+        }
+        return f_name;
+    }
 
-	private String getSaveAs() {
-		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+    private String getSaveAs() {
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-		if (fileName == null)
-			fileChooser.setSelectedFile(null);
-		else
-			fileChooser.setSelectedFile(new File(fileName));
+        if (fileName == null)
+            fileChooser.setSelectedFile(null);
+        else
+            fileChooser.setSelectedFile(new File(fileName));
 
-		if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
-			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			return null;
-		}
+        if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            return null;
+        }
 
-		File fileChosen = fileChooser.getSelectedFile();
+        File fileChosen = fileChooser.getSelectedFile();
         ThdlOptions.setUserPreference("thdl.Jskad.working.directory",
                                       fileChosen.getParentFile().getAbsolutePath());
-		String fileName = fileChosen.getAbsolutePath();
-		int i = fileName.lastIndexOf('.');
+        String fileName = fileChosen.getAbsolutePath();
+        int i = fileName.lastIndexOf('.');
 
-		if (i < 0)
-			fileName += ".rtf";
-		else
-			fileName = fileName.substring(0, i) + ".rtf";
+        if (i < 0)
+            fileName += ".rtf";
+        else
+            fileName = fileName.substring(0, i) + ".rtf";
 
-		getSave(fileName);
+        getSave(fileName);
 
-		fileChooser.rescanCurrentDirectory();
-		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		return fileName;
-	}
+        fileChooser.rescanCurrentDirectory();
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        return fileName;
+    }
 
-	private void cutSelection() {
+    private void cutSelection() {
         dp.cut();
-	}
+    }
 
-	private void copySelection() {
+    private void copySelection() {
         dp.copy();
-	}
+    }
 
-	private void pasteSelection() {
-		dp.paste(dp.getCaret().getDot());
-	}
+    private void pasteSelection() {
+        dp.paste(dp.getCaret().getDot());
+    }
 
-	private void toTibetan() {
-		Jskad.this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		dp.toTibetanMachineWeb();
-		Jskad.this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-	}
+    private void toTibetan() {
+        Jskad.this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        dp.toTibetanMachineWeb();
+        Jskad.this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    }
 
-	private void toWylie() {
-		Jskad.this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		if (!((TibetanDocument)dp.getDocument()).toWylie(dp.getSelectionStart(),
+    private void toWylie() {
+        Jskad.this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        if (!((TibetanDocument)dp.getDocument()).toWylie(dp.getSelectionStart(),
                                                          dp.getSelectionEnd(),
                                                          new long[] { 0 })) {
             JOptionPane.showMessageDialog(Jskad.this,
@@ -1138,66 +1138,66 @@ public class Jskad extends JPanel implements DocumentListener {
                                           "Attention Required",
                                           JOptionPane.ERROR_MESSAGE);
         }
-		Jskad.this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-	}
+        Jskad.this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    }
 
-	private void importWylie() {
-		fileChooser.removeChoosableFileFilter(rtfFilter);
-		fileChooser.addChoosableFileFilter(txtFilter);
+    private void importWylie() {
+        fileChooser.removeChoosableFileFilter(rtfFilter);
+        fileChooser.addChoosableFileFilter(txtFilter);
 
-		if (fileChooser.showDialog(Jskad.this, "Import Wylie") != JFileChooser.APPROVE_OPTION) {
-			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			fileChooser.removeChoosableFileFilter(txtFilter);
-			fileChooser.addChoosableFileFilter(rtfFilter);
-			return;
-		}
+        if (fileChooser.showDialog(Jskad.this, "Import Wylie") != JFileChooser.APPROVE_OPTION) {
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            fileChooser.removeChoosableFileFilter(txtFilter);
+            fileChooser.addChoosableFileFilter(rtfFilter);
+            return;
+        }
 
-		File txt_fileChosen = fileChooser.getSelectedFile();
-		fileChooser.rescanCurrentDirectory();
-		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		fileChooser.removeChoosableFileFilter(txtFilter);
-		fileChooser.addChoosableFileFilter(rtfFilter);
+        File txt_fileChosen = fileChooser.getSelectedFile();
+        fileChooser.rescanCurrentDirectory();
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        fileChooser.removeChoosableFileFilter(txtFilter);
+        fileChooser.addChoosableFileFilter(rtfFilter);
 
-		if (fileChooser.showDialog(Jskad.this, "Save as Tibetan") != JFileChooser.APPROVE_OPTION) {
-			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			return;
-		}
+        if (fileChooser.showDialog(Jskad.this, "Save as Tibetan") != JFileChooser.APPROVE_OPTION) {
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            return;
+        }
 
-		File rtf_fileChosen = fileChooser.getSelectedFile();
-		fileChooser.rescanCurrentDirectory();
-		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		String rtf_fileName = rtf_fileChosen.getAbsolutePath();
-		int i = rtf_fileName.lastIndexOf('.');
+        File rtf_fileChosen = fileChooser.getSelectedFile();
+        fileChooser.rescanCurrentDirectory();
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        String rtf_fileName = rtf_fileChosen.getAbsolutePath();
+        int i = rtf_fileName.lastIndexOf('.');
 
-		if (i < 0)
-			rtf_fileName += ".rtf";
-		else
-			rtf_fileName = fileName.substring(0, i) + ".rtf";
+        if (i < 0)
+            rtf_fileName += ".rtf";
+        else
+            rtf_fileName = fileName.substring(0, i) + ".rtf";
 
-		try {
-			BufferedReader in = new BufferedReader(new FileReader(txt_fileChosen));
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(txt_fileChosen));
             // FIXME: why do we need a whole DuffPane to do this?
             DuffPane dp2 = new DuffPane();
 
-			try {
-				String val = in.readLine();
+            try {
+                String val = in.readLine();
 
-				while (val != null) {
-					dp2.toTibetanMachineWeb(val + "\n", dp2.getCaret().getDot());
-					val = in.readLine();
-				}
+                while (val != null) {
+                    dp2.toTibetanMachineWeb(val + "\n", dp2.getCaret().getDot());
+                    val = in.readLine();
+                }
 
-				TibetanDocument t_doc = (TibetanDocument)dp2.getDocument();
-				t_doc.writeRTFOutputStream(new FileOutputStream(new File(rtf_fileName)));
-			} catch (IOException ioe) {
+                TibetanDocument t_doc = (TibetanDocument)dp2.getDocument();
+                t_doc.writeRTFOutputStream(new FileOutputStream(new File(rtf_fileName)));
+            } catch (IOException ioe) {
                 ThdlDebug.noteIffyCode();
-				System.out.println("problem reading or writing file");
-			}
-		} catch (FileNotFoundException fnfe) {
+                System.out.println("problem reading or writing file");
+            }
+        } catch (FileNotFoundException fnfe) {
             ThdlDebug.noteIffyCode();
-			System.out.println("problem reading file");
-		}
-	}
+            System.out.println("problem reading file");
+        }
+    }
 
 /**
 * Allows use of Jskad as dependent JFrame.
@@ -1205,9 +1205,9 @@ public class Jskad extends JPanel implements DocumentListener {
 * be able to close Jskad without shutting
 * down your superordinate application.
 */
-	public void makeDependent() {
-		numberOfTibsRTFOpen++;
-	}
+    public void makeDependent() {
+        numberOfTibsRTFOpen++;
+    }
 
 /**
 * Fills the editing pane with content. If the
@@ -1216,56 +1216,56 @@ public class Jskad extends JPanel implements DocumentListener {
 * @param wylie the string of wylie you want to
 * put in the editing pane
 */
-	public void setContent(String wylie) {
-		if (dp.getDocument().getLength() > 0)
-			return;
+    public void setContent(String wylie) {
+        if (dp.getDocument().getLength() > 0)
+            return;
 
-		dp.newDocument();
-		dp.toTibetanMachineWeb(wylie, 0);
-	}
-	
+        dp.newDocument();
+        dp.toTibetanMachineWeb(wylie, 0);
+    }
+    
 /**
 * Enables typing of Roman (non-Tibetan) text along
 * with Tibetan.
 */
-	public void enableRoman() {
-		dp.enableRoman();
-	}
+    public void enableRoman() {
+        dp.enableRoman();
+    }
 
 /**
 * Disables typing of Roman (non-Tibetan) text.
 */
-	public void disableRoman() {
-		dp.disableRoman();
-	}
+    public void disableRoman() {
+        dp.disableRoman();
+    }
 
 /*
-	private void showAttributes(int pos) {
-		dp.skipUpdate = true;
+    private void showAttributes(int pos) {
+        dp.skipUpdate = true;
 
-		AttributeSet attr = dp.getDocument().getCharacterElement(pos).getAttributes();
-		String name = StyleConstants.getFontFamily(attr);
+        AttributeSet attr = dp.getDocument().getCharacterElement(pos).getAttributes();
+        String name = StyleConstants.getFontFamily(attr);
 
-		if (!fontName.equals(name)) {
-			fontName = name;
-			fontFamilies.setSelectedItem(name);
-		}
-		int size = StyleConstants.getFontSize(attr);
-		if (fontSize != size) {
-			fontSize = size;
-			fontSizes.setSelectedItem(Integer.toString(fontSize));
-		}
+        if (!fontName.equals(name)) {
+            fontName = name;
+            fontFamilies.setSelectedItem(name);
+        }
+        int size = StyleConstants.getFontSize(attr);
+        if (fontSize != size) {
+            fontSize = size;
+            fontSizes.setSelectedItem(Integer.toString(fontSize));
+        }
 
-		dp.skipUpdate = false;
-	}
+        dp.skipUpdate = false;
+    }
 */
 
 /**
 * Required for implementations of DocumentListener.
 * Does nothing.
 */
-	public void changedUpdate(DocumentEvent de) {
-	}
+    public void changedUpdate(DocumentEvent de) {
+    }
 
 /**
 * Required for implementations of DocumentListener.
@@ -1274,9 +1274,9 @@ public class Jskad extends JPanel implements DocumentListener {
 *
 * @param de a DocumentEvent
 */
-	public void insertUpdate(DocumentEvent de) {
-		hasChanged = true;
-	}
+    public void insertUpdate(DocumentEvent de) {
+        hasChanged = true;
+    }
 
 /**
 * Required for implementations of DocumentListener.
@@ -1285,69 +1285,69 @@ public class Jskad extends JPanel implements DocumentListener {
 *
 * @param de a DocumentEvent
 */
-	public void removeUpdate(DocumentEvent de) {
-		hasChanged = true;
-	}
+    public void removeUpdate(DocumentEvent de) {
+        hasChanged = true;
+    }
 
-	private class RTFFilter extends javax.swing.filechooser.FileFilter {
-		// Accept all directories and all RTF files.
+    private class RTFFilter extends javax.swing.filechooser.FileFilter {
+        // Accept all directories and all RTF files.
 
-		public boolean accept(File f) {
-			if (f.isDirectory()) {
-				return true;
-			}
+        public boolean accept(File f) {
+            if (f.isDirectory()) {
+                return true;
+            }
 
-			String fName = f.getName();
-			int i = fName.lastIndexOf('.');
+            String fName = f.getName();
+            int i = fName.lastIndexOf('.');
 
-			if (i < 0)
-				return false;
+            if (i < 0)
+                return false;
 
-			else {
-				String ext = fName.substring(i+1).toLowerCase();
+            else {
+                String ext = fName.substring(i+1).toLowerCase();
 
-				if (ext.equals("rtf"))
-					return true;
-				else
-					return false;
-			}
-		}
+                if (ext.equals("rtf"))
+                    return true;
+                else
+                    return false;
+            }
+        }
     
-		//the description of this filter
-		public String getDescription() {
-			return "Rich Text Format (.rtf)";
-		}
-	}
+        //the description of this filter
+        public String getDescription() {
+            return "Rich Text Format (.rtf)";
+        }
+    }
 
-	private class TXTFilter extends javax.swing.filechooser.FileFilter {
-		// Accept all directories and all TXT files.
+    private class TXTFilter extends javax.swing.filechooser.FileFilter {
+        // Accept all directories and all TXT files.
 
-		public boolean accept(File f) {
-			if (f.isDirectory()) {
-				return true;
-			}
+        public boolean accept(File f) {
+            if (f.isDirectory()) {
+                return true;
+            }
 
-			String fName = f.getName();
-			int i = fName.lastIndexOf('.');
+            String fName = f.getName();
+            int i = fName.lastIndexOf('.');
 
-			if (i < 0)
-				return false;
+            if (i < 0)
+                return false;
 
-			else {
-				String ext = fName.substring(i+1).toLowerCase();
+            else {
+                String ext = fName.substring(i+1).toLowerCase();
 
-				if (ext.equals("txt"))
-					return true;
-				else
-					return false;
-			}
-		}
+                if (ext.equals("txt"))
+                    return true;
+                else
+                    return false;
+            }
+        }
     
-		//the description of this filter
-		public String getDescription() {
-			return "Text file (.txt)";
-		}
-	}
+        //the description of this filter
+        public String getDescription() {
+            return "Text file (.txt)";
+        }
+    }
 
     /** Closes this Jskad session without saving.  If deleteFromList
         is true, the jskads vector is updated so that it no longer
@@ -1431,7 +1431,7 @@ public class Jskad extends JPanel implements DocumentListener {
 * jskad.log in addition to appearing on the console as per usual.  If
 * you discover a bug, please send us an email, making sure to include
 * the jskad.log file as an attachment.  */
-	public static void main(String[] args) {
+    public static void main(String[] args) {
         try {
             ThdlDebug.attemptToSetUpLogFile("jskad", ".log");
 
@@ -1470,5 +1470,5 @@ public class Jskad extends JPanel implements DocumentListener {
             e.getRealException().printStackTrace(System.err);
             System.exit(1);
         }
-	}
+    }
 }
