@@ -93,6 +93,13 @@ public class DuffPaneTest extends TestCase {
         ensureKeysGiveCorrectWylie(in, out);
     }
 
+    private void noExceptions(String keys) {
+        dp.newDocument(); // initialize to a blank canvas.
+        fireKeysWithoutModifiers(keys);
+        // no assertion -- if an exception happens, then and only then
+        // the test fails.
+    }
+
     private void ensureKeysGiveCorrectWylie(String keys, String wylie) {
         dp.newDocument(); // initialize to a blank canvas.
         fireKeysWithoutModifiers(keys);
@@ -801,6 +808,18 @@ public class DuffPaneTest extends TestCase {
         e("a+ra"); e("a+r", "a+ra"); e("a+ri"); e("a+ru"); e("a+re"); e("a+ro"); e("a+rU"); e("a+rM"); e("a+rau"); e("a+rai"); e("a+rI"); e("a+r-i");
         e("a+r+ya"); e("a+r+y", "a+r+ya"); e("a+r+yi"); e("a+r+yu"); e("a+r+ye"); e("a+r+yo"); e("a+r+yU"); e("a+r+yM"); e("a+r+yau"); e("a+r+yai"); e("a+r+yI"); e("a+r+y-i");
 */
+    }
+
+    public void testNoKeysCrashUs() {
+        /* why 130? because we want to try some extended ASCII
+           characters to make sure that they don't crash us either */
+        char max = (char)130;
+        for (char ch = 0; ch < max; ch++) {
+            noExceptions("" + ch);
+            for (char ch2 = 0; ch2 < max; ch2++) {
+                noExceptions("" + ch + ch2);
+            }
+        }
     }
 
     public void testDisambiguation() {
