@@ -165,7 +165,7 @@ public final class DuffCode {
  * @return a string representation of this object that does not refer
  * to its Wylie representation (because the TMW->Wylie error messages
  * call upon this when there is none, and you don't want an infinite
- * loop (manifesting as a StackOverflowError)) */
+ * recursion (manifesting as a StackOverflowError)) */
 	public String toString(boolean TMW) {
         boolean[] err = new boolean[] { false };
 		return "<duffcode font="
