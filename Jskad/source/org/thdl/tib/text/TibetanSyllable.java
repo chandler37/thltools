@@ -1058,13 +1058,14 @@ void  ItsComponents(){
 }
 
 //For cleaning up the invalid syllables by throwing them at the end of the list. 
-void InValidSyllable(){				
+void InValidSyllable() throws RuntimeException
+{				
 	nVowels =1;
 	TibetanSyllableFlag = true;
-	System.out.println("This is not a valid Tibetan syllable: "+theSyllable);
+	// System.out.println("This is not a valid Tibetan syllable: "+theSyllable);
 	for(int i=0; i<10; i++) 
 		for(int j=0; j<20;j++) Components[i][j] = "invalid";
-			
+	throw new RuntimeException("This is not a valid Tibetan syllable: "+theSyllable);			
 }
 
 
