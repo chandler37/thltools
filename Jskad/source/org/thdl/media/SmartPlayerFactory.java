@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import org.thdl.util.*;
 
 import org.thdl.util.ThdlDebug;
+import org.thdl.util.OperatingSystemUtils;
 
 public class SmartPlayerFactory {
 	public static List moviePlayers;
@@ -33,23 +34,28 @@ public class SmartPlayerFactory {
     private SmartPlayerFactory() { }
 
 	public static List getAllAvailableSmartPlayers() {
-		String os;
-		try {
-			os = System.getProperty("os.name").toLowerCase();
-		} catch (SecurityException e) {
-			os = "unknown";
-		}
+		String defaultPlayer, player;
+        switch (OperatingSystemUtils.getOSType()) {
+        case OperatingSystemUtils.MAC:
+            //macs default to org.thdl.media.SmartQT4JPlayer
+			defaultPlayer = "org.thdl.media.SmartQT4JPlayer";
+            break;
+        case OperatingSystemUtils.WIN32:
+            //windows defaults to SmartJMFPlayer
+			defaultPlayer = "org.thdl.media.SmartJMFPlayer";
+            break;
+        default:
+            //put linux etc. here
+			defaultPlayer = "org.thdl.media.SmartJMFPlayer";
+            break;
+        }
 
-		String defaultPlayer;
-		if (os.indexOf("mac") != -1) //macs default to org.thdl.media.SmartQT4JPlayer
-			defaultPlayer = ThdlOptions.getStringOption("thdl.media.player", "org.thdl.media.SmartQT4JPlayer");
-		else if (os.indexOf("windows") != -1) //windows defaults to SmartJMFPlayer
-			defaultPlayer = ThdlOptions.getStringOption("thdl.media.player", "org.thdl.media.SmartJMFPlayer");
-		else //put linux etc. here
-			defaultPlayer = ThdlOptions.getStringOption("thdl.media.player", "org.thdl.media.SmartJMFPlayer");
+        player
+            = ThdlOptions.getStringOption("thdl.media.player", defaultPlayer);
+
 
 		String[] possiblePlayers;
-		if (defaultPlayer.equals("org.thdl.media.SmartJMFPlayer"))
+		if (player.equals("org.thdl.media.SmartJMFPlayer"))
 			possiblePlayers = new String[] {"org.thdl.media.SmartJMFPlayer", "org.thdl.media.SmartQT4JPlayer"};
 		else
 			possiblePlayers = new String[] {"org.thdl.media.SmartQT4JPlayer", "org.thdl.media.SmartJMFPlayer"};

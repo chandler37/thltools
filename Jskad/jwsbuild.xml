@@ -43,7 +43,7 @@
 
   <target name="package-for-java-web-start"
           depends="this-init"
-          description="Builds the Java Web Start version of ${my.app} given that you have compiled it (and from scratch, since our compilation procedure doesn't konw about dependencies)">
+          description="Builds the Java Web Start version of ${my.app} given that you have compiled it to a JAR with the suffix ${jwsjarsuffix} (and from scratch, since our compilation procedure doesn't konw about dependencies)">
 
     <!-- First, you must give the passwords so that we can sign the JARs. -->
     <fail message="Use 'ant -Dkeystore.password=psst' to sign a Java Web Start WAR file."
@@ -89,7 +89,7 @@
       <jnlp src="${dist}/${my.app}.jnlp">
         <resources>
           <fileset dir="${lib}">
-            <include name="${my.app}.jar" />
+            <include name="${my.app}${jwsjarsuffix}.jar" />
           </fileset>
         </resources>
       </jnlp>

@@ -1,5 +1,11 @@
 <!-- @author David Chandler, dchandler@users.sourceforge.net
 
+     FIXME
+       Right now, the web-start-releases and self-contained-dist
+       targets hard-code the paths of the JARs/ZIPs they need.  Be
+       sure you have yours in the right place.
+     FIXME
+
      We have a document,
      http://thdltools.sourceforge.net/BuildSystems.html, that
      describes how to use this file to build Savant, Jskad,
@@ -158,10 +164,8 @@
           description="runs every target in this buildfile in a smart order; useful for testing the buildfile and your build environment" />
 
 
-  <!-- DLC FIXME: generate as-nearly-self-contained-as-possible Savant
-       and QuillDriver -->
   <target name="self-contained-dist"
-          depends="jskad-all-in-one-dist"
+          depends="jskad-all-in-one-dist,savant-all-in-one-dist,qd-all-in-one-dist"
           description="JARs up everything into self-contained JARs for double-click, classpath-worry-free joy" />
 
   <target name="dist"
@@ -175,7 +179,10 @@
 
   <target name="jskad-compile" depends="init"
           description="compiles Jskad" >
-    <antcall target="create-timestamp-source-code"/>
+    <antcall target="copy-tmw-fonts-to-bin-dir">
+      <param name="my.bin" value="${jskadbin}"/>
+    </antcall>
+    <antcall target="create-timestamp-source-code"/> <!-- DLC NOW! The -run targets are mucking with this! It isn't fatal, but it should be fixed. -->
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${jskadbin}"/>
       <param name="my.included.source.file"
@@ -204,6 +211,10 @@
 
   <target name="savant-compile" depends="init"
           description="compiles Savant" >
+    <antcall target="copy-tmw-fonts-to-bin-dir">
+      <param name="my.bin" value="${savantbin}"/>
+    </antcall>
+    <antcall target="create-timestamp-source-code"/>
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${savantbin}"/>
       <param name="my.included.source.file"
@@ -240,6 +251,10 @@
   <!-- Builds the standalone translation tool: -->
   <target name="tt-standalone-compile" depends="init"
           description="compiles the standalone Translation Tool" >
+    <antcall target="copy-tmw-fonts-to-bin-dir">
+      <param name="my.bin" value="${ttstandalonebin}"/>
+    </antcall>
+    <antcall target="create-timestamp-source-code"/>
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${ttstandalonebin}"/>
       <param name="my.included.source.file"
@@ -269,6 +284,10 @@
        Compiling with J2SDK 1.3 does so by default, by the way. -->
   <target name="tt-handheld-compile" depends="init"
           description="compiles the handheld Translation Tool" >
+    <antcall target="copy-tmw-fonts-to-bin-dir">
+      <param name="my.bin" value="${tthandheldbin}"/>
+    </antcall>
+    <antcall target="create-timestamp-source-code"/>
     <antcall target="our-internal-javac-task">
       <param name="target.jvm" value="1.1"/>
       <param name="mybin" value="${tthandheldbin}"/>
@@ -284,6 +303,10 @@
   <!-- Builds the applet + the Java Web Start translation tool: -->
   <target name="tt-applet-plus-jws-compile" depends="init"
           description="compiles the applet + Java Web Start forms of the Translation Tool" >
+    <antcall target="copy-tmw-fonts-to-bin-dir">
+      <param name="my.bin" value="${ttappletjwsbin}"/>
+    </antcall>
+    <antcall target="create-timestamp-source-code"/>
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${ttappletjwsbin}"/>
       <param name="my.included.source.file"
@@ -307,6 +330,10 @@
           depends="ttsc-init"
           if="found.servlet.classes"
           description="compiles the servlet form of the Translation Tool if you've set the j2ee.sdk.home property correctly" >
+    <antcall target="copy-tmw-fonts-to-bin-dir">
+      <param name="my.bin" value="${ttservletbin}"/>
+    </antcall>
+    <antcall target="create-timestamp-source-code"/>
     <!-- For now, these two paths are identical: -->
     <path id="ttsc.class.path">
       <path refid="all.extras.class.path"/>
@@ -344,6 +371,10 @@
   <target name="qd-compile" depends="init"
           description="compiles QuillDriver" >
     <!-- Compile the java code from ${source} into ${qdbin} -->
+    <antcall target="copy-tmw-fonts-to-bin-dir">
+      <param name="my.bin" value="${qdbin}"/>
+    </antcall>
+    <antcall target="create-timestamp-source-code"/>
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${qdbin}"/>
       <param name="my.included.source.file"
@@ -387,33 +418,32 @@
           description="Builds the Java Web Start version of Jskad">
     <antcall target="compile-from-scratch-and-call-jws-subbuild">
       <param name="my.app" value="Jskad"/>
-      <param name="my.prereq" value="jskad-dist"/>
+      <param name="jwsjarsuffix" value="-self-contained"/>
+      <param name="my.prereq" value="jskad-all-in-one-dist"/>
       <param name="lib" value="${jwslib}"/>
     </antcall>
   </target>
 
 
-  <!-- DLC FIXME: package up all the XML jars and the JMF jars and libraries that Savant uses.
-   -->
   <target name="savant-jws"
           depends="init"
           description="Builds the Java Web Start version of Savant">
     <antcall target="compile-from-scratch-and-call-jws-subbuild">
       <param name="my.app" value="Savant"/>
-      <param name="my.prereq" value="savant-dist"/>
+      <param name="jwsjarsuffix" value="-self-contained"/>
+      <param name="my.prereq" value="savant-all-in-one-dist"/>
       <param name="lib" value="${jwslib}"/>
     </antcall>
   </target>
 
 
-  <!-- DLC FIXME: package up all the XML jars and the JMF jars and libraries that QuillDriver uses.
-   -->
   <target name="qd-jws"
           depends="init"
           description="Builds the Java Web Start version of QuillDriver">
     <antcall target="compile-from-scratch-and-call-jws-subbuild">
       <param name="my.app" value="QuillDriver"/>
-      <param name="my.prereq" value="qd-dist"/>
+      <param name="jwsjarsuffix" value="-self-contained"/>
+      <param name="my.prereq" value="qd-all-in-one-dist"/>
       <param name="lib" value="${jwslib}"/>
     </antcall>
   </target>
@@ -424,6 +454,7 @@
           description="Builds the Java Web Start version of the translation tool">
     <antcall target="compile-from-scratch-and-call-jws-subbuild">
       <param name="my.app" value="DictionarySearchAppletAndJavaWebStart"/>
+      <param name="jwsjarsuffix" value=""/>
       <param name="my.prereq" value="tt-applet-plus-jws-dist"/>
       <param name="lib" value="${jwslib}"/>
     </antcall>
@@ -548,7 +579,7 @@
 
 
 
-<!-- DLC FIXME: This used to inlude Jskad2Javascript.class, etc.  But it no longer does.  Compile those extra files! -->
+<!-- DLC FIXME: This used to inlude Jskad2Javascript.class, etc.  But it no longer does.  Compile those extra files, if Edward hasn't removed them! -->
   <target name="jskad-all-in-one-dist" depends="jskad-compile"
           description="generates the self-contained binary distribution for Jskad" >
     <!-- Now put everything in ${bin} and ${ext}/netscape, plus
@@ -566,6 +597,40 @@
         <attribute name="Main-Class" value="org.thdl.tib.input.Jskad"/>
       </manifest>
     </jar>
+  </target>
+
+
+  <target name="savant-all-in-one-dist" depends="savant-compile"
+          description="generates the self-contained binary distribution for Savant" >
+    <!-- Put everything in ${savantbin} into the JAR file after unpacking the
+         JARs/ZIPs we need to ${savantbin}. -->
+    <antcall target="copy-SQD-jars">
+      <param name="unjardest" value="${savantbin}"/>
+    </antcall>
+    <jar jarfile="${lib}/Savant-self-contained${my.jar.suffix}.jar"
+         basedir="${savantbin}">
+      <manifest>
+        <attribute name="Main-Class" value="org.thdl.savant.SavantShell"/>
+      </manifest>
+    </jar>
+    <delete dir="${savantbin}"/>
+  </target>
+
+
+  <target name="qd-all-in-one-dist" depends="qd-compile"
+          description="generates the self-contained QuillDriver binary distribution" >
+    <!-- Put everything in ${savantbin} into the JAR file after unpacking the
+         JARs/ZIPs we need to ${savantbin}. -->
+    <antcall target="copy-SQD-jars">
+      <param name="unjardest" value="${qdbin}"/>
+    </antcall>
+    <jar jarfile="${lib}/QuillDriver-self-contained${my.jar.suffix}.jar"
+         basedir="${qdbin}">
+      <manifest>
+        <attribute name="Main-Class" value="org.thdl.quilldriver.QDShell"/>
+      </manifest>
+    </jar>
+    <delete dir="${qdbin}"/>
   </target>
 
 
@@ -689,11 +754,11 @@
   </target>
 
 
-  <!-- DLC FIXME: build the tt-servlet release if the J2EE SDK is present. -->
-  <!-- DLC FIXME build web start WARs -->
+  <!-- DLC FIXME: build the tt-servlet release if the J2EE SDK is present. UPDATE: doesn't it do this? -->
   <!-- See http://thdltools.sf.net/BuildSystems.html for info on
        how to use this target.  Note that we must do a distclean
-       because Ant doesn't always recompile when it should.  -->
+       because Ant doesn't always recompile when it should unless you use a
+       special task.  -->
   <target name="releases"
           description="builds the releases under 'dist/releases/' after doing a distclean"
           depends="distclean,init">
@@ -921,7 +986,7 @@
 </security>
 <resources>
   <j2se version="1.2+"/>
-  <jar href="Jskad.jar" />
+  <jar href="Jskad-self-contained.jar" />
 </resources>
 <application-desc />
 </jnlp>
@@ -966,7 +1031,7 @@
 </security>
 <resources>
   <j2se version="1.2+"/>
-  <jar href="Savant.jar" />
+  <jar href="Savant-self-contained.jar" />
 </resources>
 <application-desc />
 </jnlp>
@@ -1009,7 +1074,7 @@
 </security>
 <resources>
   <j2se version="1.2+"/>
-  <jar href="QuillDriver.jar" />
+  <jar href="QuillDriver-self-contained.jar" />
 </resources>
 <application-desc />
 </jnlp>
@@ -1141,6 +1206,26 @@ public class ThdlVersion {
 ]]></echo>
   </target>
 
+  <target name="copy-SQD-jars"
+          description="Unpacks the JARs/WARs/ZIP files that Savant and QuillDriver use to the chosen bin/ directory">
+    <unjar src="${ext}/jdom.jar" dest="${unjardest}"/>
+    <unjar src="${ext}/xml-apis.jar" dest="${unjardest}"/>
+    <unjar src="${ext}/xalan.jar" dest="${unjardest}"/>
+    <unjar src="${ext}/xercesImpl.jar" dest="${unjardest}"/>
+    <unjar src="${ext}/jmf.jar" dest="${unjardest}"/>
+    <unzip src="${ext}/drop-ins/QTJava.zip" dest="${unjardest}"/>
+    <!-- One or more of the above may have a META-INF directory.  We don't
+         want theirs to overwrite our own, so we delete it. -->
+    <delete dir="${unjardest}/META-INF"/>
+  </target>
+
+
+  <target name="copy-tmw-fonts-to-bin-dir"
+          description="Unpacks the JARs/WARs/ZIP files that Savant and QuillDriver use to the chosen bin/ directory">
+    <copy todir="${my.bin}/Fonts/TibetanMachineWeb">
+      <fileset dir="Fonts/TibetanMachineWeb"/>
+    </copy>
+  </target>
 </project>
 
 <!-- My TO-DO list: -->

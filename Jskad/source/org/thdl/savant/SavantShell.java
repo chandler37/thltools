@@ -37,6 +37,7 @@ import org.thdl.util.ThdlActionListener;
 import org.thdl.util.RTFPane;
 import org.thdl.util.SimpleFrame;
 import org.thdl.util.ThdlI18n;
+import org.thdl.util.ThdlOptions;
 
 
 public class SavantShell extends JFrame
@@ -339,25 +340,34 @@ public class SavantShell extends JFrame
 		}
 
 		if (project.equals("THDL")) {
-			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-			String fonts[] = ge.getAvailableFontFamilyNames();
-			int i=0;
-			for (; i<fonts.length; i++)
-				if (fonts[i].equals("TibetanMachineWeb"))
-				{
-					i=-1;
-					break;
-				}
+            // See if we have the TMW fonts available.  If we do,
+            // allow showing Tibetan as well as Wylie and English.
 
-			if (i!=-1)
-			{
-/*
-				JOptionPane.showMessageDialog(this, 
-					"If you want to see text in Tibetan script, "+
-					"please visit www.thdl.org to download and "+
-					"install the Tibetan Machine Web fonts.",
-					"Note", JOptionPane.INFORMATION_MESSAGE);
-*/
+            int i=0;
+            if (!ThdlOptions.getBooleanOption("thdl.rely.on.system.tmw.fonts")) {
+                // We do have the TMW fonts available because we
+                // manually loaded them.
+                i = -1;
+            } else {
+                // DLC FIXME: scan for this in TibetanMachineWeb.java
+                // before manually loading the TMW fonts.
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                String fonts[] = ge.getAvailableFontFamilyNames();
+                for (; i<fonts.length; i++) {
+                    if (fonts[i].equals("TibetanMachineWeb"))
+                        {
+                            i=-1;
+                            break;
+                        }
+                }
+            }
+			if (i!=-1) {
+                JOptionPane.showMessageDialog(this,
+                                              "If you want to see text in Tibetan script, "+
+                                              "please set the option " +
+                                              "thdl.rely.on.system.tmw.fonts" +
+                                              " to false.",
+                                              "Note", JOptionPane.INFORMATION_MESSAGE);
 
 				TranscriptView[] views = new TranscriptView[3];
 				views[0] = new org.thdl.savant.tib.Wylie(isr);

@@ -112,7 +112,18 @@ public class Jskad extends JPanel implements DocumentListener {
     
     /** Do not use this JPanel constructor. */
     private Jskad(LayoutManager lm, boolean isDB) { super(lm, isDB); }
-    
+
+    /** Saves user preferences to disk if possible. */
+    private static void savePreferencesAction() {
+        try {
+            ThdlOptions.saveUserPreferences();
+        } catch (IOException ioe) {
+            System.out.println("IO Exception saving user preferences to " + ThdlOptions.getUserPreferencesPath());
+            ioe.printStackTrace();
+            ThdlDebug.noteIffyCode();
+        }
+    }
+
 
 /**
 * @param parent the object that embeds this instance of Jskad.
@@ -249,16 +260,28 @@ public class Jskad extends JPanel implements DocumentListener {
 			editMenu.add(selectallItem);
 		}
 
-		JMenuItem preferencesItem = new JMenuItem("Preferences");
-		preferencesItem.addActionListener(new ThdlActionListener() {
-			public void theRealActionPerformed(ActionEvent e) {
-				getPreferences();
-			}
-		});
-		editMenu.addSeparator();
-		editMenu.add(preferencesItem);
+        {
+            JMenuItem preferencesItem = new JMenuItem("Preferences");
+            preferencesItem.addActionListener(new ThdlActionListener() {
+                    public void theRealActionPerformed(ActionEvent e) {
+                        getPreferences();
+                    }
+                });
+            editMenu.addSeparator();
+            editMenu.add(preferencesItem);
+        }
 
-		menuBar.add(editMenu);
+        {
+            JMenuItem preferencesItem = new JMenuItem("Save preferences to " + ThdlOptions.getUserPreferencesPath());
+            preferencesItem.addActionListener(new ThdlActionListener() {
+                    public void theRealActionPerformed(ActionEvent e) {
+                        savePreferencesAction();
+                    }
+                });
+            editMenu.add(preferencesItem);
+        }
+
+        menuBar.add(editMenu);
 
 		JMenu toolsMenu = new JMenu("Tools");
 
@@ -347,6 +370,15 @@ public class Jskad extends JPanel implements DocumentListener {
 
 		menuBar.add(infoMenu);
 
+        /* Initialize dp before calling
+           JskadKeyboard.activate(DuffPane) or dp.toggleLanguage(). */
+        if (ThdlOptions.getBooleanOption(Jskad.enableKeypressStatusProp)) {
+            dp = new DuffPane(statusBar);
+        } else {
+            dp = new DuffPane();
+        }
+
+
 		JToolBar toolBar = new JToolBar();
 		toolBar.setBorder(null);
 		toolBar.addSeparator();
@@ -355,9 +387,30 @@ public class Jskad extends JPanel implements DocumentListener {
 
 		String[] input_modes = {"Tibetan","Roman"};
 		final JComboBox inputmethods = new JComboBox(input_modes);
+
+        int initialInputMethod
+            = ThdlOptions.getIntegerOption("thdl.Jskad.input.method", 0);
+        if (!dp.isRomanEnabled() && 1 == initialInputMethod) {
+            initialInputMethod = 0;
+            System.out.println("Hey yo!  Roman input mode is not enabled, but your preference is for Roman mode at startup.  Sorry!");
+            ThdlDebug.noteIffyCode();
+        }
+        try {
+            inputmethods.setSelectedIndex(initialInputMethod);
+        } catch (IllegalArgumentException e) {
+            initialInputMethod = 0; // Tibetan is the default.
+            inputmethods.setSelectedIndex(initialInputMethod);
+        }
+        // Because we start in Tibetan mode, we must toggle initially
+        // if the user wants it that way:
+        if (1 == initialInputMethod && dp.isRomanEnabled())
+            dp.toggleLanguage();
+
 		inputmethods.addActionListener(new ThdlActionListener() {
 			public void theRealActionPerformed(ActionEvent e) {
-				switch (inputmethods.getSelectedIndex()) {
+                int si = inputmethods.getSelectedIndex();
+                ThdlOptions.setUserPreference("thdl.Jskad.input.method", si);
+				switch (si) {
 					case 0: //Tibetan
 						if (dp.isRomanMode())
 							dp.toggleLanguage();
@@ -380,15 +433,6 @@ public class Jskad extends JPanel implements DocumentListener {
 		toolBar.add(new JLabel("Keyboard:"));
 		toolBar.addSeparator();
 
-        /* Initialize dp before calling
-           JskadKeyboard.activate(DuffPane). */
-        if (ThdlOptions.getBooleanOption(Jskad.enableKeypressStatusProp)) {
-            dp = new DuffPane(statusBar);
-        } else {
-            dp = new DuffPane();
-        }
-
-
 		final JComboBox keyboards
             = new JComboBox(keybdMgr.getIdentifyingStrings());
         int initialKeyboard
@@ -402,7 +446,10 @@ public class Jskad extends JPanel implements DocumentListener {
         keybdMgr.elementAt(initialKeyboard).activate(dp);
 		keyboards.addActionListener(new ThdlActionListener() {
 			public void theRealActionPerformed(ActionEvent e) {
+                int ki = keyboards.getSelectedIndex();
                 keybdMgr.elementAt(keyboards.getSelectedIndex()).activate(dp);
+                ThdlOptions.setUserPreference("thdl.default.tibetan.keyboard",
+                                              ki);
 			}
 		});
 		toolBar.add(keyboards);
@@ -493,11 +540,12 @@ public class Jskad extends JPanel implements DocumentListener {
 		int size;
 		try {
 			size = Integer.parseInt(tibetanFontSizes.getSelectedItem().toString());
+            dp.setByUserTibetanFontSize(size);
 		}
 		catch (NumberFormatException ne) {
 			size = dp.getTibetanFontSize();
+            dp.setTibetanFontSize(size);
 		}
-		dp.setTibetanFontSize(size);
 
 		String font = romanFontFamilies.getSelectedItem().toString();
 		try {
@@ -506,7 +554,7 @@ public class Jskad extends JPanel implements DocumentListener {
 		catch (NumberFormatException ne) {
 			size = dp.getRomanFontSize();
 		}
-		dp.setRomanAttributeSet(font, size);
+        dp.setByUserRomanAttributeSet(font, size);
 	}
 
 	private void newFile() {
@@ -991,6 +1039,18 @@ public class Jskad extends JPanel implements DocumentListener {
             f.setLocation(d.width/8, d.height/8);
             f.getContentPane().add(new Jskad(f));
             f.setVisible(true);
+
+            /* Make it so that any time the user exits Jskad by
+             * (almost) any means, the user's preferences are saved if
+             * the SecurityManager allows it and the path is
+             * correct. */
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                    public void run() {
+                        savePreferencesAction();
+                    }
+                }
+                                                );
+
         } catch (ThdlLazyException e) {
             // FIXME: tell the users how to submit bug reports.
             System.err.println("Jskad has a BUG:");

@@ -27,7 +27,7 @@ import org.thdl.tib.input.JskadKeyboard;
 public class JskadKeyboardFactory {
     public static JskadKeyboard[] getAllAvailableJskadKeyboards() {
         return new JskadKeyboard[] {
-            new JskadKeyboard("Extended Wylie Keyboard",
+            new JskadKeyboard("Extended Wylie",
                               null,
                               "Wylie_keyboard.rtf"),
             new JskadKeyboard("TCC Keyboard #1",
@@ -39,7 +39,7 @@ public class JskadKeyboardFactory {
             new JskadKeyboard("Sambhota Keymap One",
                               "sambhota_keyboard_1.ini",
                               "Sambhota_keymap_one.rtf"),
-            new JskadKeyboard("Asian Classics Input Project (ACIP) Keyboard",
+            new JskadKeyboard("Asian Classics Input Project (ACIP)",
                               "acip_keyboard.ini",
                               null)
         };

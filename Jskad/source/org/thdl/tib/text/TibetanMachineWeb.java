@@ -29,11 +29,17 @@ import java.awt.font.*;
 
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.Trie;
+import org.thdl.util.ThdlOptions;
 
 /**
 * Interfaces between Extended Wylie and the TibetanMachineWeb fonts.
-* To do this this must first read the code table, which lives in "tibwn.ini",
-* and which must be found in the same directory as this class.
+* To do this this must first read the code table, which lives in
+* "tibwn.ini", and which must be found in the same directory as this
+* class.  Note that WylieWord has its own copy of this file, so edit
+* both or neither.
+*
+* <p>In addition, this class optionally loads the TibetanMachineWeb
+* fonts manually via {@link #readInFontFiles()}.
 * @author Edward Garrett, Tibetan and Himalayan Digital Library
 * @version 1.0
 */
@@ -258,12 +264,51 @@ public class TibetanMachineWeb {
 			setKeyboard(keyboard);
 	}
 
+    /** Assumes that the TMW font files are resources associated with
+     *  this class and loads those font files.
+     *  @throws Error if that assumption does not hold */
+    private static void readInFontFiles() {
+        /* Note the leading slashes on these paths: */
+        readInFontFile("/Fonts/TibetanMachineWeb/timwn.ttf");
+        readInFontFile("/Fonts/TibetanMachineWeb/timwn1.ttf");
+        readInFontFile("/Fonts/TibetanMachineWeb/timwn2.ttf");
+        readInFontFile("/Fonts/TibetanMachineWeb/timwn3.ttf");
+        readInFontFile("/Fonts/TibetanMachineWeb/timwn4.ttf");
+        readInFontFile("/Fonts/TibetanMachineWeb/timwn5.ttf");
+        readInFontFile("/Fonts/TibetanMachineWeb/timwn6.ttf");
+        readInFontFile("/Fonts/TibetanMachineWeb/timwn7.ttf");
+        readInFontFile("/Fonts/TibetanMachineWeb/timwn8.ttf");
+        readInFontFile("/Fonts/TibetanMachineWeb/timwn9.ttf");
+    }
+
+    /** Assumes that the TMW font file at the given path is a resource
+     *  associated with this class and loads that font file.
+     *  @param path a path within the JAR containing this class file
+     *  @throws Error if that assumption does not hold */
+    private static void readInFontFile(String path) {
+        try {
+            InputStream is = TibetanMachineWeb.class.getResourceAsStream(path);
+            if (null == is) {
+                throw new Error("You selected the optional behavior of loading the TibetanMachineWeb font family manually, but the resource "
+                                + path + " could not be found.");
+            }
+            Font.createFont(Font.TRUETYPE_FONT, is);
+        } catch( Exception e ) {
+            e.printStackTrace();
+            ThdlDebug.noteIffyCode();
+        }
+    }
+
 /**
 * This method reads the data file ("tibwn.ini"), constructs
 * the character, punctuation, and vowel lists, as well as
 * performing other acts of initialization.
 */
 	private static void readData() {
+        if (!ThdlOptions.getBooleanOption("thdl.rely.on.system.tmw.fonts")) {
+            readInFontFiles();
+        }
+
 		webFontAttributeSet[0] = null;
 		for (int i=1; i<webFontAttributeSet.length; i++) {
 			webFontAttributeSet[i] = new SimpleAttributeSet();
@@ -1184,6 +1229,10 @@ public static boolean isTopVowel(DuffCode dc) {
 
         @return true iff this is a tsheg or whitespace or the like */
     public static boolean isTMWFontCharBreakable(char ch) {
+        // DLC FIXME: treat whitespace differently than you do
+        // punctuation.  And treat "/ka nga/", Tibetan verse,
+        // specially in the caller of this method.
+
         if (false) {
         //<?Input:Punctuation?>
         int ord = (int)ch;

@@ -20,11 +20,14 @@ package org.thdl.util;
 
 import java.io.InputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Properties;
 
 import org.thdl.util.ThdlLazyException;
+import org.thdl.util.OperatingSystemUtils;
 
 /**
  * Provides a clean interface to the multi-tiered system of user
@@ -184,7 +187,10 @@ public final class ThdlOptions {
     }
 
     private static boolean suppressErrs() {
-        return false; /* FIXME--make THIS configurable. */
+        return false;
+        /* FIXME--make THIS configurable.  It's not a simple thing,
+         * though, since you can't use the usual prefences mechanism
+         * because it helps to implement that mechanism. */
     }
     private static void init() {
         try {
@@ -246,10 +252,8 @@ public final class ThdlOptions {
 
             // Get the user's properties, if they've set any:
             userProperties
-                = tryToGetPropsFromFile("thdl.user.options.file",
-                                        // FIXME this default is
-                                        // system-dependent:
-                                        "C:\\thdl_uopt.txt",
+                = tryToGetPropsFromFile("thdl.user.options.directory", // DLC NOW FIXME: put in options.txt
+                                        getUserPreferencesPath(),
                                         systemWideProperties,
                                         suppressErrors);
         } catch (SecurityException e) {
@@ -285,8 +289,13 @@ public final class ThdlOptions {
                                                     boolean suppressErrors)
         throws FileNotFoundException, SecurityException
     {
-        Properties props = defaultProps;
         String systemPropFileName = System.getProperty(pName, defaultLoc);
+        
+        /* The empty string means "use the default location".  See
+         * options.txt. */
+        if ("".equals(systemPropFileName))
+            systemPropFileName = defaultLoc;
+
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(systemPropFileName);
@@ -297,12 +306,12 @@ public final class ThdlOptions {
                 if (!suppressErrors)
                     throw e;
             } else {
-                // definitely suppress this.  On a Mac or
-                // Unix/Linux box, this'll happen every time
-                // at present.  (FIXME)
+                // definitely suppress this.  On a Mac, I think
+                // this'll happen every time at present.  (FIXME)
             }
         }
-                
+
+        Properties props = defaultProps;
         if (fis != null) {
             props = getPropertiesFromStream(fis,
                                             suppressErrors,
@@ -347,8 +356,112 @@ public final class ThdlOptions {
             }
         }
     }
+
+    /** Saves the user's preferences to a file whose path is the value
+     *  of {@link #getUserPreferencesPath()}.  You must call
+     *  <code>setUserPreference(..)</code> for this to be effective.
+     *  @throws IOException if an IO exception occurs while writing to
+     *  the disk. */
+    public static void saveUserPreferences() throws IOException {
+        if (null != userProperties) {
+            userProperties.store(new FileOutputStream(getUserPreferencesPath()),
+                                 " This file was automatically created by a THDL tool.\n"
+                                 + "# You may edit this file, but it will be recreated,\n"
+                                 + "# so your comments will be lost.\n"
+                                 + "# \n"
+                                 + "# To understand this file's contents, please see\n"
+                                 + "# options.txt in the JAR file.\n"
+                                 + "# \n"
+                                 + "# Note that this is the user-specific preferences file.\n"
+                                 + "# This tool also supports a system-specific preferences\n"
+                                 + "# file, which the user-specific preferences override.\n"
+                                 + "# \n"
+                                 + "# Note also that you can set a JVM preference at run-time.\n"
+                                 + "# Doing so will override both system- and user-specific\n"
+                                 + "# preferences.  On many systems, you do this like so:\n"
+                                 + "# 'java -Dthdl.default.tibetan.font.size=36 -jar Jskad.jar'\n"
+                                 + "# \n"
+                                 + "# There is, unfortunately, no further documentation on the\n"
+                                 + "# preferences mechanism at this time.  Yell for it!\n"
+                                 + "# \n"
+                                 + "# Created at:"); // DLC FIXME: document the preferences mechanism.
+        }
+    }
+
+    /** This returns the location of the user's preferences file.
+     *  This value may be overridden, by, you guessed it, a JVM,
+     *  built-in, or system-wide preference
+     *  <code>thdl.user.options.directory</code>
+     */
+    public static String getUserPreferencesPath() {
+        String defaultUserDir;
+        switch (OperatingSystemUtils.getOSType()) {
+        case OperatingSystemUtils.MAC:
+            // where?  DLC FIXME
+            defaultUserDir = "/tmp";
+            break;
+        case OperatingSystemUtils.WIN32:
+            defaultUserDir = "C:\\";
+            break;
+        default:
+            //put linux etc. here
+            defaultUserDir = "/tmp";
+            break;
+        }
+
+        String defaultLoc = System.getProperty("user.home", defaultUserDir);
+        String systemsOverridingValue
+            = System.getProperty("thdl.user.options.directory", defaultLoc);
+
+        return (new File(systemsOverridingValue,
+                         "my_thdl_preferences.txt")).getPath();
+    }
+
+    /** In order to save preferences, this class must know that the
+     *  user (explicitly or implicitly) has changed a preference,
+     *  either through selecting something in a ComboBox, going
+     *  through a Preferences GUI, or the like.  Calling this method
+     *  indicates that the user has changed an integer-valued
+     *  preference pref to value.
+     *  @param pref the preference the user is setting
+     *  @param value the user's new preference
+     */
+    public static void setUserPreference(String pref, int value) {
+        if (userProperties == null) {
+            userProperties = new Properties(); // empty
+        } // else leave it as is.
+        userProperties.setProperty(pref, String.valueOf(value));
+    }
+
+    /** In order to save preferences, this class must know that the
+     *  user (explicitly or implicitly) has changed a preference,
+     *  either through selecting something in a ComboBox, going
+     *  through a Preferences GUI, or the like.  Calling this method
+     *  indicates that the user has changed a boolean-valued
+     *  preference pref to value.
+     *  @param pref the preference the user is setting
+     *  @param value the user's new preference
+     */
+    public static void setUserPreference(String pref, boolean value) {
+        if (userProperties == null) {
+            userProperties = new Properties(); // empty
+        } // else leave it as is.
+        userProperties.setProperty(pref, String.valueOf(value));
+    }
+
+    /** In order to save preferences, this class must know that the
+     *  user (explicitly or implicitly) has changed a preference,
+     *  either through selecting something in a ComboBox, going
+     *  through a Preferences GUI, or the like.  Calling this method
+     *  indicates that the user has changed a String-valued preference
+     *  pref to value.
+     *  @param pref the preference the user is setting
+     *  @param value the user's new preference
+     */
+    public static void setUserPreference(String pref, String value) {
+        if (userProperties == null) {
+            userProperties = new Properties(); // empty
+        } // else leave it as is.
+        userProperties.setProperty(pref, value);
+    }
 }
-
-
-
-

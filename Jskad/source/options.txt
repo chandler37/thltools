@@ -19,6 +19,16 @@
 #########################    User Preferences    ###########################
 ############################################################################
 
+# Set this to the full path of the user preferences file, or to the
+# empty string if you wish to use the default values, which are
+# system-specific.
+thdl.user.options.directory =
+
+# Should the TibetanMachineWeb fonts not be loaded from within the JAR?  Set
+# this to true if you can get away with it and want your THDL tools to load
+# faster.
+thdl.rely.on.system.tmw.fonts = false
+
 # Set this to your preference of one of the following values:
 #
 # Framework: QuickTime for Java        Value: org.thdl.media.SmartQT4JPlayer
@@ -32,7 +42,13 @@ thdl.media.player = org.thdl.media.SmartJMFPlayer
 # 1: TCC Keyboard #1
 # 2: TCC Keyboard #2
 # 3: Sambhota Keymap One
+# 4: *ALPHA VERSION* ACIP Keyboard
 thdl.default.tibetan.keyboard = 0
+
+# Should Jskad be in Roman input mode or Tibetan input mode upon startup?
+# 0: Tibetan
+# 1: Roman
+thdl.Jskad.input.method = 0
 
 # Set this to the default font face for Roman input.  No error is
 # given if this font is not found.
@@ -52,7 +68,7 @@ thdl.Jskad.disable.status.bar = false
 
 # The message displayed in Jskad's status bar when you start it up
 # with thdl.Jskad.disable.status.bar set to false:
-thdl.Jskad.initial.status.message = Welcome to Jskad!
+thdl.Jskad.initial.status.message = Welcome to Jskad\!
 
 # Set this to true if you don't want Jskad to ask you "Do you really
 # want to quit?" when you try to exit the program.  (Your changes will

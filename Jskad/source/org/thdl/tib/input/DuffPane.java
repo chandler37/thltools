@@ -495,6 +495,20 @@ public class DuffPane extends TibetanPane implements KeyListener, FocusListener 
 			getTibDoc().setTibetanFontSize(size);
 	}
 
+    /**
+     * Like {@link #setTibetanFontSize(int)}, but should be called only
+     * when the user has somewhat explicitly chosen the font size.
+     * This will set the font size but also record this as a user
+     * preference.  Then you can choose to save the user preferences
+     * via {@link org.thdl.util.ThdlOptions.saveUserPreferences()}.
+     *
+     * @param size a point size
+     */
+	public void setByUserTibetanFontSize(int size) {
+        ThdlOptions.setUserPreference("thdl.default.tibetan.font.size", size);
+        setTibetanFontSize(size);
+	}
+
 /**
 * Gets the current point size for Tibetan text.
 * @return the current default font size for Tibetan
@@ -516,6 +530,15 @@ public class DuffPane extends TibetanPane implements KeyListener, FocusListener 
 		StyleConstants.setFontFamily(romanAttributeSet, font);
 		StyleConstants.setFontSize(romanAttributeSet, size);
 	}
+
+    /** Like {@link #setRomanAttributeSet}, but allows for noting the
+     *  (explicit or implicit) choice in the user's preferences
+     *  file. */
+    public void setByUserRomanAttributeSet(String font, int size) {
+        ThdlOptions.setUserPreference("thdl.default.roman.font.face", font);
+        ThdlOptions.setUserPreference("thdl.default.roman.font.size", size);
+        setRomanAttributeSet(font, size);
+    }
 
 /**
 * Gets the current point size for non-Tibetan text.

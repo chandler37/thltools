@@ -138,6 +138,7 @@ public class ThdlActionListener implements ActionListener {
                class.  Handle it well so that users know what's up: */
             ThdlDebug.handleClasspathError(null, err);
         } catch (Throwable t) {
+            /* FIXME: make aborting optional, and have it off by default */
             System.err.println("THDL_ERR 106: This application failed due to the following exception: ");
             t.printStackTrace(System.err);
             System.exit(1);
