@@ -51,7 +51,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 */
 	public TibetanDocument(StyleContext styles) {
 		super(styles);
-	}
+	} 
 
 /**
 * Sets the point size used by default for Tibetan text.
@@ -105,9 +105,9 @@ public class TibetanDocument extends DefaultStyledDocument {
 * @param glyphs the array of Tibetan data you want to insert
 * @param pos the position at which you want to insert text
 */
-	public void insertDuff(int pos, DuffData[] glyphs) {
+	public int insertDuff(int pos, DuffData[] glyphs) {
 		if (glyphs == null)
-			return;
+			return pos;
 
 		MutableAttributeSet mas;
 		for (int i=0; i<glyphs.length; i++) {
@@ -115,6 +115,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 			appendDuff(pos, glyphs[i].text, mas);
 			pos += glyphs[i].text.length();
 		}
+		return pos;
 	}
 
 /**
@@ -426,7 +427,10 @@ public class TibetanDocument extends DefaultStyledDocument {
 					isSanskrit = false;
 				}
 				else { //could not convert - throw exception
-					System.out.println("Bad wylie: "+wylie.substring(start,5));
+					if (start+5 < wylie.length())
+						System.out.println("Bad wylie: "+wylie.substring(start,5));
+					else
+						System.out.println("Bad wylie: "+wylie.substring(start));
 					throw new InvalidWylieException(wylie, start);
 				}
 			}
@@ -779,6 +783,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 				vowels.add(halfHeight);
 
 			if (null != dc_v)
+
 				vowels.add(dc_v);
 
 			return vowels;
@@ -1033,6 +1038,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 */
 	public String getWylie() {
 		return getWylie(0, getLength());
+
 	}
 
 /**
@@ -1051,32 +1057,54 @@ public class TibetanDocument extends DefaultStyledDocument {
 		DuffCode dc;
 		char ch;
 
-		if (begin == end)
+		if (begin >= end)
 			return "";
 
 		java.util.List dcs = new ArrayList();
 		int i = begin;
+		StringBuffer wylieBuffer = new StringBuffer();
 
 		try {
 			while (i < end) {
 				attr = getCharacterElement(i).getAttributes();
 				fontName = StyleConstants.getFontFamily(attr);
 
-				if ((0 == (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName)))) {
-					DuffCode[] dc_array = new DuffCode[0];
-					dc_array = (DuffCode[])dcs.toArray(dc_array);
-					return TibetanDocument.getWylie(dc_array);
+				ch = getText(i,1).charAt(0);
+
+				//current character is formatting
+				if (ch == '\n' || ch == '\t') {
+					if (dcs.size() > 0) {
+						DuffCode[] dc_array = new DuffCode[0];
+						dc_array = (DuffCode[])dcs.toArray(dc_array);
+						wylieBuffer.append(TibetanDocument.getWylie(dc_array));
+						dcs.clear();
+					}
+					wylieBuffer.append(ch);
 				}
+
+				//current character isn't TMW
+				else if ((0 == (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName)))) {
+					if (dcs.size() > 0) {
+						DuffCode[] dc_array = new DuffCode[0];
+						dc_array = (DuffCode[])dcs.toArray(dc_array);
+						wylieBuffer.append(TibetanDocument.getWylie(dc_array));
+						dcs.clear();
+					}
+				}
+
+				//current character is convertable
 				else {
-					ch = getText(i,1).charAt(0);
 					dc = new DuffCode(fontNum, ch);
 					dcs.add(dc);
 				}
 				i++;
 			}
-			DuffCode[] dc_array = new DuffCode[0];
-			dc_array = (DuffCode[])dcs.toArray(dc_array);
-			return TibetanDocument.getWylie(dc_array);
+			if (dcs.size() > 0) {
+				DuffCode[] dc_array = new DuffCode[0];
+				dc_array = (DuffCode[])dcs.toArray(dc_array);
+				wylieBuffer.append(TibetanDocument.getWylie(dc_array));
+			}
+			return wylieBuffer.toString();
 		}
 		catch (BadLocationException ble) {
 			ble.printStackTrace();

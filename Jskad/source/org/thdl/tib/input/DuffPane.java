@@ -25,8 +25,12 @@ import java.awt.font.*;
 import java.awt.event.*;
 import javax.swing.*; 
 import javax.swing.text.*;
+
 import java.lang.*;
 import org.thdl.tib.text.*;
+
+import java.io.*;
+import javax.swing.text.rtf.*;
 
 /**
 * Enables input of Tibetan text
@@ -184,7 +188,7 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 * current entry/edit/deletion position.
 */
 	private Caret caret;
-	private StyledEditorKit editorKit;
+//	private StyledEditorKit editorKit;
 	private StyleContext styleContext;
 	private Style rootStyle;
 	private boolean skipUpdate = false;
@@ -194,34 +198,48 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 	private int romanFontSize;
 	private MutableAttributeSet romanAttributeSet;
 
+public Clipboard rtfBoard;
+public DataFlavor rtfFlavor;
+public RTFEditorKit rtfEd = null;
+
 	public DuffPane() {
-		this(new StyledEditorKit());
+		setupKeyboard();
+		setupEditor();
+//		this(new StyledEditorKit());
 	}
 
 	public DuffPane(TibetanKeyboard keyboard) {
-		this(new StyledEditorKit(), keyboard);
+		TibetanMachineWeb.setKeyboard(keyboard);
+		setupKeyboard();
+		setupEditor();	
+//		this(new StyledEditorKit(), keyboard);
 	}
 
 	public DuffPane(java.net.URL keyboardURL) {
-		this(new StyledEditorKit(), keyboardURL);
-	}
-
-	public DuffPane(StyledEditorKit styledEditorKit) {
-		setupKeyboard();
-		setupEditor(styledEditorKit);
-	}
-
-	public DuffPane(StyledEditorKit styledEditorKit, TibetanKeyboard keyboard) {
-		TibetanMachineWeb.setKeyboard(keyboard);
-		setupKeyboard();
-		setupEditor(styledEditorKit);
-	}
-
-	public DuffPane(StyledEditorKit styledEditorKit, java.net.URL keyboardURL) {
 		TibetanMachineWeb.setKeyboard(keyboardURL);
 		setupKeyboard();
+		setupEditor();
+//		this(new StyledEditorKit(), keyboardURL);
+	}
+
+/*
+	public DuffPane() {
+		setupKeyboard();
 		setupEditor(styledEditorKit);
 	}
+
+	public DuffPane(TibetanKeyboard keyboard) {
+		TibetanMachineWeb.setKeyboard(keyboard);
+		setupKeyboard();
+		setupEditor();
+	}
+
+	public DuffPane(java.net.URL keyboardURL) {
+		TibetanMachineWeb.setKeyboard(keyboardURL);
+		setupKeyboard();
+		setupEditor();
+	}
+*/
 
 /**
 * This method sets up the editor, assigns fonts and point sizes,
@@ -229,22 +247,26 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 *
 * @param sek the StyledEditorKit for the editing window
 */
-	private void setupEditor(StyledEditorKit sek) {
+	public void setupEditor() {
+		rtfBoard = getToolkit().getSystemClipboard();
+		rtfFlavor = new DataFlavor("text/rtf", "Rich Text Format");
+		rtfEd = new RTFEditorKit();
+		setEditorKit(rtfEd);
+		styleContext = new StyleContext();
+
+		doc = new TibetanDocument(styleContext);
+		doc.setTibetanFontSize(36);
+		setDocument(doc);
+
+		Style defaultStyle = styleContext.getStyle(StyleContext.DEFAULT_STYLE);
+		StyleConstants.setFontFamily(defaultStyle, "TibetanMachineWeb");
+		StyleConstants.setFontSize(defaultStyle, 36);
+
 		romanFontFamily = "Serif";
 		romanFontSize = 14;
 		setRomanAttributeSet(romanFontFamily, romanFontSize);
 
-		editorKit = sek;
-		setEditorKit(editorKit);
-		styleContext = new StyleContext();
-
-		Style defaultStyle = styleContext.getStyle(StyleContext.DEFAULT_STYLE);
-		rootStyle = styleContext.addStyle("RootStyle", defaultStyle);
-		StyleConstants.setFontFamily(rootStyle, "TibetanMachineWeb");
-		StyleConstants.setFontSize(rootStyle, 36);
-		setLogicalStyle(rootStyle);
-
-		newDocument();		
+//		newDocument();
 		caret = getCaret();
 
 		addKeyListener(this);
@@ -258,7 +280,7 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 * respect to stacking, and concerning the differences between
 * Tibetan and Sanskrit; and then it initializes the input method.
 */
-	private void setupKeyboard() {
+	public void setupKeyboard() {
 		if (TibetanMachineWeb.hasTibetanStackingKey()) {
 			if (TibetanMachineWeb.hasSanskritStackingKey()) {
 				isDefinitelyTibetan_default = false;
@@ -336,10 +358,15 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 * Clears the current document.
 */
 	public void newDocument() {
+		styleContext = new StyleContext();
+
 		doc = new TibetanDocument(styleContext);
 		doc.setTibetanFontSize(36);
 		setDocument(doc);
-		setLogicalStyle(rootStyle);
+
+		Style defaultStyle = styleContext.getStyle(StyleContext.DEFAULT_STYLE);
+		StyleConstants.setFontFamily(defaultStyle, "TibetanMachineWeb");
+		StyleConstants.setFontSize(defaultStyle, 36);
 	}
 
 /**
@@ -718,6 +745,57 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 		initKeyboard();
 	}
 
+class RTFSelection implements ClipboardOwner, Transferable {
+	DataFlavor[] supportedFlavor;
+	ByteArrayOutputStream rtfOut;
+	String plainText;
+
+	RTFSelection(StyledDocument doc, int offset, int length) {
+		supportedFlavor = new DataFlavor[2];
+		supportedFlavor[0] = rtfFlavor;
+		supportedFlavor[1] = DataFlavor.stringFlavor;
+		try {
+			//construct new document that contains only portion of text you want to copy
+			//this workaround is due to bug 4129911, which will not be fixed (see below after source code)
+			StyledDocument newDoc = new DefaultStyledDocument();
+			for (int i=offset; i<offset+length; i++) {
+				try {
+					String s = doc.getText(i,1);
+					AttributeSet as = doc.getCharacterElement(i).getAttributes();
+					newDoc.insertString(i-offset, s, as);
+				} catch (BadLocationException ble) {
+					ble.printStackTrace();
+				}
+			}
+			rtfOut = new ByteArrayOutputStream();
+			rtfEd.write(rtfOut, newDoc, 0, newDoc.getLength()); //last two parameters ignored, see bug below
+			plainText = getText(offset, length);
+		} catch (BadLocationException ble) {
+			ble.printStackTrace();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+	}
+	public void lostOwnership(Clipboard clipboard, Transferable contents) {
+	}
+	public Object getTransferData(DataFlavor flavor) {
+		if (flavor.equals(rtfFlavor))
+			return new ByteArrayInputStream(rtfOut.toByteArray());
+		if (flavor.equals(DataFlavor.stringFlavor))
+			return plainText;
+		return null;
+	}
+	public DataFlavor[] getTransferDataFlavors() {
+		return supportedFlavor;	
+	}
+	public boolean isDataFlavorSupported(DataFlavor flavor) {
+		for (int i=0; i<supportedFlavor.length; i++)
+			if (flavor.equals(supportedFlavor[i]))
+				return true;
+		return false;
+	}
+}
+
 /**
 * Cuts or copies the specified portion of this object's document
 * to the system clipboard. What is cut/copied is Wylie text -
@@ -731,56 +809,22 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 * false if it is 'copy'
 */
 	public void copy(int start, int end, boolean remove) {
-		if (start < end) {
-			java.util.List dcs = new ArrayList();
-
+		int p1 = start;
+		int p2 = end;
+		if (p1 != p2) {
+			RTFSelection rtfSelection = new RTFSelection((StyledDocument)getDocument(), p1, p2-p1);
 			try {
-				AttributeSet attr;
-				String fontName;
-				int fontNum;
-				DuffCode dc;
-				char ch;
-
-				int i = start;
-
-				while (i < end+1) {
-					attr = doc.getCharacterElement(i).getAttributes();
-					fontName = StyleConstants.getFontFamily(attr);
-
-					if ((0 == (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName))) || i==end) {
-						if (i != start) {
-							DuffCode[] dc_array = new DuffCode[0];
-							dc_array = (DuffCode[])dcs.toArray(dc_array);
-							StringSelection data = new StringSelection(TibetanDocument.getWylie(dc_array));
-							Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-							clipboard.setContents(data, data);
-							if (remove) {
-								doc.remove(start, i-start);
-								setSelectionEnd(start);
-							}
-							else {
-								setSelectionStart(start);
-								setSelectionEnd(i);
-							}
-							return;
-						}
-						else {
-							setSelectionEnd(start);
-							return;
-						}
-					}
-					else {
-						ch = doc.getText(i,1).charAt(0);
-						dc = new DuffCode(fontNum, ch);
-						dcs.add(dc);
-					}
-					i++;
-				}
-			}
-			catch (BadLocationException ble) {
-				ble.printStackTrace();
+				rtfBoard.setContents(rtfSelection, rtfSelection);
+			} catch (IllegalStateException ise) {
+				ise.printStackTrace();
 			}
 		}
+		if (remove)
+			try {
+				getDocument().remove(p1, p2-p1);
+			} catch (BadLocationException ble) {
+				ble.printStackTrace();
+			}
 	}
 
 /**
@@ -793,21 +837,39 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 * appear.
 * @param offset the position in the document you want to paste to
 */
-	public void paste(int offset) {
-		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		Transferable data = clipboard.getContents(this);
+public void paste(int offset) {
+	try {
+		Transferable contents = rtfBoard.getContents(this);
+		if (contents.isDataFlavorSupported(rtfFlavor)) {
+			InputStream in = (InputStream)contents.getTransferData(rtfFlavor);
+			int p1 = offset;
 
-		String s = null;
-		try {
-			s = (String)(data.getTransferData(DataFlavor.stringFlavor));
+			//construct new document that contains only portion of text you want to paste
+			StyledDocument sd = new DefaultStyledDocument();
+			rtfEd.read(in, sd, 0);
+			for (int i=0; i<sd.getLength()-1; i++) { //getLength()-1 so that final newline is not included in paste
+				try {
+					String s = sd.getText(i,1);
+					AttributeSet as = sd.getCharacterElement(i).getAttributes();
+					doc.insertString(p1+i, s, as);
+				} catch (BadLocationException ble) {
+					ble.printStackTrace();
+				}
+			}
+		} else if (contents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+			String s = (String)contents.getTransferData(DataFlavor.stringFlavor);
+			replaceSelection(s);		
 		}
-		catch (Exception e) {
-			s = data.toString();
-		}
-
-		if (s != null)
-			toTibetanMachineWeb(s, offset);
+	} catch (UnsupportedFlavorException ufe) {
+		ufe.printStackTrace();
+	} catch (IOException ioe) {
+		ioe.printStackTrace();
+	} catch (IllegalStateException ise) {
+		ise.printStackTrace();
+	} catch (BadLocationException ble) {
+		ble.printStackTrace();
 	}
+}
 
 /**
 * Enables cutting and pasting of Tibetan text.
@@ -1298,8 +1360,21 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 */
 	public void toTibetanMachineWeb(String wylie, int offset) {
 		try {
-			TibetanDocument.DuffData[] dd = TibetanDocument.getTibetanMachineWeb(wylie);
-			doc.insertDuff(offset, dd);
+			StringTokenizer sTok = new StringTokenizer(wylie, "\n\t", true);
+			while (sTok.hasMoreTokens()) {
+				String next = sTok.nextToken();
+				if (next.equals("\n") || next.equals("\t")) {
+					try {
+						doc.insertString(offset, next, null);
+						offset++;
+					} catch (BadLocationException ble) {
+						ble.printStackTrace();
+					}
+				} else {
+					TibetanDocument.DuffData[] dd = TibetanDocument.getTibetanMachineWeb(next);
+					offset = doc.insertDuff(offset, dd);
+				}
+			}
 		}
 		catch (InvalidWylieException iwe) {
 			JOptionPane.showMessageDialog(this,
@@ -1307,7 +1382,6 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 				"beginning from:\n     " + iwe.getCulpritInContext() + "\n" +
 				"The culprit is probably the character '"+iwe.getCulprit()+"'.");
 		}
-
 	}
 
 /**
@@ -1373,4 +1447,5 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 			ble.printStackTrace();
 		}
 	}
+
 }

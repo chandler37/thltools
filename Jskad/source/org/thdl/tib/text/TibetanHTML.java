@@ -1,5 +1,7 @@
 package org.thdl.tib.text;
 
+import java.util.StringTokenizer;
+
 public class TibetanHTML {
 	static String[] styleNames =
 		{"tmw","tmw1","tmw2","tmw3","tmw4","tmw5","tmw6","tmw7","tmw8","tmw9"};
@@ -17,17 +19,26 @@ public class TibetanHTML {
 				".tmw9 {font: "+fontSize+"pt TibetanMachineWeb9}\n";
 	}
 
-
-	public static String getHTML(String wylie) {
+	public static String getHTMLX(String wylie) {
 		try {
-			return getHTML(TibetanDocument.getTibetanMachineWeb(wylie));
-		}
-		catch (InvalidWylieException ive) {
-			return null;
+			StringBuffer buffer = new StringBuffer();
+			for (StringTokenizer tokenizer = new StringTokenizer(wylie, " \t\n", true); tokenizer.hasMoreElements();) {
+				String next = tokenizer.nextToken();
+				if (next.equals("\t") || next.equals("\n")) {
+					buffer.append("<wbr/>");
+					buffer.append(getHTML(TibetanDocument.getTibetanMachineWeb("_")));
+					buffer.append("<wbr/>");
+				}
+				else
+					buffer.append(getHTML(TibetanDocument.getTibetanMachineWeb(next)));
+			}
+			return buffer.toString();
+		} catch (InvalidWylieException ive) {
+			return "";
 		}
 	}
 
-	public static String getHTML(TibetanDocument.DuffData[] duffData) {
+	public static String getHTMLX(TibetanDocument.DuffData[] duffData) {
 		String[] styleNames =
 			{"tmw","tmw1","tmw2","tmw3","tmw4","tmw5","tmw6","tmw7","tmw8","tmw9"};
 
@@ -41,32 +52,30 @@ public class TibetanHTML {
 				htmlBuffer.append(styleNames[duffData[i].font-1]);
 				htmlBuffer.append("\">");
 
-				switch (c[k]) {
-					case '"':
-						htmlBuffer.append("&quot");
-						break;
-					case '<':
-						htmlBuffer.append("&lt");
-						break;
-					case '>':
-						htmlBuffer.append("&gt");
-						break;
-					case '&':
-						htmlBuffer.append("&amp");
-						break;
-					default:
-						htmlBuffer.append(c[k]);
-						break;
-				}
-
-				htmlBuffer.append("</span>");
-				if (c[k] < 32) //must be formatting, like carriage return or tab
-					htmlBuffer.append("<br>");
-
-				else {
+				if (c[k] > 32 && c[k] < 127) { //ie if it's not formatting
+					switch (c[k]) {
+						case '"':
+							htmlBuffer.append("&quot;");
+							break;
+						case '<':
+							htmlBuffer.append("&lt;");
+							break;
+						case '>':
+							htmlBuffer.append("&gt;");
+							break;
+						case '&':
+							htmlBuffer.append("&amp;");
+							break;
+						default:
+							htmlBuffer.append(c[k]);
+							break;
+					}
+					htmlBuffer.append("</span>");
 					String wylie = TibetanMachineWeb.getWylieForGlyph(duffData[i].font, c[k]);
 					if (TibetanMachineWeb.isWyliePunc(wylie))
-						htmlBuffer.append("<wbr>");
+						htmlBuffer.append("<wbr/>");
+				} else {
+					htmlBuffer.append("</span><br/>");
 				}
 			}
 		}
@@ -74,71 +83,143 @@ public class TibetanHTML {
 		htmlBuffer.append("</nobr>");
 		return htmlBuffer.toString();
 	}
-}
 
+	public static String getIndentedHTML(String wylie) {
+		return getHTML("_" + wylie);
+	}
 
-
-//import org.apache.xerces.dom.DOMImplementationImpl;
-//import org.w3c.dom.*;
-
-/*
-	public static Node getHTML(String wylie) {
+	public static String getHTML(String wylie) {
 		try {
-			return getHTML(TibetanDocument.getTibetanMachineWeb(wylie));
-		}
-		catch (InvalidWylieException ive) {
-			return null;
+			StringBuffer buffer = new StringBuffer();
+			for (StringTokenizer tokenizer = new StringTokenizer(wylie, " \t\n", true); tokenizer.hasMoreElements();) {
+				String next = tokenizer.nextToken();
+				if (next.equals("\t") || next.equals("\n")) {
+					buffer.append("<wbr/>");
+					buffer.append(getHTML(TibetanDocument.getTibetanMachineWeb("_")));
+					buffer.append("<wbr/>");
+				}
+				else
+					buffer.append(getHTML(TibetanDocument.getTibetanMachineWeb(next)));
+			}
+			return buffer.toString();
+		} catch (InvalidWylieException ive) {
+			return "";
 		}
 	}
 
-	public static Node getHTML(TibetanDocument.DuffData[] duffData) {
-		try {
-			DOMImplementationImpl impl = new DOMImplementationImpl();
-			Document doc = impl.createDocument(null, "root", null);
-//			DocumentFragment frag = doc.createDocumentFragment()
+	public static String getHTML(TibetanDocument.DuffData[] duffData) {
+		String[] styleNames =
+			{"tmw","tmw1","tmw2","tmw3","tmw4","tmw5","tmw6","tmw7","tmw8","tmw9"};
 
+		StringBuffer htmlBuffer = new StringBuffer();
+		htmlBuffer.append("<nobr>");
 
-			Element nobr = doc.createElement("nobr");
-//			frag.appendChild(nobr);
-
-			for (int i=0; i<duffData.length; i++) {
-				char[] c = duffData[i].text.toCharArray();
-				for (int k=0; k<c.length; k++) {
-					Element span = doc.createElement("span");
-					span.setAttribute("class", styleNames[duffData[i].font-1]);
-//					Text tib = doc.createTextNode(String.valueOf(c[k]));
-//					span.appendChild(tib);
-					nobr.appendChild(span);
-
-					String wylie = TibetanMachineWeb.getWylieForGlyph(duffData[i].font, c[k]);
-					if (TibetanMachineWeb.isWyliePunc(wylie)) {
-						Element wbr = doc.createElement("wbr");
-						nobr.appendChild(wbr);
+		for (int i=0; i<duffData.length; i++) {
+			htmlBuffer.append("<span class=\"");
+			htmlBuffer.append(styleNames[duffData[i].font-1]);
+			htmlBuffer.append("\">");
+			char[] c = duffData[i].text.toCharArray();
+			for (int k=0; k<c.length; k++) {
+				if (c[k] > 31 && c[k] < 127) { //ie if it's not formatting
+					switch (c[k]) {
+						case '"':
+							htmlBuffer.append("&quot;");
+							break;
+						case '<':
+							htmlBuffer.append("&lt;");
+							break;
+						case '>':
+							htmlBuffer.append("&gt;");
+							break;
+						case '&':
+							htmlBuffer.append("&amp;");
+							break;
+						default:
+							htmlBuffer.append(c[k]);
+							break;
 					}
+					String wylie = TibetanMachineWeb.getWylieForGlyph(duffData[i].font, c[k]);
+					if (TibetanMachineWeb.isWyliePunc(wylie))
+						htmlBuffer.append("<wbr/>");
+				} else {
+					htmlBuffer.append("<br/>");
 				}
 			}
-
-//doc.appendChild(nobr);
-return nobr;
-
-//			return frag;
+			htmlBuffer.append("</span>");
 		}
-		catch (DOMException dome) {
-switch (dome.code) {
 
-case DOMException.HIERARCHY_REQUEST_ERR:
-System.out.println("hierarchy error!!");
-break;
+		htmlBuffer.append("</nobr>");
+		return htmlBuffer.toString();
+	}
 
-case DOMException.WRONG_DOCUMENT_ERR:
-System.out.println("wrong doc error!!");
-break;
+	public static String getHTMLforJava(String wylie) {
+		//differences:
+		//	as of 1.4.1, anyway, browser built into java does not accept <wbr/> and <br/>,
+		//	only <wbr> and <br>
 
-case DOMException.NO_MODIFICATION_ALLOWED_ERR:
-System.out.println("no mod allowed error!!");
-break;
-}
-			return null;
+		try {
+			StringBuffer buffer = new StringBuffer();
+			for (StringTokenizer tokenizer = new StringTokenizer(wylie, " \t\n", true); tokenizer.hasMoreElements();) {
+				String next = tokenizer.nextToken();
+				if (next.equals("\t") || next.equals("\n")) {
+					buffer.append("<wbr>");
+					buffer.append(getHTML(TibetanDocument.getTibetanMachineWeb("_")));
+					buffer.append("<wbr>");
+				}
+				else
+					buffer.append(getHTML(TibetanDocument.getTibetanMachineWeb(next)));
+			}
+			return buffer.toString();
+		} catch (InvalidWylieException ive) {
+			return "";
 		}
 	}
-*/
+
+	public static String getHTMLforJava(TibetanDocument.DuffData[] duffData) {
+		String[] fontNames = {
+			"TibetanMachineWeb","TibetanMachineWeb1", "TibetanMachineWeb2",
+			"TibetanMachineWeb3","TibetanMachineWeb4","TibetanMachineWeb5",
+			"TibetanMachineWeb6","TibetanMachineWeb7","TibetanMachineWeb8",
+			"TibetanMachineWeb9"};
+
+		StringBuffer htmlBuffer = new StringBuffer();
+		htmlBuffer.append("<nobr>");
+
+		for (int i=0; i<duffData.length; i++) {
+			htmlBuffer.append("<font size=\"36\" face=\"");
+			htmlBuffer.append(fontNames[duffData[i].font-1]);
+			htmlBuffer.append("\">");
+			char[] c = duffData[i].text.toCharArray();
+			for (int k=0; k<c.length; k++) {
+				if (c[k] > 31 && c[k] < 127) { //ie if it's not formatting
+					switch (c[k]) {
+						case '"':
+							htmlBuffer.append("&quot;");
+							break;
+						case '<':
+							htmlBuffer.append("&lt;");
+							break;
+						case '>':
+							htmlBuffer.append("&gt;");
+							break;
+						case '&':
+							htmlBuffer.append("&amp;");
+							break;
+						default:
+							htmlBuffer.append(c[k]);
+							break;
+					}
+					String wylie = TibetanMachineWeb.getWylieForGlyph(duffData[i].font, c[k]);
+					if (TibetanMachineWeb.isWyliePunc(wylie))
+						htmlBuffer.append("<wbr>");
+				} else {
+					htmlBuffer.append("<br>");
+				}
+			}
+			htmlBuffer.append("</font>");
+		}
+
+		htmlBuffer.append("</nobr>");
+		return htmlBuffer.toString();
+	}
+}
