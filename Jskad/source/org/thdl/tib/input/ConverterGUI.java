@@ -44,7 +44,7 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
 
     // DLC FIXMEDOC returns true on success
     public boolean doConversion(ConvertDialog cd, File oldFile, File newFile,
-                             String whichConversion) {
+                                String whichConversion) {
         PrintStream ps;
         try {
             returnCode
@@ -55,6 +55,11 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
             ps.close();
         } catch (FileNotFoundException e) {
             returnCode = 39;
+            JOptionPane.showMessageDialog(cd,
+                                          "The conversion failed because either the old\nfile could not be found or the new file could\nnot be written (because it was open\nelsewhere or read-only or what have you).",
+                                          "Conversion failed",
+                                          JOptionPane.ERROR_MESSAGE);
+            return false;
         }
         if (0 != returnCode) {
             JOptionPane.showMessageDialog(cd,
