@@ -93,7 +93,7 @@ public class TibetanKeyboard {
 			InputStreamReader isr = new InputStreamReader(url.openStream());
 			BufferedReader in = new BufferedReader(isr);
 
-			System.out.println("reading "+url.toString());
+			System.out.println("Reading Tibetan Keyboard " + url.toString());
 			String line;
 
 			charMap = new HashMap();
@@ -382,10 +382,7 @@ public class TibetanKeyboard {
 * @param s the possible vowel
 */
 	public boolean isVowel(String s) {
-		if (vowelMap.containsKey(s))
-			return true;
-		else
-			return false;
+		return vowelMap.containsKey(s);
 	}
 
 /**
