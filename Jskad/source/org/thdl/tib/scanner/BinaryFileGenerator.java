@@ -224,7 +224,7 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 	    int currentPage=0, currentLine=1;
 	    char ch;	    
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(archivo)));
-		String entrada="", s1="", s2="", currentLetter="", temp="", lastWeirdDefiniendum="";
+		String entrada="", s1="", s2="", currentLetter="", temp="", lastWeirdDefiniendum="", alternateWords[];
 		boolean markerNotFound;
         
         // used for acip dict 
@@ -504,7 +504,17 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 		                {
 		                    s1 = deleteQuotes(entrada.substring(0,marker).trim());
 		                    s2 = deleteQuotes(entrada.substring(marker+1).trim());
-		                    add(s1, s2 , defNum);
+		                    marker2 = s1.indexOf(';');
+            		        if (marker2>0)
+            		        {
+		                        alternateWords = Manipulate.parseFields(s1, ';');
+    		                    for (marker2=0; marker2<alternateWords.length; marker2++)
+	    	                    {
+		                            add(alternateWords[marker2],s2, defNum);
+		                        }
+		                        
+		                    }
+		                    else add(s1, s2 , defNum);
     		            }
     		        }
 		    	    currentLine++;            

@@ -17,8 +17,8 @@ Contributor(s): ______________________________________.
 */
 package org.thdl.tib.scanner;
 
-
 import java.io.*;
+import org.thdl.util.*;
 
 /** Miscelaneous static methods for the manipulation of Tibetan text.
 	
@@ -27,6 +27,23 @@ import java.io.*;
 
 public class Manipulate
 {
+
+	public static String[] parseFields (String s, char delimiter)
+	{
+	    int pos;
+	    String field;
+	    SimplifiedLinkedList ll = new SimplifiedLinkedList();
+	    
+	    while ((pos = s.indexOf(delimiter))>=0)
+	    {
+	        field = s.substring(0, pos).trim();
+	        ll.addLast(field);
+	        s = s.substring(pos+1);
+	    }
+	    
+	    ll.addLast(s.trim());
+	    return ll.toStringArray();
+	}    
 	
 	public static String replace(String linea, String origSub, String newSub)
 	{

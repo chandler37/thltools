@@ -216,7 +216,8 @@ class WhichDictionaryFrame extends Dialog implements ActionListener, ItemListene
 	    else if (obj instanceof Choice)
 	    {
 	        Choice ch = (Choice) obj;
-	        response = dictsOnline[ch.getSelectedIndex()];
+	        dictType = ch.getSelectedIndex();
+	        response = dictsOnline[dictType];
 	    }
 	}
 

@@ -27,7 +27,7 @@ public abstract class TibetanScanner
 {
 	public static final String copyrightUnicode="Copyright " + '\u00A9' + " 2000-2003 by Andr" + '\u00E9' + "s Montano Pellegrini, all rights reserved.";
 	public static final String copyrightASCII="Copyright 2000-2003 by Andres Montano Pellegrini, all rights reserved.";
-	public static final String copyrightHTML="<hr><small><strong>" + "The Tibetan to English Translation Tool: Version 2.1.0, compiled on " + ThdlVersion.getTimeOfCompilation() + ". Copyright &copy; 2000-2002 by <a href=\"http://www.people.virginia.edu/~am2zb/\" target=\"_blank\">Andr&eacute;s Montano Pellegrini</a><br>All rights reserved</small></strong>";
+	public static final String copyrightHTML="<hr><small><strong>" + "The Tibetan to English Translation Tool: Version 2.1.0, compiled on " + ThdlVersion.getTimeOfCompilation() + ". Copyright &copy; 2000-2002 by <a href=\"http://www.people.virginia.edu/~am2zb/\" target=\"_blank\">Andr&eacute;s Montano Pellegrini</a><br/>All rights reserved</strong></small>";
 	public static final String aboutUnicode=
 	"Warning: Since version 1.3.0. the dictionary database format changed and " +
 	"is incompatible with previous versions. In order to use the newest version " +

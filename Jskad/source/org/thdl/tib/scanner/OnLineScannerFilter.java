@@ -81,8 +81,8 @@ public class OnLineScannerFilter extends HttpServlet
         else
             out.println(" <title>The Online Tibetan to English Translation/Dictionary Tool</title>");
             
-        out.println(" <META name=\"keywords\" content=\"tibetan, english, dictionary, jim valby, rangjung yeshe, jeffrey hopkins, tsig mdzod chen mo, online, translation, scanner, parser, buddhism, language, processing, font, dharma, chos, tibet\">");
-        out.println(" <META NAME=\"Description\" CONTENT=\"This Java tool takes Tibetan language passages and divides the passages up into their component phrases and words, and displays corresponding dictionary definitions.\">");
+        out.println(" <meta name=\"keywords\" content=\"tibetan, english, dictionary, jim valby, rangjung yeshe, jeffrey hopkins, tsig mdzod chen mo, online, translation, scanner, parser, buddhism, language, processing, font, dharma, chos, tibet\">");
+        out.println(" <meta name=\"Description\" content=\"This Java tool takes Tibetan language passages and divides the passages up into their component phrases and words, and displays corresponding dictionary definitions.\">");
         out.println(" <meta name=\"MSSmartTagsPreventParsing\" content=\"TRUE\">");
 		
         script = request.getParameter("script");
@@ -93,7 +93,6 @@ public class OnLineScannerFilter extends HttpServlet
         wantsTibetan = (script==null || script.equals("tibetan"));
         if (wantsTibetan)
         {
-    		out.println("<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
 	    	out.println("<style>.tmw {font: 28pt TibetanMachineWeb}");
 		    out.println(".tmw1 {font: 28pt TibetanMachineWeb1}");
     		out.println(".tmw2 {font: 28pt TibetanMachineWeb2}");
@@ -168,9 +167,9 @@ public class OnLineScannerFilter extends HttpServlet
         out.println("    <td width=\"75%\">");
         out.println("      <p><input type=\"radio\" value=\"tibetan\" ");
         if (wantsTibetan) out.println("checked ");
-        out.println("name=\"script\">Tibetan script (using <a href=\"http://iris.lib.virginia.edu/tibet/tools/tmw.html\" target=\"_blank\">Tibetan Machine Web font</a>)<br>");
+        out.println("name=\"script\">Tibetan script (using <a href=\"http://iris.lib.virginia.edu/tibet/tools/tmw.html\" target=\"_blank\">Tibetan Machine Web font</a>)<br/>");
         out.println("      <input type=\"radio\" value=\"roman\" ");
-        if (!wantsTibetan) out.println("checked ");        
+        if (!wantsTibetan) out.println("checked ");
         out.println("name=\"script\">Roman script</td>");
         out.println("  </tr>");
         out.println("</table>");
