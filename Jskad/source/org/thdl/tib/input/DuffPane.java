@@ -500,7 +500,7 @@ public class DuffPane extends TibetanPane implements KeyListener, FocusListener 
      * when the user has somewhat explicitly chosen the font size.
      * This will set the font size but also record this as a user
      * preference.  Then you can choose to save the user preferences
-     * via {@link org.thdl.util.ThdlOptions.saveUserPreferences()}.
+     * via {@link org.thdl.util.ThdlOptions#saveUserPreferences()}.
      *
      * @param size a point size
      */
@@ -1101,9 +1101,9 @@ public void paste(int offset) {
                 if (this.isEditable()) {
                     initKeyboard();
                     if (isTibetan)
-                        getTibDoc().appendDuff(caret.getDot(),"	",TibetanMachineWeb.getAttributeSet(1));
+                        getTibDoc().appendDuff(caret.getDot(),"\t",TibetanMachineWeb.getAttributeSet(1));
                     else
-                        append("	", romanAttributeSet);
+                        append("\t", romanAttributeSet);
                 }
 				break;
 
@@ -1198,6 +1198,10 @@ public void paste(int offset) {
 *
 * @param e a KeyEvent */
 	public void processTibetan(KeyEvent kev) {
+        /* DLC FIXME: in the extended wylie keyboard, there's a
+         * potential problem: typing ai gets you what aai gets you,
+         * not what i gets you.  Typing ae gets you what e gets
+         * you. */
 		boolean shouldIBackSpace = true;
 
         // We don't handle just any old keypress.  We handle only the
