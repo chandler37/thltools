@@ -59,12 +59,9 @@ import org.thdl.util.OperatingSystemUtils;
  * default, call it "EnableFeatureFoo".  This makes the users' lives
  * easier.</p>
  * 
- * <p>ThdlOptions is a final class so that compilers can make this
- * code run efficiently.</p>
- *
  * @author David Chandler
  */
-public final class ThdlOptions {
+public class ThdlOptions {
 	/**
 	 * So that you're not tempted to instantiate this class, the
 	 * constructor is private: */
