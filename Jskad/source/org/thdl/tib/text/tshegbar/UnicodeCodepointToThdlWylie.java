@@ -60,41 +60,47 @@ public class UnicodeCodepointToThdlWylie {
      *  consonants take ra-btags.  DLC NOW what about
      *  canonicalization? */
     public static String getThdlWylieForUnicodeCodepoint(char x) {
+        // DLC FIXME: use tibwn.ini for this; don't duplicate effort!
+        // See TibetanMachineWeb.java's UnicodeToTMW mapping and
+        // follow that example.  At the very least, test it thoroughly
+        // so that changes to tibwn.ini will cause these tests to
+        // fail.
+
         switch (x) {
 
         case '\u0F00': return "oM";
-        case '\u0F01': return null;
-        case '\u0F02': return null;
-        case '\u0F03': return null;
+        case '\u0F01': return "\\u0F01";
+        case '\u0F02': return null; // DLC
+        case '\u0F03': return null; // DLC
         case '\u0F04': return "@";
         case '\u0F05': return "#";
         case '\u0F06': return "$";
         case '\u0F07': return "%";
         case '\u0F08': return "!";
-        case '\u0F09': return null;
-        case '\u0F0A': return null;
+        case '\u0F09': return "\\u0F09";
+        case '\u0F0A': return "\\u0F0A";
         case '\u0F0B': return " ";
         case '\u0F0C': return "*"; // DLC NOW: Jskad does not support this!
         case '\u0F0D': return "/";
         case '\u0F0E': return "//"; // DLC FIXME: this is kind of a hack-- the Unicode standard says the spacing for this construct is different than the spacing for "\u0F0D\u0F0D"
         case '\u0F0F': return ";";
 
-        case '\u0F10': return "[";
+        case '\u0F10': return "\\u0F10";
         case '\u0F11': return "|";
-        case '\u0F12': return "]";
-        case '\u0F13': return "`";
+        case '\u0F12': return "\\u0F12";
+        case '\u0F13': return "\\u0F13";
         case '\u0F14': return ":";
-        case '\u0F15': return null;
-        case '\u0F16': return null;
-        case '\u0F17': return null;
-        case '\u0F18': return null;
-        case '\u0F19': return null;
-        case '\u0F1A': return null;
-        case '\u0F1B': return null;
-        case '\u0F1C': return null;
-        case '\u0F1D': return null;
-        case '\u0F1E': return null;
-        case '\u0F1F': return null;
+        case '\u0F15': return "\\u0F15";
+        case '\u0F16': return "\\u0F16";
+        case '\u0F17': return "\\u0F17";
+        case '\u0F18': return "\\u0F18";
+        case '\u0F19': return "\\u0F19";
+        case '\u0F1A': return "\\u0F1A";
+        case '\u0F1B': return "\\u0F1B";
+        case '\u0F1C': return "\\u0F1C";
+        case '\u0F1D': return "\\u0F1D";
+        case '\u0F1E': return "\\u0F1E";
+        case '\u0F1F': return "\\u0F1F";
 
         case '\u0F20': return "0";
         case '\u0F21': return "1";
@@ -106,29 +112,29 @@ public class UnicodeCodepointToThdlWylie {
         case '\u0F27': return "7";
         case '\u0F28': return "8";
         case '\u0F29': return "9";
-        case '\u0F2A': return null;
-        case '\u0F2B': return null;
-        case '\u0F2C': return null;
-        case '\u0F2D': return null;
-        case '\u0F2E': return null;
-        case '\u0F2F': return null;
+        case '\u0F2A': return "\\u0F2A";
+        case '\u0F2B': return "\\u0F2B";
+        case '\u0F2C': return "\\u0F2C";
+        case '\u0F2D': return "\\u0F2D";
+        case '\u0F2E': return "\\u0F2E";
+        case '\u0F2F': return "\\u0F2F";
 
-        case '\u0F30': return null;
-        case '\u0F31': return null;
-        case '\u0F32': return null;
-        case '\u0F33': return null;
+        case '\u0F30': return "\\u0F30";
+        case '\u0F31': return "\\u0F31";
+        case '\u0F32': return "\\u0F32";
+        case '\u0F33': return "\\u0F33";
         case '\u0F34': return "=";
-        case '\u0F35': return null;
-        case '\u0F36': return null;
-        case '\u0F37': return null;
-        case '\u0F38': return null;
-        case '\u0F39': return null;
+        case '\u0F35': return "~X";
+        case '\u0F36': return "\\u0F36";
+        case '\u0F37': return "X";
+        case '\u0F38': return "\\u0F38";
+        case '\u0F39': return "^";
         case '\u0F3A': return "<";
         case '\u0F3B': return ">";
         case '\u0F3C': return "(";
         case '\u0F3D': return ")";
-        case '\u0F3E': return "{";
-        case '\u0F3F': return "}";
+        case '\u0F3E': return "}";
+        case '\u0F3F': return "{";
 
         case '\u0F40': return "k";
         case '\u0F41': return "kh";
@@ -140,7 +146,7 @@ public class UnicodeCodepointToThdlWylie {
         case '\u0F45': return "c";
         case '\u0F46': return "ch";
         case '\u0F47': return "j";
-        case '\u0F48': return null;
+            // skip
         case '\u0F49': return "ny";
         case '\u0F4A': return "T";
         case '\u0F4B': return "Th";
@@ -187,13 +193,13 @@ public class UnicodeCodepointToThdlWylie {
                                + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY // DLC FIXME: is this right?
                                + getThdlWylieForUnicodeCodepoint('\u0FB5'));
         case '\u0F6A': return "r";
-        case '\u0F6B': return null;
-        case '\u0F6C': return null;
-        case '\u0F6D': return null;
-        case '\u0F6E': return null;
-        case '\u0F6F': return null;
+            // skip
+            // skip
+            // skip
+            // skip
+            // skip
 
-        case '\u0F70': return null;
+            // skip
         case '\u0F71': return "A";
         case '\u0F72': return "i";
         case '\u0F73': return "I";
@@ -212,20 +218,20 @@ public class UnicodeCodepointToThdlWylie {
 
         case '\u0F80': return "-i";
         case '\u0F81': return "-I";
-        case '\u0F82': return "~^";// DLC unsupported in Jskad
-        case '\u0F83': return "M^"; // DLC unsupported in Jskad
+        case '\u0F82': return "\\u0F82";
+        case '\u0F83': return "^M"; // DLC unsupported in Jskad
         case '\u0F84': return "?";
         case '\u0F85': return "&";
-        case '\u0F86': return null;
-        case '\u0F87': return null;
-        case '\u0F88': return null;
-        case '\u0F89': return null;
-        case '\u0F8A': return null;
-        case '\u0F8B': return null;
-        case '\u0F8C': return null;
-        case '\u0F8D': return null;
-        case '\u0F8E': return null;
-        case '\u0F8F': return null;
+        case '\u0F86': return "\\u0F86";
+        case '\u0F87': return "\\u0F87";
+        case '\u0F88': return "\\u0F88";
+        case '\u0F89': return "\\u0F89";
+        case '\u0F8A': return "\\u0F8A";
+        case '\u0F8B': return "\\u0F8B";
+            // skip
+            // skip
+            // skip
+            // skip
 
         case '\u0F90': return "k";
         case '\u0F91': return "kh";
@@ -237,7 +243,7 @@ public class UnicodeCodepointToThdlWylie {
         case '\u0F95': return "c";
         case '\u0F96': return "ch";
         case '\u0F97': return "j";
-        case '\u0F98': return null;
+            // skip
         case '\u0F99': return "ny";
         case '\u0F9A': return "T";
         case '\u0F9B': return "Th";
@@ -286,26 +292,26 @@ public class UnicodeCodepointToThdlWylie {
         case '\u0FBA': return "w";
         case '\u0FBB': return "y";
         case '\u0FBC': return "r";
-        case '\u0FBD': return null;
-        case '\u0FBE': return null;
-        case '\u0FBF': return null;
+            // skip
+        case '\u0FBE': return "\\u0FBE";
+        case '\u0FBF': return "\\u0FBF";
 
-        case '\u0FC0': return null;
-        case '\u0FC1': return null;
-        case '\u0FC2': return null;
-        case '\u0FC3': return null;
-        case '\u0FC4': return null;
-        case '\u0FC5': return null;
-        case '\u0FC6': return null;
-        case '\u0FC7': return null;
-        case '\u0FC8': return null;
-        case '\u0FC9': return null;
-        case '\u0FCA': return null;
-        case '\u0FCB': return null;
-        case '\u0FCC': return null;
-        case '\u0FCD': return null;
-        case '\u0FCE': return null;
-        case '\u0FCF': return null; // DLC i added this to the 'EWTS document misspeaks' bug report... null I think...
+        case '\u0FC0': return "\\u0FC0";
+        case '\u0FC1': return "\\u0FC1";
+        case '\u0FC2': return "\\u0FC2";
+        case '\u0FC3': return "\\u0FC3";
+        case '\u0FC4': return "\\u0FC4";
+        case '\u0FC5': return "\\u0FC5";
+        case '\u0FC6': return "\\u0FC6";
+        case '\u0FC7': return "\\u0FC7";
+        case '\u0FC8': return "\\u0FC8";
+        case '\u0FC9': return "\\u0FC9";
+        case '\u0FCA': return "\\u0FCA";
+        case '\u0FCB': return "\\u0FCB";
+        case '\u0FCC': return "\\u0FCC";
+            // skip
+            // skip
+        case '\u0FCF': return "\\u0FCF"; // DLC i added this to the 'EWTS document misspeaks' bug report... null I think...
 
         default: {
             // DLC handle space (EW's "_")
