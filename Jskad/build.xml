@@ -1206,14 +1206,13 @@ public class ThdlVersion {
 ]]></echo>
   </target>
 
+<!-- DLC TODO: jardiffs for the JWS stuff. -->
   <target name="copy-SQD-jars"
           description="Unpacks the JARs/WARs/ZIP files that Savant and QuillDriver use to the chosen bin/ directory">
     <unjar src="${ext}/jdom.jar" dest="${unjardest}"/>
     <unjar src="${ext}/xml-apis.jar" dest="${unjardest}"/>
-    <unjar src="${ext}/xalan.jar" dest="${unjardest}"/>
+    <unjar src="${ext}/xalan.jar" dest="${unjardest}"/> <!-- DLC FIXME: this isn't needed for Savant. -->
     <unjar src="${ext}/xercesImpl.jar" dest="${unjardest}"/>
-    <unjar src="${ext}/jmf.jar" dest="${unjardest}"/>
-    <unzip src="${ext}/drop-ins/QTJava.zip" dest="${unjardest}"/>
     <!-- One or more of the above may have a META-INF directory.  We don't
          want theirs to overwrite our own, so we delete it. -->
     <delete dir="${unjardest}/META-INF"/>
