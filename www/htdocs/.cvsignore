@@ -6,3 +6,5 @@ pubapi
 privateapi
 public-javadocs*.zip
 private-javadocs*.zip
+*~
+.#*
