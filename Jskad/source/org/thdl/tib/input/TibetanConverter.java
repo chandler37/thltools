@@ -23,9 +23,7 @@ import java.io.*;
 import org.thdl.util.*;
 import org.thdl.tib.text.*;
 
-/** DLC FIXME: this is misnamed
- *
- *  TMW_RTF_TO_THDL_WYLIE is a command-line utility for converting to
+/** TibetanConverter is a command-line utility for converting to
  *  and from Tibetan Machine Web (TMW).  It converts TMW to Wylie, to
  *  Unicode, or to Tibetan Machine (TM).  It also converts TM to TMW.
  *  It is a TibetanMachineWeb-in-RichTextFormat to your choice of
@@ -34,7 +32,7 @@ import org.thdl.tib.text.*;
  *  more specifically, as well as converting from TM to TMW.  Invoke
  *  it with no parameters for usage information.
  *  @author David Chandler */
-public class TMW_RTF_TO_THDL_WYLIE {
+public class TibetanConverter {
     static final String rtfErrorMessage
         = "The Rich Text Format (RTF) file selected contains constructs that\nJskad cannot handle.  If you got the RTF file from saving a Word\ndocument as RTF, try saving that same document as RTF in\nWord 2000 instead of Word XP or in Word 97 instead of\nWord 2000.  Older versions of Word produce RTF that Jskad\ncan more easily deal with.  OpenOffice and StarOffice may also\nproduce better-behaved RTF.";
 
@@ -77,10 +75,10 @@ public class TMW_RTF_TO_THDL_WYLIE {
                              = args[0].equals("--to-wylie"))
                          || (findSomeNonTMWMode
                              = args[0].equals("--find-some-non-tmw"))))) {
-                out.println("TMW_RTF_TO_THDL_WYLIE [--find-all-non-tmw | --find-some-non-tmw");
-                out.println("                       | --to-tibetan-machine | --to-tibetan-machine-web");
-                out.println("                       | --to-unicode | --to-wylie] RTF_file");
-                out.println(" | TMW_RTF_TO_THDL_WYLIE [--version | -v | --help | -h]");
+                out.println("TibetanConverter [--find-all-non-tmw | --find-some-non-tmw");
+                out.println("                  | --to-tibetan-machine | --to-tibetan-machine-web");
+                out.println("                  | --to-unicode | --to-wylie] RTF_file");
+                out.println(" | TibetanConverter [--version | -v | --help | -h]");
                 out.println("");
                 out.println("Distributed under the terms of the THDL Open Community License Version 1.0.");
                 out.println("");
@@ -111,7 +109,7 @@ public class TMW_RTF_TO_THDL_WYLIE {
                 return 77;
             }
             if (args[0].equals("--version") || args[0].equals("-v")) {
-                out.println("TMW_RTF_TO_THDL_WYLIE version 0.82");
+                out.println("TibetanConverter version 0.82");
                 out.println("Compiled at "
                             + ThdlVersion.getTimeOfCompilation());
                 return 77;
@@ -125,7 +123,7 @@ public class TMW_RTF_TO_THDL_WYLIE {
                 try {
                     dp.rtfEd.read(in, dp.getDocument(), 0);
                 } catch (Exception e) {
-                    out.println("TMW_RTF_TO_THDL_WYLIE:\n"
+                    out.println("TibetanConverter:\n"
                                        + rtfErrorMessage);
                     return 3;
                 }
@@ -184,7 +182,7 @@ public class TMW_RTF_TO_THDL_WYLIE {
                 return exitCode;
             }
         } catch (ThdlLazyException e) {
-            out.println("TMW_RTF_TO_THDL_WYLIE has a BUG:");
+            out.println("TibetanConverter has a BUG:");
             e.getRealException().printStackTrace(out);
             return 7;
         } catch (IOException e) {

@@ -739,7 +739,7 @@ public class Jskad extends JPanel implements DocumentListener {
                     newRTF.dp.rtfEd.read(in, newRTF.dp.getDocument(), 0);
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(newFrame,
-                                                  TMW_RTF_TO_THDL_WYLIE.rtfErrorMessage);
+                                                  TibetanConverter.rtfErrorMessage);
                     error = true;
                 }
                 in.close();
@@ -767,7 +767,7 @@ public class Jskad extends JPanel implements DocumentListener {
                     dp.rtfEd.read(in, dp.getDocument(), 0);
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(this,
-                                                  TMW_RTF_TO_THDL_WYLIE.rtfErrorMessage);
+                                                  TibetanConverter.rtfErrorMessage);
                     error = true;
                 }
 

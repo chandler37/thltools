@@ -31,7 +31,7 @@ import org.thdl.util.javaxdelta.Delta;
 /**
  * @author David Chandler
  *
- * Tests {@link org.thdl.tib.input.TMW_RTF_TO_THDL_WYLIE} at the unit level.
+ * Tests {@link org.thdl.tib.input.TibetanConverter} at the unit level.
  */
 public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
 	/**
@@ -85,7 +85,7 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
         };
         boolean fileNotFound = false;
         try {
-            int rc = TMW_RTF_TO_THDL_WYLIE.realMain(args, new PrintStream(new FileOutputStream("bin/for-junit/TMW_RTF_TO_THDL_WYLIETest1Result" + extension + ".out")));
+            int rc = TibetanConverter.realMain(args, new PrintStream(new FileOutputStream("bin/for-junit/TMW_RTF_TO_THDL_WYLIETest1Result" + extension + ".out")));
             assertTrue(rc == erc);
         } catch (FileNotFoundException e) {
             fileNotFound = true;
@@ -106,25 +106,25 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
 
 
     /** Tests the --find-some-non-tmw mode of {@link
-     *  org.thdl.tib.input.TMW_RTF_TO_THDL_WYLIE}. */
+     *  org.thdl.tib.input.TibetanConverter}. */
     public void testFindSomeNonTMWMode() {
         helper("--find-some-non-tmw", "FindSome", 1);
     }
 
     /** Tests the --find-all-non-tmw mode of {@link
-     *  org.thdl.tib.input.TMW_RTF_TO_THDL_WYLIE}. */
+     *  org.thdl.tib.input.TibetanConverter}. */
     public void testFindAllNonTMWMode() {
         helper("--find-all-non-tmw", "FindAll", 1);
     }
 
     /** Tests the --to-wylie converter mode of {@link
-     *  org.thdl.tib.input.TMW_RTF_TO_THDL_WYLIE}. */
+     *  org.thdl.tib.input.TibetanConverter}. */
     public void testConverterMode() {
         helper("--to-wylie", "Conversion", 0);
     }
 
     /** Tests the --to-tibetan-machine converter mode of {@link
-     *  org.thdl.tib.input.TMW_RTF_TO_THDL_WYLIE}. */
+     *  org.thdl.tib.input.TibetanConverter}. */
     public void testTMConverterMode() {
         helper("--to-tibetan-machine", "TM", 0);
     }
