@@ -85,6 +85,12 @@ public class LexRepository
 	 */
 	private Connection getConnection()
 	{
+		if ( null == connection || connection.isClosed() )
+		{
+			Context context = new InitialContext();
+			DataSource source = (DataSource) context.lookup( LexConstants.DATASOURCE_NAME );
+			setConnection( source.getConnection() );
+		}
 		return connection;
 	}
 
@@ -97,6 +103,12 @@ public class LexRepository
 	 */
 	public Statement getQueryStatement()
 	{
+		if ( getConnection().isClosed() )
+		{
+			Context context = new InitialContext();
+			DataSource source = (DataSource) context.lookup( LexConstants.DATASOURCE_NAME );
+			setConnection( source.getConnection() );
+		}
 		return queryStatement;
 	}
 
