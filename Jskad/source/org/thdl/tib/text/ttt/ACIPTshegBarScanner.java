@@ -111,15 +111,18 @@ public class ACIPTshegBarScanner {
     /** Helper.  Here because ACIP {MTHAR%\nKHA} should be treated the
         same w.r.t. tsheg insertion regardless of the lex errors and
         lex warnings found. */
-    private static boolean lastNonExceptionalThingWasNonPunctish(ArrayList al) {
+    private static boolean lastNonExceptionalThingWasAdornmentOr(ArrayList al, int kind) {
         int i = al.size() - 1;
         while (i >= 0 && (((TString)al.get(i)).getType() == TString.WARNING
                           || ((TString)al.get(i)).getType() == TString.ERROR))
             --i;
         return (i >= 0 && // FIXME: or maybe i < 0 || ...
-                (((TString)al.get(i)).getType() == TString.TIBETAN_NON_PUNCTUATION
+                (((TString)al.get(i)).getType() == kind
                  || ((TString)al.get(i)).getType() == TString.TSHEG_BAR_ADORNMENT));
     }
+
+    // DLC FIXME "H:\n\n" becomes "H: \n\n", wrongly I think.  See
+    // Tibetan! 5.1 section on formatting Tibetan texts.
 
     /** Returns a list of {@link TString TStrings} corresponding
      *  to s, possibly the empty list (when the empty string is the
@@ -808,7 +811,7 @@ public class ACIPTshegBarScanner {
                 if (('\r' == ch
                      || ('\n' == ch && i > 0 && s.charAt(i - 1) != '\r'))
                     && !al.isEmpty()
-                    && lastNonExceptionalThingWasNonPunctish(al)) {
+                    && lastNonExceptionalThingWasAdornmentOr(al, TString.TIBETAN_NON_PUNCTUATION)) {
                     al.add(new TString(" ", TString.TIBETAN_PUNCTUATION));
                 }
 
@@ -816,7 +819,7 @@ public class ACIPTshegBarScanner {
                 if (('\r' == ch
                      || ('\n' == ch && i > 0 && s.charAt(i - 1) != '\r'))
                     && !al.isEmpty()
-                    && lastNonExceptionalThingWasNonPunctish(al)
+                    && lastNonExceptionalThingWasAdornmentOr(al, TString.TIBETAN_PUNCTUATION)
                     && ((TString)al.get(al.size() - 1)).getText().equals(",")
                     && s.charAt(i-1) == ','
                     && (i + (('\r' == ch) ? 2 : 1) < sl
