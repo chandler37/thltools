@@ -67,7 +67,7 @@ public class ThdlLazyExceptionTest extends TestCase {
 		junit.textui.TestRunner.run(ThdlLazyExceptionTest.class);
 	}
 
-	/*
+	/**
 	 * Test for void ThdlLazyException()
 	 */
 	public void testThdlLazyException() {
@@ -81,7 +81,7 @@ public class ThdlLazyExceptionTest extends TestCase {
 		} /* don't catch anything else. */
 	}
 
-	/*
+	/**
 	 * Test for void ThdlLazyException(String)
 	 */
 	public void testThdlLazyExceptionString() {
@@ -91,7 +91,7 @@ public class ThdlLazyExceptionTest extends TestCase {
 		assertTrue(null == e.getRealException());
 	}
 
-	/*
+	/**
 	 * Test for void ThdlLazyException(String, Throwable)
 	 */
 	public void testThdlLazyExceptionStringThrowable() {
@@ -103,7 +103,7 @@ public class ThdlLazyExceptionTest extends TestCase {
 		assertTrue("bah".equals(e.getRealException().getMessage()));
 	}
 
-	/*
+	/**
 	 * Test for void ThdlLazyException(Throwable)
 	 */
 	public void testThdlLazyExceptionThrowable() {

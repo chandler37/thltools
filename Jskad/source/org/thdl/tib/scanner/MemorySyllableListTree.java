@@ -85,7 +85,7 @@ public class MemorySyllableListTree extends LinkedList implements SyllableListTr
 	{
 		MemorySyllableListTree prefijo;
 		String firstSillable;
-		int pos, marker = word.indexOf(" ");
+		int marker = word.indexOf(" ");
 		
 		if (marker<0)
 			firstSillable = word;

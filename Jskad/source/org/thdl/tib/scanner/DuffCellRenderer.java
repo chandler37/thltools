@@ -22,10 +22,12 @@ import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.border.*;
 import javax.swing.text.*;
+import java.io.Serializable;
+
 import org.thdl.tib.input.DuffPane;
+import org.thdl.util.ThdlDebug;
 import org.thdl.tib.text.*;
 import org.thdl.tib.text.DuffData;
-import java.io.Serializable;
 
 /** Used by DictionaryTable to display a Tibetan word or phrase
 	(in either Roman or Tibetan script) in a single cell.

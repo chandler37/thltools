@@ -91,7 +91,6 @@ public class QuechuaEnglish implements TranscriptView
 			StyleConstants.setFontSize(mas2, 16);
 			StyleConstants.setFontSize(mas2, 16);
 			Position endPos = null;
-			int wherestart;
 			String wylie;
 
 			idBuffer = new StringBuffer();
@@ -117,7 +116,7 @@ public class QuechuaEnglish implements TranscriptView
 				}
 				else
 				{
-					wherestart = endPos.getOffset();
+//					wherestart = endPos.getOffset();
 					doc.insertString(endPos.getOffset(), wylie, mas);
 				}
 
@@ -160,7 +159,7 @@ public class QuechuaEnglish implements TranscriptView
 				{
 					doc.insertString(endPos.getOffset(), "\n", mas0);
 					wylie = current.getAttributeValue("who");
-					wherestart = endPos.getOffset();
+//					wherestart = endPos.getOffset();
 					doc.insertString(endPos.getOffset(), wylie, mas);
 					if (iter.hasNext())
 						current = (org.jdom.Element)iter.next();

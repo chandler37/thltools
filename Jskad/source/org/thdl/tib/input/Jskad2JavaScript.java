@@ -26,6 +26,7 @@ import netscape.javascript.JSObject;
 
 import org.thdl.tib.text.*;
 import org.thdl.util.ThdlActionListener;
+import org.thdl.util.ThdlDebug;
 
 /**
 * A version of Jskad which can be embedded into

@@ -80,13 +80,13 @@ public class TibetanWylieEnglish implements TranscriptView
 			Element current = null;
 
 			DuffData[] dd;
-			DuffData[] space = TibTextUtils.getTibetanMachineWeb("_");
+//			DuffData[] space = TibTextUtils.getTibetanMachineWeb("_");
 			MutableAttributeSet mas = new SimpleAttributeSet();
 			StyleConstants.setForeground(mas, Color.blue);
 			MutableAttributeSet mas2 = new SimpleAttributeSet();
 			StyleConstants.setItalic(mas2, true);
 			Position endPos = null;
-			int wherestart;
+//			int wherestart;
 			String wylie;
 			TibetanDocument doc = new TibetanDocument(new StyleContext());
 
@@ -113,7 +113,7 @@ public class TibetanWylieEnglish implements TranscriptView
 				}
 				else
 				{
-					wherestart = endPos.getOffset();
+//					wherestart = endPos.getOffset();
 					doc.insertString(endPos.getOffset(), wylie, mas);
 				}
 
@@ -156,7 +156,7 @@ public class TibetanWylieEnglish implements TranscriptView
 				{
 					doc.insertString(endPos.getOffset(), "\n", null);
 					wylie = current.getAttributeValue("who");
-					wherestart = endPos.getOffset();
+//					wherestart = endPos.getOffset();
 					doc.insertString(endPos.getOffset(), wylie, mas);
 					if (iter.hasNext())
 						current = (org.jdom.Element)iter.next();

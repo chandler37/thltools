@@ -96,8 +96,8 @@ public class QD extends JDesktopPane {
 	protected DuffPane sharedDP = new DuffPane();
 	protected DuffPane sharedDP2 = new DuffPane();
 
-	protected AbstractDocument findDoc = null;
-	protected AbstractDocument replaceDoc = null;
+	protected StyledDocument findDoc = null;
+	protected StyledDocument replaceDoc = null;
 
 	protected KeyStroke cutKey, copyKey, pasteKey, selectAllKey;
 	protected KeyStroke insert1TimeKey, insert2TimesKey, insertSpeakerKey;
@@ -700,7 +700,7 @@ public void setMedia(URL url) {
 }
 
 public Project() {
-	JPanel p = new JPanel(new GridLayout(2,2));
+	JPanel p = new JPanel(new GridLayout(2,2)); //FIXME: is this used?
 	titleField = new JTextField();
 	int preferredHeight = titleField.getPreferredSize().height;
 	titleField.setPreferredSize(new Dimension(300, preferredHeight));
@@ -775,11 +775,7 @@ public void changeKeyboard(JskadKeyboard kbd) {
 public boolean saveTranscript() {
 	currentWork.stopWork();
 
-//URGENT!! fix saving problem
-
-//change keyboard back to wylie for a second
-		DuffPane dp = (DuffPane)pane;
-
+//URGENT!! fix saving problem (FIXME: grep for URGENT and fix or Fix or FIX)
 
 	org.jdom.Element title = new org.jdom.Element("title");
 	title.setText(project.getTitle().trim());
@@ -840,7 +836,6 @@ public boolean saveTranscript() {
 
 	org.jdom.Element text = new org.jdom.Element("text");
 	TibetanDocument doc = (TibetanDocument)pane.getDocument();
-	ImageIcon[] icons = sd.getSpeakerIcons();
 	int lastPoint = 0;
 	int k;
 	for (k=0; k<doc.getLength(); k++) {
@@ -893,7 +888,7 @@ public boolean saveTranscript() {
 		File htmlOut = new File(f.substring(0, f.lastIndexOf('.')) + ".html");
 		transformer.transform(new JDOMSource(qdDoc), new StreamResult(new FileOutputStream(htmlOut)));	
 
-//URGENT FIX SAVING PROBLEM
+//URGENT FIX SAVING PROBLEM (FIXME)
 
 		return true;
 	} catch (FileNotFoundException fnfe) {
@@ -954,7 +949,7 @@ public boolean loadTranscript(File t) {
 		project = new Project();
 
 //change keyboard back to wylie for a second
-		DuffPane dp = (DuffPane)pane;
+		// DuffPane dp = (DuffPane)pane;
 
 //URGENT FIX LOADING PROBLEM
 
@@ -1022,20 +1017,20 @@ if (keyboard_url != null) {
 		}
 
 		org.jdom.Element text = qd.getChild("text");
-//		DuffPane dp = (DuffPane)pane;
+		DuffPane dp = (DuffPane)pane;
 		TibetanDocument tDoc = (TibetanDocument)dp.getDocument();
 		if (tDoc.getLength() > 0)
 			dp.setText("");
 		java.util.List textContent = text.getContent();
 		ImageIcon[] icons = sd.getSpeakerIcons();
 		Iterator textIter = textContent.iterator();
-		boolean wasLastComponent = true;
+//		boolean wasLastComponent = true;
 		while (textIter.hasNext()) {
 			Object nextContent = textIter.next();
 			if (nextContent instanceof org.jdom.Text) {
 				String wylie = ((org.jdom.Text)nextContent).getText();
 				dp.toTibetanMachineWeb(wylie, tDoc.getLength());
-				wasLastComponent = false;
+//				wasLastComponent = false;
 			}
 			else if (nextContent instanceof org.jdom.Element) {
 				org.jdom.Element e = (org.jdom.Element)nextContent;
@@ -1050,7 +1045,7 @@ if (keyboard_url != null) {
 						}
 */
 					new TimePoint(dp, clockIcon, Integer.valueOf(e.getAttributeValue("t")));
-					wasLastComponent = true;
+//					wasLastComponent = true;
 				}
 				else if (e.getName().equals("who")) {
 /*					if (!wasLastComponent)
@@ -1062,7 +1057,7 @@ if (keyboard_url != null) {
 						}
 */
 					dp.insertComponent(new JLabel("  ", icons[Integer.parseInt(e.getAttributeValue("id"))], SwingConstants.LEFT));
-					wasLastComponent = true;
+//					wasLastComponent = true;
 				}
 			}
 		}
@@ -1534,7 +1529,7 @@ public JMenuBar getTextMenuBar() {
 	return bar;
 }
 
-public int findNextText(int startPos, TibetanDocument sourceDoc, TibetanDocument findDoc) {
+public int findNextText(int startPos, StyledDocument sourceDoc, StyledDocument findDoc) {
 	if (startPos<0 || startPos>sourceDoc.getLength()-1)
 		return -1;
 

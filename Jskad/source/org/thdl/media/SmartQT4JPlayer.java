@@ -208,7 +208,7 @@ public class SmartQT4JPlayer extends SmartMoviePanel
 			//mechanism of internally of the TimeCallback.
 			//Its recomended to use this Timer class to do callbacks , which would take care of the time base time changes and
 			//recscheduling of the tickle method .
-			Timer timer = new Timer(1, 2, new Tickler(), getMovie() );
+			Timer timer = new Timer(1, 2, new Tickler(), getMovie() ); //FIXME: is this used?
 //			timer.setActive(true);		
 
 		}

@@ -83,7 +83,7 @@ public class Wylie implements TranscriptView
 			MutableAttributeSet mas = new SimpleAttributeSet();
 			StyleConstants.setForeground(mas, Color.blue);
 			Position endPos = null;
-			AbstractDocument doc = new TibetanDocument(new StyleContext());
+			StyledDocument doc = new TibetanDocument(new StyleContext());
 
 			idBuffer = new StringBuffer();
 			startBuffer = new StringBuffer();

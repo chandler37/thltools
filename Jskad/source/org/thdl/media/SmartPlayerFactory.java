@@ -21,6 +21,8 @@ package org.thdl.media;
 import java.lang.reflect.*;
 import java.util.*;
 
+import org.thdl.util.ThdlDebug;
+
 public class SmartPlayerFactory {
     /** You cannot instantiate this class. */
     private SmartPlayerFactory() { }
@@ -33,7 +35,7 @@ public class SmartPlayerFactory {
 		for (int i=0; i<possiblePlayers.length; i++) {
 			try {
 				Class mediaClass = Class.forName(possiblePlayers[i]);
-				playerClasses.add(mediaClass);
+                //FIXME:				playerClasses.add(mediaClass);
 				SmartMoviePanel smp = (SmartMoviePanel)mediaClass.newInstance();
 				moviePlayers.add(smp);
 			} catch (ClassNotFoundException cnfe) {

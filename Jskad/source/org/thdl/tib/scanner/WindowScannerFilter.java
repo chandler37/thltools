@@ -258,7 +258,6 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		Object clicked = e.getSource();
 		StringSelection ss;
 		String s = null;
-		int start, end;
 		
 		if (clicked == mnuAbout)
 		{

@@ -1605,7 +1605,6 @@ public void paste(int offset) {
 		StringBuffer sb;
 		AttributeSet attr;
 		String fontName;
-		int fontNum;
 		Position endPos;
 		int i;
 
@@ -1618,7 +1617,7 @@ public void paste(int offset) {
 				attr = doc.getCharacterElement(i).getAttributes();
 				fontName = StyleConstants.getFontFamily(attr);
 
-				if ((0 != (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName))) || i==endPos.getOffset()) {
+				if ((0 != TibetanMachineWeb.getTMWFontNumber(fontName)) || i==endPos.getOffset()) {
 					if (i != start) {
 						try {
 							DuffData[] duffdata = TibTextUtils.getTibetanMachineWeb(sb.toString());
@@ -1653,7 +1652,7 @@ public void paste(int offset) {
 * document consists of both Tibetan and non-Tibetan fonts, however,
 * the conversion stops at the first non-Tibetan font.
 * @return the string of Wylie corresponding to the associated document
-* @see org.thdl.tib.text.TibetanDocument.getWylie() */
+* @see org.thdl.tib.text.TibetanDocument#getWylie() */
     public String getWylie() {
         return doc.getWylie();
     }

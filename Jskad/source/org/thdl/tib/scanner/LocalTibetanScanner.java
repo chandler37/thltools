@@ -201,7 +201,6 @@ class LocalTibetanScanner implements TibetanScanner
 	{
 		boolean isDeclined =false;
 		int len = sil.length();
-		String dev;
 
 		if (len<3) return null;
 
@@ -223,7 +222,6 @@ class LocalTibetanScanner implements TibetanScanner
 	
 	public void scanBody(String in)
 	{
-		Word word;
 		boolean hayMasLineas=true;
 
 		if (in.equals("")) finishUp();
@@ -263,7 +261,7 @@ class LocalTibetanScanner implements TibetanScanner
 	
 	public void scanLine(String linea)
 	{
-		int init = 0, fin, i;
+		int init = 0, fin;
 		char ch;
 		String sil;
 		boolean doNotFinishUp;
@@ -349,7 +347,6 @@ outAHere:
 	{
 		int i=wordList.size();
 		Token token[] = new Token[i];
-		Object obj;
 		ListIterator li = wordList.listIterator();
 		while(li.hasNext())
 			token[--i] = (Token)li.next();
@@ -366,7 +363,6 @@ outAHere:
 		{
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(archivo + ".dic")));
 			LinkedList ll1 = new LinkedList(), ll2 = new LinkedList();
-			int i;
 			String s;
 			while ((s=br.readLine())!=null)
 			{

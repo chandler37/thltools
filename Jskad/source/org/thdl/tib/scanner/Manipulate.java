@@ -272,7 +272,7 @@ public class Manipulate
 	{
 	    sil = sil.toLowerCase();
 	    
-	    int i=0, len=sil.length();
+	    int i=0;
 	    char ch, ch2;
 	    
 	    while (!isVowel(sil.charAt(i))) i++;

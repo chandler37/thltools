@@ -99,7 +99,8 @@ public class Word extends Token
 	
 	public String getLink(boolean tibetan)
 	{
-	    String localWord, result;
+	    String localWord;
+	    // String result;
 		if (wordSinDec==null) localWord = super.token;
 		else localWord = wordSinDec;
 		if (tibetan) localWord = TibetanHTML.getHTML(localWord + " ");

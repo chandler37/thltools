@@ -295,7 +295,7 @@ public class TibetanMachineWeb {
 			System.out.println("reading "+fileName);
 			String line;
 			boolean hashOn = false;
-			boolean isSanskrit = false;
+			boolean isSanskrit = false; //FIXME: this is never read.
 			boolean ignore = false;
 
 			while ((line = in.readLine()) != null) {

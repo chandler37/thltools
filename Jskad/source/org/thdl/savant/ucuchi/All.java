@@ -92,7 +92,6 @@ public class All implements TranscriptView
 			StyleConstants.setFontFamily(mas3, "Monospaced");
 			StyleConstants.setFontSize(mas3, 14);
 			Position endPos = null;
-			int wherestart;
 			String wylie;
 
 			idBuffer = new StringBuffer();
@@ -118,7 +117,7 @@ public class All implements TranscriptView
 				}
 				else
 				{
-					wherestart = endPos.getOffset();
+//					wherestart = endPos.getOffset();
 					doc.insertString(endPos.getOffset(), wylie, mas);
 				}
 
@@ -164,7 +163,7 @@ public class All implements TranscriptView
 				{
 					doc.insertString(endPos.getOffset(), "\n", null);
 					wylie = current.getAttributeValue("who");
-					wherestart = endPos.getOffset();
+//					wherestart = endPos.getOffset();
 					doc.insertString(endPos.getOffset(), wylie, mas);
 					if (iter.hasNext())
 						current = (org.jdom.Element)iter.next();

@@ -125,7 +125,6 @@ public class RemoteTibetanScanner implements TibetanScanner
 
 			BufferedReader br = new BufferedReader(new InputStreamReader(uC.getInputStream()));
 			LinkedList ll1 = new LinkedList(), ll2 = new LinkedList();
-			int i;
 			String s;
 			while ((s=br.readLine())!=null)
 			{

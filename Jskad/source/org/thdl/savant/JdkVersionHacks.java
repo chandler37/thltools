@@ -146,8 +146,6 @@ public final class JdkVersionHacks {
 		// f.getToolkit().isFrameStateSupported(Frame.MAXIMIZED_BOTH)
 		// if possible.
 		
-		boolean success = false;
-
 		Method isFSSMethod = null;
 		try {
 			isFSSMethod

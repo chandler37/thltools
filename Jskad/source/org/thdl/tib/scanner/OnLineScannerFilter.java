@@ -46,7 +46,7 @@ public class OnLineScannerFilter extends HttpServlet {
 		String parrafo = request.getParameter("parrafo"), checkboxName, script;
 		DictionarySource ds=null;
 		boolean checkedDicts[], allUnchecked, wantsTibetan;
-		int percent=100;
+		// int percent=100;
 		
         out.println("<html>");
         out.println("<head>");
@@ -176,7 +176,7 @@ public class OnLineScannerFilter extends HttpServlet {
 	
 	synchronized public void desglosar(String in, PrintWriter pw, boolean tibetan)
 	{
-		boolean hayMasLineas=true;
+		//boolean hayMasLineas=true;
 		//int init = 0, fin;
 		//String linea;
 		Object words[];

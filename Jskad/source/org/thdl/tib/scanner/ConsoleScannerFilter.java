@@ -102,7 +102,7 @@ class ConsoleScannerFilter
 
 	public void run() throws Exception
 	{
-		String inStr, outStr;
+		String inStr;
 
 		while ((inStr=in.readLine())!=null)
 		{

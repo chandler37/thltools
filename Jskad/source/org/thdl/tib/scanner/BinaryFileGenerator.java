@@ -101,7 +101,9 @@ public class BinaryFileGenerator extends LinkedList
 	{
 	    final short newDefiniendum=1, halfDefiniendum=2, definition=3;
 	    short status=newDefiniendum;
-	    int marker, len, marker2, n=0, total=0, currentPage=0, currentLine=1;
+	    int marker, len, marker2;
+//	    int n=0;
+	    int currentPage=0, currentLine=1;
 	    char ch;	    
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(archivo)));
 		String entrada="", s1="", s2="", currentLetter="", temp="", lastWeirdDefiniendum="";
@@ -383,7 +385,7 @@ public class BinaryFileGenerator extends LinkedList
 		Link link, newLink;
 		BinaryFileGenerator ultimo;
 		String firstSillable;
-		int pos, marker = word.indexOf(" "), comp;
+		int marker = word.indexOf(" "), comp;
 				
 		if (marker<0)
 			firstSillable = word;

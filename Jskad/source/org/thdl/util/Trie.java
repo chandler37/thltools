@@ -88,115 +88,161 @@ package org.thdl.util;
 public class Trie
 {
 
-  /** Size of the m_nextChar array.  */
-  public static final int ALPHA_SIZE = 128;
+    /** Size of the m_nextChar array.  */
+    public static final int ALPHA_SIZE = 128;
 
-  /** The root node of the tree.    */
-  Node m_Root;
-
-  /**
-   * Constructs a trie.
-   */
-  public Trie()
-  {
-    m_Root = new Node();
-  }
-
-  /**
-   * Puts an object into the trie for lookup.
-   *
-   * @param key must be a 7-bit ASCII string
-   * @param value any java object.
-   *
-   * @return The old object that matched key, or null.
-   */
-  public Object put(String key, Object value)
-  {
-
-    final int len = key.length();
-    Node node = m_Root;
-
-    for (int i = 0; i < len; i++)
-    {
-      Node nextNode = node.m_nextChar[Character.toUpperCase(key.charAt(i))];
-
-      if (nextNode != null)
-      {
-        node = nextNode;
-      }
-      else
-      {
-        for (; i < len; i++)
-        {
-          Node newNode = new Node();
-
-          node.m_nextChar[Character.toUpperCase(key.charAt(i))] = newNode;
-          node = newNode;
-        }
-
-        break;
-      }
-    }
-
-    Object ret = node.m_Value;
-
-    node.m_Value = value;
-
-    return ret;
-  }
-
-  /**
-   * Gets an object that matches the key.
-   *
-   * @param key must be a 7-bit ASCII string
-   *
-   * @return The object that matches the key, or null.
-   */
-  public Object get(String key)
-  {
-
-    final int len = key.length();
-    Node node = m_Root;
-
-    for (int i = 0; i < len; i++)
-    {
-      try
-      {
-        node = node.m_nextChar[Character.toUpperCase(key.charAt(i))];
-      }
-      catch (ArrayIndexOutOfBoundsException e)
-      {
-
-        // the key is not 7-bit ASCII so we won't find it here
-        node = null;
-      }
-
-      if (node == null)
-        return null;
-    }
-
-    return node.m_Value;
-  }
-
-  /**
-   * The node representation for the trie.
-   */
-  class Node
-  {
+    /** The root node of the tree.    */
+    Node m_Root;
 
     /**
-     * Constructor, creates a Node[ALPHA_SIZE].
+     * Constructs a trie.
      */
-    Node()
+    public Trie()
     {
-      m_nextChar = new Node[ALPHA_SIZE];
-      m_Value = null;
+        m_Root = new Node();
     }
 
-    /** The next nodes.   */
-    Node m_nextChar[];
+    /**
+     * Puts an object into the trie for lookup.
+     *
+     * @param key must be a 7-bit ASCII string
+     * @param value any java object, but not null.
+     *
+     * @return The old object that matched key, or null.
+     * @throws NullPointerException if value is null or if key is null
+     */
+    public Object put(String key, Object value)
+    {
+        if (null == value) throw new NullPointerException();
 
-    /** The value.   */
-    Object m_Value;
-  }
+        final int len = key.length();
+        Node node = m_Root;
+
+        for (int i = 0; i < len; i++)
+            {
+                Node nextNode = node.m_nextChar[Character.toUpperCase(key.charAt(i))];
+
+                if (nextNode != null)
+                    {
+                        node = nextNode;
+                    }
+                else
+                    {
+                        for (; i < len; i++)
+                            {
+                                Node newNode = new Node();
+
+                                node.m_nextChar[Character.toUpperCase(key.charAt(i))] = newNode;
+                                node.m_isLeaf = false;
+                                node = newNode;
+                            }
+
+                        break;
+                    }
+            }
+
+        Object ret = node.m_Value;
+
+        node.m_Value = value;
+
+        return ret;
+    }
+
+    /**
+     * Gets an object that matches the key.
+     *
+     * @param key must be a 7-bit ASCII string
+     *
+     * @return The object that matches the key, or null.
+     */
+    public Object get(String key)
+    {
+
+        final int len = key.length();
+        Node node = m_Root;
+
+        for (int i = 0; i < len; i++)
+            {
+                try
+                    {
+                        node = node.m_nextChar[Character.toUpperCase(key.charAt(i))];
+                    }
+                catch (ArrayIndexOutOfBoundsException e)
+                    {
+
+                        // the key is not 7-bit ASCII so we won't find it here
+                        node = null;
+                    }
+
+                if (node == null)
+                    return null;
+            }
+
+        return node.m_Value;
+    }
+
+    /**
+     * Returns true if and only if key is a prefix of another, distinct
+     * member of the trie.  Note that key may be in the trie as well as
+     * a prefix of something in the trie, but not all keys in the trie
+     * are prefixes of other keys.  (In the trie you might naturally
+     * construct for the extended Wylie keyboard, "t" is a prefix, as is
+     * "ts", but "tsh", though a member of the trie, is not a prefix
+     * because there is no string x such that x begins with "tsh" but is
+     * not equal to "tsh" that is in the trie.)
+     *
+     * @param key must be a 7-bit ASCII string
+     *
+     * @return The object that matches the key, or null.  */
+    public boolean hasPrefix(String key)
+    {
+
+        final int len = key.length();
+        Node node = m_Root;
+
+        for (int i = 0; i < len; i++)
+            {
+                try
+                    {
+                        node = node.m_nextChar[Character.toUpperCase(key.charAt(i))];
+                    }
+                catch (ArrayIndexOutOfBoundsException e)
+                    {
+
+                        // the key is not 7-bit ASCII so we won't find it here
+                        node = null;
+                    }
+
+                if (node == null)
+                    return false;
+            }
+
+        return !node.m_isLeaf;
+    }
+
+    /**
+     * The node representation for the trie.
+     */
+    class Node
+    {
+
+        /**
+         * Constructor, creates a Node[ALPHA_SIZE].
+         */
+        Node()
+        {
+            m_nextChar = new Node[ALPHA_SIZE];
+            m_Value = null;
+            m_isLeaf = true;
+        }
+
+        /** The next nodes.   */
+        Node m_nextChar[];
+
+        /** The value.   */
+        Object m_Value;
+
+        /** True if and only if this node has no children. */
+        boolean m_isLeaf;
+    }
 }

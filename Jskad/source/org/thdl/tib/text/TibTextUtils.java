@@ -929,9 +929,6 @@ public class TibTextUtils {
 		if (dcs.length == 0)
 			return null;
 
-		AttributeSet attr;
-		String fontName;
-		int fontNum;
 		char ch;
 		String wylie;
 
@@ -944,7 +941,7 @@ public class TibTextUtils {
 			for (int i=start; i<dcs.length; i++) {
 				ch = dcs[i].character;
 				int k = dcs[i].charNum;
-				fontNum = dcs[i].fontNum;
+				// int fontNum = dcs[i].fontNum;
 
 				if (k < 32) {
 					if (wylieBuffer.length() > 0 || !glyphList.isEmpty()) {

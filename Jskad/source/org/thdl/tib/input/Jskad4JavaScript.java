@@ -68,7 +68,6 @@ public class Jskad4JavaScript extends JApplet {
 
 	public void setWylie(String wylie) {
 		try {
-			DuffData[] dd = TibTextUtils.getTibetanMachineWeb(wylie);
 			TibetanDocument t_doc = (TibetanDocument)jskad.dp.getDocument();
 			if (t_doc.getLength() > 0)
 				jskad.dp.newDocument(); // DLC FIXME: is it intended that t_doc is the new document?  Because it is the old document at present.

@@ -172,7 +172,6 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
 		Object clicked = e.getSource();
 		StringSelection ss;
 		String s = null;
-		int start, end;
 		
 		if (clicked==aboutItem)
 		{

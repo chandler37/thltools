@@ -79,15 +79,14 @@ public class WylieEnglish implements TranscriptView
 			Iterator iter = elements.iterator();
 			Element current = null;
 
-			DuffData[] dd;
 			MutableAttributeSet mas = new SimpleAttributeSet();
 			StyleConstants.setForeground(mas, Color.blue);
 			MutableAttributeSet mas2 = new SimpleAttributeSet();
 			StyleConstants.setItalic(mas2, true);
 			Position endPos = null;
-			int wherestart;
+//			int wherestart;
 			String wylie;
-			AbstractDocument doc = new TibetanDocument(new StyleContext());
+			StyledDocument doc = new TibetanDocument(new StyleContext());
 
 			idBuffer = new StringBuffer();
 			startBuffer = new StringBuffer();
@@ -112,7 +111,7 @@ public class WylieEnglish implements TranscriptView
 				}
 				else
 				{
-					wherestart = endPos.getOffset();
+//					wherestart = endPos.getOffset();
 					doc.insertString(endPos.getOffset(), wylie, mas);
 				}
 
@@ -153,7 +152,7 @@ public class WylieEnglish implements TranscriptView
 				{
 					doc.insertString(endPos.getOffset(), "\n", null);
 					wylie = current.getAttributeValue("who");
-					wherestart = endPos.getOffset();
+//					wherestart = endPos.getOffset();
 					doc.insertString(endPos.getOffset(), wylie, mas);
 					if (iter.hasNext())
 						current = (org.jdom.Element)iter.next();

@@ -262,7 +262,7 @@ public class Savant extends JDesktopPane
 									fullScreen.getContentPane().setBackground(Color.black);
 									Dimension screenSize = fullScreen.getToolkit().getScreenSize();
 									Dimension videoSize = sp.getVisualComponent().getPreferredSize();
-									Dimension controlSize = sp.getControlComponent().getPreferredSize();
+//									Dimension controlSize = sp.getControlComponent().getPreferredSize();
 									int videoWidth = videoSize.width;
 									int videoHeight = videoSize.height;
 									float vWidth = new Integer(videoWidth).floatValue();
