@@ -285,7 +285,8 @@ class TParseTree {
             TStackListList noPrefixTestsUniqueParse = getUniqueParse(true);
             if (noPrefixTestsUniqueParse.size() == 1
                 && !noPrefixTestsUniqueParse.get(0).equals(bestParse)) {
-                return "Warning: We're going with " + bestParse + ", but only because our knowledge of prefix rules says that " + noPrefixTestsUniqueParse.get(0) + " is not a legal Tibetan tsheg bar (\"syllable\")";
+                if (warningLevel != "Some")
+                    return "Warning: We're going with " + bestParse + ", but only because our knowledge of prefix rules says that " + noPrefixTestsUniqueParse.get(0) + " is not a legal Tibetan tsheg bar (\"syllable\")";
             }
         }
 
