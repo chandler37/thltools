@@ -407,7 +407,8 @@ public class ThdlOptions {
             userProperties.store(new FileOutputStream(getUserPreferencesPath()),
                                  " This file was automatically created by a THDL tool.\n"
                                  + "# You may edit this file, but it will be recreated,\n"
-                                 + "# so your comments will be lost.\n"
+                                 + "# so your comments will be lost.  Moreover, you must\n"
+                                 + "# edit this file only after exiting all THDL tools.\n"
                                  + "# \n"
                                  + "# To understand this file's contents, please see\n"
                                  + "# options.txt in the JAR file.\n"
