@@ -75,6 +75,7 @@ public class LexActionServlet extends HttpServlet
 		Global global = new Global( recentItems, refreshDelay );
 		config.getServletContext().setAttribute( LexConstants.GLOBAL_CONTEXT_ATTR, global );
 		LexLogger.debugComponent( global );
+		System.setProperty( "java.awt.headless", "true" );
 	}
 
 
