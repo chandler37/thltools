@@ -65,6 +65,10 @@ public interface THDLWylieConstants {
 */
 	public static final String SA = "s";
 /**
+* the Wylie for the consonant ra:
+*/
+	public static final String RA = "r";
+/**
 * the Wylie for the 16th of the 30 consonants, ma:
 */
 	public static final String MA = "m";

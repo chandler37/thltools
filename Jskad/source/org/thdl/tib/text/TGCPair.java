@@ -73,13 +73,23 @@ public class TGCPair {
         vowelWylie = null;
     }
     public String getWylie() {
-        return getWylie(false);
+        return getWylie(null);
     }
-    public String getWylie(boolean appendaged) {
+    /** Returns the EWTS for this pair, given that, if and only if
+        this pair is part of an appendaged tsheg bar like ma'ongs or
+        pa'am or spre'ur, previousTranslitIfAppendaged is non-null.
+        If it is non-null, then it must be equal to the EWTS
+        transliteration of the previous pair.
+        @see #getACIP(String)
+    */
+    public String getWylie(String previousTranslitIfAppendaged) {
         StringBuffer b = new StringBuffer();
         if (consonantWylie != null) {
-            if (appendaged && !"'".equals(consonantWylie))
-                b.append("a"); // pa'am...  we want 'am, not 'm; 'ang, not 'ng.
+            // Think of pa'am...  we want 'am, not 'm; 'ang, not 'ng.  But we want 'ur, not 'uar, 'is, not 'ias.
+            if (null != previousTranslitIfAppendaged
+                && "'".equals(previousTranslitIfAppendaged)) {
+                b.append("a");
+            }
 
             // we may have {p-y}, but the user wants to see {py}.
             for (int i = 0; i < consonantWylie.length(); i++) {
@@ -93,9 +103,10 @@ public class TGCPair {
         return b.toString();
     }
     public String getACIP() {
-        return getACIP(false);
+        return getACIP(null);
     }
-    public String getACIP(boolean appendaged) {
+    /** Like {@link #getWylie(String)}. */
+    public String getACIP(String previousTranslitIfAppendaged) {
         // DLC FIXME: has the EWTS change affected Manipulate.acipToWylie?
         StringBuffer b = new StringBuffer();
         if (consonantWylie != null) {
@@ -104,8 +115,12 @@ public class TGCPair {
             if (null == consonantACIP) {
                 return TibetanMachineWeb.getTMWToACIPErrorString("glyph with THDL Extended Wylie " + consonantWylie);
             } else {
-                if (appendaged && !"'".equals(consonantWylie))
-                    b.append("A"); // PA'AM
+                // Think of pa'am...  we want 'am, not 'm; 'ang, not 'ng.  But we want 'ur, not 'uar, 'is, not 'ias.
+                if (null != previousTranslitIfAppendaged
+                    && "'".equals(previousTranslitIfAppendaged)) {
+                    b.append("A");
+                }
+
                 // we may have {P-Y}, but the user wants to see {PY}.
                 for (int i = 0; i < consonantACIP.length(); i++) {
                     char ch = consonantACIP.charAt(i);

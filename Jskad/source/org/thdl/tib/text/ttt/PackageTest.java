@@ -80,6 +80,13 @@ public class PackageTest extends TestCase {
     }
 
     private static final boolean sdebug = false;
+    /** Testing helper.
+        @param pairListToUse is 0 for the usual lex, 1 for the "Treat
+        ' as a consonant, not a vowel" parse, 2 to use 1 but also
+        verify that lex 1 is preferred by the converter over lex 0, 3
+        to use 1 but also verify that lex 0 is preferred by the
+        converter over lex 1, -1 to use 0 and ensure that there is no
+        lex 1, only a lex 0. */
     private static void tstHelper2(String acip,
                                    String expectedPairs,
                                    boolean debug,
@@ -88,9 +95,11 @@ public class PackageTest extends TestCase {
                                    String expectedBestParse,
                                    int pairListToUse) {
         TPairList[] la = TPairListFactory.breakACIPIntoChunks(acip);
-        TPairList l = la[pairListToUse];
+        TPairList l = la[(pairListToUse == -1) ? 0 : ((pairListToUse >= 1) ? 1 : pairListToUse)];
         if (sdebug || debug)
             System.out.println("ACIP=" + acip + " and l'=" + l);
+        if (pairListToUse == -1)
+            assertTrue(la[1] == null);
         if (expectedPairs != null) {
             if (!l.equals(expectedPairs)) {
                 System.out.println("acip=" + acip + "; chunks=" + l + "; expected chunks=" + expectedPairs);
@@ -219,6 +228,19 @@ public class PackageTest extends TestCase {
             System.out.println("acip=" + acip
                                + "; recovery is " + l.recoverACIP());
             assertTrue(false);
+        }
+        if (pairListToUse >= 2) {
+            TParseTree pt0 = la[0].getParseTree();
+            TParseTree pt1 = la[1].getParseTree();
+            TStackList sl0 = pt0.getBestParse();
+            TStackList sl1 = pt1.getBestParse();
+            BoolTriple sl0bt = sl0.isLegalTshegBar(false);
+            BoolTriple sl1bt = sl1.isLegalTshegBar(false);
+            if (pairListToUse == 2) {
+                assertTrue(sl0bt.compareTo(sl1bt) < 0);
+            } else {
+                assertTrue(sl0bt.compareTo(sl1bt) >= 0);
+            }
         }
     }
 
@@ -380,37 +402,48 @@ tstHelper("KA'", "[(K . A), (' . )]",
                                  "{G}{DA}{M}{S}{'O}",
                   },
                   new String[] { "{G}{DA}{M}{S}{'O}" },
-                  "{G}{DA}{M}{S}{'O}", 1);
+                  "{G}{DA}{M}{S}{'O}", 2);
 
-        tstHelper("SNYAMS'AM'ANG", "{S}{NYA}{M}{S-}{'A}{M-}{'A}{NG}", null, null, "{S+NYA}{M}{S}{'A}{M}{'A}{NG}", 1);
+        tstHelper("SNYAMS'AM'ANG", "{S}{NYA}{M}{S-}{'A}{M-}{'A}{NG}", null, null, "{S+NYA}{M}{S}{'A}{M}{'A}{NG}", 2);
         tstHelper("SNYAMS'AM'ANG", "{S}{NYA}{M}{S'A}{M'A}{NG}", null, null, "{S+NYA}{M+S'A}{M'A}{NG}", 0);
-        tstHelper("SNYAM'AM", null, null, null, "{S+NYA}{M}{'A}{M}", 1);
-        tstHelper("SNYAMS'AM", null, null, null, "{S+NYA}{M}{S}{'A}{M}", 1);
+        tstHelper("SNYAM'AM", null, null, null, "{S+NYA}{M}{'A}{M}", 2);
+        tstHelper("SNYAMS'AM", null, null, null, "{S+NYA}{M}{S}{'A}{M}", 2);
         tstHelper("SNYAM-'A-M", null, null, null, "!null!", 1);
-        tstHelper("SNYAM-'A-M", null, null, null, "{S+NYA}{M}{'A}{M}", 0);
-        tstHelper("SNY-M-'-M", null, null, null, "{S+NY}{M}{'}{M}", 0);
+        tstHelper("SNYAM-'A-M", null, null, null, "{S+NYA}{M}{'A}{M}", -1);
+        tstHelper("SNY-M-'-M", null, null, null, "{S+NY}{M}{'}{M}", -1);
         tstHelper("SNY-M-'-M", null, null, null, "!null!", 1);
-        tstHelper("SNYAMS'AM'ANG'U'I'O", null, null, null, "{S+NYA}{M}{S}{'A}{M}{'A}{NG}{'U}{'I}{'O}", 1);
-        tstHelper("SNYAMS'I'AM'ANG'U'I'O", null, null, null, "{S+NYA}{M}{S}{'I}{'A}{M}{'A}{NG}{'U}{'I}{'O}", 1);
-        tstHelper("SNYAM+S+'O", null, null, null, "{S+NYA}{M+S+'O}", 0);
-        tstHelper("SNYAMS+'O", null, null, null, "{S+NYA}{M+S+'O}", 0);
-        tstHelper("SNYAMS+'O", null, null, null, "{S+NYA}{M+S+'O}", 0);
-        tstHelper("SAM'UR'US", null, null, null, "{SA}{M}{'U}{R}{'U}{S}", 1);
-        tstHelper("SAM'US", null, null, null, "{SA}{M}{'U}{S}", 1);
-        tstHelper("SAM'AM", null, null, null, "{SA}{M}{'A}{M}", 1);
-        tstHelper("SAMS'ANG", null, null, null, "{SA}{M}{S}{'A}{NG}", 1);
-        tstHelper("SNYANGD'O", null, null, null, "{S+NYA}{NG}{D}{'O}", 1);
-        tstHelper("T-SNYANGD'O", null, null, null, "{T}{S+NYA}{NG+D}{'O}", 1); // T is no prefix, so NG+D, not NG-D
+        tstHelper("SNYAMS'AM'ANG'U'I'O", null, null, null, "{S+NYA}{M}{S}{'A}{M}{'A}{NG}{'U}{'I}{'O}", 2);
+        tstHelper("SNYAMS'I'AM'ANG'U'I'O", null, null, null, "{S+NYA}{M}{S}{'I}{'A}{M}{'A}{NG}{'U}{'I}{'O}", 2);
+        tstHelper("SNYAM+S+'O", null, null, null, "{S+NYA}{M+S+'O}", -1);
+        tstHelper("SNYAMS+'O", null, null, null, "{S+NYA}{M+S+'O}", -1);
+        tstHelper("SNYAMS+'O", null, null, null, "{S+NYA}{M+S+'O}", -1);
+
+        tstHelper("SAM'US", null, null, null, "{SA}{M}{'U}{S}", 2);
+        tstHelper("SAM'UR'US", null, null, null, "{SA}{M}{'U}{R}{'U}{S}", 2);
+        tstHelper("LA'OS", null, null, null, "{LA}{'O}{S}", -1);
+        tstHelper("LA'OS", null, null, null, "!null!", 1);
+        tstHelper("NA'OS", null, null, null, "{NA}{'O}{S}", -1);
+        tstHelper("NA'IS", null, null, null, "{NA}{'I}{S}", -1);
+        tstHelper("LE'UNG", null, null, null, "{LE}{'U}{NG}", -1);
+        tstHelper("LE'U'ANG", null, null, null, "{LE}{'U}{'A}{NG}", -1);
+        tstHelper("LE'UM", null, null, null, "{LE}{'U}{M}", -1);
+        tstHelper("LE'U'IS", null, null, null, "{LE}{'U}{'I}{S}", -1);
+
+        tstHelper("MA'ONGS", null, null, null, "{MA}{'O}{NG}{S}", -1);
+
+        tstHelper("SAM'AM", null, null, null, "{SA}{M}{'A}{M}", 2);
+        tstHelper("SAMS'ANG", null, null, null, "{SA}{M}{S}{'A}{NG}", 2);
+        tstHelper("SNYANGD'O", null, null, null, "{S+NYA}{NG}{D}{'O}", 2);
+        tstHelper("T-SNYANGD'O", null, null, null, "{T}{S+NYA}{NG+D}{'O}", 3); // T is no prefix, so NG+D, not NG-D
         tstHelper("T-SNYANGD'O", null, null, null, "{T}{S+NYA}{NG+D'O}", 0);
 
-        tstHelper("SNYAM+S+'O", null, null, null, "{S+NYA}{M+S+'O}", 0);
-        tstHelper("SNYAMS+'O", null, null, null, "{S+NYA}{M+S+'O}", 0);
+        tstHelper("SNYAM+S+'O", null, null, null, "{S+NYA}{M+S+'O}", -1);
+        tstHelper("SNYAMS+'O", null, null, null, "{S+NYA}{M+S+'O}", -1);
 
-        tstHelper("GDAMS", null, null, null, "{G}{DA}{M}{S}", 0);
-        tstHelper("GDAM-S'O", null, null, null, "{G}{DA}{M}{S}{'O}", 1);
+        tstHelper("GDAMS", null, null, null, "{G}{DA}{M}{S}", -1);
+        tstHelper("GDAM-S'O", null, null, null, "{G}{DA}{M}{S}{'O}", 2);
         tstHelper("GDAM-C'O", null, null, null, "{G+DA}{M}{C'O}", 0);
-        tstHelper("GDAM-C'O", null, null, null, "{G+DA}{M}{C}{'O}", 1);
-        tstHelper("GDAMS", null, null, null, "{G}{DA}{M}{S}", 0);
+        tstHelper("GDAM-C'O", null, null, null, "{G+DA}{M}{C}{'O}", 3);
         // DLC NOW: FIXME: tstHelper("DKHY", null, null, null, "{D}{KH+YA}", 0);
     // DLC DKHY'O should give parse tree {{D-KH+Y'O}, {D+KH+Y'O}}
     // DLC DKHYA'O should give parse tree {{D-KH+YA'O}, {D+KH+YA'O}}

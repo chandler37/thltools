@@ -910,10 +910,17 @@ public static boolean isWylieSanskritConsonantStack(String s) {
     or 'ang.  The word le'u (chapter) contains such an appendage,
     e.g. */
 public static boolean isWylieAchungAppendage(String s) {
-    return (s.equals("'e")
+    return (s.equals("'e") // Appears in transcription of foreign words at the very least.  The ACIP LEM'E is {LE}{M'E} if we don't think of 'E as "legal"... tricky, tricky (DLC FIXME: think again, verify it's doing what we want for both ACIP-> and EWTS-> and TMW->)
             || s.equals("'i")
             || s.equals("'o")
             || s.equals("'u")
+            || s.equals("'us")
+            || s.equals("'ur")
+            || s.equals("'ong") // This isn't an appendage I know of, but 'ongs is, and we need this in here or 'ongs won't work.  DLC FIXME: cludge
+            || s.equals("'ongs")
+            || s.equals("'os")
+            || s.equals("'is")
+            || s.equals("'ung")
             || s.equals("'ang")
             || s.equals("'am"));
 }

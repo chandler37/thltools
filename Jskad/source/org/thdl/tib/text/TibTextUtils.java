@@ -902,7 +902,11 @@ public class TibTextUtils implements THDLWylieConstants {
     /** True for and only for ma and nga because 'am and 'ang are
         appendages. */
     private static final boolean isAppendageNonVowelWylie(String wylie) {
-        return (MA.equals(wylie) || NGA.equals(wylie));
+        return (MA.equals(wylie) /* 'AM */
+                || NGA.equals(wylie) /* 'ANG, 'UNG */
+                || SA.equals(wylie) /* 'OS, 'US, maybe 'IS */
+                || RA.equals(wylie) /* 'UR */
+                );
     }
 
     // DLC FIXME: {H}, U+0F7F, is part of a grapheme cluster!
@@ -1209,7 +1213,12 @@ public class TibTextUtils implements THDLWylieConstants {
                             break;
                         }
                     } else if (candidateType.startsWith("appendaged-")) {
-                        if (TibetanMachineWeb.isWylieAchungAppendage(wylie)) {
+                        if (TibetanMachineWeb.isWylieAchungAppendage(wylie)
+                            // 'ang:
+                            || TibetanMachineWeb.isWylieAchungAppendage(lastPair.getWylie() + wylie)
+                            // 'ongs, as in ma'ongs:
+                            || (i > 1
+                                && TibetanMachineWeb.isWylieAchungAppendage(gcs.get(i-2).getWylie() + lastPair.getWylie() + wylie))) {
                             // candidateType stays what it is.
                         } else if (ACHUNG.equals(wylie)) {
                             candidateType = ("maybe-" + candidateType).intern();
@@ -1495,11 +1504,21 @@ public class TibTextUtils implements THDLWylieConstants {
             }
 
             // append the wylie/ACIP left over:
+            String lastPairTranslit = null;
+            if (appendaged && leftover >= 1) {
+                TGCPair tp = (TGCPair)gcs.get(leftover-1);
+                lastPairTranslit = (EWTSNotACIP
+                                    ? tp.getWylie(null)
+                                    : tp.getACIP(null));
+            }
             for (int i = leftover; i < sz; i++) {
                 TGCPair tp = (TGCPair)gcs.get(i);
+                String y;
                 translitBuffer.append(EWTSNotACIP
-                                      ? tp.getWylie(appendaged)
-                                      : tp.getACIP(appendaged));
+                                      ? (y = tp.getWylie(lastPairTranslit))
+                                      : (y = tp.getACIP(lastPairTranslit)));
+                if (appendaged)
+                    lastPairTranslit = y;
             }
         }
     }
