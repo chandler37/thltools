@@ -87,18 +87,18 @@ public class ThdlDebug {
         throws ThdlLazyException
     {
 
-		/* FIXME: find all calls to this function and rethink or shore
+        /* FIXME: find all calls to this function and rethink or shore
            up the calling code. */
 
         if (ThdlOptions.getBooleanOption("thdl.debug"))
             throw new ThdlLazyException(new Error("You've reached some iffy code, some code that's not well thought-out.  Because you invoked the Java runtime environment with the property thdl.debug set to true (developers: use 'ant -Dthdl.debug=false' to prevent this), or because you set the thdl.debug preference to true in one of the preferences files, the program is now aborting."));
     }
 
-	/** Exits the program with a message that the CLASSPATH is not set
+    /** Exits the program with a message that the CLASSPATH is not set
         properly. */
-	public static void handleClasspathError(String whoseWhat, Throwable error) {
-		System.err.println(((whoseWhat == null) ? "Your CLASSPATH" : whoseWhat)
-						   + " is not set properly.");
+    public static void handleClasspathError(String whoseWhat, Throwable error) {
+        System.err.println(((whoseWhat == null) ? "Your CLASSPATH" : whoseWhat)
+                           + " is not set properly.");
 
         /* FIXME */
         System.err.println("Note that Savant and QuillDriver CANNOT be invoked via the");
@@ -107,17 +107,17 @@ public class ThdlDebug {
         System.err.println("either, because we don't set the JARs' manifest files to contain");
         System.err.println("Class-path attributes.  See installation instructions."); /* FIXME: we don't HAVE installation instructions, do we? */
         System.err.println("");
-		System.err.println("Details: Missing class: "
+        System.err.println("Details: Missing class: "
                            + ((error == null)
                               ? "unknown!" : error.getMessage()));
-		if (ThdlOptions.getBooleanOption("thdl.debug")) {
-			System.err.println("Details: Stack trace: "
+        if (ThdlOptions.getBooleanOption("thdl.debug")) {
+            System.err.println("Details: Stack trace: "
                                + ((error == null)
                                   ? "unknown!" : error.getMessage()));
-			error.printStackTrace(System.err);
-		}
-		System.exit(1);
-	}
+            error.printStackTrace(System.err);
+        }
+        System.exit(1);
+    }
 
     /** Exits the program the hard way.  Don't ever call this for code
         that you expect to be executed. */
@@ -130,12 +130,12 @@ public class ThdlDebug {
         System.exit(37);
     }
 
-	/** Sets it up so that a call to System.out or System.err prints
+    /** Sets it up so that a call to System.out or System.err prints
      *  to standard output/error but ALSO prints to the log file named
      *  (prefix + suffix).  Be sure the log file name is a relative
      *  path, because we may put this file into an arbitrary
      *  directory. */
-	public static void attemptToSetUpLogFile(String prefix, String suffix) {
+    public static void attemptToSetUpLogFile(String prefix, String suffix) {
         if (ThdlOptions.getBooleanOption("thdl.disable.log.file"))
             return;
         // Else:
@@ -193,20 +193,20 @@ public class ThdlDebug {
                 logFile = new File(prefix + suffix);
             }
         }
-		try {
-			PrintStream logFilePrintStream
-				= new PrintStream(new FileOutputStream(logFile));
+        try {
+            PrintStream logFilePrintStream
+                = new PrintStream(new FileOutputStream(logFile));
             System.out.println("Logging to "
                                + logFile.getAbsolutePath().toString()
                                + ".");
             System.out.println("Please include the contents of the log file in any bug reports.");
-			PrintStream psOut = new TeeStream(System.out, logFilePrintStream);
-			PrintStream psErr = new TeeStream(System.err, logFilePrintStream);
-			System.setErr(psErr);
-			System.setOut(psOut);
-		} catch (Exception e) {
-			/* don't let this stop us. */
-			noteIffyCode();
-		}
-	}
-};
+            PrintStream psOut = new TeeStream(System.out, logFilePrintStream);
+            PrintStream psErr = new TeeStream(System.err, logFilePrintStream);
+            System.setErr(psErr);
+            System.setOut(psOut);
+        } catch (Exception e) {
+            /* don't let this stop us. */
+            noteIffyCode();
+        }
+    }
+}
