@@ -1,0 +1,590 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<!-- @author David Chandler -->
+<!-- @date-created October 20, 2002 -->
+<!-- @editor Emacs, baby! -->
+
+<!--
+==============
+INSERT KEYWORDS AND DESCRIPTION HERE
+==============
+-->
+
+
+<meta name="keywords" content="tibetan fonts, tibetan software, digital ethnography">
+
+<meta name="description" content="This presents intellectual and electronic tools for using Tibetan language in a digital medium and for viewing the THDL site.">
+
+<!--
+==============
+INSERT PAGE TITLE HERE
+==============
+ In order to facilitate the use of the unicode character set the charset declaration will be set equal to utf-8 
+ Always incorporate Tibetan and Himalayan
+-->
+
+<title>tibwn.ini File Format</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-utf-8">
+
+<!--
+==============
+THIS IS THE STYLE FOR THE BODY; IT'S WHAT CALLS ON THE BANNER AS A BACKGROUND IMAGE AND SETS UP THE BACKGROUND COLOR. MAKE SURE TO LINK TO THE BANNER HERE.
+==============
+-->
+
+<style type="text/css">
+<!--
+body {background-attachment: scroll; background-image: url(http://iris.lib.virginia.edu/tibet/images/bannerTools.gif); background-repeat: no-repeat; background-position: left top; backgroud-color: white}
+-->
+</style>
+
+<!--
+==============
+THE STYLE FOR THE TEXT, ETC. IT GOES TO THE TOP-LEVEL STYLE PAGE. IS THERE A NEED FOR EACH COLLECTION TO HAVE INDIVIDUAL STYLE PAGES?
+==============
+-->
+
+<link rel="stylesheet" href="http://iris.lib.virginia.edu/tibet/style/tools.css">
+
+<!--
+==============
+MAKES NETSCAPE RELOAD IF THE WINDOW IS RESIZED
+==============
+-->
+
+<script language="JavaScript">
+<!--
+function MM_reloadPage(init) {  //reloads the window if Nav4 resized
+  if (init==true) with (navigator) {if ((appName=="Netscape")&&(parseInt(appVersion)==4)) {
+    document.MM_pgW=innerWidth; document.MM_pgH=innerHeight; onresize=MM_reloadPage; }}
+  else if (innerWidth!=document.MM_pgW || innerHeight!=document.MM_pgH) location.reload();
+}
+MM_reloadPage(true);
+// -->
+</script>
+</head>
+
+<!--
+==============
+SETS THE PAGE MARGINS TO "0" SO THE MENU DOESN'T GET SCREWED UP
+==============
+-->
+
+<body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+
+
+<!--
+==============
+THE JAVASCRIPT MENUS
+==============
+-->
+
+<script type='text/javascript'>
+//HV Menu v5- by Ger Versluis (http://www.burmees.nl/)
+//Submitted to Dynamic Drive (http://www.dynamicdrive.com)
+//Visit http://www.dynamicdrive.com for this script and more
+
+function Go(){return}
+
+//==============
+// --CALL UP THE MENU. THE 1ST OF THE CHOICES HAS THE VARIABLES 
+// AND NEEDS TO BE UPDATED FOR EACH SECTION. 
+// MENU_LOADER.JS WILL ALWAYS BE THE SAME.
+//==============
+
+
+</script>
+        <script type='text/javascript' src='http://iris.lib.virginia.edu/tibet/scripts/menu_tools.js'></script>
+        <script type='text/javascript' src='http://iris.lib.virginia.edu//tibet/scripts/menu_loader.js'></script>
+<script type="text/javascript" src="http://iris.lib.virginia.edu//tibet/scripts/thdl_scripts.js"></script>
+<noscript> Your browser does not support Javascript menus. Please utilize the 
+Site Map for navigation.</noscript> 
+
+
+<div align="left" style="position:absolute; left:0px; top:0px; width:100px; height:50px; z-index:7">
+<a href="http://iris.lib.virginia.edu/tibet/index.html">
+<img src="http://iris.lib.virginia.edu/tibet/images/spacer.gif" style="border-width:0" width="100" height="50">
+</a>
+</div>
+<div id="Layer1" style="position:absolute; left:100px; top:28px; width:708px; height:20px; z-index:1">
+
+<!--
+==============
+INSERT THE BREADCRUMBS
+==============
+ A HREF tags should not be applied to current page, e.g. THDL and Collections get link, Literature and Home do not. If you were on a subpage of Literature, then Literature would link to the Literature home page.
+ -->
+
+	<div align="right"><font color="#000000"><A HREF="http://iris.lib.virginia.edu/tibet/index.html">THDL</A> : <A HREF="http://iris.lib.virginia.edu/tibet/tools/index.html">Tools</A> : <a href="http://iris.lib.virginia.edu/tibet/tools/software.html">Software</a> : tibwn.ini File Format</a></font>
+	</div>
+</div>
+
+<!--
+==============
+INSERT THE MENU
+==============
+-->
+
+<div id='MenuPos' style="text-size:9px; layer-background-color:#CCCCCC; background-color: #CCCCCC; position:absolute; left:0px; top:50px; width:808px"><table width="808" cellpadding="0" cellspacing="0" height="19"><tr><td><p style="font-size:9px">Menu loading...</p></td></tr></table></div>
+
+
+ <!--
+==============
+MAKE THE LAYER THAT WILL HOLD THE CONTENT OF THE PAGE - THE TEXT, IMAGES, WHATEVER. THIS LAYER WILL BE CLOSED AT THE END OF THIS HTML DOCUMENT
+==============
+ Maximum table width not to exceed 750
+All images must have borders of 1 pixel
+No image will exceed 325 X 325 height and width measurements
+Position attribute on layer3 may need to be changed to absolute to accomodate Netscape
+ -->
+
+<div id="Layer3" style="position:relative; left:7px; top:80px; width:801px; height:396px; z-index:1; overflow: visible; background-color: #FFFFFF; layer-background-color: #FFFFFF; border: 1px none #000000" > 
+
+  <table width="750" border="0" cellspacing="0" cellpadding="10">
+    <tr>
+      <td valign="top" align="left"> 
+
+<!--
+=============
+FOR EVERY "ADMINISTRATIVELY DISTINCT" PROJECT, THERE SHOULD BE A CREDIT FOR THE PROVIDER OF THE INFO
+=============
+-->
+
+<script langauge="JavaScript">
+function openWin(url, name) { popupWin = window.open(url, name,"resizable=1,scrollbars=1,toolbar=0,width=400 ,height=450")
+}
+</script>
+
+
+<!--
+============
+THIS LINK WILL OPEN A SEPARATE WINDOW THAT WILL PROVIDE INFORMATION REGARDING THE ADVISORY BOARD MEMBERS. ALSO PROVIDED IN THE PAGE WILL BE PARTICIPATION AND DONATION INFORMATION.
+============
+-->
+
+
+<!--
+==============
+SETS THE BODY TEXT TO JUSTIFIED
+==============
+-->
+  
+	<div align=justify>
+
+
+<!--
+=============
+INSERT LINK TO GUIDED TOUR HERE -uncomment when ready.
+=============
+-->
+
+
+<!--
+==============
+INSERT BODY TEXT HERE
+
+The first section of text is the short "introduction" about the Theme and the various discplines that have a vested interest in them.
+ Design principle: Bold the first few words of this text section.
+==============
+-->
+<h2>tibwn.ini File Format</h2>
+
+<p>
+  <a
+  href="http://iris.lib.virginia.edu/tibet/tools/jskad.html">Jskad</a>
+  and <a
+  href="http://iris.lib.virginia.edu/tibet/tools/wyword.html">WylieWord</a>
+  both make use of a data file named <code>tibwn.ini</code>.&nbsp;
+  This document concerns the structure and content of that data file.
+</p>
+
+<p>
+  The purpose of the file is to encode all knowledge of the <a
+  href="http://iris.lib.virginia.edu/tibet/tools/tm.html">Tibetan
+  Machine</a> (TM) and <a
+  href="http://iris.lib.virginia.edu/tibet/tools/tmw.html">Tibetan
+  Machine Web</a> (TMW) fonts.&nbsp; Specifically, the following
+  knowledge is found:
+</p>
+
+<ul>
+  <li>
+    which TM glyphs corresponds to which TMW glyphs (a two-way
+    mapping, which is one-to-one except for TMW7.90 and TMW7.91, which
+    both map to the same TM glyph for our purposes)
+  </li>
+  <li>
+    which TM glyphs corresponds to which TMW glyphs (a two-way
+    mapping, which is one-to-one except for TMW7.90 and TMW7.91, which
+    both map to the same TM glyph for our purposes)
+  </li>
+  <li>
+    which Unicode codepoints are suitable for a TM or TMW to Unicode
+    conversion
+  </li>
+  <li>
+    which THDL Extended Wylie is suitable for a TM or TMW to Wylie
+    conversion
+  </li>
+  <li>
+    which vowel/bindu/vowel+bindu/achung-as-vowel glyphs correspond to
+    which consonant/consonant stack glyphs (needed for composing
+    beautiful stacks; needed for Wylie->TMW conversions and input
+    methods).
+  </li>
+</ul>
+
+<p>
+  Much of this knowledge is found in the <a
+  href="http://iris.lib.virginia.edu/tibet/tools/tib5doc.pdf">documentation</a>
+  for the TM and TMW fonts.&nbsp; Note the <a
+  href="Tibetan51Errata.html">errata</a> for this document, as it
+  especially concerns the data in <code>tibwn.ini</code>.
+</p>
+
+<h3>File Format -- Overview</h3>
+
+<p>
+  The <code>tibwn.ini</code> file format allows for comments, blank
+  lines (entirely blank, containing not even whitespace), Section
+  headers, comma-delimited lists, and newline-delimited rows of
+  tilde-delimited data.&nbsp; A comment line is any line that begins
+  with two slashes ('//'); the entire line is ignored.&nbsp; A blank
+  line is ignored, too.&nbsp; A section header is a line
+  '&lt;?<i>section-name</i>?&gt;'.&nbsp; A comma-delimited list must
+  fit entirely on one line.
+</p>
+
+
+<h3>File Format -- Sections</h3>
+
+<p>
+  The <code>tibwn.ini</code> file is broken up into sections.&nbsp;
+  Currently, these are as follows:
+</p>
+
+<ul>
+  <li>
+    Consonants - set of Tibetan/Tibetanized Sanskrit consonants that
+    the application reading tibwn.ini supports; does not include
+    stacks
+  </li>
+
+  <li>
+    Numbers - set of Tibetan numbers that the application reading
+    tibwn.ini supports
+  </li>
+
+  <li>
+    Vowels - set of Tibetan vowels that the application reading
+    tibwn.ini supports
+  </li>
+
+  <li>
+    Other - set of Tibetan punctuation and other characters that the
+    application reading tibwn.ini supports
+  </li>
+
+  <li>
+    Input:Punctuation - application-independent data for all Tibetan
+    punctuation and other miscellaneous characters that can be listed
+    in the Other section
+  </li>
+
+  <li>
+    Input:Vowels - application-independent data for all Tibetan vowels
+    that can be listed in the Vowels section
+  </li>
+
+  <li>
+    Input:Tibetan - application-independent data for all Tibetan
+    consonants and Tibetan (but not Tibetanized Sanskrit) consonant
+    stacks that can be listed in the Consonants section
+  </li>
+
+  <li>
+    Input:Numbers - application-independent data for all Tibetan
+    numbers that can be listed in the Numbers section
+  </li>
+
+  <li>
+    Input:Sanskrit - application-independent data for all Tibetanized
+    Sanskrit stacks
+  </li>
+
+  <li>
+    ToWylie - data needed merely for Tibetan-to-THDL Extended Wylie
+    and Tibetan-to-Unicode conversions
+  </li>
+
+  <li>
+    Ignore - a section containing data to be ignored for all purposes
+    other than Tibetan-to-Unicode conversions (should probably be
+    called ToUnicode at this point <!-- FIXME -->, but is called
+    Ignore because it was once entirely ignored)
+  </li>
+</ul>
+
+<p>
+  The Consonants, Numbers, Vowels, and Other sections contain
+  comma-delimited lists of the THDL Extended Wylie representations of
+  each consonant, number, etc. that the application reading
+  <code>tibwn.ini</code> wishes to support.&nbsp; Note that it is not
+  possible to represent a comma (though extending the file format to
+  do so would likely work along the same lines as the support for '~'
+  characters via __TILDE__).&nbsp; These sections should probably be
+  discarded entirely so that applications and users can choose which
+  characters to support themselves.&nbsp; The rest of the file is
+  application-independent.<!-- FIXME -->
+</p>
+
+<p>
+  The remaining sections are the meat of the file.&nbsp; Each one
+  contains zero or more rows of data, one row per line.&nbsp; Each
+  line looks like this:
+</p>
+
+<pre>
+h~61,1~1,100~1,62~1,109~1,112~1,123~1,125~10,115~10,122~0F67~1,102~
+</pre>
+
+<p>
+Each line describes one glyph in the Tibetan Machine Web font.&nbsp;
+There are thirteen tilde-delimited columns per line, though the last
+two columns are optional.&nbsp; An empty column takes no space; for
+example,
+</p>
+
+<pre>
+_~32,1~~2,32~~~~~~~0020
+</pre>
+
+<p>
+has non-empty data for only columns 1 (the first column, i.e. the one
+containing an underscore), 2, 4, and 11.&nbsp; When it is desirable to
+represent a tilde ('~') character, __TILDE__ is used.&nbsp; For
+example, in the THDL Extended Wylie for nyi zla, a tilde is used, so
+this line occurs:
+</p>
+
+<pre>
+__TILDE__^~91,5~~9,89~~~~~~~0F82
+</pre>
+
+<p>
+  The columns themselves each have a meaning.&nbsp; They are as
+  follows:
+</p>
+
+<ul>
+  <li>
+    Column 1 - the THDL Extended Wylie corresponding to this glyph
+  </li>
+
+  <li>
+    Column 2 - '<i>ord</i>,<i>fn</i>' where <i>fn</i> corresponds to a
+    <a href="#tmindex">Tibetan Machine font</a> and <i>ord</i> tells
+    which glyph in <b>Tibetan Machine</b> corresponds to the Tibetan
+    Machine Web glyph this line describes
+  </li>
+
+  <li>
+    Column 3 - '<i>fn</i>,<i>ord</i>' where <i>fn</i> corresponds to a
+    <a href="#tmwindex">Tibetan Machine Web font</a> and <i>ord</i>
+    tells which glyph in that font corresponds to the Tibetan Machine
+    Web <b>reduced-height glyph</b> corresponding to the full-height
+    glyph this line describes
+  </li>
+
+  <li>
+    <b>Column 4 - key -</b> '<i>fn</i>,<i>ord</i>' where <i>fn</i>
+    corresponds to a <a href="#tmwindex">Tibetan Machine Web font</a>
+    and <i>ord</i> tells which Tibetan Machine Web glyph this line
+    describes.&nbsp; No two rows of data may have the same value for
+    this column.
+  </li>
+
+  <li>
+    Column 5 - '<i>fn</i>,<i>ord</i>' where <i>fn</i> corresponds to a
+    <a href="#tmwindex">Tibetan Machine Web font</a> and <i>ord</i>
+    tells which glyph in that font corresponds to the Tibetan Machine
+    Web glyph for the <b>gi-gu</b> vowel that looks most beautiful
+    with the glyph this line describes
+  </li>
+
+  <li>
+    Column 6 - '<i>fn</i>,<i>ord</i>' where <i>fn</i> corresponds to a
+    <a href="#tmwindex">Tibetan Machine Web font</a> and <i>ord</i>
+    tells which glyph in that font corresponds to the Tibetan Machine
+    Web glyph for the <b>zhabs-kyu</b> vowel that looks most beautiful
+    with the glyph this line describes
+  </li>
+
+  <li>
+    Column 7 - '<i>fn</i>,<i>ord</i>' where <i>fn</i> corresponds to a
+    <a href="#tmwindex">Tibetan Machine Web font</a> and <i>ord</i>
+    tells which glyph in that font corresponds to the Tibetan Machine
+    Web glyph for the <b>'greng-bu</b> vowel that looks most beautiful
+    with the glyph this line describes
+  </li>
+
+  <li>
+    Column 8 - '<i>fn</i>,<i>ord</i>' where <i>fn</i> corresponds to a
+    <a href="#tmwindex">Tibetan Machine Web font</a> and <i>ord</i>
+    tells which glyph in that font corresponds to the Tibetan Machine
+    Web glyph for the <b>na-ro</b> vowel that looks most beautiful
+    with the glyph this line describes
+  </li>
+
+  <li>
+    Column 9 - '<i>fn</i>,<i>ord</i>' where <i>fn</i> corresponds to a
+    <a href="#tmwindex">Tibetan Machine Web font</a> and <i>ord</i>
+    tells which glyph in that font corresponds to the Tibetan Machine
+    Web glyph for the <b>a-chung</b> [Sanskrit] vowel that looks most
+    beautiful with the glyph this line describes
+  </li>
+
+  <li>
+    Column 10 - '<i>fn</i>,<i>ord</i>' where <i>fn</i> corresponds to
+    a <a href="#tmwindex">Tibetan Machine Web font</a> and <i>ord</i>
+    tells which glyph in that font corresponds to the Tibetan Machine
+    Web glyph for the <b>a-chung plus zhabs-kyu</b> [Sanskrit] vowel
+    that looks most beautiful with the glyph this line describes
+  </li>
+
+  <li>
+    Column 11 - '<i>x<sub>1</sub></i>,<i>x<sub>2</sub></i>,...' or
+    'none', where <i>x<sub>i</sub></i> describes a Unicode codepoint,
+    most often a codepoint in the Tibetan range U+0F00 to
+    U+0FFF.&nbsp; A case-insensitive string of one, two, three, or
+    four hexadecimal digits composes each <i>x<sub>i</sub></i>.&nbsp;
+    The full, comma-separated sequence is the preferred Unicode
+    representation of the glyph this line describes; 'none' appears
+    for glyphs that have no Unicode correspondence.
+  </li>
+
+  <li>
+    Column 12 - '<i>fn</i>,<i>ord</i>' where <i>fn</i> corresponds to
+    a <a href="#tmwindex">Tibetan Machine Web font</a> and <i>ord</i>
+    tells which glyph in that font corresponds to the Tibetan Machine
+    Web <b>severely-reduced-height glyph</b> corresponding to the
+    full-height glyph this line describes
+  </li>
+
+  <li>
+    Column 13 - '<i>fn</i>,<i>ord</i>' where <i>fn</i> corresponds to
+    a <a href="#tmwindex">Tibetan Machine Web font</a> and <i>ord</i>
+    tells which glyph in that font corresponds to the Tibetan Machine
+    Web <b>vowel+bindu glyph</b> corresponding to the vowel glyph this
+    line describes
+  </li>
+</ul>
+
+<a name="tmindex"></a>
+<h4>Tibetan Machine Font Indices</h4>
+
+<p>
+  The following are the indices this file format uses to refer to the
+  TibetanMachine font files:
+</p>
+<ul>
+  <li>
+    1 corresponds to TibetanMachine, the normal font
+  </li>
+  <li>
+    2 corresponds to TibetanMachineSkt1
+  </li>
+  <li>
+    3 corresponds to TibetanMachineSkt2
+  </li>
+  <li>
+    4 corresponds to TibetanMachineSkt3
+  </li>
+  <li>
+    5 corresponds to TibetanMachineSkt4
+  </li>
+</ul>
+
+<a name="tmwindex"></a>
+<h4>Tibetan Machine Web Font Indices</h4>
+
+<p>
+  The following are the indices this file format uses to refer to the
+  TibetanMachineWeb font files:
+</p>
+<ul>
+  <li>
+    1 corresponds to TibetanMachineWeb
+  </li>
+  <li>
+    2 corresponds to TibetanMachineWeb1
+  </li>
+  <li>
+    3 corresponds to TibetanMachineWeb2
+  </li>
+  <li>
+    4 corresponds to TibetanMachineWeb3
+  </li>
+  <li>
+    5 corresponds to TibetanMachineWeb4
+  </li>
+  <li>
+    6 corresponds to TibetanMachineWeb5
+  </li>
+  <li>
+    7 corresponds to TibetanMachineWeb6
+  </li>
+  <li>
+    8 corresponds to TibetanMachineWeb7
+  </li>
+  <li>
+    9 corresponds to TibetanMachineWeb8
+  </li>
+  <li>
+    10 corresponds to TibetanMachineWeb9
+  </li>
+</ul>
+
+<p>
+    Please
+
+    <a href="mailto:thdltools-devel@lists.sourceforge.net">
+      e-mail us</a> 
+
+    your comments about this page.
+</p>
+
+<p>
+The
+<a target="_blank" href="http://www.sourceforge.net/projects/thdltools">
+  THDL Tools</a>
+project is generously hosted by:
+<!--
+
+DO NOT DELETE THE SF.NET LOGO.
+
+We have a choice of colors and sizes for this logo (see
+"https://sourceforge.net/docman/display_doc.php?docid=790&group_id=1"),
+but we do not have the option of removing it.  SourceForge requests
+that we put it on each web page for our project, and to give us
+incentive to do so, they will not track the number of hits for our
+project web pages unless we put this link in.  To track hits, see
+"http://sourceforge.net/project/stats/index.php?report=months&group_id=61934".
+
+-->
+<a target="_blank" href="http://sourceforge.net/">
+  <img src="http://sourceforge.net/sflogo.php?group_id=61934&amp;type=1"
+       width="88" height="31" border="0" alt="SourceForge Logo">
+</a>
+<!-- AGAIN, DO NOT DELETE THE SF.NET LOGO. -->
+</p>
+	</div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+
+</body>
+</html>
