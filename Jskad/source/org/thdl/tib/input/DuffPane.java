@@ -1144,6 +1144,9 @@ public void paste(int offset) {
 
 	private void processRomanChar(String key, MutableAttributeSet attSet) {
 		switch (key.charAt(0)) {
+			case KeyEvent.VK_TAB:
+			case KeyEvent.VK_ENTER:
+			case KeyEvent.VK_ESCAPE:
 			case KeyEvent.VK_BACK_SPACE:
 				break;
 			default:
