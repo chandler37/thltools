@@ -40,10 +40,13 @@ public class UnicodeUtilsTest extends TestCase implements UnicodeConstants {
 	}
 
     /** Tests Unicode Normalization form KD for Tibetan codepoints.
-        See Unicode, Inc.'s NormalizationTest-3.2.0.txt.  This
-        contains all test cases for
-        <code>U+0F00</code>-<code>U+0FFF</code> there, and a few
-        more. */
+     *  See Unicode, Inc.'s NormalizationTest-3.2.0.txt.  This
+     *  contains all test cases for
+     *  <code>U+0F00</code>-<code>U+0FFF</code> there, and a few more.
+     *  Tests both {@link
+     *  UnicodeUtils#toMostlyDecomposedUnicode(String, byte)} and
+     *  {@link UnicodeUtils#toMostlyDecomposedUnicode(StringBuffer,
+     *  byte)}.*/
     public void testMostlyNFKD() {
         assertTrue(UnicodeUtils.toMostlyDecomposedUnicode("\u0F0B", NORM_NFKD).equals("\u0F0B"));
         assertTrue(UnicodeUtils.toMostlyDecomposedUnicode("\u0F40", NORM_NFKD).equals("\u0F40"));
@@ -112,10 +115,13 @@ public class UnicodeUtilsTest extends TestCase implements UnicodeConstants {
     }
 
     /** Tests Unicode Normalization form D for Tibetan codepoints.
-        See Unicode, Inc.'s NormalizationTest-3.2.0.txt.  This
-        contains all test cases for
-        <code>U+0F00</code>-<code>U+0FFF</code> there, and a few
-        more. */
+     *  See Unicode, Inc.'s NormalizationTest-3.2.0.txt.  This
+     *  contains all test cases for
+     *  <code>U+0F00</code>-<code>U+0FFF</code> there, and a few more.
+     *  Tests both {@link
+     *  UnicodeUtils#toMostlyDecomposedUnicode(String, byte)} and
+     *  {@link UnicodeUtils#toMostlyDecomposedUnicode(StringBuffer,
+     *  byte)}.*/
     public void testMostlyNFD() {
         assertTrue(UnicodeUtils.toMostlyDecomposedUnicode("\u0F0B", NORM_NFD).equals("\u0F0B"));
         assertTrue(UnicodeUtils.toMostlyDecomposedUnicode("\u0F40", NORM_NFD).equals("\u0F40"));
@@ -184,10 +190,13 @@ public class UnicodeUtilsTest extends TestCase implements UnicodeConstants {
     }
 
     /** Tests Unicode Normalization form THDL for Tibetan codepoints.
-        See Unicode, Inc.'s NormalizationTest-3.2.0.txt.  This
-        contains all test cases for
-        <code>U+0F00</code>-<code>U+0FFF</code> there, and a few
-        more. */
+     *  See Unicode, Inc.'s NormalizationTest-3.2.0.txt.  This
+     *  contains all test cases for
+     *  <code>U+0F00</code>-<code>U+0FFF</code> there, and a few more.
+     *  Tests both {@link
+     *  UnicodeUtils#toMostlyDecomposedUnicode(String, byte)} and
+     *  {@link UnicodeUtils#toMostlyDecomposedUnicode(StringBuffer,
+     *  byte)}. */
     public void testMostlyNFTHDL() {
         assertTrue(UnicodeUtils.toMostlyDecomposedUnicode("\u0F0B", NORM_NFTHDL).equals("\u0F0B"));
         assertTrue(UnicodeUtils.toMostlyDecomposedUnicode("\u0F40", NORM_NFTHDL).equals("\u0F40"));
@@ -253,15 +262,121 @@ public class UnicodeUtilsTest extends TestCase implements UnicodeConstants {
         assertTrue(UnicodeUtils.toMostlyDecomposedUnicode("\u0F79", NORM_NFTHDL).equals("\u0FB3\u0F71\u0F80"));
         assertTrue(UnicodeUtils.toMostlyDecomposedUnicode("\u0FB3\u0F81", NORM_NFTHDL).equals("\u0FB3\u0F71\u0F80"));
         assertTrue(UnicodeUtils.toMostlyDecomposedUnicode("\u0FB3\u0F71\u0F80", NORM_NFTHDL).equals("\u0FB3\u0F71\u0F80"));
+
+
+        assertTrue(UnicodeUtils.toMostlyDecomposedUnicode("", NORM_NFTHDL).equals(""));
+
+        {
+            StringBuffer sb = new StringBuffer("\u0FAC");
+            UnicodeUtils.toMostlyDecomposedUnicode(sb, NORM_NFTHDL);
+            assertTrue(sb.toString().equals("\u0FAB\u0FB7"));
+        }
+        {
+            StringBuffer sb = new StringBuffer("\u0F66");
+            UnicodeUtils.toMostlyDecomposedUnicode(sb, NORM_NFTHDL);
+            assertTrue(sb.toString().equals("\u0F66"));
+        }
+        {
+            StringBuffer sb = new StringBuffer("");
+            UnicodeUtils.toMostlyDecomposedUnicode(sb, NORM_NFTHDL);
+            assertTrue(sb.toString().equals(""));
+        }
     }
 
     /** Tests the containsRa method. */
     public void testContainsRa() {
+        assertTrue(!UnicodeUtils.containsRa('\u0F69'));
+        assertTrue(!UnicodeUtils.containsRa('\u0FB1'));
+        assertTrue(!UnicodeUtils.containsRa('\u0F48'));
+        assertTrue(!UnicodeUtils.containsRa('\u0060'));
+        assertTrue(!UnicodeUtils.containsRa('\uFFFF'));
+        assertTrue(!UnicodeUtils.containsRa('\uFFFF'));
+
         assertTrue(UnicodeUtils.containsRa('\u0FB2'));
         assertTrue(UnicodeUtils.containsRa('\u0F77'));
         assertTrue(UnicodeUtils.containsRa('\u0F76'));
         assertTrue(UnicodeUtils.containsRa('\u0F6A'));
         assertTrue(UnicodeUtils.containsRa('\u0F62'));
         assertTrue(UnicodeUtils.containsRa('\u0FBC'));
+    }
+
+    /**
+     * Tests the {@link UnicodeUtils#unicodeStringToString(String)}
+     * method. */
+    public void testUnicodeStringToString() {
+        assertTrue(UnicodeUtils.unicodeStringToString("\u0000").equals("\\u0000"));
+        assertTrue(UnicodeUtils.unicodeStringToString("\u0001").equals("\\u0001"));
+        assertTrue(UnicodeUtils.unicodeStringToString("\u000F").equals("\\u000f"));
+        assertTrue(UnicodeUtils.unicodeStringToString("\u001F").equals("\\u001f"));
+        assertTrue(UnicodeUtils.unicodeStringToString("\u00fF").equals("\\u00ff"));
+        assertTrue(UnicodeUtils.unicodeStringToString("\u01fF").equals("\\u01ff"));
+        assertTrue(UnicodeUtils.unicodeStringToString("\u0ffF").equals("\\u0fff"));
+        assertTrue(UnicodeUtils.unicodeStringToString("\u1ffF").equals("\\u1fff"));
+        assertTrue(UnicodeUtils.unicodeStringToString("\ufffF").equals("\\uffff"));
+
+        assertTrue(UnicodeUtils.unicodeStringToString("\u0F00\u0091\uABCD\u0FFF\u0Ff1\uFFFF\u0000").equals("\\u0f00\\u0091\\uabcd\\u0fff\\u0ff1\\uffff\\u0000"));
+    }
+
+    /**
+     * Tests the {@link UnicodeUtils#unicodeCodepointToString(char)}
+     * method. */
+    public void testUnicodeCodepointToString() {
+        assertTrue(UnicodeUtils.unicodeCodepointToString('\u0000').equals("\\u0000"));
+        assertTrue(UnicodeUtils.unicodeCodepointToString('\u0001').equals("\\u0001"));
+        assertTrue(UnicodeUtils.unicodeCodepointToString('\u000F').equals("\\u000f"));
+        assertTrue(UnicodeUtils.unicodeCodepointToString('\u001F').equals("\\u001f"));
+        assertTrue(UnicodeUtils.unicodeCodepointToString('\u00fF').equals("\\u00ff"));
+        assertTrue(UnicodeUtils.unicodeCodepointToString('\u01fF').equals("\\u01ff"));
+        assertTrue(UnicodeUtils.unicodeCodepointToString('\u0ffF').equals("\\u0fff"));
+        assertTrue(UnicodeUtils.unicodeCodepointToString('\u1ffF').equals("\\u1fff"));
+        assertTrue(UnicodeUtils.unicodeCodepointToString('\ufffF').equals("\\uffff"));
+    }
+
+    /**
+     * Tests the {@link UnicodeUtils#isEntirelyTibetanUnicode(String)}
+     * method. */
+    public void testIsEntirelyTibetanUnicode() {
+        assertTrue(UnicodeUtils.isEntirelyTibetanUnicode("\u0F00\u0FFF\u0F00\u0F1e\u0F48")); // U+0F48 is reserved, but in the range.
+        assertTrue(!UnicodeUtils.isEntirelyTibetanUnicode("\u0F00\u1000\u0FFF\u0F00\u0F1e\u0F48")); // U+0F48 is reserved, but in the range.
+    }
+
+    /**
+     * Tests the {@link UnicodeUtils#isTibetanConsonant(char)}
+     * method. */
+    public void testIsTibetanConsonant() {
+        assertTrue(!UnicodeUtils.isTibetanConsonant('\u0000'));
+        assertTrue(!UnicodeUtils.isTibetanConsonant('\uF000'));
+        assertTrue(!UnicodeUtils.isTibetanConsonant('\u0EFF'));
+        assertTrue(!UnicodeUtils.isTibetanConsonant('\u1000'));
+        assertTrue(!UnicodeUtils.isTibetanConsonant('\u0F00'));
+        assertTrue(!UnicodeUtils.isTibetanConsonant('\u0FFF'));
+
+        assertTrue(UnicodeUtils.isTibetanConsonant('\u0FB2'));
+        assertTrue(UnicodeUtils.isTibetanConsonant('\u0F6A'));
+        assertTrue(UnicodeUtils.isTibetanConsonant('\u0F40'));
+        assertTrue(UnicodeUtils.isTibetanConsonant('\u0F50'));
+        assertTrue(UnicodeUtils.isTibetanConsonant('\u0FBC'));
+        assertTrue(UnicodeUtils.isTibetanConsonant('\u0FB9'));
+        assertTrue(UnicodeUtils.isTibetanConsonant('\u0FB0'));
+        assertTrue(UnicodeUtils.isTibetanConsonant('\u0FAD'));
+        assertTrue(UnicodeUtils.isTibetanConsonant('\u0FA6'));
+        assertTrue(UnicodeUtils.isTibetanConsonant('\u0F90'));
+        assertTrue(UnicodeUtils.isTibetanConsonant('\u0F91'));
+
+        // reserved codepoints:
+        assertTrue(!UnicodeUtils.isTibetanConsonant('\u0F48'));
+        assertTrue(!UnicodeUtils.isTibetanConsonant('\u0F98'));
+    }
+
+    /**
+     * Tests the {@link UnicodeUtils#isInTibetanRange(char)}
+     * method. */
+    public void testIsInTibetanRange() {
+        assertTrue(!UnicodeUtils.isInTibetanRange('\u0000'));
+        assertTrue(!UnicodeUtils.isInTibetanRange('\u0100'));
+        assertTrue(!UnicodeUtils.isInTibetanRange('\u1000'));
+        assertTrue(UnicodeUtils.isInTibetanRange('\u0F00'));
+        assertTrue(UnicodeUtils.isInTibetanRange('\u0FF0'));
+        assertTrue(UnicodeUtils.isInTibetanRange('\u0FFF'));
     }
 }

@@ -100,13 +100,11 @@ And also there are cases where they combine. For ex you can have
  *  </ul>
  *
  *  <p>Note that this class uses only a subset of Unicode to represent
- *  consonants and vowels.  In some situations, you should use {@link
- *  #EWSUB_wa_zur} to represent the consonant wa, while in others you
- *  should use {@link #EWC_wa}, even though you mean to subscribe a
- *  fixed-form wa.  Basically, stick to the codepoints for which
- *  enumerations exist in {@link
- *  org.thdl.tib.text.tshegbar.UnicodeConstants} and use your common
- *  sense.</p>
+ *  consonants and vowels.  You should always use the nominal form of
+ *  a letter, e.g. {@link #EWC_wa}, not {@link #EWSUB_wa_zur}, to
+ *  represent letters.  (What if you mean to subscribe a fixed-form
+ *  wa?  Well, that's not a legal tsheg-bar, so you don't mean to do
+ *  that.)</p>
  *
  *  <p>For a pretty good, concise summary of the rules this class
  *  knows about, see Joe B. Wilson's <i>Translating Buddhism from
@@ -142,8 +140,6 @@ public class LegalTshegBar
     /** Do not use this constructor. */
     private LegalTshegBar() { super(); }
 
-    // DLC FIXME: do we want to accept EWC_ra or EWSUB_ra_btags for
-    // the root letter, even if there is no head letter?  Etc.
     /** Constructs a valid Tibetan syllable or throws an exception.
      *  Use EW_ABSENT (or null in the case of <code>suffix</code>) for
      *  those parts of the syllable that are absent.  The root letter
@@ -180,7 +176,7 @@ public class LegalTshegBar
         // copying is slightly inefficient because it is unnecessary
         // since Java strings are read-only, but translating this code
         // to C++ is easier this way.
-        this.suffix = new String(suffix);
+        this.suffix = (suffix == null) ? null : new String(suffix);
 
         this.postsuffix = postsuffix;
         this.vowel = vowel;
@@ -198,7 +194,8 @@ public class LegalTshegBar
         throws IllegalArgumentException
     {
         this(prefix, headLetter, rootLetter, subjoinedLetter,
-             hasWaZur, hasAChung, new String(new char[] { suffix }),
+             hasWaZur, hasAChung,
+             (suffix == EW_ABSENT) ? null : new String(new char[] { suffix }),
              postsuffix, vowel);
     }
 
@@ -216,7 +213,10 @@ public class LegalTshegBar
     }
 
     /** Returns the non-EWSUB_wa_zur consonant subscribed to the root
-     *  consonant, or EW_ABSENT if none is.  If you want to know if there is a wa-zur, use {@link #hasWaZurSubjoinedToRootLetter()}*/
+     *  consonant, or EW_ABSENT if none is.  If you want to know if
+     *  there is a wa-zur, use {@link
+     *  #hasWaZurSubjoinedToRootLetter()}.  This returns EWC_ra, not
+     *  EWSUB_ra_btags, etc.  */
     public char getSubjoinedLetter() {
         return subjoinedLetter;
     }
@@ -458,11 +458,11 @@ public class LegalTshegBar
         if (EW_ABSENT == subjoinedLetter) {
             return isConsonantThatTakesWaZur(rootLetter);
         }
-        if (EWSUB_ra_btags == subjoinedLetter) {
+        if (EWC_ra == subjoinedLetter) {
             if (EWC_ga == rootLetter
                     || EWC_da == rootLetter)
                 return true;
-        } else if (EWSUB_ya_btags == subjoinedLetter) {
+        } else if (EWC_ya == subjoinedLetter) {
             if (EWC_pha == rootLetter)
                 return true;
         }
@@ -599,6 +599,9 @@ public class LegalTshegBar
      *  this is {@link #getConnectiveCaseSuffix()}
      *  @param postsuffix the optional postsuffix, which should be
      *  EWC_sa or EWC_da
+     *  @param errorBuffer if non-null, and if the return code is
+     *  false, then the reason that this is not a legal tsheg-bar will
+     *  be appended to errorBuffer.
      *  @param vowel the optional vowel */
     public static boolean formsLegalTshegBar(char prefix,
                                              char headLetter,
@@ -608,12 +611,14 @@ public class LegalTshegBar
                                              boolean hasAChung,
                                              String suffix,
                                              char postsuffix,
-                                             char vowel)
+                                             char vowel,
+                                             StringBuffer errorBuffer)
     {
         try {
             return internalLegalityTest(prefix, headLetter, rootLetter,
                                         subjoinedLetter, hasWaZur, hasAChung,
-                                        suffix, postsuffix, vowel, false);
+                                        suffix, postsuffix, vowel, false,
+                                        errorBuffer);
         } catch (IllegalArgumentException e) {
             throw new Error("This simply cannot happen, but it did.");
         }
@@ -631,12 +636,15 @@ public class LegalTshegBar
                                              boolean hasAChung,
                                              char suffix,
                                              char postsuffix,
-                                             char vowel)
+                                             char vowel,
+                                             StringBuffer errorBuffer)
     {
         return formsLegalTshegBar(prefix, headLetter, rootLetter,
                                   subjoinedLetter, hasWaZur, hasAChung,
-                                  new String(new char[] { suffix }),
-                                  postsuffix, vowel);
+                                  ((suffix == EW_ABSENT)
+                                   ? null
+                                   : new String(new char[] { suffix })),
+                                  postsuffix, vowel, errorBuffer);
     }
 
 
@@ -659,12 +667,17 @@ public class LegalTshegBar
     {
         internalLegalityTest(prefix, headLetter, rootLetter,
                              subjoinedLetter, hasWaZur, hasAChung,
-                             suffix, postsuffix, vowel, true);
+                             suffix, postsuffix, vowel, true, null);
     }
 
     /** Voodoo.  Stand back. */
-    private static boolean internalThrowThing(boolean doThrow, String msg)
+    private static boolean internalThrowThing(boolean doThrow,
+                                              StringBuffer errorBuf,
+                                              String msg)
     {
+        if (errorBuf != null) {
+            errorBuf.append(msg);
+        }
         if (doThrow)
             throw new IllegalArgumentException(msg);
         return false;
@@ -674,6 +687,8 @@ public class LegalTshegBar
      *  thrown, then this combination makes a legal Tibetan syllable.
      *  To learn about the arguments, see {@link
      *  #formsLegalTshegBar(char,char,char,char,boolean,boolean,String,char,char)}.
+     *  @param errorBuf if non-null, the reason this is illegal will
+     *  be written here, if this is illegal
      *  @return true if this syllable is legal, false if this syllable
      *  is illegal and throwIfIllegal is false, does not return if
      *  this syllable is illegal and throwIfIllegal is true
@@ -689,11 +704,13 @@ public class LegalTshegBar
                                                 String suffix,
                                                 char postsuffix,
                                                 char vowel,
-                                                boolean throwIfIllegal)
+                                                boolean throwIfIllegal,
+                                                StringBuffer errorBuf)
         throws IllegalArgumentException
     {
         if (!isNominalRepresentationOfConsonant(rootLetter))
             return internalThrowThing(throwIfIllegal,
+                                      errorBuf,
                                       "The root letter must be one of the standard thirty Tibetan consonants, and must be represented nominally, not, for example, by FIXED-FORM RA (&#92;u0F6A)");
 
         if (EW_ABSENT != prefix) {
@@ -701,28 +718,34 @@ public class LegalTshegBar
             // and that it can go with this root letter:
             if (!isNominalRepresentationOfPrefix(prefix))
                 return internalThrowThing(throwIfIllegal,
+                                          errorBuf,
                                           "The prefix is not absent, so it must be one of the five possible prefixes.");
             // DLC test that it can go with the root letter.
         }
 
         if (EW_ABSENT != subjoinedLetter) {
-            if (EWSUB_ya_btags == subjoinedLetter) {
+            if (EWC_ya == subjoinedLetter) {
                 if (!isConsonantThatTakesYaBtags(rootLetter)) {
                     return internalThrowThing(throwIfIllegal,
+                                              errorBuf,
                                               "Cannot subscribe ya-btags to that root letter.");
                 }
-            } else if (EWSUB_ra_btags == subjoinedLetter) {
+            } else if (EWC_ra == subjoinedLetter) {
                 if (!isConsonantThatTakesRaBtags(rootLetter)) {
                     return internalThrowThing(throwIfIllegal,
+                                              errorBuf,
                                               "Cannot subscribe ra-btags to that root letter.");
                 }
-            } else if (EWSUB_la_btags == subjoinedLetter) {
+            } else if (EWC_la == subjoinedLetter) {
                 if (!isConsonantThatTakesLaBtags(rootLetter)) {
                     return internalThrowThing(throwIfIllegal,
+                                              errorBuf,
                                               "Cannot subscribe la-btags to that root letter.");
                 }
-            } else if (EWSUB_wa_zur == subjoinedLetter) {
-                throw new Error("DLC FIXME: can this happen?  wa-zur comes in via the boolean argument hasWaZur, not via subjoinedLetter.");
+            } else if (EWC_wa == subjoinedLetter) {
+                return internalThrowThing(throwIfIllegal,
+                                          errorBuf,
+                                          "The presence of wa-zur must be specified via a boolean parameter.");
             } else {
                 // check for a common mistake:
                 if ('\u0FBA' == subjoinedLetter
@@ -730,9 +753,11 @@ public class LegalTshegBar
                     || '\u0FBC' == subjoinedLetter)
                     {
                         return internalThrowThing(throwIfIllegal,
+                                                  errorBuf,
                                                   "The subjoined letter given is subjoinable, but you gave the fixed-form variant, which is not used in Tibetan syllables but is sometimes used in Tibetan transliteration of Sanskrit, Chinese, or some non-Tibetan language.");
                     }
                 return internalThrowThing(throwIfIllegal,
+                                          errorBuf,
                                           "The subjoined letter given is not one of the four consonants that may be subscribed.");
             }
         } // subjoinedLetter tests
@@ -743,10 +768,12 @@ public class LegalTshegBar
             if (!getConnectiveCaseSuffix().equals(suffix)) {
                 if (suffix.length() != 1) {
                     return internalThrowThing(throwIfIllegal,
+                                              errorBuf,
                                               "Illegal suffix -- not one of the legal complex suffixes like 'u, 'o, 'i, 'am.");
                 }
                 if (!isNominalRepresentationOfSimpleSuffix(suffix.charAt(0))) {
                     return internalThrowThing(throwIfIllegal,
+                                              errorBuf,
                                               "Illegal suffix -- not one of the ten legal suffixes: "
                                               + UnicodeUtils.unicodeCodepointToString(suffix.charAt(0)));
                 }
@@ -755,6 +782,7 @@ public class LegalTshegBar
         if (EW_ABSENT != postsuffix) {
             if (null == suffix)
                 return internalThrowThing(throwIfIllegal,
+                                          errorBuf,
                                           "You cannot have a postsuffix unless you also have a suffix.");
         }
 
@@ -762,11 +790,13 @@ public class LegalTshegBar
             if (EWC_ra == headLetter) {
                 if (!isConsonantThatTakesRaMgo(rootLetter)) {
                     return internalThrowThing(throwIfIllegal,
+                                              errorBuf,
                                               "The head letter ra cannot be used with that root letter.");
                 }
             } else if (EWC_la == headLetter) {
                 if (!isConsonantThatTakesLaMgo(rootLetter)) {
                     return internalThrowThing(throwIfIllegal,
+                                              errorBuf,
                                               "The head letter la cannot be used with that root letter.");
                 }
             } else if (EWC_sa == headLetter) {
@@ -774,15 +804,18 @@ public class LegalTshegBar
                     // handle a common error specially:
                     if (EWC_la == rootLetter)
                         return internalThrowThing(throwIfIllegal,
+                                                  errorBuf,
                                                   "sa cannot be a head letter atop the root letter la.  You probably meant to have sa the root letter and la the subjoined letter.");
 
                     return internalThrowThing(throwIfIllegal,
+                                              errorBuf,
                                               "The head letter sa cannot be used with that root letter.");
                 }
             } else {
                 // '&#92;u0F6A' is not a valid head letter, even for
                 // "rnya".  Use EWC_ra instead.
                 return internalThrowThing(throwIfIllegal,
+                                          errorBuf,
                                           "The head letter given is not valid.");
             }
         } // headLetter tests
@@ -796,16 +829,20 @@ public class LegalTshegBar
                 {
                     if (EWC_achen == vowel)
                         return internalThrowThing(throwIfIllegal,
+                                                  errorBuf,
                                                   "The vowel given is not valid.  Use EW_ABSENT for the EWC_achen sound.");
                     if ('\u0F71' == vowel)
                         return internalThrowThing(throwIfIllegal,
-                                                  "a-chung cannot be used in a simple Tibetan syllable.");
+                                                  errorBuf,
+                                                  "a-chung cannot be used in a simple Tibetan syllable."); // DLC FIXME: what about pA?
                     return internalThrowThing(throwIfIllegal,
+                                              errorBuf,
                                               "The vowel given is not valid.");
                 }
         }
 
         // Phew.  We got here, so this combination of inputs is valid.
+        // Do nothing to errorBuf.
         return true;
     }
 
