@@ -23,6 +23,8 @@ import java.io.*;
 import java.lang.*;
 import java.net.URL;
 
+import org.thdl.util.Trie;
+
 /**
 * An alternate (non-Extended Wylie) keyboard input
 * method. A keyboard URL is passed to its constructor. This URL
@@ -43,6 +45,11 @@ import java.net.URL;
 * @version 1.0
 */
 public class TibetanKeyboard {
+
+    /** This addresses bug 624133, "Input freezes after impossible
+        character".  We store all valid input sequences here. */
+    private Trie validInputSequences;
+
 	private boolean hasDisambiguatingKey;
 	private char disambiguatingKey;
 	private boolean hasSanskritStackingKey;
@@ -68,6 +75,9 @@ public class TibetanKeyboard {
 	public class InvalidKeyboardException extends Exception {
 	}
 
+    /** Do not call this. */
+	private TibetanKeyboard() { }
+
 /**
 * Opens the URL specified by the parameter,
 * and tries to construct a keyboard from it. If the file is
@@ -89,6 +99,7 @@ public class TibetanKeyboard {
 			charMap = new HashMap();
 			vowelMap = new HashMap();
 			puncMap = new HashMap();
+			validInputSequences = new Trie();
 
 			command = NO_COMMAND;
 
@@ -176,6 +187,7 @@ public class TibetanKeyboard {
 									break;
 
 								charMap.put(right, left);
+								validInputSequences.put(right, left);
 								break;
 
 						case VOWELS:
@@ -186,6 +198,7 @@ public class TibetanKeyboard {
 									break;
 
 								vowelMap.put(right, left);
+								validInputSequences.put(right, left);
 								break;
 
 						case PUNCTUATION:
@@ -196,6 +209,7 @@ public class TibetanKeyboard {
 									break;
 
 								puncMap.put(right, left);
+								validInputSequences.put(right, left);
 								break;
 					}
 				}
@@ -298,14 +312,14 @@ public class TibetanKeyboard {
 	}
 
 /**
-* Decides whether or not a string is a character in this keyboard.
+* Decides whether or not a string is a character (as opposed to a
+* vowel or punctuation) in this keyboard.
 * @return true if the parameter is a character
 * in this keyboard. This method checks to see
 * if the passed string has been mapped to a
 * Wylie character - if not, then it returns false.
 *
-* @param s the possible character
-*/
+* @param s the possible character */
 	public boolean isChar(String s) {
 		if (charMap.containsKey(s))
 			return true;
@@ -388,4 +402,15 @@ public class TibetanKeyboard {
 
 		return (String)vowelMap.get(s);
 	}
+
+    /** This addresses bug 624133, "Input freezes after impossible
+     *  character".  Returns true iff s is a proper prefix of some
+     *  legal input for this keyboard.  In the extended Wylie
+     *  keyboard, hasInputPrefix("S") is true because "Sh" is legal
+     *  input.  hasInputPrefix("Sh") is false because though "Sh" is
+     *  legal input, ("Sh" + y) is not valid input for any non-empty
+     *  String y. */
+    public boolean hasInputPrefix(String s) {
+        return validInputSequences.hasPrefix(s);
+    }
 }

@@ -1039,6 +1039,8 @@ public void paste(int offset) {
 * Other keystrokes are handled by keyTyped.
 */
 	public void keyPressed(KeyEvent e) {
+        // FIXME: exceptions thrown here do not cause the program to fail, even in development mode.
+
 		if (e.isActionKey())
 			initKeyboard();
 
@@ -1108,6 +1110,8 @@ public void paste(int offset) {
 * @param e the KeyEvent
 */
 	public void keyReleased(KeyEvent e) {
+        // FIXME: exceptions thrown here do not cause the program to fail, even in development mode.
+
 /*
 * Apparently it works best to check for backspace
 * and init the keyboard here in key released
@@ -1128,6 +1132,8 @@ public void paste(int offset) {
 * @param e a KeyEvent
 */
 	public void keyTyped(KeyEvent e) {
+        // FIXME: exceptions thrown here do not cause the program to fail, even in development mode.
+
 		e.consume();
 
         // Respect setEditable(boolean):
@@ -1174,29 +1180,34 @@ public void paste(int offset) {
 * TibTextUtils.getGlyphs, which in turn relies on 'tibwn.ini'.
 *
 * @param e a KeyEvent */
-	public void processTibetan(KeyEvent e) {
-		char c = e.getKeyChar();
-
-		int start = getSelectionStart();
-		int end = getSelectionEnd();
+	public void processTibetan(KeyEvent kev) {
 		boolean shouldIBackSpace = true;
 
         // We don't handle just any old keypress.  We handle only the
         // ones that enter text.
-		if (e.isControlDown() || e.isAltDown())
+		if (kev.isControlDown() || kev.isAltDown())
 			return;
 
-		if (start != end) {
-			if (e.getKeyCode() != KeyEvent.VK_ESCAPE) {
-				try {
-					initKeyboard();
-					doc.remove(start, end-start);
-					shouldIBackSpace = false;
-				}
-				catch (BadLocationException ble) {
-				}
-			}
-		}
+        {
+            int start = getSelectionStart();
+            int end = getSelectionEnd();
+            if (start != end) {
+                if (kev.getKeyCode() != KeyEvent.VK_ESCAPE) {
+                    try {
+                        initKeyboard();
+                        doc.remove(start, end-start);
+                        shouldIBackSpace = false;
+                    }
+                    catch (BadLocationException ble) {
+                    }
+                }
+            }
+        }
+		processTibetanChar(kev.getKeyChar(), shouldIBackSpace);
+    }
+
+    /** @see #processTibetan(KeyEvent) */
+	private void processTibetanChar(char c, boolean shouldIBackSpace) {
 
         // Have we modified the status bar?
 		boolean changedStatus = false;
@@ -1371,9 +1382,29 @@ public void paste(int offset) {
                             changedStatus = true;
                             updateStatus("You typed a non-vowel, Tibetan character.");
 						} else {
-							isTopHypothesis = false;
-                            changedStatus = true;
-                            updateStatus("invalid input, I think");
+                            if (TibetanMachineWeb.hasInputPrefix(s)) {
+                                isTopHypothesis = false;
+                                changedStatus = true;
+                                updateStatus("incomplete input (like the \"S\" in Extended Wylie's \"Sh\")");
+                            } else {
+                                // FIXME: ring a bell here so the user knows what's up.
+                                initKeyboard();
+                                
+                                // The recursive call to
+                                // processTibetanChar will update the
+                                // status bar, so set this to true:
+                                changedStatus = true;
+
+                                // This status message is bound to get
+                                // overridden, but this is what we
+                                // would say if we had a queue of
+                                // messages or something like Emacs's
+                                // M-x view-lossage to see a history
+                                // of status messages:
+                                appendStatus(" (because you typed something invalid [2nd way])");
+
+                                processTibetanChar(c, false);
+                            }
                         }
 					}
 				} else { //there is already a character in charList
@@ -1454,7 +1485,7 @@ public void paste(int offset) {
 										putVowel(TibetanMachineWeb.A_VOWEL);
 										initKeyboard();
                                         changedStatus = true;
-                                        appendStatus("we put a vowel");
+                                        appendStatus(" (because we put a vowel)");
 										break key_block;
 									}
 
@@ -1470,9 +1501,34 @@ public void paste(int offset) {
                                     updateStatus("you didn't type a 'char'; voodoo no. 5 ensues");
 								}
 							}
-						} else { //top char is just a guess! just keep it in holdCurrent
-                            changedStatus = true;
-                            updateStatus("top char is just a guess! just keep it in holdCurrent");
+						} else {
+                            // top char is just a guess!  Just keep c
+                            // in holdCurrent if it may become valid
+                            // input, or reset if we've no hope.
+
+                            if (TibetanMachineWeb.hasInputPrefix(s)) {
+                                isTopHypothesis = false;
+                                changedStatus = true;
+                                updateStatus("incomplete input (like the \"S\" in Extended Wylie's \"Sh\")");
+                            } else {
+                                // FIXME: ring a bell here so the user knows what's up.
+                                initKeyboard();
+                                
+                                // The recursive call to
+                                // processTibetanChar will update the
+                                // status bar, so set this to true:
+                                changedStatus = true;
+
+                                // This status message is bound to get
+                                // overridden, but this is what we
+                                // would say if we had a queue of
+                                // messages or something like Emacs's
+                                // M-x view-lossage to see a history
+                                // of status messages:
+                                appendStatus(" (because you typed something invalid [2nd way])");
+
+                                processTibetanChar(c, false);
+                            }
 						}
 					}
 				}

@@ -28,6 +28,7 @@ import javax.swing.text.*;
 import java.awt.font.*;
 
 import org.thdl.util.ThdlDebug;
+import org.thdl.util.Trie;
 
 /**
 * Interfaces between Extended Wylie and the TibetanMachineWeb fonts.
@@ -37,6 +38,17 @@ import org.thdl.util.ThdlDebug;
 * @version 1.0
 */
 public class TibetanMachineWeb {
+    /** This addresses bug 624133, "Input freezes after impossible
+     *  character".  The input sequences that are valid in Extended
+     *  Wylie.  For example, "Sh" will be in this container, but "S"
+     *  will not be. */
+    private static Trie validInputSequences = new Trie();
+
+    /** needed because a Trie cannot have a null value associated with
+     *  a key */
+    private final static String anyOldObjectWillDo
+        = "this placeholder is useful for debugging; we need a nonnull Object anyway";
+
 	private static boolean hasReadData = false;
 	private static TibetanKeyboard keyboard = null;
 	private static final String DEFAULT_KEYBOARD = "default_keyboard.ini";
@@ -306,8 +318,11 @@ public class TibetanMachineWeb {
 						line = in.readLine();
 						charSet = new HashSet();
 						StringTokenizer st = new StringTokenizer(line,",");
-						while (st.hasMoreTokens())
-							charSet.add(st.nextToken());
+						while (st.hasMoreTokens()) {
+                            String ntk;
+							charSet.add(ntk = st.nextToken());
+                            validInputSequences.put(ntk, anyOldObjectWillDo);
+                        }
 					}
 					else if (line.equalsIgnoreCase("<?Vowels?>")) {
 						isSanskrit = false;
@@ -315,8 +330,11 @@ public class TibetanMachineWeb {
 						line = in.readLine();
 						vowelSet = new HashSet();
 						StringTokenizer st = new StringTokenizer(line,",");
-						while (st.hasMoreTokens())
-							vowelSet.add(st.nextToken());
+						while (st.hasMoreTokens()) {
+                            String ntk;
+							vowelSet.add(ntk = st.nextToken());
+                            validInputSequences.put(ntk, anyOldObjectWillDo);
+                        }
 					}
 					else if (line.equalsIgnoreCase("<?Other?>")) {
 						isSanskrit = false;
@@ -324,8 +342,11 @@ public class TibetanMachineWeb {
 						line = in.readLine();
 						puncSet = new HashSet();
 						StringTokenizer st = new StringTokenizer(line,",");
-						while (st.hasMoreTokens())
-							puncSet.add(st.nextToken());
+						while (st.hasMoreTokens()) {
+                            String ntk;
+							puncSet.add(ntk = st.nextToken());
+                            validInputSequences.put(ntk, anyOldObjectWillDo);
+                        }
 					}
 
 					else if (line.equalsIgnoreCase("<?Input:Punctuation?>")
@@ -445,8 +466,10 @@ public static boolean setKeyboard(TibetanKeyboard kb) {
 		isAChungConsonant = false;
 		hasAVowel = true;
 		aVowel = WYLIE_aVOWEL;
-		if (!vowelSet.contains(WYLIE_aVOWEL))
+		if (!vowelSet.contains(WYLIE_aVOWEL)) {
 			vowelSet.add(WYLIE_aVOWEL);
+            validInputSequences.put(WYLIE_aVOWEL, anyOldObjectWillDo);
+        }
 	}
 	else {
 		hasDisambiguatingKey = keyboard.hasDisambiguatingKey();
@@ -703,6 +726,13 @@ public static String getWylieForChar(String s) {
 }
 
 /**
+ *  Returns the current keyboard, or, if the current keyboard is the
+ *  Extended Wylie keyboard, null.  */
+    public static TibetanKeyboard getKeyboard() {
+        return keyboard;
+    }
+
+/**
 * Converts punctuation to its Extended Wylie correspondence.
 * This assumes that the passed string is punctuation
 * in the current keyboard.
@@ -926,6 +956,22 @@ public static String getWylieForGlyph(DuffCode dc) {
 	String hashKey = getHashKeyForGlyph(dc);
 	return wylieForGlyph(hashKey);
 }
+
+    /** This addresses bug 624133, "Input freezes after impossible
+     *  character".  Returns true iff s is a proper prefix of some
+     *  legal input for this keyboard.  In the extended Wylie
+     *  keyboard, hasInputPrefix("S") is true because "Sh" is legal
+     *  input.  hasInputPrefix("Sh") is false because though "Sh" is
+     *  legal input, ("Sh" + y) is not valid input for any non-empty
+     *  String y. */
+    public static boolean hasInputPrefix(String s) {
+        if (null != keyboard) {
+            return keyboard.hasInputPrefix(s);
+        } else {
+            return validInputSequences.hasPrefix(s);
+        }
+    }
+
 
 /**
 * Says whether or not this glyph involves a Sanskrit stack.

@@ -81,6 +81,8 @@ Contributor(s): ______________________________________.
 
 package org.thdl.util;
 
+import org.thdl.util.ThdlDebug;
+
 /**
  * A digital search trie for 7-bit ASCII text.  The API is a subset of
  * java.util.Hashtable.  The key must be a 7-bit ASCII string.  The
@@ -102,6 +104,9 @@ public class Trie
         m_Root = new Node();
     }
 
+    private static final boolean caseInsensitive = false;
+
+
     /**
      * Puts an object into the trie for lookup.
      *
@@ -120,7 +125,10 @@ public class Trie
 
         for (int i = 0; i < len; i++)
             {
-                Node nextNode = node.m_nextChar[Character.toUpperCase(key.charAt(i))];
+                Node nextNode
+                    = node.m_nextChar[(caseInsensitive
+                                       ? Character.toUpperCase(key.charAt(i))
+                                       : key.charAt(i))];
 
                 if (nextNode != null)
                     {
@@ -132,7 +140,9 @@ public class Trie
                             {
                                 Node newNode = new Node();
 
-                                node.m_nextChar[Character.toUpperCase(key.charAt(i))] = newNode;
+                                node.m_nextChar[(caseInsensitive
+                                                 ? Character.toUpperCase(key.charAt(i))
+                                                 : key.charAt(i))] = newNode;
                                 node.m_isLeaf = false;
                                 node = newNode;
                             }
@@ -165,13 +175,17 @@ public class Trie
             {
                 try
                     {
-                        node = node.m_nextChar[Character.toUpperCase(key.charAt(i))];
+                        node = node.m_nextChar[(caseInsensitive
+                                                ? Character.toUpperCase(key.charAt(i))
+                                                : key.charAt(i))];
                     }
                 catch (ArrayIndexOutOfBoundsException e)
                     {
 
                         // the key is not 7-bit ASCII so we won't find it here
                         node = null;
+
+                        ThdlDebug.noteIffyCode();
                     }
 
                 if (node == null)
@@ -204,13 +218,17 @@ public class Trie
             {
                 try
                     {
-                        node = node.m_nextChar[Character.toUpperCase(key.charAt(i))];
+                        node = node.m_nextChar[(caseInsensitive
+                                                ? Character.toUpperCase(key.charAt(i))
+                                                : key.charAt(i))];
                     }
                 catch (ArrayIndexOutOfBoundsException e)
                     {
 
                         // the key is not 7-bit ASCII so we won't find it here
                         node = null;
+
+                        ThdlDebug.noteIffyCode();
                     }
 
                 if (node == null)
