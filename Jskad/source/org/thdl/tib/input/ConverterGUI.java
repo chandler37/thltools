@@ -73,6 +73,12 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
                                           "Nothing to do",
                                           JOptionPane.ERROR_MESSAGE);
             return false;
+        } else if (42 == returnCode) {
+            JOptionPane.showMessageDialog(cd,
+                                          "Some of the document cannot be converted.  The output\ncontains the problem glyphs.  E-mail David Chandler\nwith your suggestions about the proper way to handle\nsuch a document.",
+                                          "Errors in Conversion",
+                                          JOptionPane.ERROR_MESSAGE);
+            return false;
         } else if (0 != returnCode) {
             JOptionPane.showMessageDialog(cd,
                                           "The conversion failed with code " + returnCode + "; please e-mail\ndchandler@users.sourceforge.net to learn what that means if\nyou can't find out from the output.",
