@@ -216,7 +216,7 @@
     <antcall target="src-dist"/>
     <zip destfile="${dist}/nightlyBuild.zip">
       <zipfileset dir="${dist}"
-                  excludes="nightlyBuild.zip,lib-jws/**,*.jnlp,README.txt"
+                  excludes="nightlyBuild.zip,lib-jws/**,*.jnlp,README.TXT,releases"
                   prefix="."/>
     </zip>
   </target>
@@ -944,6 +944,36 @@
   </target>
 
 
+  <!-- DC uses this to update the javadocs on thdltools.sf.net. -->
+  <target name="copy-over-javadocs"
+          depends="clean,public-javadocs-dist,private-javadocs-dist"
+          description="Uses scp to copy zip files of two flavors of Javadocs to thdltools.sf.net.  After that, ssh in and follow the instructions given in http://thdltools.sourceforge.net/BuildSystems.html.">
+    <apply executable="scp" parallel="true">
+      <srcfile/>
+      <fileset dir="dist/docs"/>
+      <arg value="dchandler@thdltools.sourceforge.net:/home/groups/t/th/thdltools/htdocs"/>
+    </apply>
+  </target>
+
+  <!-- DC uses this to do nightly builds. The passwords are included
+       in this publically-available file because the keystore is basically
+       a dummy keystore. -->
+  <target name="dc-nightly-build"
+          description="How Chandler r0x0rs the nightly build's b0x0rs">
+    <antcall target="nightly-build">
+      <param name="keystore" value="file:///home/chandler/thdl/sandboxes/Jskad/NightlyBuildStore"/>
+      <param name="key.alias" value="me"/>
+      <param name="dgkey.password" value="nightly"/>
+      <param name="keystore.password" value="nightly"/>
+    </antcall>
+  </target>
+
+
+  <!-- -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* -->
+  <!-- UTILITY TARGETS - targets of antcalls, targets not usually
+       directly called. -->
+  <!-- -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* -->
+
   <target name="ttsc-init" depends="init"
           description="used internally to set a property when the J2EE SDK or Tomcat's servlet.jar is installed in a place where we can find it.  In that case, we can build servlets.">
     <condition property="found.servlet.classes">
@@ -953,12 +983,6 @@
       </or>
     </condition>
   </target>
-
-
-  <!-- -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* -->
-  <!-- UTILITY TARGETS - targets of antcalls, targets not usually
-       directly called. -->
-  <!-- -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* -->
 
   <!-- Utility target called by private-javadocs and public-javadocs -->
   <target name="our-javadocs" depends="init"
@@ -992,7 +1016,7 @@
       <doctitle><![CDATA[<h1>THDL Tools</h1>]]></doctitle>
 
       <!-- Note: We must show the SF.net logo in order to get hit counts. -->
-      <bottom>These API docs were created ${javadoc.creation.time}.<![CDATA[<br><i>Copyright &#169; 2001-2002 Tibetan and Himalayan Digital Library. All Rights Reserved.</i><br>Hosted by <a href="http://sourceforge.net/"><img src="http://sourceforge.net/sflogo.php?group_id=61934&amp;type=1" width="88" height="31" border="0" alt="SourceForge_Logo"></a>]]></bottom>
+      <bottom>These API docs were created ${javadoc.creation.time}.<![CDATA[<br><i>Copyright &#169; 2001-2003 Tibetan and Himalayan Digital Library. All Rights Reserved.</i><br>Hosted by <a href="http://sourceforge.net/"><img src="http://sourceforge.net/sflogo.php?group_id=61934&amp;type=1" width="88" height="31" border="0" alt="SourceForge_Logo"></a>]]></bottom>
 
       <group title="Tibetan Text Packages" packages="org.thdl.tib.text.**"/>
       <group title="Tibetan Input Packages" packages="org.thdl.tib.input.**"/>
@@ -1376,9 +1400,25 @@ public class ThdlVersion {
   <target name="copy-SQD-jars"
           description="Unpacks the JARs/WARs/ZIP files that Savant and QuillDriver use to the chosen bin/ directory">
     <unjar src="${ext}/jdom.jar" dest="${unjardest}"/>
+
+    <available file="${ext}/xml-apis.jar"
+               property="found.xml-apis.jar"/>
+    <fail message="Can't find extensions/xml-apis.jar; please download it."
+          unless="found.xml-apis.jar"/>
     <unjar src="${ext}/xml-apis.jar" dest="${unjardest}"/>
-    <unjar src="${ext}/xalan.jar" dest="${unjardest}"/> <!-- DLC FIXME: this isn't needed for Savant. -->
+
+    <available file="${ext}/xalan.jar"
+               property="found.xalan.jar"/>
+    <fail message="Can't find extensions/xalan.jar; please download it."
+          unless="found.xalan.jar"/>
+    <unjar src="${ext}/xalan.jar" dest="${unjardest}"/> <!-- Note: this isn't actually needed for Savant. -->
+
+    <available file="${ext}/xercesImpl.jar"
+               property="found.xercesImpl.jar"/>
+    <fail message="Can't find extensions/xercesImpl.jar; please download it."
+          unless="found.xercesImpl.jar"/>
     <unjar src="${ext}/xercesImpl.jar" dest="${unjardest}"/>
+
     <!-- One or more of the above may have a META-INF directory.  We don't
          want theirs to overwrite our own, so we delete it. -->
     <delete dir="${unjardest}/META-INF"/>
@@ -1389,7 +1429,7 @@ public class ThdlVersion {
           description="Unpacks the JARs/WARs/ZIP files that Savant and QuillDriver use to the chosen bin/ directory">
     <available file="Fonts/TibetanMachineWeb"
                property="found.the.fonts"/>
-    <fail message="Can't find the Fonts module at Jskad/Fonts/TibetanMachineWeb.  Did you do 'cvs checkout Fonts' from inside the Jskad directory?"
+    <fail message="Can't find the Fonts module at Jskad/Fonts/TibetanMachineWeb.  Did you do 'cvs -f checkout -P Fonts' from inside the Jskad directory?"
           unless="found.the.fonts"/>
     <copy todir="${my.bin}/Fonts/TibetanMachineWeb">
       <fileset dir="Fonts/TibetanMachineWeb"/>

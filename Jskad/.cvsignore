@@ -1,6 +1,7 @@
+*~
+NightlyBuildStore
+TEST*
 bin
 jskad.log
-savant.log
 qd.log
-TEST*
-*~
+savant.log
