@@ -85,7 +85,7 @@
 
 
   <target name="test-all"
-          depends="clean,distclean,compile,dist,src-dist,all-src-dist,jskad-src-dist,self-contained-dist,public-javadocs-dist,private-javadocs-dist"
+          depends="clean,distclean,compile,dist,src-dist,self-contained-dist,public-javadocs-dist,private-javadocs-dist,releases"
           description="runs every target in this buildfile in a smart order; useful for testing the buildfile and your build environment" />
 
 
@@ -98,10 +98,6 @@
   <target name="dist"
           depends="jskad-dist,savant-dist,qd-dist,tt-dist"
           description="JARs up everything" />
-
-  <target name="src-dist"
-          depends="all-src-dist"
-          description="JARs up the source distribution" />
 
   <target name="compile"
           depends="jskad-compile,savant-compile,qd-compile,tt-compile"
@@ -226,26 +222,7 @@
   </target>
 
 
-  <!-- FIXME: do we really need many source distributions?  I think
-       all-src-dist will do just fine. -->
-  <target name="jskad-src-dist" depends="init"
-          description="generates the Jskad source distribution" >
-    <!-- Put everything necessary into the zip file -->
-    <zip destfile="${dist}/source/Jskad-src-${DSTAMP}.zip">
-      <zipfileset dir="${source}"
-                  includes="org/thdl/tib/text/**,org/thdl/tib/input/**,org/thdl/util/**"
-                  prefix="source"/>
-      <zipfileset dir="license"
-                  includes="*.txt,*.html"
-                  prefix="."/>
-      <zipfileset dir="."
-                  includes="build.xml"
-                  prefix="."/>
-    </zip>
-  </target>
-
-
-  <target name="all-src-dist" depends="init"
+  <target name="src-dist" depends="init"
           description="generates the full Jskad+Savant+QuillDriver+Translation Tool source distribution" >
     <!-- Put everything necessary into the zip file -->
     <zip destfile="${dist}/source/THDL-Tools-src-${DSTAMP}.zip">
@@ -257,6 +234,9 @@
                   prefix="."/>
       <zipfileset dir="."
                   includes="build.xml"
+                  prefix="."/>
+      <zipfileset dir="."
+                  includes="docs/*package-list/**"
                   prefix="."/>
     </zip>
   </target>
@@ -473,7 +453,6 @@
       <!-- Note: We must show the SF.net logo in order to get hit counts. -->
       <bottom>These API docs were created ${javadoc.creation.time}.<![CDATA[<br><i>Copyright &#169; 2001-2002 Tibetan and Himalayan Digital Library. All Rights Reserved.</i><br>Hosted by <a href="http://sourceforge.net/"><img src="http://sourceforge.net/sflogo.php?group_id=61934&amp;type=1" width="88" height="31" border="0" alt="SourceForge_Logo"></a>]]></bottom>
 
-      <!-- DLC FIXME: we need an overview.html. -->
       <group title="Tibetan Text Packages" packages="org.thdl.tib.text.**"/>
       <group title="Tibetan Input Packages" packages="org.thdl.tib.input.**"/>
 
@@ -535,7 +514,12 @@
   </target>
 
 
-  <target name="releases" description="builds the releases under 'dist/releases/'">
+  <!-- See http://thdltools.sf.net/CuttingReleases.html for info on
+       how to use this target.  Note that we must do a distclean
+       because Ant doesn't always recompile when it should.  -->
+  <target name="releases"
+          description="builds the releases under 'dist/releases/' after doing a distclean"
+          depends="distclean">
     <mkdir dir="${dist}/releases"/>
     <antcall target="dist">
       <param name="javacdashg" value="no"/>
@@ -552,6 +536,6 @@
     </antcall>
   </target>
 
-      <!-- DLC FIXME: we need a compile-all that uses if="" and <available> . -->
+  <!-- DLC FIXME: we need a compile-all that uses if="" and <available> . -->
 
 </project>
