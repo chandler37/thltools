@@ -1051,14 +1051,16 @@ class JskadKeyboard {
      *  @param dp the DuffPane for which this keyboard will be made
      *  the active keyboard */
     public void activate(DuffPane dp) {
-        URL tibKeybdURL = null;
-        if (null == tibKeybdURL && keybdIniFile != null) {
-            tibKeybdURL = TibetanMachineWeb.class.getResource(keybdIniFile);
+        if (keybdIniFile != null) {
+            URL tibKeybdURL
+                = TibetanMachineWeb.class.getResource(keybdIniFile);
             if (null == tibKeybdURL)
                 throw new Error("Cannot load the keyboard initialization resource "
                                 + keybdIniFile);
+            dp.registerKeyboard(tibKeybdURL);
+        } else {
+            dp.registerKeyboard();
         }
-        dp.registerKeyboard(tibKeybdURL);
     }
 }
 
