@@ -1336,6 +1336,10 @@ public class ThdlVersion {
 
   <target name="copy-tmw-fonts-to-bin-dir"
           description="Unpacks the JARs/WARs/ZIP files that Savant and QuillDriver use to the chosen bin/ directory">
+    <available file="Fonts/TibetanMachineWeb"
+               property="found.the.fonts"/>
+    <fail message="Can't find the Fonts module at Jskad/Fonts/TibetanMachineWeb.  Did you do 'cvs checkout Fonts' from inside the Jskad directory?"
+          unless="found.the.fonts"/>
     <copy todir="${my.bin}/Fonts/TibetanMachineWeb">
       <fileset dir="Fonts/TibetanMachineWeb"/>
     </copy>
