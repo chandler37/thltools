@@ -44,6 +44,8 @@ import org.thdl.util.HTMLPane;
 import org.thdl.util.SimpleFrame;
 import org.thdl.util.ThdlLazyException;
 
+import calpa.html.CalHTMLPane;
+
 
 
 /**
@@ -159,9 +161,6 @@ public class Jskad extends JPanel implements DocumentListener {
                                       "Clearing Preferences",
                                       JOptionPane.PLAIN_MESSAGE);
     }
-
-    /** pane displaying Jskad's single HTML help file */
-    private static HTMLPane helpPane;
 
     /** the File menu */
     private JMenu fileMenu = null;
@@ -596,36 +595,44 @@ public class Jskad extends JPanel implements DocumentListener {
 
 		menuBar.add(toolsMenu);
 
-		JMenu infoMenu = new JMenu("Info");
+		JMenu helpMenu = new JMenu("Help");
 
         {
             JMenuItem helpItem = new JMenuItem("Help");
             helpItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
-                        if (helpPane == null) {
-                            try {
-                                helpPane
-                                    = new HTMLPane(Jskad.class,
-                                                   "/org/thdl/tib/input/jskad_doc.html");
-                            } catch (Exception ex) {
-                                ex.printStackTrace(System.err);
-                                throw new ThdlLazyException(ex);
-                                /* DLC FIXME--handle this better.
-                                   show a dialog saying "help can't be
-                                   loaded, surf to thdl's web site and
-                                   also submit a bug report." */
-                            }
+                        CalHTMLPane helpPane = new CalHTMLPane();
+                        try {
+                            URL helpDocumentURL
+                                = Jskad.class.getResource("/org/thdl/tib/input/jskad_doc.html");
+
+                            helpPane.showHTMLDocument(helpDocumentURL);
+                        } catch (Exception ex) {
+                            ex.printStackTrace(System.err);
+                            throw new ThdlLazyException(ex);
                         }
                         new SimpleFrame("Help for Jskad", helpPane);
-                        /* DLC FIXME -- pressing the "Help" menu item
-                           twice causes the first pane to become dead.
-                           We should check to see if the first pane
-                           exists and raise it rather than creating a
-                           second pane. */
                     }
                 });
-            infoMenu.add(helpItem);
-            infoMenu.addSeparator();
+            helpMenu.add(helpItem);
+        }
+
+        {
+            JMenuItem helpItem = new JMenuItem("Jskad on the Web");
+            helpItem.addActionListener(new ThdlActionListener() {
+                    public void theRealActionPerformed(ActionEvent e) {
+                        CalHTMLPane onlineHelpPane = new CalHTMLPane();
+                        try {
+                            onlineHelpPane.showHTMLDocument(new URL("http://iris.lib.virginia.edu/tibet/tools/jskad.html"));
+                        } catch (Exception ex) {
+                            ex.printStackTrace(System.err);
+                            throw new ThdlLazyException(ex);
+                        }
+                        new SimpleFrame("Jskad on the Web", onlineHelpPane);
+                    }
+                });
+            helpMenu.add(helpItem);
+            helpMenu.addSeparator();
         }
 
         for (int i = 0; i < keybdMgr.size(); i++) {
@@ -644,11 +651,11 @@ public class Jskad extends JPanel implements DocumentListener {
                                creating a second pane. */
                         }
                     });
-                infoMenu.add(keybdItem);
+                helpMenu.add(keybdItem);
             }
         }
 
-		infoMenu.addSeparator();
+		helpMenu.addSeparator();
 
         {
             JMenuItem aboutItem = new JMenuItem("About");
@@ -662,16 +669,19 @@ public class Jskad extends JPanel implements DocumentListener {
                                                       "for Jskad, visit our web site:\n"+
                                                       "     http://thdl.org/\n" +
                                                       "\n" +
+                                                      "Portions copyright Andrew Moulden.  Thanks to him for\n" + // CalHTMLPane's license requires this.
+                                                      "allowing us to display Help documents.\n" +
+                                                      "\n" +
                                                       "When submitting bug reports, please indicate that the\n" +
                                                       "time of compilation is "
                                                       + ThdlVersion.getTimeOfCompilation() + "\n",
                                                       "About Jskad", JOptionPane.PLAIN_MESSAGE);
                     }
                 });
-            infoMenu.add(aboutItem);
+            helpMenu.add(aboutItem);
         }
 
-		menuBar.add(infoMenu);
+		menuBar.add(helpMenu);
 
         /* Initialize dp before calling
            JskadKeyboard.activate(DuffPane) or dp.toggleLanguage(). */

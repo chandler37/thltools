@@ -122,7 +122,7 @@
   <!-- To easily add a jar to the CLASSPATH, just drop it into
        'extensions/drop-ins/'. -->
   <path id="entire.class.path">
-    <pathelement location="${ext}/"/> <!-- for netscape.javascript -->
+    <pathelement location="${ext}/"/> <!-- for netscape.javascript and calpa.html -->
 
     <!-- Developers: although these JARs are not yet in CVS, you're
          responsible for finding them and putting them into
@@ -284,12 +284,6 @@
   <target name="jskad-compile" depends="init"
           description="compiles Jskad" >
     <mkdir dir="${jskadbin}"/>
-    <antcall target="copy-tmw-fonts-to-bin-dir">
-      <param name="my.bin" value="${jskadbin}"/>
-    </antcall>
-    <antcall target="copy-tm-fonts-to-bin-dir">
-      <param name="my.bin" value="${jskadbin}"/>
-    </antcall>
     <antcall target="create-timestamp-source-code"/> <!-- DLC NOW! The -run targets are mucking with this! It isn't fatal, but it should be fixed. -->
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${jskadbin}"/>
@@ -315,6 +309,15 @@
     </antcall>
     <antcall target="copy-ini-files-to-bin-dir-for-jarring">
       <param name="mybin" value="${jskadbin}"/>
+    </antcall>
+    <antcall target="copy-tmw-fonts-to-bin-dir">
+      <param name="my.bin" value="${jskadbin}"/>
+    </antcall>
+    <antcall target="copy-tm-fonts-to-bin-dir">
+      <param name="my.bin" value="${jskadbin}"/>
+    </antcall>
+    <antcall target="copy-calhtmlpane-to-bin-dir">
+      <param name="my.bin" value="${jskadbin}"/>
     </antcall>
     <antcall target="copy-license-etc-to-bin-dir-for-jarring">
       <param name="mybin" value="${jskadbin}"/>
@@ -1250,6 +1253,13 @@ public class ThdlVersion {
           unless="found.the.fonts"/>
     <copy todir="${my.bin}/Fonts/TibetanMachine">
       <fileset dir="Fonts/TibetanMachine"/>
+    </copy>
+  </target>
+
+  <target name="copy-calhtmlpane-to-bin-dir"
+          description="Copies the class files for CalHTMLPane to the current build's bin/ directory.  The license does not require that we include CalHTMLPane's license in the JAR.">
+    <copy todir="${my.bin}/calpa/html">
+      <fileset dir="extensions/calpa/html"/>
     </copy>
   </target>
 
