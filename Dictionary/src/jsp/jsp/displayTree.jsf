@@ -189,7 +189,7 @@
 <!--RELATED TERM-->
 											<li>
 												<c:out value="<a name='${ sessionScope.visit.helper.hashCodeForCollection }'></a>" escapeXml="false"/>
-												<h2>RelatedTerm</h2>
+												<h2>Related Term</h2>
 												<ul>
 													<c:forEach var="relatedTerm" items="${ subdefinition.relatedTerms }">
 														<c:set target="${ sessionScope.visit.helper }" property="component" value="${relatedTerm}"/>
