@@ -181,7 +181,12 @@
   <target name="check"
           description="Compiles and runs all JUnit tests (that can be run given the present extension JARs) for the entire project.  Our coverage is currently quite low."
           depends="compile-junit-tests">
-    <ant antfile="junitbuild.xml" target="run-all-junit-tests"
+    <ant antfile="junitbuild.xml" target="run-headed-junit-tests"
+         inheritAll="false" inheritRefs="false">
+       <reference refid="entire.class.path"/>
+       <property name="junitbin" value="${junitbin}"/>
+    </ant>
+    <ant antfile="junitbuild.xml" target="run-headless-junit-tests"
          inheritAll="false" inheritRefs="false">
        <reference refid="entire.class.path"/>
        <property name="junitbin" value="${junitbin}"/>

@@ -26,7 +26,8 @@ import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 
 import org.thdl.util.ThdlOptions;
-import org.thdl.util.javaxdelta.Delta;
+import org.apache.commons.jrcs.tools.JDiff;
+import org.apache.commons.jrcs.diff.Revision;
 
 /**
  * @author David Chandler
@@ -78,9 +79,21 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
             + "TMW_RTF_TO_THDL_WYLIE" + testName + ".expected";
         assertTrue(new File(actualFile).exists());
         assertTrue(new File(expectedFile).exists());
-        rc = Delta.areFilesDifferent(actualFile, expectedFile);
-        if (0 != rc) System.out.println("0: rc is " + rc);
-        assertTrue(0 == rc);
+        Revision rev = JDiff.getDiff(expectedFile, actualFile);
+        assertTrue(null != rev);
+        String lineSep = System.getProperty("line.separator");
+        boolean foundExpectedDiff = false;
+        String expectedDiff
+            = ("3c3" + lineSep
+               + "< {\\stylesheet{\\s1\\li0\\ri0\\fi0\\ql\\sbasedon2\\snext1 Body Text;}{\\s2 default;}}\n"
+               + "---" + lineSep
+               + "> {\\stylesheet{\\s2 default;}{\\s1\\li0\\ri0\\fi0\\ql\\sbasedon2\\snext1 Body Text;}}\n");
+        if (0 != rev.size()
+            && !(foundExpectedDiff = expectedDiff.equals(rev.toString()))) {
+            System.out.println("Oops! the diff is this:");
+            System.out.print(rev.toString());
+            assertTrue(false);
+        }
     }
 
 
