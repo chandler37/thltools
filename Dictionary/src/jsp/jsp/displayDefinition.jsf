@@ -5,7 +5,7 @@
 
 
 <!--DEFINITION LOOP-->
-<c:set var="defintion" value="${ sessionScope.visit.helper.component }"/>
+<c:set var="definition" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
 
 		<c:if test="${ editMode }">

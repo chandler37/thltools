@@ -222,6 +222,8 @@ public class Term extends BaseTerm implements Serializable, LexComponentNode
 	{
 		List list = findSiblings( component );
 		list.add( component );
+		int precedence = list.indexOf( component );
+		component.setPrecedence( new Integer( precedence ) );
 	}
 
 
