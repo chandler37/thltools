@@ -196,7 +196,7 @@ public class TibetanMachineWeb implements THDLWylieConstants {
     /** comma-delimited list of supported punctuation and
         miscellaneous characters: */
 	private static final String others
-        = "_, ,/,|,!,:,;,@,#,$,%,(,),H,M,`,&,@#,?,=,[,],{,},*";
+        = "_, ,/,|,!,:,;,@,#,$,%,(,),H,M,`,&,@#,?,=,[,],{,},*,~";
 
     /** comma-delimited list of supported vowels: */
 	private static final String vowels
