@@ -17,48 +17,33 @@ public class LexRepository
 //attributes
 	private static LexRepository instance;
 
-	private Connection connection;
+	private DataSource dataSource;
 
-	private Statement queryStatement;
-	private Statement updateStatement;
+
+	/**
+	 *  Sets the dataSource attribute of the LexRepository object
+	 *
+	 * @param  dataSource  The new dataSource value
+	 */
+	public void setDataSource( DataSource dataSource )
+	{
+		this.dataSource = dataSource;
+	}
+
+
+	/**
+	 *  Gets the dataSource attribute of the LexRepository object
+	 *
+	 * @return    The dataSource value
+	 */
+	public DataSource getDataSource()
+	{
+		return dataSource;
+	}
+
 
 
 //accessors
-	/**
-	 *  Sets the connection attribute of the LexRepository object
-	 *
-	 * @param  connection  The new connection value
-	 * @since
-	 */
-	private void setConnection( Connection connection )
-	{
-		this.connection = connection;
-	}
-
-
-	/**
-	 *  Sets the queryStatement attribute of the LexRepository object
-	 *
-	 * @param  queryStatement  The new queryStatement value
-	 * @since
-	 */
-	public void setQueryStatement( Statement queryStatement )
-	{
-		this.queryStatement = queryStatement;
-	}
-
-
-	/**
-	 *  Sets the updateStatement attribute of the LexRepository object
-	 *
-	 * @param  updateStatement  The new updateStatement value
-	 * @since
-	 */
-	public void setUpdateStatement( Statement updateStatement )
-	{
-		this.updateStatement = updateStatement;
-	}
-
 
 	/**
 	 *  Gets the instance attribute of the LexRepository class
@@ -77,93 +62,8 @@ public class LexRepository
 	}
 
 
-	/**
-	 *  Gets the connection attribute of the LexRepository object
-	 *
-	 * @return                             The connection value
-	 * @exception  LexRepositoryException  Description of the Exception
-	 * @since
-	 */
-	private Connection getConnection() throws LexRepositoryException
-	{
-		try
-		{
-			if ( null == connection || connection.isClosed() )
-			{
-				Context context = new InitialContext();
-				DataSource source = (DataSource) context.lookup( LexConstants.DATASOURCE_NAME );
-				setConnection( source.getConnection() );
-			}
-		}
-		catch ( Exception se )
-		{
-			throw new LexRepositoryException( se );
-		}
-		return connection;
-	}
-
-
-
-	/**
-	 *  Gets the queryStatement attribute of the LexRepository object
-	 *
-	 * @return                             The queryStatement value
-	 * @exception  LexRepositoryException  Description of the Exception
-	 * @since
-	 */
-	public Statement getQueryStatement() throws LexRepositoryException
-	{
-		try
-		{
-			if ( getConnection().isClosed() )
-			{
-				Context context = new InitialContext();
-				DataSource source = (DataSource) context.lookup( LexConstants.DATASOURCE_NAME );
-				setConnection( source.getConnection() );
-			}
-		}
-		catch ( Exception se )
-		{
-			throw new LexRepositoryException( se );
-		}
-		return queryStatement;
-	}
-
-
-	/**
-	 *  Gets the updateStatement attribute of the LexRepository object
-	 *
-	 * @return    The updateStatement value
-	 * @since
-	 */
-	public Statement getUpdateStatement()
-	{
-		return updateStatement;
-	}
-
 
 //helper methods
-	/**
-	 *  doQuery() performs a SELECT query on the database.
-	 *
-	 * @param  sql                         This is a SQL String passed in from
-	 *      outside.
-	 * @return                             ResultSet representing query results
-	 * @exception  LexRepositoryException  Description of the Exception
-	 * @since
-	 */
-	public ResultSet doQuery( String sql ) throws LexRepositoryException
-	{
-		try
-		{
-			return getQueryStatement().executeQuery( sql );
-		}
-		catch ( SQLException sqle )
-		{
-			throw new LexRepositoryException( sqle );
-		}
-	}
-
 
 	/**
 	 *  doUpdate() performs an INSERT/UPDATE/DROP action
@@ -177,7 +77,10 @@ public class LexRepository
 	{
 		try
 		{
-			return getQueryStatement().executeUpdate( sql );
+			Connection con = getDataSource().getConnection();
+			int i = con.createStatement().executeUpdate( sql );
+			con.close();
+			return i;
 		}
 		catch ( SQLException sqle )
 		{
@@ -213,11 +116,13 @@ public class LexRepository
 			i = doUpdate( sql );
 			if ( i > 0 )
 			{
-				rs = doQuery( "SELECT LAST_INSERT_ID()" );
+				Connection con = getDataSource().getConnection();
+				rs = con.createStatement().executeQuery( "SELECT LAST_INSERT_ID()" );
 				while ( rs.next() )
 				{
 					returnVal = rs.getInt( 1 );
 				}
+				con.close();
 				return returnVal;
 			}
 			else
@@ -243,80 +148,6 @@ public class LexRepository
 	 */
 	public static void main( String[] args )
 	{
-		String table = "Testing";
-		String msg = "Successful";
-		if ( args.length == 1 )
-		{
-			msg = args[0];
-		}
-//TEST doInsert() method. Insert a message multiple times using the Testing table
-		System.out.println( "TEST ONE\n--------\n" );
-		try
-		{
-			LexRepository lr = LexRepository.getInstance();
-			String sqlString = "INSERT INTO Testing Values (NULL, '" + msg + "')";
-			int newPK = lr.doInsert( sqlString );
-			if ( newPK > 0 )
-			{
-				System.out.println( "The newly inserted row's primary key equals " + newPK );
-			}
-			else
-			{
-				System.out.println( "The row was not inserted" );
-			}
-		}
-		catch ( LexRepositoryException lre )
-		{
-			System.out.println( lre.getMessage() );
-			lre.printStackTrace();
-		}
-
-//TEST doQuery() method. Accept a table parameter from the command line and output
-//a tab-delimited representation of the table.
-		System.out.println( "\nTEST TWO\n--------\n" );
-		try
-		{
-			LexRepository lr = LexRepository.getInstance();
-			ResultSet rs = lr.doQuery( "SELECT * FROM " + table );
-			ResultSetMetaData rsmd = rs.getMetaData();
-
-			int cc = rsmd.getColumnCount();
-			StringBuffer sb = new StringBuffer();
-			for ( int i = 1; i <= cc; i++ )
-			{
-				if ( 1 != i )
-				{
-					sb.append( "\t" );
-				}
-				sb.append( rsmd.getColumnLabel( i ) );
-			}
-			System.out.println( sb.toString() );
-			sb.setLength( 0 );
-			while ( rs.next() )
-			{
-				for ( int i = 1; i <= cc; i++ )
-				{
-					if ( 1 != i )
-					{
-						sb.append( "\t" );
-					}
-					sb.append( rs.getString( i ) );
-				}
-
-				System.out.println( sb.toString() );
-				sb.setLength( 0 );
-			}
-		}
-		catch ( LexRepositoryException lre )
-		{
-			System.out.println( lre.getMessage() );
-			lre.printStackTrace();
-		}
-		catch ( SQLException sqle )
-		{
-			System.out.println( sqle.getMessage() );
-			sqle.printStackTrace();
-		}
 	}
 
 
@@ -331,35 +162,15 @@ public class LexRepository
 	{
 		try
 		{
-			/*
-			    Class.forName( LexConstants.DRIVER );
-			    Properties props = new Properties();
-			    props.setProperty( "user", LexConstantsSecure.USER );
-			    props.setProperty( "password", LexConstantsSecure.PASSWORD );
-			    props.setProperty( "useUnicode", "true" );
-			    props.setProperty( "characterEncoding", "UTF-8" );
-			    setConnection( DriverManager.getConnection( LexConstantsSecure.URL, props ) );
-			  */
 			Context context = new InitialContext();
 			DataSource source = (DataSource) context.lookup( LexConstants.DATASOURCE_NAME );
-			setConnection( source.getConnection() );
-			setQueryStatement( getConnection().createStatement() );
-			setUpdateStatement( getConnection().createStatement() );
+			setDataSource( source );
 		}
-		/*
-		    catch ( ClassNotFoundException cnfe )
-		    {
-		    throw new LexRepositoryException( "No Driver Available for: " + LexConstants.DRIVER );
-		    }
-		  */
 		catch ( NamingException ne )
 		{
 			throw new LexRepositoryException( ne );
 		}
-		catch ( SQLException se )
-		{
-			throw new LexRepositoryException( se );
-		}
+
 	}
 }
 

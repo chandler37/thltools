@@ -2,6 +2,7 @@ package org.thdl.lex;
 
 import org.thdl.users.ThdlUserRepository;
 import java.util.HashMap;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -678,7 +679,8 @@ public class LexFlatDataRepository
 		try
 		{
 			LexRepository lr = LexRepository.getInstance();
-			rs = lr.getQueryStatement().executeQuery( sql );
+			Connection con = lr.getDataSource().getConnection();
+			rs = con.createStatement().executeQuery( sql );
 			if ( null != rs )
 			{
 				int i = 0;
@@ -698,6 +700,7 @@ public class LexFlatDataRepository
 					map.put( key, value );
 				}
 			}
+			con.close();
 		}
 		catch ( LexRepositoryException lre )
 		{

@@ -1,5 +1,6 @@
 package org.thdl.lex;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.thdl.lex.component.*;
@@ -487,9 +488,11 @@ public class Preferences
 	public void populate() throws LexRepositoryException, LexComponentException
 	{
 		String sql = "SELECT * FROM Preferences WHERE userId = " + getUserId();
-		ResultSet results = LexRepository.getInstance().doQuery( sql );
 		try
 		{
+			LexRepository lr = LexRepository.getInstance();
+			Connection con = lr.getDataSource().getConnection();
+			ResultSet results = con.createStatement().executeQuery( sql );
 			if ( LexUtilities.getResultSetSize( results ) > 0 )
 			{
 				results.next();
@@ -524,6 +527,7 @@ public class Preferences
 			{
 				insertNew();
 			}
+			con.close();
 		}
 		catch ( SQLException sqle )
 		{
@@ -562,11 +566,15 @@ public class Preferences
 		try
 		{
 			String sql = "SELECT id FROM Preferences WHERE userId = " + getUserId();
-			ResultSet results = LexRepository.getInstance().doQuery( sql );
+			LexRepository lr = LexRepository.getInstance();
+			Connection con = lr.getDataSource().getConnection();
+			ResultSet results = con.createStatement().executeQuery( sql );
+
 			if ( LexUtilities.getResultSetSize( results ) < 1 )
 			{
 				insertNew();
 			}
+			con.close();
 			StringBuffer sqlBuffer = new StringBuffer();
 			sqlBuffer.append( "UPDATE Preferences SET userId = " );
 			sqlBuffer.append( getUserId() );
@@ -608,7 +616,6 @@ public class Preferences
 			sqlBuffer.append( LexUtilities.convertIntegerArrayToTokens( getDialectSet() ) );
 			sqlBuffer.append( "' WHERE id = " );
 			sqlBuffer.append( getId() );
-
 			LexRepository.getInstance().doUpdate( sqlBuffer.toString() );
 		}
 		catch ( LexRepositoryException lre )
