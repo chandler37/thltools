@@ -68,12 +68,16 @@ public class DuffData {
         you call setData or manipulate the public fields. */
     public DuffData() { }
 
+    /** here for efficiency */
+    private static char[] chars = new char[1];
+
 /** Changes the text and font this DuffData represents.
 * @param c a character of TibetanMachineWeb or TibetanMachine text
 * @param i a TibetanMachineWeb or TibetanMachine font number
 */
     public void setData(char c, int i) {
-        text = new String(new char[] { c });
+        chars[0] = c;
+        text = new String(chars);
         font = i;
     }
 }
