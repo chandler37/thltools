@@ -112,7 +112,7 @@ public class ThdlUserRepository
 	 * @return                                  Description of the Return Value
 	 * @exception  ThdlUserRepositoryException  Description of the Exception
 	 */
-	public ThdlUser validate( ThdlUser user, String application ) throws ThdlUserRepositoryException
+	public ThdlUser validate( ThdlUser user, String application ) throws ThdlUserRepositoryException, SQLException
 	{
 		ThdlUser thdlUser = validate( user );
 
