@@ -19,35 +19,63 @@ Contributor(s): ______________________________________.
 package org.thdl.media;
 
 import java.lang.reflect.*;
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
+
+import org.thdl.util.*;
 
 import org.thdl.util.ThdlDebug;
 
 public class SmartPlayerFactory {
+	public static List moviePlayers;
+
     /** You cannot instantiate this class. */
     private SmartPlayerFactory() { }
 
-	static final String[] possiblePlayers
-		= {"org.thdl.media.SmartJMFPlayer", "org.thdl.media.SmartQT4JPlayer"};
+	public static List getAllAvailableSmartPlayers() {
+		String os;
+		try {
+			os = System.getProperty("os.name").toLowerCase();
+		} catch (SecurityException e) {
+			os = "unknown";
+		}
 
-	static SmartMoviePanel[] getAllAvailableSmartPlayers() {
-		List moviePlayers = new ArrayList();
+		String defaultPlayer;
+		if (os.indexOf("mac") != -1) //macs default to org.thdl.media.SmartQT4JPlayer
+			defaultPlayer = ThdlOptions.getStringOption("thdl.media.player", "org.thdl.media.SmartQT4JPlayer");
+		else if (os.indexOf("windows") != -1) //windows defaults to SmartJMFPlayer
+			defaultPlayer = ThdlOptions.getStringOption("thdl.media.player", "org.thdl.media.SmartJMFPlayer");
+		else //put linux etc. here
+			defaultPlayer = ThdlOptions.getStringOption("thdl.media.player", "org.thdl.media.SmartJMFPlayer");
+
+		String[] possiblePlayers;
+		if (defaultPlayer.equals("org.thdl.media.SmartJMFPlayer"))
+			possiblePlayers = new String[] {"org.thdl.media.SmartJMFPlayer", "org.thdl.media.SmartQT4JPlayer"};
+		else
+			possiblePlayers = new String[] {"org.thdl.media.SmartQT4JPlayer", "org.thdl.media.SmartJMFPlayer"};
+
+		moviePlayers = new ArrayList();
 		for (int i=0; i<possiblePlayers.length; i++) {
 			try {
 				Class mediaClass = Class.forName(possiblePlayers[i]);
+
                 //FIXME:				playerClasses.add(mediaClass);
+
 				SmartMoviePanel smp = (SmartMoviePanel)mediaClass.newInstance();
 				moviePlayers.add(smp);
 			} catch (ClassNotFoundException cnfe) {
-				cnfe.printStackTrace();
+				System.out.println("No big deal: class " + possiblePlayers[i] + " not found.");
+			} catch (LinkageError lie) {
+				System.out.println("No big deal: class " + possiblePlayers[i] + " not found.");
 			} catch (InstantiationException ie) {
 				ie.printStackTrace();
-				ThdlDebug.noteIffyCode();
+			} catch (SecurityException se) {
+				se.printStackTrace();
 			} catch (IllegalAccessException iae) {
 				iae.printStackTrace();
 				ThdlDebug.noteIffyCode();
 			}
 		}
-		return (SmartMoviePanel[])moviePlayers.toArray();
+		return moviePlayers;
 	}
 }

@@ -30,8 +30,6 @@ import org.thdl.util.ThdlDebug;
 /*-----------------------------------------------------------------------*/
 public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListener
 {
-		private EventListenerList listenerList = new EventListenerList();
-
 		public URL 				mediaURL;
 
 		private Player			player = null;
@@ -54,8 +52,11 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 
 		private Float			to = null;
 /*-----------------------------------------------------------------------*/
-	public String getName() {
+	public String getIdentifyingName() {
 		return "Java Media Framework";
+	}
+	public URL getMediaURL() {
+		return mediaURL;
 	}
 	public SmartJMFPlayer() {
 		super(new GridLayout());
@@ -79,7 +80,17 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 	public void destroy() throws SmartMoviePanelException {
 		if (false)
 			throw new SmartMoviePanelException();
+		removeAllAnnotationPlayers();
 		player.close();
+		removeAll();
+		mediaURL = null;
+		isRealized = false;
+		isSized = false;
+		visualComponent = null;
+		controlComponent = null;
+		panel = null;
+		vPanel = null;
+		isMediaAudio = false;
 	}
 /*-----------------------------------------------------------------------*/
 	private void start() {
@@ -118,27 +129,27 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 /*-----------------------------------------------------------------------*/
 	private void showMediaComponent() {
 		if (isRealized && isCached) {
-		if (visualComponent == null) {
-			if (panel == null) {
-				setLayout(new GridLayout(1,1));
-				vPanel = new JPanel();
-				vPanel.setLayout( new BorderLayout() );
-				if ((visualComponent = player.getVisualComponent())!= null)	
-					vPanel.add("Center", visualComponent);
-				else
-					isMediaAudio = true;
-				if ((controlComponent = player.getControlPanelComponent()) != null) {
-					if (visualComponent == null) //no video
-						vPanel.setPreferredSize(new Dimension(400,25));
-					vPanel.add("South", controlComponent);
+			if (visualComponent == null) {
+				if (panel == null) {
+					setLayout(new GridLayout(1,1));
+					vPanel = new JPanel();
+					vPanel.setLayout( new BorderLayout() );
+					if ((visualComponent = player.getVisualComponent())!= null)	
+						vPanel.add("Center", visualComponent);
+					else
+						isMediaAudio = true;
+					if ((controlComponent = player.getControlPanelComponent()) != null) {
+						if (visualComponent == null) //no video
+							vPanel.setPreferredSize(new Dimension(400,25));
+						vPanel.add("South", controlComponent);
+					}
 				}
+				add(vPanel);
+				parent.invalidate();
+				parent.validate();
+				parent.repaint();
+				isSized = true;
 			}
-			add(vPanel);
-			parent.invalidate();
-			parent.validate();
-			parent.repaint();
-			isSized = true;
-		}
 		}
 	}
 	public synchronized void controllerUpdate(ControllerEvent event) {
@@ -147,23 +158,14 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 		if (event instanceof RealizeCompleteEvent) {
 			System.out.println("received RealizeCompleteEvent event");
 			isRealized = true;
-			if (mediaURL.getProtocol() == "file") { //if http then wait until entire media is cached
+			if (mediaURL.getProtocol().equals("file")) { //if http then wait until entire media is cached
 				isCached = true;
 				showMediaComponent();
 			} else if (isCached) //must be http
 				showMediaComponent();
 		} else if (event instanceof StartEvent) {
-			StartEvent se = (StartEvent)event;
-			Time t = se.getMediaTime();
-			long longt = t.getNanoseconds();
-			Float from = new Float(longt);
-			float f = (from.floatValue() / 1000000000);
-			from = new Float(f);
-			t = player.getStopTime();
-			longt = t.getNanoseconds();
-			to = new Float(longt);
-			f = (to.floatValue() / 1000000000);
-			to = new Float(f);
+			launchAnnotationTimer(); //FIXME should have upper limit (stop time)
+
 			if (timer != null)
 			{
 				timer.cancel();
@@ -179,7 +181,7 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 				}}, 0, 15);
 		} else if (event instanceof StopEvent) {
 			pauseTime = player.getMediaTime();
-
+			cancelAnnotationTimer();
 
 			/*messy problems require messy solutions:
 				if the slider is present, dragging it while playing creates
