@@ -457,7 +457,10 @@ class ConvertDialog extends JDialog
         } else if (FIND_ALL_NON_TM == ct) {
             newFileNamePrefix = "AllNonTM__";
             newFileNameExtension = ".TXT";
-        } else { // conversion {to Wylie or TM} mode
+        } else if (TMW_TO_SAME_TWM == ct) {
+            newFileNamePrefix = "TMW_to_same_TMW__";
+            newFileNameExtension = ".RTF";
+        } else { // conversion mode
             if (TMW_TO_WYLIE == ct) {
                 newFileNamePrefix = suggested_WYLIE_prefix;
             } else if (TMW_TO_WYLIE_TEXT == ct) {

@@ -93,6 +93,12 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
                                           "Attention required",
                                           JOptionPane.ERROR_MESSAGE);
             return false;
+        } else if (50 == returnCode) {
+            JOptionPane.showMessageDialog(cd,
+                                          "Error doing RTF->RTF identity copy.",
+                                          "Attention required",
+                                          JOptionPane.ERROR_MESSAGE);
+            return false;
         } else if (43 == returnCode) {
             JOptionPane.showMessageDialog(cd,
                                           "Though an output file has been created, this conversion did nothing.\nDid you choose the correct original file?\nDid you choose the correct type of conversion?",
@@ -192,13 +198,15 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
             if (null == owner) {
                 convDialog
                     = new ConvertDialog(new ConverterGUI(),
-                                        CHOICES,
+                                        ThdlOptions.getBooleanOption("thdl.debug")
+                                        ? DEBUG_CHOICES : CHOICES,
                                         true);
             } else {
                 convDialog
                     = new ConvertDialog(owner,
                                         new ConverterGUI(),
-                                        CHOICES,
+                                        ThdlOptions.getBooleanOption("thdl.debug")
+                                        ? DEBUG_CHOICES : CHOICES,
                                         true);
             }
 

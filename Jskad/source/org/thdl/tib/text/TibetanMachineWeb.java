@@ -1372,6 +1372,39 @@ private static final DuffCode TMW_cr = new DuffCode(1, '\r');
 private static final DuffCode TMW_lf = new DuffCode(1, '\n');
 private static final DuffCode TMW_tab = new DuffCode(1, '\t');
 
+/** An identity function used merely for testing. */
+public static DuffCode mapTMWtoItself(int font, int ordinal, int suggestedFont) {
+    if (font < 0 || font > 9)
+        return null;
+    if (ordinal >= 255) {
+        throw new Error("I didn't know that ever happened.");
+    }
+    if (ordinal < 32) {
+        if (ordinal == (int)'\r') {
+            if (0 == suggestedFont)
+                return TMW_cr;
+            else
+                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it needlessly taxes the GC
+        } else if (ordinal == (int)'\n') {
+            if (0 == suggestedFont)
+                return TMW_lf;
+            else
+                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it needlessly taxes the GC
+        } else if (ordinal == (int)'\t') {
+            if (0 == suggestedFont)
+                return TMW_tab;
+            else
+                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it needlessly taxes the GC
+        } else {
+            // for robustness, just return font 1, char ordinal.
+            ThdlDebug.noteIffyCode();
+            return null;
+        }
+    }
+    return new DuffCode(font + 1, (char)ordinal);
+}
+
+
 /** Returns the DuffCode for the TibetanMachineWeb glyph corresponding
     to the given TibetanMachine font
     (0=norm,1=Skt1,2=Skt2,3=Skt3,4=Skt4) and character(32-254).
@@ -1406,17 +1439,17 @@ public static DuffCode mapTMtoTMW(int font, int ordinal, int suggestedFont) {
             if (0 == suggestedFont)
                 return TMW_cr;
             else
-                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it wastes heap
+                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it needlessly taxes the GC
         } else if (ordinal == (int)'\n') {
             if (0 == suggestedFont)
                 return TMW_lf;
             else
-                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it wastes heap
+                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it needlessly taxes the GC
         } else if (ordinal == (int)'\t') {
             if (0 == suggestedFont)
                 return TMW_tab;
             else
-                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it wastes heap
+                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it needlessly taxes the GC
         } else {
             // for robustness, just return font 1, char ordinal.
             ThdlDebug.noteIffyCode();
@@ -1430,7 +1463,7 @@ public static DuffCode mapTMtoTMW(int font, int ordinal, int suggestedFont) {
     // assume that a machine goofed along the way.  (FIXME: optionally
     // warn.)
     if ((0 != suggestedFont) && (32 == ordinal || 45 == ordinal)) {
-        return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it wastes heap
+        return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it needlessly taxes the GC
     }
     return TMtoTMW[font][ordinal-32];
 }
@@ -1465,17 +1498,17 @@ public static DuffCode mapTMWtoTM(int font, int ordinal, int suggestedFont) {
             if (0 == suggestedFont)
                 return TM_cr;
             else
-                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it wastes heap
+                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it needlessly taxes the GC
         } else if (ordinal == (int)'\n') {
             if (0 == suggestedFont)
                 return TM_lf;
             else
-                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it wastes heap
+                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it needlessly taxes the GC
         } else if (ordinal == (int)'\t') {
             if (0 == suggestedFont)
                 return TM_tab;
             else
-                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it wastes heap
+                return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it needlessly taxes the GC
         } else {
             // for robustness, just return font 1, char ordinal.
             ThdlDebug.noteIffyCode();
@@ -1488,7 +1521,7 @@ public static DuffCode mapTMWtoTM(int font, int ordinal, int suggestedFont) {
         return new DuffCode(1, (char)ordinal);
     }
     if ((0 != suggestedFont) && (32 == ordinal)) {
-        return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it wastes heap
+        return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it needlessly taxes the GC
     }
     DuffCode ans = TMWtoTM[font][ordinal-32];
     return ans;

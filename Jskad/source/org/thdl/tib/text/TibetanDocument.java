@@ -219,13 +219,18 @@ public class TibetanDocument extends DefaultStyledDocument {
 * @param color the color in which to insert, which is used if and only
 * if {@link #colorsEnabled() colors are enabled}
 */
-	public int insertDuff(int pos, DuffData[] glyphs, Color color) {
-        return insertDuff(tibetanFontSize, pos, glyphs, true, color);
-	}
+public int insertDuff(int pos, DuffData[] glyphs, Color color) {
+    return insertDuff(tibetanFontSize, pos, glyphs, true, color);
+}
 
-	public int insertDuff(int pos, DuffData[] glyphs) {
-        return insertDuff(tibetanFontSize, pos, glyphs, true, Color.black);
-	}
+/**
+* Inserts a stretch of TibetanMachineWeb data into the document.
+* @param pos the position at which you want to insert text
+* @param glyphs the array of Tibetan data you want to insert
+*/
+public int insertDuff(int pos, DuffData[] glyphs) {
+    return insertDuff(tibetanFontSize, pos, glyphs, true, Color.black);
+}
 
 /**
 * Appends glyph to the end of this document.
@@ -255,7 +260,7 @@ public class TibetanDocument extends DefaultStyledDocument {
                      glyph.font, asTMW);
     }
 
-	/** Replacing can be more efficient than inserting and then
+    /** Replacing can be more efficient than inserting and then
         removing. This replaces the glyphs at position [startOffset,
         endOffset) with data, which is interpreted as TMW glyphs if
         asTMW is true and as TM glyphs otherwise.  The font size for
@@ -265,16 +270,16 @@ public class TibetanDocument extends DefaultStyledDocument {
     private void replaceDuffs(int fontSize, int startOffset,
                               int endOffset, String data,
                               int newFontIndex, boolean asTMW) {
-		MutableAttributeSet mas
+        MutableAttributeSet mas
             = ((asTMW)
                ? TibetanMachineWeb.getAttributeSet(newFontIndex)
                : TibetanMachineWeb.getAttributeSetTM(newFontIndex));
         StyleConstants.setFontSize(mas, fontSize);
-		try {
+        try {
             replace(startOffset, endOffset - startOffset, data, mas);
         } catch (BadLocationException ble) {
             ThdlDebug.noteIffyCode();
-		}
+        }
     }
 
 	/** Replacing can be more efficient than inserting and then
@@ -297,25 +302,25 @@ public class TibetanDocument extends DefaultStyledDocument {
 		}
     }
 
-	private int insertDuff(int fontSize, int pos, DuffData[] glyphs, boolean asTMW) {
-        return insertDuff(fontSize, pos, glyphs, asTMW, Color.black);
-    }
-	private int insertDuff(int fontSize, int pos, DuffData[] glyphs, boolean asTMW, Color color) {
-		if (glyphs == null)
-			return pos;
+private int insertDuff(int fontSize, int pos, DuffData[] glyphs, boolean asTMW) {
+    return insertDuff(fontSize, pos, glyphs, asTMW, Color.black);
+}
+private int insertDuff(int fontSize, int pos, DuffData[] glyphs, boolean asTMW, Color color) {
+    if (glyphs == null)
+        return pos;
 
-		MutableAttributeSet mas;
-		for (int i=0; i<glyphs.length; i++) {
-            mas = ((asTMW)
-                   ? TibetanMachineWeb.getAttributeSet(glyphs[i].font)
-                   : TibetanMachineWeb.getAttributeSetTM(glyphs[i].font));
-            if (null == mas)
-                throw new Error("Cannot insert that DuffData; the font number is too low or too high; perhaps the programmer has asTMW set incorrectly?");
-			appendDuff(fontSize, pos, glyphs[i].text, mas, color);
-			pos += glyphs[i].text.length();
-		}
-		return pos;
-	}
+    MutableAttributeSet mas;
+    for (int i=0; i<glyphs.length; i++) {
+        mas = ((asTMW)
+               ? TibetanMachineWeb.getAttributeSet(glyphs[i].font)
+               : TibetanMachineWeb.getAttributeSetTM(glyphs[i].font));
+        if (null == mas)
+            throw new Error("Cannot insert that DuffData; the font number is too low or too high; perhaps the programmer has asTMW set incorrectly?");
+        appendDuff(fontSize, pos, glyphs[i].text, mas, color);
+        pos += glyphs[i].text.length();
+    }
+    return pos;
+}
 
 /**
 * Converts the entire document into Extended Wylie.
@@ -629,7 +634,7 @@ public class TibetanDocument extends DefaultStyledDocument {
     */
     public boolean convertToTM(int begin, int end, StringBuffer errors,
                                long numAttemptedReplacements[]) {
-        return convertHelper(begin, end, true, false, errors, null,
+        return convertHelper(begin, end, "TMW->TM", errors, null,
                              numAttemptedReplacements);
     }
 
@@ -651,7 +656,7 @@ public class TibetanDocument extends DefaultStyledDocument {
     */
     public boolean convertToTMW(int begin, int end, StringBuffer errors,
                                 long numAttemptedReplacements[]) {
-        return convertHelper(begin, end, false, false, errors, null,
+        return convertHelper(begin, end, "TM->TMW", errors, null,
                              numAttemptedReplacements);
     }
 
@@ -676,7 +681,7 @@ public class TibetanDocument extends DefaultStyledDocument {
     public boolean convertToUnicode(int begin, int end, StringBuffer errors,
                                     String unicodeFont,
                                     long numAttemptedReplacements[]) {
-        return convertHelper(begin, end, false, true, errors, unicodeFont,
+        return convertHelper(begin, end, "TMW->Unicode", errors, unicodeFont,
                              numAttemptedReplacements);
     }
 
@@ -790,8 +795,11 @@ public class TibetanDocument extends DefaultStyledDocument {
         return !ThdlOptions.getBooleanOption("thdl.insert.and.remove.instead.of.replacing");
     }
 
-    /** Helper function.  Converts TMW->TM if !toUnicode&&toTM,
-        TM->TMW if !toUnicode&&!toTM, TMW->Unicode if toUnicode.
+    /** Helper function.  Converts TMW->TM, TM->TMW, TMW->Unicode, or
+        TMW-> the very same TMW [just for testing Java's RTF support]
+        depending on mode.
+        @param mode one of "TMW->TMW-identity" (a null conversion for
+        testing), "TM->TMW", "TMW->TM", or "TMW->Unicode"
         @param errors if non-null, then notes about all exceptional
         cases will be appended to this StringBuffer
         @return false on 100% success, true if any exceptional case
@@ -799,14 +807,17 @@ public class TibetanDocument extends DefaultStyledDocument {
         @see #convertToUnicode(int,int,StringBuffer,String,long[])
         @see #convertToTMW(int,int,StringBuffer,long[]) 
         @see #convertToTM(int,int,StringBuffer,long[]) */
-    private boolean convertHelper(int begin, int end, boolean toTM,
-                                  boolean toUnicode, StringBuffer errors,
+    private boolean convertHelper(int begin, int end, String mode,
+                                  StringBuffer errors,
                                   String unicodeFont,
                                   long numAttemptedReplacements[]) {
         // To preserve formatting, we go paragraph by paragraph.
 
         // Use positions, not offsets, because our work on paragraph K
         // will affect the offsets of paragraph K+1.
+
+        ThdlDebug.verify("TMW->TMW-identity" == mode || "TMW->Unicode" == mode
+                         || "TM->TMW" == mode || "TMW->TM" == mode);
 
         Position finalEndPos;
         if (end < 0) {
@@ -835,13 +846,13 @@ public class TibetanDocument extends DefaultStyledDocument {
                 noMore = true;
                 ceh.doErrorWrapup = true;
             }
-            convertHelperHelper(thisParagraph.getStartOffset(),
-                                ((finalEndPos.getOffset() < p_end)
-                                 ? finalEndPos.getOffset()
-                                 : p_end),
-                                toTM, toUnicode, errors, ceh,
-                                unicodeFont,
-                                numAttemptedReplacements);
+            convertParagraph(thisParagraph.getStartOffset(),
+                             ((finalEndPos.getOffset() < p_end)
+                              ? finalEndPos.getOffset()
+                              : p_end),
+                             mode, errors, ceh,
+                             unicodeFont,
+                             numAttemptedReplacements);
         }
         if (!ceh.errorReturn
             && pl != getParagraphs(begin, finalEndPos.getOffset()).length) {
@@ -860,24 +871,22 @@ public class TibetanDocument extends DefaultStyledDocument {
         return ceh.errorReturn;
     }
 
-    /** See the sole caller, convertHelper. */
-    private void convertHelperHelper(int begin, int end, boolean toTM,
-                                     boolean toUnicode, StringBuffer errors,
-                                     ConversionErrorHelper ceh,
-                                     String unicodeFont,
-                                     long numAttemptedReplacements[]) {
-        final boolean debug = false;
-        if (debug)
-            System.out.println("cHH: [" + begin + ", " + end + ")");
+    /** See the sole caller, {@link #convertHelper}.  begin and end
+        should specify the bounds of a paragraph. */
+    private void convertParagraph(int begin, int end, String mode,
+                                  StringBuffer errors,
+                                  ConversionErrorHelper ceh,
+                                  String unicodeFont,
+                                  long numAttemptedReplacements[]) {
+        final int debug = 0;
+        if (debug > 0)
+            System.out.println("convertParagraph: [" + begin + ", " + end + ")");
         // DLC FIXME: here's an idea, a compressor -- use the '-' (ord
         // 45) or ' ' (ord 32) glyph from the same font as the
         // preceding glyph, never others.  This reduces the size of a
         // TMW RTF file by a factor of 3 sometimes.  To do it, use
-        // this routine, but give it the ability to go from TMW->TMW
-        // and TM->TM.
-
-        // toTM is ignored when toUnicode is true:
-        ThdlDebug.verify(!toUnicode || !toTM);
+        // this routine, but give it the ability to go from
+        // TMW->compressed-TMW and TM->compressed-TM.
 
         boolean toStdout = ThdlOptions.getBooleanOption("thdl.debug");
         if (end < 0)
@@ -910,8 +919,10 @@ public class TibetanDocument extends DefaultStyledDocument {
             while (i < endPos.getOffset()) {
                 AttributeSet attr = getCharacterElement(i).getAttributes();
                 String fontName = StyleConstants.getFontFamily(attr);
-				int fontNum
-                    = ((toTM || toUnicode)
+                int fontNum
+                    = (("TMW->TM" == mode
+                        || "TMW->Unicode" == mode
+                        || "TMW->TMW-identity" == mode)
                        ? TibetanMachineWeb.getTMWFontNumber(fontName)
                        : TibetanMachineWeb.getTMFontNumber(fontName));
 
@@ -926,14 +937,18 @@ public class TibetanDocument extends DefaultStyledDocument {
 
                     DuffCode dc = null;
                     String unicode = null;
-                    if (toUnicode) {
+                    if ("TMW->Unicode" == mode) {
                         unicode = TibetanMachineWeb.mapTMWtoUnicode(fontNum - 1,
                                                                     getText(i,1).charAt(0));
                     } else {
-                        if (toTM) {
+                        if ("TMW->TM" == mode) {
                             dc = TibetanMachineWeb.mapTMWtoTM(fontNum - 1,
                                                               getText(i,1).charAt(0),
                                                               replacementFontIndex);
+                        } else if ("TMW->TMW-identity" == mode) {
+                            dc = TibetanMachineWeb.mapTMWtoItself(fontNum - 1,
+                                                                  getText(i,1).charAt(0),
+                                                                  replacementFontIndex);
                         } else {
                             dc = TibetanMachineWeb.mapTMtoTMW(fontNum - 1,
                                                               getText(i,1).charAt(0),
@@ -942,7 +957,7 @@ public class TibetanDocument extends DefaultStyledDocument {
                     }
                     if (replacementQueue.length() > 0
                         && (mustReplace
-                            || ((!toUnicode
+                            || (("TMW->Unicode" != mode
                                  && null != dc
                                  && dc.getFontNum() != replacementFontIndex)
                                 || fontSize != replacementFontSize))) {
@@ -955,7 +970,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 
                         // this if-else statement is duplicated below; beware!
                         int endIndex = mustReplace ? mustReplaceUntil : i;
-                        if (toUnicode) {
+                        if ("TMW->Unicode" == mode) {
                             UnicodeUtils.fixSomeOrderingErrorsInTibetanUnicode(replacementQueue);
                             replaceDuffsWithUnicode(replacementFontSize,
                                                     replacementStartIndex,
@@ -968,13 +983,13 @@ public class TibetanDocument extends DefaultStyledDocument {
                                          endIndex,
                                          replacementQueue.toString(),
                                          replacementFontIndex,
-                                         !toTM);
+                                         mode != "TMW->TM");
                         }
 
                         // i += numnewchars - numoldchars;
-                        if (debug)
+                        if (debug > 10)
                             System.out.println("Incrementing i by " + (replacementQueue.length()
-                              - (endIndex - replacementStartIndex)) + "; replaced a patch with font size " + replacementFontSize + ", fontindex " + replacementFontIndex);
+                                                                       - (endIndex - replacementStartIndex)) + "; replaced a patch with font size " + replacementFontSize + ", fontindex " + replacementFontIndex);
                         i += (replacementQueue.length()
                               - (endIndex - replacementStartIndex));
 
@@ -986,13 +1001,13 @@ public class TibetanDocument extends DefaultStyledDocument {
                         if (0 == replacementQueue.length()) {
                             replacementFontSize = fontSize;
                             replacementStartIndex = i;
-                            if (!toUnicode) {
+                            if ("TMW->Unicode" != mode) {
                                 replacementFontIndex = dc.getFontNum();
                             }
                         }
-                        if (toUnicode) {
+                        if ("TMW->Unicode" == mode) {
                             replacementQueue.append(unicode);
-                            if (debug)
+                            if (debug > 0)
                                 System.out.println("unicode rq.append: " + org.thdl.tib.text.tshegbar.UnicodeUtils.unicodeStringToString(unicode));
                         } else {
                             replacementQueue.append(dc.getCharacter());
@@ -1011,9 +1026,7 @@ public class TibetanDocument extends DefaultStyledDocument {
                             ceh.problemGlyphsTable.put(cgf, "yes this character appears once");
                             if (null != errors) {
                                 String err
-                                    = (toUnicode
-                                       ? "TMW->Unicode"
-                                       : (toTM ? "TMW->TM" : "TM->TMW"))
+                                    = mode
                                     + " conversion failed for a glyph:\nFont is "
                                     + fontName + ", glyph number is "
                                     + (int)getText(i,1).charAt(0)
@@ -1028,9 +1041,15 @@ public class TibetanDocument extends DefaultStyledDocument {
                                 // the beginning of the document,
                                 // after a 'a' character (i.e.,
                                 // \tm0062 or \tmw0063):
-                                equivalent[0].setData((toUnicode || toTM) ? (char)63 : (char)62, 1);
+                                equivalent[0].setData((("TMW->Unicode" == mode
+                                                        || "TMW->TM" == mode)
+                                                       ? (char)63 : (char)62),
+                                                      1);
                                 insertDuff(72, ceh.errorGlyphLocation++,
-                                           equivalent, toUnicode || toTM);
+                                           equivalent,
+                                           ("TMW->Unicode" == mode
+                                            || "TMW->TMW-identity" == mode
+                                            || "TMW->TM" == mode));
                                 ++i;
                                 // Don't later replace this last guy:
                                 if (replacementStartIndex < ceh.errorGlyphLocation) {
@@ -1038,7 +1057,10 @@ public class TibetanDocument extends DefaultStyledDocument {
                                 }
                                 equivalent[0].setData(getText(i,1), fontNum);
                                 insertDuff(72, ceh.errorGlyphLocation++,
-                                           equivalent, toUnicode || toTM);
+                                           equivalent,
+                                           ("TMW->Unicode" == mode
+                                            || "TMW->TMW-identity" == mode
+                                            || "TMW->TM" == mode));
                                 ++i;
                                 // Don't later replace this last guy:
                                 if (replacementStartIndex < ceh.errorGlyphLocation) {
@@ -1056,7 +1078,10 @@ public class TibetanDocument extends DefaultStyledDocument {
                         }
                     }
                 } else {
-                    if (debug) System.out.println("non-tm/tmw found at offset " + i + "; font=" + fontName + " ord " + (int)getText(i,1).charAt(0));
+                    // FIXME: are we doing the right thing here?  I
+                    // think so -- I think we're just not replacing
+                    // the current character, but I'm not at all sure.
+                    if (debug > 0) System.out.println("non-tm/tmw found at offset " + i + "; font=" + fontName + " ord " + (int)getText(i,1).charAt(0));
                     if (replacementQueue.length() > 0) {
                         if (!mustReplace) {
                             mustReplaceUntil = i;
@@ -1069,14 +1094,14 @@ public class TibetanDocument extends DefaultStyledDocument {
             if (replacementQueue.length() > 0) {
                 // this if-else statement is duplicated above; beware!
                 int endIndex = mustReplace ? mustReplaceUntil : i;
-                if (toUnicode) {
+                if ("TMW->Unicode" == mode) {
                     UnicodeUtils.fixSomeOrderingErrorsInTibetanUnicode(replacementQueue);
                     replaceDuffsWithUnicode(replacementFontSize,
                                             replacementStartIndex,
                                             endIndex,
                                             replacementQueue.toString(),
                                             unicodeFont);
-                    if (debug)
+                    if (debug > 0)
                         System.out.println("unicode rq: " + org.thdl.tib.text.tshegbar.UnicodeUtils.unicodeStringToString(replacementQueue.toString()));
                 } else {
                     replaceDuffs(replacementFontSize,
@@ -1084,7 +1109,7 @@ public class TibetanDocument extends DefaultStyledDocument {
                                  endIndex,
                                  replacementQueue.toString(),
                                  replacementFontIndex,
-                                 !toTM);
+                                 "TMW->TM" != mode);
                 }
             }
             ceh.lastOffsetExamined = endPos.getOffset() - 1;
@@ -1092,7 +1117,9 @@ public class TibetanDocument extends DefaultStyledDocument {
             if (ceh.doErrorWrapup && ceh.errorGlyphLocation > 0) {
                 // Bracket the bad stuff with U+0F3C on the left
                 // and U+0F3D on the right:
-                if (!(toUnicode || toTM)) {
+                if (!("TMW->Unicode" == mode
+                      || "TMW->TM" == mode
+                      || "TMW->TMW-identity" == mode)) {
                     equivalent[0].setData((char)209, 1);
                     insertDuff(72, ceh.errorGlyphLocation++,
                                equivalent, false);
@@ -1252,6 +1279,30 @@ public class TibetanDocument extends DefaultStyledDocument {
             ThdlDebug.noteIffyCode();
             return false;
         }
+    }
+
+    /**
+       To test Java's RTF support, it's helpful to just try and do an
+       identity TMW->TMW transformation (you can think of it as a
+       converter that converts nothing).  I'm curious to see if the
+       problem we have with TMW->Unicode conversions failing to
+       preserve whitespace is a bug in our code or a bug in Java's RTF
+       support, and this provides one data point.
+       
+       @return false on 100% success, true if any exceptional case was
+       encountered
+       @exception Error if start or end is out of range */
+    public boolean identityTmwToTmwConversion(int start,
+                                              int end,
+                                              long numAttemptedReplacements[]) {
+        StringBuffer errors = new StringBuffer();
+        boolean r = convertHelper(start, end, "TMW->TMW-identity",
+                                  errors, "Unicode Font should not be used",
+                                  numAttemptedReplacements);
+        System.err.println("<TMW_TO_SAME_TWM-errors>");
+        System.err.println(errors.toString());
+        System.err.println("</TMW_TO_SAME_TWM-errors>");
+        return r;
     }
 
     /** Returns all the paragraph elements in this document that
