@@ -10,7 +10,7 @@ License for the specific terms governing rights and limitations under the
 License. 
 
 The Initial Developer of this software is the Tibetan and Himalayan Digital
-Library (THDL). Portions created by the THDL are Copyright 2001 THDL.
+Library (THDL). Portions created by the THDL are Copyright 2001-2003 THDL.
 All Rights Reserved. 
 
 Contributor(s): ______________________________________.
@@ -373,6 +373,47 @@ public class UnicodeGraphemeCluster
     /** DLC SOON */
     public boolean isTibetan() {
         throw new Error("DLC FIXME: not yet implemented.");
+    }
+
+    public char getSoleTibetanUnicodeCP() {
+//         DLC FIXME -- if has only one and it is in 0f00-0fff, return it.  else,
+
+        throw new Error("DLC FIXME");
+        //        return EW_ABSENT;
+    }
+
+    char getSuperscribedLetter() {
+//         DLC FIXME
+        throw new Error("DLC FIXME");
+    }
+
+    // DLC NOW -- LegalSyllable doesn't handle digits w/ underlining, etc.
+
+    /** If this is a Tibetan consonant stack, this returns the root
+     *  letter.  If this is a Tibetan digit (perhaps with other
+     *  codepoints like U+0F18), this returns the digit.  If this is a
+     *  non-Tibetan codepoint, this returns that.
+     *
+     *  <p>If a consonant stack consists of exactly two consonants,
+     *  determining which is the root letter depends on knowing
+     *  whether sa (U+0F66) can be superscribed on la (U+0F63) or
+     *  whether it is instead the case that la can be subscribed to
+     *  sa.  The rules of Tibetan syntax do not permit ambiguity in
+     *  this area.</p> */
+    char getRootCP() {
+        throw new Error("DLC FIXME");
+    }
+    char getSoleNonWazurSubjoinedLetter() {
+        throw new Error("DLC FIXME");
+    }
+    char getVowel() {
+        throw new Error("DLC FIXME");
+    }
+    boolean hasAchung() {
+        throw new Error("DLC FIXME");
+    }
+    boolean hasWazur() {
+        throw new Error("DLC FIXME");
     }
 }
 
