@@ -245,6 +245,9 @@ public class TibetanConverter implements FontConverterConstants {
         } catch (IOException e) {
             e.printStackTrace(out);
             return 4;
+        } catch (OutOfMemoryError e) {
+            e.printStackTrace(out);
+            throw e;
         }
 	}
 

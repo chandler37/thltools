@@ -57,6 +57,7 @@
                                   build.xml check-report' will fail. -->
       <sysproperty key="java.awt.headless" value="true"/>
       <test name="org.thdl.tib.text.ttt.PackageTest"/>
+      <test name="org.thdl.tib.text.ttt.LotsOfTshegBarsTest"/>
       <test name="org.thdl.tib.input.TMW_RTF_TO_THDL_WYLIETest"/>
       <test name="org.thdl.util.RTFFixerInputStreamTest"/>
       <test name="org.thdl.util.ThdlLazyExceptionTest"/>

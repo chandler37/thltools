@@ -21,6 +21,7 @@ package org.thdl.tib.text.ttt;
 import org.thdl.util.ThdlOptions;
 
 import java.util.HashSet;
+import java.io.*;
 
 /**
 * An TString is some Latin text and a type, the type stating whether
@@ -130,15 +131,15 @@ public class TString {
             outputTshegBar(ftext);
     }
 
-    /** Prints x to standard output if and only if we have never
+    /** Prints x to standard error if and only if we have never
         encountered x before. */
     private static void outputTshegBar(String x) {
         if (outputAllTshegBars) {
-            System.out.println(outputTshegBarsPrefix + x);
+            System.err.println(outputTshegBarsPrefix + x);
         } else if (outputUniqueTshegBars) {
             if (!tshegBars.contains(x)) {
                 tshegBars.add(x);
-                System.out.println(outputTshegBarsPrefix + x);
+                System.err.println(outputTshegBarsPrefix + x);
             }
         }
     }

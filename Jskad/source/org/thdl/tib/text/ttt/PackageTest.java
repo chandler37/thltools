@@ -51,7 +51,7 @@ public class PackageTest extends TestCase {
 
 
     public PackageTest() { }
-    private static void tstHelper(String acip) {
+    static void tstHelper(String acip) {
         tstHelper2(acip, null, false, null, null, null, 0);
     }
     private static void tstHelper(String acip, String expectedPairs) {

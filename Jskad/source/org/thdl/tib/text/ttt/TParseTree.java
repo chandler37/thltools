@@ -317,7 +317,7 @@ class TParseTree {
                         if (warningLevel == "All")
                             return "Warning: The last stack does not have a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}; this may indicate a typo, because Sanskrit, which this is (because it's not legal Tibetan), should have a vowel after each stack.";
                     } else {
-                        throw new Error("Can't happen now that we stack greedily");
+                        return "Warning: Trying to stack non-consonants."; // DLC
                     }
                 }
             }
