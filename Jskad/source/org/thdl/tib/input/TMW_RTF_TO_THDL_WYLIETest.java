@@ -32,7 +32,9 @@ import org.apache.commons.jrcs.diff.Revision;
 /**
  * @author David Chandler
  *
- * Tests {@link org.thdl.tib.input.TibetanConverter} at the unit level.
+ * Tests {@link org.thdl.tib.input.TibetanConverter} at the unit
+ * level.  The name is a misnomer; we test more than just
+ * TMW.rtf->EWTS conversions.
  */
 public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
 	/**
@@ -52,6 +54,11 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
 
         // We don't want to use options.txt:
         ThdlOptions.forTestingOnlyInitializeWithoutDefaultOptionsFile();
+
+        ThdlOptions.setUserPreference("thdl.acip.to.tibetan.warning.and.error.severities.are.built.in.defaults", "true");
+        ThdlOptions.setUserPreference("thdl.acip.to.tibetan.warning.severity.507", "Most");
+        org.thdl.tib.text.ttt.ErrorsAndWarnings.setupSeverityMap();
+
         // We do want debugging assertions:
         ThdlOptions.setUserPreference("thdl.debug", true);
     }
@@ -77,9 +84,11 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
             + "tib" + File.separator
             + "input" + File.separator
             + "TMW_RTF_TO_THDL_WYLIE" + testName + ".expected";
-        assertTrue("The file the converter should've produced doesn't exist",
+        assertTrue("The file the converter should've produced doesn't exist: "
+                   + actualFile,
                    new File(actualFile).exists());
-        assertTrue("The baseline file, the file containing the expected results, doesn't exist",
+        assertTrue("The baseline file, the file containing the expected results, doesn't exist: "
+                   + expectedFile,
                    new File(expectedFile).exists());
         Revision rev = JDiff.getDiff(expectedFile, actualFile);
         assertTrue("JDiff.getDiff returned null", null != rev);
@@ -100,16 +109,17 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
     }
 
 
-    private void helper(String testName, String mode, String extension, int erc) {
+    private void helper(String testName, String inputExtension, String mode,
+                        String extension, int erc, String errorMessageLength) {
         String[] args = new String[] {
             "--colors",
             "no",
             "--warning-level",
             "All",
             "--acip-to-tibetan-warning-and-error-messages",
-            "long",
+            errorMessageLength,
             mode,
-            getTestFileName(testName)
+            getTestFileName(testName, inputExtension)
         };
         boolean fileNotFound = false;
         try {
@@ -126,45 +136,53 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
         testActualAndExpected(testName + "Result" + extension);
     }
 
-    private static String getTestFileName(String testName) {
+    private static String getTestFileName(String testName,
+                                          String inputExtension) {
         return "source" + File.separator
             + "org" + File.separator
             + "thdl" + File.separator
             + "tib" + File.separator
             + "input" + File.separator
-            // FIXME: one of the files named '.rtf' is really a text
-            // file:
-            + "TMW_RTF_TO_THDL_WYLIE" + testName + ".rtf";
+            + "TMW_RTF_TO_THDL_WYLIE" + testName + inputExtension;
     }
 
 
     /** Tests the --find-some-non-tmw mode of {@link
      *  org.thdl.tib.input.TibetanConverter}. */
     public void testFindSomeNonTMWMode() {
-        helper("Test1", "--find-some-non-tmw", "FindSome", 1);
+        helper("Test1", ".rtf", "--find-some-non-tmw", "FindSome", 1, "long");
     }
 
     /** Tests the --find-all-non-tmw mode of {@link
      *  org.thdl.tib.input.TibetanConverter}. */
     public void testFindAllNonTMWMode() {
-        helper("Test1", "--find-all-non-tmw", "FindAll", 1);
+        helper("Test1", ".rtf", "--find-all-non-tmw", "FindAll", 1, "long");
     }
 
     /** Tests the --to-wylie converter mode of {@link
      *  org.thdl.tib.input.TibetanConverter}. */
-    public void testConverterMode() {
-        helper("Test1", "--to-wylie", "Conversion", 0);
-        helper("Test2", "--to-wylie", "Conversion", 44);
+    public void testToWylieConverterMode() {
+        helper("Test1", ".rtf", "--to-wylie", "Conversion", 0, "long");
+        helper("Test2", ".rtf", "--to-wylie", "Conversion", 44, "long");
     }
 
     /** Tests the --to-tibetan-machine, --to-tibetan-machine-web,
      *  --to-acip, and --acip-to-tmw converter modes of {@link
      *  org.thdl.tib.input.TibetanConverter}. */
-    public void testTMConverterMode() {
-        helper("Test1", "--to-tibetan-machine", "TM", 0);
-        helper("Test2", "--to-tibetan-machine", "TM", 0);
-        helper("Test2", "--to-tibetan-machine-web", "TMW", 0);
-        helper("Test2", "--to-acip", "ACIP", 49);
-        helper("Test3", "--acip-to-tmw", "TMW", 0);
+    public void testSomeConverters() {
+        /* TODO(DLC)[EWTS->Tibetan]: NOW runs out of memory 
+        helper("Test4_aka_TD4222I1.INC", "", "--acip-to-tmw", "TMW", 46,
+        "short"); */
+        helper("Test4_aka_TD4222I1.INC", "", "--acip-to-unicode", "UNI", 46,
+               "short");
+        helper("Test1", ".rtf", "--to-tibetan-machine", "TM", 0, "long");
+        helper("Test2", ".rtf", "--to-tibetan-machine", "TM", 0, "long");
+        helper("Test2", ".rtf", "--to-tibetan-machine-web", "TMW", 0, "long");
+        helper("Test2", ".rtf", "--to-acip", "ACIP", 49, "long");
+        helper("Test3", ".acip", "--acip-to-tmw", "TMW", 0, "long");
     }
 }
+
+// TODO(dchandler): put the line 'THIS IS ENGLISH' in
+// TMW_RTF_TO_THDL_WYLIETest3.rtf; what would that mean?  I did this once but
+// didn't check it in...

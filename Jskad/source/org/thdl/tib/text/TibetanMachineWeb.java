@@ -1,5 +1,6 @@
 /*
-The contents of this file are subject to the THDL Open Community License
+
+// give B+DE to be very friendly to machines.The contents of this file are subject to the THDL Open Community License
 Version 1.0 (the "License"); you may not use this file except in compliance
 with the License. You may obtain a copy of the License on the THDL web site 
 (http://www.thdl.org/).
@@ -202,7 +203,7 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 
     /** comma-delimited list of supported non-Tibetan consonants, such
      *  as Sanskrit consonants: */
-    private static final String otherConsonants // va and fa are treated pretty-much like Sanskrit.
+    private static final String otherConsonants // va and fa are treated pretty-much like Sanskrit. // TODO(DLC)[EWTS->Tibetan]: now are v and f in EWTS?
         = "T,Th,D,N,Sh,v,f";
 
     /** comma-delimited list of supported numbers (superscribed,

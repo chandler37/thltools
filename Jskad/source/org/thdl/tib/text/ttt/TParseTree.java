@@ -246,7 +246,7 @@ class TParseTree {
         return al.toString();
     }
 
-    /** Returns true if and only if either x is an TParseTree
+    /** Returns true if and only if either x is a TParseTree
      *  object representing the same TPairLists in the same order
      *  or x is a String that is equals to the result of {@link
      *  #toString()}. */

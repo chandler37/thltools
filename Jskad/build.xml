@@ -457,6 +457,16 @@ Contributor(s): ______________________________________.
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${junitbin}"/>
       <param name="my.included.source.file"
+             value="org/thdl/tib/text/ttt/EWTSTest.java"/>
+    </antcall>
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${junitbin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/tib/text/ttt/EWTStibwniniTest.java"/>
+    </antcall>
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${junitbin}"/>
+      <param name="my.included.source.file"
              value="org/thdl/tib/text/ttt/LotsOfTshegBarsTest.java"/>
     </antcall>
     <antcall target="copy-ini-files-to-bin-dir-for-jarring">

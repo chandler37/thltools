@@ -53,7 +53,7 @@ class TTGCList implements TGCList {
     /** Returns the number of TGCPairs in this list. */
     public int size() { return al.size(); }
 
-    /** Returns a zero-based index of an TPairList inside the stack
+    /** Returns a zero-based index of a TPairList inside the stack
      *  list from which this list was constructed.  This pair list is
      *  the one that caused the TGCPair at index tgcPairIndex to come
      *  into existence. */

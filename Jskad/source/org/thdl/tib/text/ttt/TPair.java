@@ -24,10 +24,12 @@ import org.thdl.tib.text.DuffCode;
 
 import java.util.ArrayList;
 
-/** An ordered pair used in ACIP-to-TMW conversion.  The left side is
- *  the consonant or empty; the right side is the vowel, '+', or '-'.
+/** An ordered pair used in ACIP/EWTS-to-TMW/Unicode conversion.  The
+ *  left side is the consonant or empty; the right side is either the
+ *  vowel or '+' (indicating stacking) or a disambiguator (i.e., '-'
+ *  in ACIP or '.' in EWTS).
  *  @author David Chandler */
-/* BIG FIXME: make this package work for EWTS, not just ACIP. */
+/* BIG FIXME: make this package work for EWTS, not just ACIP.  (TODO(DLC)[EWTS->Tibetan]: does it?) */
 class TPair {
     /** The left side, or null if there is no left side.  That is, the
      *  non-vowel, non-'m', non-':', non-'-', non-'+' guy. */
@@ -72,13 +74,13 @@ class TPair {
                 + ((r == null) ? 0 : r.length()));
     }
 
-    /** Returns an TPair that is like this one except that it is
+    /** Returns a TPair that is like this one except that it is
      *  missing N characters.  The characters are taken from r, the
      *  right side, first and from l, the left side, second.  The pair
      *  returned may be illegal, such as the (A . ') you can get from
      *  ACIP {A'AAMA}.
      *  @throws IllegalArgumentException if N is out of range */
-    TPair minusNRightmostACIPCharacters(int N)
+    TPair minusNRightmostTransliterationCharacters(int N)
         throws IllegalArgumentException
     {
         int sz;
@@ -107,7 +109,7 @@ class TPair {
             return false;
         if (null != l && !ACIPRules.isConsonant(l))
             return false;
-        if (null != r && !ACIPRules.isVowel(r))
+        if (null != r && !ACIPRules.isWowel(r))
             return false;
         return true;
     }
@@ -117,7 +119,7 @@ class TPair {
     boolean isPrefix() {
         return (null != l
                 && ((null == r || "".equals(r))
-                    || "-".equals(r)
+                    || "-".equals(r) // TODO(DLC)[EWTS->Tibetan]
                     || "A".equals(r)) // FIXME: though check for BASKYABS and warn because BSKYABS is more common
                 && ACIPRules.isACIPPrefix(l));
     }
@@ -158,7 +160,7 @@ class TPair {
         return false;
     }
 
-    /** Returns an TPair that is like this pair except that it has
+    /** Returns a TPair that is like this pair except that it has
      *  a "+" on the right if this pair is empty on the right and is
      *  empty on the right if this pair has a disambiguator (i.e., a
      *  '-') on the right.  May return itself (but never mutates this

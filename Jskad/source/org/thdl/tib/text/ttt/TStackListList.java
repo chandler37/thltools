@@ -62,7 +62,7 @@ class TStackListList {
         return al.toString();
     }
 
-    /** Returns true if and only if either x is an TStackListList
+    /** Returns true if and only if either x is a TStackListList
      *  object representing the same TStackList objects in the same
      *  order or x is a String that is equals to the result of {@link
      *  #toString()}. */

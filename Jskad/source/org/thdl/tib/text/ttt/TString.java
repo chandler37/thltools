@@ -53,7 +53,7 @@ public class TString {
 	return encoding;
     }
 	
-    /** Returns true if and only if an TString with type <i>type</i>
+    /** Returns true if and only if a TString with type <i>type</i>
      *  is to be converted to something other than Tibetan text.
      *  (Chinese Unicode, Latin, etc. all qualify as non-Tibetan.) */
     public boolean isLatin() {

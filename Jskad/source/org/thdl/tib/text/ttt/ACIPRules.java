@@ -30,6 +30,8 @@ import org.thdl.tib.text.THDLWylieConstants;
 import org.thdl.tib.text.TibetanMachineWeb;
 import org.thdl.tib.text.TibTextUtils;
 
+// TODO(DLC)[EWTS->Tibetan]: this and ACIPTraits -- unify?
+
 /** Canonizes some facts regarding the ACIP transcription system.
  *  @author David Chandler */
 public class ACIPRules {
@@ -37,11 +39,11 @@ public class ACIPRules {
      *  three. */
     public static int MAX_CONSONANT_LENGTH = 3;
 
-    /** {'EEm:}, the longest "vowel", has 5 characters, so this is
+    /** {'EEm:}, the longest wowel, has 5 characters, so this is
      *  five. */
-    public static int MAX_VOWEL_LENGTH = 5;
+    public static int MAX_WOWEL_LENGTH = 5;
 
-    /** For O(1) {@link #isVowel(String)} calls. */
+    /** For O(1) {@link #isWowel(String)} calls. */
     private static HashSet acipVowels = null;
 
     private static String[][] baseVowels = new String[][] {
@@ -58,10 +60,10 @@ public class ACIPRules {
         { "i", "-i", "A-i" }
     };
 
-    /** Returns true if and only if s is an ACIP "vowel".  You can't
-     *  just call this any time -- A is a consonant and a vowel in
-     *  ACIP, so you have to call this in the right context. */
-    public static boolean isVowel(String s) {
+    /** Returns true if and only if s is an ACIP wowel.  You can't
+     *  just call this any time -- A is both a consonant and a vowel
+     *  in ACIP, so you have to call this in the right context. */
+    public static boolean isWowel(String s) {
         if (null == acipVowels) {
             acipVowels = new HashSet(baseVowels.length * 8);
             for (int i = 0; i < baseVowels.length; i++) {

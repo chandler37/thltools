@@ -340,7 +340,7 @@ public class ErrorsAndWarnings {
         user preferences and falling back on built-in defaults if
         necessary (which it shouldn't be -- options.txt should be in
         the JAR with this class file. */
-    static void setupSeverityMap() {
+    public static void setupSeverityMap() {
         // errors:
         for (int i = MIN_ERROR; i <= MAX_ERROR; i++) {
             severityMap.put(new Integer(i), "ERROR");

@@ -13,7 +13,7 @@ License for the specific terms governing rights and limitations under the
 License. 
 
 The Initial Developer of this software is the Tibetan and Himalayan Digital
-Library (THDL). Portions created by the THDL are Copyright 2003 THDL.
+Library (THDL). Portions created by the THDL are Copyright 2003-2004 THDL.
 All Rights Reserved. 
 
 Contributor(s): ______________________________________.
@@ -29,7 +29,7 @@ import junit.framework.TestCase;
 
 
 /** Tests this package, especially {@link #TPairListFactory} and
- *  {@link TPairList}.
+ *  {@link TPairList}.  Tests use ACIP more than EWTS.
  *
  *  @author David Chandler */
 public class PackageTest extends TestCase {
@@ -10495,7 +10495,7 @@ tstHelper("shKA");
         }
     }
 
-
+    /** Tests warning/error messages 512 and 507 */
     public void test512And507() {
         // Plain "GNY" is interpreted as two stacks, so no 512 warning
         // is given.  FIXME 946058

@@ -16,6 +16,8 @@ All Rights Reserved.
 Contributor(s): ______________________________________.
 */
 
+// TODO(DLC)[EWTS->Tibetan]: a (DLC: does this become (a.) or (.a)?), ug pha, g.a, aM, etc. -- test!
+
 package org.thdl.tib.text.ttt;
 
 import org.thdl.tib.text.TibetanMachineWeb;
@@ -27,7 +29,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 
 /** A list of {@link TPair TPairs}, typically corresponding to
- *  one tsheg bar.  <i>l</i>' in the design doc is an TPairList.
+ *  one tsheg bar.  <i>l</i>' in the design doc is a TPairList.
  *
  *  @author David Chandler */
 class TPairList {
@@ -136,13 +138,13 @@ class TPairList {
 
     /** Returns true if this list contains ( . <vowel>) or (A . ),
      *  which are two simple errors you encounter if you interpret DAA
-     *  or TAA or DAI or DAE the wrong way. */
-    boolean hasSimpleError() {
+     *  or TAA or DAI or DAE the wrong way. TODO(DLC)[EWTS->Tibetan]: ACIP vs. EWTS */
+    boolean hasSimpleError(TTraits ttraits) {
         int sz = size();
         for (int i = 0; i < sz; i++) {
             TPair p = get(i);
-            if ((null == p.getLeft() && !"-".equals(p.getRight()))
-                || ("A".equals(p.getLeft()) && null == p.getRight()))
+            if ((null == p.getLeft() && !ttraits.disambiguator().equals(p.getRight()))
+                || ttraits.hasSimpleError(p))
                 return true;
         }
         return false;
@@ -205,7 +207,7 @@ class TPairList {
         return null;
     }
 
-    /** Returns true if and only if either x is an TPairList object
+    /** Returns true if and only if either x is a TPairList object
      *  representing the same TPairs in the same order or x is a
      *  String that is equals to the result of {@link #toString()}. */
     public boolean equals(Object x) {

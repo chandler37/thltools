@@ -16,6 +16,8 @@ All Rights Reserved.
 Contributor(s): ______________________________________.
 */
 
+// TODO(DLC)[EWTS->Tibetan]: If EWTS still has 'v', warn about it if it looks like someone thinks that ACIP's usage of it for wa-zur is how EWTS does things.
+
 package org.thdl.tib.text.ttt;
 
 /** A factory for creating {@link TPairList TPairLists} from
@@ -38,7 +40,7 @@ class TPairListFactory {
      *  rest would be suboptimal, so we backtrack to [(T . )] and then
      *  finally become [(T . ), (A . A)].  We look for (A . ) and (
      *  . <vowel>) in the rest in order to say "the rest would be
-     *  suboptimal", i.e. we use TPairList.hasSimpleError().</p>
+     *  suboptimal", i.e. we use TPairList.hasSimpleError(TTraits).</p>
      *
      *  <p>There is one case where we break things up into two pair
      *  lists if and only if specialHandlingForAppendages is true -- I
@@ -65,19 +67,20 @@ class TPairListFactory {
      *  @return an array of one or two pair lists, if the former, then
      *  the second element will be null, if the latter, the second
      *  element will have (* . ), (' . *) instead of (* . '*) which
-     *  the former has @throws IllegalArgumentException if acip is too
-     *  large for us to break into chunks (we're recursive, not
-     *  iterative, so the boundary can be increased a lot if you care,
-     *  but you don't) */
+     *  the former has
+     *  @throws IllegalArgumentException if acip is too large for us
+     *  to break into chunks (we're recursive, not iterative, so the
+     *  boundary can be increased a lot if you care, but you don't) */
     static TPairList[] breakACIPIntoChunks(String acip,
                                            boolean specialHandlingForAppendages)
         throws IllegalArgumentException
     {
         try {
-            TPairList a = breakHelper(acip, true, false);
+            TTraits ttraits = ACIPTraits.instance();
+            TPairList a = breakHelperACIP(acip, true, false, ttraits);
             TPairList b = null;
             if (specialHandlingForAppendages)
-                b = breakHelper(acip, false, false);
+                b = breakHelperACIP(acip, false, false, ttraits);
             if (null != b && a.equals(b))
                 return new TPairList[] { a, null };
             else
@@ -88,6 +91,22 @@ class TPairListFactory {
             throw new IllegalArgumentException("Input too large[2]: " + acip);
         }
     }
+
+    /** TODO(DLC)[EWTS->Tibetan]: doc */
+    static TPairList[] breakEWTSIntoChunks(String ewts)
+        throws IllegalArgumentException
+    {
+        try {
+            return new TPairList[] {
+                breakHelperEWTS(ewts, EWTSTraits.instance()), null
+                    };
+        } catch (StackOverflowError e) {
+            throw new IllegalArgumentException("Input too large[1]: " + ewts);
+        } catch (OutOfMemoryError e) {
+            throw new IllegalArgumentException("Input too large[2]: " + ewts);
+        }
+    }
+
     /** Helps {@link #breakACIPIntoChunks(String,boolean)}.
      *  @param tickIsVowel true if and only if you want to treat the
      *  ACIP {'} as an U+0F71 vowel instead of the full-sized
@@ -96,7 +115,9 @@ class TPairListFactory {
      *  @param weHaveSeenVowelAlready true if and only if, in our
      *  recursion, we've already found one vowel (not a disambiguator,
      *  but a vowel like "A", "E", "Um:", "m", "'U", etc.) */
-    private static TPairList breakHelper(String acip, boolean tickIsVowel, boolean weHaveSeenVowelAlready) {
+    private static TPairList breakHelperACIP(String acip, boolean tickIsVowel,
+                                             boolean weHaveSeenVowelAlready,
+                                             TTraits ttraits) {
 
         // base case for our recursion:
         if ("".equals(acip))
@@ -104,7 +125,7 @@ class TPairListFactory {
 
         StringBuffer acipBuf = new StringBuffer(acip);
         int howMuchBuf[] = new int[1];
-        TPair head = getFirstConsonantAndVowel(acipBuf, howMuchBuf);
+        TPair head = getFirstConsonantAndVowel(acipBuf, howMuchBuf, ttraits);
         int howMuch = howMuchBuf[0];
         if (!tickIsVowel
             && null != head.getLeft()
@@ -122,26 +143,63 @@ class TPairListFactory {
 
         TPairList tail;
         if ((tail
-             = breakHelper(acipBuf.substring(howMuch),
-                           tickIsVowel,
-                           weHaveSeenVowelAlready
-                           || (head.getRight() != null
-                               && !"+".equals(head.getRight())
-                               && !"-".equals(head.getRight())))).hasSimpleError()) {
+             = breakHelperACIP(acipBuf.substring(howMuch),
+                               tickIsVowel,
+                               weHaveSeenVowelAlready
+                               || (head.getRight() != null
+                                   && !"+".equals(head.getRight())
+                                   && !"-".equals(head.getRight())),
+                               ttraits)).hasSimpleError(ttraits)) {
             for (int i = 1; i < howMuch; i++) {
                 // try giving i characters back if that leaves us with
                 // a legal head and makes the rest free of simple
                 // errors.
                 TPairList newTail = null;
                 TPair newHead;
-                if ((newHead = head.minusNRightmostACIPCharacters(i)).isLegal()
+                if ((newHead = head.minusNRightmostTransliterationCharacters(i)).isLegal()
                     && !(newTail
-                         = breakHelper(acipBuf.substring(howMuch - i),
-                                       tickIsVowel,
-                                       weHaveSeenVowelAlready
-                                       || (newHead.getRight() != null
-                                           && !"+".equals(newHead.getRight())
-                                           && !"-".equals(newHead.getRight())))).hasSimpleError()) {
+                         = breakHelperACIP(acipBuf.substring(howMuch - i),
+                                           tickIsVowel,
+                                           weHaveSeenVowelAlready
+                                           || (newHead.getRight() != null
+                                               && !"+".equals(newHead.getRight())
+                                               && !"-".equals(newHead.getRight())),
+                                           ttraits)).hasSimpleError(ttraits)) {
+                    newTail.prepend(newHead);
+                    return newTail;
+                }
+            }
+            // It didn't work.  Return the first thing we'd thought
+            // of: head appended with tail.  (I.e., fall through.)
+        }
+        tail.prepend(head);
+        return tail;
+    }
+
+    // TODO(DLC)[EWTS->Tibetan]: doc
+    private static TPairList breakHelperEWTS(String ewts, TTraits ttraits /* TODO(DLC)[EWTS->Tibetan]: use */) {
+
+        // base case for our recursion:
+        if ("".equals(ewts))
+            return new TPairList();
+
+        StringBuffer ewtsBuf = new StringBuffer(ewts);
+        int howMuchBuf[] = new int[1];
+        TPair head = getFirstConsonantAndVowel(ewtsBuf, howMuchBuf, ttraits);
+        int howMuch = howMuchBuf[0];
+
+        TPairList tail;
+        if ((tail = breakHelperEWTS(ewtsBuf.substring(howMuch),
+                                    ttraits)).hasSimpleError(ttraits)) {
+            for (int i = 1; i < howMuch; i++) {
+                // try giving i characters back if that leaves us with
+                // a legal head and makes the rest free of simple
+                // errors.
+                TPairList newTail = null;
+                TPair newHead;
+                if ((newHead = head.minusNRightmostTransliterationCharacters(i)).isLegal()
+                    && !(newTail
+                         = breakHelperEWTS(ewtsBuf.substring(howMuch - i), ttraits)).hasSimpleError(ttraits)) {
                     newTail.prepend(newHead);
                     return newTail;
                 }
@@ -162,14 +220,16 @@ class TPairListFactory {
      *  A later phase will need to turn that into {N+YE} or an error
      *  or whatever you like.  howMuch[0] will be set to the number of
      *  characters of acip that this call has consumed. */
-    private static TPair getFirstConsonantAndVowel(StringBuffer acip,
-                                                   int howMuch[]) {
+    private static TPair getFirstConsonantAndVowel(StringBuffer acip, // TODO(DLC)[EWTS->Tibetan]: function name needs ACIP in it?
+                                                   int howMuch[],
+                                                   TTraits ttraits) {
         // Note that it is *not* the case that if acip.substring(0, N)
         // is legal (according to TPair.isLegal()), then
         // acip.substring(0, N-1) is legal for all N.  For example,
-        // think of {shA} and {KshA}.  However, 's' is the only tricky
-        // fellow, so it is true that acip.substring(0, N-1) is either
-        // legal or ends with 's' if acip.substring(0, N) is legal.
+        // think of ACIP's {shA} and {KshA}.  However, 's' is the only
+        // tricky fellow, so it is true that acip.substring(0, N-1) is
+        // either legal or ends with 's' if acip.substring(0, N) is
+        // legal.
         //
         // We don't, however, use this approach.  We just try to find
         // a consonant of length 3, and then, failing that, of length
@@ -180,9 +240,9 @@ class TPairListFactory {
             howMuch[0] = 0;
             return new TPair(null, null);
         }
-        if (acip.charAt(0) == '-') {
+        if (acip.charAt(0) == ttraits.disambiguatorChar()) {
             howMuch[0] = 1;
-            return new TPair(null, "-");
+            return new TPair(null, ttraits.disambiguator());
         }
         char ch = acip.charAt(0);
 
@@ -190,32 +250,33 @@ class TPairListFactory {
         // like seeing 1-2-3-4.
         if (ch >= '0' && ch <= '9') {
             howMuch[0] = 1; // not 2...
-            return new TPair(acip.substring(0, 1), (xl == 1) ? null : "-");
+            return new TPair(acip.substring(0, 1), (xl == 1) ? null : ttraits.disambiguator());
         }
 
         String l = null, r = null;
-        for (i = Math.min(ACIPRules.MAX_CONSONANT_LENGTH, xl); i >= 1; i--) {
+        for (i = Math.min(ttraits.maxConsonantLength(), xl); i >= 1; i--) {
             String t = null;
-            if (ACIPRules.isConsonant(t = acip.substring(0, i))) {
+            if (ttraits.isConsonant(t = acip.substring(0, i))) {
                 l = t;
                 break;
             }
         }
         int ll = (null == l) ? 0 : l.length();
-        if (null != l && xl > ll && acip.charAt(ll) == '-') {
+        if (null != l && xl > ll && acip.charAt(ll) == ttraits.disambiguatorChar()) {
             howMuch[0] = l.length() + 1;
-            return new TPair(l, "-");
+            return new TPair(l, ttraits.disambiguator());
         }
         if (null != l && xl > ll && acip.charAt(ll) == '+') {
             howMuch[0] = l.length() + 1;
             return new TPair(l, "+");
         }
-        for (i = Math.min(ACIPRules.MAX_VOWEL_LENGTH, xl - ll); i >= 1; i--) {
+        for (i = Math.min(ttraits.maxWowelLength(), xl - ll); i >= 1; i--) {
             String t = null;
-            if (ACIPRules.isVowel(t = acip.substring(ll, ll + i))
+            if (ttraits.isWowel(t = acip.substring(ll, ll + i))
                 // Or these, which we massage into "Am", "Am:", and
                 // "A:" because I didn't think {Pm} should be treated
                 // like {PAm} originally:
+                // TODO(DLC)[EWTS->Tibetan]: NOW NIGHTMARE
                 || "m".equals(t) || "m:".equals(t) || ":".equals(t)) {
                 r = t;
                 break;
@@ -224,14 +285,14 @@ class TPairListFactory {
 
         // Treat {BATA+SA'I} like {BAT+SA'I}:
         int z;
-        if (null != l && "A".equals(r) && ((z = ll + "A".length()) < xl)
+        if (null != l && /* TODO(DLC)[EWTS->Tibetan]: */"A".equals(r) && ((z = ll + /* TODO(DLC)[EWTS->Tibetan]: */"A".length()) < xl)
             && acip.charAt(z) == '+') {
             acip.deleteCharAt(z-1);
             howMuch[0] = l.length() + 1;
             return new TPair(l, "+");
         }
 
-        // Allow Pm to mean PAm, P: to mean PA:, Pm: to mean PAm:.
+        // Allow Pm to mean PAm, P: to mean PA:, Pm: to mean PAm:. /* TODO(DLC)[EWTS->Tibetan]: */
         int mod = 0;
         if ("m".equals(r)) { r = "Am"; mod = -1; }
         if (":".equals(r)) { r = "A:"; mod = -1; }
@@ -239,19 +300,20 @@ class TPairListFactory {
         if (":m".equals(r)) { r = "A:m"; mod = -1; } // not seen, though...
 
 
-        // what if we see a character that's not part of any vowel or
+        // what if we see a character that's not part of any wowel or
         // consonant?  We return it.
         if (null == l && null == r) {
             howMuch[0] = 1; // not 2...
-            // add a '-' to avoid exponentials:
-            return new TPair(acip.substring(0, 1), (xl == 1) ? null : "-");
+            // add a disambiguator to avoid exponential running time:
+            return new TPair(acip.substring(0, 1),
+                             (xl == 1) ? null : ttraits.disambiguator());
         }
 
         howMuch[0] = (((l == null) ? 0 : l.length())
                       + ((r == null) ? 0 : r.length())
                       + mod);
         return new TPair(l, r);
-    }
+    } // TODO(DLC)[EWTS->Tibetan]:
 }
 
 

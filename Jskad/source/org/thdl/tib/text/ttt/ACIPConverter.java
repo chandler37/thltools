@@ -137,6 +137,7 @@ public class ACIPConverter {
      *  prefix rules in another
      *  @throws IOException if we cannot write to out
      */
+    // TODO(DLC)[EWTS->Tibetan]: misnamed source file, this is TConverter.java nowadays
     public static boolean convertToTMW(ArrayList scan,
                                        OutputStream out,
                                        StringBuffer errors,
@@ -673,7 +674,7 @@ public class ACIPConverter {
                                         }
                                     }
                                 }
-                            }
+                            } // TODO(DLC)[EWTS->Tibetan]: change this to have a "parse" phase that puts out error messagesf like 142 and figures out what a space means.  This is a very long function that is difficult to maintain, and we want EWTS->Tibetan to be clean.
                         } else if (stype == TString.START_PAREN) {
                             if (null != writer)
                                 writer.write("[ERROR "
