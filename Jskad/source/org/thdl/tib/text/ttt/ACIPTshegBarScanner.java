@@ -18,11 +18,10 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Stack;
 
-import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlOptions;
 
 /**
@@ -36,8 +35,10 @@ import org.thdl.util.ThdlOptions;
 * the parser, not here in the lexical analyzer.  That'd be cleaner,
 * and more like how you'd do things if you used lex and yacc.
 *
+* This is not public because you should use {@link ACIPTraits#scanner()}.
+*
 * @author David Chandler */
-public class ACIPTshegBarScanner extends TTshegBarScanner {
+class ACIPTshegBarScanner extends TTshegBarScanner {
     /** True if those ACIP snippets inside square brackets (e.g.,
         "[THIS]") are to be passed through into the output unmodified
         while retaining the brackets and if those ACIP snippets inside

@@ -18,7 +18,11 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.InputStream;
+import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -40,7 +44,7 @@ public abstract class TTshegBarScanner {
      *  If errors is non-null, error messages will be appended to it.
      *  Returns a list of TStrings that is the scan.  Warning and
      *  error messages in the result will be long and self-contained
-     *  unless shortMessagse is true.
+     *  unless shortMessages is true.
      *
      *  <p>This is not so efficient; copies the whole file into memory
      *  first.

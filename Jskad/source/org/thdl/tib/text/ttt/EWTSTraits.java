@@ -18,11 +18,14 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
+import java.util.ArrayList;
+import org.thdl.tib.text.DuffCode;
+
 /** A singleton class that should contain (but due to laziness and
  *  ignorance probably does not contain) all the traits that make EWTS
  *  transliteration different from other (say, ACIP) transliteration
  *  schemes. */
-final class EWTSTraits implements TTraits {
+public final class EWTSTraits implements TTraits {
     /** sole instance of this class */
     private static EWTSTraits singleton = null;
 
@@ -30,7 +33,7 @@ final class EWTSTraits implements TTraits {
     private EWTSTraits() { }
 
     /** */
-    public static EWTSTraits instance() {
+    public static synchronized EWTSTraits instance() {
         if (null == singleton) {
             singleton = new EWTSTraits();
         }
@@ -79,4 +82,48 @@ final class EWTSTraits implements TTraits {
                 || "H".equals(s)
                 || "M".equals(s)); // TODO(DLC)[EWTS->Tibetan]:???
     }
+
+    public String aVowel() { return "a"; }
+
+    public boolean isPostsuffix(String s) {
+        return ("s".equals(s) || "d".equals(s));
+    }
+
+    public boolean isPrefix(String l) {
+        return ("'".equals(l)
+                || "m".equals(l)
+                || "b".equals(l)
+                || "d".equals(l)
+                || "g".equals(l));
+    }
+
+    public boolean isSuffix(String l) {
+        return ("s".equals(l)
+                || "g".equals(l)
+                || "d".equals(l)
+                || "m".equals(l)
+                || "'".equals(l)
+                || "b".equals(l)
+                || "ng".equals(l)
+                || "n".equals(l)
+                || "l".equals(l)
+                || "r".equals(l));
+    }
+
+    /** Returns l, since this is EWTS's traits class. */
+    public String getEwtsForConsonant(String l) { return l; }
+
+    /** Returns l, since this is EWTS's traits class. */
+    public String getEwtsForOther(String l) { return l; }
+
+    /** Returns l, since this is EWTS's traits class. */
+    public String getEwtsForWowel(String l) { return l; }
+
+    public TTshegBarScanner scanner() { return EWTSTshegBarScanner.instance(); }
+
+    public void getDuffForWowel(ArrayList duff, DuffCode preceding, String wowel) {
+        throw new Error("TODO(DLC)[EWTS->Tibetan]");
+    }
+
+    public String getUnicodeFor(String l, boolean subscribed) { throw new Error("TODO(DLC)[EWTS->Tibetan]"); }
 }

@@ -69,10 +69,10 @@ public class TConverter {
         boolean shortMessages = false;
         String warningLevel = "Most";
         ArrayList al
-            = ACIPTshegBarScanner.instance().scanFile(args[0], errors,
-                                                      maxErrors - 1,
-                                                      shortMessages,
-                                                      warningLevel);
+            = ACIPTraits.instance().scanner().scanFile(args[0], errors,
+                                                       maxErrors - 1,
+                                                       shortMessages,
+                                                       warningLevel);
 
         if (null == al) {
             System.err.println(maxErrors + " or more lexical errors occurred while scanning ACIP input file; is this");
@@ -103,8 +103,9 @@ public class TConverter {
             warnings = new StringBuffer();
             putWarningsInOutput = true;
         }
-        convertToTMW(al, System.out, errors, warnings, null,
-                     putWarningsInOutput, warningLevel, shortMessages, colors);
+        convertToTMW(ACIPTraits.instance(), al, System.out, errors, warnings,
+                     null, putWarningsInOutput, warningLevel, shortMessages,
+                     colors);
         int retCode = 0;
         if (errors.length() > 0) {
             System.err.println("Errors converting ACIP input file: ");
@@ -139,7 +140,8 @@ public class TConverter {
      *  prefix rules in another
      *  @throws IOException if we cannot write to out
      */
-    public static boolean convertToTMW(ArrayList scan,
+    public static boolean convertToTMW(TTraits ttraits,
+                                       ArrayList scan,
                                        OutputStream out,
                                        StringBuffer errors,
                                        StringBuffer warnings,
@@ -152,7 +154,8 @@ public class TConverter {
     {
         TibetanDocument tdoc = new TibetanDocument();
         boolean rv
-            = convertToTMW(scan, tdoc, errors, warnings, hasWarnings,
+            = convertToTMW(ttraits,
+                           scan, tdoc, errors, warnings, hasWarnings,
                            writeWarningsToResult, warningLevel,
                            shortMessages, colors,
                            new int[] { tdoc.getLength() });
@@ -169,7 +172,8 @@ public class TConverter {
         offset from zero inside tdoc at which conversion results will
         be placed.  On output, loc[0] is one past the offset of the
         last of the conversion results. */
-    public static boolean convertToTMW(ArrayList scan,
+    public static boolean convertToTMW(TTraits ttraits,
+                                       ArrayList scan,
                                        TibetanDocument tdoc,
                                        StringBuffer errors,
                                        StringBuffer warnings,
@@ -181,7 +185,8 @@ public class TConverter {
                                        int[] loc)
         throws IOException
     {
-        return convertTo(false, true, scan, null, tdoc, errors, warnings,
+        return convertTo(false, true,
+                         ttraits, scan, null, tdoc, errors, warnings,
                          hasWarnings, writeWarningsToResult, warningLevel,
                          shortMessages, colors, loc,
                          loc[0] == tdoc.getLength());
@@ -189,33 +194,30 @@ public class TConverter {
 
     /** Returns UTF-8 encoded Unicode.  A bit indirect, so use this
      *  for testing only if performance is a concern.  If errors occur
-     *  in scanning the ACIP or in converting a tsheg bar, then they
-     *  are appended to errors if errors is non-null, as well as
-     *  written to the result.  If warnings occur in scanning the ACIP
-     *  or in converting a tsheg bar, then they are appended to
-     *  warnings if warnings is non-null, and they are written to the
-     *  result if writeWarningsToResult is true.  Error and warning
-     *  messages are long and self-contained unless shortMessages is
-     *  true.  Returns the conversion upon perfect success or if there
-     *  were merely warnings, null if errors occurred.  */
-    public static String convertToUnicodeText(String transliteration,
-                                              String acip,
+     *  in scanning the transliteration or in converting a tsheg bar,
+     *  then they are appended to errors if errors is non-null, as
+     *  well as written to the result.  If warnings occur in scanning
+     *  the transliteration or in converting a tsheg bar, then they
+     *  are appended to warnings if warnings is non-null, and they are
+     *  written to the result if writeWarningsToResult is true.  Error
+     *  and warning messages are long and self-contained unless
+     *  shortMessages is true.  Returns the conversion upon perfect
+     *  success or if there were merely warnings, null if errors
+     *  occurred.  */
+    public static String convertToUnicodeText(TTraits ttraits,
+                                              String translit,
                                               StringBuffer errors,
                                               StringBuffer warnings,
                                               boolean writeWarningsToResult,
                                               String warningLevel,
                                               boolean shortMessages) {
-        if (transliteration != "ACIP") {
-            ThdlDebug.noteIffyCode();
-            throw new IllegalArgumentException("Unsupported transliteration");
-        }
         ByteArrayOutputStream sw = new ByteArrayOutputStream();
         ArrayList al
-            = ACIPTshegBarScanner.instance().scan(acip, errors, -1,
-                                                  shortMessages, warningLevel);
+            = ttraits.scanner().scan(translit, errors, -1, shortMessages,
+                                     warningLevel);
         try {
             if (null != al) {
-                convertToUnicodeText(al, sw, errors,
+                convertToUnicodeText(ttraits, al, sw, errors,
                                      warnings, null, writeWarningsToResult,
                                      warningLevel, shortMessages);
                 return sw.toString("UTF-8");
@@ -236,7 +238,8 @@ public class TConverter {
      *  writeWarningsToOut is true, then warnings also will be written
      *  to out.
      *  @return true upon perfect success, false if errors occurred.
-     *  @param scan result of ACIPTshegBarScanner.scan(..)
+     *  @param scan result of using ttraits.scanner() to break up the
+     *  original string of transliteration
      *  @param out stream to which to write converted text
      *  @param errors if non-null, all error messages are appended
      *  @param warnings if non-null, all warning messages appropriate
@@ -246,9 +249,9 @@ public class TConverter {
      *  false otherwise
      *  @param writeWarningsToOut if true, then all warning messages
      *  are written to out in the appropriate places
-     *  @throws IOException if we cannot write to out
-     */
-    public static boolean convertToUnicodeText(ArrayList scan,
+     *  @throws IOException if we cannot write to out */
+    public static boolean convertToUnicodeText(TTraits ttraits,
+                                               ArrayList scan,
                                                OutputStream out,
                                                StringBuffer errors,
                                                StringBuffer warnings,
@@ -258,7 +261,8 @@ public class TConverter {
                                                boolean shortMessages)
         throws IOException
     {
-        return convertTo(true, false, scan, out, null, errors, warnings,
+        return convertTo(true, false,
+                         ttraits, scan, out, null, errors, warnings,
                          hasWarnings, writeWarningsToOut, warningLevel,
                          shortMessages, false, new int[] { -1 } , true);
     }
@@ -283,6 +287,7 @@ public class TConverter {
 
     private static boolean convertTo(boolean toUnicode, // else to TMW
                                      boolean toRTF, // else to UTF-8-encoded text
+                                     TTraits ttraits,
                                      ArrayList scan,
                                      OutputStream out, // for (toUnicode && !toRTF) mode
                                      TibetanDocument tdoc, // for !toUnicode mode or (toUnicode && toRTF) mode
@@ -368,7 +373,7 @@ public class TConverter {
                 if (lastGuyWasNonPunct) {
                     String err = "[#ERROR " + ErrorsAndWarnings.getMessage(133, shortMessages, s.getText()) + "]";
                     if (null != writer) {
-                        String uni = ACIPRules.getUnicodeFor(s.getText(), false);
+                        String uni = ttraits.getUnicodeFor(s.getText(), false);
                         if (null == uni) {
                             hasErrors = true;
                             uni = err;
@@ -377,7 +382,7 @@ public class TConverter {
                     }
                     if (null != tdoc) {
                         String wylie
-                            = ACIPRules.getWylieForACIPOther(s.getText());
+                            = ttraits.getEwtsForOther(s.getText());
                         if (null == wylie) {
                             hasErrors = true;
                             tdoc.appendRoman(tdocLocation[0], err, Color.RED);
@@ -658,7 +663,7 @@ public class TConverter {
                             }
 
                             if (!done) {
-                                if (null != writer) unicode = ACIPRules.getUnicodeFor(s.getText(), false);
+                                if (null != writer) unicode = ttraits.getUnicodeFor(s.getText(), false);
                                 if (null != tdoc) {
                                     if (s.getText().equals("\r")
                                         || s.getText().equals("\t")
@@ -675,7 +680,7 @@ public class TConverter {
                                                 TibetanMachineWeb.getGlyph("#")
                                             }; // hard-coded EWTS values
                                         } else {
-                                            String wy = ACIPRules.getWylieForACIPOther(s.getText());
+                                            String wy = ttraits.getEwtsForOther(s.getText());
                                             if (null == wy) throw new Error("No wylie for ACIP " + s.getText());
                                             duff = new Object[] { TibetanMachineWeb.getGlyph(wy) };
                                         }

@@ -25,7 +25,7 @@ import javax.swing.text.rtf.RTFEditorKit;
 import java.io.*;
 
 import org.thdl.util.ThdlDebug;
-import org.thdl.tib.text.ttt.ACIPTshegBarScanner;
+import org.thdl.tib.text.ttt.ACIPTraits;
 import org.thdl.tib.text.ttt.TConverter;
 import org.thdl.tib.text.tshegbar.LegalTshegBar;
 import org.thdl.tib.text.tshegbar.UnicodeConstants;
@@ -333,8 +333,8 @@ public class TibTextUtils implements THDLWylieConstants {
     {
         StringBuffer errors = new StringBuffer();
         String warningLevel = withWarnings ? "All" : "None";
-        ArrayList al = ACIPTshegBarScanner.instance().scan(acip, errors, 500,
-                                                           false, warningLevel);
+        ArrayList al = ACIPTraits.instance().scanner().scan(acip, errors, 500,
+                                                            false, warningLevel);
         if (null == al || errors.length() > 0) {
             if (errors.length() > 0)
                 throw new InvalidACIPException(errors.toString());
@@ -348,8 +348,8 @@ public class TibTextUtils implements THDLWylieConstants {
         }
         try {
             int tloc[] = new int[] { loc };
-            TConverter.convertToTMW(al, tdoc, null, null, null,
-                                    putWarningsInOutput, warningLevel,
+            TConverter.convertToTMW(ACIPTraits.instance(), al, tdoc, null, null,
+                                    null, putWarningsInOutput, warningLevel,
                                     false, colors, tloc);
             return tloc[0] - loc;
         } catch (IOException e) {
@@ -1430,6 +1430,53 @@ public class TibTextUtils implements THDLWylieConstants {
             candidateType = getCandidateTypeModuloAppendage(candidateType);
 
             if ("prefix/root-root/suffix-suffix/postsuffix" == candidateType) {
+                /* Update: Chris Fynn wrote this in response to an
+e-mail from David Chapman on Feb 21, 2005:
+
+<quote Chris Fynn feb 21 2005>
+When working out the rules for Tibetan and Dzongkha
+collation in Bhutan we came up with the following sequences
+that could be ambiguous:
+
+0F51 0F42 0F66
+0F60 0F42 0F66
+0F51 0F44 0F66
+0F42 0F53 0F51
+0F58 0F53 0F51
+0F56 0F42 0F66
+0F51 0F56 0F66
+0F60 0F56 0F66
+0F58 0F42 0F66
+0F58 0F44 0F66
+0F51 0F58 0F66
+
+After much consultation with experts in Bhutan it was
+decided these should always be read as follows:
+
+0F51 0F42 0F66  dgas
+0F60 0F42 0F66  'gas
+0F51 0F44 0F66  dngas *
+0F42 0F53 0F51  gnad
+0F58 0F53 0F51  mnad *
+0F56 0F42 0F66  bags
+0F51 0F56 0F66  dbas
+0F60 0F56 0F66  'bas *
+0F58 0F42 0F66  mags
+0F58 0F44 0F66  mangs
+0F51 0F58 0F66  dmas
+
+In most cases it was found that only one of the two possible
+readings actually existed as words. 0F51 0F44 0F66 , 0F58
+0F53 0F51, and 0F60 0F56 0F66 were not found as syllables in
+any known words, but the experts felt that *if* they
+occurred in Tibetan or Dzongkha text then dngas, mnad, and
+'bas would be the most likely reading.
+</quote>
+
+
+
+    Because of this e-mail, dbas and dngas were added to the list of
+    exceptions.  */
                 /* Yes, this is ambiguous. How do we handle it?  See
                  * this from Andres (but note that only 4 of the 14 in
                  * the second list are ambiguous because ra na sa and
@@ -1480,7 +1527,9 @@ public class TibTextUtils implements THDLWylieConstants {
                                                 || wylie2.equals("n")
                                                 || wylie2.equals("s")))
                         || (wylie1.equals("d") && (wylie2.equals("g")
-                                                   || wylie2.equals("m")))
+                                                   || wylie2.equals("m")
+                                                   || wylie2.equals("b")
+                                                   || wylie2.equals("ng")))
                         || (wylie1.equals("b") && wylie2.equals("d"))
                         || (wylie1.equals("m") && wylie2.equals("d"))
                         || (wylie1.equals("'") && (wylie2.equals("g")

@@ -1988,7 +1988,7 @@ private static String acipForGlyph(String hashKey) {
         // ~X is a special case because the EWTS is 2 characters in
         // length
         || "~X".equals(hashKey)) // hard-coded EWTS value
-        return org.thdl.tib.text.ttt.ACIPRules.getACIPForEWTS(hashKey);
+        return org.thdl.tib.text.ttt.ACIPTraits.instance().getACIPForEWTS(hashKey);
     else
         // else we are not be able to use it because it's not smart
         // about stacks (e.g., W+W)
@@ -2116,7 +2116,7 @@ public static String getACIPForGlyph(DuffCode dc1,
 
     // DLC FIXME: TMW.53 is probably going to come out all wrong (VA
     // vs. WA) from this function, but
-    // ACIPRules.getACIPForEWTS(String) seems to come through... will
+    // ACIPTraits.getACIPForEWTS(String) seems to come through... will
     // it always?
 
     String hashKey = getHashKeyForGlyph(dc1);

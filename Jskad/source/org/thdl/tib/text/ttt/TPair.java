@@ -26,22 +26,27 @@ import java.util.ArrayList;
 
 /** An ordered pair used in ACIP/EWTS-to-TMW/Unicode conversion.  The
  *  left side is the consonant or empty; the right side is either the
- *  vowel or '+' (indicating stacking) or a disambiguator (i.e., '-'
- *  in ACIP or '.' in EWTS).
+ *  vowel or '+' (indicating stacking in both ACIP and EWTS) or a
+ *  disambiguator (e.g., '-' in ACIP or '.' in EWTS).
  *  @author David Chandler */
 /* BIG FIXME: make this package work for EWTS, not just ACIP.  (TODO(DLC)[EWTS->Tibetan]: does it?) */
 class TPair {
-    /** The left side, or null if there is no left side.  That is, the
-     *  non-vowel, non-'m', non-':', non-'-', non-'+' guy. */
+    /** the part that knows ACIP from EWTS */
+    private TTraits traits;
+
+    /** Returns the part that knows ACIP from EWTS. */
+    public TTraits getTraits() { return traits; }
+
+    /** The left side, or null if there is no left side.  I.e., the
+     *  non-wowel, non-disambiguator, non-'+' guy. */
     private String l;
     String getLeft() {
         ThdlDebug.verify(!"".equals(l));
         return l;
     }
 
-    /** The right side. That is, the vowel, with 'm' or ':' "vowel"
-     *  after it if appropriate, or "-" (disambiguator), or "+"
-     *  (stacking), or null otherwise. */
+    /** The right side. That is, the wowel or disambiguator or "+"
+     *  (for stacking) or null otherwise. */
     private String r;
     String getRight() {
         ThdlDebug.verify(!"".equals(r));
@@ -50,13 +55,14 @@ class TPair {
 
     /** Constructs a new TPair with left side l and right side r.
      *  Use null or the empty string to represent an absence. */
-    TPair(String l, String r) {
+    TPair(TTraits traits, String l, String r) {
         // Normalize:
         if (null != l && l.equals("")) l = null;
         if (null != r && r.equals("")) r = null;
 
         this.l = l;
         this.r = r;
+        this.traits = traits;
     }
 
     /** Returns a nice String representation.  Returns "(D . E)" for
@@ -67,8 +73,8 @@ class TPair {
             + ((null == r) ? "" : r) + ")";
     }
 
-    /** Returns the number of ACIP characters that make up this
-     *  TPair. */
+    /** Returns the number of transliteration characters that make up
+     *  this TPair. */
     int size() {
         return (((l == null) ? 0 : l.length())
                 + ((r == null) ? 0 : r.length()));
@@ -98,18 +104,18 @@ class TPair {
             sz = l.length();
             newL = l.substring(0, sz - N);
         }
-        return new TPair(newL, newR);
+        return new TPair(traits, newL, newR);
     }
 
-    /** Returns true if and only if this is nonempty and is l, if
-     *  present, is a legal ACIP consonant, and is r, if present, is a
-     *  legal ACIP vowel. */
+    /** Returns true if and only if this is nonempty and if l, if
+     *  present, is a legal consonant, and if r, if present, is a
+     *  legal wowel. */
     boolean isLegal() {
         if (size() < 1)
             return false;
-        if (null != l && !ACIPRules.isConsonant(l))
+        if (null != l && !traits.isConsonant(l))
             return false;
-        if (null != r && !ACIPRules.isWowel(r))
+        if (null != r && !traits.isWowel(r))
             return false;
         return true;
     }
@@ -119,9 +125,9 @@ class TPair {
     boolean isPrefix() {
         return (null != l
                 && ((null == r || "".equals(r))
-                    || "-".equals(r) // TODO(DLC)[EWTS->Tibetan]
-                    || "A".equals(r)) // FIXME: though check for BASKYABS and warn because BSKYABS is more common
-                && ACIPRules.isACIPPrefix(l));
+                    || traits.disambiguator().equals(r)
+                    || traits.aVowel().equals(r)) // FIXME: though check for BASKYABS and warn because BSKYABS is more common
+                && traits.isPrefix(l));
     }
 
     /** Returns true if and only if this pair could be a Tibetan
@@ -129,25 +135,25 @@ class TPair {
     boolean isPostSuffix() {
         return (null != l
                 && ((null == r || "".equals(r))
-                    || "-".equals(r)
-                    || "A".equals(r)) // FIXME: though warn about GAMASA vs. GAMS
-                && ACIPRules.isACIPPostsuffix(l));
+                    || traits.disambiguator().equals(r)
+                    || traits.aVowel().equals(r)) // FIXME: though warn about GAMASA vs. GAMS
+                && traits.isPostsuffix(l));
     }
 
     /** Returns true if and only if this pair could be a Tibetan
-     *  suffix. FIXME: ACIP specific, just like isPostSuffix() and isPrefix() */
+     *  suffix. */
     boolean isSuffix() {
         return (null != l
                 && ((null == r || "".equals(r))
-                    || "-".equals(r)
-                    || "A".equals(r))
-                && ACIPRules.isACIPSuffix(l));
+                    || traits.disambiguator().equals(r)
+                    || traits.aVowel().equals(r))
+                && traits.isSuffix(l));
     }
 
     /** Returns true if and only if this pair is merely a
      *  disambiguator. */
     boolean isDisambiguator() {
-        return ("-".equals(r) && getLeft() == null);
+        return (traits.disambiguator().equals(r) && getLeft() == null);
     }
 
     /** Yep, this works for TPairs. */
@@ -160,16 +166,16 @@ class TPair {
         return false;
     }
 
-    /** Returns a TPair that is like this pair except that it has
-     *  a "+" on the right if this pair is empty on the right and is
-     *  empty on the right if this pair has a disambiguator (i.e., a
-     *  '-') on the right.  May return itself (but never mutates this
+    /** Returns a TPair that is like this pair except that it has a
+     *  "+" on the right if this pair is empty on the right and is
+     *  empty on the right if this pair has a disambiguator on the
+     *  right.  May return itself (but never mutates this
      *  instance). */
     TPair insideStack() {
         if (null == getRight())
-            return new TPair(getLeft(), "+");
-        else if ("-".equals(getRight()))
-            return new TPair(getLeft(), null);
+            return new TPair(traits, getLeft(), "+");
+        else if (traits.disambiguator().equals(getRight()))
+            return new TPair(traits, getLeft(), null);
         else
             return this;
     }
@@ -194,7 +200,7 @@ class TPair {
     String getWylie(boolean justLeft) {
         String leftWylie = null;
         if (getLeft() != null) {
-            leftWylie = ACIPRules.getWylieForACIPConsonant(getLeft());
+            leftWylie = traits.getEwtsForConsonant(getLeft());
             if (leftWylie == null) {
                 if (isNumeric())
                     leftWylie = getLeft();
@@ -208,7 +214,7 @@ class TPair {
         else if ("+".equals(getRight()))
             rightWylie = "+";
         else if (getRight() != null)
-            rightWylie = ACIPRules.getWylieForACIPVowel(getRight());
+            rightWylie = traits.getEwtsForWowel(getRight());
         if (null == rightWylie) rightWylie = "";
         return leftWylie + rightWylie;
     }
@@ -227,18 +233,19 @@ class TPair {
     void getUnicode(StringBuffer consonantSB, StringBuffer vowelSB,
                     boolean subscribed) {
         if (null != getLeft()) {
-            String x = ACIPRules.getUnicodeFor(getLeft(), subscribed);
+            String x = traits.getUnicodeFor(getLeft(), subscribed);
             if (null == x) throw new Error("TPair: " + getLeft() + " has no Uni");
             consonantSB.append(x);
         }
         if (null != getRight()
             && !("-".equals(getRight()) || "+".equals(getRight()) || "A".equals(getRight()))) {
-            String x = ACIPRules.getUnicodeFor(getRight(), subscribed);
+            String x = traits.getUnicodeFor(getRight(), subscribed);
             if (null == x) throw new Error("TPair: " + getRight() + " has no Uni");
             vowelSB.append(x);
         }
     }
 
+    // TODO(DLC)[EWTS->Tibetan]
     /** Returns true if this pair is surely the last pair in an ACIP
      *  stack. Stacking continues through (* . ) and (* . +), but
      *  stops anywhere else. */

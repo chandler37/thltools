@@ -137,7 +137,7 @@ public class TGCPair implements THDLWylieConstants {
                 consonantACIP = "V";
             else
                 consonantACIP
-                    = org.thdl.tib.text.ttt.ACIPRules.getACIPForEWTS(consonantWylie);
+                    = org.thdl.tib.text.ttt.ACIPTraits.instance().getACIPForEWTS(consonantWylie);
             if (null == consonantACIP) {
                 if (null != consonantWylie && consonantWylie.startsWith("R+"))
                     return TibetanMachineWeb.getTMWToACIPErrorString("glyph with THDL Extended Wylie " + consonantWylie, " because the ACIP R+... could imply the short superscribed form, but this most likely intends the full form (i.e., Unicode character U+0F6A)");
@@ -160,7 +160,7 @@ public class TGCPair implements THDLWylieConstants {
         }
         if (vowelWylie != null) {
             String vowelACIP
-                = org.thdl.tib.text.ttt.ACIPRules.getACIPForEWTS(vowelWylie);
+                = org.thdl.tib.text.ttt.ACIPTraits.instance().getACIPForEWTS(vowelWylie);
             if (null == vowelACIP) {
                 return TibetanMachineWeb.getTMWToACIPErrorString("glyph with THDL Extended Wylie " + vowelWylie, "");
             } else {

@@ -27,7 +27,7 @@ import org.thdl.util.*;
 import org.thdl.tib.text.*;
 
 import org.thdl.tib.text.ttt.TConverter;
-import org.thdl.tib.text.ttt.ACIPTshegBarScanner;
+import org.thdl.tib.text.ttt.ACIPTraits;
 import java.util.ArrayList;
 
 /** TibetanConverter is a command-line utility for converting to and
@@ -297,17 +297,18 @@ public class TibetanConverter implements FontConverterConstants {
         if (ACIP_TO_UNI_TEXT == ct || ACIP_TO_TMW == ct) {
             try {
                 ArrayList al
-                    = ACIPTshegBarScanner.instance().scanStream(in, null,
-                                                                ThdlOptions.getIntegerOption("thdl.most.errors.a.tibetan.acip.document.can.have",
-                                                                                             1000 - 1),
-                                                                shortMessages,
-                                                                warningLevel);
+                    = ACIPTraits.instance().scanner().scanStream(in, null,
+                                                                 ThdlOptions.getIntegerOption("thdl.most.errors.a.tibetan.acip.document.can.have",
+                                                                                              1000 - 1),
+                                                                 shortMessages,
+                                                                 warningLevel);
                 if (null == al)
                     return 47;
                 boolean embeddedWarnings = (warningLevel != "None");
                 boolean hasWarnings[] = new boolean[] { false };
                 if (ACIP_TO_UNI_TEXT == ct) {
-                    if (!TConverter.convertToUnicodeText(al, out, null,
+                    if (!TConverter.convertToUnicodeText(ACIPTraits.instance(),
+                                                         al, out, null,
                                                          null, hasWarnings,
                                                          embeddedWarnings,
                                                          warningLevel,
@@ -315,7 +316,8 @@ public class TibetanConverter implements FontConverterConstants {
                         return 46;
                 } else {
                     if (ct != ACIP_TO_TMW) throw new Error("badness");
-                    if (!TConverter.convertToTMW(al, out, null, null,
+                    if (!TConverter.convertToTMW(ACIPTraits.instance(),
+                                                 al, out, null, null,
                                                  hasWarnings,
                                                  embeddedWarnings,
                                                  warningLevel, shortMessages,

@@ -33,6 +33,9 @@ import java.util.ArrayList;
  *
  *  @author David Chandler */
 class TPairList {
+    /** the part that knows ACIP from EWTS */
+    private TTraits traits;
+
     /** FIXME: change me and see if performance improves. */
     private static final int INITIAL_SIZE = 1;
 
@@ -41,17 +44,20 @@ class TPairList {
 
     /** Creates a new list containing just p. */
     public TPairList(TPair p) {
+        this.traits = p.getTraits();
         al = new ArrayList(1);
         add(p);
     }
 
     /** Creates an empty list. */
-    public TPairList() {
+    public TPairList(TTraits traits) {
+        this.traits = traits;
         al = new ArrayList(INITIAL_SIZE);
     }
 
     /** Creates an empty list with the capacity to hold N items. */
-    public TPairList(int N) {
+    public TPairList(TTraits traits, int N) {
+        this.traits = traits;
         al = new ArrayList(N);
     }
 
@@ -181,7 +187,7 @@ class TPairList {
                 return ErrorsAndWarnings.getMessage(125, shortMessages, translit);
             } else if ((null == p.getLeft() && !"-".equals(p.getRight()))
                        || (null != p.getLeft()
-                           && !ACIPRules.isConsonant(p.getLeft())
+                           && !traits.isConsonant(p.getLeft())
                            && !p.isNumeric())) {
                 // FIXME: stop handling this outside of ErrorsAndWarnings:
                 if (null == p.getLeft()) {
@@ -406,12 +412,12 @@ class TPairList {
                 // and only if b1 is one, etc.
                 for (int counter = 0; counter < (1<<numBreaks); counter++) {
                     TStackList sl = new TStackList();
-                    TPairList currentStack = new TPairList();
+                    TPairList currentStack = new TPairList(traits);
                     for (int k = startLoc; k <= i; k++) {
                         if (!get(k).isDisambiguator()) {
                             if (get(k).isNumeric()
                                 || (get(k).getLeft() != null
-                                    && ACIPRules.isConsonant(get(k).getLeft())))
+                                    && traits.isConsonant(get(k).getLeft())))
                                 currentStack.add(get(k).insideStack());
                             else
                                 return null; // sA, for example, is illegal.
@@ -419,7 +425,7 @@ class TPairList {
                         if (k == i || get(k).endsACIPStack()) {
                             if (!currentStack.isEmpty())
                                 sl.add(currentStack.asStack());
-                            currentStack = new TPairList();
+                            currentStack = new TPairList(traits);
                         } else {
                             if (numBreaks > 0) {
                                 for (int j = 0; breakStart+j < 3; j++) {
@@ -427,7 +433,7 @@ class TPairList {
                                         && 1 == ((counter >> j) & 1)) {
                                         if (!currentStack.isEmpty())
                                             sl.add(currentStack.asStack());
-                                        currentStack = new TPairList();
+                                        currentStack = new TPairList(traits);
                                         break; // shouldn't matter, but you never know
                                     }
                                 }
@@ -460,9 +466,9 @@ class TPairList {
         if (!isEmpty()) {
             TPair lastPair = get(size() - 1);
             if ("+".equals(lastPair.getRight()))
-                al.set(size() - 1, new TPair(lastPair.getLeft(), null));
+                al.set(size() - 1, new TPair(traits, lastPair.getLeft(), null));
             else if ("-".equals(lastPair.getRight()))
-                al.set(size() - 1, new TPair(lastPair.getLeft(), null));
+                al.set(size() - 1, new TPair(traits, lastPair.getLeft(), null));
         }
         return this;
     }
@@ -506,10 +512,10 @@ class TPairList {
                 add_U0F7F = true;
                 StringBuffer rr = new StringBuffer(p.getRight());
                 rr.deleteCharAt(where);
-                p = new TPair(p.getLeft(), rr.toString());
+                p = new TPair(traits, p.getLeft(), rr.toString());
             }
             boolean hasNonAVowel = (!"A".equals(p.getRight()) && null != p.getRight());
-            String thislWylie = ACIPRules.getWylieForACIPConsonant(p.getLeft());
+            String thislWylie = traits.getEwtsForConsonant(p.getLeft());
             if (thislWylie == null) {
                 char ch;
                 if (p.isNumeric()) {
@@ -528,21 +534,21 @@ class TPairList {
             boolean isTibetan = TibetanMachineWeb.isWylieTibetanConsonantOrConsonantStack(ll.toString());
             boolean isSanskrit = TibetanMachineWeb.isWylieSanskritConsonantStack(lWylie.toString());
             if (ddebug && !isTibetan && !isSanskrit && !isNumeric) {
-                System.out.println("OTHER for " + lWylie + " with vowel " + ACIPRules.getWylieForACIPVowel(p.getRight()) + " and p.getRight()=" + p.getRight());
+                System.out.println("OTHER for " + lWylie + " with vowel " + traits.getEwtsForWowel(p.getRight()) + " and p.getRight()=" + p.getRight());
             }
             if (isTibetan && isSanskrit) {
                  // RVA, e.g.  It must be Tibetan because RWA is what
                  // you'd use for RA over fixed-form WA.
                 isSanskrit = false;
             }
-            if (ddebug && hasNonAVowel && ACIPRules.getWylieForACIPVowel(p.getRight()) == null) {
-                System.out.println("vowel " + ACIPRules.getWylieForACIPVowel(p.getRight()) + " and p.getRight()=" + p.getRight());
+            if (ddebug && hasNonAVowel && traits.getEwtsForWowel(p.getRight()) == null) {
+                System.out.println("vowel " + traits.getEwtsForWowel(p.getRight()) + " and p.getRight()=" + p.getRight());
             }
             TGCPair tp;
             indexList.add(new Integer(index));
             tp = new TGCPair(lWylie.toString(),
                              (hasNonAVowel
-                              ? ACIPRules.getWylieForACIPVowel(p.getRight())
+                              ? traits.getEwtsForWowel(p.getRight())
                               : ""),
                              (isNumeric
                               ? TGCPair.TYPE_OTHER
@@ -697,9 +703,9 @@ class TPairList {
         if (lastPair.getRight() == null || lastPair.equals("-")) {
             duffsAndErrors.add(TibetanMachineWeb.getGlyph(hashKey));
         } else {
-            ACIPRules.getDuffForACIPVowel(duffsAndErrors,
-                                          TibetanMachineWeb.getGlyph(hashKey),
-                                          lastPair.getRight());
+            traits.getDuffForWowel(duffsAndErrors,
+                                   TibetanMachineWeb.getGlyph(hashKey),
+                                   lastPair.getRight());
         }
         if (previousSize == duffsAndErrors.size())
             throw new Error("TPairList with no duffs? " + toString()); // FIXME: change to assertion.

@@ -202,15 +202,16 @@ public class PackageTest extends TestCase {
         message. */
     static String ACIP2TMW2Translit(boolean EWTSNotACIP, String ACIP) {
         StringBuffer errors = new StringBuffer();
-        ArrayList al = ACIPTshegBarScanner.instance().scan(ACIP, errors, -1,
-                                                           false, "None");
+        ArrayList al = ACIPTraits.instance().scanner().scan(ACIP, errors, -1,
+                                                            false, "None");
         if (null == al || errors.length() > 0)
             return null;
         org.thdl.tib.text.TibetanDocument tdoc
             = new org.thdl.tib.text.TibetanDocument();
         int loc[] = new int[] { 0 };
         try {
-            if (!TConverter.convertToTMW(al,
+            if (!TConverter.convertToTMW(ACIPTraits.instance(),
+                                         al,
                                          tdoc,
                                          null,
                                          null,
@@ -7358,8 +7359,8 @@ tstHelper("ZUR");
 
     private static void shelp(String s, String expectedErrors, String expectedScan, String warningLevel) {
         StringBuffer errors = new StringBuffer();
-        ArrayList al = ACIPTshegBarScanner.instance().scan(s, errors, -1, false,
-                                                           warningLevel);
+        ArrayList al = ACIPTraits.instance().scanner().scan(s, errors, -1, false,
+                                                            warningLevel);
         if (null != expectedScan) {
             if (!al.toString().equals(expectedScan)) {
                 System.out.println("Scanning " + s + " into tsheg bars was expected to cause the following scan:");
@@ -7392,7 +7393,7 @@ tstHelper("ZUR");
 
     /** Tests {@link ACIPTshegBarScanner#scan(String, StringBuffer,
         int, boolean)}. */
-    public void testScanner() {
+    public void testAcipScanner() {
         shelp("Pm KA", "", "[TIBETAN_NON_PUNCTUATION:{Pm}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{KA}]");
 
         shelp("KA (KHA\nGA)", "", "[TIBETAN_NON_PUNCTUATION:{KA}, TIBETAN_PUNCTUATION:{ }, START_PAREN:{(}, TIBETAN_NON_PUNCTUATION:{KHA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{GA}, END_PAREN:{)}]");
@@ -7682,7 +7683,8 @@ tstHelper("ZUR");
     private static void uhelp(String acip, String expectedUnicode,
                               String warningLevel, boolean shortMessages) {
         StringBuffer errors = new StringBuffer();
-        String unicode = TConverter.convertToUnicodeText("ACIP", acip, errors,
+        String unicode = TConverter.convertToUnicodeText(ACIPTraits.instance(),
+                                                         acip, errors,
                                                          null, true,
                                                          warningLevel,
                                                          shortMessages);

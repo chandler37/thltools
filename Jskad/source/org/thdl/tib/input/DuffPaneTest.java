@@ -969,6 +969,22 @@ public class DuffPaneTest extends DuffPaneTestBase {
 
         ensureKeysGiveCorrectWylie("'gas");
 
+        /* Chris Fynn's e-mail on Feb 21 2005 leads to these test
+           cases: */
+        {
+            ensureKeysGiveCorrectWylie("dgas");
+            ensureKeysGiveCorrectWylie("'gas");
+            ensureKeysGiveCorrectWylie("dngas");
+            ensureKeysGiveCorrectWylie("gnad");
+            ensureKeysGiveCorrectWylie("mnad");
+            ensureKeysGiveCorrectWylie("bags");
+            ensureKeysGiveCorrectWylie("dbas");
+            ensureKeysGiveCorrectWylie("'bas");
+            ensureKeysGiveCorrectWylie("mags");
+            ensureKeysGiveCorrectWylie("mangs");
+            ensureKeysGiveCorrectWylie("dmas");
+        }
+
         ensureKeysGiveCorrectWylie("gangs");
 
         ensureKeysGiveCorrectWylie("gnags");

@@ -121,7 +121,7 @@ class TPairListFactory {
 
         // base case for our recursion:
         if ("".equals(acip))
-            return new TPairList();
+            return new TPairList(ttraits);
 
         StringBuffer acipBuf = new StringBuffer(acip);
         int howMuchBuf[] = new int[1];
@@ -131,9 +131,9 @@ class TPairListFactory {
             && null != head.getLeft()
             && null != head.getRight()
             && weHaveSeenVowelAlready
-            && ACIPRules.isACIPSuffix(head.getLeft()) // DKY'O should be two horizontal units, not three. -- {D}{KY'O}, not {D}{KY}{'O}.
+            && ttraits.isSuffix(head.getLeft()) // DKY'O should be two horizontal units, not three. -- {D}{KY'O}, not {D}{KY}{'O}.
             && head.getRight().startsWith("'")) {
-            head = new TPair(head.getLeft(),
+            head = new TPair(ttraits, head.getLeft(),
                              // Without this disambiguator, we are
                              // less efficient (8 parses, not 4) and
                              // we can't handle PA'AM'ANG etc.
@@ -177,11 +177,11 @@ class TPairListFactory {
     }
 
     // TODO(DLC)[EWTS->Tibetan]: doc
-    private static TPairList breakHelperEWTS(String ewts, TTraits ttraits /* TODO(DLC)[EWTS->Tibetan]: use */) {
+    private static TPairList breakHelperEWTS(String ewts, TTraits ttraits) {
 
         // base case for our recursion:
         if ("".equals(ewts))
-            return new TPairList();
+            return new TPairList(ttraits);
 
         StringBuffer ewtsBuf = new StringBuffer(ewts);
         int howMuchBuf[] = new int[1];
@@ -238,11 +238,11 @@ class TPairListFactory {
         int i, xl = acip.length();
         if (0 == xl) {
             howMuch[0] = 0;
-            return new TPair(null, null);
+            return new TPair(ttraits, null, null);
         }
         if (acip.charAt(0) == ttraits.disambiguatorChar()) {
             howMuch[0] = 1;
-            return new TPair(null, ttraits.disambiguator());
+            return new TPair(ttraits, null, ttraits.disambiguator());
         }
         char ch = acip.charAt(0);
 
@@ -250,7 +250,7 @@ class TPairListFactory {
         // like seeing 1-2-3-4.
         if (ch >= '0' && ch <= '9') {
             howMuch[0] = 1; // not 2...
-            return new TPair(acip.substring(0, 1), (xl == 1) ? null : ttraits.disambiguator());
+            return new TPair(ttraits, acip.substring(0, 1), (xl == 1) ? null : ttraits.disambiguator());
         }
 
         String l = null, r = null;
@@ -264,11 +264,11 @@ class TPairListFactory {
         int ll = (null == l) ? 0 : l.length();
         if (null != l && xl > ll && acip.charAt(ll) == ttraits.disambiguatorChar()) {
             howMuch[0] = l.length() + 1;
-            return new TPair(l, ttraits.disambiguator());
+            return new TPair(ttraits, l, ttraits.disambiguator());
         }
         if (null != l && xl > ll && acip.charAt(ll) == '+') {
             howMuch[0] = l.length() + 1;
-            return new TPair(l, "+");
+            return new TPair(ttraits, l, "+");
         }
         for (i = Math.min(ttraits.maxWowelLength(), xl - ll); i >= 1; i--) {
             String t = null;
@@ -289,7 +289,7 @@ class TPairListFactory {
             && acip.charAt(z) == '+') {
             acip.deleteCharAt(z-1);
             howMuch[0] = l.length() + 1;
-            return new TPair(l, "+");
+            return new TPair(ttraits, l, "+");
         }
 
         // Allow Pm to mean PAm, P: to mean PA:, Pm: to mean PAm:. /* TODO(DLC)[EWTS->Tibetan]: */
@@ -305,14 +305,14 @@ class TPairListFactory {
         if (null == l && null == r) {
             howMuch[0] = 1; // not 2...
             // add a disambiguator to avoid exponential running time:
-            return new TPair(acip.substring(0, 1),
+            return new TPair(ttraits, acip.substring(0, 1),
                              (xl == 1) ? null : ttraits.disambiguator());
         }
 
         howMuch[0] = (((l == null) ? 0 : l.length())
                       + ((r == null) ? 0 : r.length())
                       + mod);
-        return new TPair(l, r);
+        return new TPair(ttraits, l, r);
     } // TODO(DLC)[EWTS->Tibetan]:
 }
 
