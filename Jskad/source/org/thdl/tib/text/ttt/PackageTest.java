@@ -7409,6 +7409,8 @@ G+NA
 MNA'
 M+NA
 */
+        uhelp("BGLA", "\u0f56\u0f42\u0fb3");
+        uhelp("BLCAG", "\u0f56\u0f63\u0f95\u0f42");
         uhelp("DBA", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP DBA has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.]\u0f51\u0f56");
         // DLC FIXME        uhelp("BDEm:", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP BDEm: has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.]\u0f56DLC\u0f7a\u0f7e\u0f7f");
         uhelp("DMAR", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP DMAR has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.]\u0f51\u0f58\u0f62");
@@ -7420,6 +7422,12 @@ M+NA
     }
 
     public void testACIPConversion() {
+        uhelp("x", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP x must be glued to the end of a tsheg bar, but this one was not]");
+        uhelp("o", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP o must be glued to the end of a tsheg bar, but this one was not]");
+        uhelp("%", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP % must be glued to the end of a tsheg bar, but this one was not]");
+        uhelp(":", "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") : HAS THESE ERRORS: Cannot convert ACIP : because : is not an ACIP consonant]");
+        uhelp("m", "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") m HAS THESE ERRORS: Cannot convert ACIP m because m is not an ACIP consonant]");
+
         uhelp("NA+YA", "\u0f53\u0fb1"); // DLC FIXME: warn about the extra A
         uhelp("NE+YA", "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") NE+YA HAS THESE ERRORS: Cannot convert ACIP NE+-YA because + is not an ACIP consonant]");
         uhelp("tRAStA", "\u0f4a\u0fb2\u0f66\u0f9a");
