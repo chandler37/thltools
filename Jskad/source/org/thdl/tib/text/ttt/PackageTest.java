@@ -7475,6 +7475,8 @@ M+NA
         uhelp("P'EE", "\u0f54\u0f71\u0f7b");
 
         uhelp("KA", "\u0f40");
+        uhelp("\\u0F35", "\u0F35");
+        uhelp("\\uF035", "[#ERROR CONVERTING ACIP DOCUMENT: The Unicode escape '\uf035' with ordinal 61493 is in the private-use area (PUA) of Unicode and will thus not be written out into the output lest you think other tools will be able to understand this non-standard construction.]");
         uhelp("KI", "\u0f40\u0f72");
         uhelp("KO", "\u0f40\u0f7c");
         uhelp("KE", "\u0f40\u0f7a");
