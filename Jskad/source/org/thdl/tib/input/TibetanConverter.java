@@ -26,7 +26,7 @@ import javax.swing.text.StyleConstants;
 import org.thdl.util.*;
 import org.thdl.tib.text.*;
 
-import org.thdl.tib.text.ttt.ACIPConverter;
+import org.thdl.tib.text.ttt.TConverter;
 import org.thdl.tib.text.ttt.ACIPTshegBarScanner;
 import java.util.ArrayList;
 
@@ -307,19 +307,19 @@ public class TibetanConverter implements FontConverterConstants {
                 boolean embeddedWarnings = (warningLevel != "None");
                 boolean hasWarnings[] = new boolean[] { false };
                 if (ACIP_TO_UNI_TEXT == ct) {
-                    if (!ACIPConverter.convertToUnicodeText(al, out, null,
-                                                            null, hasWarnings,
-                                                            embeddedWarnings,
-                                                            warningLevel,
-                                                            shortMessages))
+                    if (!TConverter.convertToUnicodeText(al, out, null,
+                                                         null, hasWarnings,
+                                                         embeddedWarnings,
+                                                         warningLevel,
+                                                         shortMessages))
                         return 46;
                 } else {
                     if (ct != ACIP_TO_TMW) throw new Error("badness");
-                    if (!ACIPConverter.convertToTMW(al, out, null, null,
-                                                    hasWarnings,
-                                                    embeddedWarnings,
-                                                    warningLevel, shortMessages,
-                                                    colors))
+                    if (!TConverter.convertToTMW(al, out, null, null,
+                                                 hasWarnings,
+                                                 embeddedWarnings,
+                                                 warningLevel, shortMessages,
+                                                 colors))
                         return 46;
                 }
                 if (embeddedWarnings && hasWarnings[0])

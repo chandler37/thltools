@@ -348,8 +348,8 @@ Contributor(s): ______________________________________.
       <param name="my.included.source.file"
              value="org/thdl/util/VerboseUnicodeDump.java"/>
     </antcall>
-    <!-- Put TibetanConverter and ACIPConverter in Jskad's jar for
-         those who want to use them. -->
+    <!-- Put TibetanConverter in Jskad's jar for those who want to use
+         it. -->
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${jskadbin}"/>
       <param name="my.included.source.file"
@@ -358,7 +358,7 @@ Contributor(s): ______________________________________.
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${jskadbin}"/>
       <param name="my.included.source.file"
-             value="org/thdl/tib/text/ttt/ACIPConverter.java"/>
+             value="org/thdl/tib/text/ttt/TConverter.java"/>
     </antcall>
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${jskadbin}"/>

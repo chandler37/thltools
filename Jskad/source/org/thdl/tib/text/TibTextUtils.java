@@ -26,7 +26,7 @@ import java.io.*;
 
 import org.thdl.util.ThdlDebug;
 import org.thdl.tib.text.ttt.ACIPTshegBarScanner;
-import org.thdl.tib.text.ttt.ACIPConverter;
+import org.thdl.tib.text.ttt.TConverter;
 import org.thdl.tib.text.tshegbar.LegalTshegBar;
 import org.thdl.tib.text.tshegbar.UnicodeConstants;
 import org.thdl.tib.text.tshegbar.UnicodeUtils;
@@ -348,9 +348,9 @@ public class TibTextUtils implements THDLWylieConstants {
         }
         try {
             int tloc[] = new int[] { loc };
-            ACIPConverter.convertToTMW(al, tdoc, null, null, null,
-                                       putWarningsInOutput, warningLevel,
-                                       false, colors, tloc);
+            TConverter.convertToTMW(al, tdoc, null, null, null,
+                                    putWarningsInOutput, warningLevel,
+                                    false, colors, tloc);
             return tloc[0] - loc;
         } catch (IOException e) {
             throw new Error("Can't happen: " + e);

@@ -209,16 +209,16 @@ public class PackageTest extends TestCase {
             = new org.thdl.tib.text.TibetanDocument();
         int loc[] = new int[] { 0 };
         try {
-            if (!ACIPConverter.convertToTMW(al,
-                                            tdoc,
-                                            null,
-                                            null,
-                                            null,
-                                            false,
-                                            "None",
-                                            false,
-                                            false,
-                                            loc))
+            if (!TConverter.convertToTMW(al,
+                                         tdoc,
+                                         null,
+                                         null,
+                                         null,
+                                         false,
+                                         "None",
+                                         false,
+                                         false,
+                                         loc))
                 return null;
         } catch (java.io.IOException e) {
             assertTrue("I/O exception?", false);
@@ -7680,9 +7680,10 @@ tstHelper("ZUR");
     private static void uhelp(String acip, String expectedUnicode,
                               String warningLevel, boolean shortMessages) {
         StringBuffer errors = new StringBuffer();
-        String unicode = ACIPConverter.convertToUnicodeText(acip, errors, null,
-                                                            true, warningLevel,
-                                                            shortMessages);
+        String unicode = TConverter.convertToUnicodeText("ACIP", acip, errors,
+                                                         null, true,
+                                                         warningLevel,
+                                                         shortMessages);
         if (null == unicode) {
             if (null != expectedUnicode && "none" != expectedUnicode) {
                 System.out.println("No unicode exists for " + acip + " but you expected " + org.thdl.tib.text.tshegbar.UnicodeUtils.unicodeStringToPrettyString(expectedUnicode));

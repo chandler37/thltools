@@ -35,7 +35,7 @@ import org.thdl.tib.text.DuffCode;
 * results as ACIP->TMW followed by TMW->Unicode (FIXME: test it!)
 * @author David Chandler
 */
-public class ACIPConverter {
+public class TConverter {
 
     /** Command-line converter for testing only -- use
      *  org.thdl.tib.input.TibetanConverter for production work.
@@ -55,7 +55,7 @@ public class ACIPConverter {
 
         // Only developers should use this.
         if (!ThdlOptions.getBooleanOption("thdl.debug")) {
-            System.err.println("Use org.thdl.tib.input.TibetanConverter for production work, not ACIPConverter.");
+            System.err.println("Use org.thdl.tib.input.TibetanConverter for production work, not TConverter.");
             System.exit(1);
         }
 
@@ -137,7 +137,6 @@ public class ACIPConverter {
      *  prefix rules in another
      *  @throws IOException if we cannot write to out
      */
-    // TODO(DLC)[EWTS->Tibetan]: misnamed source file, this is TConverter.java nowadays
     public static boolean convertToTMW(ArrayList scan,
                                        OutputStream out,
                                        StringBuffer errors,
@@ -197,12 +196,17 @@ public class ACIPConverter {
      *  messages are long and self-contained unless shortMessages is
      *  true.  Returns the conversion upon perfect success or if there
      *  were merely warnings, null if errors occurred.  */
-    public static String convertToUnicodeText(String acip,
+    public static String convertToUnicodeText(String transliteration,
+                                              String acip,
                                               StringBuffer errors,
                                               StringBuffer warnings,
                                               boolean writeWarningsToResult,
                                               String warningLevel,
                                               boolean shortMessages) {
+        if (transliteration != "ACIP") {
+            ThdlDebug.noteIffyCode();
+            throw new IllegalArgumentException("Unsupported transliteration");
+        }
         ByteArrayOutputStream sw = new ByteArrayOutputStream();
         ArrayList al = ACIPTshegBarScanner.scan(acip, errors, -1, shortMessages,
                                                 warningLevel);
