@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core"  %>
 <ul class="navLinks">
 <li>
-<a href="http://iris.lib.virginia.edu/tibet/reference/dictionary.html">Dictionary Home</a> | 
+<a href="/lex/">Dictionary Home</a> | 
 </li>
 <li>
 <a href="/lex/action?cmd=menu" title="Main Menu">Main Menu</a> | 

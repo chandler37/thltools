@@ -1,5 +1,7 @@
 package org.thdl.lex.component;
 
+import org.thdl.lex.component.child.TransitionalDataLabel;
+
 /**
  * Description of the Interface
  * 
@@ -28,7 +30,7 @@ public interface ITransitionalData extends ILexComponent {
 	 * 
 	 * @return The transitionalDataLabel value
 	 */
-	public java.lang.Integer getTransitionalDataLabel();
+	public TransitionalDataLabel getTransitionalDataLabel();
 
 	/**
 	 * Sets the transitionalDataLabel attribute of the ITransitionalData object
@@ -36,7 +38,7 @@ public interface ITransitionalData extends ILexComponent {
 	 * @param transitionalDataLabel
 	 *            The new transitionalDataLabel value
 	 */
-	public void setTransitionalDataLabel(java.lang.Integer transitionalDataLabel);
+	public void setTransitionalDataLabel(TransitionalDataLabel transitionalDataLabel);
 
 	/**
 	 * Gets the forPublicConsumption attribute of the ITransitionalData object

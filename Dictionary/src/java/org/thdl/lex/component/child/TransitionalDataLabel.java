@@ -14,6 +14,8 @@ public class TransitionalDataLabel implements Serializable {
 
 	/** nullable persistent field */
 	private String transitionalDataLabel;
+	
+	private Integer priority;
 
 	/** full constructor */
 	public TransitionalDataLabel(String transitionalDataLabel) {
@@ -56,4 +58,11 @@ public class TransitionalDataLabel implements Serializable {
 		return new HashCodeBuilder().append(getId()).toHashCode();
 	}
 
+	public Integer getPriority() {
+		return priority;
+	}
+
+	public void setPriority(Integer priority) {
+		this.priority = priority;
+	}
 }

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.thdl.lex.component.child.TransitionalDataLabel;
 
 /** @author Hibernate CodeGenerator */
 abstract public class BaseTransitionalData extends LexComponent implements
@@ -13,7 +14,7 @@ abstract public class BaseTransitionalData extends LexComponent implements
 	private Integer parentId;
 
 	/** nullable persistent field */
-	private Integer transitionalDataLabel;
+	private TransitionalDataLabel transitionalDataLabel;
 
 	/** persistent field */
 	private String forPublicConsumption;
@@ -27,7 +28,7 @@ abstract public class BaseTransitionalData extends LexComponent implements
 	/** full constructor */
 	public BaseTransitionalData(Boolean deleted, List analyticalNotes,
 			org.thdl.lex.component.Meta meta, Integer parentId,
-			Integer transitionalDataLabel, String forPublicConsumption,
+			TransitionalDataLabel transitionalDataLabel, String forPublicConsumption,
 			String transitionalDataText,
 			org.thdl.lex.component.ILexComponent parent) {
 		super(deleted, analyticalNotes, meta);
@@ -57,11 +58,11 @@ abstract public class BaseTransitionalData extends LexComponent implements
 		this.parentId = parentId;
 	}
 
-	public Integer getTransitionalDataLabel() {
+	public TransitionalDataLabel getTransitionalDataLabel() {
 		return this.transitionalDataLabel;
 	}
 
-	public void setTransitionalDataLabel(Integer transitionalDataLabel) {
+	public void setTransitionalDataLabel(TransitionalDataLabel transitionalDataLabel) {
 		this.transitionalDataLabel = transitionalDataLabel;
 	}
 

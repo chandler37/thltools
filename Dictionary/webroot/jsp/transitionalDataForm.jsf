@@ -42,7 +42,7 @@
 
 <c:out value="${ originalEtymologyDescription } " escapeXml='false' />
 
-<c:out value="${ applicationScope.flatData.transitionalDataLabels[ component.transitionalDataLabel ] }" /> Text: <br />
+<c:out value="${ component.transitionalDataLabel.transitionalDataLabel }" /> Text: <br />
 <textarea name="transitionalDataText" rows="8" cols="90"><c:if test="${ param.cmd != 'getTranslationForm'}"><c:out value='${ transitionalDataText }' escapeXml='false' /></c:if></textarea>
 <br />
 

@@ -1,11 +1,13 @@
 package org.thdl.lex;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.thdl.lex.component.ILexComponent;
 import org.thdl.lex.component.ITerm;
+import org.thdl.lex.component.TransitionalDataComparator;
 
 /**
  * Description of the Class

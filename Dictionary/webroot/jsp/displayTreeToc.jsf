@@ -130,7 +130,12 @@
 <c:set value="${sessionScope.visit.query.entry.transitionalData}" target="${sessionScope.visit.helper}" property="collection"/>
 <c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <c:out value='<li><a href="#${sessionScope.visit.helper.hashCodeForCollection}">Other Dictionaries</a></li>' escapeXml='false' />
-<c:forEach var="transitionalData" items="${ sessionScope.visit.query.entry.transitionalData }"></c:forEach>
+<c:forEach var="transitionalData" items="${ sessionScope.visit.query.entry.transitionalData }">
+<c:set target="${ sessionScope.visit.helper }" property="component" value="${transitionalData}"/>
+<c:if test="${ transitionalData.forPublicConsumption == 'true' || ! sessionScope.visit.user.guest }">
+<a href="#<c:out value="${ sessionScope.visit.helper.hashCodeForComponent }" />"><li>-- <c:out value="${ transitionalData.transitionalDataLabel.transitionalDataLabel }" /></li></a>
+</c:if>
+</c:forEach>
 </c:if>
 
 

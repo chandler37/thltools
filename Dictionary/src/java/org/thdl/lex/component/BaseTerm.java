@@ -2,6 +2,7 @@ package org.thdl.lex.component;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
@@ -29,7 +30,7 @@ abstract public class BaseTerm extends LexComponent implements
 	private List encyclopediaArticles;
 
 	/** persistent field */
-	private List transitionalData;
+	private Set transitionalData;
 
 	/** persistent field */
 	private List definitions;
@@ -59,7 +60,7 @@ abstract public class BaseTerm extends LexComponent implements
 	public BaseTerm(Boolean deleted, List analyticalNotes,
 			org.thdl.lex.component.Meta meta, String term, List pronunciations,
 			List etymologies, List spellings, List functions,
-			List encyclopediaArticles, List transitionalData, List definitions,
+			List encyclopediaArticles, Set transitionalData, List definitions,
 			List glosses, List keywords, List modelSentences,
 			List translationEquivalents, List relatedTerms, List passages,
 			List registers) {
@@ -133,11 +134,11 @@ abstract public class BaseTerm extends LexComponent implements
 		this.encyclopediaArticles = encyclopediaArticles;
 	}
 
-	public List getTransitionalData() {
+	public Set getTransitionalData() {
 		return this.transitionalData;
 	}
 
-	public void setTransitionalData(List transitionalData) {
+	public void setTransitionalData(Set transitionalData) {
 		this.transitionalData = transitionalData;
 	}
 

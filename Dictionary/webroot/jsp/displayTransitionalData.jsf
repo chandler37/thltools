@@ -18,7 +18,7 @@
 		</span>
 		</c:if>
 
-		<span><c:out value="${ applicationScope.flatData.transitionalDataLabels[ transitionalData.transitionalDataLabel ] }" /></span>  <c:out value="${ pronunciation.phonetics }"  escapeXml="false"/>   <br />
+		<span><c:out value="${ transitionalData.transitionalDataLabel.transitionalDataLabel }" /></span>  <c:out value="${ pronunciation.phonetics }"  escapeXml="false"/>   <br />
 		<c:out value="${ transitionalData.transitionalDataText }"  escapeXml="false"/>   
 
 		<jsp:include page="displayMeta.jsf" />

@@ -115,7 +115,7 @@ public interface ITerm extends LexComponentNode {
 	 * @return The transitionalData value
 	 * @since
 	 */
-	public java.util.List getTransitionalData();
+	public java.util.Set getTransitionalData();
 
 	/**
 	 * Sets the transitionalData attribute of the ITerm object
@@ -124,7 +124,7 @@ public interface ITerm extends LexComponentNode {
 	 *            The new transitionalData value
 	 * @since
 	 */
-	public void setTransitionalData(java.util.List transitionalData);
+	public void setTransitionalData(java.util.Set transitionalData);
 
 	/**
 	 * Gets the definitions attribute of the ITerm object
