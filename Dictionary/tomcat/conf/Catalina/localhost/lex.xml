@@ -1,4 +1,97 @@
 <Context path="/lex" docBase="C:\Documents and Settings\Andres Montano\My Documents\docs-misc\java\DictionarySearch\src\Dictionary\webroot" workDir="C:\Documents and Settings\Andres Montano\My Documents\docs-misc\java\DictionarySearch\src\Dictionary\work"  debug="0" reloadable="true" crossContext="true">
+	<Resource name="jdbc/lex-datasource" scope="Shareable" type="javax.sql.DataSource"/>
+	<ResourceParams name="jdbc/lex-datasource">
+		<parameter>
+			<name>factory</name>
+			<value>org.apache.commons.dbcp.BasicDataSourceFactory</value>
+		</parameter>
+		<!-- DBCP database connection settings -->
+		<parameter>
+			<name>url</name>
+			<value>jdbc:mysql://localhost:3306/Lex?useUnicode=true&amp;characterEncoding=UTF-8</value>
+		</parameter>
+		<parameter>
+			<name>driverClassName</name>
+			<value>com.mysql.jdbc.Driver</value>
+		</parameter>
+		<parameter>
+			<name>username</name>
+			<value>javauser</value>
+		</parameter>
+		<parameter>
+			<name>password</name>
+			<value>javadude</value>
+		</parameter>
+		<!-- DBCP connection pooling options -->
+		<parameter>
+			<name>maxWait</name>
+			<value>5000</value>
+		</parameter>
+		<parameter>
+			<name>maxIdle</name>
+			<value>7</value>
+		</parameter>
+		<parameter>
+			<name>maxActive</name>
+			<value>15</value>
+		</parameter>
+		<parameter>
+			<name>removeAbandoned</name>
+			<value>true</value>
+		</parameter>
+	</ResourceParams>
+
+	<Resource name="jdbc/thdl-users-datasource" scope="Shareable" type="javax.sql.DataSource"/>
+	<ResourceParams name="jdbc/thdl-users-datasource">
+		<parameter>
+			<name>factory</name>
+			<value>org.apache.commons.dbcp.BasicDataSourceFactory</value>
+		</parameter>
+		<!-- DBCP database connection settings -->
+		<parameter>
+			<name>url</name>
+			<value>jdbc:mysql://localhost:3306/ThdlUsers</value>
+		</parameter>
+		<parameter>
+			<name>driverClassName</name>
+			<value>com.mysql.jdbc.Driver</value>
+		</parameter>
+		<parameter>
+			<name>username</name>
+			<value>javauser</value>
+		</parameter>
+		<parameter>
+			<name>password</name>
+			<value>javadude</value>
+		</parameter>
+		<parameter>
+			<name>useUnicode</name>
+			<value>true</value>
+		</parameter>
+		<parameter>
+			<name>characterEncoding</name>
+			<value>utf-8</value>
+		</parameter>
+		<!-- DBCP connection pooling options -->
+		<parameter>
+			<name>maxWait</name>
+			<value>5000</value>
+		</parameter>
+		<parameter>
+			<name>maxIdle</name>
+			<value>7</value>
+		</parameter>
+		<parameter>
+			<name>maxActive</name>
+			<value>15</value>
+		</parameter>
+		<parameter>
+			<name>removeAbandoned</name>
+			<value>true</value>
+		</parameter>
+	</ResourceParams>
+
+	<!-- Jakarta Tomcat 5.5 does not accept the resource & resourceparams partnership. There use this:
 
 	<Resource name="jdbc/lex-datasource" scope="Shareable" type="javax.sql.DataSource"
 	factory="org.apache.commons.dbcp.BasicDataSourceFactory"
@@ -22,7 +115,7 @@
 	maxWait="5000"
 	maxIdle="7"
 	maxActive="15"
-	removeAbandoned="true"/>
+	removeAbandoned="true"/>-->
 
 	<Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs/access" prefix="lex_access_log." suffix=".txt" pattern="combined" resolveHosts="true"/>
 </Context>
