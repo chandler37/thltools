@@ -76,6 +76,9 @@ public class TibetanConverter implements FontConverterConstants {
             boolean findAllNonTMWMode = false;
             boolean findSomeNonTMMode = false;
             boolean findAllNonTMMode = false;
+            
+            boolean textOutput = false;
+
             // Process arguments:
             if ((args.length != 1 && args.length != 2)
                 || (args.length == 1
@@ -96,8 +99,14 @@ public class TibetanConverter implements FontConverterConstants {
                              = args[0].equals("--to-unicode"))
                          || (convertToWylieMode
                              = args[0].equals("--to-wylie"))
+                         || (convertToWylieMode
+                             = textOutput
+                             = args[0].equals("--to-wylie-text"))
                          || (convertToACIPMode
                              = args[0].equals("--to-acip"))
+                         || (convertToACIPMode
+                             = textOutput
+                             = args[0].equals("--to-acip-text"))
                          || (findSomeNonTMWMode
                              = args[0].equals("--find-some-non-tmw"))
                          || (findSomeNonTMMode
@@ -107,7 +116,8 @@ public class TibetanConverter implements FontConverterConstants {
                 ))) {
                 out.println("TibetanConverter --find-all-non-tmw | --find-some-non-tmw");
                 out.println("                 | --to-tibetan-machine | --to-tibetan-machine-web");
-                out.println("                 | --to-unicode | --to-wylie | --to-acip RTF_file");
+                out.println("                 | --to-unicode | --to-wylie | --to-acip");
+                out.println("                 | --to-wylie-text | --to-acip-text  RTF_file");
                 out.println(" | TibetanConverter --acip-to-unicode | --acip-to-tmw TXT_file");
                 out.println(" | TibetanConverter [--version | -v | --help | -h]");
                 out.println("");
@@ -124,9 +134,13 @@ public class TibetanConverter implements FontConverterConstants {
                 out.println("");
                 out.println(" --to-tibetan-machine-web to convert TibetanMachine to TibetanMachineWeb");
                 out.println("");
-                out.println(" --to-wylie to convert TibetanMachineWeb to THDL Extended Wylie");
+                out.println(" --to-wylie to convert TibetanMachineWeb to THDL Extended Wylie in RTF");
                 out.println("");
-                out.println(" --to-acip to convert TibetanMachineWeb to ACIP");
+                out.println(" --to-wylie-text to convert TibetanMachineWeb to THDL Extended Wylie in text");
+                out.println("");
+                out.println(" --to-acip to convert TibetanMachineWeb to ACIP in RTF");
+                out.println("");
+                out.println(" --to-acip-text to convert TibetanMachineWeb to ACIP in text");
                 out.println("");
                 out.println(" --acip-to-unicode to convert ACIP text file to Unicode text file");
                 out.println("");
@@ -207,7 +221,8 @@ public class TibetanConverter implements FontConverterConstants {
                     conversionTag = TMW_TO_TM;
                 }
             }
-            return reallyConvert(in, out, conversionTag, "Most" // DLC make me configurable
+            return reallyConvert(in, out, conversionTag, textOutput,
+                                 "Most" // DLC make me configurable
                                  );
         } catch (ThdlLazyException e) {
             out.println("TibetanConverter has a BUG:");
@@ -226,7 +241,7 @@ public class TibetanConverter implements FontConverterConstants {
         return code so that TibetanConverter's usage message is
         honored. */
     static int reallyConvert(InputStream in, PrintStream out, String ct,
-                             String warningLevel) {
+                             boolean textOutput, String warningLevel) {
         if (ACIP_TO_UNI == ct || ACIP_TO_TMW == ct) {
             try {
                 ArrayList al = ACIPTshegBarScanner.scanStream(in, null,
@@ -377,10 +392,18 @@ public class TibetanConverter implements FontConverterConstants {
                 }
 
                 // Write to standard output the result:
-                try {
-                    tdoc.writeRTFOutputStream(out);
-                } catch (IOException e) {
-                    exitCode = 40;
+                if (textOutput) {
+                    try {
+                        tdoc.writeTextOutput(new BufferedWriter(new OutputStreamWriter(out)));
+                    } catch (IOException e) {
+                        exitCode = 40;
+                    }
+                } else {
+                    try {
+                        tdoc.writeRTFOutputStream(out);
+                    } catch (IOException e) {
+                        exitCode = 40;
+                    }
                 }
                 if (out.checkError())
                     exitCode = 41;

@@ -129,6 +129,22 @@ public class TibetanDocument extends DefaultStyledDocument {
 		}
 	}
 
+    /** Saves the contents of this RTF document as text on out.  If
+     *  any TM or TMW is in the document, the output will be
+     *  garbage. */
+    public void writeTextOutput(BufferedWriter out) throws IOException {
+        // DLC FIXME: try getting blocks of text; I bet it's a huge
+        // speedup.
+        try {
+            for (int i = 0; i < getLength(); i++) {
+                out.write(getText(i,1));
+            }
+        } catch (BadLocationException e) {
+            throw new Error("can't happen");
+        }
+    }
+
+
 /**
 * Inserts Tibetan text into the document. The font size is applied automatically,
 * according to the current Tibetan font size.

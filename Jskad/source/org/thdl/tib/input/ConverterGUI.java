@@ -56,6 +56,7 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
                                                  ps = new PrintStream(new FileOutputStream(newFile),
                                                                       false),
                                                  whichConversion,
+                                                 false, // DLC FIXME add a checkbox
                                                  warningLevel);
             ps.close();
         } catch (FileNotFoundException e) {
