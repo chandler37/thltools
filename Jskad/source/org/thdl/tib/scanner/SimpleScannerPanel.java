@@ -55,8 +55,8 @@ public class SimpleScannerPanel extends ScannerPanel implements ItemListener
 		
 		panel1 = new Panel(new BorderLayout());
 		// txtInput = new TextArea("",1,1,TextArea.SCROLLBARS_VERTICAL_ONLY);
-		if (landscape) txtInput = new TextArea("", 2, WIDTH_LANDSCAPE, TextArea.SCROLLBARS_VERTICAL_ONLY);
-		else txtInput = new TextArea("", 3, WIDTH_PORTRAIT, TextArea.SCROLLBARS_VERTICAL_ONLY);
+		if (landscape) txtInput = new TextArea("", 3, WIDTH_LANDSCAPE, TextArea.SCROLLBARS_VERTICAL_ONLY);
+		else txtInput = new TextArea("", 4, WIDTH_PORTRAIT, TextArea.SCROLLBARS_VERTICAL_ONLY);
 		//panel1.add(txtInput);
 		panel1.add(txtInput, BorderLayout.NORTH);
 		listDefs = new List();
