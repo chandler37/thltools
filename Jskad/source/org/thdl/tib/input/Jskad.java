@@ -73,8 +73,16 @@ public class Jskad extends JPanel implements DocumentListener {
 
     /** the middleman that keeps code regarding Tibetan keyboards
      *  clean */
-    private final static JskadKeyboardManager keybdMgr
-		= new JskadKeyboardManager(JskadKeyboardFactory.getAllAvailableJskadKeyboards());
+    private final static JskadKeyboardManager keybdMgr;
+
+    static {
+        try {
+            keybdMgr
+                = new JskadKeyboardManager(JskadKeyboardFactory.getAllAvailableJskadKeyboards());
+        } catch (Exception e) {
+            throw new ThdlLazyException(e);
+        }
+    }
 
 	private JComboBox fontFamilies, fontSizes;
 	private JFileChooser fileChooser;

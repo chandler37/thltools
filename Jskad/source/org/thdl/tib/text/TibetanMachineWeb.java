@@ -282,7 +282,8 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 			InputStreamReader isr = new InputStreamReader(url.openStream());
 			BufferedReader in = new BufferedReader(isr);
 
-			System.out.println("reading "+fileName);
+			System.out.println("Reading Tibetan Machine Web code table "
+                               + fileName);
 			String line;
 			boolean hashOn = false;
 			boolean isSanskrit = false; //FIXME: this is never read.

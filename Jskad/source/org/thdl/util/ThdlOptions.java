@@ -332,8 +332,12 @@ public final class ThdlOptions {
     }
 
 
-    // FIXMEDOC
-    private static Properties getPropertiesFromResource(Class resourceHolder,
+    /** The resource named resourceName is find and read in using
+     *  resourceHolder for guidance.  Default properties are provided
+     *  by defaults if it is non-null.  If suppressErrors is true, no
+     *  exceptions will be thrown in normal operation.  Otherwise, an
+     *  unchecked exception may be thrown upon error. */
+    public static Properties getPropertiesFromResource(Class resourceHolder,
                                                         String resourceName,
                                                         boolean suppressErrors,
                                                         Properties defaults)

@@ -947,6 +947,11 @@
         <include name="org/thdl/tib/**/*.ini"/>
       </fileset>
     </copy>
+    <copy todir="${mybin}">
+      <fileset dir="${source}">
+        <include name="keyboards.ini"/>
+      </fileset>
+    </copy>
   </target>
 
 

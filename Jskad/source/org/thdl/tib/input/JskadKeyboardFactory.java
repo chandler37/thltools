@@ -18,31 +18,75 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.input;
 
+import java.util.Properties;
+
 import org.thdl.tib.input.JskadKeyboard;
+import org.thdl.util.ThdlLazyException;
+import org.thdl.util.ThdlOptions;
 
 /** A JskadKeyboardFactory determines which Tibetan keyboards Jskad
     supports.  Adding a new one is as easy as adding 3 lines of text
     to this class's source code.
 */
 public class JskadKeyboardFactory {
-    public static JskadKeyboard[] getAllAvailableJskadKeyboards() {
-        return new JskadKeyboard[] {
-            new JskadKeyboard("Extended Wylie",
-                              null,
-                              "Wylie_keyboard.rtf"),
-            new JskadKeyboard("TCC Keyboard #1",
-                              "tcc_keyboard_1.ini",
-                              "TCC_keyboard_1.rtf"),
-            new JskadKeyboard("TCC Keyboard #2",
-                              "tcc_keyboard_2.ini",
-                              "TCC_keyboard_2.rtf"),
-            new JskadKeyboard("Sambhota Keymap One",
-                              "sambhota_keyboard_1.ini",
-                              "Sambhota_keymap_one.rtf"),
-            new JskadKeyboard("Asian Classics Input Project (ACIP)",
-                              "acip_keyboard.ini",
-                              null)
-        };
+    private static final String keyIniPath = "/keyboards.ini";
+
+    /** Reads /keyboards.ini to learn which Tibetan keyboards are
+     *  available.  Returns them. */
+    public static JskadKeyboard[] getAllAvailableJskadKeyboards()
+        throws Exception
+    {
+        Properties keyboardProps
+            = ThdlOptions.getPropertiesFromResource(JskadKeyboardFactory.class,
+                                                    keyIniPath,
+                                                    false,
+                                                    null);
+        String numberOfKeyboardsString
+            = keyboardProps.getProperty("number.of.keyboards", null);
+        if (null == numberOfKeyboardsString) {
+            throw new Exception(keyIniPath
+                                + " doesn't contain a number.of.keyboards property");
+        }
+        int numberOfKeyboards;
+        try {
+			Integer num = new Integer(numberOfKeyboardsString);
+            numberOfKeyboards = num.intValue();
+            if (numberOfKeyboards < 0) throw new NumberFormatException();
+        } catch (NumberFormatException e) {
+            throw new Exception(keyIniPath
+                                + " has a number.of.keyboards property, but it's not a nonnegative integer.");
+        }
+
+        JskadKeyboard[] keyboards;
+        keyboards = new JskadKeyboard[numberOfKeyboards];
+        for (int i = 1; i <= numberOfKeyboards; i++) {
+            String description
+                = keyboardProps.getProperty("keyboard.name.for.popup." + i,
+                                            null);
+            String iniFile
+                = keyboardProps.getProperty("keyboard.ini.file." + i,
+                                            null);
+            String rtfFile
+                = keyboardProps.getProperty("keyboard.rtf.help.file." + i,
+                                            null);
+            if (null == description)
+                throw new Exception(keyIniPath
+                                    + ": keyboard.name.for.popup." + i + " not defined.");
+            if (null == iniFile)
+                throw new Exception(keyIniPath
+                                    + ": keyboard.ini.file." + i + " not defined.");
+            if (null == rtfFile)
+                throw new Exception(keyIniPath
+                                    + ": keyboard.rtf.help.file." + i + " not defined.");
+            if (iniFile.equals("nil"))
+                iniFile = null;
+            if (rtfFile.equals("nil"))
+                rtfFile = null;
+            keyboards[i - 1] = new JskadKeyboard(description,
+                                                 iniFile,
+                                                 rtfFile);
+        }
+        return keyboards;
     }
 }
 
