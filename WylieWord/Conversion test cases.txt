@@ -177,6 +177,17 @@ sid+d+hi
 shrI
 sat+t+wa
 sarma
+hU~M`!
+wa~M`ba~MthangumaM
+
+// R+, +W, +Y, +R
+paN+D+R+yau
+k+Sh+RUM
+kar+Wabi
+waw+Wa
+fuN+D+Yo
+yay+Yaya
+r+Yi
 
 // bug ticklers
 ragyada
@@ -202,15 +213,15 @@ ai.-i
 // M,H on bare vowel
 aiM
 eM
-U^M
-au^M
+U~M
+au~M`
 aH
 aiH
 
-// M and ^M in the middle of a word
+// bindus in the middle of a word
 gaMb+ha
-hU^MhU^MhU^M
-aMu^MraH
+hUMhU~MhU~M`
+aMu~MraH
 
 raMH
 
@@ -382,9 +393,9 @@ D+h+wau
 N+T-i
 N+Th-I
 N+Da
-N+D+ye
+N+D+Ye
 N+D+ri
-N+D+r+yo
+N+D+R+yo
 N+D+hu
 N+NA
 N+d+rI
@@ -477,7 +488,7 @@ n+thai
 n+dau
 n+d+d-i
 n+d+d+r-I
-n+d+ya
+n+d+yA
 n+d+re
 n+d+hi
 n+d+h+ro
@@ -546,7 +557,7 @@ m+lA
 m+wI
 m+sU
 m+hai
-y+yau
+y+Yau
 y+r-i
 y+w-I
 y+sa
@@ -580,8 +591,8 @@ r+b+po
 r+b+bu
 r+b+hA
 r+m+mI
-r+yU
-r+wai
+r+YU
+r+Wai
 r+shau
 r+sh+y-i
 r+Sh-I
@@ -602,7 +613,7 @@ l+h+we
 w+yi
 w+ro
 w+nu
-w+wA
+w+WA
 sh+tsI
 sh+ts+yU
 sh+tshai
@@ -673,7 +684,7 @@ k+Sh+Na
 k+Sh+me
 k+Sh+m+yi
 k+Sh+yo
-k+Sh+ru
+k+Sh+Ru
 k+Sh+lA
 k+Sh+wI
 a+yU
@@ -733,11 +744,11 @@ e+ya
 ba+
 b+
 M
-^M
+~M
 Ma
 Mam
-^Ma
-^Mam
+~Ma
+~Mam
 r+ra
 
 tat
