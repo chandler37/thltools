@@ -1081,13 +1081,17 @@ private int insertDuff(int fontSize, int pos, DuffData[] glyphs, boolean asTMW, 
                     // FIXME: are we doing the right thing here?  I
                     // think so -- I think we're just not replacing
                     // the current character, but I'm not at all sure.
-                    if (debug > 0) System.out.println("non-tm/tmw found at offset " + i + "; font=" + fontName + " ord " + (int)getText(i,1).charAt(0));
+                    if (debug > 0) System.out.println("some font we're not converting found at offset " + i + "; font=" + fontName + " ord " + (int)getText(i,1).charAt(0));
                     if (replacementQueue.length() > 0) {
                         if (!mustReplace) {
                             mustReplaceUntil = i;
                             mustReplace = true;
                         }
                     }
+                    // TODO(dchandler): If this is a TMW->*
+                    // conversion, generate a warning if TM is found.
+                    // If this is a TM->* conversion, generate a
+                    // warning if TMW is found.
                 }
                 i++;
             }

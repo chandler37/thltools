@@ -14,7 +14,8 @@
    <li><a href="#start">Getting Started</a></li>
    <li><a href="#tibetan">Typing Tibetan</a></li>
    <li><a href="#english">Typing English</a></li>
-   <li><a href="#copypaste">Copying and Pasting</a></li>
+   <li><a href="#copypaste">Copying and Pasting TM/TMW</a></li>
+   <li><a href="#copyasunicode">Copying as Unicode</a></li>
    <li><a href="#wylietotmw">Converting Wylie to Tibetan</a></li>
    <li><a href="#tmwtowylie">Converting Tibetan to Wylie</a></li>
    <li><a href="#ttot">Converting Tibetan to Tibetan</a></li>
@@ -50,8 +51,8 @@ produce a document without the warning messages.
 <p>
 Jskad now has first-class support for converting entire
 documents.&nbsp; You can convert ACIP to Unicode, ACIP to Tibetan
-Machine Web (or TMW, or simply "Tibetan" in the menus), Tibetan
-Machine to TMW and vice versa, TMW to ACIP, TMW to Unicode, and TMW to
+Machine Web ("TMW", or simply "Tibetan" in the menus), Tibetan Machine
+("TM") to TMW and vice versa, TMW to ACIP, TMW to Unicode, and TMW to
 Wylie (i.e., EWTS).&nbsp; Try it from the Tools menu.&nbsp; Full
 documentation is <a
 href="http://thdltools.sourceforge.net/TMW_RTF_TO_THDL_WYLIE.html">online</a>.
@@ -59,8 +60,11 @@ href="http://thdltools.sourceforge.net/TMW_RTF_TO_THDL_WYLIE.html">online</a>.
 
 <p>
   Be on the lookout for formatting changes; Java's RTF support is
-  currently poor.<!-- DLC FIXME: do this correctly, not in a "Latest
-  Changes" section. -->
+  currently poor and it's hard to fix Java because (as of February
+  2005) Java is not available under an OSI-approved open-source
+  license.&nbsp; You will lose some formatting like centering and some
+  indention when to convert from RTF to RTF.<!-- DLC FIXME: do this
+  correctly, not in a "Latest Changes" section. -->
 </p>
 
 <p>
@@ -96,7 +100,8 @@ Machine Web</a> family of fonts installed; they are now embedded in
 Jskad itself along with the <a
 href="http://iris.lib.virginia.edu/tibet/tools/tm.html">Tibetan
 Machine</a> family of fonts.&nbsp; But if you wish to copy and paste
-into another application, then you do need the <a
+into another application as Tibetan Machine Web (rather than as
+Unicode), then you do need the <a
 href="http://iris.lib.virginia.edu/tibet/tools/tmw.html">Tibetan
 Machine Web</a> family of fonts installed.
 </p>
@@ -150,9 +155,10 @@ As...' lets you save under a new name.
 <p>
 The 'Edit' menu lets you cut, copy, and paste Tibetan text and set
 document preferences.&nbsp; These topics are covered elsewhere, in <a
-href="#copypaste">Copying and Pasting</a>, <a href="#tibetan">Typing
-Tibetan</a>, <a href="#english">Typing English</a>, and <a
-href="#preferences">Preferences</a>.
+href="#copypaste">Copying and Pasting TM/TMW</a>, <a
+href="#copyasunicode">Copying as Unicode</a>, <a
+href="#tibetan">Typing Tibetan</a>, <a href="#english">Typing
+English</a>, and <a href="#preferences">Preferences</a>.
 </p>
 
 <p>
@@ -174,19 +180,19 @@ href="#tmwtowylie">Converting Tibetan to Wylie</a>. -->
 
 <p>
 Jskad lets you input Tibetan text according to several popular
-keyboard input methods.&nbsp; The default keyboard is the <a
+keyboard input methods.&nbsp; The default keyboard is the <!-- <a
 href="http://iris.lib.virginia.edu/tibet/tools/jskad_docs/Wylie_keyboard.rtf"
-target="_blank">Extended Wylie</a> keyboard.&nbsp; Other supported
-keyboards include <a
+target="_blank"> -->Extended Wylie<!-- </a> --> keyboard.&nbsp; Other
+supported keyboards include <!-- <a
 href="http://iris.lib.virginia.edu/tibet/tools/jskad_docs/TCC_keyboard_1.rtf"
-target="_blank">Tibetan Computer Company Keyboard #1</a>, <a
+target="_blank"> -->Tibetan Computer Company Keyboard #1<!-- </a> -->,
+<!-- <a
 href="http://iris.lib.virginia.edu/tibet/tools/jskad_docs/TCC_keyboard_2.rtf"
-target="_blank">Tibetan Computer Company Keyboard #2</a> , and
-Nitharta's <a
+target="_blank"> -->Tibetan Computer Company Keyboard #2<!-- </a> -->
+, and Nitharta's <!-- <a
 href="http://iris.lib.virginia.edu/tibet/tools/jskad_docs/Sambhota_keymap_one.rtf"
-target="_blank">Sambhota Keymap One</a>.&nbsp; There is an ACIP
-keyboard also, but it is pre-alpha; there are various known bugs with
-it.
+target="_blank"> -->Sambhota Keymap One<!-- </a> -->.&nbsp; For
+documentation of these keyboards, see Jskad's 'Help' menu.
 </p>
 
 <p>
@@ -226,15 +232,48 @@ selecting 'Preferences' from the 'Edit' menu.
 <center><font size="-1"><a href="#top">Back to top</a></font></center>
 </p>
 
+
+<a name="copyasunicode"></a>
+<h3>Copying as Unicode</h3>
+
+<p>
+In addition to supporting <a href="#copypaste">copying and pasting TM
+and TMW</a>, Jskad supports copying Tibetan Machine Web as Unicode.
+</p>
+
+<p>
+This effectively does a <a
+href="http://thdltools.sourceforge.net/TMW_RTF_TO_THDL_WYLIE.html">TMW-&gt;Unicode</a>
+conversion and then copies the output to the system clipboard, ready
+to be pasted into MS Word, OpenOffice, Notepad, or wherever.
+Depending on how smart the target application is, you may have to
+explicitly tell it to use a Tibetan Unicode font such as THDL's own
+Tibetan Machine Uni.
+</p>
+
+<p>
+<font color="red">NOTE WELL</font> that OpenOffice 1.1.4 has a bug
+whereby the parts of your selection that were not Tibetan Machine Web
+are silently dropped if you paste into a section of Tibetan Unicode.
+If this affects you, you should paste into a section of English text.
+</p>
+
+
 <a name="copypaste"></a>
-<h3>Copying and Pasting</h3>
+<h3>Copying and Pasting TM/TMW</h3>
+
+<p>
+In addition to supporting <a href="#copyasunicode">copying to Unicode
+text</a>, Jskad supports copying and pasting Tibetan Machine Web.
+</p>
 
 <p>
 Jskad supports RTF copy and paste.&nbsp; That means, among other
-things, that you can copy Tibetan back and forth between Microsoft
-Word and Jskad.&nbsp; To do so, you can use standard keyboard
-shortcuts (Ctrl-A for select all, Ctrl-X for cut, Ctrl-C for copy, and
-Ctrl-V for paste).&nbsp; Note that you must have the <a
+things, that you can copy Tibetan Machine and Tibetan Machine Web back
+and forth between Jskad and Microsoft Word or OpenOffice.&nbsp; To do
+so, you can use standard keyboard shortcuts (Ctrl-A for select all,
+Ctrl-X for cut, Ctrl-C for copy, and Ctrl-V for paste).&nbsp; Note
+that you must have the <a
 href="http://iris.lib.virginia.edu/tibet/tools/tmw.html">Tibetan
 Machine Web</a> family of fonts installed on your computer for
 applications besides Jskad to be aware of them.
@@ -465,21 +504,21 @@ As already mentioned, Jskad supports four different keyboard input methods:
 </p>
 
 <ol>
-<li><a
+<li><!-- <a
 href="http://iris.lib.virginia.edu/tibet/tools/jskad_docs/Wylie_keyboard.rtf"
-target="_blank">Extended Wylie</a></li>
+target="_blank"> -->Extended Wylie<!-- </a> --></li>
 
-<li><a
+<li><!-- <a
 href="http://iris.lib.virginia.edu/tibet/tools/jskad_docs/TCC_keyboard_1.rtf"
-target="_blank">Tibetan Computer Company Keyboard #1</a></li>
+target="_blank"> -->Tibetan Computer Company Keyboard #1<!-- </a> --></li>
 
-<li><a
+<li><!-- <a
 href="http://iris.lib.virginia.edu/tibet/tools/jskad_docs/TCC_keyboard_2.rtf"
-target="_blank">Tibetan Computer Company Keyboard #2</a></li>
+target="_blank"> -->Tibetan Computer Company Keyboard #2<!-- </a> --></li>
 
-<li><a
+<li><!-- <a
 href="http://iris.lib.virginia.edu/tibet/tools/jskad_docs/Sambhota_keymap_one.rtf"
-target="_blank">Sambhota Keymap One</a></li>
+target="_blank"> -->Sambhota Keymap One<!-- </a> --></li>
 </ol>
 
 <p>

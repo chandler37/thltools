@@ -949,8 +949,13 @@ public class DuffPane extends TibetanPane implements FocusListener {
         appendStatus(" (because the window focus was lost)");
     }
 
-    /** Copies the current selection to the system clipboard, unless
-        cut-and-paste operations are disabled. */
+    /** Converts the current selection to Unicode and then copies that
+        Unicode to the system clipboard. */
+    public void copyAsUnicode() {
+        copyOrCutToUnicode(getSelectionStart(), getSelectionEnd(), false);
+    }
+
+    /** Copies the current selection to the system clipboard. */
     public void copy() {
         copy(getSelectionStart(), getSelectionEnd(), false);
     }
@@ -991,29 +996,98 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * false if it is 'copy'
 */
     private void copy(int start, int end, boolean remove) {
-        int p1 = start;
-        int p2 = end;
-        if (p1 != p2) {
+        if (start != end) {
             ThdlDebug.verify(getDocument() == getTibDoc());
-            RTFSelection rtfSelection = new RTFSelection((StyledDocument)getDocument(), p1, p2-p1);
+            RTFSelection rtfSelection
+                = new RTFSelection((StyledDocument)getDocument(),
+                                   start, end-start);
             try {
                 rtfBoard.setContents(rtfSelection, rtfSelection);
                 updateStatus("Copied to clipboard");
             } catch (IllegalStateException ise) {
+                // TODO(dchandler): let's show a dialog box.  The user
+                // should know that another app is monopolizing the
+                // clipboard.
                 ise.printStackTrace();
                 ThdlDebug.noteIffyCode();
             }
         } else
             updateStatus("Nothing to copy/cut");
 
-        if (remove) {
-            // Respect setEditable(boolean):
-            if (!this.isEditable())
-                return;
-
+        if (remove && this.isEditable()) {
             try {
                 ThdlDebug.verify(getDocument() == getTibDoc());
-                getDocument().remove(p1, p2-p1);
+                getDocument().remove(start, end-start);
+                updateStatus("Cut to clipboard");
+            } catch (BadLocationException ble) {
+                ble.printStackTrace();
+                ThdlDebug.noteIffyCode();
+            }
+        }
+    }
+
+    /** Adds to the clipboard the Unicode you'd get if you used a
+        TMW->Unicode conversion on the specified portion of the
+        document.  This is plain-text Unicode, not RTF.  We lose info
+        about font size, formatting like centering etc. */
+    private void copyOrCutToUnicode(int start, int end, boolean remove) {
+        if (start != end) {
+            ThdlDebug.verify(getDocument() == getTibDoc());
+            // construct new document that contains only portion of
+            // text you want to copy/cut so that we can use
+            // TibetanDocument.convertToUnicode(..).
+            TibetanDocument newDoc = new TibetanDocument();
+            boolean warn_about_tm = false;
+            for (int i = start; i < end; i++) {
+                try {
+                    String s = getTibDoc().getText(i,1);
+                    AttributeSet as
+                        = getTibDoc().getCharacterElement(i).getAttributes();
+                    String fontName = StyleConstants.getFontFamily(as);
+                    if (0 != TibetanMachineWeb.getTMFontNumber(fontName))
+                        warn_about_tm = true;
+                    newDoc.insertString(i - start, s, as);
+                } catch (BadLocationException ble) {
+                    ble.printStackTrace();
+                    ThdlDebug.noteIffyCode();
+                }
+            }
+            String unicode = "[Jskad: Converting to Unicode failed.]";
+            if (newDoc.convertToUnicode(0, newDoc.getLength(), null, null,
+                                        new long[] { 0 })) {
+                // TODO(dchandler): better error handling!
+            } else {
+                try {
+                    unicode = newDoc.getText(0, newDoc.getLength());
+                    if (warn_about_tm)
+                        unicode
+                            = ("[Jskad: Warning while copying as Unicode: We convert TibetanMachineWeb to Unicode but not TibetanMachine during this operation, but there was some TibetanMachine text present.  This will appear as garbage!  Convert your TibetanMachine to TibetanMachineWeb and try again if you want perfect results.]"
+                               + unicode);
+                    if (start != end && unicode.length() == 0)
+                        unicode = "[Jskad: Converting to Unicode shouldn't have produced the empty string!  This is a bug in Jskad.]";
+                } catch (BadLocationException ble) {
+                    // This should never happen.
+                    unicode = "[Jskad: Oops! bigtime bug 13412412kjlwe32]";
+                }
+            }
+            StringSelection uSelection = new StringSelection(unicode);
+            try {
+                rtfBoard.setContents(uSelection, uSelection);
+                updateStatus("Copied to clipboard");
+            } catch (IllegalStateException ise) {
+                // TODO(dchandler): let's show a dialog box.  The user
+                // should know that another app is monopolizing the
+                // clipboard.
+                ise.printStackTrace();
+                ThdlDebug.noteIffyCode();
+            }
+        } else
+            updateStatus("Nothing to copy/cut");
+
+        if (remove && this.isEditable()) {
+            try {
+                ThdlDebug.verify(getDocument() == getTibDoc());
+                getDocument().remove(start, end-start);
                 updateStatus("Cut to clipboard");
             } catch (BadLocationException ble) {
                 ble.printStackTrace();
@@ -1634,18 +1708,17 @@ public void paste(int offset)
 /** The JDK contains StringSelection, but we want to copy and paste
     RTF sometimes. Enter RTFSelection. */
 class RTFSelection implements ClipboardOwner, Transferable {
-    private DataFlavor[] supportedFlavors;
+    private final DataFlavor[] supportedFlavors
+        = new DataFlavor[] { rtfFlavor, DataFlavor.stringFlavor };
     private ByteArrayOutputStream rtfOut;
     private String plainText;
 
     RTFSelection(StyledDocument sdoc, int offset, int length) {
-        supportedFlavors = new DataFlavor[2];
-        supportedFlavors[0] = rtfFlavor;
-        supportedFlavors[1] = DataFlavor.stringFlavor;
         try {
-            //construct new document that contains only portion of text you want to copy
-            //this workaround is due to bug 4129911, which will not be fixed
-
+            // construct new document that contains only portion of
+            // text you want to copy this workaround is due to bug
+            // 4129911, which will not be fixed
+            //
             // TODO(dchandler): Is this where we lose formatting like
             // centering and indention?
             StyledDocument newDoc = new DefaultStyledDocument();
@@ -1659,12 +1732,11 @@ class RTFSelection implements ClipboardOwner, Transferable {
                     ThdlDebug.noteIffyCode();
                 }
             }
+            plainText = getText(offset, length);
             rtfOut = new ByteArrayOutputStream();
 
             //last two parameters ignored (bug 4129911?):
             rtfEd.write(rtfOut, newDoc, 0, newDoc.getLength());
-
-            plainText = getText(offset, length);
         } catch (BadLocationException ble) {
             ble.printStackTrace();
             ThdlDebug.noteIffyCode();
@@ -1683,9 +1755,7 @@ class RTFSelection implements ClipboardOwner, Transferable {
         return null;
     }
     public DataFlavor[] getTransferDataFlavors() {
-        // TODO(dchandler): Can't the caller modify our array?  Let's
-        // return a new array that's a copy, for safety.
-        return supportedFlavors; 
+        return (DataFlavor[])supportedFlavors.clone();
     }
     public boolean isDataFlavorSupported(DataFlavor flavor) {
         for (int i=0; i<supportedFlavors.length; i++)
@@ -1693,6 +1763,6 @@ class RTFSelection implements ClipboardOwner, Transferable {
                 return true;
         return false;
     }
-} // class RTFSelection
+} // inner class DuffPane.RTFSelection
 
-}
+} // class DuffPane

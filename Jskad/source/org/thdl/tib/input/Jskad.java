@@ -365,6 +365,14 @@ public class Jskad extends JPanel implements DocumentListener {
             });
             editMenu.add(copyItem);
 
+            JMenuItem copyAsUnicodeItem = new JMenuItem("Copy as Unicode");
+            copyAsUnicodeItem.addActionListener(new ThdlActionListener() {
+                public void theRealActionPerformed(ActionEvent e) {
+                    copyAsUnicodeSelection();
+                }
+            });
+            editMenu.add(copyAsUnicodeItem);
+
             JMenuItem pasteItem = new JMenuItem("Paste");
             pasteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
                                                             java.awt.Event.CTRL_MASK)); //Ctrl-v
@@ -1145,6 +1153,10 @@ public class Jskad extends JPanel implements DocumentListener {
 
     private void copySelection() {
         dp.copy();
+    }
+
+    private void copyAsUnicodeSelection() {
+        dp.copyAsUnicode();
     }
 
     private void pasteSelection() {
