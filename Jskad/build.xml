@@ -80,8 +80,13 @@
     <javac destdir="${jskadbin}">
       <classpath refid="entire.class.path"/>
       <src path="${source}"/>
-      <include name="org/thdl/tib/**,org/thdl/util/**" />
-      <exclude name="**/*.ini,**/*.html" />
+      <include name="org/thdl/tib/**" />
+      <include name="org/thdl/util/**" />
+      <exclude name="**/*.ini" />
+	  <exclude name="**/*.html" />
+      <!-- Exclude JUnit tests: -->
+	  <exclude name="**/*Test.java" />
+      <exclude name="**/*AllTests.java" />
     </javac>
   </target>
 
