@@ -45,6 +45,9 @@ brgyud
 // Featuritis
 brtswand
 
+// the only other case of superscript + root + wazur
+rgwug
+
 // two-letter suffix (not to be treated as n suffix + g second-suffix)
 dbang
 // plus second sufix
@@ -64,7 +67,7 @@ a
 i
 'o
 'a
-// Bare polyvowels
+// Bare polyvowels; not clear if these are really legal, but:
 a'o
 i'u'i
 'o'i
@@ -87,6 +90,8 @@ bsgrubs
 bzlog
 brlabs
 sprul
+// this one is important because it's an exception to the rule that in a 
+// row of three consonants, the second is almost always the root.
 shabs
 shes
 ldan
@@ -193,6 +198,9 @@ r+Yi
 ragyada
 'agarma
 gayaradasa
+la'i
+a'i
+od
 
 // Taken from THDL Sechen text collection
 dashadigAMsarbatimirabi ni saranan+nAmashrIguh+yagar+b+hatatwaMsh+ts+yayastanataras+yaTa'ikAbiharatisma
@@ -711,13 +719,14 @@ rta'i [(horse's)] mgrin
 
 <?Reject?>
 
-// The dbu can [m][ng][s] should be read "mngas".
-mangs
-
 // ??? legal???
 pa'am'ang
 // is this actually illegal?
 pe'as
+
+pe's
+p'is
+p'e
 
 'angs
 'ag
@@ -754,7 +763,7 @@ r+ra
 tat
 sbla
 
-// Skt can't end in vowel
+// Skt can't end in consonant
 ragyad
 
 // no vowel between ' and g
