@@ -143,10 +143,6 @@ public class ACIPConverter {
         throws IOException
     {
         TibetanDocument tdoc = new TibetanDocument();
-        tdoc.setRomanAttributeSet(ThdlOptions.getStringOption("thdl.acip.to.x.latin.font",
-                                                              "Courier New"),
-                                  ThdlOptions.getIntegerOption("thdl.acip.to.x.latin.font.size",
-                                                               20));
         boolean rv
             = convertToTMW(scan, tdoc, errors, warnings,
                            writeWarningsToResult, warningLevel, colors);
@@ -194,7 +190,7 @@ public class ACIPConverter {
             } else {
                 return null;
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new Error(e.toString());
         }
     }
@@ -258,6 +254,23 @@ public class ACIPConverter {
                                      boolean colors)
         throws IOException
     {
+        int smallFontSize = -1;
+        int regularFontSize = -1;
+        if (null != tdoc) {
+            String latinFont
+                = ThdlOptions.getStringOption("thdl.acip.to.x.latin.font",
+                                              "Courier New");
+            int latinFontSize
+                = ThdlOptions.getIntegerOption("thdl.acip.to.x.latin.font.size",
+                                               20);
+            tdoc.setRomanAttributeSet(latinFont, latinFontSize);
+
+            regularFontSize = tdoc.getTibetanFontSize();
+            smallFontSize = (int)(0.75*regularFontSize);
+            if (smallFontSize >= regularFontSize)
+                smallFontSize = regularFontSize - 1;
+        }
+
         if (colors)
             tdoc.enableColors();
         else
@@ -481,6 +494,16 @@ public class ACIPConverter {
                                     }
                                 }
                             }
+                        } else if (stype == ACIPString.START_PAREN) {
+                            if (null != tdoc) {
+                                tdoc.setTibetanFontSize(smallFontSize);
+                            }
+                            continue;
+                        } else if (stype == ACIPString.END_PAREN) {
+                            if (null != tdoc) {
+                                tdoc.setTibetanFontSize(regularFontSize);
+                            }
+                            continue;
                         } else {
                             throw new Error("forgot a case");
                         }

@@ -35,6 +35,9 @@ public class ACIPString {
     public static boolean isLatin(int type) {
         return (type != TIBETAN_NON_PUNCTUATION
                 && type != TIBETAN_PUNCTUATION
+                && type != TSHEG_BAR_ADORNMENT
+                && type != START_PAREN
+                && type != END_PAREN
                 && type != START_SLASH
                 && type != END_SLASH);
     }

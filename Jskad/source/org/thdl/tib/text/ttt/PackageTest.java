@@ -7083,6 +7083,8 @@ tstHelper("ZUR");
 
     /** Tests {@link ACIPTshegBarScanner#scan(String, StringBuffer, int)}. */
     public void testScanner() {
+        shelp("KA (KHA\nGA)", "", "[TIBETAN_NON_PUNCTUATION:{KA}, TIBETAN_PUNCTUATION:{ }, START_PAREN:{(}, TIBETAN_NON_PUNCTUATION:{KHA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{GA}, END_PAREN:{)}]");
+
         shelp("LA...SGRUB",
               "",
               "[TIBETAN_NON_PUNCTUATION:{LA}, TIBETAN_PUNCTUATION:{.}, TIBETAN_PUNCTUATION:{.}, TIBETAN_PUNCTUATION:{.}, TIBETAN_NON_PUNCTUATION:{SGRUB}]");
