@@ -202,7 +202,8 @@ public class PackageTest extends TestCase {
         message. */
     static String ACIP2TMW2Translit(boolean EWTSNotACIP, String ACIP) {
         StringBuffer errors = new StringBuffer();
-        ArrayList al = ACIPTshegBarScanner.scan(ACIP, errors, -1, false, "None");
+        ArrayList al = ACIPTshegBarScanner.instance().scan(ACIP, errors, -1,
+                                                           false, "None");
         if (null == al || errors.length() > 0)
             return null;
         org.thdl.tib.text.TibetanDocument tdoc
@@ -7357,7 +7358,8 @@ tstHelper("ZUR");
 
     private static void shelp(String s, String expectedErrors, String expectedScan, String warningLevel) {
         StringBuffer errors = new StringBuffer();
-        ArrayList al = ACIPTshegBarScanner.scan(s, errors, -1, false, warningLevel);
+        ArrayList al = ACIPTshegBarScanner.instance().scan(s, errors, -1, false,
+                                                           warningLevel);
         if (null != expectedScan) {
             if (!al.toString().equals(expectedScan)) {
                 System.out.println("Scanning " + s + " into tsheg bars was expected to cause the following scan:");

@@ -26,18 +26,18 @@ import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlOptions;
 
 /**
-* This class is able to break up Strings of ACIP text (for example, an
-* entire sutra file) into tsheg bars, comments, etc. Folio markers,
-* comments, and the like are segregated (so that consumers can ensure
-* that they remain in Latin), and Tibetan passages are broken up into
-* tsheg bars.
+* This singleton class is able to break up Strings of ACIP text (for
+* example, an entire sutra file) into tsheg bars, comments, etc. Folio
+* markers, comments, and the like are segregated (so that consumers
+* can ensure that they remain in Latin), and Tibetan passages are
+* broken up into tsheg bars.
 *
 * <p><b>FIXME:</b> We should be handling {KA\n\nKHA} vs. {KA\nKHA} in
 * the parser, not here in the lexical analyzer.  That'd be cleaner,
 * and more like how you'd do things if you used lex and yacc.
 *
 * @author David Chandler */
-public class ACIPTshegBarScanner {
+public class ACIPTshegBarScanner extends TTshegBarScanner {
     /** True if those ACIP snippets inside square brackets (e.g.,
         "[THIS]") are to be passed through into the output unmodified
         while retaining the brackets and if those ACIP snippets inside
@@ -59,9 +59,9 @@ public class ACIPTshegBarScanner {
         }
         StringBuffer errors = new StringBuffer();
         int maxErrors = 1000;
-        ArrayList al = scanFile(args[0], errors, maxErrors - 1,
-                                "true".equals(System.getProperty("org.thdl.tib.text.ttt.ACIPTshegBarScanner.shortMessages")),
-                                "All" /* memory hog */);
+        ArrayList al = instance().scanFile(args[0], errors, maxErrors - 1,
+                                           "true".equals(System.getProperty("org.thdl.tib.text.ttt.ACIPTshegBarScanner.shortMessages")),
+                                           "All" /* memory hog */);
 
         if (null == al) {
             System.out.println(maxErrors + " or more errors occurred while scanning ACIP input file; is this");
@@ -81,63 +81,6 @@ public class ACIPTshegBarScanner {
 
         System.out.println("Good scan!");
         System.exit(0);
-    }
-
-    /** Scans an ACIP file with path fname into tsheg bars.  If errors
-     *  is non-null, error messages will be appended to it.  Returns a
-     *  list of TStrings that is the scan.  Warning and error messages
-     *  in the result will be long and self-contained unless
-     *  shortMessagse is true.
-     *
-     *  <p>FIXME: not so efficient; copies the whole file into memory
-     *  first.
-     *
-     *  @param warningLevel controls which lexical warnings you will
-     *  encounter
-     *
-     *  @throws IOException if we cannot read in the ACIP input file
-     *  */
-    public static ArrayList scanFile(String fname, StringBuffer errors,
-                                     int maxErrors, boolean shortMessages,
-                                     String warningLevel)
-        throws IOException
-    {
-        return scanStream(new FileInputStream(fname),
-                          errors, maxErrors, shortMessages, warningLevel);
-    }
-
-    /** Scans a stream of ACIP into tsheg bars.  If errors is
-     *  non-null, error messages will be appended to it.  You can
-     *  recover both errors and (optionally) warnings (modulo offset
-     *  information) from the result, though.  They will be short
-     *  messages iff shortMessages is true.  Returns a list of
-     *  TStrings that is the scan, or null if more than maxErrors
-     *  occur.
-     *
-     *  <p>FIXME: not so efficient; copies the whole file into memory
-     *  first.
-     *
-     *  @param warningLevel controls which lexical warnings you will
-     *  encounter
-     *
-     *  @throws IOException if we cannot read the whole ACIP stream */
-    public static ArrayList scanStream(InputStream stream, StringBuffer errors,
-                                       int maxErrors, boolean shortMessages,
-                                       String warningLevel)
-        throws IOException
-    {
-        StringBuffer s = new StringBuffer();
-        char ch[] = new char[8192];
-        BufferedReader in
-            = new BufferedReader(new InputStreamReader(stream, "US-ASCII"));
-
-        int amt;
-        while (-1 != (amt = in.read(ch))) {
-            s.append(ch, 0, amt);
-        }
-        in.close();
-        return scan(s.toString(), errors, maxErrors, shortMessages,
-                    warningLevel);
     }
 
     /** Helper.  Here because ACIP {MTHAR%\nKHA} should be treated the
@@ -190,33 +133,11 @@ public class ACIPTshegBarScanner {
     // DLC FIXME "H:\n\n" becomes "H: \n\n", wrongly I think.  See
     // Tibetan! 5.1 section on formatting Tibetan texts.
 
-    /** Returns a list of {@link TString TStrings} corresponding
-     *  to s, possibly the empty list (when the empty string is the
-     *  input).  Each String is either a Latin comment, some Latin
-     *  text, a tsheg bar (minus the tsheg or shad or whatever), a
-     *  String of inter-tsheg-bar punctuation, etc.
-     *
-     *  <p>This not only scans; it finds all the errors and warnings a
-     *  parser would too, like "NYA x" and "(" and ")" and "/NYA" etc.
-     *  It puts those in as TStrings with type {@link
-     *  TString#ERROR} or {@link TString#WARNING}, and also, if
-     *  errors is non-null, appends helpful messages to errors, each
-     *  followed by a '\n'.
-     *  @param s the ACIP text
-     *  @param errors if non-null, the buffer to which to append error
-     *  messages (FIXME: kludge, just get this info by scanning
-     *  the result for TString.ERROR (and maybe TString.WARNING,
-     *  if you care about warnings), but then we'd have to put the
-     *  Offset info in the TString)
-     *  @param maxErrors if nonnegative, then scanning will stop when
-     *  more than maxErrors errors occur.  In this event, null is
-     *  returned.
-     *  @param shortMessages true iff you want short error and warning
-     *  messages instead of long, self-contained error messages
-     *  @return null if more than maxErrors errors occur, or the scan
-     *  otherwise */
-    public static ArrayList scan(String s, StringBuffer errors, int maxErrors,
-                                 boolean shortMessages, String warningLevel) {
+    /** See the comment in TTshegBarScanner.  And note that this not
+     *  only scans; it finds all the errors and warnings a parser
+     *  would too, like "NYA x" and "(" and ")" and "/NYA" etc.  */
+    public ArrayList scan(String s, StringBuffer errors, int maxErrors,
+                          boolean shortMessages, String warningLevel) {
         // FIXME: Use less memory and time by not adding in the
         // warnings that are below threshold.
 
@@ -1112,5 +1033,16 @@ public class ACIPTshegBarScanner {
             || ch == 'n'
             || ch == 's'
             || ch == 'h';
+    }
+
+    /** non-public because this is a singleton */
+    protected ACIPTshegBarScanner() { }
+    private static ACIPTshegBarScanner singleton = null;
+    /** Returns the sole instance of this class. */
+    public synchronized static ACIPTshegBarScanner instance() {
+        if (null == singleton) {
+            singleton = new ACIPTshegBarScanner();
+        }
+        return singleton;
     }
 }

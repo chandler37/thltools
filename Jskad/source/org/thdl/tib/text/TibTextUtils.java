@@ -333,8 +333,8 @@ public class TibTextUtils implements THDLWylieConstants {
     {
         StringBuffer errors = new StringBuffer();
         String warningLevel = withWarnings ? "All" : "None";
-        ArrayList al = ACIPTshegBarScanner.scan(acip, errors, 500, false,
-                                                warningLevel);
+        ArrayList al = ACIPTshegBarScanner.instance().scan(acip, errors, 500,
+                                                           false, warningLevel);
         if (null == al || errors.length() > 0) {
             if (errors.length() > 0)
                 throw new InvalidACIPException(errors.toString());

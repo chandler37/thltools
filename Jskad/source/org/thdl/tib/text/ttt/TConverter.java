@@ -29,6 +29,7 @@ import org.thdl.tib.text.TibetanDocument;
 import org.thdl.tib.text.TibetanMachineWeb;
 import org.thdl.tib.text.DuffCode;
 
+// TODO(DLC)[EWTS->Tibetan]: THis class is broken for ewts.  But kill this class unless it needs to exist.
 /**
 * This class is able to convert an ACIP file into Tibetan Machine Web
 * and an ACIP file into Unicode.  ACIP->Unicode should yield the same
@@ -68,9 +69,10 @@ public class TConverter {
         boolean shortMessages = false;
         String warningLevel = "Most";
         ArrayList al
-            = ACIPTshegBarScanner.scanFile(args[0], errors,
-                                           maxErrors - 1, shortMessages,
-                                           warningLevel);
+            = ACIPTshegBarScanner.instance().scanFile(args[0], errors,
+                                                      maxErrors - 1,
+                                                      shortMessages,
+                                                      warningLevel);
 
         if (null == al) {
             System.err.println(maxErrors + " or more lexical errors occurred while scanning ACIP input file; is this");
@@ -208,8 +210,9 @@ public class TConverter {
             throw new IllegalArgumentException("Unsupported transliteration");
         }
         ByteArrayOutputStream sw = new ByteArrayOutputStream();
-        ArrayList al = ACIPTshegBarScanner.scan(acip, errors, -1, shortMessages,
-                                                warningLevel);
+        ArrayList al
+            = ACIPTshegBarScanner.instance().scan(acip, errors, -1,
+                                                  shortMessages, warningLevel);
         try {
             if (null != al) {
                 convertToUnicodeText(al, sw, errors,
@@ -301,9 +304,9 @@ public class TConverter {
     {
         try {
         if (null != tdoc && (toUnicode && !toRTF))
-            throw new Error("Doing both at once might work, but it's not been tested.  I bet some 'continue;' statements will need to go.");
+            throw new IllegalArgumentException("Doing both at once might work, but it's not been tested.  I bet some 'continue;' statements will need to go.");
         if (toUnicode && toRTF)
-            throw new Error("FIXME: support this ACIP->Unicode.rtf mode so that KA (GA) shows up in two different font sizes.  See RFE 838591.");
+            throw new IllegalArgumentException("FIXME: support this ACIP->Unicode.rtf mode so that KA (GA) shows up in two different font sizes.  See RFE 838591.");
         if (!toUnicode && !toRTF)
             throw new IllegalArgumentException("ACIP->Uni.rtf, ACIP->Uni.txt, and ACIP->TMW.rtf are supported, but not ACIP->TMW.txt");
         if (toUnicode && toRTF && null == tdoc)

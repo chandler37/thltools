@@ -297,11 +297,11 @@ public class TibetanConverter implements FontConverterConstants {
         if (ACIP_TO_UNI_TEXT == ct || ACIP_TO_TMW == ct) {
             try {
                 ArrayList al
-                    = ACIPTshegBarScanner.scanStream(in, null,
-                                                     ThdlOptions.getIntegerOption("thdl.most.errors.a.tibetan.acip.document.can.have",
-                                                                                  1000 - 1),
-                                                     shortMessages,
-                                                     warningLevel);
+                    = ACIPTshegBarScanner.instance().scanStream(in, null,
+                                                                ThdlOptions.getIntegerOption("thdl.most.errors.a.tibetan.acip.document.can.have",
+                                                                                             1000 - 1),
+                                                                shortMessages,
+                                                                warningLevel);
                 if (null == al)
                     return 47;
                 boolean embeddedWarnings = (warningLevel != "None");
