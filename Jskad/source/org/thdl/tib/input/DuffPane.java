@@ -1497,53 +1497,44 @@ public void paste(int offset) {
 * @param start the point from which to begin converting to Wylie
 * @param end the point at which to stop converting to Wylie
 */
-	public void toWylie(int start, int end) {
-		if (start == end)
-			return;
+    public void toWylie(int start, int end) {
+        if (start == end)
+            return;
 
-		DuffCode[] dc_array;
-		AttributeSet attr;
-		String fontName;
-		Position endPos;
-		int fontNum;
-		DuffCode dc;
-		char ch;
-		int i;
 
-		java.util.List dcs = new ArrayList();
+        try {
+            DuffCode[] any_dc_array = new DuffCode[0];
+            DuffCode[] dc_array;
+            Position endPos = getTibDoc().createPosition(end);
+            int i = start;
+            java.util.List dcs = new ArrayList();
 
-		try {
-			endPos = getTibDoc().createPosition(end);
-			i = start;
+            while (i < endPos.getOffset()+1) {
+                AttributeSet attr
+                    = getTibDoc().getCharacterElement(i).getAttributes();
+                String fontName = StyleConstants.getFontFamily(attr);
+                int fontNum;
 
-			while (i < endPos.getOffset()+1) {
-				attr = getTibDoc().getCharacterElement(i).getAttributes();
-				fontName = StyleConstants.getFontFamily(attr);
+                if ((0 == (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName))) || i==endPos.getOffset()) {
+                    if (i != start) {
+                        dc_array = (DuffCode[])dcs.toArray(any_dc_array);
+                        getTibDoc().remove(start, i-start);
+                        append(start, TibTextUtils.getWylie(dc_array), romanAttributeSet);
+                        dcs.clear();
+                    }
+                    start = i+1;
+                } else {
+                    char ch = getTibDoc().getText(i,1).charAt(0);
+                    dcs.add(new DuffCode(fontNum, ch));
+                }
 
-				if ((0 == (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName))) || i==endPos.getOffset()) {
-					if (i != start) {
-						dc_array = new DuffCode[0];
-						dc_array = (DuffCode[])dcs.toArray(dc_array);
-						getTibDoc().remove(start, i-start);
-						append(start, TibTextUtils.getWylie(dc_array), romanAttributeSet);
-						dcs.clear();
-					}
-					start = i+1;
-				}
-				else {
-					ch = getTibDoc().getText(i,1).charAt(0);
-					dc = new DuffCode(fontNum, ch);
-					dcs.add(dc);
-				}
-
-				i++;
-			}
-		}
-		catch (BadLocationException ble) {
-			ble.printStackTrace();
-			ThdlDebug.noteIffyCode();
-		}
-	}
+                i++;
+            }
+        } catch (BadLocationException ble) {
+            ble.printStackTrace();
+            ThdlDebug.noteIffyCode();
+        }
+    }
 
 /**
 * Converts a string of Extended Wylie to TibetanMachineWeb, and 
