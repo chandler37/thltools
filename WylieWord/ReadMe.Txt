@@ -1,9 +1,9 @@
 ************************************************************************
-*	   INSTRUCTIONS FOR WYLIE WORD VERSION 1.0                     *
-*		MS Word Macro for Windows	    		       *
-* 		Written by Than Garson				       *
-*		Samantabhadra Project, UVa         		       *
-*		September, 2001		       			       *
+*	  INSTRUCTIONS FOR WYLIE WORD VERSION 1.0                            *
+*		MS Word Macro for Windows	    		                                 *
+* 	Written by Than Garson			  	                                   *
+*		Samantabhadra Project, UVa                              		       *
+*		September, 2001		       			                                     *
 ************************************************************************
 
 ACKNOWLEDGEMENTS: 
@@ -12,14 +12,15 @@ have been made available through the gracious donations of the Tibetan Computer
 Company and the Trace Foundation. All other material is the result of the 
 collaborative efforts of the Tibetan and Himalayan Digital Library. 
 
-Web-sites: http://faculty.virginia.edu/tibet-initiative/library/frameset.html
-	   http://jefferson.village.virginia.edu/tibet/
+Web-site: http://iris.lib.virginia.edu/tibet/index.html
 
 LICENSE INFO: 
 The contents of this file are subject to the THDL Open Community License
 Version 1.0 (the "License"); you may not use this file except in compliance
 with the License. The license is included in this Zip archive, or you may 
-obtain a copy of the License on the THDL web site (http://www.thdl.org/).
+obtain a copy of the License on the THDL web site:
+
+     http://iris.lib.virginia.edu/tibet/tools/license.html
 
 Software distributed under the License is distributed on an "AS IS" basis, 
 WITHOUT WARRANTY OF ANY KIND, either express or implied. See the 
@@ -48,7 +49,7 @@ The Zip archive contains the following files:
 	Wylie Word program uses this scheme with a slight modification for
 	entering Sanskrit stacks.
 
-2. wywrd1.dot - This is a Word document template that actually houses
+2. WylieWord1.dot - This is a Word document template that actually houses
 	the macro. It can be used in a number of ways.
 	
 	a. Stored on your hard drive it will act like a regular document and
@@ -92,7 +93,7 @@ be added, though our ultimate goal is to utilize a public-domain Unicode Tibetan
 once such a font is available. There are ten font files: "timwn.ttf" through "timwn9.ttf".
 They can be downloaded from the tools section of the Tibetan and Himalayan Digital Library at:
 
- (http://faculty.virginia.edu/tibet-initiative/library/frameset.html). 
+ (http://iris.lib.virginia.edu/tibet/tools/index.html). 
 
 All ten files must be installed in your font folder, which is contained within the 
 control panel. To install the fonts, first unpack them into a temporary folder. 
