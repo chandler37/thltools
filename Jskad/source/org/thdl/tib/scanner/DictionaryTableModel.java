@@ -19,8 +19,8 @@ package org.thdl.tib.scanner;
 
 import javax.swing.*;
 import javax.swing.table.*;
-import org.thdl.tib.text.TibetanDocument;
-import org.thdl.tib.text.TibetanDocument.DuffData;
+import org.thdl.tib.text.TibTextUtils;
+import org.thdl.tib.text.DuffData;
 
 /** Stores the words being displayed in a DictionaryTable.
 
@@ -114,7 +114,7 @@ public class DictionaryTableModel extends AbstractTableModel
 		    try
 		    {
     		    for (i=0; i<array.length; i++)
-	    	        arrayTibetan[i]=TibetanDocument.getTibetanMachineWeb(array[i].getWylie());
+	    	        arrayTibetan[i]=TibTextUtils.getTibetanMachineWeb(array[i].getWylie());
 	    	}
 	    	catch (Exception e)
 	    	{

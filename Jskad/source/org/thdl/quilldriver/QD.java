@@ -34,7 +34,6 @@ import java.lang.reflect.*;
 
 import org.thdl.tib.input.*;
 import org.thdl.tib.text.*;
-import org.thdl.tib.text.TibetanDocument.*;
 import org.thdl.savant.JdkVersionHacks;
 import org.thdl.media.*;
 
@@ -80,6 +79,8 @@ public class QD extends JDesktopPane {
 	public Style componentStyle;
 	public DataFlavor timeFlavor;
 
+    /** Either "qt4j" or "jmf", corresponding to the thdl.media.player
+        property. */
 	protected String thdl_mediaplayer_property = null;
 
 	//class fields because they are affected depending on whether we're
@@ -95,8 +96,8 @@ public class QD extends JDesktopPane {
 	protected DuffPane sharedDP = new DuffPane();
 	protected DuffPane sharedDP2 = new DuffPane();
 
-	protected TibetanDocument findDoc = null;
-	protected TibetanDocument replaceDoc = null;
+	protected AbstractDocument findDoc = null;
+	protected AbstractDocument replaceDoc = null;
 
 	protected KeyStroke cutKey, copyKey, pasteKey, selectAllKey;
 	protected KeyStroke insert1TimeKey, insert2TimesKey, insertSpeakerKey;
@@ -1385,7 +1386,7 @@ class SpeakerData extends AbstractTableModel
 		if (column == 0)
 			return spIcon[sp.getIconID()];
 		try { //otherwise column 1, the speaker name
-			return TibetanDocument.getTibetanMachineWeb(sp.getName().trim());
+			return TibTextUtils.getTibetanMachineWeb(sp.getName().trim());
 		} catch (InvalidWylieException iwe) {
 			iwe.printStackTrace();
 			ThdlDebug.noteIffyCode();
@@ -1653,7 +1654,7 @@ public void replaceText() {
 		java.util.List replaceDCs = new ArrayList();
 		for (int k=0; k<replaceDoc.getLength(); k++)
 			replaceDCs.add(new DuffCode(TibetanMachineWeb.getTMWFontNumber(StyleConstants.getFontFamily(replaceDoc.getCharacterElement(k).getAttributes())), replaceDoc.getText(k,1).charAt(0)));
-		TibetanDocument.DuffData[] dd = TibetanDocument.convertGlyphs(replaceDCs);
+		DuffData[] dd = TibTextUtils.convertGlyphs(replaceDCs);
 
 		TibetanDocument doc = (TibetanDocument)pane.getDocument();
 		Position pos = doc.createPosition(pane.getCaretPosition());

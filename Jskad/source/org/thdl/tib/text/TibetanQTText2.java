@@ -126,14 +126,14 @@ public class TibetanQTText2 {
 
 	public static String getQTText(String wylie) {
 		try {
-			return getQTText(TibetanDocument.getTibetanMachineWeb(wylie));
+			return getQTText(TibTextUtils.getTibetanMachineWeb(wylie));
 		}
 		catch (InvalidWylieException ive) {
 			return null;
 		}
 	}
 
-	public static String getQTText(TibetanDocument.DuffData[] duffData) {
+	public static String getQTText(DuffData[] duffData) {
 		StringBuffer qtBuffer = new StringBuffer();
 		qtBuffer.append("{size:" + tibFontSize + "}");
 

@@ -61,8 +61,7 @@ public class JskadConversionTool extends JApplet {
 			public void theRealActionPerformed(ActionEvent e)
 			{
 				try {
-					TibetanDocument t_doc = (TibetanDocument)jskad.dp.getDocument();
-					String wylie = t_doc.getWylie();
+					String wylie = jskad.dp.getWylie();
 					String html = "<HTML>\n<HEAD>\n<STYLE>\n";
 					html += TibetanHTML.getStyles("28");
 					html += "</STYLE>\n</HEAD>\n<BODY>\n";

@@ -25,7 +25,6 @@ import javax.swing.text.JTextComponent;
 import java.awt.event.*;
 import java.awt.datatransfer.*;
 import org.thdl.tib.input.DuffPane;
-import org.thdl.tib.text.TibetanDocument;
 
 /** Inputs a Tibetan text and displays the words with
 	their definitions through through a graphical interfase using a
@@ -244,7 +243,7 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
                 {
                     try
                     {
-                        ((TibetanDocument)t.getDocument()).remove(t.getSelectionStart(), t.getSelectionEnd());
+                        t.getDocument().remove(t.getSelectionStart(), t.getSelectionEnd());
                     }
                     catch (Exception ex)
                     {

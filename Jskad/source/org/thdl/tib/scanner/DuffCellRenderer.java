@@ -24,7 +24,7 @@ import javax.swing.border.*;
 import javax.swing.text.*;
 import org.thdl.tib.input.DuffPane;
 import org.thdl.tib.text.*;
-import org.thdl.tib.text.TibetanDocument.DuffData;
+import org.thdl.tib.text.DuffData;
 import java.io.Serializable;
 
 /** Used by DictionaryTable to display a Tibetan word or phrase
@@ -133,6 +133,7 @@ public class DuffCellRenderer extends DuffPane implements TableCellRenderer, Ser
 	    catch (Exception e)
 	    {
 	        System.out.println(e);
+            ThdlDebug.noteIffyCode();
 	    }
 	    doc.insertDuff(0, (DuffData []) value);
 	}

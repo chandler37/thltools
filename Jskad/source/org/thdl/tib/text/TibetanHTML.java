@@ -26,11 +26,11 @@ public class TibetanHTML {
 				String next = tokenizer.nextToken();
 				if (next.equals("\t") || next.equals("\n")) {
 					buffer.append("<wbr/>");
-					buffer.append(getHTML(TibetanDocument.getTibetanMachineWeb("_")));
+					buffer.append(getHTML(TibTextUtils.getTibetanMachineWeb("_")));
 					buffer.append("<wbr/>");
 				}
 				else
-					buffer.append(getHTML(TibetanDocument.getTibetanMachineWeb(next)));
+					buffer.append(getHTML(TibTextUtils.getTibetanMachineWeb(next)));
 			}
 			return buffer.toString();
 		} catch (InvalidWylieException ive) {
@@ -38,7 +38,7 @@ public class TibetanHTML {
 		}
 	}
 
-	public static String getHTMLX(TibetanDocument.DuffData[] duffData) {
+	public static String getHTMLX(DuffData[] duffData) {
 		String[] styleNames =
 			{"tmw","tmw1","tmw2","tmw3","tmw4","tmw5","tmw6","tmw7","tmw8","tmw9"};
 
@@ -95,11 +95,11 @@ public class TibetanHTML {
 				String next = tokenizer.nextToken();
 				if (next.equals("\t") || next.equals("\n")) {
 					buffer.append("<wbr/>");
-					buffer.append(getHTML(TibetanDocument.getTibetanMachineWeb("_")));
+					buffer.append(getHTML(TibTextUtils.getTibetanMachineWeb("_")));
 					buffer.append("<wbr/>");
 				}
 				else
-					buffer.append(getHTML(TibetanDocument.getTibetanMachineWeb(next)));
+					buffer.append(getHTML(TibTextUtils.getTibetanMachineWeb(next)));
 			}
 			return buffer.toString();
 		} catch (InvalidWylieException ive) {
@@ -107,7 +107,7 @@ public class TibetanHTML {
 		}
 	}
 
-	public static String getHTML(TibetanDocument.DuffData[] duffData) {
+	public static String getHTML(DuffData[] duffData) {
 		String[] styleNames =
 			{"tmw","tmw1","tmw2","tmw3","tmw4","tmw5","tmw6","tmw7","tmw8","tmw9"};
 
@@ -163,11 +163,11 @@ public class TibetanHTML {
 				String next = tokenizer.nextToken();
 				if (next.equals("\t") || next.equals("\n")) {
 					buffer.append("<wbr>");
-					buffer.append(getHTML(TibetanDocument.getTibetanMachineWeb("_")));
+					buffer.append(getHTML(TibTextUtils.getTibetanMachineWeb("_")));
 					buffer.append("<wbr>");
 				}
 				else
-					buffer.append(getHTML(TibetanDocument.getTibetanMachineWeb(next)));
+					buffer.append(getHTML(TibTextUtils.getTibetanMachineWeb(next)));
 			}
 			return buffer.toString();
 		} catch (InvalidWylieException ive) {
@@ -175,7 +175,7 @@ public class TibetanHTML {
 		}
 	}
 
-	public static String getHTMLforJava(TibetanDocument.DuffData[] duffData) {
+	public static String getHTMLforJava(DuffData[] duffData) {
 		String[] fontNames = {
 			"TibetanMachineWeb","TibetanMachineWeb1", "TibetanMachineWeb2",
 			"TibetanMachineWeb3","TibetanMachineWeb4","TibetanMachineWeb5",

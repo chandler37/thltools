@@ -80,8 +80,8 @@ public class TibetanWylie implements TranscriptView
 			Element current = null;
 
 			String wylie;
-			TibetanDocument.DuffData[] dd;
-			TibetanDocument.DuffData[] space = TibetanDocument.getTibetanMachineWeb("_");
+			DuffData[] dd;
+			DuffData[] space = TibTextUtils.getTibetanMachineWeb("_");
 			MutableAttributeSet mas = new SimpleAttributeSet();
 			StyleConstants.setForeground(mas, Color.blue);
 			Position endPos = null;
@@ -122,7 +122,7 @@ public class TibetanWylie implements TranscriptView
 			}
 
 			wylie = current.getText();
-			dd = TibetanDocument.getTibetanMachineWeb(wylie+"\n");
+			dd = TibTextUtils.getTibetanMachineWeb(wylie+"\n");
 			if (endPos == null)
 			{
 				thisStart = "0";
@@ -166,7 +166,7 @@ public class TibetanWylie implements TranscriptView
 				startBuffer.append(thisStart);
 				startBuffer.append(',');
 				wylie = current.getText();
-				dd = TibetanDocument.getTibetanMachineWeb(wylie+"\n");
+				dd = TibTextUtils.getTibetanMachineWeb(wylie+"\n");
 				doc.insertDuff(endPos.getOffset(), dd);
 				doc.insertString(endPos.getOffset(), wylie, null);
 

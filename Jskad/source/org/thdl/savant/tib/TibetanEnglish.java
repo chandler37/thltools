@@ -79,8 +79,8 @@ public class TibetanEnglish implements TranscriptView
 			Iterator iter = elements.iterator();
 			Element current = null;
 
-			TibetanDocument.DuffData[] dd;
-			TibetanDocument.DuffData[] space = TibetanDocument.getTibetanMachineWeb("_");
+			DuffData[] dd;
+			DuffData[] space = TibTextUtils.getTibetanMachineWeb("_");
 			MutableAttributeSet mas = new SimpleAttributeSet();
 			StyleConstants.setForeground(mas, Color.blue);
 			Position endPos = null;
@@ -120,7 +120,7 @@ public class TibetanEnglish implements TranscriptView
 					current = (org.jdom.Element)iter.next();
 			}
 
-			dd = TibetanDocument.getTibetanMachineWeb(current.getText()+"\n");
+			dd = TibTextUtils.getTibetanMachineWeb(current.getText()+"\n");
 			if (endPos == null)
 			{
 				thisStart = "0";
@@ -164,7 +164,7 @@ public class TibetanEnglish implements TranscriptView
 				thisStart = String.valueOf(endPos.getOffset());
 				startBuffer.append(thisStart);
 				startBuffer.append(',');
-				dd = TibetanDocument.getTibetanMachineWeb(current.getText()+"\n");
+				dd = TibTextUtils.getTibetanMachineWeb(current.getText()+"\n");
 				doc.insertDuff(endPos.getOffset(), dd);
 				doc.insertString(endPos.getOffset(), current.getAttributeValue("eng"), null);
 				thisEnd = String.valueOf(endPos.getOffset());

@@ -47,6 +47,7 @@ public class Jskad2JavaScript extends JApplet {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}
 		catch (Exception e) {
+            ThdlDebug.noteIffyCode();
 		}
 		setContentPane(makeContentPane());
 	}
@@ -61,11 +62,10 @@ public class Jskad2JavaScript extends JApplet {
 			public void theRealActionPerformed(ActionEvent e)
 			{
 				try {
-					TibetanDocument t_doc = (TibetanDocument)jskad.dp.getDocument();
-					String wylie = t_doc.getWylie();
-					Object[] args = {wylie};
+					Object[] args = { jskad.dp.getWylie() };
 					JSObject.getWindow(Jskad2JavaScript.this).call("settext", args);
 				} catch (Exception ex) {
+                    ThdlDebug.noteIffyCode();
 				}
 			}
 		});

@@ -79,7 +79,7 @@ public class WylieEnglish implements TranscriptView
 			Iterator iter = elements.iterator();
 			Element current = null;
 
-			TibetanDocument.DuffData[] dd;
+			DuffData[] dd;
 			MutableAttributeSet mas = new SimpleAttributeSet();
 			StyleConstants.setForeground(mas, Color.blue);
 			MutableAttributeSet mas2 = new SimpleAttributeSet();
@@ -87,7 +87,7 @@ public class WylieEnglish implements TranscriptView
 			Position endPos = null;
 			int wherestart;
 			String wylie;
-			TibetanDocument doc = new TibetanDocument(new StyleContext());
+			AbstractDocument doc = new TibetanDocument(new StyleContext());
 
 			idBuffer = new StringBuffer();
 			startBuffer = new StringBuffer();

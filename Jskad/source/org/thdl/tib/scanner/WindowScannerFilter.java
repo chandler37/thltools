@@ -27,7 +27,6 @@ import java.awt.*;
 import java.awt.datatransfer.*;
 import javax.swing.text.JTextComponent;
 import org.thdl.tib.input.DuffPane;
-import org.thdl.tib.text.TibetanDocument;
 
 public class WindowScannerFilter implements WindowListener, FocusListener, ActionListener, ItemListener
 {
@@ -339,7 +338,7 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
                 {
                     try
                     {
-                        ((TibetanDocument)t.getDocument()).remove(t.getSelectionStart(), t.getSelectionEnd());
+                        t.getDocument().remove(t.getSelectionStart(), t.getSelectionEnd());
                     }
                     catch (Exception ex)
                     {

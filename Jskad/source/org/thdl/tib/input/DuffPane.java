@@ -225,18 +225,6 @@ public RTFEditorKit rtfEd = null;
 //		this(new StyledEditorKit(), keyboardURL);
     }
 
-    // DLC 
-    private Action getActionByName(String name) {
-        Action[] actions = this.getActions();
-        for (int i = 0; i < actions.length; i++) {
-            if (actions[i].getValue(Action.NAME).equals(name)) {
-                return actions[i];
-            }
-        }
-        return null;
-    }
-
-
     /** Creates a new DuffPane that updates sb, if sb is not null,
         with messages about how the users' keypresses are being
         interpreted. */
@@ -640,7 +628,7 @@ public RTFEditorKit rtfEd = null;
 			backSpace(oldGlyphCount - beginDifference);
 
 		java.util.List sublist = newGlyphList.subList(k, newGlyphCount);
-		TibetanDocument.DuffData[] dd = TibetanDocument.convertGlyphs(sublist);
+		DuffData[] dd = TibTextUtils.convertGlyphs(sublist);
 		doc.insertDuff(caret.getDot(), dd);
 		return newGlyphList;
 	}
@@ -705,7 +693,7 @@ public RTFEditorKit rtfEd = null;
 					before_vowel.add(dc_1);
 
 				before_vowel.add(dc_2);
-				java.util.List after_vowel = TibetanDocument.getVowel(dc_1, dc_2, v);
+				java.util.List after_vowel = TibTextUtils.getVowel(dc_1, dc_2, v);
 				redrawGlyphs(before_vowel, after_vowel);
 			}
 			catch(BadLocationException ble) {
@@ -728,8 +716,8 @@ public RTFEditorKit rtfEd = null;
 	private void printAChenWithVowel(String v) {
 		DuffCode[] dc_array = (DuffCode[])TibetanMachineWeb.getTibHash().get(TibetanMachineWeb.ACHEN);
 		DuffCode dc = dc_array[TibetanMachineWeb.TMW];
-		java.util.List achenlist = TibetanDocument.getVowel(dc,v);
-		TibetanDocument.DuffData[] dd = TibetanDocument.convertGlyphs(achenlist);
+		java.util.List achenlist = TibTextUtils.getVowel(dc,v);
+		DuffData[] dd = TibTextUtils.convertGlyphs(achenlist);
 		doc.insertDuff(caret.getDot(), dd);		
 	}
 
@@ -765,7 +753,7 @@ public RTFEditorKit rtfEd = null;
 				DuffCode dc = new DuffCode(fontNum, c2);
 				java.util.List beforecaret = new ArrayList();
 				beforecaret.add(dc);
-				java.util.List bindulist = TibetanDocument.getBindu(dc);
+				java.util.List bindulist = TibTextUtils.getBindu(dc);
 				redrawGlyphs(beforecaret, bindulist);
 				initKeyboard();
 				return;
@@ -775,7 +763,7 @@ public RTFEditorKit rtfEd = null;
 			}
 		}
 
-		TibetanDocument.DuffData[] dd = TibetanDocument.convertGlyphs(TibetanDocument.getBindu(null));
+		DuffData[] dd = TibTextUtils.convertGlyphs(TibTextUtils.getBindu(null));
 		doc.insertDuff(caret.getDot(), dd);
 		initKeyboard();
 	}
@@ -1162,7 +1150,7 @@ public void paste(int offset) {
 * type s-g-r, you see a single glyph, a three-letter stack, but if you
 * type s-d-r, you see two glyphs.  If you examine the status bar,
 * you'll see that the thing determining that is
-* TibetanDocument.getGlyphs, which in turn relies on 'tibwn.ini'.
+* TibTextUtils.getGlyphs, which in turn relies on 'tibwn.ini'.
 *
 * @param e a KeyEvent */
 	public void processTibetan(KeyEvent e) {
@@ -1214,11 +1202,11 @@ public void paste(int offset) {
                         appendStatus(" (because you pressed the stacking key with nothing to stack on)");
 					} else if (size > 1 && isStackingRightToLeft) {
 						String s = (String)charList.remove(charList.size() - 1);
-						newGlyphList = TibetanDocument.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
+						newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
 						oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
 						initKeyboard();
 						charList.add(s);
-						newGlyphList = TibetanDocument.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
+						newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
 						oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
 						holdCurrent = new StringBuffer();
 						isTopHypothesis = false;
@@ -1355,7 +1343,7 @@ public void paste(int offset) {
 							s = TibetanMachineWeb.getWylieForChar(s);
 							charList.add(s);
 							isTopHypothesis = true;
-							newGlyphList = TibetanDocument.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
+							newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
 							oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
                             changedStatus = true;
                             updateStatus("You typed a non-vowel, Tibetan character.");
@@ -1379,7 +1367,7 @@ public void paste(int offset) {
 						if (isTopHypothesis) {
 							if (TibetanMachineWeb.isAChungConsonant() && isStackingOn && charList.size()>1 && s2.equals(TibetanMachineWeb.ACHUNG)) {
 								charList.remove(charList.size() - 1);
-								newGlyphList = TibetanDocument.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
+								newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
 								oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
 								putVowel(TibetanMachineWeb.A_VOWEL);
 								initKeyboard();
@@ -1388,7 +1376,7 @@ public void paste(int offset) {
 								break key_block;
 							}
 							charList.set(charList.size()-1, s2);
-							newGlyphList = TibetanDocument.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
+							newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
 							oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
 						} else {
 							if (!isStackingOn) {
@@ -1406,7 +1394,7 @@ public void paste(int offset) {
 
 							charList.add(s2);
 							isTopHypothesis = true;
-							newGlyphList = TibetanDocument.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
+							newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
 							oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
 						}
 					} else { //the holding string is not a character
@@ -1441,7 +1429,7 @@ public void paste(int offset) {
 									}
 
 									charList.add(s2);
-									newGlyphList = TibetanDocument.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
+									newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
 									oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
                                     changedStatus = true;
                                     updateStatus("added character to charList");
@@ -1511,7 +1499,7 @@ public void paste(int offset) {
 						dc_array = new DuffCode[0];
 						dc_array = (DuffCode[])dcs.toArray(dc_array);
 						doc.remove(start, i-start);
-						append(start, TibetanDocument.getWylie(dc_array), romanAttributeSet);
+						append(start, TibTextUtils.getWylie(dc_array), romanAttributeSet);
 						dcs.clear();
 					}
 					start = i+1;
@@ -1552,7 +1540,7 @@ public void paste(int offset) {
 						ThdlDebug.noteIffyCode();
 					}
 				} else {
-					TibetanDocument.DuffData[] dd = TibetanDocument.getTibetanMachineWeb(next);
+					DuffData[] dd = TibTextUtils.getTibetanMachineWeb(next);
 					offset = doc.insertDuff(offset, dd);
 				}
 			}
@@ -1603,7 +1591,7 @@ public void paste(int offset) {
 				if ((0 != (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName))) || i==endPos.getOffset()) {
 					if (i != start) {
 						try {
-							TibetanDocument.DuffData[] duffdata = TibetanDocument.getTibetanMachineWeb(sb.toString());
+							DuffData[] duffdata = TibTextUtils.getTibetanMachineWeb(sb.toString());
 							doc.remove(start, i-start);
 							doc.insertDuff(start, duffdata);
 						}
@@ -1629,5 +1617,15 @@ public void paste(int offset) {
 			ThdlDebug.noteIffyCode();
 		}
 	}
+
+/**
+* Converts the entire associated document into Extended Wylie.  If the
+* document consists of both Tibetan and non-Tibetan fonts, however,
+* the conversion stops at the first non-Tibetan font.
+* @return the string of Wylie corresponding to the associated document
+* @see org.thdl.tib.text.TibetanDocument.getWylie() */
+    public String getWylie() {
+        return doc.getWylie();
+    }
 
 }

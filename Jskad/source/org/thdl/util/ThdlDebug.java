@@ -119,6 +119,17 @@ public class ThdlDebug {
 		System.exit(1);
 	}
 
+    /** Exits the program the hard way.  Don't ever call this for code
+        that you expect to be executed. */
+    public static void abort(String message) {
+        System.err.println("THDL Internal Error.  ABORTING.");
+        if (null != message) {
+            System.err.println(message);
+            System.err.println("THDL Internal Error.  ABORTING.");
+        }
+        System.exit(37);
+    }
+
 	/** Sets it up so that a call to System.out or System.err prints
      *  to standard output/error but ALSO prints to the log file named
      *  (prefix + suffix).  Be sure the log file name is a relative

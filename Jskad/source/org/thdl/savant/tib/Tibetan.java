@@ -85,9 +85,9 @@ public class Tibetan implements TranscriptView
 			t2Buffer = new StringBuffer();
 			String thisStart, thisEnd, thisId;
 			Position endPos = null;
-			TibetanDocument.DuffData[] dd;
+			DuffData[] dd;
 			TibetanDocument doc = new TibetanDocument(new StyleContext());
-			TibetanDocument.DuffData[] space = TibetanDocument.getTibetanMachineWeb("_");
+			DuffData[] space = TibTextUtils.getTibetanMachineWeb("_");
 			MutableAttributeSet mas = new SimpleAttributeSet();
 			StyleConstants.setForeground(mas, Color.blue);
 
@@ -99,7 +99,7 @@ public class Tibetan implements TranscriptView
 
 			while (current.getName().equals("spkr"))
 			{
-				dd = TibetanDocument.getTibetanMachineWeb(current.getAttributeValue("who"));
+				dd = TibTextUtils.getTibetanMachineWeb(current.getAttributeValue("who"));
 				if (endPos == null)
 				{
 					doc.insertDuff(0, dd);
@@ -126,7 +126,7 @@ public class Tibetan implements TranscriptView
 			}
 
 			wherestart = endPos.getOffset();
-			dd = TibetanDocument.getTibetanMachineWeb(current.getText()); //from +"\n"
+			dd = TibTextUtils.getTibetanMachineWeb(current.getText()); //from +"\n"
 			doc.insertDuff(endPos.getOffset(), dd);
 			startBuffer.append(String.valueOf(wherestart)+",");
 			thisEnd = String.valueOf(endPos.getOffset());
@@ -145,7 +145,7 @@ public class Tibetan implements TranscriptView
 				while (current.getName().equals("spkr"))
 				{
 					doc.insertString(endPos.getOffset(), "\n", null);
-					dd = TibetanDocument.getTibetanMachineWeb(current.getAttributeValue("who")); //from +"\n"
+					dd = TibTextUtils.getTibetanMachineWeb(current.getAttributeValue("who")); //from +"\n"
 					wherestart = endPos.getOffset();
 					doc.insertDuff(endPos.getOffset(), dd);
 					doc.setCharacterAttributes(wherestart, endPos.getOffset()-wherestart, mas, false);
@@ -155,7 +155,7 @@ public class Tibetan implements TranscriptView
 
 				doc.insertDuff(endPos.getOffset(), space);
 				counter++;
-				dd = TibetanDocument.getTibetanMachineWeb(current.getText()); //from "+\n"
+				dd = TibTextUtils.getTibetanMachineWeb(current.getText()); //from "+\n"
 				thisStart = String.valueOf(endPos.getOffset());
 				startBuffer.append(thisStart);
 				startBuffer.append(',');

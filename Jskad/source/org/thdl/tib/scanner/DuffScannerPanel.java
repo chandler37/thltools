@@ -23,7 +23,6 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 import org.thdl.tib.input.DuffPane;
-import org.thdl.tib.text.TibetanDocument;
 
 /** Graphical interfase to be used by applications and applets
 	to input a Tibetan text (in Roman or Tibetan script) and
@@ -142,7 +141,7 @@ public class DuffScannerPanel extends ScannerPanel
 
 		in = "";
 		if (showingTibetan)
-		    in = ((TibetanDocument)duffInput.getDocument()).getWylie();
+		    in = duffInput.getWylie();
 		else
     		in = txtInput.getText();
 
@@ -192,7 +191,7 @@ public class DuffScannerPanel extends ScannerPanel
 	    }
 	    if (!enabled && showingTibetan)
 	    {
-			txtInput.setText(((TibetanDocument)duffInput.getDocument()).getWylie());
+			txtInput.setText(duffInput.getWylie());
 			table.activateTibetan(false);
 			cl.last(inputPanel);
 			showingTibetan = false;

@@ -68,11 +68,11 @@ public class Jskad4JavaScript extends JApplet {
 
 	public void setWylie(String wylie) {
 		try {
-			TibetanDocument.DuffData[] dd = TibetanDocument.getTibetanMachineWeb(wylie);
+			DuffData[] dd = TibTextUtils.getTibetanMachineWeb(wylie);
 			TibetanDocument t_doc = (TibetanDocument)jskad.dp.getDocument();
 			if (t_doc.getLength() > 0)
-				jskad.dp.newDocument();
-			TibetanDocument.DuffData[] duffdata = TibetanDocument.getTibetanMachineWeb(wylie);
+				jskad.dp.newDocument(); // DLC FIXME: is it intended that t_doc is the new document?  Because it is the old document at present.
+			DuffData[] duffdata = TibTextUtils.getTibetanMachineWeb(wylie);
 			t_doc.insertDuff(0, duffdata);
 		}
 		catch (InvalidWylieException iwe) {
@@ -84,7 +84,6 @@ public class Jskad4JavaScript extends JApplet {
 	}
 
 	public String getWylie() {
-		TibetanDocument t_doc = (TibetanDocument)jskad.dp.getDocument();
-		return t_doc.getWylie();
+		return jskad.dp.getWylie();
 	}
 }

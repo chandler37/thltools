@@ -141,7 +141,7 @@ public class SavantShell extends JFrame
 		JMenu fileMenu = new JMenu("File");
 
 		JMenuItem openItem = new JMenuItem("Open");
-		openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,2));
+		openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,java.awt.Event.CTRL_MASK));
 		openItem.addActionListener(new ThdlActionListener() {
 			public void theRealActionPerformed(ActionEvent e) {
 				if (fileChooser.showOpenDialog(SavantShell.this) != JFileChooser.APPROVE_OPTION)
@@ -166,7 +166,7 @@ public class SavantShell extends JFrame
 		});
 
 		JMenuItem closeItem = new JMenuItem("Close");
-		closeItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,2));
+		closeItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,java.awt.Event.CTRL_MASK));
 		closeItem.addActionListener(new ThdlActionListener()
 		{
 			public void theRealActionPerformed(ActionEvent e)
@@ -177,7 +177,7 @@ public class SavantShell extends JFrame
 		});
 
 		JMenuItem quitItem = new JMenuItem("Quit");
-		quitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,2));
+		quitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,java.awt.Event.CTRL_MASK));
 		quitItem.addActionListener(new ThdlActionListener()
 		{
 			public void theRealActionPerformed(ActionEvent e)
