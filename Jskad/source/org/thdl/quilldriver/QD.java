@@ -44,12 +44,9 @@ import javax.xml.transform.*;
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlActionListener;
 import org.thdl.util.ThdlAbstractAction;
+import org.thdl.util.ThdlOptions;
 
 public class QD extends JDesktopPane {
-    /** When opening a file, this is the only extension QuillDriver
-        cares about.  This is case-insensitive. */
-    protected final static String dotQuillDriver = ".xml";
-
 	//project related data
 	protected Project project;
 
@@ -65,7 +62,6 @@ public class QD extends JDesktopPane {
 	protected JInternalFrame actionFrame = null;
 
 	//miscellaneous stuff
-	protected JFileChooser fileChooser = null;
 	public JTabbedPane jtp;
 	public TimeCodeManager tcp = null;
 	public SpeakerManager spm = null;
@@ -76,7 +72,12 @@ public class QD extends JDesktopPane {
 	public Style componentStyle;
 	public DataFlavor timeFlavor;
 
-	protected JMenu editMenu;
+	protected String thdl_mediaplayer_property = null;
+
+	//class fields because they are affected depending on whether we're
+	//in read-only or edit mode
+	protected JMenu editMenu, searchMenu;
+	protected JMenuItem replaceTextItem;
 
 	protected ResourceBundle messages;
 
@@ -91,6 +92,10 @@ public class QD extends JDesktopPane {
 
 	protected URL keyboard_url = null;
 
+	protected KeyStroke cutKey, copyKey, pasteKey, selectAllKey;
+	protected KeyStroke insert1TimeKey, insert2TimesKey, insertSpeakerKey;
+	protected KeyStroke findKey, replaceKey;
+
 
 public QD(ResourceBundle messages) {
 	this.messages = messages;
@@ -100,9 +105,6 @@ public QD(ResourceBundle messages) {
 
 	clockIcon = new ImageIcon(QD.class.getResource("clock.gif"));
 	timeFlavor = new DataFlavor(Integer.class, "time");
-
-	fileChooser = new JFileChooser();
-	fileChooser.addChoosableFileFilter(new XMLFilter());
 
 	Action insert1TimeAction = new ThdlAbstractAction("insert1Time", null) {
 		public void theRealActionPerformed(ActionEvent e) {
@@ -127,22 +129,32 @@ public QD(ResourceBundle messages) {
 		}
 	};
 
+/*
 	Action saveAction = new ThdlAbstractAction("saveTranscript", null) {
 		public void theRealActionPerformed(ActionEvent e) {
 			getSave();
 		}
 	};
+*/
 
 	JTextPane tp = new JTextPane();
 	Keymap keymap = tp.addKeymap("QDBindings", tp.getKeymap());
 
-	KeyStroke insert1TimeKey = KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, Event.CTRL_MASK);
-	KeyStroke insert2TimesKey = KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, Event.CTRL_MASK);
-	KeyStroke saveKey = KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK);
+	insert1TimeKey = KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, Event.CTRL_MASK);
+	insert2TimesKey = KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, Event.CTRL_MASK);
+	insertSpeakerKey = KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.ALT_MASK);
+	findKey = KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK);
+	replaceKey = KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK);
+	cutKey = KeyStroke.getKeyStroke(KeyEvent.VK_X, Event.CTRL_MASK);
+	pasteKey = KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.CTRL_MASK);
+	copyKey = KeyStroke.getKeyStroke(KeyEvent.VK_C, Event.CTRL_MASK);
+	selectAllKey = KeyStroke.getKeyStroke(KeyEvent.VK_A, Event.CTRL_MASK);
+
+//	KeyStroke saveKey = KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK);
 
 	keymap.addActionForKeyStroke(insert1TimeKey, insert1TimeAction);
 	keymap.addActionForKeyStroke(insert2TimesKey, insert2TimesAction);
-	keymap.addActionForKeyStroke(saveKey, saveAction);
+//	keymap.addActionForKeyStroke(saveKey, saveAction);
 
 	Speaker[] speakers = new Speaker[0];
 	SpeakerData speakerData = new SpeakerData(speakers, keymap);
@@ -564,6 +576,34 @@ class Work {
 	}
 }
 
+public void setMediaPlayerProperty(String property) {
+	if (property.equals("jmf") || property.equals("qt4j"))
+		if (!thdl_mediaplayer_property.equals(property)) {
+			thdl_mediaplayer_property = new String(property);
+			if (project != null) {
+				File f = project.getMedia();
+				if (f != null) {
+					project.setMedia(null);
+					project.setMedia(f);
+				}
+			}		
+		}
+}
+public String getMediaPlayerProperty() {
+	//if already set, return current media player
+	if (thdl_mediaplayer_property == null) {
+		//else get default based on system, user prefs, etc.
+		String os = System.getProperty("os.name").toLowerCase();
+		if (os.indexOf("mac") != -1) //macs default to qt4j
+			thdl_mediaplayer_property = ThdlOptions.getStringOption("thdl.media.player", "qt4j");
+		else if (os.indexOf("windows") != -1)
+			thdl_mediaplayer_property = ThdlOptions.getStringOption("thdl.media.player", "jmf");
+		else //put linux etc. here
+			thdl_mediaplayer_property = ThdlOptions.getStringOption("thdl.media.player", "jmf");
+	}
+	return thdl_mediaplayer_property;
+}
+
 class Project extends JPanel {
 	JTextField titleField, mediaField, transcriptField, nameField, taskField;
 	File transcript = null;
@@ -603,7 +643,7 @@ public File getMedia() {
 public void setMedia(File f) {
 	if (f == null) {
 		media = f;
-		mediaField.setText(media.getPath());
+		mediaField.setText("");
 		if (player != null) {
 			try {
 				player.cmd_stop();
@@ -623,8 +663,7 @@ public void setMedia(File f) {
 			actionFrame.setLocation(0,0);
 			actionFrame.setSize(new Dimension(actionFrame.getSize().width, QD.this.getSize().height));
 		}
-	}
-	else {
+	} else {
 		try {
 			URL url = f.toURL();
 
@@ -632,22 +671,21 @@ public void setMedia(File f) {
 				try {
 					player.cmd_stop();
 					player.destroy();
+					player = null;
 				} catch (SmartMoviePanelException smpe) {
 					smpe.printStackTrace();
 					ThdlDebug.noteIffyCode();
 				}
 			}
 
-
-//if user properties opt for qt4j instead of jmf, then load qt4j instead
-
-			String os = System.getProperty("os.name").toLowerCase();
 			try {
-				if (os.indexOf("windows") != -1) {
-					player = new SmartJMFPlayer(QD.this, url);
-				} else if (os.indexOf("mac") != -1) {
+				if (thdl_mediaplayer_property == null)
+					thdl_mediaplayer_property = getMediaPlayerProperty();
+				if (thdl_mediaplayer_property.equals("qt4j")) {
 					player = new SmartQT4JPlayer();
 					player.loadMovie(url);
+				} else if (thdl_mediaplayer_property.equals("jmf")) {
+					player = new SmartJMFPlayer(QD.this, url);
 				}
 				media = f;
 				mediaField.setText(media.getPath());
@@ -753,24 +791,7 @@ public void changeKeyboard(ActionEvent e) {
 	sharedDP2.setupKeyboard();
 }
 
-public boolean getSave() {
-	if (pane.getDocument().getLength() == 0 && speakerTable.getRowCount() == 0)
-		return true; //nothing to save
-
-	if (project.getTranscript() == null) {
-		if (project.getMedia() == null)
-			fileChooser.setSelectedFile(null);
-		else {
-			String path = project.getMedia().getPath();
-			path = path.substring(0, path.lastIndexOf('.')) + QD.dotQuillDriver;
-			fileChooser.setSelectedFile(new File(path));
-		}
-		if (fileChooser.showSaveDialog(QD.this) == JFileChooser.APPROVE_OPTION) {
-			File f = fileChooser.getSelectedFile();
-			project.setTranscript(f);
-		} else
-			return false;
-	}
+public boolean saveTranscript() {
 	currentWork.stopWork();
 
 //change keyboard back to wylie for a second
@@ -917,27 +938,45 @@ if (keyboard_url != null) {
 	}
 }
 
-public boolean getOpen() {
-	getSave();
-	fileChooser.setSelectedFile(null);
-	if (fileChooser.showOpenDialog(QD.this) == JFileChooser.APPROVE_OPTION) {
-		File f = fileChooser.getSelectedFile();
-		project = new Project();
-		jtp.addTab(messages.getString("ProjectDetails"), project);
-		if (getLoad(f))
-			return true;
+protected void clearProject() {
+	if (project != null) {
+		project.setMedia(null); //do this first to properly dispose of media player
+		jtp.remove(project);
+		project = null;
+
 	}
-	return false;
+
+	if (tcp != null) {
+		tcp = null;
+		jtp.remove(tcp);
+	}
+
+	SpeakerData sd = (SpeakerData)speakerTable.getModel();
+	sd.removeAllSpeakers();
+
+	jtp.invalidate();
+	jtp.validate();
+	jtp.repaint();
+
+	pane.setText("");	
 }
 
-public boolean getLoad(File t) {
+public void newProject(File mediaFile) {
+	clearProject();
+	project = new Project();
+	jtp.addTab(messages.getString("ProjectDetails"), project);
+	project.setMedia(mediaFile);
+}
+
+public boolean loadTranscript(File t) {
 	if (!t.exists())
 		return false;
 	SAXBuilder builder = new SAXBuilder();
 
-
-
 	try {
+
+		clearProject();
+		project = new Project();
 
 //change keyboard back to wylie for a second
 		DuffPane dp = (DuffPane)pane;
@@ -1052,7 +1091,7 @@ if (keyboard_url != null) {
 }
 
 project.setTranscript(t);
-
+jtp.addTab(messages.getString("ProjectDetails"), project);
 		return true;
 	} catch (JDOMException jdome) {
 		jdome.printStackTrace();
@@ -1297,7 +1336,6 @@ class SpeakerData extends AbstractTableModel
 				tp.insertComponent(new JLabel("  ", spIcon[sp.getIconID()], SwingConstants.LEFT));
 			}
 		};
-		KeyStroke insertSpeakerKey = KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.ALT_MASK);
 		keymap.addActionForKeyStroke(insertSpeakerKey, insertSpeakerAction);
 	}
 	public boolean addSpeaker(Speaker speaker) {
@@ -1411,6 +1449,7 @@ class SpeakerTable extends JTable
 		tc.setCellRenderer(duffRenderer);
 		tc.setHeaderValue(messages.getString("Name"));
 	}
+
 }
 
 public JMenuBar getTextMenuBar() {
@@ -1442,15 +1481,17 @@ public JMenuBar getTextMenuBar() {
 	viewMenu.addSeparator();
 	viewMenu.add(suppressTimesItem);
 
-	JMenu searchMenu = new JMenu(messages.getString("Search"));
+	searchMenu = new JMenu(messages.getString("Search"));
 	JMenuItem findTextItem = new JMenuItem(messages.getString("FindText"));
+	findTextItem.setAccelerator(findKey);
 	findTextItem.addActionListener(new ThdlActionListener() {
 		public void theRealActionPerformed(ActionEvent e) {
 			findText();
 		}
 	});
 
-	JMenuItem replaceTextItem = new JMenuItem(messages.getString("ReplaceText"));
+	replaceTextItem = new JMenuItem(messages.getString("ReplaceText"));
+	replaceTextItem.setAccelerator(replaceKey);
 	replaceTextItem.addActionListener(new ThdlActionListener() {
 		public void theRealActionPerformed(ActionEvent e) {
 			replaceText();
@@ -1465,14 +1506,28 @@ public JMenuBar getTextMenuBar() {
 	searchMenu.add(findspeakerItem);
 	searchMenu.add(findtimeItem);
 
+/* this is a bit odd.
+   since all the following keys are already associated with
+   actions via the keymap, these menu items don't need to actually do anything.
+   however, i have added the accelerators so that the keyboard shortcuts
+   are shown next to the menu items. */
+
 	editMenu = new JMenu(messages.getString("Edit"));
 	JMenuItem cutItem = new JMenuItem(messages.getString("Cut"));
+	cutItem.setAccelerator(cutKey);
 	JMenuItem copyItem = new JMenuItem(messages.getString("Copy"));
+	copyItem.setAccelerator(copyKey);
 	JMenuItem pasteItem = new JMenuItem(messages.getString("Paste"));
+	pasteItem.setAccelerator(pasteKey);
 	JMenuItem selectallItem = new JMenuItem(messages.getString("SelectAll"));
+	selectallItem.setAccelerator(selectAllKey);
 	JMenuItem insertspeakerItem = new JMenuItem(messages.getString("InsertSpeaker"));
+	insertspeakerItem.setAccelerator(insertSpeakerKey);
 	JMenuItem insertonetimeItem = new JMenuItem(messages.getString("InsertOneTime"));
+	insertonetimeItem.setAccelerator(insert1TimeKey);
 	JMenuItem inserttwotimesItem = new JMenuItem(messages.getString("InsertTwoTimes"));	
+	inserttwotimesItem.setAccelerator(insert2TimesKey);
+
 	editMenu.add(cutItem);
 	editMenu.add(copyItem);
 	editMenu.add(pasteItem);
@@ -1675,6 +1730,7 @@ class RadioListener extends ThdlActionListener {
 
 			//reinstate the edit menu to the pane
 			textFrame.getJMenuBar().add(editMenu);
+			searchMenu.add(replaceTextItem, 1);
 			textFrame.invalidate();
 			textFrame.validate();
 			textFrame.repaint();
@@ -1698,6 +1754,7 @@ class RadioListener extends ThdlActionListener {
 
 			//remove the edit menu from the pane
 			textFrame.getJMenuBar().remove(editMenu);
+			searchMenu.remove(replaceTextItem);
 			textFrame.invalidate();
 			textFrame.validate();
 			textFrame.repaint();
@@ -1716,20 +1773,4 @@ class RadioListener extends ThdlActionListener {
 		}
 	}
 }
-
-	private class XMLFilter extends javax.swing.filechooser.FileFilter {
-		// accepts all directories and all savant files
-
-		public boolean accept(File f) {
-			if (f.isDirectory()) {
-				return true;
-			}
-			return f.getName().toLowerCase().endsWith(QD.dotQuillDriver);
-		}
-    
-		//the description of this filter
-		public String getDescription() {
-			return "Extensible Markup Language (" + QD.dotQuillDriver + ")";
-		}
-	}
 }

@@ -158,6 +158,7 @@ public class SmartQT4JPlayer extends SmartMoviePanel
 	}
 	public void cmd_playSegment(Integer startTime, Integer stopTime) throws SmartMoviePanelException
 	{
+//FIXME: need to deal with null stopTime
 		try
 		{
 			getPlayer().setTime( startTime.intValue() );
@@ -200,11 +201,21 @@ public class SmartQT4JPlayer extends SmartMoviePanel
 	}
 	public int getCurrentTime()
 	{
-		return 0;
+		try {
+			return getMovie().getTime();
+		} catch (StdQTException stqte) {
+			stqte.printStackTrace();
+			return -1;
+		}
 	}
 	public int getEndTime() 
 	{
-		return 0;
+		try {
+			return getMovie().getDuration();
+		} catch (StdQTException stqte) {
+			stqte.printStackTrace();
+			return -1;
+		}
 	}
 	
 //helper methods - QT4J
