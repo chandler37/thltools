@@ -89,7 +89,8 @@ public class TMW_RTF_TO_THDL_WYLIE {
                 out.println(" file.  Writes the THDL Extended Wylie transliteration of that file [in");
                 out.println(" --to-wylie mode] or the TibetanMachine equivalent of that file [in");
                 out.println(" --to-tibetan-machine mode] to standard output after dealing with the curly");
-                out.println(" brace problem.  Exit code is zero on success, nonzero otherwise.");
+                out.println(" brace problem.  Exit code is zero on success, 42 if some TibetanMachine glyphs");
+                out.println(" couldn't be understood (though output is still given), nonzero otherwise.");
                 out.println("");
                 out.println(" You may find it helpful to use `--find-some-non-tmw' mode before doing a");
                 out.println(" conversion so that you have confidence in the conversion's correctness.");
@@ -126,7 +127,8 @@ public class TMW_RTF_TO_THDL_WYLIE {
             } else { // conversion {to Wylie or TM} mode
                 // Fix curly braces in the entire document:
                 ((TibetanDocument)dp.getDocument()).replaceTahomaCurlyBracesAndBackslashes(0, -1);
-
+                
+                int exitCode = 0;
                 if (convertToWylieMode) {
                     ThdlDebug.verify(!convertToTMMode);
                     // Convert to THDL Wylie:
@@ -134,14 +136,14 @@ public class TMW_RTF_TO_THDL_WYLIE {
                 } else {
                     ThdlDebug.verify(convertToTMMode);
                     // Convert to TibetanMachine:
-                    ((TibetanDocument)dp.getDocument()).convertToTM(0, dp.getDocument().getLength());
+                    if (!((TibetanDocument)dp.getDocument()).convertToTM(0, dp.getDocument().getLength(), null))
+                        exitCode = 42;
                 }
 
                 // Write to standard output the result:
                 ((TibetanDocument)dp.getDocument()).writeRTFOutputStream(out);
 
-                // Exit normally:
-                return 0;
+                return exitCode;
             }
         } catch (ThdlLazyException e) {
             out.println("TMW_RTF_TO_THDL_WYLIE has a BUG:");

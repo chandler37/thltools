@@ -893,17 +893,16 @@ private static final DuffCode TMW_tab = new DuffCode(1, '\t');
 
     Null is never returned for an existing TibetanMachine glyph,
     because every TibetanMachine glyph has a corresponding
-    TibetanMachineWeb glyph.  But if (font, ord) doesn't correspond to
-    an existing TibetanMachine glyph, null is returned.  In general,
-    though, this method may raise a runtime exception if you pass in a
-    (font, ord) that doesn't correspond to an existing TibetanMachine
-    glyph.
+    TibetanMachineWeb glyph.  Null is returned if the input isn't
+    valid.
 
     Only a few control characters are supported: '\r' (carriage
-    return), '\n' (line feed), and '\t' (tab).
- */
-public static DuffCode mapTMtoTMW(int font, int ordinal)
-    throws ArrayIndexOutOfBoundsException {
+    return), '\n' (line feed), and '\t' (tab).  */
+public static DuffCode mapTMtoTMW(int font, int ordinal) {
+    if (font < 0 || font > 4)
+        return null;
+    if (ordinal > 255)
+        return getUnusualTMtoTMW(font, ordinal);
     if (ordinal < 32) {
         if (ordinal == (int)'\r')
             return TMW_cr;
@@ -918,8 +917,6 @@ public static DuffCode mapTMtoTMW(int font, int ordinal)
         }
     }
     DuffCode ans = TMtoTMW[font][ordinal-32];
-    // comment this out to test via main(..):
-    ThdlDebug.verify(null != ans);
 	return ans;
 }
 
@@ -934,18 +931,17 @@ private static final DuffCode TM_tab = new DuffCode(1, '\t');
     Null is returned for an existing TibetanMachineWeb glyph only if
     that glyph is TibetanMachineWeb7.91, because every other
     TibetanMachineWeb glyph has a corresponding TibetanMachine glyph.
-    But if (font, ord) isn't (7, 91) and doesn't correspond to an
-    existing TibetanMachineWeb glyph, null is returned.  In general,
-    though, this method may raise a runtime exception if you pass in a
-    (font, ord) that doesn't correspond to an existing
-    TibetanMachineWeb glyph.
+    Null is returned if the input isn't valid.
 
     Only a few control characters are supported: '\r' (carriage
     return), '\n' (line feed), and '\t' (tab).
 
  */
-public static DuffCode mapTMWtoTM(int font, int ordinal)
-    throws ArrayIndexOutOfBoundsException {
+public static DuffCode mapTMWtoTM(int font, int ordinal) {
+    if (font < 0 || font > 9)
+        return null;
+    if (ordinal > 127)
+        return null;
     if (ordinal < 32) {
         if (ordinal == (int)'\r')
             return TM_cr;
@@ -960,8 +956,6 @@ public static DuffCode mapTMWtoTM(int font, int ordinal)
         }
     }
     DuffCode ans = TMWtoTM[font][ordinal-32];
-    // comment this out to test via main(..):
-    ThdlDebug.verify(null != ans || (font == 7 && ordinal == 91));
 	return ans;
 }
 
@@ -1015,49 +1009,81 @@ public static void main(String[] args) {
     }
 }
 
-private static DuffCode getTMtoTMW(int font, int code) {
-    if (false) { // DLC FIXME: why was this here?
-	if (code > 255-32) {
-		switch (code) {
-			case 8218-32: //sby
-				code = 130-32;
-				break;
+/** Tibet Doc makes weird RTF where you see TibetanMachine.8225 etc.
+    The highest possible glyph value should be 255, but that's not
+    what appears.  This returns non-null if (font, code) identify an
+    oddball we know.  This list may well be incomplete, but we handle
+    such oddballs in a first-class fashion. */
+private static DuffCode getUnusualTMtoTMW(int font, int code) {
+    if (code > 255) {
+        if (font == 0) {
+            switch (code) {
+            case 347: // reduced-height ha
+				return TMtoTMW[font][156 - 32];
 
-			case 8230-32: //sgr
-				code = 133-32;
-				break;
+            case 353: // d-r-w
+				return TMtoTMW[font][154 - 32];
 
-			case 8225-32: //spr
-				code = 135-32;
-				break;
+            case 377: // t-w
+				return TMtoTMW[font][143 - 32];
 
-			case 8117-32: //tshw
-				code = 146-32;
-				break;
+            case 710: // s-b-r
+				return TMtoTMW[font][136 - 32];
 
-			case 8126-32: //rw
-				code = 149-32;
-				break;
+            case 1026: // s-g-y
+				return TMtoTMW[font][128 - 32];
 
-			case 8482-32: //grw
-				code = 153-32;
-				break;
+            case 1027: // s-p-y
+				return TMtoTMW[font][129 - 32];
+
+            case 1106: // d-w
+				return TMtoTMW[font][144 - 32];
+
+			case 8117: // tsh-w
+				return TMtoTMW[font][146 - 32];
+
+			case 8126: // r-w
+				return TMtoTMW[font][149 - 32];
+
+            case 8218: // s-b-y
+                return TMtoTMW[font][130 - 32];
+
+			case 8225: // s-p-r
+				return TMtoTMW[font][135 - 32];
+
+			case 8230: // s-g-r
+				return TMtoTMW[font][133 - 32];
+
+            case 8240: // s-m-r
+				return TMtoTMW[font][137 - 32];
+
+			case 8482: // g-r-w
+				return TMtoTMW[font][153 - 32];
 
 			default:
 				return null;
-		}
-	}
-    }
+            }
+        } else if (font == 3) {
+            switch (code) {
+            case 402: // h+y
+                return TMtoTMW[font][131 - 32];
 
-	return TMtoTMW[font][code];
+			default:
+				return null;
+            }
+        } else {
+            return null;
+        }
+    } else {
+        return null;
+    }
 }
 
 /**
 * Gets the TibetanMachine font number for this font name.
 * @param name a font name
 * @return between 1 and 5 if the font is one
-* of the TibetanMachine fonts, otherwise 0
-*/
+* of the TibetanMachine fonts, otherwise 0 */
 public static int getTMFontNumber(String name) {
     String internedName = name.intern();
 	for (int i=1; i<tmFontNames.length; i++) {

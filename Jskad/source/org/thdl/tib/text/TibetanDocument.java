@@ -25,6 +25,7 @@ import javax.swing.text.rtf.RTFEditorKit;
 import java.io.*;
 
 import org.thdl.util.ThdlDebug;
+import org.thdl.util.ThdlOptions;
 
 /** Represents a character meant to be rendered in a certain font.
  *  @author David Chandler
@@ -379,6 +380,7 @@ public class TibetanDocument extends DefaultStyledDocument {
                         break;
                     }
                     if (null != toReplaceWith) {
+                        // SPEED_FIXME: determining font size might be slow
                         int fontSize = tibetanFontSize;
                         try {
                             fontSize = ((Integer)getCharacterElement(i).getAttributes().getAttribute(StyleConstants.FontSize)).intValue();
@@ -403,9 +405,14 @@ public class TibetanDocument extends DefaultStyledDocument {
         the document.  Be sure to set the size for Tibetan as you like
         it before using this (well, it usually gets it right on its
         own, but just in case).  SPEED_FIXME: might be faster to run
-        over the elements, if they are one per font. */
-    public void convertToTM(int begin, int end) {
-        convertTMW_TM(begin, end, true);
+        over the elements, if they are one per font.
+        @return true on 100% success, false if any exceptional case
+        was encountered
+        @param errors if non-null, then notes about all exceptional
+        cases will be appended to this StringBuffer
+    */
+    public boolean convertToTM(int begin, int end, StringBuffer errors) {
+        return convertTMW_TM(begin, end, true, errors);
     }
 
     /** Converts all TibetanMachine glyphs in the document to
@@ -414,24 +421,38 @@ public class TibetanDocument extends DefaultStyledDocument {
         the end of the document.  Be sure to set the size for Tibetan
         as you like it before using this (well, it usually gets it
         right on its own, but just in case).  SPEED_FIXME: might be
-        faster to run over the elements, if they are one per font. */
-    public void convertToTMW(int begin, int end) {
-        convertTMW_TM(begin, end, false);
+        faster to run over the elements, if they are one per font.
+        @return true on 100% success, false if any exceptional case
+        was encountered
+        @param errors if non-null, then notes about all exceptional
+        cases will be appended to this StringBuffer
+    */
+    public boolean convertToTMW(int begin, int end, StringBuffer errors) {
+        return convertTMW_TM(begin, end, false, errors);
     }
 
     /** Helper function.
+        @param errors if non-null, then notes about all exceptional
+        cases will be appended to this StringBuffer
+        @return true on 100% success, false if any exceptional case
+        was encountered
         @see convertToTMW(int,int) 
         @see convertToTM(int,int) */
-    private void convertTMW_TM(int begin, int end, boolean toTM) {
+    private boolean convertTMW_TM(int begin, int end, boolean toTM,
+                                  StringBuffer errors) {
+        boolean toStdout = ThdlOptions.getBooleanOption("thdl.debug");
+        boolean errorReturn = false;
         if (end < 0)
             end = getLength();
         if (begin >= end)
-            return;
+            return errorReturn; // nothing to do, so no errors in the doing.
         int i = begin;
+        HashMap problemGlyphsTable = new HashMap();
         try {
+            Position endPos = createPosition(end);
             DuffData[] equivalent = new DuffData[1];
             equivalent[0] = new DuffData();
-            while (i < end) {
+            while (i < endPos.getOffset()) {
                 AttributeSet attr = getCharacterElement(i).getAttributes();
                 String fontName = StyleConstants.getFontFamily(attr);
 				int fontNum
@@ -441,50 +462,65 @@ public class TibetanDocument extends DefaultStyledDocument {
 
                 if (0 != fontNum) {
                     DuffCode dc = null;
-                    try {
-                        if (toTM) {
-                            dc = TibetanMachineWeb.mapTMWtoTM(fontNum - 1,
-                                                              getText(i,1).charAt(0));
-                        } else {
-                            dc = TibetanMachineWeb.mapTMtoTMW(fontNum - 1,
-                                                              getText(i,1).charAt(0));
-                        }
-                        if (null != dc) {
-                            equivalent[0].setData(dc.getCharacter(),
-                                                  dc.getFontNum());
-                        }
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                         // we handle this below...
-                        System.out.println("FIXME: "
-                                           + (toTM ? "TMW->TM" : "TM->TMW")
-                                           + " conversion is in trouble");
-                        System.out.println("font is " + (fontNum - 1)
-                                           + ", char is "
-                                           + (int)getText(i,1).charAt(0)
-                                           + "; pos is " + i);
-                        ThdlDebug.noteIffyCode();
+                    if (toTM) {
+                        dc = TibetanMachineWeb.mapTMWtoTM(fontNum - 1,
+                                                          getText(i,1).charAt(0));
+                    } else {
+                        dc = TibetanMachineWeb.mapTMtoTMW(fontNum - 1,
+                                                          getText(i,1).charAt(0));
                     }
                     if (null != dc) {
+                        equivalent[0].setData(dc.getCharacter(),
+                                              dc.getFontNum());
+                        // SPEED_FIXME: determining font size might be slow
                         int fontSize = tibetanFontSize;
                         try {
                             fontSize = ((Integer)getCharacterElement(i).getAttributes().getAttribute(StyleConstants.FontSize)).intValue();
                         } catch (Exception e) {
                             // leave it as tibetanFontSize
                         }
-                        insertDuff(fontSize, i, equivalent, !toTM);
-                        remove(i+1, 1);
+                        // We have two choices: remove-then-insert
+                        // second vs. insert-then-remove and also
+                        // insert-before vs. insert-after.  It turns
+                        // out that insert-after preserves formatting
+                        // whereas insert-before doesn't.  And we do
+                        // insert-then-remove because we're guessing
+                        // that helps with formatting too.
+                        insertDuff(fontSize, i+1, equivalent, !toTM);
+                        remove(i, 1);
                     } else {
                         // DLC FIXME: insert into document a string
-                        // saying "there's no TM equivalent for this."
-                        // (For now, I'm inserting the alphabet and
-                        // all the numbers in a big font in TMW to try
-                        // and get some attention.  And I've
+                        // saying "<<[[there's no TM equivalent for
+                        // this, details are ...]]>>" (For now, I'm
+                        // inserting the alphabet in a big font in TMW
+                        // to try and get some attention.  And I've
                         // *documented* this on the website.)
+                        
+                        errorReturn = true;
+                        CharacterInAGivenFont cgf
+                            = new CharacterInAGivenFont(getText(i,1), fontName);
+                        if (!problemGlyphsTable.containsKey(cgf)) {
+                            problemGlyphsTable.put(cgf, "yes this character appears once");
+                            if (null != errors) {
+                                String err
+                                    = (toTM ? "TMW->TM" : "TM->TMW")
+                                    + " conversion failed for a glyph:\nFont is "
+                                    + fontName + ", glyph number is "
+                                    + (int)getText(i,1).charAt(0)
+                                    + "; first position found (from zero) is "
+                                    + i + "\n";
+                                errors.append(err);
+                                if (toStdout) {
+                                    System.out.print(err);
+                                }
+                            }
+                        }
+
                         String trickyTMW
-                            = "!-\"-#-,-%-&-'-(-)-*-+-,-.-/-0-1-2-3-4-5-6-7-8-9-:-;-<-=->-?-0-1-2-3-4-5-6-7-8-9-";
+                            = "!-\"-#-$-%-&-'-(-)-*-+-,-.-/-0-1-2-3-4-5-6-7-8-9-:-;-<-=->-?-";
                         equivalent[0] = new DuffData(trickyTMW, 1);
                         insertDuff(72, i, equivalent, true);
-                        i += trickyTMW.length() + 1;
+                        i += trickyTMW.length();
                     }
                 }
                 i++;
@@ -493,5 +529,6 @@ public class TibetanDocument extends DefaultStyledDocument {
             ble.printStackTrace();
             ThdlDebug.noteIffyCode();
         }
+        return errorReturn;
     }
 }

@@ -327,14 +327,39 @@ public class Jskad extends JPanel implements DocumentListener {
             JMenuItem toTMItem = new JMenuItem("Convert TMW to TM"); // DLC FIXME: do it just in the selection?
             toTMItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
-                        ((TibetanDocument)dp.getDocument()).convertToTM(0, -1); // entire document
+                        StringBuffer errors = new StringBuffer();
+                        boolean errorReturn
+                            = ((TibetanDocument)dp.getDocument()).convertToTM(0, -1, errors); // entire document
+                        if (errorReturn) {
+                            JOptionPane.showMessageDialog(Jskad.this,
+                                                          "At least one error occurred while converting Tibetan Machine Web\nto Tibetan Machine.  Your document is mostly converted,\nexcept for the glyphs found after the 72-point Tibetan Machine Web\n30-letter alphabet.\nThe following glyphs were problems:\n"
+                                                          + errors.toString(),
+                                                          "TMW to TM Errors",
+                                                          JOptionPane.PLAIN_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(Jskad.this,
+                                                          "Converting Tibetan Machine Web to Tibetan Machine met with perfect success.",
+                                                          "Success", JOptionPane.PLAIN_MESSAGE);
+                        }
                     }
                 });
 
             JMenuItem toTMWItem = new JMenuItem("Convert TM to TMW"); // DLC FIXME: do it just in the selection?
             toTMWItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
-                        ((TibetanDocument)dp.getDocument()).convertToTMW(0, -1); // entire document
+                        StringBuffer errors = new StringBuffer();
+                        boolean errorReturn
+                            = ((TibetanDocument)dp.getDocument()).convertToTMW(0, -1, errors); // entire document
+                        if (errorReturn) {
+                            JOptionPane.showMessageDialog(Jskad.this,
+                                                          "At least one error occurred while converting Tibetan Machine\nto Tibetan Machine Web.  Your document is mostly converted,\nexcept for the glyphs found after the 72-point Tibetan Machine Web\n30-letter alphabet.\nThe following glyphs were problems:\n"
+                                                          + errors.toString(),
+                                                          "TM to TMW Errors", JOptionPane.PLAIN_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(Jskad.this,
+                                                          "Converting Tibetan Machine to Tibetan Machine Web met with perfect success.",
+                                                          "Success", JOptionPane.PLAIN_MESSAGE);
+                        }
                     }
                 });
             toolsMenu.addSeparator();
