@@ -348,7 +348,7 @@ public class TibTextUtils implements THDLWylieConstants {
         }
         try {
             int tloc[] = new int[] { loc };
-            ACIPConverter.convertToTMW(al, tdoc, null, null,
+            ACIPConverter.convertToTMW(al, tdoc, null, null, null,
                                        putWarningsInOutput, warningLevel,
                                        colors, tloc);
             return tloc[0] - loc;

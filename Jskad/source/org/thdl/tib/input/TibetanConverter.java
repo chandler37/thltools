@@ -241,12 +241,16 @@ public class TibetanConverter implements FontConverterConstants {
         } catch (ThdlLazyException e) {
             out.println("TibetanConverter has a BUG:");
             e.getRealException().printStackTrace(out);
+            System.err.println("TibetanConverter has a BUG:");
+            e.getRealException().printStackTrace(System.err);
             return 7;
         } catch (IOException e) {
             e.printStackTrace(out);
+            e.printStackTrace(System.err);
             return 4;
         } catch (OutOfMemoryError e) {
             e.printStackTrace(out);
+            e.printStackTrace(System.err);
             throw e;
         }
 	}
@@ -263,26 +267,27 @@ public class TibetanConverter implements FontConverterConstants {
             try {
                 ArrayList al = ACIPTshegBarScanner.scanStream(in, null,
                                                               ThdlOptions.getIntegerOption("thdl.most.errors.a.tibetan.acip.document.can.have",
-                                                                                           250 - 1)
+                                                                                           1000 - 1)
                                                               );
                 if (null == al)
                     return 47;
-                StringBuffer warnings = new StringBuffer();
                 boolean embeddedWarnings = (warningLevel != "None");
+                boolean hasWarnings[] = new boolean[] { false };
                 if (ACIP_TO_UNI_TEXT == ct) {
                     if (!ACIPConverter.convertToUnicodeText(al, out, null,
-                                                            warnings,
+                                                            null, hasWarnings,
                                                             embeddedWarnings,
                                                             warningLevel))
                         return 46;
                 } else {
                     if (ct != ACIP_TO_TMW) throw new Error("badness");
-                    if (!ACIPConverter.convertToTMW(al, out, null, warnings,
+                    if (!ACIPConverter.convertToTMW(al, out, null, null,
+                                                    hasWarnings,
                                                     embeddedWarnings,
                                                     warningLevel, colors))
                         return 46;
                 }
-                if (embeddedWarnings && warnings.length() > 0)
+                if (embeddedWarnings && hasWarnings[0])
                     return 45;
                 else
                     return 0;

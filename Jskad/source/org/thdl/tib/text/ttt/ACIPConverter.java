@@ -55,7 +55,7 @@ public class ACIPConverter {
             System.out.println("Bad args!  Need just the name of the ACIP text file.");
         }
         StringBuffer errors = new StringBuffer();
-        int maxErrors = 250;
+        int maxErrors = 1000; // DLC NOW PER CAPITA
         ArrayList al = ACIPTshegBarScanner.scanFile(args[0], errors, maxErrors - 1);
 
         if (null == al) {
@@ -88,7 +88,7 @@ public class ACIPConverter {
             warnings = new StringBuffer();
             putWarningsInOutput = true;
         }
-        convertToTMW(al, System.out, errors, warnings,
+        convertToTMW(al, System.out, errors, warnings, null,
                      putWarningsInOutput, warningLevel, colors);
         int retCode = 0;
         if (errors.length() > 0) {
@@ -128,6 +128,7 @@ public class ACIPConverter {
                                        OutputStream out,
                                        StringBuffer errors,
                                        StringBuffer warnings,
+                                       boolean[] hasWarnings,
                                        boolean writeWarningsToResult,
                                        String warningLevel,
                                        boolean colors)
@@ -135,7 +136,7 @@ public class ACIPConverter {
     {
         TibetanDocument tdoc = new TibetanDocument();
         boolean rv
-            = convertToTMW(scan, tdoc, errors, warnings,
+            = convertToTMW(scan, tdoc, errors, warnings, hasWarnings,
                            writeWarningsToResult, warningLevel, colors,
                            new int[] { tdoc.getLength() });
         tdoc.writeRTFOutputStream(out);
@@ -155,6 +156,7 @@ public class ACIPConverter {
                                        TibetanDocument tdoc,
                                        StringBuffer errors,
                                        StringBuffer warnings,
+                                       boolean[] hasWarnings,
                                        boolean writeWarningsToResult,
                                        String warningLevel,
                                        boolean colors,
@@ -162,8 +164,8 @@ public class ACIPConverter {
         throws IOException
     {
         return convertTo(false, true, scan, null, tdoc, errors, warnings,
-                         writeWarningsToResult, warningLevel, colors,
-                         loc, loc[0] == tdoc.getLength());
+                         hasWarnings, writeWarningsToResult, warningLevel,
+                         colors, loc, loc[0] == tdoc.getLength());
     }
 
     /** Returns UTF-8 encoded Unicode.  A bit indirect, so use this
@@ -187,7 +189,7 @@ public class ACIPConverter {
         try {
             if (null != al) {
                 convertToUnicodeText(al, sw, errors,
-                                     warnings, writeWarningsToResult,
+                                     warnings, null, writeWarningsToResult,
                                      warningLevel);
                 return sw.toString("UTF-8");
             } else {
@@ -212,6 +214,9 @@ public class ACIPConverter {
      *  @param errors if non-null, all error messages are appended
      *  @param warnings if non-null, all warning messages appropriate
      *  to warningLevel are appended
+     *  @param hasWarnings if non-null, then hasWarnings[0] will be
+     *  updated to true if and only if warnings are encountered and
+     *  false otherwise
      *  @param writeWarningsToOut if true, then all warning messages
      *  are written to out in the appropriate places
      *  @throws IOException if we cannot write to out
@@ -220,12 +225,14 @@ public class ACIPConverter {
                                                OutputStream out,
                                                StringBuffer errors,
                                                StringBuffer warnings,
+                                               boolean[] hasWarnings,
                                                boolean writeWarningsToOut,
                                                String warningLevel)
         throws IOException
     {
         return convertTo(true, false, scan, out, null, errors, warnings,
-                         writeWarningsToOut, warningLevel, false, new int[] { -1 } , true);
+                         hasWarnings, writeWarningsToOut, warningLevel, false,
+                         new int[] { -1 } , true);
     }
 
     private static boolean peekaheadFindsSpacesAndComma(ArrayList /* of TString */ scan,
@@ -253,6 +260,7 @@ public class ACIPConverter {
                                      TibetanDocument tdoc, // for !toUnicode mode or (toUnicode && toRTF) mode
                                      StringBuffer errors,
                                      StringBuffer warnings,
+                                     boolean[] hasWarnings,
                                      boolean writeWarningsToOut,
                                      String warningLevel,
                                      boolean colors,
@@ -299,6 +307,7 @@ public class ACIPConverter {
 
         int sz = scan.size();
         boolean hasErrors = false;
+        if (null != hasWarnings) hasWarnings[0] = false;
         BufferedWriter writer = null;
         if (toUnicode && !toRTF)
             writer
@@ -360,6 +369,7 @@ public class ACIPConverter {
                 }
 
                 if (null != warnings) {
+                    if (null != hasWarnings) hasWarnings[0] = true;
                     warnings.append("Warning: Lexical warning: ");
                     warnings.append(s.getText());
                     warnings.append('\n');
@@ -424,7 +434,7 @@ public class ACIPConverter {
                                     // differently, but now, I think
                                     // this is impossible.  DLC FIXME:
                                     // run with -Dthdl.debug=true on
-                                    // all ACIP Release IV texts you
+                                    // all ACIP Release V texts you
                                     // can find.
                                     ThdlDebug.noteIffyCode();
                                     hasErrors = true;
@@ -479,6 +489,7 @@ public class ACIPConverter {
                                             }
                                         }
                                         if (null != warnings) {
+                                            if (null != hasWarnings) hasWarnings[0] = true;
                                             warnings.append(warning);
                                             warnings.append('\n');
                                         }

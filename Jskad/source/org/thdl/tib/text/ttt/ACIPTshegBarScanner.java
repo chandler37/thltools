@@ -49,7 +49,7 @@ public class ACIPTshegBarScanner {
             System.exit(1);
         }
         StringBuffer errors = new StringBuffer();
-        int maxErrors = 250;
+        int maxErrors = 1000;
         ArrayList al = scanFile(args[0], errors, maxErrors - 1);
 
         if (null == al) {
