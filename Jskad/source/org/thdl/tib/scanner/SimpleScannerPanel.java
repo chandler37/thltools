@@ -30,74 +30,70 @@ import java.awt.event.*;
     @see WindowScannerFilter
 */
 
-public class SimpleScannerPanel extends ScannerPanel
+public class SimpleScannerPanel extends ScannerPanel implements ItemListener
 {
 	private TextArea txtInput, txtOutput;
-	private Panel inputPanel;
+	private Panel cardPanel;
+	private List listDefs;
+	private Word wordArray[];
+	private int lenPreview;
+	private static int WIDTH_PORTRAIT = 34;
+	private static int WIDTH_LANDSCAPE = 46;
 	
 	public SimpleScannerPanel(String file, boolean landscape)
 	{
 		super(file);
 		Panel panel1, panel2;
-		inputPanel = new Panel(new CardLayout());
-		txtInput = new TextArea("",1,1,TextArea.SCROLLBARS_VERTICAL_ONLY);
-		inputPanel.add(txtInput, "1");
-
-		if (landscape) panel2 = getDictPanel(5);
-		else panel2 = getDictPanel(4);
-		if (panel2!=null)
-		{
-		    inputPanel.add(panel2, "2");
-		}
+		cardPanel = new Panel(new CardLayout());
 		
-		txtOutput = new TextArea("",0,0,TextArea.SCROLLBARS_VERTICAL_ONLY);
-		txtOutput.setEditable(false);
+		// FIXME values shouldn't be hardwired
+		if (landscape) lenPreview = WIDTH_LANDSCAPE;
+		else lenPreview = WIDTH_PORTRAIT;
+		wordArray=null;
+
+		// panel1 = new Panel(new GridLayout(3, 1));
 		
 		panel1 = new Panel(new BorderLayout());
-		panel1.add(inputPanel, BorderLayout.NORTH);
-		panel1.add(txtOutput, BorderLayout.CENTER);
+		// txtInput = new TextArea("",1,1,TextArea.SCROLLBARS_VERTICAL_ONLY);
+		if (landscape) txtInput = new TextArea("", 2, WIDTH_LANDSCAPE, TextArea.SCROLLBARS_VERTICAL_ONLY);
+		else txtInput = new TextArea("", 3, WIDTH_PORTRAIT, TextArea.SCROLLBARS_VERTICAL_ONLY);
+		//panel1.add(txtInput);
+		panel1.add(txtInput, BorderLayout.NORTH);
+		listDefs = new List();
+		listDefs.setMultipleMode(false);
+		listDefs.addItemListener(this);
 		
-		/*panel1 = new Panel (new GridLayout(2,1));
-		panel1.add(inputPanel);
-		panel1.add(txtOutput);*/
-
-        /*GridBagLayout gridbag = new GridBagLayout();
-        GridBagConstraints c = new GridBagConstraints();
-		panel1 = new Panel(gridbag);
-		c.weightx=1;
-		c.gridheight=1;		
-        c.fill = GridBagConstraints.BOTH;
-        c.gridwidth = GridBagConstraints.REMAINDER;
-		gridbag.setConstraints(inputPanel, c);
-		panel1.add(inputPanel);
-		c.gridheight=2;
-		c.weighty=1;
-        c.gridheight = GridBagConstraints.REMAINDER;
-		gridbag.setConstraints(txtOutput, c);
-		panel1.add(txtOutput);*/
+		panel2 = new Panel(new GridLayout(2,1));		
+		panel2.add(listDefs);
+		txtOutput = new TextArea("",0,0,TextArea.SCROLLBARS_VERTICAL_ONLY);
+		txtOutput.setEditable(false);		
+		panel2.add(txtOutput);
+		panel1.add(panel2, BorderLayout.CENTER);
+		cardPanel.add(panel1, "1");
 		
-        /* GridBagLayout gridbag = new GridBagLayout();
-        GridBagConstraints c = new GridBagConstraints();
-		panel1 = new Panel(gridbag);
-		c.weightx=1;
-		c.weighty=1;
-		c.gridheight=1;
-        c.fill = GridBagConstraints.BOTH;
-        c.gridwidth = GridBagConstraints.REMAINDER;
-		gridbag.setConstraints(txtInput, c);
-		panel1.add(txtInput);
-		c.gridheight = GridBagConstraints.REMAINDER;
-		c.ipady = 70;
-		gridbag.setConstraints(txtOutput, c);*/
+		// FIXME: values shouldn't be hardwired
+		if (landscape) panel2 = getDictPanel(2);
+		else panel2 = getDictPanel(1);
+		if (panel2!=null)
+		{
+		    cardPanel.add(panel2, "2");
+		}
 		
-		add(panel1, BorderLayout.CENTER);		
+    	add(cardPanel, BorderLayout.CENTER);		
 	}
+	
+    public void itemStateChanged(ItemEvent e)
+    {
+        int n = listDefs.getSelectedIndex();
+        if (n>-1) txtOutput.setText(wordArray[n].toString());
+    }
+    
 	
 	public void setWylieInput(boolean enabled)
 	{
-	    CardLayout cl = (CardLayout) inputPanel.getLayout();
-	    if (enabled) cl.first(inputPanel);
-	    else cl.last(inputPanel);
+	    CardLayout cl = (CardLayout) cardPanel.getLayout();
+	    if (enabled) cl.first(cardPanel);
+	    else cl.last(cardPanel);
 	}
 	
 
@@ -110,17 +106,25 @@ public class SimpleScannerPanel extends ScannerPanel
 	public void printAllDefs()
 	{
 		int i;
-		Object array[] = scanner.getTokenArray();
+		wordArray = scanner.getWordArray();
+		String preview;
 		
-		for(i=0; i<array.length; i++)
-		    if (array[i] instanceof Word)
-			    txtOutput.append("* " + array[i].toString() + "\n\n");
+		listDefs.removeAll();
+		
+		for(i=0; i<wordArray.length; i++)
+		{
+		    
+		    preview = wordArray[i].toString();
+		    if (preview.length()>lenPreview) preview = preview.substring(0,lenPreview);
+		    listDefs.add(preview);
+		}
 	}
 	
 	public void clear()
 	{
     	txtInput.setText("");
 		txtOutput.setText("");
+		listDefs.removeAll();
 	}
 	
 	public void translate()
