@@ -7364,12 +7364,14 @@ tstHelper("ZUR");
     }
 
     public void testACIPConversion() {
-        uhelp("DZHDZHA", "\u0f5c\u0fac"); // tricky because DZHDZA is not in TMW but DZHDZHA is
-        uhelp("DZHDZA", "\u0f5c\u0fab");
+        uhelp("tRAStA", "\u0f4a\u0fb2\u0f66\u0f9a");
+        uhelp("DZHDZHA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP DZHDZHA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f5c\u0fac"); // tricky because DZHDZA is not in TMW but DZHDZHA is
+        uhelp("DZHDZA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP DZHDZA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f5c\u0fab");
         uhelp("P+S+N+YA", "\u0f54\u0fb6\u0fa3\u0fb1");
-        uhelp("PSNYA", "\u0f54\u0fb6\u0f99"); // Is this P+S+N+YA?  No, it's P+S+NYA.  But, DLC, warn!
-        uhelp("NNYA", "\u0f53\u0f99"); // DLC warn
-        uhelp("GHNYA", "\u0f43\u0f99");
+        uhelp("P+S+NYA", "\u0f54\u0fb6\u0f99");
+        uhelp("PSNYA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP PSNYA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f54\u0fb6\u0f99"); // Is this P+S+N+YA?  No, it's P+S+NYA.  But warn!
+        uhelp("NNYA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP NNYA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f53\u0f99");
+        uhelp("GHNYA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP GHNYA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f43\u0f99");
 
         // TS+NYA and T+S+N+YA are both legal, so what is TSNYA?
         // Private correspondence with Robert Chilton says that it is

@@ -322,6 +322,58 @@ class TParseTree {
                 }
             }
         }
+
+        // Check for things like DZHDZ+H: stacks that have some pluses
+        // but not all pluses.
+        //
+        // Check for things like TSNYA: stacks that could be
+        // mistransliterations of T+S+N+YA
+        //
+        // Check for useless disambiguators.
+        {
+            int plnum = 0;
+            String swarn
+                = "There is a stack of three or more consonants in " + ((null != originalACIP) ? originalACIP : recoverACIP()) + " that uses at least one '+' but does not use a '+' between each consonant.";
+            String disamWarn
+                = "There is a useless disambiguator in " + ((null != originalACIP) ? originalACIP : recoverACIP()) + ".";
+            while (plnum < pl.size() && pl.get(plnum).isDisambiguator()) {
+                ++plnum;
+                return disamWarn;
+            }
+            for (int stackNum = 0; stackNum < bestParse.size(); stackNum++) {
+                TPairList stack = bestParse.get(stackNum);
+                int type = 0;
+                int stackSize = stack.size();
+                boolean hasAmbiguousConsonant = false; // TS could be TSA or T+SA, so it's "ambiguous"
+                for (int j = 0; j < stackSize; j++) {
+                    TPair tp = pl.get(plnum++);
+                    if (j + 1 < stack.size()) {
+                        if (null == tp.getRight()) {
+                            if (type == 0)
+                                type = -1;
+                            else if (type == 1)
+                                return swarn;
+                        } else {
+                            if (type == 0)
+                                type = 1;
+                            else if (type == -1)
+                                return swarn;
+                        }
+                    }
+                    if (stackSize > 1 && tp.getLeft() != null && tp.getLeft().length() > 1) {
+                        hasAmbiguousConsonant = true;
+                    }
+                }
+                if (hasAmbiguousConsonant && -1 == type) {
+                    if ("Most" == warningLevel || "All" == warningLevel)
+                        return "There is a chance that the ACIP " + ((null != originalACIP) ? originalACIP : recoverACIP()) + " was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.";
+                }
+                while (plnum < pl.size() && pl.get(plnum).isDisambiguator()) {
+                    ++plnum;
+                    return disamWarn;
+                }
+            }
+        }
         return null;
     }
     

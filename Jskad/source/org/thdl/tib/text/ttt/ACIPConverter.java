@@ -1,6 +1,4 @@
-// DLC NOW: 'US etc. -- do we handle them all?
-// DLC NOW WARN ON NNYA and DBA
-// DLC NOW: implement Robert Chilton-supplied prefix rules
+// DLC NOW WARN ON DBA
 /*
 The contents of this file are subject to the THDL Open Community License
 Version 1.0 (the "License"); you may not use this file except in compliance
@@ -44,10 +42,6 @@ public class ACIPConverter {
     // DLC NOW: IMPLEMENT (KA) font shrinking
 
     // DLC NOW: BAo isn't converting.
-
-    // DLC NOW: tRAStA is not converter correctly to Unicode, and no
-    // warning is given when converting to TMW (Wait!  isn't the "a
-    // stack occurs w/o a vowel" warning given?)
 
     /** Command-line converter.  Gives error messages on standard
      *  output about why we can't convert the document perfectly and
