@@ -33,6 +33,7 @@ import java.io.*;
 import javax.swing.text.rtf.*;
 
 import org.thdl.util.ThdlDebug;
+import org.thdl.util.StatusBar;
 
 /**
 * Enables input of Tibetan text
@@ -45,6 +46,13 @@ import org.thdl.util.ThdlDebug;
 * @version 1.0
 */
 public class DuffPane extends JTextPane implements KeyListener, FocusListener {
+/** 
+* The status bar to update with messages about the current input mode.
+* Are we expecting a vowel? a subscript? et cetera.
+*/
+    private StatusBar statBar = null;
+
+
 /**
 * A central part of the Tibetan keyboard. As keys are typed, they are
 * added to charList if they constitute a valid Wylie character. charList
@@ -206,6 +214,14 @@ public Clipboard rtfBoard;
 public DataFlavor rtfFlavor;
 public RTFEditorKit rtfEd = null;
 
+    /** Creates a new DuffPane that updates sb, if sb is not null,
+        with messages about how the users' keypresses are being
+        interpreted. */
+	public DuffPane(StatusBar sb) {
+        this();
+        setStatusBar(sb);
+    }
+
 	public DuffPane() {
 		setupKeyboard();
 		setupEditor();
@@ -225,6 +241,32 @@ public RTFEditorKit rtfEd = null;
 		setupEditor();
 //		this(new StyledEditorKit(), keyboardURL);
 	}
+
+    /** Sets the status bar to update with mode information.  If sb is
+        null, no status bar will be updated. */
+    public void setStatusBar(StatusBar sb) {
+        statBar = sb;
+    }
+
+    /** If we have a status bar, update it. */
+    private void updateStatus(String newStatus) {
+        if (statBar != null) {
+            /* If we've seen this message just before, append " x2" to
+               the end of it. The third message will cause a toggle,
+               which you can tell is different, so that's fine. */
+            if (newStatus.equals(statBar.currentStatus())) {
+                newStatus = newStatus + " x2";
+            }
+            statBar.replaceStatus((isTopHypothesis ? "Guess: " : "Fact: ") + newStatus);
+        }
+    }
+
+    /** If we have a status bar, append msg to its current status. */
+    private void appendStatus(String msg) {
+        if (statBar != null) {
+            statBar.replaceStatus(statBar.currentStatus() + msg);
+        }
+    }
 
 /*
 	public DuffPane() {
@@ -381,6 +423,7 @@ public RTFEditorKit rtfEd = null;
 * backspacing, redrawing, etc.
 */
 	private void initKeyboard() {
+        updateStatus("Jskad is in its basic input mode");
 		charList.clear();
 		oldGlyphList.clear();
 		holdCurrent = new StringBuffer();
@@ -1034,9 +1077,18 @@ public void paste(int offset) {
 * and also of whether or not the user is in stacking
 * mode. Most of the keyboard logic can be found here.
 *
-* @param e a KeyEvent
-*/
+* If there is a nonnull status bar to be updated (passed to the
+* constructor), let's explain to the user which mode we're in, why
+* their keypress has changed nothing, etc.  At present, this is really
+* for developers to understand what's going on.  For example, if you
+* type s-g-r, you see a single glyph, a three-letter stack, but if you
+* type s-d-r, you see two glyphs.  If you examine the status bar,
+* you'll see that the thing determining that is
+* TibetanDocument.getGlyphs, which in turn relies on 'tibwn.ini'.
+*
+* @param e a KeyEvent */
 	public void processTibetan(KeyEvent e) {
+        boolean changedStatus = false;
 		char c = e.getKeyChar();
 
 		int start = getSelectionStart();
@@ -1064,6 +1116,8 @@ public void paste(int offset) {
 		if (TibetanMachineWeb.hasDisambiguatingKey())
 			if (c == TibetanMachineWeb.getDisambiguatingKey()) {
 				initKeyboard();
+                changedStatus = true;
+                appendStatus(" (because you pressed the disambiguating key)");
 				break key_block;
 			};
 
@@ -1074,6 +1128,8 @@ public void paste(int offset) {
 
 					if (size == 0) {
 						initKeyboard();
+                        changedStatus = true;
+                        appendStatus(" (because you pressed the stacking key with nothing to stack on)");
 					} else if (size > 1 && isStackingRightToLeft) {
 						String s = (String)charList.remove(charList.size() - 1);
 						newGlyphList = TibetanDocument.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
@@ -1088,6 +1144,8 @@ public void paste(int offset) {
 						isStackingRightToLeft = false;
 						isDefinitelyTibetan = isDefinitelyTibetan_withStackKey;
 						isDefinitelySanskrit = isDefinitelySanskrit_withStackKey;
+                        changedStatus = true;
+                        updateStatus("You have stacked a letter atop another.");
 					} else {
 						holdCurrent = new StringBuffer();
 						isTopHypothesis = false;
@@ -1095,6 +1153,8 @@ public void paste(int offset) {
 						isStackingRightToLeft = false;
 						isDefinitelyTibetan = isDefinitelyTibetan_withStackKey;
 						isDefinitelySanskrit = isDefinitelySanskrit_withStackKey;
+                        changedStatus = true;
+                        updateStatus("Some sort of stack-fu is happening/has happened.");
 					}
 					break key_block;
 				}
@@ -1105,6 +1165,8 @@ public void paste(int offset) {
 						isStackingRightToLeft = false;
 						isDefinitelyTibetan = isDefinitelyTibetan_withStackKey;
 						isDefinitelySanskrit = isDefinitelySanskrit_withStackKey;
+                        changedStatus = true;
+                        updateStatus("!isStackingOn || (isStackingOn && isDefinitelyTibetan==isDefinitelyTibetan_default)");
 					}
 					else {try {
 						char ch = doc.getText(caret.getDot()-1, 1).charAt(0);
@@ -1118,6 +1180,8 @@ public void paste(int offset) {
 							isStackingRightToLeft = false;
 							isDefinitelyTibetan = isDefinitelyTibetan_withStackKey;
 							isDefinitelySanskrit = isDefinitelySanskrit_withStackKey;
+                            changedStatus = true;
+                            appendStatus(" (because 0 == fontNum)");
 						} else {
 							initKeyboard();
 							DuffCode dc = new DuffCode(fontNum, ch);
@@ -1128,10 +1192,14 @@ public void paste(int offset) {
 								isDefinitelyTibetan = isDefinitelyTibetan_withStackKey;
 								isDefinitelySanskrit = isDefinitelySanskrit_withStackKey;
 							}
+                            changedStatus = true;
+                            appendStatus(" (because 0 != fontNum)");
 						}
 					}
 					catch (BadLocationException ble) {
 						initKeyboard();
+                        changedStatus = true;
+                        appendStatus(" (because a BadLocationException was thrown)");
 					}}
 					break key_block;
 				}
@@ -1143,6 +1211,8 @@ public void paste(int offset) {
 			case KeyEvent.VK_ENTER:
 			case KeyEvent.VK_ESCAPE:
 				initKeyboard();
+                changedStatus = true;
+                appendStatus(" (because you typed enter, tab, or escape)");
 				break;
 
 			case KeyEvent.VK_BACK_SPACE:
@@ -1167,6 +1237,8 @@ public void paste(int offset) {
 					}
 
 					initKeyboard();
+                    changedStatus = true;
+                    appendStatus(" (because you typed punctuation)");
 					break key_block; /* DLC is this right? */
 				}
 
@@ -1182,6 +1254,8 @@ public void paste(int offset) {
 
 						putVowel(s);
 						isTypingVowel = true;
+                        changedStatus = true;
+                        updateStatus("You typed a vowel (the simple way).");
 					} else {
 						if (isTypingVowel) {
 							isTypingVowel = false;
@@ -1193,12 +1267,16 @@ public void paste(int offset) {
 							s = TibetanMachineWeb.getWylieForVowel(s);
 							putVowel(s);
 							isTypingVowel = true;
+                            changedStatus = true;
+                            updateStatus("You typed a vowel (the other way).");
 						} else if (TibetanMachineWeb.isChar(s)) {
 							s = TibetanMachineWeb.getWylieForChar(s);
 							charList.add(s);
 							isTopHypothesis = true;
 							newGlyphList = TibetanDocument.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
 							oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
+                            changedStatus = true;
+                            updateStatus("You typed a non-vowel, Tibetan character.");
 						} else
 							isTopHypothesis = false;
 					}
@@ -1211,6 +1289,8 @@ public void paste(int offset) {
 						initKeyboard();
 						isTypingVowel = true;
 						putVowel(s);
+                        changedStatus = true;
+                        updateStatus("You typed another vowel, so the first vowel was discarded.");
 					} else if (TibetanMachineWeb.isChar(s)) { //the holding string is a character
 						String s2 = TibetanMachineWeb.getWylieForChar(s);
 
@@ -1221,6 +1301,8 @@ public void paste(int offset) {
 								oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
 								putVowel(TibetanMachineWeb.A_VOWEL);
 								initKeyboard();
+                                changedStatus = true;
+                                appendStatus(" (because we put a vowel and there's some achung stuff happening)");
 								break key_block;
 							}
 							charList.set(charList.size()-1, s2);
@@ -1230,9 +1312,13 @@ public void paste(int offset) {
 							if (!isStackingOn) {
 								initKeyboard();
 								holdCurrent = new StringBuffer(s);
+                                changedStatus = true;
+                                appendStatus(" (because you weren't stacking, and there was a character already)");
 							} else if (TibetanMachineWeb.isAChungConsonant() && s2.equals(TibetanMachineWeb.ACHUNG)) {
 								putVowel(TibetanMachineWeb.A_VOWEL);
 								initKeyboard();
+                                changedStatus = true;
+                                appendStatus(" (because you were stacking, and we put a vowel, and there was some achung business)");
 								break key_block;
 							}
 
@@ -1253,6 +1339,8 @@ public void paste(int offset) {
 								initKeyboard();
 								isTypingVowel = true;
 								holdCurrent = new StringBuffer(s);
+                                changedStatus = true;
+                                appendStatus(" (because we put a vowel and the previous...)");
 							} else {
 								if (TibetanMachineWeb.isStackingMedial() && !isStackingRightToLeft)
 									initKeyboard();
@@ -1265,23 +1353,35 @@ public void paste(int offset) {
 									} else if (TibetanMachineWeb.isAChungConsonant() && s2.equals(TibetanMachineWeb.ACHUNG)) {
 										putVowel(TibetanMachineWeb.A_VOWEL);
 										initKeyboard();
+                                        changedStatus = true;
+                                        appendStatus("we put a vowel");
 										break key_block;
 									}
 
 									charList.add(s2);
 									newGlyphList = TibetanDocument.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
 									oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
+                                    changedStatus = true;
+                                    updateStatus("added character to charList");
 								} else {
 									holdCurrent = new StringBuffer(s);
 									isTopHypothesis = false;
+                                    changedStatus = true;
+                                    updateStatus("voodoo no. 5");
 								}
 							}
 						} else { //top char is just a guess! just keep it in holdCurrent
+                            changedStatus = true;
+                            updateStatus("top char is just a guess! just keep it in holdCurrent");
 						}
 					}
 				}
 		} //end switch
 		} //end key_block
+
+        if (changedStatus == false) {
+            updateStatus("THAT KEY DID NOTHING BECAUSE OF THE CURRENT INPUT MODE.");
+        }
 	}
 
 /**

@@ -33,7 +33,9 @@ import javax.swing.text.rtf.*;
 
 import org.thdl.tib.text.*;
 import org.thdl.util.ThdlDebug;
+import org.thdl.util.StatusBar;
 import org.thdl.util.ThdlActionListener;
+
 
 
 /**
@@ -53,6 +55,13 @@ import org.thdl.util.ThdlActionListener;
 * @version 1.0
 */
 public class Jskad extends JPanel implements DocumentListener {
+
+    /** the name of the property a developer should set to see
+        low-level info on how keypresses in "Tibetan" input mode are
+        being interpreted */
+    private final static String enableKeypressStatusProp
+        = "thdl.Jskad.enable.tibetan.mode.status";
+
 	private String fontName = "";
 	private JComboBox fontFamilies, fontSizes;
 	private JFileChooser fileChooser;
@@ -79,12 +88,20 @@ public class Jskad extends JPanel implements DocumentListener {
 */
 	public String fileName = null;
 
+    /** the status bar for this frame */
+    private StatusBar statusBar;
+
 /**
 * @param parent the object that embeds this instance of Jskad.
 * Supported objects include JFrames and JApplets. If the parent
 * is a JApplet then the File menu is omitted from the menu bar.
 */
 	public Jskad(final Object parent) {
+        if (Boolean.getBoolean("thdl.Jskad.disable.status.bar")) {
+            statusBar = null;
+        } else {
+            statusBar = new StatusBar("Welcome to Jskad!");
+        }
 		parentObject = parent;
 		numberOfTibsRTFOpen++;
 		JMenuBar menuBar = new JMenuBar();
@@ -283,11 +300,13 @@ public class Jskad extends JPanel implements DocumentListener {
 					case 0: //Tibetan
 						if (dp.isRomanMode())
 							dp.toggleLanguage();
+                        statusBar.replaceStatus("Now inputting Tibetan script");
 						break;
 
 					case 1: //Roman
 						if (!dp.isRomanMode() && dp.isRomanEnabled())
 							dp.toggleLanguage();
+                        statusBar.replaceStatus("Now inputting Roman script");
 						break;
 				}
 			}
@@ -335,7 +354,11 @@ public class Jskad extends JPanel implements DocumentListener {
 		toolBar.add(keyboards);
 		toolBar.add(Box.createHorizontalGlue());
 
-		dp = new DuffPane();
+        if (Boolean.getBoolean(Jskad.enableKeypressStatusProp)) {
+            dp = new DuffPane(statusBar);
+        } else {
+            dp = new DuffPane();
+        }
 		JScrollPane sp = new JScrollPane(dp, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		dp.getDocument().addDocumentListener(this);
 
@@ -370,6 +393,8 @@ public class Jskad extends JPanel implements DocumentListener {
 		setLayout(new BorderLayout());
 		add("North", toolBar);
 		add("Center", sp);
+        if (statusBar != null)
+            add("South", statusBar);
 	}
 
 	private void getPreferences() {
@@ -698,7 +723,12 @@ public class Jskad extends JPanel implements DocumentListener {
 
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(txt_fileChosen));
-			DuffPane dp2 = new DuffPane();
+            DuffPane dp2;
+            if (Boolean.getBoolean(Jskad.enableKeypressStatusProp)) {
+                dp2 = new DuffPane(statusBar);
+            } else {
+                dp2 = new DuffPane();
+            }
 
 			try {
 				String val = in.readLine();
@@ -908,7 +938,7 @@ public class Jskad extends JPanel implements DocumentListener {
 * you discover a bug, please send us an email, making sure to include
 * the jskad.log file as an attachment.  */
 	public static void main(String[] args) {
-		ThdlDebug.attemptToSetUpLogFile("jskad.log");
+		ThdlDebug.attemptToSetUpLogFile("jskad", ".log");
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -926,3 +956,4 @@ public class Jskad extends JPanel implements DocumentListener {
 		f.setVisible(true);
 	}
 }
+
