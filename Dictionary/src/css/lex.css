@@ -50,7 +50,7 @@ list-style-type: disc;
 ol, ul,  li
 {
 clear: right;
-margin-right: 0 !important;
+margin-right: 0px !important;
 padding-right: 0 !important;
 margin-left: 2px !important;
 padding-left: 0 !important;
@@ -63,25 +63,23 @@ li
 {
 	margin-left: 0 !important;
 }
-
-/* #entry ol
+/* ol
 {
-
 	border: solid 2px black;
 }
 
-#entry li ol
+li ol
 {
 	border: solid 2px yellow;
 }
-#entry li
+li
 {
 	border: solid 2px red;
-} */
+}  */
 li li
 {
 	margin-left: 25px !important;
-	/* border: solid 2px blue; */
+	 /* border: solid 2px blue;  */
 }
 
 
