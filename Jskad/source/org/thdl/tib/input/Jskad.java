@@ -209,9 +209,16 @@ public class Jskad extends JPanel implements DocumentListener {
 				JMenuItem closeItem = new JMenuItem("Close");	
 				closeItem.addActionListener(new ThdlActionListener() {
 					public void theRealActionPerformed(ActionEvent e) {
-						if (!hasChanged || hasChanged && checkSave(JOptionPane.YES_NO_CANCEL_OPTION)) {
-                            Jskad.this.realCloseAction(true);
-						}
+                        if (numberOfTibsRTFOpen == 1) {
+                            JOptionPane.showMessageDialog(Jskad.this,
+                                                          "You cannot close the last Jskad window.\nUse File/Exit if you intend to exit.",
+                                                          "Cannot close last Jskad window",
+                                                          JOptionPane.ERROR_MESSAGE);                     
+                        } else {
+                            if (!hasChanged || hasChanged && checkSave(JOptionPane.YES_NO_CANCEL_OPTION)) {
+                                Jskad.this.realCloseAction(true);
+                            }
+                        }
 					}
 				});
 				fileMenu.add(closeItem);
