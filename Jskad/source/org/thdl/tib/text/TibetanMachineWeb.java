@@ -195,7 +195,7 @@ public class TibetanMachineWeb implements THDLWylieConstants {
     /** comma-delimited list of supported numbers (superscribed,
         subscribed, normal, half-numerals): */
 	private static final String numbers
-        = "0,1,2,3,4,5,6,7,8,9,>0,>1,>2,>3,>4,>5,>6,>7,>8,>9,<0,<1,<2,<3,<4,<5,<6,<7,<8,<9";
+        = "0,1,2,3,4,5,6,7,8,9";
 
     /** comma-delimited list of supported punctuation and
         miscellaneous characters: */
