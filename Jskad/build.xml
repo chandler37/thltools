@@ -1,0 +1,360 @@
+<project name="Jskad" default="dist" basedir=".">
+
+
+  <description>
+    This Jakarta Ant buildfile is used to build Jskad, Savant, and
+    QuillDriver.  The docs at http://thdltools.sf.net/api are created
+    using this buildfile, for example.  Read the comments of this
+    buildfile to learn more.
+  </description>
+
+
+  <!-- set global properties for this build -->
+  <property name="source" location="source"/>
+  <property name="bin" location="bin"/>
+  <property name="jskadbin" location="bin/jskad"/>
+  <property name="docs" location="docs"/>
+  <property name="dist"  location="dist"/>
+  <property name="ext"  location="extensions"/>
+  <property name="publicjavadocs"  location="${docs}/public-javadocs"/>
+  <property name="privatejavadocs"  location="${docs}/private-javadocs"/>
+
+
+  <path id="entire.class.path">
+    <pathelement location="${ext}/"/> <!-- for netscape.javascript -->
+    <pathelement location="${ext}/jdom.jar"/>
+    <pathelement location="${ext}/xalan.jar"/>
+    <pathelement location="${ext}/xercesImpl.jar"/>
+    <pathelement location="${ext}/xml-apis.jar"/>
+    <pathelement location="${ext}/jmf.jar"/>
+
+	<!-- this gets Ant's jars, so leave it out:
+		<pathelement path="${java.class.path}/"/> -->
+
+    <pathelement path="${additional.class.path}"/>
+  </path>
+
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${bin}"/>
+    <mkdir dir="${jskadbin}"/>
+    <mkdir dir="${publicjavadocs}"/>
+    <mkdir dir="${privatejavadocs}"/>
+  </target>
+
+
+  <!-- DLC FIXME: generate as-nearly-self-contained-as-possible Savant
+       and QuillDriver -->
+  <target name="test-all"
+          depends="clean,distclean,compile,dist,src-dist,all-src-dist,jskad-src-dist,self-contained-dist,public-javadocs-dist,private-javadocs-dist"
+          description="runs every target in this buildfile in a smart order; useful for testing the buildfile and your build environment" />
+
+
+  <!-- DLC FIXME: generate as-nearly-self-contained-as-possible Savant
+       and QuillDriver -->
+  <target name="self-contained-dist"
+          depends="jskad-all-in-one-dist"
+          description="JARs up everything into self-contained JARs for double-click, classpath-worry-free joy" />
+
+  <!-- DLC FIXME: do likewise for Savant and QuillDriver -->
+  <target name="dist"
+          depends="jskad-dist"
+          description="JARs up everything" />
+
+  <!-- DLC FIXME: do likewise for Savant and QuillDriver -->
+  <target name="src-dist"
+          depends="all-src-dist,jskad-src-dist"
+          description="JARs up source distributions" />
+
+  <target name="compile"
+          depends="jskad-compile,savant-compile,qd-compile"
+          description="compiles all source" />
+
+
+  <target name="jskad-compile" depends="init"
+          description="compiles Jskad" >
+    <!-- Compile the java code from ${source} into ${bin} -->
+    <javac destdir="${jskadbin}">
+      <classpath refid="entire.class.path"/>
+      <src path="${source}"/>
+      <include name="org/thdl/tib/**,org/thdl/util/**" />
+      <exclude name="**/*.ini,**/*.html" />
+    </javac>
+  </target>
+
+
+  <target name="savant-compile" depends="init"
+          description="compiles Savant" >
+    <!-- Compile the java code from ${source} into ${bin} -->
+    <javac destdir="${bin}">
+      <classpath refid="entire.class.path"/>
+      <src path="${source}"/>
+      <include name="org/thdl/savant/**" />
+      <include name="org/thdl/util/**" />
+      <exclude name="**/*.ini" />
+	  <exclude name="**/*.html" />
+      <!-- Exclude JUnit tests: -->
+	  <exclude name="**/*Test.java" />
+      <exclude name="**/*AllTests.java" />
+    </javac>
+  </target>
+
+
+  <target name="qd-compile" depends="init"
+          description="compiles QuillDriver" >
+    <!-- Compile the java code from ${source} into ${bin} -->
+    <javac destdir="${bin}">
+      <classpath refid="entire.class.path"/>
+      <src path="${source}"/>
+      <include name="org/thdl/quilldriver/**" />
+      <include name="org/thdl/util/**" />
+      <exclude name="**/*.ini" />
+	  <exclude name="**/*.html" />
+      <exclude name="**/*.gif" />
+      <exclude name="**/*.jpeg" />
+      <!-- Exclude JUnit tests: -->
+	  <exclude name="**/*Test.java" />
+      <exclude name="**/*AllTests.java" />
+    </javac>
+  </target>
+
+
+  <target name="jskad-src-dist" depends="init"
+          description="generates the Jskad source distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/source"/>
+
+    <!-- Put everything necessary into the JAR file -->
+    <zip destfile="${dist}/source/Jskad-src-${DSTAMP}.zip">
+      <zipfileset dir="${source}"
+                  includes="org/thdl/tib/**,org/thdl/util/**"
+                  prefix="source"/>
+      <zipfileset dir="license"
+                  includes="*.txt,*.html"
+                  prefix="."/>
+      <zipfileset dir="."
+                  includes="build.xml"
+                  prefix="."/>
+    </zip>
+  </target>
+
+
+  <target name="savant-src-dist" depends="init"
+          description="generates the Savant source distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/source"/>
+
+    <!-- Put everything necessary into the JAR file -->
+    <zip destfile="${dist}/source/Savant-src-${DSTAMP}.zip"
+         basedir="${source}"
+         includes="org/thdl/savant/**,org/thdl/tib/**,org/thdl/util/**"/>
+  </target>
+
+
+  <target name="all-src-dist" depends="init"
+          description="generates the Jskad+Savant+QuillDriver source distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/source"/>
+
+    <!-- Put everything necessary into the JAR file -->
+    <zip destfile="${dist}/source/THDL-Tools-src-${DSTAMP}.zip">
+      <zipfileset dir="${source}"
+                  includes="**"
+                  prefix="source"/>
+      <zipfileset dir="license"
+                  includes="*.txt,*.html"
+                  prefix="."/>
+      <zipfileset dir="."
+                  includes="build.xml"
+                  prefix="."/>
+    </zip>
+  </target>
+
+
+  <target name="jskad-dist" depends="jskad-compile"
+          description="generates the bare Jskad binary distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/lib"/>
+
+    <!-- Put everything in ${bin} into the JAR file -->
+    <jar jarfile="${dist}/lib/Jskad-${DSTAMP}.jar" basedir="${bin}"/>
+  </target>
+
+
+  <target name="jskad-all-in-one-dist" depends="jskad-compile"
+          description="generates the self-contained binary distribution for Jskad" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/lib"/>
+
+    <!-- Now put everything in ${bin} and ${ext}/netscape, plus
+	     the .ini files, into the JAR file
+     -->
+    <copy todir="${jskadbin}">
+      <fileset dir="${source}">
+        <include name="org/thdl/tib/**/*.ini"/>
+      </fileset>
+    </copy>
+    <copy todir="${jskadbin}/netscape">
+      <fileset dir="${ext}/netscape"/>
+    </copy>
+    <jar jarfile="${dist}/lib/Jskad-self-contained-${DSTAMP}.jar"
+         basedir="${jskadbin}"
+         includes="org/thdl/tib/**,org/thdl/util/**,netscape/**"
+         index="true"
+         update="no">
+      <manifest>
+        <attribute name="Main-Class" value="org.thdl.tib.input.Jskad"/>
+      </manifest>
+    </jar>
+  </target>
+
+
+  <target name="clean"
+          description="cleans up a few things, but not all" >
+    <!-- Delete the ${bin} and ${dist} directory trees -->
+    <delete dir="${bin}"/>
+    <delete dir="${jskadbin}"/>
+    <delete dir="${dist}"/>
+  </target>
+
+
+  <target name="distclean"
+          description="cleans up so your directory once again looks like the source distribution"
+          depends="clean" >
+    <!-- Delete the API docs -->
+    <delete dir="${publicjavadocs}"/>
+    <delete dir="${privatejavadocs}"/>
+  </target>
+
+
+  <!--
+    HEY PROJECT MANAGER:
+
+    http://thdltools.sf.net/api lives at
+    /home/groups/t/th/thdltools/htdocs/api.  To update it, simple run
+    'ant private-javadocs-dist', which creates dist/docs/private-javadocs-DSTAMP.zip.  Then scp that file over with the command
+
+    scp dist/docs/private-javadocs-WHATEVER.zip \
+        yourUserId@thdltools.sf.net/home/groups/t/th/thdltools/
+
+    or use PuTTY's scp to do something equivalent.
+
+    Now, shell in to thdltools.sf.net with 'ssh -l yourUserId
+    thdltools.sf.net' or with PuTTY.
+
+    Change directory (cd) to /home/groups/t/th/thdltools/htdocs/.
+
+    While you're here, do a 'cvs update' - just in case some developer
+    made changes to the web pages but forgot to update.
+
+    Anyway, now run 'rm -fr api' (from the htdocs/ directory).
+
+    Now run 'mkdir api'.
+
+    Now 'cd api'.
+
+	Now run 'unzip ../../private-javadocs-WHATEVER.zip'.
+
+    See if http://thdltools.sf.net/api/ looks up to date.  If so,
+    delete ../../private-javadocs-WHATEVER.zip and log out.
+
+    UPDATE THESE INSTRUCTIONS if something above is wrong or unclear.
+  -->
+
+
+  <target name="public-javadocs-dist" depends="public-javadocs"
+          description="makes zip file of Javadoc documentation for public/protected classes, methods, and fields" >
+    <mkdir dir="${dist}/docs"/>
+	<tstamp/>
+    <zip destfile="${dist}/docs/public-javadocs-${DSTAMP}.zip"
+         basedir="${publicjavadocs}"/>
+  </target>
+
+
+  <target name="private-javadocs-dist" depends="private-javadocs"
+          description="makes zip file of Javadoc documentation for ALL classes, methods, and fields" >
+    <mkdir dir="${dist}/docs"/>
+	<tstamp/>
+    <zip destfile="${dist}/docs/private-javadocs-${DSTAMP}.zip"
+         basedir="${privatejavadocs}"/>
+  </target>
+
+
+  <target name="public-javadocs"
+          description="makes Javadoc documentation for public/protected classes, methods, and fields" >
+    <antcall target="our-javadocs">
+      <param name="access" value="protected"/>
+      <param name="our-javadocs-destdir" value="${publicjavadocs}"/>
+    </antcall>
+  </target>
+
+
+  <target name="private-javadocs"
+          description="makes Javadoc documentation for all classes, methods, and fields, regardless of their protection level (public, private, etc.)" >
+    <antcall target="our-javadocs">
+      <param name="access" value="private"/>
+      <param name="our-javadocs-destdir" value="${privatejavadocs}"/>
+    </antcall>
+  </target>
+
+
+  <!-- -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* -->
+  <!-- UTILITY TARGETS - targets of antcalls, targets not usually
+       directly called. -->
+  <!-- -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* -->
+
+  <!-- Utility target called by private-javadocs and public-javadocs -->
+  <target name="our-javadocs" depends="init"
+          description="makes Javadoc documentation; NOT A USER TARGET" >
+
+    <!-- See http://jakarta.apache.org/ant/manual/CoreTasks/javadoc.html
+         to learn more about the Javadoc task.
+     -->
+
+    <tstamp>
+      <format property="javadoc.creation.time" pattern="MM/dd/yyyy hh:mm aa"/>
+    </tstamp> 
+
+    <!-- We don't really use @version correctly, do we? So version="false". -->
+    <javadoc destdir="${our-javadocs-destdir}"
+             author="true"
+			 access="${access}"
+             version="false" 
+             use="true"
+             classpathref="entire.class.path"
+             windowtitle="THDL Tools APIs">
+
+      <fileset dir="${source}" defaultexcludes="yes">
+        <include name="org/thdl/**" />
+        <!-- Exclude JUnit tests: -->
+        <exclude name="**/*Test.java"/>
+        <exclude name="**/*AllTests.java"/>
+        <exclude name="**/*.ini"/>
+        <exclude name="**/*.html"/>
+        <exclude name="**/*.gif"/>
+        <exclude name="**/*.jpg"/>
+      </fileset>
+
+      <doctitle><![CDATA[<h1>THDL Tools</h1>]]></doctitle>
+
+      <!-- Note: We must show the SF.net logo in order to get hit counts. -->
+      <bottom>These API docs were created ${javadoc.creation.time}.<![CDATA[<br><i>Copyright &#169; 2001-2002 Tibetan and Himalayan Digital Library. All Rights Reserved.</i><br>Hosted by <a href="http://sourceforge.net/"><img src="http://sourceforge.net/sflogo.php?group_id=61934&amp;type=1" width="88" height="31" border="0" alt="SourceForge_Logo"></a>]]></bottom>
+
+      <!-- DLC FIXME: we need an overview.html. -->
+      <group title="Tibetan Text Packages" packages="org.thdl.tib.text.**"/>
+      <group title="Tibetan Input Packages" packages="org.thdl.tib.input.**"/>
+
+      <!-- Have our API docs link to Sun's, JDOM's, etc. -->
+      <link offline="true"
+            href="http://java.sun.com/j2se/1.4/docs/api/"
+            packagelistLoc="${docs}/j2sdk1.4-package-list"/>
+      <link offline="true"
+            href="http://www.jdom.org/docs/apidocs/"
+            packagelistLoc="${docs}/jdom-package-list"/>
+    </javadoc>
+  </target>
+
+</project>
