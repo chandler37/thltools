@@ -233,11 +233,11 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
             
         		if (clicked == mnuCut)
 	        	{
-		    		t.cutCurrentSelection();
+	        	    t.cut();
                 }
                 else if (clicked == mnuCopy)
                 {
-		    		t.copyCurrentSelection();
+                    t.copy();
                 }
                 else if (clicked == mnuPaste)
                 {
