@@ -15,23 +15,23 @@
 
 <p>
   David Chandler has put together a build system for Jskad, the
-  translation tool, Tibbibl, and for the fonts.  In the CVS
+  translation tool, Tibbibl, and for the fonts.&nbsp; In the CVS
   repository, you'll find that the build system once worked for Savant
-  and QuillDriver as well.  This document describes them, and should
-  be updated if we put together build systems for the two diacritics
-  packages and for Wylie Word (but see e-mail to
+  and QuillDriver as well.&nbsp; This document describes them, and
+  should be updated if we put together build systems for the two
+  diacritics packages and for Wylie Word (but see e-mail to
   thdl-devel@lists.sourceforge.net that tells why we probably will
   continue to require Wylie Word developers to edit from within MS
   Word on account of the difficulty of using CVS with VBA).
 </p>
 <p>
-  What is a <i>build system</i>, you ask?  A build system is a set of
-  clear, repeatable procedures that software developers go by to
-  compile, run, test, create documentation, and cut releases.  Our
-  build systems are fully automated, which provides a good basis for
-  collaborative development.  Even for individual development, a good
-  build system gives you the confidence to make big organizational
-  changes and saves you time in the long run.
+  What is a <i>build system</i>, you ask?&nbsp; A build system is a
+  set of clear, repeatable procedures that software developers go by
+  to compile, run, test, create documentation, and cut releases.&nbsp;
+  Our build systems are fully automated, which provides a good basis
+  for collaborative development.&nbsp; Even for individual
+  development, a good build system gives you the confidence to make
+  big organizational changes and saves you time in the long run.
 </p>
 
 <h3>Table of Contents</h3>
@@ -116,28 +116,28 @@
 
   <li>
     <a name="sandbox">sandbox</a> -- a directory on your local machine
-    that mirrors one in our project's CVS repository.  You get one by
-    using the command <code>'cvs checkout'</code>.  It's called a
-    sandbox because you can safely play in it; your work will not
-    affect others until you commit your changes to the repository.
-    (Though if you really wanted to, you could create a CVS branch and
-    then even your commits (to that branch) wouldn't affect the work
-    of others on the trunk, or main branch.)
+    that mirrors one in our project's CVS repository.&nbsp; You get
+    one by using the command <code>'cvs checkout'</code>.&nbsp; It's
+    called a sandbox because you can safely play in it; your work will
+    not affect others until you commit your changes to the
+    repository.&nbsp; (Though if you really wanted to, you could
+    create a CVS branch and then even your commits (to that branch)
+    wouldn't affect the work of others on the trunk, or main branch.)
   </li>
 
   <li>
     ssh, scp, sftp -- the software that SourceForge uses to allow you
     to log in to their server without worrying about the security of
-    your password of the subsequent communications.  ssh logs you in,
-    scp and sftp allow you to copy files to and from
-    <code>thdltools.sourceforge.net</code>.  Windows users should
+    your password of the subsequent communications.&nbsp; ssh logs you
+    in, scp and sftp allow you to copy files to and from
+    <code>thdltools.sourceforge.net</code>.&nbsp; Windows users should
     either get these tools with Cygwin or should install PuTTY; the
     latter is probably easier.
   </li>
 
   <li>
-    Ant -- a.k.a. Apache Ant.  Software we use to compile and package
-    Java programs for distrution.
+    Ant -- a.k.a. Apache Ant.&nbsp; Software we use to compile and
+    package Java programs for distrution.
   </li>
 </ul>
 
@@ -147,12 +147,12 @@
 
   <p>
     Ant is built from the ground up as a full-featured, extensible
-    build system for Java programs.  If you use Ant, your
+    build system for Java programs.&nbsp; If you use Ant, your
     classpath-related headaches disappear (after clearing initial
     hurdles), and you can be sure that the build will work the same on
     Linux and the Mac as it does on Windows XP, because Ant itself is
-    a Java program.  I compile, test, run, and build releases using
-    Ant, and really like it.
+    a Java program.&nbsp; I compile, test, run, and build releases
+    using Ant, and really like it.
   </p>
 
   <p>
@@ -166,14 +166,14 @@
 
 <p>
   To install Apache's Jakarta Ant (or "Apache Ant" or simply "Ant"),
-  you'll first need a JDK installed.  I recommend getting Sun's latest
-  1.4 JDK (yes, it's available for Linux too).  Next, see the <a
-  href="http://jakarta.apache.org/ant/"> Apache Ant</a> website.
-  Their instructions for installation are pretty good, but you may
-  have trouble if you're on Windows and you don't know how to set
-  environment variables (try Control
+  you'll first need a JDK installed.&nbsp; I recommend getting Sun's
+  latest 1.4 JDK (yes, it's available for Linux too).&nbsp; Next, see
+  the <a href="http://jakarta.apache.org/ant/"> Apache Ant</a>
+  website.&nbsp; Their instructions for installation are pretty good,
+  but you may have trouble if you're on Windows and you don't know how
+  to set environment variables (try Control
   Panel-&gt;System-&gt;Advanced-&gt;Environment Variables) and the
-  like.  One thing they don't tell you is that their binary
+  like.&nbsp; One thing they don't tell you is that their binary
   distribution ships with a ton of documentation in
   <code>$ANT_HOME/docs/</code> that can all safely be deleted if you
   care about disk space.
@@ -181,26 +181,26 @@
 
 <p>
   I recommend installing Ant yourself, and not using a package manager
-  such as apt-get or rpm.  This is because the ordinary installation
-  has a well-known <code>$ANT_HOME/lib</code> directory in which we'll
-  wish to place a couple of JARs (<a href="#testingjskad">
-  <code>junit.jar</code></a> and Vamp), as described below.  I've had
-  personal experience with an RPM that made it impossible for me to
-  make Ant aware of extra JARs, so stay away from RPMs and other
-  packages.
+  such as apt-get or rpm.&nbsp; This is because the ordinary
+  installation has a well-known <code>$ANT_HOME/lib</code> directory
+  in which we'll wish to place a couple of JARs (<a
+  href="#testingjskad"> <code>junit.jar</code></a> and Vamp), as
+  described below.&nbsp; I've had personal experience with an RPM that
+  made it impossible for me to make Ant aware of extra JARs, so stay
+  away from RPMs and other packages.
 </p>
 
 <p>
   To test your installation, use cvs to checkout either the
-  <code>Fonts</code> module or the <code>Jskad</code> module.  The
-  <code>Fonts</code> module has a simpler Ant build file
+  <code>Fonts</code> module or the <code>Jskad</code> module.&nbsp;
+  The <code>Fonts</code> module has a simpler Ant build file
   (<code>Fonts/build.xml</code>) than the <code>Jskad</code> module
-  has, so perhaps it's better for testing.  The <code>Jskad</code>
-  module should be good to go as well, though, because we have a
-  multi-buildfile system that delegates less common build activities
-  (ones that require tweaking of your Ant installation) to supporting
-  buildfiles and keeps the main buildfile,
-  <code>Jskad/build.xml</code>, free of nonstandard constructs.
+  has, so perhaps it's better for testing.&nbsp; The
+  <code>Jskad</code> module should be good to go as well, though,
+  because we have a multi-buildfile system that delegates less common
+  build activities (ones that require tweaking of your Ant
+  installation) to supporting buildfiles and keeps the main buildfile,
+  <code>Jskad/build.xml</code>, free of nonstandard constructs.&nbsp;
   Change directory to whichever module you choose and run the
   following command:
 </p>
@@ -210,24 +210,24 @@
 
 <p>
   The output shouldn't alarm you, and it should conclude with "BUILD
-  SUCCESSFUL".  If you have any trouble, see Ant's FAQs and then
+  SUCCESSFUL".&nbsp; If you have any trouble, see Ant's FAQs and then
   e-mail David Chandler.
 </p>
 
 <p>
   Now that you have a good installation of Ant itself, you probably
-  will want to install both JUnit and Vamp.  These steps can wait
+  will want to install both JUnit and Vamp.&nbsp; These steps can wait
   until later if you're not sure you'll be testing our software or
-  packaging our software for release.  Here are the steps to install
-  them:
+  packaging our software for release.&nbsp; Here are the steps to
+  install them:
 </p>
 
 <ul>
   <li>
     To install JUnit, first do a cvs checkout of the
     <code>Jskad</code> module (see <a href="#cvs"> below</a> for info
-    on how to use CVS). Now, to make Ant aware of JUnit, simply copy
-    <code>Jskad/extensions/to-be-installed-with-ant/junit.jar</code>
+    on how to use CVS).&nbsp; Now, to make Ant aware of JUnit, simply
+    copy <code>Jskad/extensions/to-be-installed-with-ant/junit.jar</code>
     to the <code>$ANT_HOME/lib/</code> directory (and, if you're on
     UNIX/Linux, make the file world-readable).
   </li>
@@ -236,16 +236,16 @@
     It isn't much trouble to install the <a
     href="http://www.vamphq.com/ant.html"> Vamp Ant task</a> provided
     by the <a href="http://www.vamphq.com/"> Venus Application
-    Publisher</a>.  You need this to cut <a
+    Publisher</a>.&nbsp; You need this to cut <a
     href="http://java.sun.com/products/javawebstart/"> Java Web
     Start</a> releases of Jskad, [Tibbibl if I ever get my act
-    together], and the translation tool.  You <b>do not</b> need it
-    otherwise.
+    together], and the translation tool.&nbsp; You <b>do not</b> need
+    it otherwise.
 
     <p>
       Installing Vamp's Ant task is simple enough, and is in fact
-      simpler than Vamp's web pages of October 1, 2002 imply.  That
-      is, if you have installed Ant 1.5.1 or later, then you can
+      simpler than Vamp's web pages of October 1, 2002 imply.&nbsp;
+      That is, if you have installed Ant 1.5.1 or later, then you can
       simply drop <code>vamp.jar</code> into Ant's <code>lib</code>
       directory (i.e., <code>$ANT_HOME/lib/</code>) and forget about
       changing your classpath (but do be sure, Linux/UNIX users, that
@@ -264,12 +264,12 @@ name="cvs"></a></h3>
 <p>
   If you're working on Windows, it's probably easiest to follow <a
   href="http://sourceforge.net/docman/display_doc.php?docid=766&amp;group_id=1">
-  SourceForge's instructions</a> on using WinCVS and PuTTY.  The
+  SourceForge's instructions</a> on using WinCVS and PuTTY.&nbsp; The
   instructions there aren't up to date for the latest version of
-  WinCVS (1.3b8 as of this writing).  Instead of telling WinCVS about
-  <code>plink.exe</code> in the non-existent <code>Ports</code> tab of
-  the <code>Admin-&gt;Preferences</code> menu, you must click the
-  Settings button next to the server type (<code>"ssh"</code>) and
+  WinCVS (1.3b8 as of this writing).&nbsp; Instead of telling WinCVS
+  about <code>plink.exe</code> in the non-existent <code>Ports</code>
+  tab of the <code>Admin-&gt;Preferences</code> menu, you must click
+  the Settings button next to the server type (<code>"ssh"</code>) and
   click the <code>'If ssh is not in the path'</code> checkbox, and
   enter <code>plink.exe</code>'s full path there.
 </p>
@@ -283,16 +283,16 @@ name="cvs"></a></h3>
   If you're using WinCVS 1.3b8, note that it has a bug -- it truncates
   the output of <code>'cvs diff'</code> (as explained in <a
   href="http://sourceforge.net/tracker/index.php?func=detail&amp;aid=622680&amp;group_id=10072&amp;atid=110072">
-  this bug report</a>).  For that reason, you may wish to use what
-  WinCVS calls an "external diff" program, which is easy to install
-  and configure.  Try using <a
+  this bug report</a>).&nbsp; For that reason, you may wish to use
+  what WinCVS calls an "external diff" program, which is easy to
+  install and configure.&nbsp; Try using <a
   href="http://www.prestosoft.com/examdiff/examdiff.htm">
   ExamDiff</a>.
 </p>
 
 <p>
-  If you're on Linux or Unix, SF.net's site docs are excellent.  If
-  you're on a Mac, and SF.net's docs don't do the trick, you're in
+  If you're on Linux or Unix, SF.net's site docs are excellent.&nbsp;
+  If you're on a Mac, and SF.net's docs don't do the trick, you're in
   trouble.
 </p>
 
@@ -303,13 +303,13 @@ name="buildingfonts"></a></h3>
 
 <p>
   The <code>Fonts</code> CVS module comes with an Apache Ant build
-  system.  We made this choice because the <code>Jskad</code> CVS
+  system.&nbsp; We made this choice because the <code>Jskad</code> CVS
   module already has an Apache Ant build system, and because Ant is
-  more than powerful enough for our needs.  For this module, our only
-  task is to cut releases.  There is nothing to compile here; the only
-  task that a developer will face is updating the associated
-  documentation and then cutting a new release, ready to go up on
-  SourceForge's File Release System (FRS).
+  more than powerful enough for our needs.&nbsp; For this module, our
+  only task is to cut releases.&nbsp; There is nothing to compile
+  here; the only task that a developer will face is updating the
+  associated documentation and then cutting a new release, ready to go
+  up on SourceForge's File Release System (FRS).
 </p>
 
 <p>
@@ -319,9 +319,9 @@ name="buildingfonts"></a></h3>
 
   <ol>
     <li>
-      use cvs to checkout the <code>Fonts</code> module.  If you have
-      already checked it out, run <code>'cvs -f update -d'</code> (in
-      WinCVS, hold down the shift key while selecting "Update" and
+      use cvs to checkout the <code>Fonts</code> module.&nbsp; If you
+      have already checked it out, run <code>'cvs -f update -d'</code>
+      (in WinCVS, hold down the shift key while selecting "Update" and
       then be sure the "Create missing directories that exist in the
       repository" box is checked).
     </li>
@@ -330,9 +330,9 @@ name="buildingfonts"></a></h3>
     </li>
     <li>
       be certain the the release notes (a text or html file, I
-      believe) are under CVS control.  Perhaps you'll reuse an
+      believe) are under CVS control.&nbsp; Perhaps you'll reuse an
       existing document, or perhaps you'll have to add a file to the
-      repository.  Go to <a
+      repository.&nbsp; Go to <a
       href="http://sourceforge.net/project/showfiles.php?group_id=61934">
       our project's download page</a> and see how we've done release
       notes in the past.
@@ -350,11 +350,12 @@ name="buildingfonts"></a></h3>
           <code>ant</code>
         </blockquote>
       If you have any problems, be sure you're using the correct
-      version of Ant and then read Ant's FAQs and documentation.  Or
-      you can e-mail David Chandler.  If it turns out that the problem
-      is in the Ant build file <code>Fonts/build.xml</code>, make the
-      required changes and be sure to commit them to the repository.
-      Now run the following command to rebuild the releases:
+      version of Ant and then read Ant's FAQs and documentation.&nbsp;
+      Or you can e-mail David Chandler.&nbsp; If it turns out that the
+      problem is in the Ant build file <code>Fonts/build.xml</code>,
+      make the required changes and be sure to commit them to the
+      repository.&nbsp; Now run the following command to rebuild the
+      releases:
         <blockquote>
           <code>ant clean dist</code>
         </blockquote>
@@ -364,9 +365,9 @@ name="buildingfonts"></a></h3>
       mirror of the one in the repository, use cvs to tag this
       revision that you wish to release with a name that another
       developer, years down the road, will recognize as referring to
-      this release.  To do this, you can run <code>'cvs -f rtag
+      this release.&nbsp; To do this, you can run <code>'cvs -f rtag
       <i>tag-name</i> Fonts'</code> or (and this is preferred) you can
-      run <code>'cvs -f tag -c <i>tag-name</i>'</code>.  Good tag
+      run <code>'cvs -f tag -c <i>tag-name</i>'</code>.&nbsp; Good tag
       names are like the following:
       <ul>
         <li>
@@ -384,9 +385,9 @@ name="buildingfonts"></a></h3>
     </li>
     <li>
       Now that you've tagged this release, it will be possible for any
-      other developer to recreate the same release.  This is the heart
-      of a good build system -- clear, repeatable procedures that
-      aren't painful to follow.
+      other developer to recreate the same release.&nbsp; This is the
+      heart of a good build system -- clear, repeatable procedures
+      that aren't painful to follow.
     </li>
   </ol>
 
@@ -396,9 +397,9 @@ name="buildingfonts"></a></h3>
 
 <p>
   <a href="http://thdltools.sourceforge.net/"> Our SourceForge.net
-  website</a> is entirely under CVS control.  This means that we can
-  freely make changes, knowing that they are never lost.  It also
-  means that downloading our <a
+  website</a> is entirely under CVS control.&nbsp; This means that we
+  can freely make changes, knowing that they are never lost.&nbsp; It
+  also means that downloading our <a
   href="http://cvs.sourceforge.net/cvstarballs/thdltools-cvsroot.tar.gz">
   nightly CVS repository tarball</a> is all that is necessary to save
   a backup copy of our SF.net web site.
@@ -411,28 +412,28 @@ name="buildingfonts"></a></h3>
 
 <ul>
   <li>
-    First use cvs to checkout the <code>www</code> module.  If you've
-    already done that, then please use cvs to update (using <code>'cvs
-    update -d'</code> if you want to create missing directories that
-    exist in the repository) now.
+    First use cvs to checkout the <code>www</code> module.&nbsp; If
+    you've already done that, then please use cvs to update (using
+    <code>'cvs update -d'</code> if you want to create missing
+    directories that exist in the repository) now.
   </li>
 
   <li>
-    To add a file or directory, use <code>'cvs add'</code>.  Change
-    any files you wish.  Now validate your HTML using W3C's <a
-    href="http://validator.w3.org/"> validator</a>.  Once it passes
-    with no errors, commit your changes.
+    To add a file or directory, use <code>'cvs add'</code>.&nbsp;
+    Change any files you wish.&nbsp; Now validate your HTML using
+    W3C's <a href="http://validator.w3.org/"> validator</a>.&nbsp;
+    Once it passes with no errors, commit your changes.
   </li>
 
   <li>
     Now you must update the CVS <a href="#sandbox"> sandbox</a> at
-    <code>thdltools.sourceforge.net:/home/groups/t/th/thdltools/htdocs</code>.
+    <code>thdltools.sourceforge.net:/home/groups/t/th/thdltools/htdocs</code>.&nbsp;
     To do so, use PuTTY or another <code>ssh</code> to log in to
-    <code>thdltools.sourceforge.net</code>.  Now change directory
+    <code>thdltools.sourceforge.net</code>.&nbsp; Now change directory
     (<code>cd</code>) to
     <code>/home/groups/t/th/thdltools/htdocs</code> and run <code>'cvs
-    -f update -d -P'</code>.  You'll see your changes being made to
-    the "real" website.  Surf to <a
+    -f update -d -P'</code>.&nbsp; You'll see your changes being made
+    to the "real" website.&nbsp; Surf to <a
     href="http://thdltools.sourceforge.net/"> the website</a> and see
     for yourself.
   </li>
@@ -444,9 +445,9 @@ module<a name="updateapidocs"></a></h4>
 <p>
   Not all of the material up at our SF.net <a
   href="http://thdltools.sourceforge.net/"> website</a> is in the
-  <code>www</code> CVS module, but most of it is.  Currently, the only
-  exception is the Javadoc API documentation for Jskad, Tibbibl, and
-  the translation tool.
+  <code>www</code> CVS module, but most of it is.&nbsp; Currently, the
+  only exception is the Javadoc API documentation for Jskad, Tibbibl,
+  and the translation tool.
 </p>
 
 <p>
@@ -457,14 +458,14 @@ module<a name="updateapidocs"></a></h4>
     <li>
       The Javadocs that THDLTools_Developers.html links to,
       e.g. <code>http://thdltools.sourceforge.net/pubapi</code>, live
-      at <code>/home/groups/t/th/thdltools/htdocs/</code>.  To update
-      them, first commit any changes you've made to the repository.
-      (This, combined with the date stamp that Ant puts into our
-      Javadoc docs, will give other developers enough information to
-      recover the revision of the source files that you used.  But
-      feel free to <code>'cvs tag'</code> the revision explicitly if
-      you think it's important.  I tagged one revision
-      <code>javadocs_october_27_2002</code>, for example.)
+      at <code>/home/groups/t/th/thdltools/htdocs/</code>.&nbsp; To
+      update them, first commit any changes you've made to the
+      repository.&nbsp; (This, combined with the date stamp that Ant
+      puts into our Javadoc docs, will give other developers enough
+      information to recover the revision of the source files that you
+      used.&nbsp; But feel free to <code>'cvs tag'</code> the revision
+      explicitly if you think it's important.&nbsp; I tagged one
+      revision <code>javadocs_october_27_2002</code>, for example.)
     </li>
 
     <li>
@@ -472,11 +473,12 @@ module<a name="updateapidocs"></a></h4>
       public-javadocs-dist'</code> from the <code>Jskad</code>
       directory, which creates
       <code>Jskad/dist/docs/private-javadocs-DSTAMP.zip</code> and
-      <code>Jskad/dist/docs/public-javadocs-DSTAMP.zip</code>.
-      Examine the output for warnings; resolve them if necessary.
-      Note that the public-javadocs-dist causes warnings about links
-      not found that should be ignored; they aren't found because the
-      things linked to are private or package private.
+      <code>Jskad/dist/docs/public-javadocs-DSTAMP.zip</code>.&nbsp;
+      Examine the output for warnings; resolve them if
+      necessary.&nbsp; Note that the public-javadocs-dist causes
+      warnings about links not found that should be ignored; they
+      aren't found because the things linked to are private or package
+      private.
     </li>
 
     <li>
@@ -509,8 +511,9 @@ module<a name="updateapidocs"></a></h4>
     </li>
 
     <li>
-      Anyway, now run <code>'rm -fr pubapi privateapi public-javadocs* private-javadocs*'</code> (from the
-      <code>htdocs/</code> directory).
+      Anyway, now run <code>'rm -fr pubapi privateapi public-javadocs*
+      private-javadocs*'</code> (from the <code>htdocs/</code>
+      directory).
     </li>
 
     <li>
@@ -546,10 +549,10 @@ module<a name="updateapidocs"></a></h4>
     <li>
       See if <code>http://thdltools.sourceforge.net/api/</code> looks
       up to date (see the date at the very bottom of the page, for
-      starters).  Also, verify that links to J2SE Javadoc
+      starters).&nbsp; Also, verify that links to J2SE Javadoc
       documentation are functioning -- click on a link to
-      <code>java.lang.Object</code> and be sure that it works.  If
-      everything is fine, delete
+      <code>java.lang.Object</code> and be sure that it works.&nbsp;
+      If everything is fine, delete
       <code>../../private-javadocs-WHATEVER.zip</code> and log out.
     </li>
 
@@ -574,8 +577,8 @@ module<a name="updateapidocs"></a></h4>
       name="diacriticsmodule"></a></h3>
 
 <p>
-  We don't yet have source code in this module.  Check back here once
-  we do.
+  We don't yet have source code in this module.&nbsp; Check back here
+  once we do.
 </p>
 
 
@@ -584,8 +587,9 @@ module<a name="updateapidocs"></a></h4>
       name="wyliewordmodule"></a></h3>
 
 <p>
-  We don't yet have source code in this module.  Check back here once
-  we do.
+  You'll have to use MS Word to get at the Visual Basic source code in
+  the .dot file.&nbsp; Edit it there, and then commit the revised .dot
+  file.&nbsp; 'cvs diff' won't work, but that's life.
 </p>
 
 
@@ -599,8 +603,8 @@ module<a name="updateapidocs"></a></h4>
 
 <p>
   The first thing to note is that the <code>Jskad</code> module is
-  misnamed.  We have all our Java code inside this module, including
-  Jskad, Tibbibl, and the translation tool.
+  misnamed.&nbsp; We have all our Java code inside this module,
+  including Jskad, Tibbibl, and the translation tool.
 </p>
 
 
@@ -609,38 +613,38 @@ module<a name="updateapidocs"></a></h4>
 module<a name="jskadsetup"></a></h4>
 
 <p>
-  You'll have to first get your computer set up to use CVS.  See <a
-  href="#cvs">above</a>.
+  You'll have to first get your computer set up to use CVS.&nbsp; See
+  <a href="#cvs">above</a>.
 </p>
 
 <p>
   The next thing you'll need to do is get a CVS <a
   href="#sandbox">sandbox</a> -- a <code>Jskad</code> directory on
-  your local computer.  Use <code>'cvs checkout Jskad'</code> or
+  your local computer.&nbsp; Use <code>'cvs checkout Jskad'</code> or
   WinCVS's "Checkout module" command to do so.
 </p>
 
 <p>
   You'll also need to checkout the <code>Fonts</code> module
   underneath the directory where you checked out the
-  <code>Jskad</code> directory.  We put the TMW font into some JAR
-  files, so the <code>'Jskad/Fonts/TibetanMachineWeb/'</code>
+  <code>Jskad</code> directory.&nbsp; We put the TMW font into some
+  JAR files, so the <code>'Jskad/Fonts/TibetanMachineWeb/'</code>
   directory must exist.
 </p>
 
 <p>
-  Now go get the JARs you need.  Be sure to note which versions you
-  get, because you'll need to mention that in the release notes of any
-  releases you cut.  The following are needed:
+  Now go get the JARs you need.&nbsp; Be sure to note which versions
+  you get, because you'll need to mention that in the release notes of
+  any releases you cut.&nbsp; The following are needed:
 </p>
 <ul>
   <li>
     We use <a href="http://xml.apache.org/xalan-j/"> Xalan</a> for
     XSLT, and its binary distribution contains JARs for Xalan
     <i>and</i> <a href="http://xml.apache.org/xerces2-j/index.html">
-    Xerces</a> -- handy.  You only need to download Xerces' JARs
+    Xerces</a> -- handy.&nbsp; You only need to download Xerces' JARs
     separately if you need a bug fix from a later release than that
-    included in Xalan's.  After downloading, move
+    included in Xalan's.&nbsp; After downloading, move
     <code>xalan.jar</code>, <code>xercesImpl.jar</code>, and
     <code>xml-apis.jar</code> to <code>$ANT_HOME/lib</code>.&nbsp;
     They need to be there to avoid loader errors when running the
@@ -661,8 +665,8 @@ module<a name="jskadsetup"></a></h4>
     We also use (conditional on the <code>thdl.media.player</code>
     option) the <a
     href="http://java.sun.com/products/java-media/jmf/"> Java(TM)
-    Media Framework</a>.  After it is installed, either change your
-    CLASSPATH to include its <code>jmf.jar</code>, or avoid the
+    Media Framework</a>.&nbsp; After it is installed, either change
+    your CLASSPATH to include its <code>jmf.jar</code>, or avoid the
     classpath hassle by copying <code>jmf.jar</code> to
     <code>Jskad/extensions/drop-ins</code>.
   </li>
@@ -670,18 +674,19 @@ module<a name="jskadsetup"></a></h4>
   <li>
     We also use (conditional on the <code>thdl.media.player</code>
     option) <a href="http://www.apple.com/quicktime/"> QuickTime for
-    Java</a>.  Installing it requires installing QuickTime, selecting
-    a "Custom" install, and checking the box for QuickTime for Java.
-    After it is installed, either change your CLASSPATH to include its
-    <code>QTJava.zip</code>, or avoid the classpath hassle by copying
-    <code>QTJava.zip</code> to <code>Jskad/extensions/drop-ins</code>.
+    Java</a>.&nbsp; Installing it requires installing QuickTime,
+    selecting a "Custom" install, and checking the box for QuickTime
+    for Java.&nbsp; After it is installed, either change your
+    CLASSPATH to include its <code>QTJava.zip</code>, or avoid the
+    classpath hassle by copying <code>QTJava.zip</code> to
+    <code>Jskad/extensions/drop-ins</code>.
   </li>
 </ul>
 
 <p>
   If you need to add something else to the classpath, be it a .jar
-  file, a .zip file, or a directory, you have several options.  You
-  can set your CLASSPATH environment variable, or you can call Ant
+  file, a .zip file, or a directory, you have several options.&nbsp;
+  You can set your CLASSPATH environment variable, or you can call Ant
   using <code>'ant -Dadditional.class.path=c:\my.jar'</code>, or you
   can drop JAR or ZIP files into
   <code>Jskad/extensions/drop-ins</code>.
@@ -707,8 +712,8 @@ module<a name="daytoday"></a></h4>
 <h5>Compiling</h5>
 
 <p>
-  Compiling any of the tools is a simple matter.  First, ensure that
-  you are in the <code>Jskad/</code> directory of your <a
+  Compiling any of the tools is a simple matter.&nbsp; First, ensure
+  that you are in the <code>Jskad/</code> directory of your <a
   href="#sandbox">sandbox</a>.
 </p>
 
@@ -728,39 +733,41 @@ module<a name="daytoday"></a></h4>
 
 <p>
   You may also run <code>'ant <i>program</i>-jws'</code> to create a
-  Java Web Start release.  See <a href="#relwebstart">below</a> to
-  learn more about this.
+  Java Web Start release.&nbsp; See <a href="#relwebstart">below</a>
+  to learn more about this.
 </p>
 
 <p>
   <b>Gotcha:</b> We currently have the build system set up so that it
   builds a program, say Jskad, given merely the name of the main
-  class, say <code>org.thdl.tib.input.Jskad</code>.  This means that
-  our releases include only classes that we're actually using.  But it
-  also means that your changes to any but the main class will not
-  cause recompilation.  You must use <code>'ant clean'</code> before
-  recompiling.  In addition, you should clean after any cvs update.
+  class, say <code>org.thdl.tib.input.Jskad</code>.&nbsp; This means
+  that our releases include only classes that we're actually
+  using.&nbsp; But it also means that your changes to any but the main
+  class will not cause recompilation.&nbsp; You must use <code>'ant
+  clean'</code> before recompiling.&nbsp; In addition, you should
+  clean after any cvs update.
 </p>
 
 <p>
   The alternative to specifying just the main class is specifying
-  every needed class.  If you do this, Ant often rebuilds the correct
-  classes.  But you may have to modify <code>build.xml</code> when you
-  add a new file, and your releases may include vestigial classes.
+  every needed class.&nbsp; If you do this, Ant often rebuilds the
+  correct classes.&nbsp; But you may have to modify
+  <code>build.xml</code> when you add a new file, and your releases
+  may include vestigial classes.
 </p>
 
 <h5>Running</h5>
 
 <p>
-  Running the tools is easy for a developer.  Just run <code>'ant
+  Running the tools is easy for a developer.&nbsp; Just run <code>'ant
   <i>program</i>-run'</code>, where <i>program</i> is one of
-  <code>jskad</code>, <code>tt</code>, or <code>tibbibl</code>.  This
-  deals with classpaths and all of that, and it compiles beforehand if
-  needed.  Note the gotcha above if you're rerunning after changing
-  the source code -- you'll have to use <code>'ant clean
-  <i>program</i>-run'</code>.  If you modify a resource, such as
-  <code>Jskad/source/options.txt</code>, there are no gotchas -- Ant
-  is smart enough to handle this.
+  <code>jskad</code>, <code>tt</code>, or <code>tibbibl</code>.&nbsp;
+  This deals with classpaths and all of that, and it compiles
+  beforehand if needed.&nbsp; Note the gotcha above if you're
+  rerunning after changing the source code -- you'll have to use
+  <code>'ant clean <i>program</i>-run'</code>.&nbsp; If you modify a
+  resource, such as <code>Jskad/source/options.txt</code>, there are
+  no gotchas -- Ant is smart enough to handle this.
 </p>
 
 
@@ -770,10 +777,10 @@ module<a name="daytoday"></a></h4>
   While you're hacking, use our <a href="api/"> API docs on the
   web</a>, or build your own Javadoc API docs using <code>'ant
   public-javadocs'</code> (to see only protected and public members)
-  or <code>'ant private-javadocs'</code> (to see all members).
+  or <code>'ant private-javadocs'</code> (to see all members).&nbsp;
   They'll be waiting for you in
-  <code>Jskad/docs/{public,private}-javadocs/</code>.  If you want to
-  update the API docs on our website, follow <a
+  <code>Jskad/docs/{public,private}-javadocs/</code>.&nbsp; If you
+  want to update the API docs on our website, follow <a
   href="#updateapidocs">these instructions</a>.
 </p>
 
@@ -783,8 +790,8 @@ module<a name="daytoday"></a></h4>
 <p>
   Nowadays, any good Java IDE is aware of Ant and will let you use Ant
   for the things it is good at while using the IDE for the things it
-  is good at.  Ask David Chandler how he got Eclipse up and running;
-  he did it without too much trouble.
+  is good at.&nbsp; Ask David Chandler how he got Eclipse up and
+  running; he did it without too much trouble.
 </p>
 
 
@@ -792,34 +799,35 @@ module<a name="daytoday"></a></h4>
 <h5>Testing<a name="testingjskad"></a></h5>
 
 <p>
-  Testing is an underappreciated part of software development.
+  Testing is an underappreciated part of software development.&nbsp;
   Software without a good test suite costs more money and time to
   maintain, and it can eventually become downright demoralizing when
   you can't seem to make a simple change without breaking part of the
-  code.  If you see the break immediately, it's no big deal.  When you
-  have a solid test suite, you're much more likely to make changes
-  with confidence.
+  code.&nbsp; If you see the break immediately, it's no big
+  deal.&nbsp; When you have a solid test suite, you're much more
+  likely to make changes with confidence.
 </p>
 
 <p>
-  But testing isn't just for us, the developers.  It's mainly to give
-  the user confidence (though hearing from us about our extensive,
-  automated test suite is the direct method whereby the user gains
-  this confidence).  For key parts of our system, parts that we hope
-  others will trust with their most precious data, we need excellent
-  testing, design, and documentation.  For other parts of the system,
-  where failure is obvious (like GUI interfaces), testing can slide
-  more easily.
+  But testing isn't just for us, the developers.&nbsp; It's mainly to
+  give the user confidence (though hearing from us about our
+  extensive, automated test suite is the direct method whereby the
+  user gains this confidence).&nbsp; For key parts of our system,
+  parts that we hope others will trust with their most precious data,
+  we need excellent testing, design, and documentation.&nbsp; For
+  other parts of the system, where failure is obvious (like GUI
+  interfaces), testing can slide more easily.
 </p>
 
 <p>
   The core modules dealing with Tibetan text are thus going to be
   heavily tested, mainly by unit tests and end-to-end regression tests
   that ensure that the software still does what we verified by hand it
-  should do.  If we don't do this, can you imagine someone entrusting
-  us to convert their Kangyur, in its Roman transliteration, into
-  Unicode?  Don't imagine they will just glance at the first and last
-  page of the converted text and sign off on our fine tool.
+  should do.&nbsp; If we don't do this, can you imagine someone
+  entrusting us to convert their Kangyur, in its Roman
+  transliteration, into Unicode?&nbsp; Don't imagine they will just
+  glance at the first and last page of the converted text and sign off
+  on our fine tool.
 </p>
 
 <p>
@@ -829,30 +837,31 @@ module<a name="daytoday"></a></h4>
 
 <p>
   We use <a href="http://junit.org/"> JUnit</a> to provide automated
-  unit tests.  Running them is as simple as making Ant aware of JUnit
-  (see below) and then running <code>'ant clean check'</code>.  If
-  there are any failures, you should examine the files
-  <code>Jskad/TEST-*</code> and track them down.
+  unit tests.&nbsp; Running them is as simple as making Ant aware of
+  JUnit (see below) and then running <code>'ant clean
+  check'</code>.&nbsp; If there are any failures, you should examine
+  the files <code>Jskad/TEST-*</code> and track them down.
 </p>
 
 <p>
   To make Ant aware of JUnit, simply copy
   <code>Jskad/extensions/to-be-installed-with-ant/junit.jar</code> to
   the <code>$ANT_HOME/lib/</code> directory (and, if you're on
-  UNIX/Linux, make the file world-readable).  More details are provide
-  <a href="#installant"> above</a>.
+  UNIX/Linux, make the file world-readable).&nbsp; More details are
+  provide <a href="#installant"> above</a>.
 </p>
 
 <p>
   To make future testing easy, you should use interfaces rather than
-  hard-wiring in calls to classes that are difficult to instantiate.
-  For example, if we were to make use of a database class in our
-  DuffPane class, doing so directly would mean that the database
-  software would have to be properly installed and up and running in
-  order to test DuffPane individually.  If you create an interface and
-  use the database only through that interface, then creating a <a
-  href="http://mockobjects.com/"> mock object</a> that pretends to be
-  that database but returns canned answers is a simple matter.
+  hard-wiring in calls to classes that are difficult to
+  instantiate.&nbsp; For example, if we were to make use of a database
+  class in our DuffPane class, doing so directly would mean that the
+  database software would have to be properly installed and up and
+  running in order to test DuffPane individually.&nbsp; If you create
+  an interface and use the database only through that interface, then
+  creating a <a href="http://mockobjects.com/"> mock object</a> that
+  pretends to be that database but returns canned answers is a simple
+  matter.
 </p>
 
 
@@ -861,10 +870,11 @@ module<a name="daytoday"></a></h4>
 <p>
   Should you need to modify the Ant build file
   <code>Jskad/build.xml</code>, feel free to ask David Chandler to do
-  it for you.  Or just look at the contents of that file and find
-  something similar to what you're doing.  There are a few comments in
-  the file, and all commonly used functionality is factored out into
-  targets that are then summoned via <code>antcall</code> tasks.
+  it for you.&nbsp; Or just look at the contents of that file and find
+  something similar to what you're doing.&nbsp; There are a few
+  comments in the file, and all commonly used functionality is
+  factored out into targets that are then summoned via
+  <code>antcall</code> tasks.
 </p>
 
 
@@ -877,11 +887,11 @@ module<a name="daytoday"></a></h4>
   application like Jskad with one mouse click of a link in your
   favorite web browser and one more click of a "Yes, install Jskad"
   button in a dialog box (necessary because our applications require
-  security privileges to read and write from disk etc.).  Upon the
-  second run of the program, Java Web Start asks the user if they want
-  to create shortcuts on their computer.  Also, any time the program
-  is invoked (from a shortcut or a web link) and a network connection
-  is found, new versions of the software will be downloaded
+  security privileges to read and write from disk etc.).&nbsp; Upon
+  the second run of the program, Java Web Start asks the user if they
+  want to create shortcuts on their computer.&nbsp; Also, any time the
+  program is invoked (from a shortcut or a web link) and a network
+  connection is found, new versions of the software will be downloaded
   automatically, keeping the user up to date.
 </p>
 
@@ -889,15 +899,15 @@ module<a name="daytoday"></a></h4>
   In addition, the <a href="http://www.vamphq.com/"> Venus Application
   Publisher</a> provides a mechanism for creating CD-ROM-based
   installers that load our Java Web Start code into the user's Web
-  Start cache directory.  Then running the software will check for
-  updates as described above.  (I don't know if we'll ever use this,
-  and it's kind of ugly, but it's here.)
+  Start cache directory.&nbsp; Then running the software will check
+  for updates as described above.&nbsp; (I don't know if we'll ever
+  use this, and it's kind of ugly, but it's here.)
 </p>
 
 <p>
   For the above scenario to play out, the user must have installed a
-  recent (1.2 or later) Java runtime environment.  That's it from the
-  user's point of view.
+  recent (1.2 or later) Java runtime environment.&nbsp; That's it from
+  the user's point of view.
 </p>
 
 <a name="webstartserver"></a>
@@ -905,9 +915,9 @@ module<a name="daytoday"></a></h4>
   The web server that delivers the content must associate the MIME
   type application/x-java-jnlp-file with the "jnlp" extension and must
   associate the MIME type application/x-java-archive-diff with the
-  "jardiff" extension.  In addition, if you want to be able to serve
-  up a new release with the least difficulty (simply dropping a .war
-  file (a Java Web ARchive) into the appropriate directory on the
+  "jardiff" extension.&nbsp; In addition, if you want to be able to
+  serve up a new release with the least difficulty (simply dropping a
+  .war file (a Java Web ARchive) into the appropriate directory on the
   server), the server must run a J2EE application server such as
   Apache's Tomcat.
 </p>
@@ -918,44 +928,46 @@ module<a name="daytoday"></a></h4>
 
 <p>
   For the reasons stated above, Java Web Start (JWS) is our
-  distribution mechanism of choice.  But cutting a Java Web Start
-  release is not the easiest thing you've ever done.  For one thing,
-  because our applications require access to the local disk, they must
-  ask for security privileges.  JWS warns users not to grant such
-  privileges unless they know the software provider is trustworthy.
-  Trust depends in turn on identity, and identity is proven by public
-  key cryptography.  So to cut a JWS release, you have to sign your
-  JARs and rejar and sign any third-party JARs.  (If signing JARs is
-  new to you, the J2SE documentation on the subject is okay, but
-  hopefully reading below will tell you all you need to know.)
+  distribution mechanism of choice.&nbsp; But cutting a Java Web Start
+  release is not the easiest thing you've ever done.&nbsp; For one
+  thing, because our applications require access to the local disk,
+  they must ask for security privileges.&nbsp; JWS warns users not to
+  grant such privileges unless they know the software provider is
+  trustworthy.&nbsp; Trust depends in turn on identity, and identity
+  is proven by public key cryptography.&nbsp; So to cut a JWS release,
+  you have to sign your JARs and rejar and sign any third-party
+  JARs.&nbsp; (If signing JARs is new to you, the J2SE documentation
+  on the subject is okay, but hopefully reading below will tell you
+  all you need to know.)
 </p>
 
 <p>
   First, be sure you've installed Vamp's Ant task as described <a
-  href="#installant"> above</a>.  You can do many day-to-day
+  href="#installant"> above</a>.&nbsp; You can do many day-to-day
   development activities without performing this step, so don't assume
   that you must have already done it.
 </p>
 
 <p>
-  Second, create the release notes and the changelog.  These should be
-  two different text files.  Somewhere in one or both, you should
-  mention the versions of the third-party JARs and APIs that we have
-  packaged with our release.  <b>Most importantly, put in a link to
-  the web server on which you're going to put the web start
-  release!</b> Commit these text files to the repository (adding them
-  first if necessary).
+  Second, create the release notes and the changelog.&nbsp; These
+  should be two different text files.&nbsp; Somewhere in one or both,
+  you should mention the versions of the third-party JARs and APIs
+  that we have packaged with our release.&nbsp; <b>Most importantly,
+  put in a link to the web server on which you're going to put the web
+  start release!</b>&nbsp; Commit these text files to the repository
+  (adding them first if necessary).
 </p>
 
 <p>
-  Third, commit any changes you've made to the repository.  After
+  Third, commit any changes you've made to the repository.&nbsp; After
   being sure that your <code>Jskad</code> directory is a mirror of the
   one in the repository, use cvs to tag this revision that you wish to
   release with a name that another developer, years down the road,
-  will recognize as referring to this release.  To do this, you can
-  run <code>'cvs -f rtag <i>tag-name</i> Jskad'</code> or (and this is
-  preferred) you can run <code>'cvs -f tag -c <i>tag-name</i>'</code>.
-  Good tag names are like the following:
+  will recognize as referring to this release.&nbsp; To do this, you
+  can run <code>'cvs -f rtag <i>tag-name</i> Jskad'</code> or (and
+  this is preferred) you can run <code>'cvs -f tag -c
+  <i>tag-name</i>'</code>.&nbsp; Good tag names are like the
+  following:
 </p>
 <ul>
   <li>
@@ -971,7 +983,7 @@ module<a name="daytoday"></a></h4>
 
 <p>
   As you may have inferred, we release all four programs when we
-  release any one of them.  This is only a half-truth, though--we
+  release any one of them.&nbsp; This is only a half-truth, though--we
   release the unified source distribution any time we release a binary
   distribution, but we don't necessarily put out all four binary
   distributions in unison.
@@ -989,29 +1001,30 @@ module<a name="daytoday"></a></h4>
 </blockquote>
 <p>
   where <i>program</i> is one of <code>jskad</code> or
-  <code>tt</code>.  This cleans first, so your changes will be
-  respected.  This then creates a WAR file
-  <code>Jskad/dist/java-web-start/<i>program</i>-JWS.war</code>.  This
-  also extracts the signed JAR from inside that WAR, which is handy if
-  you're deploying to a web server that isn't running a J2EE
-  application server.  More on that below.
+  <code>tt</code>.&nbsp; This cleans first, so your changes will be
+  respected.&nbsp; This then creates a WAR file
+  <code>Jskad/dist/java-web-start/<i>program</i>-JWS.war</code>.&nbsp;
+  This also extracts the signed JAR from inside that WAR, which is
+  handy if you're deploying to a web server that isn't running a J2EE
+  application server.&nbsp; More on that below.
 </p>
 
 <p>
   The argument to <code>-Dkeystore</code> is a URL like
-  <code>file:///c:/foo/keystore</code>.  This should be a keystore
-  that you've created with keytool.  We haven't yet paid the money to
-  get a real X.509 key, so create your own.  Users will see a nasty
-  warning saying that we may not be who we say we are, but so be it.
-  Each key in your key store has an associated alias, such as your
-  name.  Specify it as the argument to <code>-Dkey.alias</code>.  The
-  other two arguments are the password for the keystore as a whole
+  <code>file:///c:/foo/keystore</code>.&nbsp; This should be a
+  keystore that you've created with keytool.&nbsp; We haven't yet paid
+  the money to get a real X.509 key, so create your own.&nbsp; Users
+  will see a nasty warning saying that we may not be who we say we
+  are, but so be it.&nbsp; Each key in your key store has an
+  associated alias, such as your name.&nbsp; Specify it as the
+  argument to <code>-Dkey.alias</code>.&nbsp; The other two arguments
+  are the password for the keystore as a whole
   (<code>-Dkeystore.password</code>) and the password for the specific
   key whose alias you're giving.
 </p>
 
 <p>
-  Inspect the output for warnings.  Ignore the warning about
+  Inspect the output for warnings.&nbsp; Ignore the warning about
   <code>"[vampwar]
   org.apache.velocity.runtime.exception.ReferenceException: reference
   : template = html/test.html [line 37,column 14] : $jnlp-url is not a
@@ -1020,44 +1033,45 @@ module<a name="daytoday"></a></h4>
 
 <p>
   If you wish to deploy to a J2EE application server, such as Apache's
-  Tomcat, now copy the <code>.war</code> file to the server.  You're
-  done with the binary part of the release.
+  Tomcat, now copy the <code>.war</code> file to the server.&nbsp;
+  You're done with the binary part of the release.
 </p>
 
 <p>
   If you're deploying to a plain-vanilla web server, first ensure that
   its MIME type associations are correct (see <a
-  href="#webstartserver">above</a>).  Now ignore the <code>.war</code>
-  file and copy the appropriate <code>.jnlp</code> file(s) and the
-  appropriate JAR(s) from <code>Jskad/dist/java-web-start/</code> to
-  the webserver.  Those two files are all you need, and you don't need
-  to edit the <code>.jnlp</code> file because you specified the
+  href="#webstartserver">above</a>).&nbsp; Now ignore the
+  <code>.war</code> file and copy the appropriate <code>.jnlp</code>
+  file(s) and the appropriate JAR(s) from
+  <code>Jskad/dist/java-web-start/</code> to the webserver.&nbsp;
+  Those two files are all you need, and you don't need to edit the
+  <code>.jnlp</code> file because you specified the
   <code>jnlp.codebase</code> property.
 </p>
 
 <p>
   Now put up a source release on SourceForge's File Release System
-  (FRS).  After ensuring that you've made NOT EVEN ONE CHANGE to your
-  sandbox, and after updating it, and after verifying that this
+  (FRS).&nbsp; After ensuring that you've made NOT EVEN ONE CHANGE to
+  your sandbox, and after updating it, and after verifying that this
   revision is cvs-tagged appropriately, use <code>'ant
   src-dist'</code> to create
-  <code>Jskad/source/THDL-Tools-src-<i>todays-date</i>.zip</code>.
+  <code>Jskad/source/THDL-Tools-src-<i>todays-date</i>.zip</code>.&nbsp;
   Now put this zip file up on the FRS with the appropriate release
   notes and changelog (which should have been committed and tagged in
   the repository).
 </p>
 
 <p>
-  You're done!  <b>Except, of course, for the gotcha:</b> At present,
-  only the translation tool and Jskad have working Java Web Start
-  releases; Tibbibl's is on the way.  Tibbibl, like Jskad, requires
-  all-permissions security.  That means that <code>xalan.jar</code>,
-  <code>xercesImpl.jar</code>, and <code>xml-apis.jar</code> [or
-  whichever subset is used...] need to be jar-signed by the same
-  certificate as Tibbibl.  We do this automatically via <code>'ant
-  self-contained-dist'</code> or <code>'ant
-  web-start-releases'</code>, but here's how to do this manually:<!--
-  DLC FIXME: automate this further. -->
+  You're done!&nbsp; <b>Except, of course, for the gotcha:</b> At
+  present, only the translation tool and Jskad have working Java Web
+  Start releases; Tibbibl's is on the way.&nbsp; Tibbibl, like Jskad,
+  requires all-permissions security.&nbsp; That means that
+  <code>xalan.jar</code>, <code>xercesImpl.jar</code>, and
+  <code>xml-apis.jar</code> [or whichever subset is used...] need to
+  be jar-signed by the same certificate as Tibbibl.&nbsp; We do this
+  automatically via <code>'ant self-contained-dist'</code> or
+  <code>'ant web-start-releases'</code>, but here's how to do this
+  manually:<!-- DLC FIXME: automate this further. -->
 </p>
 
 <ol>
