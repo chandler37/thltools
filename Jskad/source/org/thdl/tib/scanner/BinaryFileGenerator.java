@@ -99,57 +99,254 @@ public class BinaryFileGenerator extends LinkedList
 
 	public void addFile(String archivo, int defNum) throws Exception
 	{
-	    int marker, linea, len;
+	    final short newDefiniendum=1, halfDefiniendum=2, definition=3;
+	    short status=newDefiniendum;
+	    int marker, len, marker2, n=0, total=0, currentPage=0, currentLine=0;
+	    char ch;	    
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(archivo)));
-		String entrada, s1, s2, previous="";
+		String entrada="", s1, s2, previous="", currentLetter="", temp="";
+		boolean markerNotFound;
 
-        linea=1;
+        currentLine=1;
         
-        /* used for acip dict 
+        // used for acip dict 
         if (delimiter==' ')
         {
-    		while ((entrada = br.readLine())!=null)
-	    	{
-		    	entrada = entrada.trim();
-			    if (!entrada.equals(""))
-			    {
-			        // skip page numbers
-			        if (entrada.charAt(0)=='@')
-			        {
-			            len = entrada.length();
-			            marker = 1;
-			            while(marker<len && Character.isDigit(entrada.charAt(marker)))
-			                marker++;
-			            if (marker<len) entrada = entrada.substring(marker);
-			            else continue;
-			        }
-			        
-			        // skip letter headers
-			        if (entrada.length()>0 && (entrada.charAt(0)=='(' || entrada.charAt(0)=='{' || entrada.charAt(0)=='?') && previous.trim().equals(""))
-			            continue;
-			            
-			        // get definiendum
-    			    marker = entrada.indexOf('/');
-	    	        if (marker<0)
-		            {
-		                System.out.println("Error loading line " + linea + ", in file " + archivo + ":");
-		                System.out.println(entrada);
-    		        }
-	    	        else
-		            {
-		                s1 = entrada.substring(0,marker).trim();
-		                // first part of def
-		                s2 = entrada.substring(marker+1).trim();
-    		        }
-    		        entrada = entrada.substring(marker+1).trim();
-    		        if (
-    		        add(s1, s2 , defNum);
-			    }
-			    previous = entrada;
-			    linea++;
-    		}
+            s1="";
+            s2="";
+		    outAHere:
+		    while (true)
+		    {
+		        entrada=br.readLine();
+		        if (entrada==null) break;
+		        currentLine++;
+    		    
+		        entrada = entrada.trim();
+		        len = entrada.length();
+		        if (len<=0) continue;
+    		    
+                // get page number
+	            if (entrada.charAt(0)=='@')
+	            {
+	                marker = 1;
+	                while(marker<len && Character.isDigit(entrada.charAt(marker)))
+	                    marker++;
+	                temp = entrada.substring(1, marker);
+	                if (temp.length()>0)
+	                currentPage=Integer.parseInt(temp);
+	                if (marker<len)
+	                {
+	                    entrada = entrada.substring(marker).trim();
+	                    len = entrada.length();
+	                }
+	                else continue;   
+		        }
+
+	            // get current letter
+	            if ((entrada.charAt(0)=='(' || entrada.charAt(0)=='{' || entrada.charAt(0)=='?') && previous.trim().equals(""))
+	            {
+	                currentLetter = entrada.substring(1, entrada.length()-2);		            
+	                /*out.println(currentPage + ": " + currentLetter);
+	                n++;*/
+	                continue;
+	            }
+
+	            if (entrada.charAt(0)=='[')
+	            {
+	                marker=1;
+	                markerNotFound=true;
+	                do
+	                {
+    	                while (marker<len && markerNotFound)
+	                    {
+	                        if (entrada.charAt(marker)==']') markerNotFound=false;
+	                        else marker++;
+	                    }
+	                    if (markerNotFound)
+                        {
+            		        entrada=br.readLine();
+		                    if (entrada==null) break outAHere;
+		                    currentLine++;
+            		        len = entrada.length();
+            		        marker=0;
+                        }
+                        else break;
+	                } while (true);
+	                if (marker<len)
+	                {
+	                    entrada = entrada.substring(marker+1).trim();
+	                    len = entrada.length();
+	                    if (len<=0) continue;
+	                }
+	                else continue;
+	            }
+    		    
+		        // skip stuff. Add to previous definition.
+		        if (entrada.startsWith("..."))
+		        {
+		            entrada=entrada.substring(3);
+		            len = entrada.length();
+		            if (len<=0) continue;
+		        }
+    		    
+		        // find definiendum
+		        ch = entrada.charAt(0);
+                if (Character.isLetter(ch) || ch=='\'')
+                {
+                    /* first criteria: if it is not the root letter of section it is part of the
+                    previous definition, probably a page change, else go for it with following
+                    code: */
+                    
+                    // get first syllable to check base letter
+                    marker=1;
+                    while (marker<len)
+                    {
+                        ch = entrada.charAt(marker);
+                        if (ch==' ' || ch=='/') break;
+                        marker++;
+                    }
+                    
+                    if (status!=halfDefiniendum) temp = Manipulate.getBaseLetter(entrada.substring(0, marker));
+                    
+                    // if line begins with current letter, probably it is a definiendum
+                    if (status==halfDefiniendum || currentLetter.equals(temp))
+   	                {
+   	                    /* Since new definiendum was found, update last and collect new. No need to update
+   	                    status because it will be updated below. */
+   	                    if (status==definition)
+   	                    {
+                            add(s1, s2, defNum);	                        
+		                    s1=""; s2="";
+   	                    }
+   	                    
+       	                marker=marker2=1;
+   	                    markerNotFound=true;
+       	                
+   	                    while (marker < len)
+   	                    {
+       	                    ch = entrada.charAt(marker);
+   	                        switch(ch)
+   	                        {
+   	                            case '/':
+   	                                markerNotFound=false;
+   	                                marker2=marker+1;
+   	                            break;
+   	                            case '(':
+   	                                markerNotFound=false;
+   	                                marker2=marker;
+   	                            break;
+   	                            case 'g': case ' ': // verify "g " and "  "
+       	                            if (marker+1<len && entrada.charAt(marker+1)==' ')
+       	                            {
+   	                                    markerNotFound=false;
+   	                                    marker2=++marker;
+   	                                }
+   	                            break;
+   	                            case '.':
+   	                                if (marker+2<len && entrada.charAt(marker+1)=='.' && entrada.charAt(marker+2)=='.')
+   	                                {
+   	                                    markerNotFound=false;
+   	                                    marker2=marker;
+   	                                }
+   	                            break;
+       	                        default:
+   	                                if (Character.isDigit(ch))
+   	                                {
+   	                                    markerNotFound=false;
+   	                                    marker2=marker;
+   	                                }
+   	                        }
+   	                        if (markerNotFound) marker++;
+   	                        else break;
+   	                    }
+       	            
+   	                    /* either this is a definiendum that consists of several lines or
+   	                    it is part of the last definition. */
+   	                    if (markerNotFound) 
+       	                {
+   	                        /* assume that the definiendum goes on to the next line. */
+   	                        s1 = s1 + entrada + " ";
+   	                        status=halfDefiniendum;
+   	                    }
+       	                else
+   	                    {
+   	                        s1 = s1 + entrada.substring(0,marker);
+   	                        s2 = "[" + currentPage + "] " + entrada.substring(marker2).trim();
+   	                        status=definition;
+   	                        
+   	                        while (true)
+   	                        {
+            		            entrada=br.readLine();
+            		            
+		                        if (entrada==null)
+		                        {
+		                            add(s1, s2, defNum);
+		                            break outAHere;
+		                        }
+		                        
+            		            currentLine++;
+            		            entrada = entrada.trim();
+            		            
+            		            if (entrada.equals("")) break;
+            		            else
+            		            {
+		                            s2 = s2 + " " + entrada;
+		                        }
+		                    }
+   	                        
+   	                    }   	            
+	                }
+	                else // last line did not start with the current letter, it must still be part of the definition
+	                {
+                        s2 = s2 + " " + entrada;
+   	                    while (true)
+   	                    {
+            		        entrada=br.readLine();
+            		            
+		                    if (entrada==null)
+		                    {
+		                        add(s1, s2, defNum);
+		                        break outAHere;
+		                    }
+		                        
+            		        currentLine++;
+            		        entrada = entrada.trim();
+            		            
+            		        if (entrada.equals("")) break;
+            		        else
+            		        {
+		                        s2 = s2 + " " + entrada;
+		                    }
+		                }
+	                }
+	            }
+	            else // if first character was not a letter, it must still be part of definition
+	            {
+                    s2 = s2 + " " + entrada;
+   	                while (true)
+   	                {
+            		    entrada=br.readLine();
+            		            
+		                if (entrada==null)
+		                {
+		                    add(s1, s2, defNum);
+		                    break outAHere;
+		                }
+		                        
+            		    currentLine++;
+            		    entrada = entrada.trim();
+            		            
+            		    if (entrada.equals("")) break;
+            		    else
+            		    {
+		                    s2 = s2 + " " + entrada;
+		                }
+		            }
+	            }
+		    }
+            
         }
-        else*/
+        else
 		while ((entrada = br.readLine())!=null)
 		{
 			entrada = entrada.trim();
@@ -158,7 +355,7 @@ public class BinaryFileGenerator extends LinkedList
 			    marker = entrada.indexOf(delimiter);
 		        if (marker<0)
 		        {
-		            System.out.println("Error loading line " + linea + ", in file " + archivo + ":");
+		            System.out.println("Error loading line " + currentLine + ", in file " + archivo + ":");
 		            System.out.println(entrada);
 		        }
 		        else
@@ -168,7 +365,7 @@ public class BinaryFileGenerator extends LinkedList
 		            add(s1, s2 , defNum);
 		        }
 			}
-			linea++;
+			currentLine++;
 		}
 	}
 
@@ -179,7 +376,7 @@ public class BinaryFileGenerator extends LinkedList
 		BinaryFileGenerator ultimo;
 		String firstSillable;
 		int pos, marker = word.indexOf(" "), comp;
-
+				
 		if (marker<0)
 			firstSillable = word;
 		else firstSillable = word.substring(0,marker);
@@ -273,8 +470,15 @@ public class BinaryFileGenerator extends LinkedList
 		if (def!=null)
 			for (i=0; i<def.length; i++)
 			{
+			    try
+			    {
 				wordRaf.writeInt((int)defRaf.getFilePointer());
 				defRaf.writeUTF(def[i]);
+				}
+				catch (Exception e)
+				{
+				    System.out.println(def[i]);
+				}
 			}
 	}
 
@@ -305,33 +509,33 @@ public class BinaryFileGenerator extends LinkedList
 		}
 	}
 
-        private static void printSintax()
-        {
+    private static void printSintax()
+    {
 		System.out.println("Stores multiple dictionaries into a binary tree file.");
-                System.out.println("Sintaxis:");
+        System.out.println("Sintaxis:");
 		System.out.println("-For multiple dictionary sources:");
 		System.out.println("  java BinaryFileGenerator arch-dest [-delimiter1] arch-dict1 [[-delimiter2] arch-dict2 ...]");
 		System.out.println("-For one dictionary");
 		System.out.println("  java BinaryFileGenerator [-delimiter] arch-dict");
 		System.out.println("Dictionary files are assumed to be .txt. Don't include extensions!");
 		System.out.println("  -delimiter: default value is \'-\'. -tab takes \'\\t\' as delimiter.");
-        }
+    }
 
 	public static void main(String args[]) throws Exception
 	{
 		int i, n=0, a;
 		if (args.length==0)
 		{
-                  printSintax();
-		  return;
+		    printSintax();
+		    return;
 		}
 		BinaryFileGenerator sl = new BinaryFileGenerator();
                 if (args[0].charAt(0)=='-')
                 {
                   if (args[0].equals("-tab"))
                     delimiter='\t';
-                  /*else if (args[0].equals("-acip"))
-                    delimiter=' ';*/
+                  else if (args[0].equals("-acip"))
+                    delimiter=' ';
                   else
                     delimiter=args[0].charAt(1);
                   if (args.length>2)
@@ -359,6 +563,8 @@ public class BinaryFileGenerator extends LinkedList
                       {
                         if (args[i].equals("-tab"))
                           delimiter='\t';
+                        else if (args[1].equals("-acip"))
+                          delimiter=' ';
                         else
                           delimiter=args[i].charAt(1);
                         i++;
