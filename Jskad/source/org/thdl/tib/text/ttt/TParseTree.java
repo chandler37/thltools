@@ -280,8 +280,8 @@ class TParseTree {
             && warningLevel != "All")
             throw new IllegalArgumentException("warning level bad: is it interned?");
 
+        TStackList bestParse = getBestParse();
         {
-            TStackList bestParse = getBestParse();
             TStackListList noPrefixTestsUniqueParse = getUniqueParse(true);
             if (noPrefixTestsUniqueParse.size() == 1
                 && !noPrefixTestsUniqueParse.get(0).equals(bestParse)) {
@@ -295,10 +295,10 @@ class TParseTree {
             boolean isLastStack[] = new boolean[1];
             TStackListList nip = getNonIllegalParses();
             if (nip.size() != 1) {
-                if (null == getBestParse()) {
+                if (null == bestParse) {
                     return "Warning: There's not even a unique, non-illegal parse for ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}";
                 } else {
-                    if (getBestParse().hasStackWithoutVowel(pl, isLastStack)) {
+                    if (bestParse.hasStackWithoutVowel(pl, isLastStack)) {
                         if (isLastStack[0]) {
                             if (warningLevel == "All")
                                 return "Warning: The last stack does not have a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}; this may indicate a typo, because Sanskrit, which this is (because it's not legal Tibetan), should have a vowel after each stack.";
