@@ -35,8 +35,8 @@ import org.thdl.util.ThdlDebug;
 public class TibetanDocument extends DefaultStyledDocument {
 	private int tibetanFontSize = 36;
 
-    /** Do not use this contructor. */
-    private TibetanDocument() { super(); }
+    /** Creates a new TibetanDocument with default styles. */
+    public TibetanDocument() { super(); }
 
     /** Do not use this contructor. */
     private TibetanDocument(AbstractDocument.Content c, StyleContext styles ) {
