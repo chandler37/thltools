@@ -939,8 +939,8 @@ public class TibTextUtils implements THDLWylieConstants {
 * @return the Extended Wylie/ACIP corresponding to these glyphs (with
 * font size info), or null */
     public static TranslitList getTranslit(boolean EWTSNotACIP,
-                                             SizedDuffCode[] dcs,
-                                             boolean noSuch[]) {
+                                           SizedDuffCode[] dcs,
+                                           boolean noSuch[]) {
         StringBuffer warnings = (debug ? new StringBuffer() : null);
         TranslitList ans
             = getTranslitImplementation(EWTSNotACIP, dcs, noSuch, warnings);

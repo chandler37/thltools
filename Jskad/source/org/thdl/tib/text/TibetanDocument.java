@@ -344,10 +344,9 @@ public class TibetanDocument extends DefaultStyledDocument {
     }
 
 /**
-* Converts a portion of the document into Extended Wylie.
-* If the document consists of both Tibetan and
-* non-Tibetan fonts, however, the conversion stops
-* at the first non-Tibetan font.
+* Does not modify the document.  Returns the EWTS transliteration for
+* the given portion of the document.  Basically ignores non-TMW
+* characters.
 * @param begin the beginning of the region to convert
 * @param end the end of the region to convert
 * @param noSuchWylie an array which will not be touched if this is
@@ -360,9 +359,9 @@ public class TibetanDocument extends DefaultStyledDocument {
     }
 
 /**
-* Converts a portion of the document into ACIP.  If the document
-* consists of both Tibetan and non-Tibetan fonts, however, the
-* conversion stops at the first non-Tibetan font.
+* Does not modify the document.  Returns the ACIP transliteration for
+* the given portion of the document.  Basically ignores non-TMW
+* characters.
 * @param begin the beginning of the region to convert
 * @param end the end of the region to convert
 * @param noSuchACIP an array which will not be touched if this is
@@ -373,68 +372,56 @@ public class TibetanDocument extends DefaultStyledDocument {
         return getTranslit(false, begin, end, noSuchACIP);
     }
 
-    private String getTranslit(boolean EWTSNotACIP, int begin, int end, boolean noSuch[]) {
-        AttributeSet attr;
-        String fontName;
-        int fontNum;
-        char ch;
-
-        if (begin >= end)
-            return "";
-
-        java.util.List dcs = new ArrayList();
-        int i = begin;
-        TranslitList translitBuffer = new TranslitList();
-
+    private String getTranslit(boolean EWTSNotACIP, int begin, int end,
+                               boolean noSuch[]) {
         try {
-            while (i < end) {
-                attr = getCharacterElement(i).getAttributes();
-                fontName = StyleConstants.getFontFamily(attr);
-                int fsz
-                    = ((Integer)attr.getAttribute(StyleConstants.FontSize)).intValue();
-
-                ch = getText(i,1).charAt(0);
-
+            TranslitList translitBuffer = new TranslitList();
+            java.util.List dcs = new ArrayList();
+            for (int i = begin; i < end; i++) {
+                char ch = getText(i,1).charAt(0);
+                int fontNum;
                 //current character is formatting
                 if (ch == '\n' || ch == '\t') {
                     if (dcs.size() > 0) {
-                        SizedDuffCode[] dc_array
-                            = (SizedDuffCode[])dcs.toArray(new SizedDuffCode[0]);
-                        translitBuffer.append(TibTextUtils.getTranslit(EWTSNotACIP, dc_array, noSuch));
+                        translitBuffer.append(TibTextUtils.getTranslit(EWTSNotACIP,
+                                                                       (SizedDuffCode[])dcs.toArray(new SizedDuffCode[0]),
+                                                                       noSuch));
                         dcs.clear();
                     }
-                    translitBuffer.append(ch, fsz);
+                    translitBuffer.append(ch, 12);
                 }
                 //current character isn't TMW
-                else if ((0 == (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName)))) {
+                else if ((0 == (fontNum
+                                = TibetanMachineWeb.getTMWFontNumber(StyleConstants.getFontFamily(getCharacterElement(i).getAttributes()))))) {
                     if (dcs.size() > 0) {
-                        SizedDuffCode[] dc_array
-                            = (SizedDuffCode[])dcs.toArray(new SizedDuffCode[0]);
-                        translitBuffer.append(TibTextUtils.getTranslit(EWTSNotACIP, dc_array, noSuch));
+                        translitBuffer.append(TibTextUtils.getTranslit(EWTSNotACIP,
+                                                                       (SizedDuffCode[])dcs.toArray(new SizedDuffCode[0]),
+                                                                       noSuch));
                         dcs.clear();
                     }
+                    // The current character is sort of nonexistent --
+                    // it doesn't go into translitBuffer.
                 }
                 //current character is convertable
                 else {
-                    dcs.add(new SizedDuffCode(new DuffCode(fontNum, ch), fsz));
+                    dcs.add(new SizedDuffCode(new DuffCode(fontNum, ch), 12));
                 }
-                i++;
             }
             if (dcs.size() > 0) {
-                SizedDuffCode[] dc_array
-                    = (SizedDuffCode[])dcs.toArray(new SizedDuffCode[0]);
                 translitBuffer.append(TibTextUtils.getTranslit(EWTSNotACIP,
-                                                               dc_array,
+                                                               (SizedDuffCode[])dcs.toArray(new SizedDuffCode[0]),
                                                                noSuch));
+                // we'd clear dcs but we're done.
             }
-            return translitBuffer.getString();
-        }
-        catch (BadLocationException ble) {
+            String ans = translitBuffer.getString();
+            ThdlDebug.verify(begin < end // SPEED_FIXME: make this an assertion
+                             || "".equals(ans));
+            return ans;
+        } catch (BadLocationException ble) {
             ble.printStackTrace();
             ThdlDebug.noteIffyCode();
+            return "";
         }
-
-        return "";
     }
 
     /** Prints to standard output a list of all the indices of
@@ -1186,7 +1173,8 @@ public class TibetanDocument extends DefaultStyledDocument {
         return toTranslit(true, start, end, numAttemptedReplacements);
     }
 
-    // DLC DOC just like {@link #toWylie(int,int,long[])}
+    // DLC DOC just like {@link #toWylie(int,int,long[])} but uses
+    // ACIP instead of EWTS
     public boolean toACIP(int start, int end,
                           long numAttemptedReplacements[]) {
         return toTranslit(false, start, end, numAttemptedReplacements);
