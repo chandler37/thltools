@@ -102,7 +102,7 @@ public class DiacriticPanel extends JPanel implements TibConstants
 	/**
 	* This method takes a character, which is actually a String variable and creates a label
 	* with a border and a margin with the supplied character string as the
-	* centered text. Adds a MouseListener that is a {@link #TiblEditMouseAdapter}. It is called by the {@link #init} method.
+	* centered text. Adds a MouseListener that is a {@link DiacriticPanel.TiblEditMouseAdapter}. It is called by the {@link #init} method.
 	*
 	* @param ch - A string variable that is the character associated with this label/button.
 	*

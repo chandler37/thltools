@@ -312,7 +312,7 @@ public class TibFrame extends JFrame implements CaretListener, TibConstants
 
 	/**
 	* <p>
-	* This method sets the list of recent files in the file menu
+	* This method sets the list of recent files in the file menu.
 	* </p>
 	*
 	* @param recent - A Vector of the recent files from the controller.
@@ -442,7 +442,7 @@ public class TibFrame extends JFrame implements CaretListener, TibConstants
 
 	/**
 	* <p>
-	* This method is called (maybe?) when the cursor is on a title. It enables the add
+	* This method is called (maybe) when the cursor is on a title. It enables the add
 	* critical title menu option. (May be deprecated?)
 	* </p>
 	*/
@@ -453,7 +453,7 @@ public class TibFrame extends JFrame implements CaretListener, TibConstants
 
 	/**
 	* <p>
-	* This method is called (maybe?) when cursor is on something other than a title. It disnables the add
+	* This method is called (maybe) when cursor is on something other than a title. It disables the add
 	* critical title menu option. (May be deprecated?)
 	* </p>
 	*/
@@ -466,7 +466,7 @@ public class TibFrame extends JFrame implements CaretListener, TibConstants
 	* <p>
 	* This method displays a {@link TibTable} as the bottom half of a split screen with the {@link TextPane}
 	* This particular table displays the editions consulted for the formation of the master record
-	* by displaying the information in the text's tibiddecl element. To do so it uses {@link TibTable(IDFactory) TibTable constructor}
+	* by displaying the information in the text's tibiddecl element. To do so it uses {@link TibTable#TibTable(IDFactory) TibTable constructor}
 	* that takes an {@link IDFactory} retrieved from the {@link TibDoc}. It then calls {@link #showTable(TibTable) TibTable}
 	* method.
 	* </p>
@@ -504,7 +504,7 @@ public class TibFrame extends JFrame implements CaretListener, TibConstants
 
 	/**
 	* <p>
-	* This method creates a split screen with a {@link DiacriticPanel(TibFrame) DiacriticPanel}
+	* This method creates a split screen with a {@link DiacriticPanel#DiacriticPanel(TibFrame) DiacriticPanel}
 	* on the left and the main {@link TextPane} on the right.
 	* </p>
 	*/
@@ -741,7 +741,7 @@ public class TibFrame extends JFrame implements CaretListener, TibConstants
 	/**
 	* <p>
 	* This method is used by {@link #showTitles(TitleFactory)} to insert prompts for information
-	* at the correct location. The showTitles method creates a vector of {@link ElementStyles}. Once
+	* at the correct location. The showTitles method creates a vector of {@link ElementStyle}. Once
 	* this is created, if the {@link TiblEdit#mode} is to insert a title or translation. This method
 	* is called with the selected element. It searches the vector for that element and returns its
 	* index in the vector.
@@ -850,15 +850,17 @@ public class TibFrame extends JFrame implements CaretListener, TibConstants
 	/**
 	* <p>
 	* When the TibFrame is closed, the program ends. The window is disposed. The controller's
-	* {@link TiblEdit#writePrefs() writePrefs()} method is called, and the system is exited.
+	* {@link TiblEdit#exit() exit()} method is called, and the system is exited.
 	* </p>
-	*
-	* @param WindowEvent - the required parameter for this abstract method.
 	*/
 	public class XWindowHandler extends WindowAdapter
 			implements TibConstants
 	{
 
+		/** See class comment.
+		 *
+		 * @param WindowEvent - the required parameter for this abstract method.
+		 */
 		public void windowClosing(WindowEvent e)
 		{
 			e.getWindow().dispose();

@@ -112,7 +112,7 @@ public class TiblEdit implements MouseListener, KeyListener, Observer, TibConsta
 
 	/**
 	* <p>
-	* This is the name of the file which is changed when the master ID is changes
+	* This is the name of the file which is changed when the master ID is changes.
 	* </p>
 	*/
 	String fileName;
@@ -146,7 +146,7 @@ public class TiblEdit implements MouseListener, KeyListener, Observer, TibConsta
 	private String todaysDate;
 /**
 * <p>
-* This is the file chooser object that will be modified in {@link #setFileChoose} so
+* This is the file chooser object that will be modified in {@link #setFileChooser} so
 * that it displays the text names instead of the file names when opening a file.
 * </p>
 */
@@ -220,7 +220,7 @@ public class TiblEdit implements MouseListener, KeyListener, Observer, TibConsta
 
 /**
 * <p>
-* This variable tells whether a text has been saved or not
+* This variable tells whether a text has been saved or not.
 * </p>
 */
 	boolean hasBeenSaved;
@@ -246,9 +246,9 @@ public class TiblEdit implements MouseListener, KeyListener, Observer, TibConsta
 	/**
 	* <p>
 	* The init method sets the {@link #dataDirectory}, {@link #currentDirectory},
-	* and the {@link tibFrame} variables. It reads in preferences from {@link #readPrefData},
+	* and the {@link #tibFrame} variables. It reads in preferences from {@link #readPrefData},
 	* performs {@link #setDate} and {@link #setFileChooser}, and sets the {@link #mode}
-	* to {@link TibConstants@NORM}.
+	* to {@link TibConstants#NORM}.
 	* </p>
 	*/
 	public void init()
@@ -312,7 +312,7 @@ public class TiblEdit implements MouseListener, KeyListener, Observer, TibConsta
 	* This reads in the preferences from the preference file that is located in
 	* {@link TibConstants#DEFAULT_DIRECTORY} + {@link TibConstants#BIN} +
 	* {@link TibConstants#PREFS}. The main preferences that are stored in this file
-	* are: the {@link editorsInitials} and {@link editorsName}.
+	* are: the {@link #editorsInitials} and {@link #editorsName}.
 	* </p>
 	*/
 	public void readPrefData()
@@ -547,7 +547,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	*
 	* @return int - the current display mode
 	*
-	* @see setMode
+	* @see #setMode
 	*/
 	public int getMode()
 	{
@@ -616,7 +616,7 @@ System.out.println("EdInits given: " + editorsInitials);
 
 	/**
 	* <p>
-	* Returns the editors name
+	* Returns the editors name.
 	* </p>
 	*
 	* @return String - the editor's name.
@@ -1046,7 +1046,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* critically edited. They represent titles as they appear in particular editions.
 	* One choses a particular edition title as the basis for a critical title which
 	* then can have app elements collating the various readings. This method uses
-	* a {@link TibDialog} with {@link TibConstants@NEW_ED_TITLE_INFO} and
+	* a {@link TibDialog} with {@link TibConstants#NEW_ED_TITLE_INFO} and
 	* {@link TibConstants#NEW_ED_TITLE_INFO_SPECS} to get the title and its pagination.
 	* When the <code>TibDialog</code> is submitted, the {@link #insertNewEdTitle} method
 	* is called with that <code>TibDialog</code>.
@@ -1122,7 +1122,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* <p>
 	* This method is called when one either double clicks on a title or chooses enter a translation
 	* from the menu. It first determines if the selected element is the normalized title, in which case
-	* it sets the {@link #mode} to {@link TibConstants.ENTER_NORMALIZED ENTER_NORMALIZED} and redisplays with the appropriate prompts.
+	* it sets the {@link #mode} to {@link TibConstants#ENTER_NORMALIZED ENTER_NORMALIZED} and redisplays with the appropriate prompts.
 	* Otherwise, it makes sure there is a Tibetan title there and not "No title given" or "Not specified" and
 	* if it's a valid title, asks the user if they want to create a critical title with the selected title
 	* as its base. If so, it redisplays with the appropriate prompts.
@@ -1202,7 +1202,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* prompt to the next paragraph mark "/n", and then calls the {@link TibDoc#addTranslation}
 	* method with this translation <code>String</code> and the {@link #selected_element}.
 	* The display mode ({@link #mode}) is then set to {@link TibConstants#NORM} and
-	* the text is redisplayed using {@link TibFrame@showTitles} which returns
+	* the text is redisplayed using {@link TibFrame#showTitles} which returns
 	* an {@link ElementList} that is assigned to {@link #elemList}.
 	* </p>
 	*/
@@ -1373,8 +1373,8 @@ System.out.println("EdInits given: " + editorsInitials);
 	/**
 	* <p>
 	* This method inserts a particular type of discussion depending on the setting of the
-	* type parameter. When type equals {@link TibConstants.TITLE TITLE}, a discussion will be inserted
-	* for the title at the cursor position of the {@link TextPane}. When type equals {@link TibConstants.GEN GEN}
+	* type parameter. When type equals {@link TibConstants#TITLE TITLE}, a discussion will be inserted
+	* for the title at the cursor position of the {@link TextPane}. When type equals {@link TibConstants#GEN GEN}
 	* the user will be prompted with a list of options to choose from.
 	* </p>
 	*
@@ -1435,7 +1435,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	*  <li><b>Key: </b> {@link TibConstants#TABLE} -- the {@link TibTable.TibTableModel} that contains the data.
 	*  <li><b>Key:</b> {@link TibConstants#PAGIN} -- the hashtable of paginations keyed on edition sigla, used to create table
 	*	</ul>
-	*  First, it sets the information for the main reading found in the {@link TibConstants#LEM} or lemma element.
+	*  First, it sets the information for the main reading found in the {@link TibConstants#LM} or lemma element.
 	*  Then, it correlates the reading witnesses already in the app element with the siglas
 	*  for the lines of data in the table and replaces the information in existing reading elements
 	*  or adds new ones where necessary.
@@ -1846,7 +1846,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* <p>
 	* This method is invoked when the {@link DoxWindow} is submitted. It calls upon the
 	* {@link TibDoc} to {@link TibDoc#setDoxography(String, String) setDoxography} and then
-	* to {@link TibDox#setMasterID(String) setMasterID}.
+	* to {@link TibDoc#setMasterID(String) setMasterID}.
 	* </p>
 	*
 	* @param DoxWindow - the doxography selection window that supplies the users input.
@@ -2194,7 +2194,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* and there is an {@link ElementList} defined to check. It checks the {@link #elemList}
 	* for the selected element, if it is a {@link TibConstants#TITLE}, then it calls
 	* {@link #enterTranslation}. If it is an {@link TibConstants#AP}, then it calls
-	* {@link #showAp}.
+	* {@link #showApp}.
 	* </p>
 	*
 	* @param MouseEvent - the required parameter for this abstract method.
@@ -2251,8 +2251,8 @@ System.out.println("EdInits given: " + editorsInitials);
 	* This implementation of the KeyListener interface is used when information
 	* is being added directly to the {@link TextPane} being displayed. If the
 	* Enter key is pressed, the it checks the {@link #mode}. If the mode is
-	* {@link TibConstants#ENTER_TRANS}, then it calls {@link insertTranslation}.
-	* If the mode is {@link NEW_TITLE}, it calls {@link insertNewTitleAndTranslation}.
+	* {@link TibConstants#ENTER_TRANS}, then it calls {@link #insertTranslation}.
+	* If the mode is {@link #NEW_TITLE}, it calls {@link #insertNewTitleAndTranslation}.
 	* </p>
 	*
 	* @param KeyEvent - the required parameter for this abstract method.

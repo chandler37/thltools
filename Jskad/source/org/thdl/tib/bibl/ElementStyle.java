@@ -21,7 +21,7 @@ package org.thdl.tib.bibl;
 import org.jdom.*;
 
 /**
-* This wrapper class associates a String of text with a Style (as defined in {@link TibConstants}?) and a particular
+* This wrapper class associates a String of text with a Style (as defined in {@link TibConstants} [MAYBE]) and a particular
 * element. It is used for interactivity with the {@link TextPane} so that highlighting or clicking on a string in the
 * text pane can be associated with actions for processing the text within an element.
 *

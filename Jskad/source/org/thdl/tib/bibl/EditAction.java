@@ -26,10 +26,10 @@ import java.awt.event.ActionEvent;
 * super constructor. The action performed takes the following action commands:
 * </p>
 * <ul>
-* <li>{@link TibConstants.TRANS_EDIT TRANS_EDIT} - calls {@link TiblEdit#editTranslation()}
-* <li>{@link TibConstants.NORM_EDIT NORM_EDIT} - calls {@link TiblEdit#enterTranslation()}
-* <li>{@link TibConstants.REMOVE_APP REMOVE_APP} - calls {@link TiblEdit#removeApp()}
-* <li>{@link TibConstants.REMOVE_TITLE REMOVE_TITLE} - calls {@link TiblEdit#removeTitle()}
+* <li>{@link TibConstants#TRANS_EDIT TRANS_EDIT} - calls {@link TiblEdit#editTranslation()}
+* <li>{@link TibConstants#NORM_EDIT NORM_EDIT} - calls {@link TiblEdit#enterTranslation()}
+* <li>{@link TibConstants#REMOVE_APP REMOVE_APP} - calls {@link TiblEdit#removeApp()}
+* <li>{@link TibConstants#REMOVE_TITLE REMOVE_TITLE} - calls {@link TiblEdit#removeTitle()}
 * </ul>
 *
 * @author Than Garson, Tibetan and Himalayan Digital Library

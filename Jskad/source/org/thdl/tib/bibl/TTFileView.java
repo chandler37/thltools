@@ -48,7 +48,7 @@ public class TTFileView extends FileView implements TibConstants
 
 	/**
 	* <p>
-	* Overrides the ancestor's--{@link javax.swing.JFileChooser.FileView}--getName() function
+	* Overrides the ancestor's--{@link FileView}--getName() function
 	* so that it returns the text title as the name, if it is an XML file. This has the
 	* effect of presenting a list of text names in the open dialog rather than their less
 	* comprehensible file names.

@@ -226,7 +226,7 @@ public class IDFactory extends GenericTibFactory implements TibConstants
 	*
 	* @param String - the master ID string
 	*
-	* @Return String - the new file name based on the master ID
+	* @return String - the new file name based on the master ID
 	*/
 	public void setMasterID(String masterID)
 	{

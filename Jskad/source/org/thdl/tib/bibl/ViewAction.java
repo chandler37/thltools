@@ -26,9 +26,9 @@ import java.awt.event.ActionEvent;
 * super constructor. The action performed takes the following action commands:
 * </p>
 * <ul>
-* <li>{@link TibConstants.MASTER_ID_VIEW MASTER_ID_VIEW} - calls {@link TiblEdit#showMasterDox()}
-* <li>{@link TibConstants.USER_ID_VIEW USER_ID_VIEW} - calls {@link TiblEdit#getEditorInfo()}
-* <li>{@link TibConstants.ABOUT ABOUT} - calls {@link TiblEdit#showSplash()}
+* <li>{@link TibConstants#MASTER_ID_VIEW MASTER_ID_VIEW} - calls {@link TiblEdit#showMasterDox()}
+* <li>{@link TibConstants#USER_ID_VIEW USER_ID_VIEW} - calls {@link TiblEdit#getEditorInfo()}
+* <li>{@link TibConstants#ABOUT ABOUT} - calls {@link TiblEdit#showSplash()}
 * </ul>
 *
 * @author Than Garson, Tibetan and Himalayan Digital Library

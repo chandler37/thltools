@@ -23,11 +23,11 @@ import org.jdom.*;
 
 /**
 * <p>
-* Element List is a list of elements and ranges. The ranges refer to the {@link TextPanel} locations
-* where the text for that element is found. The {@link #getElement} method takes an integer location
-* in the TextPanel and returns the <code>org.jdom.Element</code> that is associated with that location
+* Element List is a list of elements and ranges. The ranges refer to the {@link TextPane} locations
+* where the text for that element is found. The {@link #getElementAt(int)} method takes an integer location
+* in the TextPane and returns the <code>org.jdom.Element</code> that is associated with that location
 * <i>if there is one</i>! If not, it returns <code>null</code>, indicating there is nothing to edit at
-* that location. This is created by the TextPanel and given to the {@link TiblEdit} controller so
+* that location. This is created by the TextPane and given to the {@link TiblEdit} controller so
 * it can turn on and off menu options and functionality, depending on the position of the cursor in
 * the TextPane.
 * </p>

@@ -65,7 +65,7 @@ public class TextPane extends JTextPane implements TibConstants
 
 	/**
 	* <p>
-	* This and the following are static, style constants, i.e. names of the styles
+	* This and the following are static, style constants.  I.e., they're names of the styles.
 	*</p>
 	*/
 	public static String REG = "regular";

@@ -58,7 +58,7 @@ public class TibDoc extends XMLDoc
 	private TitleFactory tf;
 	/**
 	* <p>
-	* The {@link IDFactory} associated with this Tibbibl XML document
+	* The {@link IDFactory} associated with this Tibbibl XML document.
 	* </p>
 	*/
 	private IDFactory idf;
@@ -202,7 +202,7 @@ public class TibDoc extends XMLDoc
 
 	/**
 	* <p>
-	* This method returns an array of strings that contains 1. the opening string of the header, such as
+	* This method returns an array of strings.  The array contains 1. the opening string of the header, such as
 	* "Bibliographic Record for", and 2. the text contain within each of its children elements, usually
 	* there are two of these a lang="tib" and a lang="eng", each one entered separately. The strings
 	* are stripped of extraneous paragraph markers and spaces using the {@link #cleanString} method.
