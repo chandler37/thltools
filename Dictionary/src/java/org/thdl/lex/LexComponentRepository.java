@@ -32,7 +32,7 @@ public class LexComponentRepository
 	public final static String ANYWHERE = "anywhere";
 	private static long start;
 
-	private static long lastUpdate;
+	private static long lastUpdate = now();
 
 
 	/**
@@ -399,11 +399,13 @@ public class LexComponentRepository
 			query = getSession().createQuery( queryString );
 			results = query.list();
 			endTransaction( false );
+			getSession().clear();
 		}
 		catch ( HibernateException he )
 		{
 			throw new LexRepositoryException( he );
 		}
+
 		return results;
 	}
 
@@ -445,6 +447,7 @@ public class LexComponentRepository
 			beginTransaction();
 			getSession().update( component );
 			endTransaction( true );
+			setLastUpdate( now() );
 		}
 		catch ( HibernateException he )
 		{
@@ -467,6 +470,7 @@ public class LexComponentRepository
 			beginTransaction();
 			getSession().delete( component );
 			endTransaction( true );
+			setLastUpdate( now() );
 		}
 		catch ( HibernateException he )
 		{

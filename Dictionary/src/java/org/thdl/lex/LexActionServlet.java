@@ -65,17 +65,25 @@ public class LexActionServlet extends HttpServlet
 	 */
 	public void init( ServletConfig config ) throws ServletException
 	{
-		super.init( config );
-		initCommands();
-		config.getServletContext().setAttribute( "flatData", new LexFlatDataRepository() );
-		String delay = config.getInitParameter( "globalDataRefreshDelay" );
-		long refreshDelay = Long.parseLong( delay ) * 1000 * 60;
-		String recent = config.getInitParameter( "recentItems" );
-		int recentItems = Integer.parseInt( recent );
-		Global global = new Global( recentItems, refreshDelay );
-		config.getServletContext().setAttribute( LexConstants.GLOBAL_CONTEXT_ATTR, global );
-		LexLogger.debugComponent( global );
-		System.setProperty( "java.awt.headless", "true" );
+		try
+		{
+			super.init( config );
+			initCommands();
+			config.getServletContext().setAttribute( "flatData", new LexFlatDataRepository() );
+			config.getServletContext().setAttribute( "sources", new LexSourceRepository() );
+			String delay = config.getInitParameter( "globalDataRefreshDelay" );
+			long refreshDelay = Long.parseLong( delay ) * 1000;
+			String recent = config.getInitParameter( "recentItems" );
+			int recentItems = Integer.parseInt( recent );
+			Global global = new Global( recentItems, refreshDelay );
+			config.getServletContext().setAttribute( LexConstants.GLOBAL_CONTEXT_ATTR, global );
+			LexLogger.debugComponent( global );
+			System.setProperty( "java.awt.headless", "true" );
+		}
+		catch ( Exception e )
+		{
+			throw new ServletException( e );
+		}
 	}
 
 
@@ -216,6 +224,7 @@ public class LexActionServlet extends HttpServlet
 
 		commands.put( "setMetaPrefs", new PreferencesCommand( "menu.jsp" ) );
 		commands.put( "setMetaDefaults", new PreferencesCommand( "menu.jsp" ) );
+		commands.put( "refreshSources", new RefreshSourcesCommand( "test.jsp" ) );
 
 		commands.put( "abort", new AbortCommand( "menu.jsp" ) );
 

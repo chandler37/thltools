@@ -17,8 +17,6 @@ public class Global
 	private static long lastRefresh;
 	private int entryCount;
 	private List recentTerms;
-	private final GlobalRefresher REFRESHER = new GlobalRefresher();
-	private final Thread REFRESHER_THREAD = new Thread( REFRESHER );
 
 
 	/**
@@ -112,7 +110,7 @@ public class Global
 	 */
 	public void setRecentTerms( List recentTerms )
 	{
-		this.recentTerms = Collections.synchronizedList( recentTerms );
+		this.recentTerms = recentTerms;
 		setLastRefresh( System.currentTimeMillis() );
 	}
 
@@ -136,9 +134,9 @@ public class Global
 	 */
 	public List getRecentTerms() throws LexRepositoryException
 	{
-		if ( null == recentTerms )
+		if ( null == recentTerms || requiresRefresh() )
 		{
-			doRefresh();
+			refresh();
 		}
 		return recentTerms;
 	}
@@ -155,9 +153,12 @@ public class Global
 		long now = System.currentTimeMillis();
 		long lastUpdate = LexComponentRepository.getLastUpdate();
 		long sinceLastRefresh = now - getLastRefresh();
+
+		//LexLogger.debug( "Requires Refresh Logic: if " + sinceLastRefresh + " > " + getRefreshDelay() + " && " + lastUpdate + " > " + getLastRefresh() );
 		if ( sinceLastRefresh > getRefreshDelay() && lastUpdate > getLastRefresh() )
 		{
 			requiresRefresh = true;
+			LexLogger.debug( "Refresh Required at: " + System.currentTimeMillis() );
 		}
 		return requiresRefresh;
 	}
@@ -165,36 +166,27 @@ public class Global
 
 	/**
 	 *  Description of the Method
-	 *
-	 * @exception  LexRepositoryException  Description of the Exception
 	 */
-	public void refresh() throws LexRepositoryException
+	public void refresh()
 	{
-		if ( requiresRefresh() )
+		try
 		{
-			doRefresh();
+			int limit = getRecentTermsCount();
+			LexLogger.debug( "GlobalRefresher is starting a refresh for the " + limit + " most recent terms." );
+			setRecentTerms( LexComponentRepository.getRecentTerms( limit ) );
+			LexLogger.debug( "GlobalRefresher is finished refreshing..." );
+			LexLogger.debug( "Here's the new recent terms list: " + getRecentTerms().toString() );
+			LexComponentRepository.cleanup();
+			LexLogger.info( "GlobalRefresher finished a refresh..." );
 		}
-	}
+		catch ( Exception e )
+		{
+			StringWriter writer = new StringWriter();
+			e.printStackTrace( new PrintWriter( writer ) );
+			String stackTrace = writer.getBuffer().toString();
+			LexLogger.error( "GlobalRefresher Thread caught an Exception: " + stackTrace );
+		}
 
-
-	/**
-	 *  Description of the Method
-	 *
-	 * @exception  LexRepositoryException  Description of the Exception
-	 */
-	public void doRefresh() throws LexRepositoryException
-	{
-		LexLogger.info( "Checking if GlobalRefresher is busy..." );
-		if ( REFRESHER.getFinished() )
-		{
-			LexLogger.info( "GlobalRefresher is not busy. Starting refresh..." );
-			REFRESHER.setFinished( false );
-			REFRESHER_THREAD.start();
-		}
-		else
-		{
-			LexLogger.info( "GlobalRefresher was busy. Refresh not started..." );
-		}
 	}
 
 
@@ -216,79 +208,5 @@ public class Global
 		setRefreshDelay( refreshDelay );
 	}
 
-
-	/**
-	 *  Description of the Class
-	 *
-	 * @author     travis
-	 * @created    October 21, 2003
-	 */
-	class GlobalRefresher implements Runnable
-	{
-		private boolean finished;
-
-
-		/**
-		 *  Sets the finished attribute of the GlobalRefresher object
-		 *
-		 * @param  finished  The new finished value
-		 */
-		private void setFinished( boolean finished )
-		{
-			this.finished = finished;
-		}
-
-
-		/**
-		 *  Gets the finished attribute of the GlobalRefresher object
-		 *
-		 * @return    The finished value
-		 */
-		private boolean getFinished()
-		{
-			return finished;
-		}
-
-
-		/**
-		 *  Main processing method for the GlobalRefresher object
-		 */
-		public void run()
-		{
-			int limit = getRecentTermsCount();
-			try
-			{
-				LexLogger.info( "GlobalRefresher is starting a refresh..." );
-				setRecentTerms( LexComponentRepository.getRecentTerms( limit ) );
-				/*
-				    ILexComponent ilc = null;
-				    for ( Iterator it = getRecentTerms().iterator(); it.hasNext(); ilc = (ILexComponent) it.next() )
-				    {
-				    ilc.getMeta();
-				    }
-				  */
-				LexComponentRepository.cleanup();
-				LexLogger.info( "GlobalRefresher finished a refresh..." );
-				setFinished( true );
-			}
-			catch ( Exception e )
-			{
-				StringWriter writer = new StringWriter();
-				e.printStackTrace( new PrintWriter( writer ) );
-				String stackTrace = writer.getBuffer().toString();
-				LexLogger.error( "GlobalRefresher Thread caught an Exception: " + stackTrace );
-			}
-			setFinished( true );
-		}
-
-
-		/**
-		 *Constructor for the GlobalRefresher object
-		 */
-		GlobalRefresher()
-		{
-			setFinished( true );
-		}
-	}
 }
 

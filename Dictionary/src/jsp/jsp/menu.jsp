@@ -67,6 +67,14 @@
 	<input type="submit" value="Preferences" /> <br />
 	</p>
 	</form>
+
+	<form id="oai" action="/lex/action" method="get" >
+	<p>
+	<input type="hidden" name="cmd" value="refreshSources" />
+	<input type="submit" value="Refresh Sources" /> <br />
+	</p>
+	</form>
+
 	</div>
 	
 	</c:if>
