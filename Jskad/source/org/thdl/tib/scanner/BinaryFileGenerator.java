@@ -99,11 +99,57 @@ public class BinaryFileGenerator extends LinkedList
 
 	public void addFile(String archivo, int defNum) throws Exception
 	{
-	    int marker, linea;
+	    int marker, linea, len;
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(archivo)));
-		String entrada, s1, s2;
+		String entrada, s1, s2, previous="";
 
         linea=1;
+        
+        /* used for acip dict 
+        if (delimiter==' ')
+        {
+    		while ((entrada = br.readLine())!=null)
+	    	{
+		    	entrada = entrada.trim();
+			    if (!entrada.equals(""))
+			    {
+			        // skip page numbers
+			        if (entrada.charAt(0)=='@')
+			        {
+			            len = entrada.length();
+			            marker = 1;
+			            while(marker<len && Character.isDigit(entrada.charAt(marker)))
+			                marker++;
+			            if (marker<len) entrada = entrada.substring(marker);
+			            else continue;
+			        }
+			        
+			        // skip letter headers
+			        if (entrada.length()>0 && (entrada.charAt(0)=='(' || entrada.charAt(0)=='{' || entrada.charAt(0)=='?') && previous.trim().equals(""))
+			            continue;
+			            
+			        // get definiendum
+    			    marker = entrada.indexOf('/');
+	    	        if (marker<0)
+		            {
+		                System.out.println("Error loading line " + linea + ", in file " + archivo + ":");
+		                System.out.println(entrada);
+    		        }
+	    	        else
+		            {
+		                s1 = entrada.substring(0,marker).trim();
+		                // first part of def
+		                s2 = entrada.substring(marker+1).trim();
+    		        }
+    		        entrada = entrada.substring(marker+1).trim();
+    		        if (
+    		        add(s1, s2 , defNum);
+			    }
+			    previous = entrada;
+			    linea++;
+    		}
+        }
+        else*/
 		while ((entrada = br.readLine())!=null)
 		{
 			entrada = entrada.trim();
@@ -284,6 +330,8 @@ public class BinaryFileGenerator extends LinkedList
                 {
                   if (args[0].equals("-tab"))
                     delimiter='\t';
+                  /*else if (args[0].equals("-acip"))
+                    delimiter=' ';*/
                   else
                     delimiter=args[0].charAt(1);
                   if (args.length>2)
