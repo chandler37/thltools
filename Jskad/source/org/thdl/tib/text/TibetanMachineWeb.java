@@ -1138,6 +1138,7 @@ public static boolean isTopVowel(DuffCode dc) {
 
         @return true iff this is a tsheg or whitespace or the like */
     public static boolean isTMWFontCharBreakable(char ch) {
+        if (false) {
         //<?Input:Punctuation?>
         int ord = (int)ch;
 
@@ -1157,7 +1158,7 @@ public static boolean isTopVowel(DuffCode dc) {
         if (94 == ord) return true;
         if (92 == ord) return true;
         if (91 == ord) return true;
-
+        } // DLC FIXME
         return ('-' == ch /* FIXME: this is the tsheg (i.e., the Wylie is ' '), but we have no constant for it. */
                 || ' ' == ch /* FIXME: this is space (i.e., the Wylie is '_'), but we have no constant for it. */
                 || '\t' == ch /* FIXME: this is some sort of whitespace */
