@@ -49,7 +49,7 @@ public class BitDictionarySource extends DictionarySource
 	}
 	
     /** Returns an instance of DictionarySource with all dictionaries selected */
-	public BitDictionarySource getAllDictionaries()
+	public static BitDictionarySource getAllDictionaries()
 	{
 		BitDictionarySource ds = new BitDictionarySource();
 		ds.setDicts(allDicts);

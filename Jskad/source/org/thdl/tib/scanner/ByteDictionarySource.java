@@ -113,6 +113,19 @@ public class ByteDictionarySource extends DictionarySource
 	    return dicts[i];
 	}
 	
+	public int getDicts()
+	{
+	    int i;
+	    BitDictionarySource availableDicts = new BitDictionarySource();
+	    
+	    if (dicts == null) return 0;
+	    
+	    for (i=0; i< dicts.length; i++)
+	        availableDicts.add(dicts[i]);
+	    
+	    return availableDicts.getDicts();
+	}
+	
 	public void dubDef(int n)
 	{
 	    BitDictionarySource newDicts[] = new BitDictionarySource[dicts.length+1];

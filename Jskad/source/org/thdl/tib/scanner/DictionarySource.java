@@ -64,5 +64,8 @@ public abstract class DictionarySource
     public abstract boolean hasBrothers();
     
     /** Returns true if dict is a selected dictionary. */
-    public abstract boolean contains(int dict);    
+    public abstract boolean contains(int dict);
+    
+    /** Returns an array of bits representing the selected dictionaries. */
+    public abstract int getDicts();    
 }

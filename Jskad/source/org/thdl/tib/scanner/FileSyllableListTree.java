@@ -18,6 +18,7 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.scanner;
 
 import java.io.*;
+import org.thdl.util.*;
 
 /** Searches the words directly in a file; not the preferred
 	implementation. The search is too slow!
@@ -34,17 +35,17 @@ import java.io.*;
 
 public class FileSyllableListTree implements SyllableListTree
 {
-	private String sil;
+	protected String sil;
 	private long def[];
-	private long posLista;
-	private DictionarySource defSource;
+	protected long posLista;
+	protected DictionarySource defSource;
 	public static BitDictionarySource defSourcesWanted;
 	public static RandomAccessFile wordRaf=null;
 	private static RandomAccessFile defRaf=null;
 	public static int versionNumber;
 	
-	/** Creates the root */
-	public FileSyllableListTree(String archivo, int defSourcesWanted) throws Exception
+	/** Creates the root. */
+	public FileSyllableListTree(String archivo) throws Exception
 	{
 		sil = null;
 		def = null;
@@ -52,15 +53,11 @@ public class FileSyllableListTree implements SyllableListTree
 		
 		this.openFiles(archivo);
 		posLista = this.wordRaf.getFilePointer();
-
-		/* if versionNumber is 2 use BitDictionarySource
-		else use ByteDictionarySource. */		
-		this.defSourcesWanted.setDicts(defSourcesWanted);
 	}
 	
 	/** Used to create each node (except the root)
 	*/
-	public FileSyllableListTree(String sil, long []def, DictionarySource defSource, long posLista)
+	protected FileSyllableListTree(String sil, long []def, DictionarySource defSource, long posLista)
 	{
 		this.sil=sil;
 		this.def=def;
@@ -100,7 +97,12 @@ public class FileSyllableListTree implements SyllableListTree
 	        e.printStackTrace();
 	    }
 	}
-
+	
+	/** Initiates all static variables, it is called by the constructor of the root
+	    FileSyllableListTree (in the case of a pure file tree) or by the 
+	    constructor of CachedSyllableListTree in the case of the root being loaded
+	    into memory.
+	*/
 	public static void openFiles(String archivo, boolean backwardCompatible) throws Exception
 	{
 	    long fileSize;
@@ -162,12 +164,41 @@ public class FileSyllableListTree implements SyllableListTree
 		    }
 		}
 		
-		/* if versionNumber is 2 use BitDictionarySource else use 
-		ByteDictionarySource. */
-		defSourcesWanted = new BitDictionarySource();
+		defSourcesWanted = BitDictionarySource.getAllDictionaries();
 		
 	    wordRaf.seek(pos);		
 	}
+	
+	public static String[] getDictionaryDescriptions(String archivo)
+	{
+		int n;
+		try
+		{
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(archivo + ".dic")));
+			SimplifiedLinkedList ll1 = new SimplifiedLinkedList(), ll2 = new SimplifiedLinkedList();
+			String s;
+			while ((s=br.readLine())!=null)
+			{
+				n = s.indexOf(",");
+				if (n < 0)
+				{
+					ll1.addLast(null);
+					ll2.addLast(s);
+				}
+				else
+				{
+					ll1.addLast(s.substring(0,n).trim());
+					ll2.addLast(s.substring(n+1).trim());
+				}
+			}
+			DictionarySource.setTags(ll2.toStringArray());
+			return ll1.toStringArray();
+		}
+		catch (Exception e)
+		{
+			return null;
+		}
+	}	
 
 	public String getDef()
 	{
@@ -242,7 +273,7 @@ public class FileSyllableListTree implements SyllableListTree
 		
 		int i;
 
-		if (silStr==null) return null;
+		if (silStr==null || posLista==-1) return null;
 		try
 		{
 			wordRaf.seek(posLista);
@@ -276,5 +307,5 @@ public class FileSyllableListTree implements SyllableListTree
 		{
 		}
 		return null;
-	}
+	}	
 }

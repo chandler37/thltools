@@ -30,6 +30,7 @@ import java.util.*;
 public class SimplifiedLinkedList
 {	
 	protected Link cabeza;
+	
 	public SimplifiedLinkedList()
 	{
 		cabeza=null;
@@ -69,6 +70,58 @@ public class SimplifiedLinkedList
 	        temp.siguiente = currentLink;
         }
     }
+    
+    /** If the object is already in the list return. It is more efficient since it
+        assumes that the list is sorted. */
+    public Object getSorted(Comparable o)
+    {
+        Link currentLink = cabeza;
+        Object currentObject;
+        int comparison;
+        
+        while(currentLink != null)
+        {
+            currentObject = currentLink.get();
+            comparison = ((Comparable) currentObject).compareTo(o);
+            if (comparison==0) return currentObject;
+            else if(comparison>0) return null;
+            currentLink = currentLink.next();
+        }
+        return null;
+    }
+
+    /** Does not add repetitions. */
+	public void addSortedUnique (Comparable o)
+	{
+	    Link previous, currentLink, temp;
+	    int comp;
+	    
+	    if (cabeza==null || o.compareTo(cabeza.get())<0)
+	    {
+	        addLast(o);
+	    }	    
+	    else
+	    {
+	        if (o.compareTo(cabeza.get())==0) return;
+	        currentLink = cabeza;
+	        while (true)
+	        {
+                previous = currentLink;
+                currentLink = currentLink.next();
+                if (currentLink != null)
+                {
+                    comp = o.compareTo(currentLink.get());
+                    if (comp==0) return;
+                    else if (comp<0) break;
+                }
+                else break;
+	        }
+	        
+	        temp = new Link (o);
+	        previous.siguiente = temp;
+	        temp.siguiente = currentLink;
+        }
+    }	
 	
 	public Object getLast()
 	{

@@ -73,7 +73,7 @@ public class LocalTibetanScanner extends TibetanScanner
 	private void scanSyllable(String sil)
 	{
 		SyllableListTree resultado=null;
-		Enumeration enum;
+		Enumeration enumeration;
 		Word w;
 		String silSinDec;
 		boolean aadded;
@@ -171,10 +171,10 @@ public class LocalTibetanScanner extends TibetanScanner
 				wordList.addLast(w);
 				this.resetAll();
 
-				enum = floatingSil.elements();
+				enumeration = floatingSil.elements();
 				floatingSil = new Vector();
-				while (enum.hasMoreElements())
-					scanSyllable((String)enum.nextElement());
+				while (enumeration.hasMoreElements())
+					scanSyllable((String)enumeration.nextElement());
 
 				scanSyllable(sil);
 			}
@@ -199,7 +199,7 @@ public class LocalTibetanScanner extends TibetanScanner
 
 	public void finishUp()
 	{
-		Enumeration enum;
+		Enumeration enumeration;
 		Word w;
 
 		while (lastCompSil!=null)
@@ -208,10 +208,10 @@ public class LocalTibetanScanner extends TibetanScanner
 			wordList.addLast(w);
 			this.resetAll();
 
-			enum = floatingSil.elements();
+			enumeration = floatingSil.elements();
 			floatingSil = new Vector();
-			while (enum.hasMoreElements())
-				scanSyllable((String)enum.nextElement());
+			while (enumeration.hasMoreElements())
+				scanSyllable((String)enumeration.nextElement());
 		}
 
 		if (silActual!=null)
@@ -379,40 +379,14 @@ outAHere:
 		}
 	}
 
-
 	/** Looks for .dic file, and returns the dictionary descriptions.
 		Also updates the definitionTags in the Definitions class.
 	*/
 	public String[] getDictionaryDescriptions()
 	{
-		int n;
-		try
-		{
-			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(archivo + ".dic")));
-			SimplifiedLinkedList ll1 = new SimplifiedLinkedList(), ll2 = new SimplifiedLinkedList();
-			String s;
-			while ((s=br.readLine())!=null)
-			{
-				n = s.indexOf(",");
-				if (n < 0)
-				{
-					ll1.addLast(null);
-					ll2.addLast(s);
-				}
-				else
-				{
-					ll1.addLast(s.substring(0,n).trim());
-					ll2.addLast(s.substring(n+1).trim());
-				}
-			}
-			DictionarySource.setTags(ll2.toStringArray());
-			return ll1.toStringArray();
-		}
-		catch (Exception e)
-		{
-			return null;
-		}
+	    return FileSyllableListTree.getDictionaryDescriptions(archivo);
 	}
+	
     public void destroy()
     {
         FileSyllableListTree.closeFiles();
