@@ -569,10 +569,15 @@ public class ACIPConverter {
                                        && null != lastGuy
                                        && (lpl = lastGuy.get(lastGuy.size() - 1)).size() == 1
                                        && lpl.get(0).getLeft().equals("NG")) {
-                                if (null != writer) unicode = ACIPRules.getUnicodeFor(" ", false);
+                                // {NGO,} is not acceptable;
+                                // typesetting requires we treat this
+                                // like {NGO\u0F0C,}.
+                                if (null != writer) {
+                                    writer.write("\u0F0C");
+                                }
                                 if (null != tdoc) {
-                                    DuffCode tshegDuff = TibetanMachineWeb.getGlyph(" ");
-                                    if (null == tshegDuff) throw new Error("tsheg duff");
+                                    DuffCode tshegDuff = TibetanMachineWeb.getGlyph("*");
+                                    if (null == tshegDuff) throw new Error("non-breaking tsheg duff");
                                     tdoc.appendDuffCode(tdocLocation[0]++,
                                                         tshegDuff, lastColor);
                                 }
