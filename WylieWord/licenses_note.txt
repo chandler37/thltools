@@ -1,0 +1,4 @@
+All portions of WylieWord are licensed under the THDL Open Community
+License, distributed with this software, except for the fonts, which
+are licensed under the Gnu General Public License, also distributed
+with this software.
