@@ -31,7 +31,6 @@ import org.thdl.util.ThdlOptions;
  * Tests {@link org.thdl.tib.input.Duffpane} at the unit level to see
  * that the various keyboards work as expected.
  */
-// DLC NOW ask around -- does wylie have the ambiguity edge over ACIP because l+ta is not legal wylie (only lta is)?
 public class DuffPaneTest extends TestCase {
     /** A DuffPane that uses THDL's extended Wylie keyboard: */
     private DuffPane dp;
@@ -1056,6 +1055,8 @@ public class DuffPaneTest extends TestCase {
         ensureKeysGiveCorrectWylie("'.g.m.s",
                                    "'gams");
 
+        ensureKeysGiveCorrectWylie("n+ya");
+
         {
             // These are correctly handled in terms of
             // makeIllegalTibetanGoEndToEnd:
@@ -1114,6 +1115,255 @@ public class DuffPaneTest extends TestCase {
             // e("r+wa"); should be the same as e("rwa") but is not, FIXME
         }
     }
+
+    private void enableACIPKeyboard() {
+        new JskadKeyboard("Asian Classics Input Project (ACIP) FOR DuffPaneTest",
+                          "acip_keyboard.ini",
+                          null).activate(dp);
+    }
+
+    /** Tests performing a few keystrokes in the ACIP keyboard,
+     *  turning those into our internal representation (IR), and then
+     *  converting the result to Extended Wylie.  These test cases are
+     *  as solid as can be; they just test that we can handle all the
+     *  consonants and basic vowels. NOTE WELL: YOU WOULD NOT USE
+     *  Jskad's EXISTING KEYBOARD MECHANISM TO IMPLEMENT
+     *  ACIP->TIBETAN.  SEE THE BUG LIST AS SF.NET. */
+    public void testACIPAlphabetToIRToWylie() {
+        enableACIPKeyboard();
+
+        ensureKeysGiveCorrectWylie("KA", "ka");
+        ensureKeysGiveCorrectWylie("KHA", "kha");
+        ensureKeysGiveCorrectWylie("GA", "ga");
+        ensureKeysGiveCorrectWylie("NGA", "nga");
+        ensureKeysGiveCorrectWylie("CA", "ca");
+        ensureKeysGiveCorrectWylie("CHA", "cha");
+        ensureKeysGiveCorrectWylie("JA", "ja");
+        ensureKeysGiveCorrectWylie("NYA", "nya");
+        ensureKeysGiveCorrectWylie("TA", "ta");
+        ensureKeysGiveCorrectWylie("THA", "tha");
+        ensureKeysGiveCorrectWylie("DA", "da");
+        ensureKeysGiveCorrectWylie("NA", "na");
+        ensureKeysGiveCorrectWylie("PA", "pa");
+        ensureKeysGiveCorrectWylie("PHA", "pha");
+        ensureKeysGiveCorrectWylie("BA", "ba");
+        ensureKeysGiveCorrectWylie("MA", "ma");
+        ensureKeysGiveCorrectWylie("TZA", "tsa");
+        ensureKeysGiveCorrectWylie("TSA", "tsha");
+        ensureKeysGiveCorrectWylie("DZA", "dza");
+        ensureKeysGiveCorrectWylie("WA", "wa");
+        ensureKeysGiveCorrectWylie("ZHA", "zha");
+        ensureKeysGiveCorrectWylie("ZA", "za");
+        ensureKeysGiveCorrectWylie("'A", "'a");
+        ensureKeysGiveCorrectWylie("YA", "ya");
+        ensureKeysGiveCorrectWylie("RA", "ra");
+        ensureKeysGiveCorrectWylie("LA", "la");
+        ensureKeysGiveCorrectWylie("SHA", "sha");
+        ensureKeysGiveCorrectWylie("SA", "sa");
+        ensureKeysGiveCorrectWylie("HA", "ha");
+
+        ensureKeysGiveCorrectWylie("KI", "ki");
+        ensureKeysGiveCorrectWylie("KHI", "khi");
+        ensureKeysGiveCorrectWylie("GI", "gi");
+        ensureKeysGiveCorrectWylie("NGI", "ngi");
+        ensureKeysGiveCorrectWylie("CI", "ci");
+        ensureKeysGiveCorrectWylie("CHI", "chi");
+        ensureKeysGiveCorrectWylie("JI", "ji");
+        ensureKeysGiveCorrectWylie("NYI", "nyi");
+        ensureKeysGiveCorrectWylie("TI", "ti");
+        ensureKeysGiveCorrectWylie("THI", "thi");
+        ensureKeysGiveCorrectWylie("DI", "di");
+        ensureKeysGiveCorrectWylie("NI", "ni");
+        ensureKeysGiveCorrectWylie("PI", "pi");
+        ensureKeysGiveCorrectWylie("PHI", "phi");
+        ensureKeysGiveCorrectWylie("BI", "bi");
+        ensureKeysGiveCorrectWylie("MI", "mi");
+        ensureKeysGiveCorrectWylie("TZI", "tsi");
+        ensureKeysGiveCorrectWylie("TSI", "tshi");
+        ensureKeysGiveCorrectWylie("DZI", "dzi");
+        ensureKeysGiveCorrectWylie("WI", "wi");
+        ensureKeysGiveCorrectWylie("ZHI", "zhi");
+        ensureKeysGiveCorrectWylie("ZI", "zi");
+        ensureKeysGiveCorrectWylie("'I",
+                                   // FIXME: should be 'i
+                                   "'I");
+        ensureKeysGiveCorrectWylie("YI", "yi");
+        ensureKeysGiveCorrectWylie("RI", "ri");
+        ensureKeysGiveCorrectWylie("LI", "li");
+        ensureKeysGiveCorrectWylie("SHI", "shi");
+        ensureKeysGiveCorrectWylie("SI", "si");
+        ensureKeysGiveCorrectWylie("HI", "hi");
+    }
+
+    /** Tests that we can handle the ACIP Tibetanized Sanskrit
+     *  stacks. NOTE WELL: YOU WOULD NOT USE Jskad's EXISTING KEYBOARD
+     *  MECHANISM TO IMPLEMENT ACIP->TIBETAN.  SEE THE BUG LIST AS
+     *  SF.NET. */
+    public void testACIPSanskritLettersToIRToWylie() {
+        enableACIPKeyboard();
+
+        ensureKeysGiveCorrectWylie("GHA", "g+ha");
+        ensureKeysGiveCorrectWylie("tA", "Ta");
+        ensureKeysGiveCorrectWylie("thA", "Tha");
+        ensureKeysGiveCorrectWylie("dA", "Da");
+        ensureKeysGiveCorrectWylie("dHA", "D+ha");
+        ensureKeysGiveCorrectWylie("nA", "Na");
+        ensureKeysGiveCorrectWylie("DHA", "d+ha");
+        ensureKeysGiveCorrectWylie("BHA", "b+ha");
+        ensureKeysGiveCorrectWylie("DZHA", "dz+ha");
+        ensureKeysGiveCorrectWylie("shA", "Sha");
+        ensureKeysGiveCorrectWylie("KshA", "k+Sha");
+
+        ensureKeysGiveCorrectWylie("GHU", "g+hu");
+        ensureKeysGiveCorrectWylie("tU", "Tu");
+        ensureKeysGiveCorrectWylie("thU", "Thu");
+        ensureKeysGiveCorrectWylie("dU", "Du");
+        ensureKeysGiveCorrectWylie("dHU", "D+hu");
+        ensureKeysGiveCorrectWylie("nU", "Nu");
+        ensureKeysGiveCorrectWylie("DHU", "d+hu");
+        ensureKeysGiveCorrectWylie("BHU", "b+hu");
+        ensureKeysGiveCorrectWylie("DZHU", "dz+hu");
+        ensureKeysGiveCorrectWylie("shU", "Shu");
+        ensureKeysGiveCorrectWylie("KshU", "k+Shu");
+    }
+
+    /** Tests performing a few keystrokes in the ACIP keyboard,
+     *  turning those into our internal representation (IR), and then
+     *  converting the result to Extended Wylie.  These test cases are
+     *  solid; we have some certainty that our test cases are
+     *  correct. NOTE WELL: YOU WOULD NOT USE Jskad's EXISTING
+     *  KEYBOARD MECHANISM TO IMPLEMENT ACIP->TIBETAN.  SEE THE BUG
+     *  LIST AS SF.NET. */
+    public void testACIPToIRToWylie() {
+        enableACIPKeyboard();
+
+        ensureKeysGiveCorrectWylie("NGA",
+                                   "nga");
+
+        ensureKeysGiveCorrectWylie("NYA",
+                                   "nya");
+
+        ensureKeysGiveCorrectWylie("TSA",
+                                   "tsha");
+
+        ensureKeysGiveCorrectWylie("TZA",
+                                   "tsa");
+
+        ensureKeysGiveCorrectWylie("DZA",
+                                   "dza");
+
+        ensureKeysGiveCorrectWylie("SHA",
+                                   "sha");
+
+        ensureKeysGiveCorrectWylie("KYA",
+                                   "kya");
+
+        ensureKeysGiveCorrectWylie("RMA",
+                                   "rma");
+
+        ensureKeysGiveCorrectWylie("G-YAS",
+                                   "g.yas");
+        ensureKeysGiveCorrectWylie("GA-YAS",
+                                   "g.yas");
+        ensureKeysGiveCorrectWylie("GAYASA",
+                                   "g.yas");
+
+        ensureKeysGiveCorrectWylie("GYAS",
+                                   "gyas");
+
+        ensureKeysGiveCorrectWylie("nga", // g has no effect; a has no effect.
+                                   "Na");
+
+        ensureKeysGiveCorrectWylie("N+YA",
+                                   "n+ya");
+
+        ensureKeysGiveCorrectWylie("GHA",
+                                   "g+ha");
+
+        ensureKeysGiveCorrectWylie("D+MAR ",
+                                   "d+mara ");
+
+        ensureKeysGiveCorrectWylie("KHKHA ",
+                                   "kh+kha ");
+
+        ensureKeysGiveCorrectWylie("T+SA",
+                                   "t+sa");
+
+        ensureKeysGiveCorrectWylie("PADMA",
+                                   "pad+ma");
+        ensureKeysGiveCorrectWylie("PA-DMA",
+                                   "pad+ma");
+        ensureKeysGiveCorrectWylie("P-DMA",
+                                   "pad+ma");
+        ensureKeysGiveCorrectWylie("P-D+MA",
+                                   "pad+ma");
+        ensureKeysGiveCorrectWylie("P-D+M ",
+                                   "pad+ma ");
+    }
+
+    /** Tests performing a few keystrokes in the ACIP keyboard,
+     *  turning those into our internal representation (IR), and then
+     *  converting the result to Extended Wylie.  These test cases are
+     *  iffy, we're either certain that Jskad is doing the wrong
+     *  thing, or we don't know what the right thing is.  NOTE WELL:
+     *  YOU WOULD NOT USE Jskad's EXISTING KEYBOARD MECHANISM TO
+     *  IMPLEMENT ACIP->TIBETAN.  SEE THE BUG LIST AS SF.NET. */
+    public void testIffyACIPToIRToWylie() {
+        enableACIPKeyboard();
+
+        // NOTE WELL: it's a prefix, it matters -- DMAR is {D}{M}{R}
+        // that is, not {D+M}{R} -- so use ACIP->Tibetan technology
+        // for a tsheg-bar-by-tsheg-bar ACIP keyboard.
+
+        ensureKeysGiveCorrectWylie("DMAR ",
+                                   // FIXME: should be "dmar "
+                                   "d+mara ");
+
+        ensureKeysGiveCorrectWylie("GNAS ",
+                                   // FIXME: should be "gnas "
+                                   "g+nasa ");
+
+        ensureKeysGiveCorrectWylie("PA DMA ",
+                                   "pa d+ma "); // FIXME: should be "pa dma"
+
+        ensureKeysGiveCorrectWylie("DMIGS ",
+                                   // FIXME: S0526m proves this should be "dmigs "
+                                   "d+migasa ");
+
+        ensureKeysGiveCorrectWylie("ZHVA",
+                                   "zha"
+                                   // FIXME: should be "zhwa", see
+                                   // bug list at sf.net
+                                   );
+
+        ensureKeysGiveCorrectWylie("GRVA",
+                                   "gra"
+                                   // FIXME: should be "grwa", see
+                                   // bug list at sf.net
+                                   );
+
+        /* From
+           http://www.asianclassics.org/download/tibetancode/conventions.html:
+
+        The hyphen is used to indicate that two letters appear in
+        horizontally adjacent positions with no intervening "tsek" (as
+        seen in G-Y, above). Although the hyphen is usually not needed
+        for resolving ambiguity (PADMA is just as definite as PA-DMA
+        or PA-D+MA), it is sometimes typed in cases other than
+        G-Y. [Note that the DMA sequence in PADMA does not strictly
+        require a plus-sign since the D can only be interpreted as a
+        suffix to PA and not as a prefix to MA; however, if written
+        (incorrectly) as a PA DMA, the D could be interpreted as a
+        prefix to MA.]
+
+           Thus, PADMA is supposed to make PA-D+MA appear.  That's
+           ODD, isn't it?  Because that requires knowledge that PA
+           cannot be a prefix.  But that's how it's done; see
+           Td4283m.act/Td4283m.rtf if you don't believe.
+           ACIP->Tibetan handles all these oddities, and the ACIP
+           keyboard really must use its technology.
+        */
+    }
 }
-// DLC FIXME: EWTS needs a list of "native" stacks in it.
+// FIXME: EWTS needs a list of "native" stacks in it.
 
