@@ -10,7 +10,7 @@ License for the specific terms governing rights and limitations under the
 License. 
 
 The Initial Developer of this software is the Tibetan and Himalayan Digital
-Library (THDL). Portions created by the THDL are Copyright 2001 THDL.
+Library (THDL). Portions created by the THDL are Copyright 2001-2003 THDL.
 All Rights Reserved. 
 
 Contributor(s): ______________________________________.
@@ -44,7 +44,7 @@ import org.thdl.util.ThdlOptions;
 * @version 1.0
 */
 // FIXME: for speed, make either this class, its methods, or both, final?
-public class TibetanMachineWeb {
+public class TibetanMachineWeb implements THDLWylieConstants {
     /** This addresses bug 624133, "Input freezes after impossible
      *  character".  The input sequences that are valid in Extended
      *  Wylie.  For example, "Sh" will be in this container, but "S"
@@ -108,86 +108,6 @@ public class TibetanMachineWeb {
 		"TibetanMachineWeb8".intern(),
 		"TibetanMachineWeb9".intern()
 	};
-/**
-* the Wylie for bindu/anusvara
-*/
-	public static final char BINDU = 'M';
-/**
-* the Wylie for tsheg
-*/
-	public static final char TSHEG = ' '; //this character occurs in all ten TMW fonts
-/**
-* the Wylie for whitespace
-*/
-	public static final char SPACE = '_'; //this character occurs in all ten TMW fonts
-/**
-* the Sanskrit stacking separator used in Extended Wylie
-*/
-	public static final char WYLIE_SANSKRIT_STACKING_KEY = '+';
-/**
-* the Wylie disambiguating key, as a char
-*/
-	public static final char WYLIE_DISAMBIGUATING_KEY = '.';
-/**
-* the Wylie for the invisible 'a' vowel
-*/
-	public static final String WYLIE_aVOWEL = "a";
-/**
-* the Wylie for achung
-*/
-	public static final String ACHUNG = "'";
-/**
-* the Wylie for the 28th of the 30 consonants, sa:
-*/
-	public static final String SA = "s";
-/**
-* the Wylie for achen
-*/
-	public static final String ACHEN = "a";
-/**
-* the Wylie for gigu
-*/
-	public static final String i_VOWEL = "i";
-/**
-* the Wylie for zhebju
-*/
-	public static final String u_VOWEL = "u";
-/**
-* the Wylie for drengbu
-*/
-	public static final String e_VOWEL = "e";
-/**
-* the Wylie for naro
-*/
-	public static final String o_VOWEL = "o";
-/**
-* the Wylie for double drengbu
-*/
-	public static final String ai_VOWEL = "ai";
-/**
-* the Wylie for double naro
-*/
-	public static final String au_VOWEL = "au";
-/**
-* the Wylie for the subscript achung vowel
-*/
-	public static final String A_VOWEL = "A";
-/**
-* the Wylie for log yig gigu
-*/
-	public static final String reverse_i_VOWEL = "-i";
-/**
-* the Wylie for the vowel achung + gigu
-*/
-	public static final String I_VOWEL = "I";
-/**
-* the Wylie for the vowel achung + zhebju
-*/
-	public static final String U_VOWEL = "U";
-/**
-* the Wylie for the vowel achung + log yig gigu
-*/
-	public static final String reverse_I_VOWEL = "-I";
 /**
 * represents where in an array of DuffCodes you
 * find the TibetanMachine equivalence of a glyph

@@ -127,11 +127,12 @@ public class UnicodeGraphemeCluster
     /** Returns the THDL Extended Wylie transliteration of this
         grapheme cluster, or null if there is none (which happens for
         a few Tibetan codepoints, if you'll recall). If needsVowel is
-        true, then an "a" will be appended when there is no EW_achung
-        or explicit simple vowel.  If there is an explicit vowel or
-        EW_achung, it will always be present.  Note that needsVowel is
-        provided because btags is the preferred THDL Extended Wylie
-        for the four contiguous grapheme clusters
+        true, then an "a" will be appended when there is no
+        EW_achung_vowel or explicit simple vowel.  If there is an
+        explicit vowel or EW_achung_vowel, it will always be present.
+        Note that needsVowel is provided because btags is the
+        preferred THDL Extended Wylie for the four contiguous grapheme
+        clusters
         <code>"&#92;u0F56&#92;u0F4F&#92;u0F42&#92;u0F66"</code>, and
         needsVowel must be set to false for all but the grapheme
         cluster corresponding to <code>&#92;u0F4F</code> if you wish
@@ -257,7 +258,7 @@ public class UnicodeGraphemeCluster
     /** Returns the <i>height</i> for the Tibetan Unicode codepoint x.
         This relative height is 0 for a base consonant, digit,
         punctuation, mark, or sign.  It is -1 for a subjoined
-        consonant, -2 for EWSUB_wa_zur, -3 for EW_achung, +1 for
+        consonant, -2 for EWSUB_wa_zur, -3 for EW_achung_vowel, +1 for
         EWV_gigu, and so on according to the height these codepoints
         appear relative to one another when on the same stack.  If two
         codepoints have equal height, they should not exist in the

@@ -83,20 +83,21 @@ public interface UnicodeConstants {
     static final char EWC_za = '\u0F5F';
     /** Note the irregular name.  The Extended Wylie representation is
         <code>'a</code>. */
-    static final char EWC_achen = '\u0F60'; /* DLC NOW is this achen or achung? achen is EWC_a, right? comment it.  replace EWC_achen everywhere if you change it. */
+    static final char EWC_achung = '\u0F60';
     static final char EWC_ya = '\u0F61';
     static final char EWC_ra = '\u0F62';
     static final char EWC_la = '\u0F63';
     static final char EWC_sha = '\u0F64';
     static final char EWC_sa = '\u0F66';
     static final char EWC_ha = '\u0F67';
+    /** achen, the 30th consonant (and, some say, the fifth vowel) DLC NOW FIXME: rename to EWC_achen */
     static final char EWC_a = '\u0F68';
 
 
     /** In the word for father, "pA lags", there is an a-chung (i.e.,
         <code>\u0F71</code>).  This is the constant for that little
         guy. */
-    static final char EW_achung = '\u0F71';
+    static final char EW_achung_vowel = '\u0F71';
 
 
     /* Four of the five vowels, some say, or, others say, "the four

@@ -28,7 +28,8 @@ import org.thdl.util.ThdlDebug;
 
 /**
 * Provides methods for converting back and forth between Extended
-* Wylie and TibetanMachineWeb.  This class is not instantiable.
+* Wylie and Tibetan represented in TibetanMachineWeb glyphs.  This
+* class is not instantiable.
 *
 * <p>
 * The class provides a variety of static methods for converting
@@ -37,7 +38,7 @@ import org.thdl.util.ThdlDebug;
 * be exported as Rich Text Format.
 *
 * @author Edward Garrett, Tibetan and Himalayan Digital Library */
-public class TibTextUtils {
+public class TibTextUtils implements THDLWylieConstants {
     /** Do not use this contructor. */
     private TibTextUtils() { super(); }
 
@@ -255,11 +256,11 @@ public class TibTextUtils {
 		if (k < 32) //return null if character is just formatting
 			return String.valueOf(c);
 
-		if (c == TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY)
-			return String.valueOf(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
+		if (c == WYLIE_DISAMBIGUATING_KEY)
+			return String.valueOf(WYLIE_DISAMBIGUATING_KEY);
 	
-		if (c == TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY)
-			return String.valueOf(TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY);
+		if (c == WYLIE_SANSKRIT_STACKING_KEY)
+			return String.valueOf(WYLIE_SANSKRIT_STACKING_KEY);
 
 		for (i=offset+1; i<wylie.length()+1; i++) {
 			s = wylie.substring(offset, i);
@@ -332,7 +333,7 @@ public class TibTextUtils {
 
 				chars.clear();
 
-				if (next.equals(String.valueOf(TibetanMachineWeb.BINDU))) {
+				if (next.equals(String.valueOf(BINDU))) {
 					if (glyphs.isEmpty())
 						dc = null;
 					else 
@@ -369,7 +370,7 @@ public class TibTextUtils {
 								break vowel_block;
 							}
 						}
-						DuffCode[] dc_array = (DuffCode[])TibetanMachineWeb.getTibHash().get(TibetanMachineWeb.ACHEN);
+						DuffCode[] dc_array = (DuffCode[])TibetanMachineWeb.getTibHash().get(ACHEN);
 						dc = dc_array[TibetanMachineWeb.TMW];
 						glyphs.addAll(getVowel(dc, next));
 					}
@@ -398,7 +399,7 @@ public class TibTextUtils {
 				}
 			}
 
-			else if (next.equals(String.valueOf(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY))) {
+			else if (next.equals(String.valueOf(WYLIE_DISAMBIGUATING_KEY))) {
 				if (!chars.isEmpty())
 					glyphs.addAll(getGlyphs(chars, true, !isSanskrit, isSanskrit));
 
@@ -406,7 +407,7 @@ public class TibTextUtils {
 				isSanskrit = false;
 			}
 
-			else if (next.equals(String.valueOf(TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY))) {
+			else if (next.equals(String.valueOf(WYLIE_SANSKRIT_STACKING_KEY))) {
 				if (!isSanskrit) { //begin sanskrit stack
 					switch (chars.size()) {
 						case 0:
@@ -475,13 +476,13 @@ public class TibTextUtils {
 		List bindus = new ArrayList();
 
 		if (null == dc) {
-			bindus.add(TibetanMachineWeb.getGlyph(String.valueOf(TibetanMachineWeb.BINDU)));
+			bindus.add(TibetanMachineWeb.getGlyph(String.valueOf(BINDU)));
 			return bindus;
 		}
 
 		if (!TibetanMachineWeb.getBinduMap().containsKey(dc)) {
 			bindus.add(dc);
-			bindus.add(TibetanMachineWeb.getGlyph(String.valueOf(TibetanMachineWeb.BINDU)));
+			bindus.add(TibetanMachineWeb.getGlyph(String.valueOf(BINDU)));
 			return bindus;
 		}
 
@@ -524,7 +525,7 @@ public class TibTextUtils {
 //this vowel doesn't correspond to a glyph -
 //so you just return the original context
 
-		if (	vowel.equals(TibetanMachineWeb.WYLIE_aVOWEL) ||
+		if (	vowel.equals(WYLIE_aVOWEL) ||
 			TibetanMachineWeb.isTopVowel(context_2)) {
 			if (context_1 != null)
 				vowels.add(context_1);
@@ -537,34 +538,34 @@ public class TibTextUtils {
 //these vowels have one invariant form - therefore,
 //dc_context is just returned along with that form
 
-		if (vowel.equals(TibetanMachineWeb.ai_VOWEL)) {
+		if (vowel.equals(ai_VOWEL)) {
 			if (context_1 != null)
 				vowels.add(context_1);
 
 			vowels.add(context_2);
-			DuffCode[] dc_v = (DuffCode[])TibetanMachineWeb.getTibHash().get(TibetanMachineWeb.ai_VOWEL);
+			DuffCode[] dc_v = (DuffCode[])TibetanMachineWeb.getTibHash().get(ai_VOWEL);
 			vowels.add(dc_v[TibetanMachineWeb.TMW]);
 			return vowels;
 		}
 
-		if (vowel.equals(TibetanMachineWeb.au_VOWEL)) {
+		if (vowel.equals(au_VOWEL)) {
 			if (context_1 != null)
 				vowels.add(context_1);
 
 			vowels.add(context_2);
-			DuffCode[] dc_v = (DuffCode[])TibetanMachineWeb.getTibHash().get(TibetanMachineWeb.au_VOWEL);
+			DuffCode[] dc_v = (DuffCode[])TibetanMachineWeb.getTibHash().get(au_VOWEL);
 			vowels.add(dc_v[TibetanMachineWeb.TMW]);
 			return vowels;
 		}
 
-		if (vowel.equals(TibetanMachineWeb.reverse_i_VOWEL)) {
+		if (vowel.equals(reverse_i_VOWEL)) {
 			if (context_1 != null)
 				vowels.add(context_1);
 
 			vowels.add(context_2);
 
 			if (!TibetanMachineWeb.isTopVowel(context_2)) {
-				DuffCode[] dc_v = (DuffCode[])TibetanMachineWeb.getTibHash().get(TibetanMachineWeb.reverse_i_VOWEL);
+				DuffCode[] dc_v = (DuffCode[])TibetanMachineWeb.getTibHash().get(reverse_i_VOWEL);
 				vowels.add(dc_v[TibetanMachineWeb.TMW]);
 			}
 
@@ -578,7 +579,7 @@ public class TibTextUtils {
 //returned along with the vowel appropriate to
 //that context
 
-		if (vowel.equals(TibetanMachineWeb.i_VOWEL)) {
+		if (vowel.equals(i_VOWEL)) {
 			String hashKey_context = TibetanMachineWeb.getHashKeyForGlyph(context_2);
 			DuffCode dc_v = TibetanMachineWeb.getVowel(hashKey_context, TibetanMachineWeb.VOWEL_i);
 			if (null == dc_v && null != context_1) {
@@ -597,7 +598,7 @@ public class TibTextUtils {
 			return vowels;
 		}
 
-		if (vowel.equals(TibetanMachineWeb.e_VOWEL)) {
+		if (vowel.equals(e_VOWEL)) {
 			String hashKey_context = TibetanMachineWeb.getHashKeyForGlyph(context_2);
 			DuffCode dc_v = TibetanMachineWeb.getVowel(hashKey_context, TibetanMachineWeb.VOWEL_e);
 			if (null == dc_v && null != context_1) {
@@ -616,7 +617,7 @@ public class TibTextUtils {
 			return vowels;
 		}
 
-		if (vowel.equals(TibetanMachineWeb.o_VOWEL)) {
+		if (vowel.equals(o_VOWEL)) {
 			String hashKey_context = TibetanMachineWeb.getHashKeyForGlyph(context_2);
 			DuffCode dc_v = TibetanMachineWeb.getVowel(hashKey_context, TibetanMachineWeb.VOWEL_o);
 			if (null == dc_v && null != context_1) {
@@ -641,7 +642,7 @@ public class TibTextUtils {
 //both u and A cannot be affixed to ordinary k or g, but
 //rather the shortened versions of k and g - therefore,
 
-		if (vowel.equals(TibetanMachineWeb.u_VOWEL)) {
+		if (vowel.equals(u_VOWEL)) {
 			String hashKey_context = TibetanMachineWeb.getHashKeyForGlyph(context_2);
 			DuffCode halfHeight = TibetanMachineWeb.getHalfHeightGlyph(hashKey_context);
 			DuffCode dc_v = TibetanMachineWeb.getVowel(hashKey_context, TibetanMachineWeb.VOWEL_u);
@@ -660,7 +661,7 @@ public class TibTextUtils {
 			return vowels;
 		}
 
-		if (vowel.equals(TibetanMachineWeb.A_VOWEL)) {
+		if (vowel.equals(A_VOWEL)) {
 			String hashKey_context = TibetanMachineWeb.getHashKeyForGlyph(context_2);
 			DuffCode halfHeight = TibetanMachineWeb.getHalfHeightGlyph(hashKey_context);
 			DuffCode dc_v = TibetanMachineWeb.getVowel(hashKey_context, TibetanMachineWeb.VOWEL_A);
@@ -680,7 +681,7 @@ public class TibTextUtils {
 			return vowels;
 		}
 
-		if (vowel.equals(TibetanMachineWeb.U_VOWEL)) {
+		if (vowel.equals(U_VOWEL)) {
 			String hashKey_context = TibetanMachineWeb.getHashKeyForGlyph(context_2);
 			DuffCode halfHeight = TibetanMachineWeb.getHalfHeightGlyph(hashKey_context);
 			DuffCode dc_v = TibetanMachineWeb.getVowel(hashKey_context, TibetanMachineWeb.VOWEL_U);
@@ -704,7 +705,7 @@ public class TibTextUtils {
 //require a change from the previous character,
 //and consist of two glyphs themselves
 
-		if (vowel.equals(TibetanMachineWeb.I_VOWEL)) {
+		if (vowel.equals(I_VOWEL)) {
 			String hashKey_context = TibetanMachineWeb.getHashKeyForGlyph(context_2);
 			DuffCode halfHeight = TibetanMachineWeb.getHalfHeightGlyph(hashKey_context);
 			DuffCode dc_v_sub = TibetanMachineWeb.getVowel(hashKey_context, TibetanMachineWeb.VOWEL_A);
@@ -726,11 +727,11 @@ public class TibTextUtils {
 			return vowels;
 		}
 
-		if (vowel.equals(TibetanMachineWeb.reverse_I_VOWEL)) {
+		if (vowel.equals(reverse_I_VOWEL)) {
 			String hashKey_context = TibetanMachineWeb.getHashKeyForGlyph(context_2);
 			DuffCode halfHeight = TibetanMachineWeb.getHalfHeightGlyph(hashKey_context);
 			DuffCode dc_v_sub = TibetanMachineWeb.getVowel(hashKey_context, TibetanMachineWeb.VOWEL_A);
-			DuffCode[] tv_array = (DuffCode[])TibetanMachineWeb.getTibHash().get(TibetanMachineWeb.reverse_i_VOWEL);
+			DuffCode[] tv_array = (DuffCode[])TibetanMachineWeb.getTibHash().get(reverse_i_VOWEL);
 			DuffCode dc_v_sup = tv_array[TibetanMachineWeb.TMW];
 
 			if (null != context_1)
@@ -766,10 +767,10 @@ public class TibTextUtils {
 
     /** Returns "a", unless wylie is already "a". */
     private static String aVowelToUseAfter(String wylie) {
-        if (wylie.equals(TibetanMachineWeb.ACHEN))
+        if (wylie.equals(ACHEN))
             return "";
         else
-            return TibetanMachineWeb.WYLIE_aVOWEL;
+            return WYLIE_aVOWEL;
     }
 
     private static String unambiguousPostAVowelWylie(String wylie1,
@@ -781,7 +782,7 @@ public class TibTextUtils {
         if (TibetanMachineWeb.isWylieTop(wylie1)
             && wylie2.equals(/* FIXME: hard-coded */ "d"))
             disambiguator
-                = new String(new char[] { TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY });
+                = new String(new char[] { WYLIE_DISAMBIGUATING_KEY });
         return wylie1 + disambiguator + wylie2;
     }
 
@@ -831,13 +832,13 @@ public class TibTextUtils {
                 }
 
                 if (TibetanMachineWeb.isAmbiguousWylie(lastWylie, wylie))
-                    sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
+                    sb.append(WYLIE_DISAMBIGUATING_KEY);
 
-                if (!wylie.equals(TibetanMachineWeb.ACHEN)) {
+                if (!wylie.equals(ACHEN)) {
                     sb.append(wylie);
-                    sb.append(TibetanMachineWeb.WYLIE_aVOWEL);
+                    sb.append(WYLIE_aVOWEL);
                 } else {
-                    sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
+                    sb.append(WYLIE_DISAMBIGUATING_KEY);
                     sb.append(wylie);
                 }
             }
@@ -861,12 +862,12 @@ public class TibTextUtils {
                 StringBuffer tailEndWylie = null;
                 int effectiveSize = size - 2;
                 while (effectiveSize >= 0
-                       && TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(effectiveSize)).equals(TibetanMachineWeb.ACHUNG)) {
+                       && TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(effectiveSize)).equals(ACHUNG)) {
                     if (null == tailEndWylie) tailEndWylie = new StringBuffer();
                     // prepend:
                     tailEndWylie.insert(0,
-                                        TibetanMachineWeb.ACHUNG
-                                        + aVowelToUseAfter(TibetanMachineWeb.ACHUNG)
+                                        ACHUNG
+                                        + aVowelToUseAfter(ACHUNG)
                                         + TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(effectiveSize + 1)));
                     effectiveSize -= 2;
                 }
@@ -893,8 +894,8 @@ public class TibTextUtils {
                 for (int i = 0; i < size; i++) {
                     wylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(i));
                     if (TibetanMachineWeb.isAmbiguousWylie(lastWylie, wylie)
-                        || (i != 0 && wylie.equals(TibetanMachineWeb.ACHEN)))
-                        sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
+                        || (i != 0 && wylie.equals(ACHEN)))
+                        sb.append(WYLIE_DISAMBIGUATING_KEY);
 
                     sb.append(wylie + aVowelToUseAfter(wylie));
                     lastWylie = wylie;
@@ -907,8 +908,8 @@ public class TibTextUtils {
             while (i+2 < size) {
                 wylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(i));
                 if (TibetanMachineWeb.isAmbiguousWylie(lastWylie, wylie)
-                    || (i != 0 && wylie.equals(TibetanMachineWeb.ACHEN)))
-                    sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
+                    || (i != 0 && wylie.equals(ACHEN)))
+                    sb.append(WYLIE_DISAMBIGUATING_KEY);
 
                 sb.append(wylie);
                 lastWylie = wylie;
@@ -933,7 +934,11 @@ public class TibTextUtils {
                 if (TibetanMachineWeb.isWylieLeft(wylie0)) {
                     /* is it ambiguous? */
                     if (TibetanMachineWeb.isWylieRight(wylie1)
-                        && TibetanMachineWeb.SA.equals(wylie2)) {
+                        && SA.equals(wylie2) /* isWylieFarRight would
+                                              * work, but the list of
+                                              * 9 words doesn't have
+                                              * any ending with d --
+                                              * all end with s. */) {
                         /* Yes, this is ambiguous. How do we handle it?  See this from Andres:
 
                         I'm posting this upon David Chandler's request. According to Lobsang
@@ -1001,14 +1006,14 @@ public class TibTextUtils {
                         //                 }
                         //             }
                         //             if (disambiguatorNeeded)
-                        //                 sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
+                        //                 sb.append(WYLIE_DISAMBIGUATING_KEY);
 
                             
                     } else {
                         /* no ambiguity. the "a" vowel comes after
                          * wylie1. */
                         if (TibetanMachineWeb.isAmbiguousWylie(wylie0, wylie1))
-                            sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
+                            sb.append(WYLIE_DISAMBIGUATING_KEY);
                         sb.append(wylie1
                                   + aVowelToUseAfter(wylie1)
                                   + wylie2);
@@ -1069,8 +1074,8 @@ public class TibTextUtils {
 
 			if (TibetanMachineWeb.isAmbiguousWylie(lastWylie, currWylie)
 				|| (!lastWylie.equals("")
-                    && currWylie.equals(TibetanMachineWeb.ACHEN)))
-                sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
+                    && currWylie.equals(ACHEN)))
+                sb.append(WYLIE_DISAMBIGUATING_KEY);
 
 			sb.append(currWylie);
 
@@ -1125,7 +1130,7 @@ public class TibTextUtils {
                 wylie = TibetanMachineWeb.getWylieForGlyph(dcs[i]);
 
                 boolean containsBindu = false;
-                if (wylie.length() > 1 && wylie.charAt(wylie.length()-1) == TibetanMachineWeb.BINDU) {
+                if (wylie.length() > 1 && wylie.charAt(wylie.length()-1) == BINDU) {
                     char[] cArray = wylie.toCharArray();
                     wylie = new String(cArray, 0, wylie.length()-1);
                     containsBindu = true;
@@ -1157,18 +1162,18 @@ public class TibTextUtils {
                     } else if (TibetanMachineWeb.isWylieVowel(wylie)) {
                         if (isLastVowel) {
                             int len = wylieBuffer.length();
-                            int A_len = TibetanMachineWeb.A_VOWEL.length();
+                            int A_len = A_VOWEL.length();
 
-                            if (wylieBuffer.substring(len-A_len).equals(TibetanMachineWeb.A_VOWEL)) {
+                            if (wylieBuffer.substring(len-A_len).equals(A_VOWEL)) {
                                 try {
-                                    if (wylie.equals(TibetanMachineWeb.i_VOWEL)) {
+                                    if (wylie.equals(i_VOWEL)) {
                                         wylieBuffer.delete(len-A_len, len);
-                                        wylieBuffer.append(TibetanMachineWeb.I_VOWEL);
+                                        wylieBuffer.append(I_VOWEL);
                                         isLastVowel = false;
                                         break process_block;
-                                    } else if (wylie.equals(TibetanMachineWeb.reverse_i_VOWEL)) {
+                                    } else if (wylie.equals(reverse_i_VOWEL)) {
                                         wylieBuffer.delete(len-A_len, len);
-                                        wylieBuffer.append(TibetanMachineWeb.reverse_I_VOWEL);
+                                        wylieBuffer.append(reverse_I_VOWEL);
                                         isLastVowel = false;
                                         break process_block;
                                     }
@@ -1189,7 +1194,7 @@ public class TibTextUtils {
                                 DuffCode top_dc = (DuffCode)glyphList.get(glyphCount-1);
                                 String top_wylie = TibetanMachineWeb.getWylieForGlyph(top_dc);
 
-                                if (top_wylie.equals(TibetanMachineWeb.ACHEN)) {
+                                if (top_wylie.equals(ACHEN)) {
                                     glyphList.remove(glyphCount-1);
 										
                                     if (glyphCount-1 == 0) {
@@ -1200,7 +1205,7 @@ public class TibTextUtils {
                                     }
                                 }
 
-                                if (top_dc == null || !TibetanMachineWeb.getWylieForGlyph(top_dc).equals(TibetanMachineWeb.ACHUNG)) {
+                                if (top_dc == null || !TibetanMachineWeb.getWylieForGlyph(top_dc).equals(ACHUNG)) {
                                     String thisPart = withoutA(glyphList);
                                     wylieBuffer.append(thisPart); //append consonants in glyphList
                                 } else {
@@ -1212,12 +1217,12 @@ public class TibTextUtils {
                                         wylieBuffer.append(thisPart);
                                     }
 
-                                    wylieBuffer.append(TibetanMachineWeb.ACHUNG);
+                                    wylieBuffer.append(ACHUNG);
                                 }
                             }
 
                             if (insertDisAmbig)
-                                wylieBuffer.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
+                                wylieBuffer.append(WYLIE_DISAMBIGUATING_KEY);
 
                             wylieBuffer.append(wylie); //append vowel
 
@@ -1234,7 +1239,7 @@ public class TibTextUtils {
                 if (containsBindu) {
                     isLastVowel = false;
                     wylieBuffer.append(withoutA(glyphList));
-                    wylieBuffer.append(TibetanMachineWeb.BINDU); //append the bindu
+                    wylieBuffer.append(BINDU); //append the bindu
                     glyphList.clear();
                 }
             }

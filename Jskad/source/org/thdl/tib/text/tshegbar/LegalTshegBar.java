@@ -18,7 +18,7 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.tshegbar;
 
-import org.thdl.tib.text.TibetanMachineWeb;
+import org.thdl.tib.text.THDLWylieConstants;
 import org.thdl.util.ThdlDebug;
 
 /** <p>A LegalTshegBar is a simple Tibetan syllable or a syllable with
@@ -29,7 +29,7 @@ import org.thdl.util.ThdlDebug;
  *  <ul>
  *
  *  <li>It contains at most one prefix, which must be one of {EWC_ga,
- *  EWC_da, EWC_ba, EWC_ma, EWC_achen} and must be prefixable to the
+ *  EWC_da, EWC_ba, EWC_ma, EWC_achung} and must be prefixable to the
  *  root letter.</li>
  *
  *  <li>It contains no vocalic modifications</li>
@@ -39,12 +39,11 @@ import org.thdl.util.ThdlDebug;
  *
  *  <li>It contains at most one vowel from the set {EWV_a, EWV_i,
  *  EWV_e, EWV_u}, and that vowel is on the root stack.  The one
- *  exception is that a 'i suffix is permitted (this is a connective
- *  case marker).</li>
+ *  exception is that 'i (i.e., the connective case marker), 'u, and
+ *  'o suffixes are permitted.</li>
  *
- *  <li>It has at most one suffix, which is a single consonant or the
- *  special connective case marker 'i (i.e.,
- *  <code>"&#92;u0F60&#92;u0F72"</code>).</li>
+ *  <li>It has at most one suffix, which is a single consonant or a
+ *  string consisting of 'i, 'u, 'o, 'am, and 'ang.</li>
  *
  *
 DLC FIXME: we must allow many suffixes.  See Andres' e-mail below:
@@ -69,10 +68,8 @@ And also there are cases where they combine. For ex you can have
  *
  *
  *  <li>It may contain a EWC_sa or EWC_da postsuffix iff there exists
- *  a suffix (and a suffix that is not the special connective case
- *  marker 'i (i.e., <code>"&#92;u0F60&#92;u0F72"</code>) (DLC FIXME: 'o and
- *  'am maybe?  I asked in the "Embarrasing error in wylie conversion"
- *  bug report.).</li>
+ *  a suffix (and a suffix that is not based on 'i, 'o, 'u, 'am, and
+ *  'ang).</li>
  *
  *  <li>The root stack follows the rules of Tibetan syntax, meaning
  *  that the following holds:
@@ -112,7 +109,7 @@ And also there are cases where they combine. For ex you can have
  *  e.g. p. 548.</p>
  *
  *  @author David Chandler */
-public class LegalTshegBar
+public final class LegalTshegBar
     extends TshegBar
     implements UnicodeConstants
 {
@@ -129,8 +126,8 @@ public class LegalTshegBar
     private boolean hasWaZur;
     /** true iff EW_wa_zur is under the root syllable. */
     private boolean hasAChung;
-    /** If this is a string, it is of a single codepoint or is equal
-     *  to {@link #getConnectiveCaseSuffix()} */
+    /** If this is a string, it is of a single codepoint or is a
+     * string formed from 'i, 'o, 'u, 'am, and 'ang. */
     private String suffix;
     /** EW_da, EW_sa, or EW_ABSENT */
     private char postsuffix;
@@ -236,24 +233,24 @@ public class LegalTshegBar
     }
 
     /** Returns null if there is no suffix, or a string containing the
-     *  one consonant or a string <code>"&#92;u0F60&#92;u0F72"</code>
-     *  containing two codepoints in the special case that the suffix
-     *  is that connective case marker {@link
-     *  #getConnectiveCaseSuffix()}. */
+     *  one consonant or a string like <code>"&#92;u0F60&#92;u0F72"</code>
+     *  in the case that the suffix
+     *  is 'i, 'u'i'o, 'am, 'ang, etc. */
     public String getSuffix() {
         return suffix;
     }
 
     /** Returns true iff there is a suffixed consonant or a suffixed
-     *  <code>'i</code> (DLC FIXME). */
+     *  string consisting of 'i, 'u, 'o, 'am, and 'ang. */
     public boolean hasSuffix() {
         return (null != suffix);
     }
 
     /** Returns true iff there is a single, suffixed consonant.  This
-        means that suffixes like <code>'am</code>, <code>'i</code>,
-        <code>'u</code>, and <code>'o</code> are not present, but this
-        does not rule out the presence of a postsuffix. */
+        means that suffixes made from <code>'am</code>,
+        <code>'ang</code> <code>'i</code>, <code>'u</code>, and
+        <code>'o</code> are not present, but this does not rule out
+        the presence of a postsuffix. */
     public boolean hasSimpleSuffix() {
         return ((null != suffix) && (1 == suffix.length()));
     }
@@ -278,12 +275,6 @@ public class LegalTshegBar
      *  EWC_sa. */
     public boolean hasPostsuffix() {
         return (EW_ABSENT != postsuffix);
-    }
-
-    /** Returns true iff this syllable has a <code>'i</code>
-     *  suffix. */
-    public boolean hasConnectiveCaseMarkerSuffix() {
-        return getSuffix().equals(getConnectiveCaseSuffix());
     }
 
     /** Returns the root consonant. */
@@ -324,7 +315,7 @@ public class LegalTshegBar
 
     private final static String possibleSuffixes
         = new String(new char[] {
-            EWC_ga, EWC_nga, EWC_da, EWC_na, EWC_ba, EWC_ma, EWC_achen,
+            EWC_ga, EWC_nga, EWC_da, EWC_na, EWC_ba, EWC_ma, EWC_achung,
             EWC_ra, EWC_la, EWC_sa
         });
 
@@ -340,18 +331,6 @@ public class LegalTshegBar
         // EWSUB_ra_btags.
     }
 
-    private final static String connectiveCaseSuffix
-        = new String(new char[] {
-            EWC_achen, EWV_i
-        });
-
-    /** Returns a two-codepoint string consisting of the Unicode
-     *  representation of what THDL Extended Wylie calls
-     *  <code>'i</code>. */
-    public static String getConnectiveCaseSuffix() {
-        return connectiveCaseSuffix;
-    }
-
     private final static String thirtyConsonants
         = new String(new char[] {
             EWC_ga,  EWC_kha,  EWC_ga,     EWC_nga,
@@ -359,7 +338,7 @@ public class LegalTshegBar
             EWC_ta,  EWC_tha,  EWC_da,     EWC_na,
             EWC_pa,  EWC_pha,  EWC_ba,     EWC_ma,
             EWC_tsa, EWC_tsha, EWC_dza,    EWC_wa,
-            EWC_zha, EWC_za,   EWC_achen,  EWC_ya,
+            EWC_zha, EWC_za,   EWC_achung,  EWC_ya,
             EWC_ra,  EWC_la,   EWC_sha,    EWC_sa,
             EWC_ha,  EWC_a
         });
@@ -388,10 +367,10 @@ public class LegalTshegBar
         <p>This is not very efficient.</p> */
     public static String[] getPossibleSuffixParticles() {
         return new String[] {
-            new String(new char[] { EWC_achen, EWV_i }),
-            new String(new char[] { EWC_achen, EWV_o }),
-            new String(new char[] { EWC_achen, EWV_u }),
-            new String(new char[] { EWC_achen, EWC_ma }),
+            new String(new char[] { EWC_achung, EWV_i }),
+            new String(new char[] { EWC_achung, EWV_o }),
+            new String(new char[] { EWC_achung, EWV_u }),
+            new String(new char[] { EWC_achung, EWC_ma }),
         };
     }
 
@@ -402,7 +381,7 @@ public class LegalTshegBar
      *  @see org.thdl.tib.text.tshegbar.UnicodeConstants */
     public static String getTheFivePrefixes() {
         final String s = new String(new char[] {
-            EWC_ga, EWC_da, EWC_ba, EWC_ma, EWC_achen
+            EWC_ga, EWC_da, EWC_ba, EWC_ma, EWC_achung
         });
         ThdlDebug.verify(s.length() == 5); // DLC put this into a JUnit test to avoid the slow-down.
         return s;
@@ -416,24 +395,101 @@ public class LegalTshegBar
 
     /** Returns a String containing the nominal Unicode
      *  representations of the ten suffixes.  The suffixes are in
-     *  dictionary order.
-     *  @see #getConnectiveCaseSuffix()
+     *  dictionary order.  This doesn't include oddballs like suffixes
+     *  based on 'i, 'u, 'o, 'am, and 'ang.
      *  @see org.thdl.tib.text.tshegbar.UnicodeConstants */
     public static String getTheTenSuffixes() {
         final String s = new String(new char[] {
             EWC_ga, EWC_nga, EWC_da, EWC_na, EWC_ba,
-            EWC_ma, EWC_achen, EWC_ra, EWC_la, EWC_sa
+            EWC_ma, EWC_achung, EWC_ra, EWC_la, EWC_sa
         });
-        ThdlDebug.verify(s.length() == 10); // DLC put this into a JUnit test to avoid the slow-down.
         return s;
     }
 
     /** Returns true iff x is the preferred, nominal Unicode
      *  representation of one of the ten suffixes.
-     *  @see #getConnectiveCaseSuffix()
      */
     public static boolean isNominalRepresentationOfSimpleSuffix(char x) {
         return (-1 != getTheTenSuffixes().indexOf(x));
+    }
+
+
+    /** Legal suffix-like particles, excluding the ten suffixes.  If
+     *  you add one, be sure that a tsheg-bar with it has the extended
+     *  wylie you wish by adding the correct extended Wylie with it. */
+    private static final String[][] oddball_suffixes = new String[][] {
+        {
+            // connective case marker:
+            new String( new char[] {
+                EWC_achung, EWV_i
+            }),
+            THDLWylieConstants.ACHUNG + THDLWylieConstants.i_VOWEL
+        },
+        {
+            new String( new char[] {
+                EWC_achung, EWV_u
+            }),
+            THDLWylieConstants.ACHUNG + THDLWylieConstants.u_VOWEL
+        },
+        {
+            // in at least one context, this shows end of sentence:
+            new String( new char[] {
+                EWC_achung, EWV_o
+            }),
+            THDLWylieConstants.ACHUNG + THDLWylieConstants.o_VOWEL
+        },
+        {
+            // as in sgom pa'am:
+            new String( new char[] {
+                EWC_achung, EWC_ma
+            }),
+            THDLWylieConstants.ACHUNG + THDLWylieConstants.WYLIE_aVOWEL
+            + THDLWylieConstants.MA
+        },
+        {
+            // meaning or, as opposed to and:
+            new String( new char[] {
+                EWC_achung, EWC_nga
+            }),
+            THDLWylieConstants.ACHUNG + THDLWylieConstants.WYLIE_aVOWEL
+            + THDLWylieConstants.NGA
+        }
+    };
+
+    /** Returns true iff suffix is 'i, 'o, 'u, 'am, 'ang, or a
+     *  concatenation like 'u'i'o.  Returns false otherwise (including
+     *  the case that suffix is the empty string). */
+    public static boolean isAchungBasedSuffix(String suffix) {
+        int i = 0; // so that the empty string causes false to be returned.
+        while (i == 0 || !suffix.equals("")) {
+            boolean startsWithOneOfThem = false;
+            for (int x = 0; x < oddball_suffixes.length; x++) {
+                if (suffix.startsWith(oddball_suffixes[x][0])) {
+                    startsWithOneOfThem = true;
+                    suffix = suffix.substring(oddball_suffixes[x][0].length());
+                    break;
+                }
+            }
+            if (!startsWithOneOfThem)
+                return false;
+            ++i;
+        }
+        return true;
+    }
+
+    private static String getTHDLWylieForOddballSuffix(String suffix) {
+        // FIXME: assert that isAchungBasedSuffix
+        StringBuffer wylie = new StringBuffer();
+        while (!suffix.equals("")) {
+            for (int x = 0; x < oddball_suffixes.length; x++) {
+                if (suffix.startsWith(oddball_suffixes[x][0])) {
+                    wylie.append(oddball_suffixes[x][1]);
+                    suffix = suffix.substring(oddball_suffixes[x][0].length());
+                    break;
+                }
+            }
+        }
+        return wylie.toString();
     }
 
 
@@ -595,8 +651,8 @@ public class LegalTshegBar
      *  @param subjoinedLetter the optional, subscribed consonant
      *  @param suffix the optional suffix, which is null, a String
      *  consisting of a single consonant (i.e. a single,
-     *  nondecomposable codepoint) except in the special case that
-     *  this is {@link #getConnectiveCaseSuffix()}
+     *  nondecomposable codepoint), or a string of 'i (U+0F, 'u, 'o, 'am,
+     *  and 'ang.
      *  @param postsuffix the optional postsuffix, which should be
      *  EWC_sa or EWC_da
      *  @param errorBuffer if non-null, and if the return code is
@@ -763,13 +819,12 @@ public class LegalTshegBar
         } // subjoinedLetter tests
 
         // Suffix tests:
-        // DLC NOW -- allow 'o, 'u, 'am, etc.
         if (null != suffix) {
-            if (!getConnectiveCaseSuffix().equals(suffix)) {
+            if (!isAchungBasedSuffix(suffix)) {
                 if (suffix.length() != 1) {
                     return internalThrowThing(throwIfIllegal,
                                               errorBuf,
-                                              "Illegal suffix -- not one of the legal complex suffixes like 'u, 'o, 'i, 'am.");
+                                              "Illegal suffix -- not one of the legal complex suffixes like 'u, 'o, 'i, 'am, 'ang.");
                 }
                 if (!isNominalRepresentationOfSimpleSuffix(suffix.charAt(0))) {
                     return internalThrowThing(throwIfIllegal,
@@ -784,6 +839,10 @@ public class LegalTshegBar
                 return internalThrowThing(throwIfIllegal,
                                           errorBuf,
                                           "You cannot have a postsuffix unless you also have a suffix.");
+            if (isAchungBasedSuffix(suffix))
+                return internalThrowThing(throwIfIllegal,
+                                          errorBuf,
+                                          "You cannot have a postsuffix if you have a suffix based on 'i, 'o, 'u, 'am, and 'ang.");
         }
 
         if (EW_ABSENT != headLetter) {
@@ -812,7 +871,9 @@ public class LegalTshegBar
                                               "The head letter sa cannot be used with that root letter.");
                 }
             } else {
-                // '&#92;u0F6A' is not a valid head letter, even for
+                // Illegal head letter.
+                //
+                // Note: U+0F6A is not a valid head letter, even for
                 // "rnya".  Use EWC_ra instead.
                 return internalThrowThing(throwIfIllegal,
                                           errorBuf,
@@ -827,14 +888,14 @@ public class LegalTshegBar
                 && EWV_e != vowel
                 && EWV_o != vowel)
                 {
-                    if (EWC_achen == vowel)
+                    if (EWC_achung == vowel)
                         return internalThrowThing(throwIfIllegal,
                                                   errorBuf,
-                                                  "The vowel given is not valid.  Use EW_ABSENT for the EWC_achen sound.");
+                                                  "The vowel given is not valid.  Use EW_ABSENT for the EWC_achung sound.");
                     if ('\u0F71' == vowel)
                         return internalThrowThing(throwIfIllegal,
                                                   errorBuf,
-                                                  "a-chung cannot be used in a simple Tibetan syllable."); // DLC FIXME: what about pA?
+                                                  "a-chung can be used, but there is a flag for it; you don't call it the vowel.");
                     return internalThrowThing(throwIfIllegal,
                                               errorBuf,
                                               "The vowel given is not valid.");
@@ -848,9 +909,6 @@ public class LegalTshegBar
 
 
     /*
-      DLC add a method giving the correct connective case thingy or
-      throwing error if the 'i suffix already appears.
-
       DLC put in a method that gets pronunciation using Unicode
       diacritical marks.  And another using just US Roman.  Note that
       pronunciation is contextual, so have these methods return all
@@ -875,7 +933,7 @@ public class LegalTshegBar
             boolean disambiguatorNeeded = false;
             char prefix = getPrefix();
             sb.append(UnicodeCodepointToThdlWylie.getThdlWylieForUnicodeCodepoint(prefix));
-            if (!hasHeadLetter()) {
+            if (!hasHeadLetter() && !hasSubjoinedLetter()) {
                 if (EWC_ya == rootLetter) {
                     if (isConsonantThatTakesYaBtags(prefix))
                         disambiguatorNeeded = true;
@@ -891,7 +949,7 @@ public class LegalTshegBar
                 }
             }
             if (disambiguatorNeeded)
-                sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
+                sb.append(THDLWylieConstants.WYLIE_DISAMBIGUATING_KEY);
         }
         if (hasHeadLetter())
             sb.append(UnicodeCodepointToThdlWylie.getThdlWylieForUnicodeCodepoint(getHeadLetter()));
@@ -914,14 +972,14 @@ public class LegalTshegBar
 
                     // DLC FIXME: are these allowed in legal Tibetan?
                     // EWTS would have special cases for them if so,
-                    // I'd wager...
-                    sb.append(UnicodeCodepointToThdlWylie.getThdlWylieForUnicodeCodepoint(EW_achung));
+                    // I'd wager, so I bet they're not.
+                    sb.append(UnicodeCodepointToThdlWylie.getThdlWylieForUnicodeCodepoint(EW_achung_vowel));
                     sb.append(UnicodeCodepointToThdlWylie.getThdlWylieForUnicodeCodepoint(getVowel()));
                 } else {
                     ThdlDebug.abort("only simple vowels occur in this class, how did this get past internalLegalityTest(..)?");
                 }
             } else {
-                sb.append(UnicodeCodepointToThdlWylie.getThdlWylieForUnicodeCodepoint(EW_achung));
+                sb.append(UnicodeCodepointToThdlWylie.getThdlWylieForUnicodeCodepoint(EW_achung_vowel));
             }
         } else {
             if (hasExplicitVowel())
@@ -930,19 +988,34 @@ public class LegalTshegBar
                 sb.append("a");
         }
 
+        String suf = null;
         if (hasSuffix()) {
-            String suf = getSuffix();
-            sb.append(UnicodeCodepointToThdlWylie.getThdlWylieForUnicodeCodepoint(suf.charAt(0)));
+            suf = getSuffix();
             if (suf.length() > 1) {
-                // DLC assert, don't verify, that the length is two.
-                // This could change if I learn of more suffix
-                // particles.
-                ThdlDebug.verify(2 == suf.length());
-                sb.append(UnicodeCodepointToThdlWylie.getThdlWylieForUnicodeCodepoint(suf.charAt(1)));
+                // pa'am, not pa'm or pa'ama!
+                sb.append(getTHDLWylieForOddballSuffix(suf));
+            } else {
+                sb.append(UnicodeCodepointToThdlWylie.getThdlWylieForUnicodeCodepoint(suf.charAt(0)));
             }
         }
-        if (hasPostsuffix())
+        if (hasPostsuffix()) {
+            // lar.d, la-ra-da, needs a disambiguator.  EWC_sa doesn't
+            // take any head letters, but EWC_da does.
+            boolean disambiguatorNeeded = false;
+            if (getPostsuffix() == EWC_da) {
+                if (suf.length() == 1) {
+                    char simpleSuffix = suf.charAt(0);
+                    if (EWC_ra == simpleSuffix
+                        || EWC_la == simpleSuffix
+                        || EWC_sa == simpleSuffix) {
+                        disambiguatorNeeded = true;
+                    }
+                }
+            }
+            if (disambiguatorNeeded)
+                sb.append(THDLWylieConstants.WYLIE_DISAMBIGUATING_KEY);
             sb.append(UnicodeCodepointToThdlWylie.getThdlWylieForUnicodeCodepoint(getPostsuffix()));
+        }
         return sb;
     }
 
@@ -987,7 +1060,7 @@ public class LegalTshegBar
                    ? "hasAChungOnRootLetter=\"true\""
                    : "")
 
-                // DLC NOW: what about the root letter a, i.e. &#92;u0F68 ?  do we want the EWTS to be 'aa' ?
+                // DLC NOW FIXME: what about the root letter a, i.e. &#92;u0F68 ?  do we want the EWTS to be 'aa' ?
                 + ("vowel=\""
                    + (hasExplicitVowel()
                       ? UnicodeCodepointToThdlWylie.getThdlWylieForUnicodeCodepoint(getVowel())
@@ -1019,7 +1092,8 @@ public class LegalTshegBar
             sb.append(getPrefix());
         }
         if (hasHeadLetter()) {
-            // DLC FIXME this crap won't be true...
+            // DLC NOW FIXME this crap won't be true... it's what we must
+            // convert to, though.  Do it.
             ThdlDebug.verify(UnicodeUtils.isNonSubjoinedConsonant(getPrefix()));
             ThdlDebug.verify(UnicodeUtils.isSubjoinedConsonant(getRootLetter()));
             sb.append(getHeadLetter());
@@ -1036,8 +1110,8 @@ public class LegalTshegBar
             sb.append(EWSUB_wa_zur);
         }
         if (hasAChungOnRootLetter()) {
-            ThdlDebug.verify('\u0F71' == EW_achung);
-            sb.append(EW_achung);
+            ThdlDebug.verify('\u0F71' == EW_achung_vowel);
+            sb.append(EW_achung_vowel);
         }
         if (hasExplicitVowel()) {
             sb.append(getVowel());

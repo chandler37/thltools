@@ -38,8 +38,64 @@ public class LegalTshegBarTest extends TestCase implements UnicodeConstants {
 		junit.textui.TestRunner.run(LegalTshegBarTest.class);
 	}
 
+    /** Tests the getThdlWylie() method to see if we 
+        handle "le'u'i'o", "sgom pa'am", "sgom pa'ang", etc.
+    */
+    public void testGetThdlWylieForLongSuffixLikeThings() {
+        assertTrue(new LegalTshegBar(EW_ABSENT, EW_ABSENT, EWC_la,
+                                     EW_ABSENT, false, false,
+                                     new String(new char[] {
+                                         EWC_achung, EWV_u,
+                                             EWC_achung, EWV_i,
+                                             EWC_achung, EWV_o
+                                             }),
+                                     EW_ABSENT, EWV_e).getThdlWylie().toString().equals("le'u'i'o"));
+        assertTrue(new LegalTshegBar(EW_ABSENT, EW_ABSENT, EWC_la,
+                                     EW_ABSENT, false, false,
+                                     new String(new char[] {
+                                         EWC_achung, EWV_u,
+                                             EWC_achung, EWV_i,
+                                             EWC_achung, EWV_o,
+                                             EWC_achung, EWC_ma,
+                                             EWC_achung, EWC_nga,
+                                             EWC_achung, EWV_o,
+                                             EWC_achung, EWC_ma
+                                             }),
+                                     EW_ABSENT, EW_ABSENT).getThdlWylie().toString().equals("la'u'i'o'am'ang'o'am"));
+        assertTrue(new LegalTshegBar(EW_ABSENT, EW_ABSENT, EWC_pa,
+                                     EW_ABSENT, false, false,
+                                     new String(new char[] { EWC_achung, EWC_ma }),
+                                     EW_ABSENT, EW_ABSENT).getThdlWylie().toString().equals("pa'am"));
+        assertTrue(new LegalTshegBar(EW_ABSENT, EW_ABSENT, EWC_pa,
+                                     EW_ABSENT, false, false,
+                                     new String(new char[] { EWC_achung, EWC_nga }),
+                                     EW_ABSENT, EW_ABSENT).getThdlWylie().toString().equals("pa'ang"));
+    }
+
     /** Tests the getThdlWylie() method and one of the constructors. */
     public void testGetThdlWylie() {
+        // do we disambiguate when needed?
+        {
+            assertTrue(new LegalTshegBar(EW_ABSENT, EW_ABSENT, EWC_ga, EWC_ya,
+                                         false, false, EW_ABSENT, EW_ABSENT, EWV_o).getThdlWylie().toString().equals("gyo"));
+            assertTrue(new LegalTshegBar(EWC_ga, EW_ABSENT, EWC_ya, EW_ABSENT,
+                                         false, false, EW_ABSENT, EW_ABSENT, EWV_o).getThdlWylie().toString().equals("g.yo"));
+            assertTrue(new LegalTshegBar(EWC_ba, EW_ABSENT, EWC_la, EW_ABSENT,
+                                         false, false, EWC_ga, EW_ABSENT, EW_ABSENT).getThdlWylie().toString().equals("b.lag"));
+            assertTrue(new LegalTshegBar(EWC_ba, EW_ABSENT, EWC_la, EW_ABSENT,
+                                         false, false, EWC_ga, EWC_sa, EW_ABSENT).getThdlWylie().toString().equals("b.lags"));
+            assertTrue(new LegalTshegBar(EWC_ba, EW_ABSENT, EWC_ra, EW_ABSENT,
+                                         false, false, EWC_ga, EWC_da, EW_ABSENT).getThdlWylie().toString().equals("b.ragd"));
+            assertTrue(new LegalTshegBar(EWC_ba, EW_ABSENT, EWC_ra, EWC_la,
+                                         false, false, EWC_ga, EWC_da, EW_ABSENT).getThdlWylie().toString().equals("brlagd"));
+            assertTrue(new LegalTshegBar(EWC_ba, EWC_ra, EWC_ga, EW_ABSENT,
+                                         false, false, EWC_ga, EWC_da, EW_ABSENT).getThdlWylie().toString().equals("brgagd"));
+            assertTrue(new LegalTshegBar(EWC_ba, EWC_la, EWC_ha, EW_ABSENT,
+                                         false, false, EWC_ga, EWC_da, EW_ABSENT).getThdlWylie().toString().equals("blhagd"));
+            assertTrue(new LegalTshegBar(EWC_ba, EWC_la, EWC_da, EW_ABSENT,
+                                         false, false, EWC_ga, EWC_da, EW_ABSENT).getThdlWylie().toString().equals("bldagd"));
+        }
+
         assertTrue(new LegalTshegBar(EWC_ba, EWC_sa, EWC_ga, EWC_ra,
                                      false, true, EWC_la, EWC_sa, EWV_o).getThdlWylie().toString().equals("bsgrAols"));
         assertTrue(new LegalTshegBar(EWC_ba, EWC_sa, EWC_ga,
@@ -80,6 +136,10 @@ public class LegalTshegBarTest extends TestCase implements UnicodeConstants {
         assertTrue(new LegalTshegBar(EW_ABSENT, EW_ABSENT, EWC_sa,
                                      EWC_la, false, false,
                                      null, EW_ABSENT, EW_ABSENT).getThdlWylie().toString().equals("sla"));
+
+        assertTrue(new LegalTshegBar(EW_ABSENT, EW_ABSENT, EWC_pa,
+                                     EW_ABSENT, false, true,
+                                     null, EW_ABSENT, EW_ABSENT).getThdlWylie().toString().equals("pA"));
 
         {
             boolean threw = false;
@@ -158,5 +218,65 @@ public class LegalTshegBarTest extends TestCase implements UnicodeConstants {
             x = true;
         }
         assertTrue(x);
+    }
+
+    /** Tests {@link
+     * org.thdl.tib.text.tshegbar.LegalTshegBar#getTheTenSuffixes()}. */
+    public void testGetTheTenSuffixes() {
+        String x = LegalTshegBar.getTheTenSuffixes();
+        assertTrue(x.length() == 10);
+        assertTrue(x.charAt(0) == EWC_ga);
+        assertTrue(x.charAt(4) == EWC_ba);
+        assertTrue(x.charAt(9) == EWC_sa);
+    }
+
+    /** Tests {@link
+     * org.thdl.tib.text.tshegbar.LegalTshegBar#isAchungBasedSuffix(String)}. */
+    public void testIsAchungBasedSuffix() {
+        assertTrue(LegalTshegBar.isAchungBasedSuffix(new String(new char[] {
+            EWC_achung, EWC_nga
+                })));
+        assertTrue(LegalTshegBar.isAchungBasedSuffix(new String(new char[] {
+            EWC_achung, EWC_ma
+                })));
+        assertTrue(LegalTshegBar.isAchungBasedSuffix(new String(new char[] {
+            EWC_achung, EWV_i
+                })));
+        assertTrue(LegalTshegBar.isAchungBasedSuffix(new String(new char[] {
+            EWC_achung, EWV_o
+                })));
+        assertTrue(LegalTshegBar.isAchungBasedSuffix(new String(new char[] {
+            EWC_achung, EWV_u
+                })));
+        assertTrue(LegalTshegBar.isAchungBasedSuffix(new String(new char[] {
+            EWC_achung, EWV_u,
+            EWC_achung, EWV_i,
+            EWC_achung, EWV_o
+                })));
+        assertTrue(!LegalTshegBar.isAchungBasedSuffix(new String(new char[] {
+            EWC_achung, EWV_u,
+            EWC_achung, EWV_i,
+            EWC_achung, EWV_o, /* no EWC_achung, */ EWC_nga
+                })));
+
+        // syntactically illegal, I'd bet, but our algorithm allows it:
+        assertTrue(LegalTshegBar.isAchungBasedSuffix(new String(new char[] {
+            EWC_achung, EWC_ma,
+            EWC_achung, EWV_i,
+            EWC_achung, EWV_i,
+            EWC_achung, EWV_i,
+            EWC_achung, EWV_o,
+            EWC_achung, EWC_nga,
+            EWC_achung, EWV_o
+                })));
+
+        assertTrue(!LegalTshegBar.isAchungBasedSuffix(new String(new char[] {
+            EWC_achung, EWC_la
+                })));
+        assertTrue(!LegalTshegBar.isAchungBasedSuffix(new String(new char[] {
+            EWC_achung, EWV_e
+                })));
+
+        assertTrue(!LegalTshegBar.isAchungBasedSuffix(""));
     }
 }
