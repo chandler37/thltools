@@ -481,6 +481,11 @@
     <antcall target="copy-license-etc-to-bin-dir-for-jarring">
       <param name="mybin" value="${ttstandalonebin}"/>
     </antcall>
+    <copy todir="${ttstandalonebin}/org/thdl/tib/input">
+      <fileset dir="${source}">
+        <include name="*.rtf"/>
+      </fileset>
+    </copy>
   </target>
 
 
@@ -533,6 +538,11 @@
     <antcall target="copy-license-etc-to-bin-dir-for-jarring">
       <param name="mybin" value="${ttappletjwsbin}"/>
     </antcall>
+    <copy todir="${ttappletjwsbin}/org/thdl/tib/input">
+      <fileset dir="${source}">
+        <include name="*.rtf"/>
+      </fileset>
+    </copy>
   </target>
 
 
