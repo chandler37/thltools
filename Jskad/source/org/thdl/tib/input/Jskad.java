@@ -574,7 +574,7 @@ public class Jskad extends JPanel implements DocumentListener {
             toolsMenu.add(converterItem);
 
 
-            JMenuItem importItem = new JMenuItem("Import Wylie as Tibetan...");
+            JMenuItem importItem = new JMenuItem("(Buggy) Import Wylie as Tibetan...");
             importItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
                     importWylie();
