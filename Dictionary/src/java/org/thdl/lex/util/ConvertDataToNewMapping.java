@@ -1,4 +1,4 @@
-package org.thdl.lex.util;
+package org.thdl.lex;
 
 import junit.framework.*;
 import org.thdl.lex.*;
@@ -20,7 +20,7 @@ public class ConvertDataToNewMapping
 {
 	public static File file = null;
 	
-	public static void convertLexComponents()
+	public static void convertLexComponents( String[] args )
 	{		try
 		{
 			
@@ -86,7 +86,7 @@ public class ConvertDataToNewMapping
 		file = new java.io.File( args[0] );
 		//ConvertDataToNewMapping.convertLexComponents();
 		//ConvertDataToNewMapping.convertTerms();
-		ConvertDataToNewMapping.writeCredits();
+		//ConvertDataToNewMapping.writeCredits();
 	}
 }
 

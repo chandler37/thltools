@@ -1,4 +1,4 @@
-package org.thdl.lex.util;
+package org.thdl.lex;
 
 import net.sf.hibernate.*;
 import net.sf.hibernate.cfg.*;
@@ -10,7 +10,7 @@ import java.io.File;
  * @author     Hibernate WIKI
  * @created    October 1, 2003
  */
-public class HibernateSessionTEMP
+public class HibernateSessionDataTransfer
 {
 
 	private static SessionFactory sessionFactory;
@@ -25,7 +25,7 @@ public class HibernateSessionTEMP
 	public static File config;
 	public static String configResource;
 public static void setConfigResource(String configResource) {
-	HibernateSessionTEMP.configResource = configResource;
+	HibernateSessionDataTransfer.configResource = configResource;
 }
 public static String getConfigResource() {
 	return configResource;
@@ -33,18 +33,18 @@ public static String getConfigResource() {
 
 
 	/**
-	 *  Sets the config attribute of the HibernateSessionTEMP object
+	 *  Sets the config attribute of the HibernateSessionDataTransfer object
 	 *
 	 * @param  config  The new config value
 	 */
 	public static void setConfig( File config )
 	{
-		HibernateSessionTEMP.config = config;
+		HibernateSessionDataTransfer.config = config;
 	}
 
 
 	/**
-	 *  Gets the config attribute of the HibernateSessionTEMP object
+	 *  Gets the config attribute of the HibernateSessionDataTransfer object
 	 *
 	 * @return    The config value
 	 */

@@ -15,7 +15,7 @@ import org.thdl.lex.component.*;
  * @author     travis
  * @created    October 1, 2003
  */
-public class LexComponentRepositoryTEMP
+public class LexComponentRepositoryDataTransfer
 {
 
 	/**
@@ -111,7 +111,7 @@ public class LexComponentRepositoryTEMP
 	 */
 	protected static Session getSession() throws HibernateException
 	{
-		Session session = HibernateSessionTEMP.currentSession();
+		Session session = HibernateSessionDataTransfer.currentSession();
 		if ( !session.isConnected() )
 		{
 //session.reconnect();
@@ -129,7 +129,7 @@ public class LexComponentRepositoryTEMP
 	{
 		try
 		{
-			HibernateTransactionTEMP.beginTransaction();
+			HibernateTransactionDataTransfer.beginTransaction();
 		}
 		catch ( HibernateException he )
 		{
@@ -150,7 +150,7 @@ public class LexComponentRepositoryTEMP
 	{
 		try
 		{
-			HibernateTransactionTEMP.endTransaction( commit );
+			HibernateTransactionDataTransfer.endTransaction( commit );
 		}
 		catch ( HibernateException he )
 		{
@@ -764,7 +764,7 @@ public class LexComponentRepositoryTEMP
 		try
 		{
 			endTransaction( false );
-			HibernateSessionTEMP.closeSession();
+			HibernateSessionDataTransfer.closeSession();
 		}
 		catch ( HibernateException he )
 		{

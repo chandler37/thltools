@@ -72,14 +72,14 @@ public class LexActionServlet extends HttpServlet
 
 			config.getServletContext().setAttribute( "flatData", new LexFlatDataRepository() );
 
-			LexSourceRepository sources = LexSourceRepository.getInstance();
+			/* LexSourceRepository sources = LexSourceRepository.getInstance();
 			sources.setOaiServer( config.getServletContext().getInitParameter( "oaiServer" ) );
 			sources.setOaiMetadataPrefix( config.getServletContext().getInitParameter( "oaiMetadataPrefix" ) );
 			sources.setOaiHome( config.getServletContext().getInitParameter( "oaiHome" ) );
 			sources.setOaiLocalCopy( config.getServletContext().getInitParameter( "oaiLocalCopy" ) );
 			//int oaiDelay = Integer.parseInt( config.getServletContext().getInitParameter( "oaiRefreshDelay" ) );
 			sources.setOaiRefreshDelay( 24 );
-			config.getServletContext().setAttribute( "sources", sources );
+			config.getServletContext().setAttribute( "sources", sources ); */
 			String delay = config.getInitParameter( "globalDataRefreshDelay" );
 			long refreshDelay = Long.parseLong( delay ) * 1000;
 			String recent = config.getInitParameter( "recentItems" );

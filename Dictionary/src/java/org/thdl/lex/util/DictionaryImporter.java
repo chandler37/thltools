@@ -28,6 +28,10 @@ public class DictionaryImporter
     private static Integer label;
     private static Statement sqlStatement;
     private static Connection conn;
+    private static Connection conn2;
+    private static Connection conn3;
+    private static Connection conn4;
+    private static Connection conn5;
     private static PreparedStatement insertMetaStmt;
     private static PreparedStatement selectMetaStmt;
     private static PreparedStatement insertTermStmt;
@@ -37,6 +41,8 @@ public class DictionaryImporter
     public final static int delimiterGeneric=0;
     public final static int delimiterAcip=1;
     public final static int delimiterDash=2;
+	
+	private static int counter = 0;
 
 //helpers	
 	public void doImport() throws Exception
@@ -107,89 +113,83 @@ public class DictionaryImporter
 	    int metaID, metaIDTrans, prec;
 	    String currentDef;
 
-		insertMetaStmt.setString( 1, creator.toString() );
-		insertMetaStmt.setString( 2, creator.toString() );
-		insertMetaStmt.setString( 3, proj.toString() );
-		insertMetaStmt.setString( 4, proj.toString() );
-		insertMetaStmt.setString( 5, note );
 		
-		
-	    definition = Manipulate.replace(definition, "\\", "@@@@");
+		// These escapes should not be needed since we're using Prepared Statements
+	    /* definition = Manipulate.replace(definition, "\\", "@@@@");
 	    definition = Manipulate.replace(definition, "@@@@", "\\\\");
-	    
 	    definition = Manipulate.replace(definition, "\"", "@@@@");
-	    definition = Manipulate.replace(definition, "@@@@", "\\\"");
+	    definition = Manipulate.replace(definition, "@@@@", "\\\""); */
 
         // displaying for debugging purposes only
         // System.out.println(term);
         
 	    // Check to see if term is already there
 	    selectMetaStmt.setString( 1 , term );
-	    set = selectMetaStmt.getResultSet();
+	    set = selectMetaStmt.executeQuery();
 	    
 	    // if it is get its metaID, else add it
 	    if (!set.first())
 	    {
-	        insertMetaStmt.execute();
-	        sqlStatement.execute("SELECT MAX(metaid) FROM META");
-	        set = sqlStatement.getResultSet();
+	        insertMetaStmt.executeUpdate();
+	        set=sqlStatement.executeQuery("SELECT MAX(metaid) FROM META");
 	        set.first();
 	        metaID = set.getInt(1);
 			
 			insertTermStmt.setInt( 1, metaID );
 			insertTermStmt.setString(2, term );
-	        insertTermStmt.execute();
+	        insertTermStmt.executeUpdate();
 	    }
 	    else metaID = set.getInt(1);
 	    
 	    // See if there is an associated TransitionalData with this term and project
-	    sqlStatement.execute("SELECT transitionaldatatext, transitionaldata.metaid FROM transitionaldata, meta where transitionaldata.parentid = " + metaID + " and transitionaldata.metaid = meta.metaid and createdbyprojsub = " + proj.toString());
-	    set = sqlStatement.getResultSet();
+	    set = sqlStatement.executeQuery("SELECT transitionaldatatext, transitionaldata.metaid FROM transitionaldata, meta where transitionaldata.parentid = " + metaID + " and transitionaldata.metaid = meta.metaid and createdbyprojsub = " + proj.toString());
 	    
 	    // if there is, append the definition if it is different. If not add it.
 	    if (set.first())
 	    {
 	        currentDef = set.getString(1).trim();
 
-    	    currentDef = Manipulate.replace(currentDef, "\\", "@@@@");
+			// These escapes should not be needed since we're using Prepared Statements
+    	    /* currentDef = Manipulate.replace(currentDef, "\\", "@@@@");
 	        currentDef = Manipulate.replace(currentDef, "@@@@", "\\\\");
-    	    
-    	    currentDef = Manipulate.replace(currentDef, "\"", "@@@@");
-	        currentDef = Manipulate.replace(currentDef, "@@@@", "\\\"");
+			currentDef = Manipulate.replace(currentDef, "\"", "@@@@");
+	        currentDef = Manipulate.replace(currentDef, "@@@@", "\\\""); */
 	        
 	        if (currentDef.indexOf(definition)<0)
 	        {
 	            if (!currentDef.equals("")) definition = currentDef + ". " + definition;
 	            metaIDTrans = set.getInt(2);
-				updateTransStmt.setString( 1, currentDef );
-				updateTransStmt.setInt( 1, metaIDTrans );
-   	            updateTransStmt.execute();
+				updateTransStmt.setString( 1, definition );
+				updateTransStmt.setInt( 2, metaIDTrans );
+   	            updateTransStmt.executeUpdate();
 	        }
 	    }
 	    else
 	    {
-	        sqlStatement.execute(insertMeta);
-	        sqlStatement.execute("SELECT MAX(metaid) FROM META");
-	        set = sqlStatement.getResultSet();
+	        insertMetaStmt.executeUpdate();
+	        set = sqlStatement.executeQuery("SELECT MAX(metaid) FROM META");
 	        set.first();
 	        metaIDTrans = set.getInt(1);
-	        sqlStatement.execute("SELECT precedence FROM transitionaldata WHERE parentid = " + metaID + " ORDER BY precedence DESC");
-	        set = sqlStatement.getResultSet();
+	        set = sqlStatement.executeQuery("SELECT precedence FROM transitionaldata WHERE parentid = " + metaID + " ORDER BY precedence DESC");
 	        if (set.first()) prec = set.getInt(1)+1;
 	        else prec = 0;
 			
 			insertTransStmt.setInt( 1, metaIDTrans );
 			insertTransStmt.setInt( 2, metaID );
 			insertTransStmt.setInt( 3, prec );
-			insertTransStmt.setInt( 4, label );
-			insertTransStmt.setInt( 5, publicCons );
+			insertTransStmt.setInt( 4, label.intValue() );
+			insertTransStmt.setString( 5, publicCons );
 			insertTransStmt.setString( 6, definition );
-	        insertTransStmt.execute();
+	        insertTransStmt.executeUpdate();
 	    }
 	}
 	
 	private void addRecord(String term, String definition) throws Exception
 	{
+		if ( counter++ % 1000 == 0 )
+		{
+			System.out.println( "Adding term " + counter + " " + term );
+		}
 	    term = Manipulate.replace(term, "  ", " ");
 	    if (out!=null) out.println(term + " - " + definition);
 	    else if (sqlStatement!=null) addRecordManually(term, definition);
@@ -379,7 +379,7 @@ public class DictionaryImporter
 		int argNum = args.length, currentArg=0;
 		String option;
 		boolean file=false;
-
+		boolean manual=false;
 		out = null;
 		
 		delimiterType = delimiterDash;
@@ -408,6 +408,7 @@ public class DictionaryImporter
 		    {
 		        initConnections();
 		        initStatements();
+				manual=true;
 		    } else if (option.equals("format"))
 		    {
 		        if (argNum<=currentArg)
@@ -507,7 +508,16 @@ public class DictionaryImporter
 		    else
 		        in = new BufferedReader(new InputStreamReader(is, format));		    
 		}
-
+		
+		if ( manual )
+		{
+			insertMetaStmt.setString( 1, creator.toString() );
+			insertMetaStmt.setString( 2, creator.toString() );
+			insertMetaStmt.setString( 3, proj.toString() );
+			insertMetaStmt.setString( 4, proj.toString() );
+			insertMetaStmt.setString( 5, note );
+		}
+		
 		new DictionaryImporter().doImport();
 	}
 }

@@ -1,4 +1,4 @@
-package org.thdl.lex.util;
+package org.thdl.lex;
 
 import net.sf.hibernate.*;
 import net.sf.hibernate.cfg.*;
@@ -10,7 +10,7 @@ import net.sf.hibernate.cfg.*;
  * @author     Hibernate WIKI
  * @created    October 1, 2003
  */
-public class HibernateTransactionTEMP
+public class HibernateTransactionDataTransfer
 {
 
 	/**
@@ -31,7 +31,7 @@ public class HibernateTransactionTEMP
 		Transaction t = (Transaction) transaction.get();
 		if ( t == null )
 		{
-			t = HibernateSessionTEMP.currentSession().beginTransaction();
+			t = HibernateSessionDataTransfer.currentSession().beginTransaction();
 			transaction.set( t );
 		}
 	}

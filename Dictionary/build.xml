@@ -60,43 +60,28 @@ jmeterhome=../jmeter
 		</fileset>
 		<!--point to org/thdl/users-->
 		<pathelement location="${build}/WEB-INF/classes"/>
+		<pathelement location="${build}/WEB-INF/tld"/>
 	</path>
 
    <!-- Executable Targets -->
 	<target name="copy" description="copy jsp, html, css, js, and other files into the build directory">
 		
 		<copy todir="${build}">
-			<fileset dir="${source}/jsp">
-				<include name="*.jsp"/>
-				<include name="*.jsf"/>
+			<fileset dir="${basedir}/web">
+				<include name="**/*.jsp"/>
+				<include name="**/*.jsf"/>
+				<include name="**/*.css"/>
+				<include name="**/*.js"/>
 			</fileset>
 		</copy>
-		<copy todir="${build}/jsp">
-			<fileset dir="${source}/jsp/jsp">
-				<include name="*.jsp"/>
-				<include name="*.jsf"/>
-			</fileset>
-		</copy>
-		
-		<copy todir="${build}/css">
-			<fileset dir="${source}/css">
-				<include name="*.css"/>
-			</fileset>
-		</copy>
-		
-		<copy todir="${build}/js">
-			<fileset dir="${source}/js">
-				<include name="*.js"/>
-			</fileset>
-		</copy>
-		
+
 		<copy todir="${build}/images">
 			<fileset dir="${basedir}/images"></fileset>
 		</copy>
 		
 		<copy todir="${build}/WEB-INF">
-			<fileset dir="${basedir}/config">
-				<filename name="web.xml"/>
+			<fileset dir="${basedir}/web/WEB-INF">
+				
 			</fileset>
 		</copy>
 		
@@ -117,9 +102,12 @@ jmeterhome=../jmeter
 			<fileset dir="${basedir}/lib/jstl">
 				<include name="*.jar"/>
 			</fileset>
+			
 			<fileset dir="${basedir}/lib/hibernate">
 				<include name="*.jar"/>
+				<exclude name="commons-dbcp.jar"/>
 			</fileset>
+			
 			<fileset dir="${basedir}/lib/thdl">
 				<include name="*.jar"/>
 			</fileset>
@@ -127,7 +115,12 @@ jmeterhome=../jmeter
 			<fileset dir="${basedir}/lib/commons">
 				<include name="*.jar"/>
 			</fileset>
+			
 			<fileset dir="${basedir}/lib/jwebunit">
+				<include name="*.jar"/>
+			</fileset>
+
+			<fileset dir="${basedir}/lib/log4j">
 				<include name="*.jar"/>
 			</fileset>
 			<!--<fileset dir="${basedir}/lib/dlese-oai">
@@ -145,12 +138,34 @@ jmeterhome=../jmeter
 		<javac srcdir="${thdluser.home}/src/java" destdir="${build}/WEB-INF/classes" deprecation="on" classpathref="classpath" debug="on"></javac>
 		<javac destdir="${build}/WEB-INF/classes" classpathref="classpath" debug="on" listfiles="no">
 			<src path="${source}/java"/>
-			<include name="org/thdl/lex/util/DictionaryImporter.java"/>
-			<include name="org/thdl/lex/**"/>
 			<exclude name="**/old/**"/>
 			<exclude name="**/test/**"/>
 			<exclude name="**/util/**"/>
 			<exclude name="**/LexSourceRepository.java/**"/>
+		</javac>
+	</target>
+	
+	<target name="compile-jsp">
+	<mkdir dir="${basedir}/src/jspc"/>
+	<jspc srcdir="${basedir}/web"
+      destdir="${basedir}/src/jspc"
+      package="org.thdl.lex.jsp"
+	  classpathref="classpath"
+	  webinc="${basedir}/web/webinc.include"
+      compiler="jasper41"
+      verbose="9">
+		  <include name="**/*.jsp" />
+		  <include name="**/*.jsf" />
+	</jspc> 
+</target>
+
+	<target name="build" depends="compile, compile-jsp"/>
+	
+	<target name="compile-util" description="Compile util classes" depends="compile">
+		<mkdir dir="${build}/WEB-INF/classes"/>
+		<javac srcdir="${thdluser.home}/src/java" destdir="${build}/WEB-INF/classes" deprecation="on" classpathref="classpath" debug="on"></javac>
+		<javac destdir="${build}/WEB-INF/classes" classpathref="classpath" debug="on" listfiles="no">
+			<src path="${source}/java/org/thdl/lex/util"/>
 		</javac>
 	</target>
 	
@@ -172,7 +187,7 @@ jmeterhome=../jmeter
 		</javadoc>
 	</target>
 	
-	<target name="install" description="Install web application" depends="compile">
+	<target name="install" description="Install web application" depends="build">
 		<install url="${url}" username="${username}" password="${password}" path="${path}" config="file://${basedir}/${lex.context.config}" war="file://${build}"/>
 	</target>
 	
@@ -190,7 +205,7 @@ jmeterhome=../jmeter
 		<antcall target="install"/>
 	</target>
 	
-	<target name="reload" description="Reload web application" depends="compile">
+	<target name="reload" description="Reload web application" depends="build">
 		<reload url="${url}" username="${username}" password="${password}" path="${path}"/>
 	</target>
 	
@@ -315,8 +330,8 @@ jmeter.save.saveservice.output_format=xml
 		</schemaupdate>
 	</target>
 		
-	<target name="convert-to-new-mapping" description="convert old data to a new db mapping" depends="copy, compile">
-		<java classname="org.thdl.lex.ConvertDataToNewMapping" classpathref="classpath" fork="yes">
+	<target name="convert-to-new-mapping" description="convert old data to a new db mapping" depends="compile-util">
+		<java classname="org.thdl.lex.utilConvertDataToNewMapping" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
 			</classpath>
@@ -324,13 +339,11 @@ jmeter.save.saveservice.output_format=xml
 		</java>
 	</target>
 
-	<target name="importer-dm" description="Imports Dan Martin's dictionary into database. " depends="copy, compile">
+	<target name="import-dm" description="Imports Dan Martin's dictionary into database. " depends="compile-util">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
 			</classpath>
-			<!-- Pass Command-line arguments to the Dictionary Importer. The first argument must always be the Hibernate config file.
-			<arg value="${source}/java/hibernate.cfg.xml"/>-->
 			<arg value="-manual"/>
 			<arg value="-format"/><arg value="UTF-16"/>
 			<arg value="-tab"/>
@@ -341,13 +354,11 @@ jmeter.save.saveservice.output_format=xml
 			<arg value="dicts/DanMartin.txt"/>
 		</java>
 	</target>
-	<target name="importer-jh" description="Imports Jeffrey Hopkins' dictionary into database. " depends="copy, compile">
+	<target name="import-jh" description="Imports Jeffrey Hopkins' dictionary into database. " depends="compile-util">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
 			</classpath>
-			<!-- Pass Command-line arguments to the Dictionary Importer. The first argument must always be the Hibernate config file.
-			<arg value="${source}/java/hibernate.cfg.xml"/>-->
 			<arg value="-manual"/>
 			<arg value="-format"/><arg value="UTF-16"/>
 			<arg value="-tab"/>
@@ -358,13 +369,11 @@ jmeter.save.saveservice.output_format=xml
 			<arg value="dicts/JHTabUnicode.txt"/>
 		</java>
 	</target>
-	<target name="importer-tc" description="Imports The Great Tibetan-Chinese Dictionary into database. " depends="copy, compile">
+	<target name="import-tc" description="Imports The Great Tibetan-Chinese Dictionary into database. " depends="compile-util">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
 			</classpath>
-			<!-- Pass Command-line arguments to the Dictionary Importer. The first argument must always be the Hibernate config file.
-			<arg value="${source}/java/hibernate.cfg.xml"/>-->
 			<arg value="-manual"/>
 			<arg value="-tab"/>
 			<arg value="-creator"/><arg value="80"/>
@@ -375,13 +384,11 @@ jmeter.save.saveservice.output_format=xml
 			<arg value="dicts/tshig.tab"/>
 		</java>
 	</target>
-	<target name="importer-ry" description="Imports Rangjung Yeshe's dictionary into database. " depends="copy, compile">
+	<target name="import-ry" description="Imports Rangjung Yeshe's dictionary into database. " depends="compile-util">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
 			</classpath>
-			<!-- Pass Command-line arguments to the Dictionary Importer. The first argument must always be the Hibernate config file.
-			<arg value="${source}/java/hibernate.cfg.xml"/>-->
 			<arg value="-manual"/>
 			<arg value="-creator"/><arg value="4"/>
 			<arg value="-proj"/><arg value="16"/>
@@ -390,13 +397,11 @@ jmeter.save.saveservice.output_format=xml
 			<arg value="dicts/ry-dic2003-prop.txt"/>
 		</java>
 	</target>
-	<target name="importer-jv" description="Imports Jim Valby's dictionary into database. " depends="copy, compile">
+	<target name="import-jv" description="Imports Jim Valby's dictionary into database. " depends="compile-util">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
 			</classpath>
-			<!-- Pass Command-line arguments to the Dictionary Importer. The first argument must always be the Hibernate config file.
-			<arg value="${source}/java/hibernate.cfg.xml"/>-->
 			<arg value="-manual"/>
 			<arg value="-creator"/><arg value="96"/>
 			<arg value="-proj"/><arg value="21"/>
@@ -406,13 +411,11 @@ jmeter.save.saveservice.output_format=xml
 		</java>
 	</target>
 
-	<target name="importer-rb" description="Imports Richard Barron's dictionary into database. " depends="copy, compile">
+	<target name="import-rb" description="Imports Richard Barron's dictionary into database. " depends="compile-util">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
 			</classpath>
-			<!-- Pass Command-line arguments to the Dictionary Importer. The first argument must always be the Hibernate config file.
-			<arg value="${source}/java/hibernate.cfg.xml"/>-->
 			<arg value="-manual"/>
 			<arg value="-creator"/><arg value="97"/>
 			<arg value="-proj"/><arg value="22"/>
@@ -422,13 +425,11 @@ jmeter.save.saveservice.output_format=xml
 		</java>
 	</target>
 
-	<target name="importer-iw" description="Imports Ives Waldo's dictionary into database. " depends="copy, compile">
+	<target name="import-iw" description="Imports Ives Waldo's dictionary into database. " depends="compile-util">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
 			</classpath>
-			<!-- Pass Command-line arguments to the Dictionary Importer. The first argument must always be the Hibernate config file.
-			<arg value="${source}/java/hibernate.cfg.xml"/>-->
 			<arg value="-manual"/>
 			<arg value="-creator"/><arg value="98"/>
 			<arg value="-proj"/><arg value="23"/>
@@ -437,4 +438,7 @@ jmeter.save.saveservice.output_format=xml
 			<arg value="dicts/IvesWaldo.txt"/>
 		</java>
 	</target>
+	
+<!-- <target name="import-all" depends="import-dm, import-jh, import-tc, import-ry import-jv,import-rb, import-iw"/> -->
+		<target name="import-all" depends="import-dm, import-jh, import-tc, import-jv,import-rb, import-iw"/>
 </project>
