@@ -1,0 +1,5 @@
+REGEDIT4
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layouts\0000040F]
+"Layout Text"="Icelandic"
+"Layout File"="kbdictib.dll"
