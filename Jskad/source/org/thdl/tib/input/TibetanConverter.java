@@ -74,6 +74,7 @@ public class TibetanConverter implements FontConverterConstants {
             boolean convertACIPToTMWMode = false;
             boolean convertToTMWMode = false;
             boolean convertToWylieMode = false;
+            boolean convertToACIPMode = false;
             boolean findSomeNonTMWMode = false;
             boolean findAllNonTMWMode = false;
             boolean findSomeNonTMMode = false;
@@ -98,6 +99,8 @@ public class TibetanConverter implements FontConverterConstants {
                              = args[0].equals("--to-unicode"))
                          || (convertToWylieMode
                              = args[0].equals("--to-wylie"))
+                         || (convertToACIPMode
+                             = args[0].equals("--to-acip"))
                          || (findSomeNonTMWMode
                              = args[0].equals("--find-some-non-tmw"))
                          || (findSomeNonTMMode
@@ -107,7 +110,7 @@ public class TibetanConverter implements FontConverterConstants {
                 ))) {
                 out.println("TibetanConverter [--find-all-non-tmw | --find-some-non-tmw");
                 out.println("                  | --to-tibetan-machine | --to-tibetan-machine-web");
-                out.println("                  | --to-unicode | --to-wylie] RTF_file");
+                out.println("                  | --to-unicode | --to-wylie | --to-acip] RTF_file");
                 out.println(" | TibetanConverter --acip-to-unicode TXT_file");
                 out.println(" | TibetanConverter [--version | -v | --help | -h]");
                 out.println("");
@@ -120,6 +123,7 @@ public class TibetanConverter implements FontConverterConstants {
                 out.println(" --to-unicode to convert TibetanMachineWeb to Unicode");
                 out.println(" --to-tibetan-machine-web to convert TibetanMachine to TibetanMachineWeb");
                 out.println(" --to-wylie to convert TibetanMachineWeb to THDL Extended Wylie");
+                out.println(" --to-acip to convert TibetanMachineWeb to ACIP");
                 out.println(" --acip-to-unicode to convert ACIP text file to Unicode text file");
                 out.println(" --find-all-non-tmw to locate all characters in the input document that are");
                 out.println("   not in Tibetan Machine Web fonts, exit zero if and only if none found");
@@ -177,6 +181,8 @@ public class TibetanConverter implements FontConverterConstants {
             } else { // conversion {to Wylie or TM} mode
                 if (convertToWylieMode) {
                     conversionTag = TMW_TO_WYLIE;
+                } else if (convertToACIPMode) {
+                    conversionTag = TMW_TO_ACIP;
                 } else if (convertToUnicodeMode) {
                     conversionTag = TMW_TO_UNI;
                 } else if (convertToTMWMode) {
@@ -311,6 +317,7 @@ public class TibetanConverter implements FontConverterConstants {
                 ThdlDebug.verify(((TMW_TO_TM == ct) ? 1 : 0)
                                  + ((TMW_TO_UNI == ct) ? 1 : 0)
                                  + ((TM_TO_TMW == ct) ? 1 : 0)
+                                 + ((TMW_TO_ACIP == ct) ? 1 : 0)
                                  + ((TMW_TO_WYLIE == ct) ? 1 : 0)
                                  == 1);
                 long numAttemptedReplacements[] = new long[] { 0 };
@@ -320,6 +327,13 @@ public class TibetanConverter implements FontConverterConstants {
                                       tdoc.getLength(),
                                       numAttemptedReplacements)) {
                         exitCode = 44;
+                    }
+                } else if (TMW_TO_ACIP == ct) {
+                    // Convert to ACIP:
+                    if (!tdoc.toACIP(0,
+                                     tdoc.getLength(),
+                                     numAttemptedReplacements)) {
+                        exitCode = 49;
                     }
                 } else if (TMW_TO_UNI == ct) {
                     StringBuffer errors = new StringBuffer();

@@ -295,6 +295,18 @@ public class TibetanDocument extends DefaultStyledDocument {
 	}
 
 /**
+* Converts the entire document into ACIP.  If the document consists of
+* both Tibetan and non-Tibetan fonts, however, the conversion stops at
+* the first non-Tibetan font.
+* @param noSuchACIP an array which will not be touched if this is
+* successful; however, if there is no ACIP corresponding to one of
+* these glyphs, then noSuchACIP[0] will be set to true
+* @return the string of ACIP corresponding to this document */
+    public String getACIP(boolean noSuchACIP[]) {
+        return getACIP(0, getLength(), noSuchACIP);
+    }
+
+/**
 * Converts a portion of the document into Extended Wylie.
 * If the document consists of both Tibetan and
 * non-Tibetan fonts, however, the conversion stops
@@ -306,7 +318,25 @@ public class TibetanDocument extends DefaultStyledDocument {
 * corresponding to one of these glyphs, then noSuchWylie[0] will be
 * set to true
 * @return the string of Wylie corresponding to this document */
-	public String getWylie(int begin, int end, boolean noSuchWylie[]) {
+    public String getWylie(int begin, int end, boolean noSuchWylie[]) {
+        return getTranslit(true, begin, end, noSuchWylie);
+    }
+
+/**
+* Converts a portion of the document into ACIP.  If the document
+* consists of both Tibetan and non-Tibetan fonts, however, the
+* conversion stops at the first non-Tibetan font.
+* @param begin the beginning of the region to convert
+* @param end the end of the region to convert
+* @param noSuchWylie an array which will not be touched if this is
+* successful; however, if there is no ACIP corresponding to one of
+* these glyphs, then noSuchACIP[0] will be set to true
+* @return the string of ACIP corresponding to this document */
+    public String getACIP(int begin, int end, boolean noSuchACIP[]) {
+        return getTranslit(true, begin, end, noSuchACIP);
+    }
+
+	private String getTranslit(boolean EWTSNotACIP, int begin, int end, boolean noSuch[]) {
 		AttributeSet attr;
 		String fontName;
 		int fontNum;
@@ -318,7 +348,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 
 		java.util.List dcs = new ArrayList();
 		int i = begin;
-		StringBuffer wylieBuffer = new StringBuffer();
+		StringBuffer translitBuffer = new StringBuffer();
 
 		try {
 			while (i < end) {
@@ -332,10 +362,10 @@ public class TibetanDocument extends DefaultStyledDocument {
 					if (dcs.size() > 0) {
 						DuffCode[] dc_array = new DuffCode[0];
 						dc_array = (DuffCode[])dcs.toArray(dc_array);
-						wylieBuffer.append(TibTextUtils.getWylie(dc_array, noSuchWylie));
+						translitBuffer.append(TibTextUtils.getTranslit(EWTSNotACIP, dc_array, noSuch));
 						dcs.clear();
 					}
-					wylieBuffer.append(ch);
+					translitBuffer.append(ch);
 				}
 
 				//current character isn't TMW
@@ -343,7 +373,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 					if (dcs.size() > 0) {
 						DuffCode[] dc_array = new DuffCode[0];
 						dc_array = (DuffCode[])dcs.toArray(dc_array);
-						wylieBuffer.append(TibTextUtils.getWylie(dc_array, noSuchWylie));
+						translitBuffer.append(TibTextUtils.getTranslit(EWTSNotACIP, dc_array, noSuch));
 						dcs.clear();
 					}
 				}
@@ -358,9 +388,9 @@ public class TibetanDocument extends DefaultStyledDocument {
 			if (dcs.size() > 0) {
 				DuffCode[] dc_array = new DuffCode[0];
 				dc_array = (DuffCode[])dcs.toArray(dc_array);
-				wylieBuffer.append(TibTextUtils.getWylie(dc_array, noSuchWylie));
+				translitBuffer.append(TibTextUtils.getTranslit(EWTSNotACIP, dc_array, noSuch));
 			}
-			return wylieBuffer.toString();
+			return translitBuffer.toString();
 		}
 		catch (BadLocationException ble) {
 			ble.printStackTrace();
@@ -1101,6 +1131,17 @@ public class TibetanDocument extends DefaultStyledDocument {
 * DuffCode..." text into the document */
     public boolean toWylie(int start, int end,
                            long numAttemptedReplacements[]) {
+        return toTranslit(true, start, end, numAttemptedReplacements);
+    }
+
+    // DLC DOC just like {@link #toWylie(int,int,long[])}
+    public boolean toACIP(int start, int end,
+                          long numAttemptedReplacements[]) {
+        return toTranslit(false, start, end, numAttemptedReplacements);
+    }
+
+    private boolean toTranslit(boolean EWTSNotACIP, int start, int end,
+                               long numAttemptedReplacements[]) {
         if (start >= end)
             return true;
 
@@ -1124,7 +1165,9 @@ public class TibetanDocument extends DefaultStyledDocument {
                         remove(start, i-start);
                         ThdlDebug.verify(getRomanAttributeSet() != null);
                         insertString(start,
-                                     TibTextUtils.getWylie(dc_array, noSuchWylie),
+                                     TibTextUtils.getTranslit(EWTSNotACIP,
+                                                              dc_array,
+                                                              noSuchWylie),
                                      getRomanAttributeSet());
                         dcs.clear();
                     }

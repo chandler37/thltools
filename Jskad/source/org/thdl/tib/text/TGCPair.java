@@ -86,6 +86,30 @@ public class TGCPair {
             b.append(vowelWylie);
         return b.toString();
     }
+    public String getACIP() {
+        // DLC FIXME: has the EWTS change affected Manipulate.acipToWylie?
+        StringBuffer b = new StringBuffer();
+        if (consonantWylie != null) {
+            String consonantACIP // DLC FIXME can KAsh occur?
+                = org.thdl.tib.scanner.Manipulate.wylieToAcip(consonantWylie);
+            if (null == consonantACIP) throw new Error("how?");
+            // System.out.println("DLC: Wylie=" + consonantWylie + ", ACIP=" + consonantACIP);
+            // we may have {P-Y}, but the user wants to see {PY}.
+            for (int i = 0; i < consonantACIP.length(); i++) {
+                char ch = consonantACIP.charAt(i);
+                if ('-' != ch)
+                    b.append(ch);
+            }
+        }
+        if (vowelWylie != null) {
+            String vowelACIP // DLC FIXME look for exceptions
+                = org.thdl.tib.scanner.Manipulate.wylieToAcip(vowelWylie);
+            // System.out.println("DLC: Wylie=" + vowelWylie + ", ACIP=" + vowelACIP);
+            if (null == vowelACIP) throw new Error("how?");
+            b.append(vowelACIP);
+        }
+        return b.toString();
+    }
     public int classification;
     /** Constructs a new TGCPair with (Tibetan or Sanskrit) consonant
      *  consonantWylie and vowel vowelWylie.  Use

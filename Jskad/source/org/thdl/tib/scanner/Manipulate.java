@@ -44,8 +44,13 @@ public class Manipulate
 	    return ch=='a' || ch=='e' || ch=='i' || ch=='o' || ch=='u';
 	}
 	
+    /** Returns null on error. */
 	public static String wylieToAcip(String palabra)
 	{
+		// DLC FIXME: for unknown things, return null.
+		if (palabra.equals("@#")) return "*";
+		if (palabra.startsWith("@") || palabra.startsWith("#"))
+			return null; // we can't convert this in isolation!  We need context.
 		char []caract;
 		int i, j, len;
 		String nuevaPalabra;
@@ -83,6 +88,12 @@ public class Manipulate
 		nuevaPalabra = replace(nuevaPalabra, "TSH", "TQQ");
 		nuevaPalabra = replace(nuevaPalabra, "TS", "TZ");
 		nuevaPalabra = replace(nuevaPalabra, "TQQ", "TS");
+		nuevaPalabra = replace(nuevaPalabra, "a", "'A");
+		nuevaPalabra = replace(nuevaPalabra, "i", "'I");
+		nuevaPalabra = replace(nuevaPalabra, "u", "'U");
+		nuevaPalabra = replace(nuevaPalabra, "-I", "i");
+		nuevaPalabra = replace(nuevaPalabra, "/", ",");
+		nuevaPalabra = replace(nuevaPalabra, "_", "    ");
 		nuevaPalabra = fixWazur(nuevaPalabra);
 		return nuevaPalabra;
 	}

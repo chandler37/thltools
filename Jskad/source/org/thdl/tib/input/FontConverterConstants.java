@@ -31,6 +31,7 @@ interface FontConverterConstants
     final String TM_TO_TMW = "TM to TMW";
     final String TMW_TO_UNI = "TMW to Unicode";
     final String TMW_TO_WYLIE = "TMW to Wylie";
+    final String TMW_TO_ACIP = "TMW to ACIP";
     final String TMW_TO_TM = "TMW to TM";
     final String FIND_SOME_NON_TMW = "Find some non-TMW";
     final String FIND_SOME_NON_TM = "Find some non-TM";
@@ -43,6 +44,7 @@ interface FontConverterConstants
         TM_TO_TMW,
         TMW_TO_UNI,
         TMW_TO_WYLIE,
+        TMW_TO_ACIP,
         TMW_TO_TM,
         FIND_SOME_NON_TMW,
         FIND_SOME_NON_TM,
@@ -51,6 +53,7 @@ interface FontConverterConstants
     };
 
     final String suggested_WYLIE_prefix = "THDL_Wylie_";
+    final String suggested_ACIP_prefix = "ACIP_";
     final String suggested_TO_TMW_prefix = "TMW_";
     final String suggested_TO_UNI_prefix = "Uni_";
     final String suggested_TO_TM_prefix = "TM_";

@@ -78,6 +78,12 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
                                           "Attention required",
                                           JOptionPane.ERROR_MESSAGE);
             return false;
+        } else if (49 == returnCode) {
+            JOptionPane.showMessageDialog(cd,
+                                          "Though an output file has been created, it contains ugly\nerror messages like\n\"<<[[JSKAD_TMW_TO_ACIP_ERROR_NO_SUCH_ACIP:\n    Cannot convert DuffCode...\".\nPlease edit the output by hand to replace all such\ncreatures with the correct ACIP transliteration.",
+                                          "Attention required",
+                                          JOptionPane.ERROR_MESSAGE);
+            return false;
         } else if (43 == returnCode) {
             JOptionPane.showMessageDialog(cd,
                                           "Though an output file has been created, this conversion did nothing.\nDid you choose the correct original file?\nDid you choose the correct type of conversion?",

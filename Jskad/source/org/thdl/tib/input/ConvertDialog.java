@@ -417,6 +417,8 @@ class ConvertDialog extends JDialog
         } else { // conversion {to Wylie or TM} mode
             if (TMW_TO_WYLIE == ct) {
                 newFileNamePrefix = suggested_WYLIE_prefix;
+            } else if (TMW_TO_ACIP == ct) {
+                newFileNamePrefix = suggested_ACIP_prefix;
             } else if (TMW_TO_UNI == ct || ACIP_TO_UNI == ct) {
                 newFileNamePrefix = suggested_TO_UNI_prefix;
             } else if (TM_TO_TMW == ct || ACIP_TO_TMW == ct) {

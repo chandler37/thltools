@@ -1706,6 +1706,13 @@ public static String wylieForGlyph(String hashKey) {
 	return sb.toString();
 }
 
+    // DLC DOC
+private static String acipForGlyph(String hashKey) {
+    String ACIP // DLC FIXME: test this.
+        = org.thdl.tib.scanner.Manipulate.wylieToAcip(hashKey);
+    return ACIP;
+}
+
 /** Error that appears in a document when some TMW cannot be
  *  transcribed in THDL Extended Wylie.  This error message is
  *  documented in www/htdocs/TMW_RTF_TO_THDL_WYLIE.html, so change
@@ -1714,6 +1721,16 @@ private static String getTMWToWylieErrorString(DuffCode dc) {
     return "<<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert DuffCode "
         + dc.toString(true)
         + " to THDL Extended Wylie.  Please see the documentation for the TMW font and transcribe this yourself.]]>>";
+}
+
+/** Error that appears in a document when some TMW cannot be
+ *  transcribed in ACIP.  This error message is
+ *  documented in www/htdocs/TMW_RTF_TO_THDL_WYLIE.html (DLC NOT YET), so change
+ *  them both when you change this. */
+private static String getTMWToACIPErrorString(DuffCode dc) {
+    return "<<[[JSKAD_TMW_TO_ACIP_ERROR_NO_SUCH_ACIP: Cannot convert DuffCode "
+        + dc.toString(true)
+        + " to ACIP.  Please see the documentation for the TMW font and transcribe this yourself.]]>>";
 }
 
 /**
@@ -1754,6 +1771,17 @@ public static String getWylieForGlyph(DuffCode dc, boolean noSuchWylie[]) {
         return getTMWToWylieErrorString(dc);
     }
 	return wylieForGlyph(hashKey);
+}
+
+// DLC DOC
+public static String getACIPForGlyph(DuffCode dc, boolean noSuchACIP[]) {
+    String hashKey = getHashKeyForGlyph(dc);
+    String ans = (hashKey == null) ? null : acipForGlyph(hashKey);
+    if (hashKey == null || ans == null) {
+        noSuchACIP[0] = true;
+        return getTMWToACIPErrorString(dc);
+    }
+    return ans;
 }
 
     /** This addresses bug 624133, "Input freezes after impossible
