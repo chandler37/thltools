@@ -15,7 +15,7 @@
 
 <!-- 	<property file="${user.home}/.${ant.project.name}-build.properties"/>
 	<property file="${user.home}/.build.properties"/> -->
-	<property file="build.properties"/> 
+	<property file="working.build.properties"/> 
 
   <!-- Configure the custom Ant tasks for the Manager application 
   			These tasks require catalina-ant.jar in $ANT_HOME/lib-->
