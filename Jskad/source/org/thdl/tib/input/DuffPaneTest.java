@@ -98,6 +98,30 @@ public class DuffPaneTest extends TestCase {
         assertTrue(passes);
     }
 
+    public void testDisambiguation() {
+        ensureKeysGiveCorrectWylie("gya");
+        ensureKeysGiveCorrectWylie("g.ya");
+        ensureKeysGiveCorrectWylie("bya");
+        ensureKeysGiveCorrectWylie("b.ya");
+        ensureKeysGiveCorrectWylie("mya");
+        ensureKeysGiveCorrectWylie("m.ya");
+        ensureKeysGiveCorrectWylie("'ya");
+        ensureKeysGiveCorrectWylie("'.ya", "'ya");
+        ensureKeysGiveCorrectWylie("dya");
+        ensureKeysGiveCorrectWylie("d.ya", "dya");
+        ensureKeysGiveCorrectWylie("grwa");
+        ensureKeysGiveCorrectWylie("g.rwa");
+        ensureKeysGiveCorrectWylie("gra");
+        ensureKeysGiveCorrectWylie("dra");
+        ensureKeysGiveCorrectWylie("drwa");
+        ensureKeysGiveCorrectWylie("d.rwa");
+        ensureKeysGiveCorrectWylie("g.r", "gar");
+        ensureKeysGiveCorrectWylie("d.r", "dar");
+        ensureKeysGiveCorrectWylie("'.r", "'ar");
+        ensureKeysGiveCorrectWylie("b.r", "bar");
+        ensureKeysGiveCorrectWylie("m.r", "mar");
+    }
+
     /** Tests performing a few keystrokes in the Extended Wylie
      *  keyboard, turning those into our internal representation (IR),
      *  and then converting the result to Extended Wylie. */
