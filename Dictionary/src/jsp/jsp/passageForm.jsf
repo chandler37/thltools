@@ -10,7 +10,7 @@
 		<c:set var="spelling" value="" />
 		<c:set var="pagination" value="" />
 		<c:set var="passage" value="" />
-		<c:set var="id" value="" />
+		<c:set var="metaId" value="" />
 		<c:set var="note" value="" />
 	</c:when>
 	<c:when test="${ ! empty param.formMode && param.formMode == 'update'}">
@@ -20,7 +20,7 @@
 		<c:set var="spelling" value="${ component.spelling }" />
 		<c:set var="pagination" value="${ component.pagination }" />
 		<c:set var="passage" value="${ component.passage }" />
-		<c:set var="id" value="${ component.id }" />
+		<c:set var="metaId" value="${ component.metaId }" />
 		<c:set var="note" value="${ component.note }" />
 	</c:when>
 	<c:otherwise>
@@ -51,7 +51,7 @@
 
 <input type="hidden" name="comp" value="passage" />
 <c:if test="${ updateMode }">
-<c:out value='<input type="hidden" name="id" value="${id}" />' escapeXml="false" />
+<c:out value='<input type="hidden" name="metaId" value="${metaId}" />' escapeXml="false" />
 </c:if>
 <c:out value='<input type="hidden" name="cmd" value="${newCmd}" />' escapeXml='false' />
 <c:out value='<input type="hidden" name="parentId" value="${ param.parentId }" />' escapeXml='false' />

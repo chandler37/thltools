@@ -116,7 +116,7 @@ public class LexComponentFilter implements Filter
 // catch (LexComponentException labe)
 		catch ( Exception labe )
 		{
-			throw new ServletException( "LABE says: " + labe.getMessage() );
+			throw new ServletException( labe );
 		}
 	}
 

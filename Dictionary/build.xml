@@ -1,16 +1,14 @@
-
 <project name="Lex" default="compile" basedir=".">
 
-  <!-- Configure the directory into which the web application is built -->
+	<!-- Configure the directory into which the web application is built -->
 	<property name="build" value="${basedir}/build"/>
 
    <!-- Configure the directory containing the source files -->
 	<property name="source" value="${basedir}/src"/>
 	
-   <!-- Configure the directory containing the config files 
-   			This files from this directory should not go in the CVS hierarchy.
-			-->
-	<property name="config" value="${basedir}/local-config"/>
+  <!-- Configure the directory containing the config files 
+   			This files from this directory should not go in the CVS hierarchy. -->
+	<property name="config" value="${basedir}/lcl-cfg"/>
 
   <!-- Configure the context path for this application -->
 	<property name="path" value="/lex"/>
@@ -19,9 +17,10 @@
   			This is used  in the classpath to bring in servlet.jar and the jdbc-driver
 			-->
 	<property name="catalina.home" value="/usr/local/tomcat8080"/>
+	<property name="catalina.base" value="/usr/local/tomcat2020"/>
 
   <!-- Configure properties to access the Manager application 
-  			user /pass combo should be in $TOMCAT_HOME/conf/tomcat-users.xml with managaer role.-->
+  			user /pass combo should be in $TOMCAT_HOME/conf/tomcat-users.xml with manager role.-->
 	<property name="url" value="http://localhost:2020/manager"/>
 	<property name="username" value="user"/>
 	<property name="password" value="pass"/>
@@ -39,27 +38,32 @@
 	<taskdef name="stop" classname="org.apache.catalina.ant.StopTask"/>
 	<taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask"/>
 
-  <!-- Configure up the classpath -->
+  <!-- Configure the classpath -->
 	<path id="classpath">
 		<fileset dir="${basedir}/lib">
 			<include name="**/*.jar"/>
-			<include name="compiletime/lib/javax.servlet.jar"/>
 		</fileset>
 		<fileset dir="${catalina.home}/common/lib">
 			<include name="servlet.jar"/>
 			<include name="mysql-connector-java-3.0.8-stable-bin.jar"/>
 		</fileset>
-		<!--point to org/thdl/thdl/users-->
+		<!--point to org/thdl/users-->
 		<pathelement location="${build}/WEB-INF/classes"/>
 	</path>
-  
+
    <!-- Executable Targets -->
 	<target name="copy" description="copy jsp, html, css, js, and other files into the build directory">
 		
 		<copy todir="${build}">
 			<fileset dir="${source}/jsp">
-				<include name="**/*.jsp"/>
-				<include name="**/*.jsf"/>
+				<include name="*.jsp"/>
+				<include name="*.jsf"/>
+			</fileset>
+		</copy>
+		<copy todir="${build}/jsp">
+			<fileset dir="${source}/jsp/jsp">
+				<include name="*.jsp"/>
+				<include name="*.jsf"/>
 			</fileset>
 		</copy>
 		
@@ -115,13 +119,11 @@
 	</target>
 	
 	<target name="test" description="Testing" depends="compile">
-		<java classname="org.thdl.lex.LexMod" classpath="${build}/WEB-INF/classes/" classpathref="classpath"/>
+		<java classname="org.thdl.lex.${class}" classpath="${build}/WEB-INF/classes/" classpathref="classpath"/>
 	</target>
 	
-	<target name="javadoc" description="Create Javadocs">
-		<mkdir dir="${build}/docs/api"/>
-		
-		<javadoc destdir="${build}/docs/api/" classpathref="classpath" author="true" version="true" use="true" windowtitle="THDL Tibetan Collaborative Dictionary API">
+	<target name="javadoc" description="Create Javadocs">		
+		<javadoc destdir="${build}/apidocs/" classpathref="classpath" author="true" version="true" use="true" windowtitle="THDL Tibetan Collaborative Dictionary API">
 			
 			<fileset dir="${source}/java" defaultexcludes="yes">
 				<include name="org/thdl/**/*.java"/>
@@ -146,7 +148,9 @@
 		<mkdir dir="logs"/>
 		<tstamp prefix="now"/>
 		<touch file="${basedir}/logs/hibernate.log"/>
-		<move file="${basedir}/logs/hibernate.log" tofile="${basedir}/logs/hibernate_${now.DSTAMP}_${now.TSTAMP}.log" overwrite="true"/>
+		<move file="${basedir}/logs/hibernate.log" tofile="${basedir}/logs/${now.DSTAMP}_${now.TSTAMP}_hibernate.log" overwrite="true"/>
+		<touch file="${basedir}/logs/lex.log"/>
+		<move file="${basedir}/logs/lex.log" tofile="${basedir}/logs/${now.DSTAMP}_${now.TSTAMP}_lex.log" overwrite="true"/>
 	</target>
 	
 	<target name="reinstall" description="Remove and Re-install web application" depends="remove">

@@ -17,13 +17,13 @@
 	</c:when>
 	<c:when test="${ ! empty param.formMode && param.formMode == 'update'}">
 		<c:set var="updateMode" value="${ true }" />		
-		<c:set var="language" value="${ component.language }" />
-		<c:set var="dialect" value="${ component.dialect }" />
-		<c:set var="source" value="${ component.source }" />
-		<c:set var="projectSubject" value="${ component.modifiedByProjSub }" />
-		<c:set var="script" value="${ component.script }" />
-		<%-- <c:set var="precedence" value="${ component.precedence }" /> --%>
-		<c:set var="note" value="${ component.note }" />
+		<c:set var="language" value="${ component.meta.language }" />
+		<c:set var="dialect" value="${ component.meta.dialect }" />
+		<c:set var="source" value="${ component.meta.source }" />
+		<c:set var="projectSubject" value="${ component.meta.modifiedByProjSub }" />
+		<c:set var="script" value="${ component.meta.script }" />
+		<%-- <c:set var="precedence" value="${ component.meta.precedence }" /> --%>
+		<c:set var="note" value="${ component.meta.note }" />
 	</c:when>
 	<c:otherwise>
 		<c:set var="updateMode" value="${ false }" />		

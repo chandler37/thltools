@@ -1,23 +1,25 @@
 package org.thdl.lex;
 
-import org.thdl.lex.component.*;
-import org.thdl.lex.commands.*;
-
 import java.io.IOException;
+import java.util.*;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
+import javax.servlet.http.HttpSession;
+import org.apache.log4j.*;
+import org.thdl.lex.commands.*;
+
+import org.thdl.lex.component.*;
 
 
 /**
  *  Description of the Class
  *
- *@author     travis
- *@created    October 1, 2003
+ * @author     travis
+ * @created    October 1, 2003
  */
 public class LexActionServlet extends HttpServlet
 {
@@ -31,8 +33,8 @@ public class LexActionServlet extends HttpServlet
 	/**
 	 *  Sets the commands attribute of the LexActionServlet object
 	 *
-	 *@param  commands  The new commands value
-	 *@since
+	 * @param  commands  The new commands value
+	 * @since
 	 */
 	public void setCommands( HashMap commands )
 	{
@@ -43,8 +45,8 @@ public class LexActionServlet extends HttpServlet
 	/**
 	 *  Sets the cmd attribute of the LexActionServlet object
 	 *
-	 *@param  cmd  The new cmd value
-	 *@since
+	 * @param  cmd  The new cmd value
+	 * @since
 	 */
 	public void setCmd( String cmd )
 	{
@@ -55,8 +57,8 @@ public class LexActionServlet extends HttpServlet
 	/**
 	 *  Gets the commands attribute of the LexActionServlet object
 	 *
-	 *@return    The commands value
-	 *@since
+	 * @return    The commands value
+	 * @since
 	 */
 	public HashMap getCommands()
 	{
@@ -67,8 +69,8 @@ public class LexActionServlet extends HttpServlet
 	/**
 	 *  Gets the cmd attribute of the LexActionServlet object
 	 *
-	 *@return    The cmd value
-	 *@since
+	 * @return    The cmd value
+	 * @since
 	 */
 	public String getCmd()
 	{
@@ -81,9 +83,9 @@ public class LexActionServlet extends HttpServlet
 	/**
 	 *  Description of the Method
 	 *
-	 *@param  config                Description of Parameter
-	 *@exception  ServletException  Description of Exception
-	 *@since
+	 * @param  config                Description of Parameter
+	 * @exception  ServletException  Description of Exception
+	 * @since
 	 */
 	public void init( ServletConfig config ) throws ServletException
 	{
@@ -96,17 +98,19 @@ public class LexActionServlet extends HttpServlet
 	/**
 	 *  Description of the Method
 	 *
-	 *@param  req                   Description of Parameter
-	 *@param  res                   Description of Parameter
-	 *@exception  ServletException  Description of Exception
-	 *@exception  IOException       Description of Exception
-	 *@since
+	 * @param  req                   Description of Parameter
+	 * @param  res                   Description of Parameter
+	 * @exception  ServletException  Description of Exception
+	 * @exception  IOException       Description of Exception
+	 * @since
 	 */
 	public void service( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException
 	{
 		String next;
 		try
 		{
+			logRequestState( req );
+			logSessionState( req.getSession( true ) );
 			setCmd( req.getParameter( LexConstants.COMMAND_REQ_PARAM ) );
 			Command command = lookupCommand( getCmd() );
 			LexComponent component = (LexComponent) req.getAttribute( LexConstants.COMPONENT_REQ_ATTR );
@@ -150,10 +154,10 @@ public class LexActionServlet extends HttpServlet
 	/**
 	 *  Description of the Method
 	 *
-	 *@param  cmdKey                Description of Parameter
-	 *@return                       Description of the Returned Value
-	 *@exception  CommandException  Description of Exception
-	 *@since
+	 * @param  cmdKey                Description of Parameter
+	 * @return                       Description of the Returned Value
+	 * @exception  CommandException  Description of Exception
+	 * @since
 	 */
 	private Command lookupCommand( String cmdKey ) throws CommandException
 	{
@@ -175,7 +179,59 @@ public class LexActionServlet extends HttpServlet
 	/**
 	 *  Description of the Method
 	 *
-	 *@since
+	 * @param  req  Description of the Parameter
+	 */
+	public void logRequestState( HttpServletRequest req )
+	{
+		Logger logger = Logger.getLogger( "org.thdl.lex" );
+		Iterator it;
+		Enumeration enum = req.getParameterNames();
+		while ( enum.hasMoreElements() )
+		{
+			String parm = (String) enum.nextElement();
+			logger.debug( "Request Parameter " + parm + " = " + req.getParameter( parm ) );
+		}
+		enum = req.getAttributeNames();
+		while ( enum.hasMoreElements() )
+		{
+			String att = (String) enum.nextElement();
+			logger.debug( "Request Attribute " + att + " = " + req.getAttribute( att ) );
+		}
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  ses  Description of the Parameter
+	 */
+	public void logSessionState( HttpSession ses )
+	{
+		Logger logger = Logger.getLogger( "org.thdl.lex" );
+		Enumeration enum = ses.getAttributeNames();
+		while ( enum.hasMoreElements() )
+		{
+			String att = (String) enum.nextElement();
+			logger.debug( "Request Attribute " + att + " = " + ses.getAttribute( att ) );
+		}
+		LexQuery query = (LexQuery) ses.getAttribute( "query" );
+		if ( null == query )
+		{
+			return;
+		}
+		logger.debug( "Query Entry: " + query.getEntry() );
+		logger.debug( "Query QueryComponent: " + query.getQueryComponent() );
+		logger.debug( "Query UpdateComponent: " + query.getUpdateComponent() );
+		logger.debug( "Query Results, " + query.getResults() + ", contain: " + query.getResults().values() );
+		logger.debug( "Query Duration: " + query.getEntry() );
+
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @since
 	 */
 	private void initCommands()
 	{

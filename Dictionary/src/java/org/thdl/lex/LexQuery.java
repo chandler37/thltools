@@ -1,22 +1,23 @@
 package org.thdl.lex;
-
-import org.thdl.lex.component.*;
+import java.sql.*;
+import java.util.*;
 
 import net.sf.hibernate.*;
 import org.apache.commons.beanutils.BeanUtils;
-import java.util.*;
-import java.sql.*;
+
+import org.thdl.lex.component.*;
 
 
 /**
  *  Description of the Class
  *
- *@author     travis
- *@created    October 1, 2003
+ * @author     travis
+ * @created    October 1, 2003
  */
 public class LexQuery
 {
 	private ILexComponent queryComponent;
+	private ILexComponent updateComponent;
 	private ITerm entry;
 	private Map results;
 	private Enumeration mode;
@@ -24,10 +25,21 @@ public class LexQuery
 
 
 	/**
+	 *  Sets the updateComponent attribute of the LexQuery object
+	 *
+	 * @param  updateComponent  The new updateComponent value
+	 */
+	public void setUpdateComponent( ILexComponent updateComponent )
+	{
+		this.updateComponent = updateComponent;
+	}
+
+
+	/**
 	 *  Sets the duration attribute of the LexQuery object
 	 *
-	 *@param  duration  The new duration value
-	 *@since
+	 * @param  duration  The new duration value
+	 * @since
 	 */
 	public void setDuration( long duration )
 	{
@@ -38,8 +50,8 @@ public class LexQuery
 	/**
 	 *  Sets the queryComponent attribute of the LexQuery object
 	 *
-	 *@param  queryComponent  The new queryComponent value
-	 *@since
+	 * @param  queryComponent  The new queryComponent value
+	 * @since
 	 */
 	public void setQueryComponent( ILexComponent queryComponent )
 	{
@@ -50,8 +62,8 @@ public class LexQuery
 	/**
 	 *  Sets the entry attribute of the LexQuery object
 	 *
-	 *@param  entry  The new entry value
-	 *@since
+	 * @param  entry  The new entry value
+	 * @since
 	 */
 	public void setEntry( ITerm entry )
 	{
@@ -62,8 +74,8 @@ public class LexQuery
 	/**
 	 *  Sets the mode attribute of the LexQuery object
 	 *
-	 *@param  mode  The new mode value
-	 *@since
+	 * @param  mode  The new mode value
+	 * @since
 	 */
 	public void setMode( Enumeration mode )
 	{
@@ -74,8 +86,8 @@ public class LexQuery
 	/**
 	 *  Sets the results attribute of the LexQuery object
 	 *
-	 *@param  results  The new results value
-	 *@since
+	 * @param  results  The new results value
+	 * @since
 	 */
 	public void setResults( Map results )
 	{
@@ -84,10 +96,21 @@ public class LexQuery
 
 
 	/**
+	 *  Gets the updateComponent attribute of the LexQuery object
+	 *
+	 * @return    The updateComponent value
+	 */
+	public ILexComponent getUpdateComponent()
+	{
+		return updateComponent;
+	}
+
+
+	/**
 	 *  Gets the duration attribute of the LexQuery object
 	 *
-	 *@return    The duration value
-	 *@since
+	 * @return    The duration value
+	 * @since
 	 */
 	public long getDuration()
 	{
@@ -98,8 +121,8 @@ public class LexQuery
 	/**
 	 *  Gets the queryComponent attribute of the LexQuery object
 	 *
-	 *@return    The queryComponent value
-	 *@since
+	 * @return    The queryComponent value
+	 * @since
 	 */
 	public ILexComponent getQueryComponent()
 	{
@@ -110,8 +133,8 @@ public class LexQuery
 	/**
 	 *  Gets the entry attribute of the LexQuery object
 	 *
-	 *@return    The entry value
-	 *@since
+	 * @return    The entry value
+	 * @since
 	 */
 	public ITerm getEntry()
 	{
@@ -122,8 +145,8 @@ public class LexQuery
 	/**
 	 *  Gets the mode attribute of the LexQuery object
 	 *
-	 *@return    The mode value
-	 *@since
+	 * @return    The mode value
+	 * @since
 	 */
 	public Enumeration getMode()
 	{
@@ -134,8 +157,8 @@ public class LexQuery
 	/**
 	 *  Gets the results attribute of the LexQuery object
 	 *
-	 *@return    The results value
-	 *@since
+	 * @return    The results value
+	 * @since
 	 */
 	public Map getResults()
 	{
@@ -151,9 +174,9 @@ public class LexQuery
 	/**
 	 *  Description of the Method
 	 *
-	 *@param  parameters                  Description of Parameter
-	 *@exception  LexRepositoryException  Description of Exception
-	 *@since
+	 * @param  parameters                  Description of Parameter
+	 * @exception  LexRepositoryException  Description of Exception
+	 * @since
 	 */
 	public void populate( Map parameters ) throws LexRepositoryException
 	{
@@ -177,17 +200,17 @@ public class LexQuery
 	/**
 	 *  Constructor for the LexQuery object
 	 *
-	 *@since
+	 * @since
 	 */
 	public LexQuery() { }
 
 //inner classes
 
 	/*
-	 *  class LexQueryMode extends Enumeration
-	 *  {
-	 *  }
-	 */
+	    class LexQueryMode extends Enumeration
+	    {
+	    }
+	  */
 }
 
 

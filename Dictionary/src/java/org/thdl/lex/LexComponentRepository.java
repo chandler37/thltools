@@ -3,6 +3,7 @@ import java.sql.*;
 import java.util.*;
 
 import net.sf.hibernate.*;
+import org.apache.log4j.*;
 
 import org.thdl.lex.component.*;
 
@@ -26,8 +27,11 @@ public class LexComponentRepository
 	 */
 	private static void setStart( long startTime )
 	{
+		Logger logger = Logger.getLogger( "org.thdl.lex" );
+		logger.debug( "Query start time: " + new java.util.Date( startTime ) );
 		start = startTime;
 	}
+
 
 
 	/**
@@ -39,6 +43,23 @@ public class LexComponentRepository
 	private static long getStart()
 	{
 		return start;
+	}
+
+
+	/**
+	 *  Gets the duration attribute of the LexComponentRepository class
+	 *
+	 * @return    The duration value
+	 */
+	private static long getDuration()
+	{
+		long duration = now() - getStart();
+
+		Logger logger = Logger.getLogger( "org.thdl.lex" );
+		logger.debug( "Query finish: " + new java.util.Date( now() ) );
+		logger.debug( "Query duration in ms: " + duration );
+		logger.info( "Query duration: " + duration / 1000 + " seconds." );
+		return duration;
 	}
 
 
@@ -155,28 +176,80 @@ public class LexComponentRepository
 			term = (ITerm) it.next();
 			lexQuery.getResults().put( term.getMetaId(), term.getTerm() );
 		}
-		lexQuery.setDuration( now() - getStart() );
+		lexQuery.setDuration( getDuration() );
 	}
 
 
 	/**
 	 *  Description of the Method
 	 *
-	 * @param  lexQuery                    Description of Parameter
+	 * @param  term                        Description of the Parameter
 	 * @exception  LexRepositoryException  Description of Exception
 	 * @since
+	 */
+	public static void loadTermByPk( ITerm term ) throws LexRepositoryException
+	{
+		try
+		{
+			getSession().load( term, term.getMetaId() );
+		}
+		catch ( HibernateException he )
+		{
+			throw new LexRepositoryException( he );
+		}
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  lexQuery                    Description of the Parameter
+	 * @exception  LexRepositoryException  Description of the Exception
 	 */
 	public static void loadTermByPk( LexQuery lexQuery ) throws LexRepositoryException
 	{
 		ITerm term = assertTerm( lexQuery.getQueryComponent() );
+		loadTermByPk( term );
+		lexQuery.setEntry( term );
+		if ( !lexQuery.getResults().containsKey( term.getMetaId() ) )
+		{
+			lexQuery.getResults().put( term.getMetaId(), term.getTerm() );
+		}
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  component                   Description of the Parameter
+	 * @exception  LexRepositoryException  Description of the Exception
+	 */
+	public static void loadByPk( ILexComponent component ) throws LexRepositoryException
+	{
+
 		try
 		{
-			getSession().load( term, term.getMetaId() );
-			lexQuery.setEntry( term );
-			if ( !lexQuery.getResults().containsKey( term.getMetaId() ) )
-			{
-				lexQuery.getResults().put( term.getMetaId(), term.getTerm() );
-			}
+			getSession().load( component, component.getMetaId() );
+		}
+		catch ( HibernateException he )
+		{
+			throw new LexRepositoryException( he );
+		}
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  component                   Description of the Parameter
+	 * @exception  LexRepositoryException  Description of the Exception
+	 */
+	public static void update( ILexComponent component ) throws LexRepositoryException
+	{
+
+		try
+		{
+			getSession().update( component );
 		}
 		catch ( HibernateException he )
 		{

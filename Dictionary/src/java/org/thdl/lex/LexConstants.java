@@ -1,5 +1,7 @@
 package org.thdl.lex;
 
+import org.thdl.lex.component.*;
+
 
 /**
  *  Description of the Class
@@ -24,55 +26,55 @@ public class LexConstants
 	/**
 	 *  Description of the Field
 	 */
-	public final static String PRONUNCIATIONLABEL_VALUE = "pronunciation";
+	public final static String PRONUNCIATIONLABEL_VALUE = new Pronunciation().getLabel();
 	/**
 	 *  Description of the Field
 	 */
-	public final static String SPELLINGLABEL_VALUE = "spelling";
+	public final static String SPELLINGLABEL_VALUE = new Spelling().getLabel();
 	/**
 	 *  Description of the Field
 	 */
-	public final static String ETYMOLOGYLABEL_VALUE = "etymology";
+	public final static String ETYMOLOGYLABEL_VALUE = new Etymology().getLabel();
 	/**
 	 *  Description of the Field
 	 */
-	public final static String FUNCTIONLABEL_VALUE = "function";
+	public final static String FUNCTIONLABEL_VALUE = new GrammaticalFunction().getLabel();
 	/**
 	 *  Description of the Field
 	 */
-	public final static String ENCYCLOPEDIA_ARTICLE_LABEL_VALUE = "encyclopediaArticle";
+	public final static String ENCYCLOPEDIA_ARTICLE_LABEL_VALUE = new EncyclopediaArticle().getLabel();
 	/**
 	 *  Description of the Field
 	 */
-	public final static String DEFINITIONLABEL_VALUE = "definition";
+	public final static String DEFINITIONLABEL_VALUE = new Definition().getLabel();
 	/**
 	 *  Description of the Field
 	 */
-	public final static String SUBDEFINITIONLABEL_VALUE = "subdefinition";
+	public final static String SUBDEFINITIONLABEL_VALUE = new Subdefinition().getLabel();
 	/**
 	 *  Description of the Field
 	 */
-	public final static String MODELSENTENCELABEL_VALUE = "modelSentence";
+	public final static String MODELSENTENCELABEL_VALUE = new ModelSentence().getLabel();
 	/**
 	 *  Description of the Field
 	 */
-	public final static String PASSAGELABEL_VALUE = "passage";
+	public final static String PASSAGELABEL_VALUE = new Passage().getLabel();
 	/**
 	 *  Description of the Field
 	 */
-	public final static String TRANSLATIONLABEL_VALUE = "translationEquivalent";
+	public final static String TRANSLATIONLABEL_VALUE = new TranslationEquivalent().getLabel();
 	/**
 	 *  Description of the Field
 	 */
-	public final static String RELATEDTERMLABEL_VALUE = "relatedTerm";
+	public final static String RELATEDTERMLABEL_VALUE = new RelatedTerm().getLabel();
 	/**
 	 *  Description of the Field
 	 */
-	public final static String REGISTERLABEL_VALUE = "register";
+	public final static String REGISTERLABEL_VALUE = new SpeechRegister().getLabel();
 	/**
 	 *  Description of the Field
 	 */
-	public final static String KEYWORDLABEL_VALUE = "keyword";
+	public final static String KEYWORDLABEL_VALUE = new Keyword().getLabel();
 	/**
 	 *  Description of the Field
 	 */
@@ -80,7 +82,16 @@ public class LexConstants
 	/**
 	 *  Description of the Field
 	 */
-	public final static String ANALYTICALNOTELABEL_VALUE = "analyticalNote";
+	public final static String ANALYTICALNOTELABEL_VALUE = new AnalyticalNote().getLabel();
+	/**
+	 *  Description of the Field
+	 */
+	public final static String TRANSITIONALDATALABEL_VALUE = new TransitionalData().getLabel();
+	/**
+	 *  Description of the Field
+	 */
+	public final static String GLOSSLABEL_VALUE = new Gloss().getLabel();
+
 	/*
 	    REQUEST PARAM NAMES AND VALUES USED BY LexActionServlet.java
 	  */
@@ -224,5 +235,6 @@ public class LexConstants
 	public final static String HIBERNATE_SESSION_KEY = "hib";
 
 //public final static String URL = "jdbc:mysql://localhost/LexTorque";
+
 }
 

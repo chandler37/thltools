@@ -58,7 +58,7 @@ Back to:
 	<jsp:include page="spellingForm.jsf" />
 </c:when>
 
- <c:when test="${ param.comp == 'function'}">
+ <c:when test="${ param.comp == 'grammaticalFunction'}">
 	<jsp:include page="functionForm.jsf" />
 </c:when>
 
@@ -94,7 +94,7 @@ Back to:
 	<jsp:include page="passageForm.jsf" />
 </c:when>
 
-<c:when test="${ param.comp == 'register' }">
+<c:when test="${ param.comp == 'speechRegister' }">
 	<jsp:include page="registerForm.jsf" />
 </c:when>
 

@@ -66,18 +66,6 @@ if (ie)
 Scripts for displayTree.jsf
 =============================
 */
-function submitForm( cmd, component, id, parentId, componentHex, parentHex )
-{
-	document.forms[2].cmd.value = cmd;
-	document.forms[2].componentLabel.value = component;
-	document.forms[2].id.value = id;
-	document.forms[2].parentId.value = parentId;
-	assert( componentHex != null , "no componentHex");
-		document.forms[2].componentHex.value = componentHex;
-	assert( parentHex != null , "no parentHex") ;
-		document.forms[2].parentHex.value = parentHex;
-	document.forms[2].submit();
-}
 
 function smile()
 {}
