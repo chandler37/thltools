@@ -6,6 +6,7 @@ import java.util.*;
 import org.thdl.lex.*;
 import org.thdl.lex.component.*;
 import org.thdl.tib.scanner.Manipulate;
+import java.sql.*;
 
 public class DictionaryImporter
 {
@@ -18,6 +19,7 @@ public class DictionaryImporter
     private static Integer proj;
     private static String publicCons;
     private static Integer label;
+    private static Statement sqlStatement;
     
     public final static int delimiterGeneric=0;
     public final static int delimiterAcip=1;
@@ -28,7 +30,7 @@ public class DictionaryImporter
 	{
 	    String entrada, s1, s2, alternateWords[];
 	    int marker, marker2, len, currentLine=1;
-	    long start = System.currentTimeMillis();
+	    //long start = System.currentTimeMillis();
 	    
         while ((entrada = in.readLine())!=null)
 	    {
@@ -68,56 +70,136 @@ public class DictionaryImporter
 		                    alternateWords = s1.split(";");
     		                for (marker2=0; marker2<alternateWords.length; marker2++)
 	    	                {
-	    	                    addRecord(alternateWords[marker2],s2);
+	    	                    if (sqlStatement!=null) addRecordManually(alternateWords[marker2],s2);
+	    	                    else addRecord(alternateWords[marker2],s2);
 		                    }
 		                }
-		                addRecord (s1, s2);
+		                if (sqlStatement!=null) addRecordManually(s1, s2);
+		                else addRecord (s1, s2);
 		            }
     		    }
     		}
 		    currentLine++;
 	    }			
 	
-		System.out.println( "Duration: " + ( System.currentTimeMillis() - start )/60000 + " minutes");
+		//System.out.println( "Duration: " + ( System.currentTimeMillis() - start )/60000 + " minutes");
 		System.out.flush();
-		out.flush();
+		if (out!=null) out.flush();
+		if (sqlStatement!=null) sqlStatement.close();
+	}
+	
+	public void addRecordManually(String term, String definition) throws Exception
+	{
+	    Boolean result;
+	    ResultSet set;
+	    int metaID, metaIDTrans;
+	    String currentDef, insertMeta = "INSERT INTO meta (createdby, modifiedby, createdbyprojsub, modifiedbyprojsub, createdon, modifiedon, source, language, dialect, script, note) VALUES (" + creator.toString() + ", " + creator.toString() + ", " + proj.toString() + ", " + proj.toString() + ", NOW(), NOW(), 0, 0, 0, 1, \"" + note + "\")";
+
+	    definition = Manipulate.replace(definition, "\\", "@@@@");
+	    definition = Manipulate.replace(definition, "@@@@", "\\\\");
+	    
+	    definition = Manipulate.replace(definition, "\"", "@@@@");
+	    definition = Manipulate.replace(definition, "@@@@", "\\\"");
+
+        // displaying for debugging purposes only
+        // System.out.println(term);
+        
+	    // Check to see if term is already there
+	    sqlStatement.execute("SELECT metaid FROM terms WHERE term = \"" + term + "\"");
+	    set = sqlStatement.getResultSet();
+	    
+	    // if it is get its metaID, else add it
+	    if (!set.first())
+	    {
+	        sqlStatement.execute(insertMeta);
+	        sqlStatement.execute("SELECT MAX(metaid) FROM META");
+	        set = sqlStatement.getResultSet();
+	        set.first();
+	        metaID = set.getInt(1);
+	        sqlStatement.execute("INSERT INTO terms (metaid, term) VALUES (" + metaID + ", \"" + term + "\")");
+	    }
+	    else metaID = set.getInt(1);
+	    
+	    // See if there is an associated TransitionalData with this term and project
+	    sqlStatement.execute("SELECT transitionaldatatext, transitionaldata.metaid FROM transitionaldata, meta where transitionaldata.parentid = " + metaID + " and transitionaldata.metaid = meta.metaid and createdbyprojsub = " + proj.toString());
+	    set = sqlStatement.getResultSet();
+	    
+	    // if there is, append the definition if it is different. If not add it.
+	    if (set.first())
+	    {
+	        currentDef = set.getString(1);
+
+    	    currentDef = Manipulate.replace(currentDef, "\\", "@@@@");
+	        currentDef = Manipulate.replace(currentDef, "@@@@", "\\\\");
+    	    
+    	    currentDef = Manipulate.replace(currentDef, "\"", "@@@@");
+	        currentDef = Manipulate.replace(currentDef, "@@@@", "\\\"");
+	        
+	        if (!currentDef.equals(definition))
+	        {
+	            definition = currentDef + ". " + definition;
+	            metaIDTrans = set.getInt(2);
+   	            sqlStatement.execute("UPDATE transitionaldata SET transitionaldatatext = \"" + definition + "\" WHERE metaid = " + metaIDTrans);
+	        }
+	    }
+	    else
+	    {
+	        sqlStatement.execute(insertMeta);
+	        sqlStatement.execute("SELECT MAX(metaid) FROM META");
+	        set = sqlStatement.getResultSet();
+	        set.first();
+	        metaIDTrans = set.getInt(1);
+	        sqlStatement.execute("INSERT INTO transitionaldata (metaid, parentid, precedence, transitionaldatalabel, forpublicconsumption, transitionaldatatext) VALUES ("+ metaIDTrans +", " + metaID +", 0, " + label + ", \"" + publicCons + "\", \"" + definition + "\")");
+	    }
 	}
 	
 	/** Main class to map the term and its definition to the Lex Component 
-	   object model. Doesn't work yet! */
+	   object model. Works but painfully slow! */
 	public void addRecord(String term, String definition) throws Exception
 	{
+	    LinkedList ll;
 	    ListIterator li;
 	    ITerm lexTerm;
 	    TransitionalData trans=null;
-	    boolean found;
+	    boolean found, newTerm = false;
+	    String existingDef;
 	    
 	    // displaying for debugging purposes only
-	    if (out!=null)
-	    {
-	        out.println(term + " - " + definition);
-	        return;
-	    }
+	    // System.out.println(term);
 	    
 		//check to see if the term already exists
 	    lexTerm = LexComponentRepository.loadTermByTerm( term );
+	    
+	    found = false;
 		
 		//if it doesn't create a new term. 
 		if ( null == lexTerm )
 		{
+		    // System.out.println("New term");
 			lexTerm = new Term();
 			lexTerm.setTerm( term );
 			lexTerm.setMeta( defaultMeta() );
 			//save the Term to the database. This step is necessary here to generate a unique id
 			LexComponentRepository.save( lexTerm );
+			newTerm = true;
 		}
-		
-	    //Andres, each term has a List object that holds all TransData components. 
-		// If you need to get a specific one, you'll need to iterate through the list and find it by means of criteria in the Meta object..
-		//	The RY dictionary had multiple entries for a single term which this dictionary does not.
-		//so I sometimes had to append transitional data text to an already created Trans Data object.
-		//If you don't need to do this, you can simply add a new TransitionalData component to each term and you should be fine.
-		
+		else
+		{
+		    // System.out.println("Old term");
+		    li = lexTerm.getTransitionalData().listIterator();
+    		
+		    while (li.hasNext())
+		    {
+		        trans = (TransitionalData) li.next();
+		        if (trans.getMeta().getCreatedByProjSub().equals(proj)) 
+		        {
+		            found = true;
+		            break;
+		        }
+		    }
+		    newTerm = false;
+		}
+				
 		//OLD CODE
 		/* TransitionalData trans = getTransData( lexTerm.getId() );
 		
@@ -144,38 +226,39 @@ public class DictionaryImporter
 		
 		// check if there is already a defition for this project
 		
-		li = lexTerm.getTransitionalData().listIterator();
-		
-		found = false;
-		while (li.hasNext())
-		{
-		    trans = (TransitionalData) li.next();
-		    if (trans.getMeta().getCreatedByProjSub().equals(proj)) 
-		    {
-		        found = true;
-		        break;
-		    }
-		}
 		if (found)
 		{
-		    definition = trans.getTransitionalDataText() + ". " + definition;
+		    existingDef = trans.getTransitionalDataText(); 
+		    if (!existingDef.equals(definition))
+		    {
+		        definition = existingDef + ". " + definition;
+		        found = false;
+		    }
 		}
 		else
 		{
+		    // System.out.println("New definition");
 		    trans = new TransitionalData( );
 		    trans.setMeta( defaultMeta() );
 		    trans.setTransitionalDataLabel(label);
 		    trans.setParentId( lexTerm.getMetaId() );
 		    trans.setForPublicConsumption(publicCons);
-    		lexTerm.getTransitionalData().add( trans );
+		    if (newTerm)
+		    {
+		        ll = new LinkedList();
+		        ll.add(trans);
+		        lexTerm.setTransitionalData(ll);
+		    }
+    		else lexTerm.getTransitionalData().add( trans );
+    		
 		}
-
-	    trans.setTransitionalDataText(definition);
 		
-		//add the new trans Data obj to the term.
-		
-		//save the Term to the database.
-		LexComponentRepository.save( lexTerm );
+		if (!found)
+		{
+	        trans.setTransitionalDataText(definition);		
+		    //save the Term to the database.
+		    LexComponentRepository.save( lexTerm );
+		}
 	}
 	
 	public Meta defaultMeta() {
@@ -192,6 +275,39 @@ public class DictionaryImporter
 		meta.setScript( new Integer( "1" ) );
 		meta.setNote(note);
 		return meta;
+	}
+	
+	/** Used only if the database is being accessed manually instead of through Hibernate */
+	private static Statement getStatement()
+	{
+		ResourceBundle rb = ResourceBundle.getBundle("dictionary-importer");
+		Statement s = null;
+		
+		// Loading driver
+		try { 
+            // The newInstance() call is a work around for some 
+            // broken Java implementations
+
+            Class.forName(rb.getString("dictionaryimporter.driverclassname")).newInstance(); 
+        } catch (Exception ex) { 
+            System.out.println("Mysql driver couldn't be loaded!");
+            System.exit(0);
+        }
+
+	    // Connecting to database
+        try {
+            Connection conn = DriverManager.getConnection(rb.getString("dictionaryimporter.url"));
+            s = conn.createStatement();
+          
+            // Do something with the Connection 
+          
+        } catch (Exception ex) {
+            // handle any errors 
+            System.out.println("Could not connect to database!"); 
+            System.exit(0);
+        }
+        
+        return s;
 	}
 	
 	public DictionaryImporter()
@@ -216,10 +332,11 @@ public class DictionaryImporter
 		note = "This entry comes from The Rangjung Yeshe Tibetan-English Dictionary of Buddhist Culture (www.rangjung.com).";
 		publicCons = "true";
 		label = new Integer(6);
+		sqlStatement = null;
 		
 		if (argNum<=currentArg)
 		{
-		    System.out.println("Syntax: DictionaryImporter [-format format] [-tab | -delim delimiter] " +
+		    System.out.println("Syntax: DictionaryImporter [-manual] [-format format] [-tab | -delim delimiter] " +
 		                       "[-creator creator-id] [-proj project-id] [-label label] [-note note] " +
 		                       "[-pub-cons public-consumption-marker] [input-file] [output-error-file]");
 		    return;
@@ -229,7 +346,10 @@ public class DictionaryImporter
 		{
 		    option = args[currentArg].substring(1);		        
 		    currentArg++;
-		    if (option.equals("format"))
+		    if (option.equals("manual"))
+		    {
+		        sqlStatement = getStatement();
+		    } else if (option.equals("format"))
 		    {
 		        if (argNum<=currentArg)
 		        {
