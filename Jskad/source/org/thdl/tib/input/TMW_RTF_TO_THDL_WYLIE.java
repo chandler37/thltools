@@ -52,6 +52,7 @@ public class TMW_RTF_TO_THDL_WYLIE {
     public static int realMain(String[] args, PrintStream out) {
         try {
             boolean convertToTMMode = false;
+            boolean convertToTMWMode = false;
             boolean convertToWylieMode = false;
             boolean findSomeNonTMWMode = false;
             boolean findAllNonTMWMode = false;
@@ -65,6 +66,8 @@ public class TMW_RTF_TO_THDL_WYLIE {
                           = args[0].equals("--find-all-non-tmw"))
                          || (convertToTMMode
                              = args[0].equals("--to-tibetan-machine"))
+                         || (convertToTMWMode
+                             = args[0].equals("--to-tibetan-machine-web"))
                          || (convertToWylieMode
                              = args[0].equals("--to-wylie"))
                          || (findSomeNonTMWMode
@@ -82,12 +85,13 @@ public class TMW_RTF_TO_THDL_WYLIE {
                 out.println(" --find-some-non-tmw to locate all distinct characters in the input document");
                 out.println("   not in Tibetan Machine Web fonts, exit zero iff none found");
                 out.println(" --to-tibetan-machine to convert TibetanMachineWeb to TibetanMachine");
-                out.println("   rather than TibetanMachineWeb to Wylie");
-                out.println(" --to-wylie to convert TibetanMachineWeb to TibetanMachine");
-                out.println("   rather than TibetanMachineWeb to Wylie");
+                out.println(" --to-tibetan-machine-web to convert TibetanMachine to TibetanMachineWeb");
+                out.println(" --to-wylie to convert TibetanMachineWeb to THDL Extended Wylie");
                 out.println(" In --to... modes, needs one argument, the name of the TibetanMachineWeb RTF");
-                out.println(" file.  Writes the THDL Extended Wylie transliteration of that file [in");
-                out.println(" --to-wylie mode] or the TibetanMachine equivalent of that file [in");
+                out.println(" file (for --to-wylie and --to-tibetan-machine) or the name of TibetanMachine");
+                out.println(" RTF file (for --to-tibetan-machine-web).  Writes the THDL Extended Wylie");
+                out.println(" transliteration of that file [in --to-wylie mode]");
+                out.println(" or the TibetanMachine equivalent of that file [in");
                 out.println(" --to-tibetan-machine mode] to standard output after dealing with the curly");
                 out.println(" brace problem.  Exit code is zero on success, 42 if some TibetanMachine glyphs");
                 out.println(" couldn't be understood (though output is still given), nonzero otherwise.");
@@ -125,19 +129,36 @@ public class TMW_RTF_TO_THDL_WYLIE {
                 // 0, -1 is the entire document.
                 return ((TibetanDocument)dp.getDocument()).findSomeNonTMWCharacters(0, -1, out);
             } else { // conversion {to Wylie or TM} mode
-                // Fix curly braces in the entire document:
-                ((TibetanDocument)dp.getDocument()).replaceTahomaCurlyBracesAndBackslashes(0, -1);
+                // Fix curly braces in the entire document if the input is TMW:
+                if (!convertToTMWMode) {
+                    ((TibetanDocument)dp.getDocument()).replaceTahomaCurlyBracesAndBackslashes(0, -1);
+                }
                 
                 int exitCode = 0;
                 if (convertToWylieMode) {
                     ThdlDebug.verify(!convertToTMMode);
+                    ThdlDebug.verify(!convertToTMWMode);
                     // Convert to THDL Wylie:
                     dp.toWylie(0, dp.getDocument().getLength());
+                } else if (convertToTMWMode) {
+                    ThdlDebug.verify(!convertToTMMode);
+                    ThdlDebug.verify(!convertToWylieMode);
+                    StringBuffer errors = new StringBuffer();
+                    // Convert to TibetanMachine:
+                    if (((TibetanDocument)dp.getDocument()).convertToTMW(0, dp.getDocument().getLength(), errors)) {
+                        System.err.println(errors);
+                        exitCode = 42;
+                    }
                 } else {
                     ThdlDebug.verify(convertToTMMode);
+                    ThdlDebug.verify(!convertToTMWMode);
+                    ThdlDebug.verify(!convertToWylieMode);
+                    StringBuffer errors = new StringBuffer();
                     // Convert to TibetanMachine:
-                    if (!((TibetanDocument)dp.getDocument()).convertToTM(0, dp.getDocument().getLength(), null))
+                    if (((TibetanDocument)dp.getDocument()).convertToTM(0, dp.getDocument().getLength(), errors)) {
+                        System.err.println(errors);
                         exitCode = 42;
+                    }
                 }
 
                 // Write to standard output the result:
