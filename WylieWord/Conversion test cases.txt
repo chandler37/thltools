@@ -205,6 +205,10 @@ wa~M`ba~MthangumaM
 ragyada
 'agarma
 gayaradasa
+// WylieWord 2.0 got this wrong (and I didn't have a test for it then)
+baraga
+// There's special-case code for lng in Sanskrit
+lngaTa
 
 // R+, +W, +Y, +R
 paN+D+R+yau
@@ -483,7 +487,7 @@ t+pho
 t+mu
 t+m+yA
 t+yI
-// t+rnU -- !!! I think that this is a bogus tibwn.ini entry, but I'm not sure
+t+r+nU
 t+sai
 t+s+thau
 t+s+n-i
@@ -772,6 +776,14 @@ rta'i [(of horse)] mgrin
 
 <?Reject?>
 
+g+a
++a
+Su
+S+ta
+t+Sa
+b~a
+ba~
+
 // ??? legal???
 pa'am'ang
 // is this actually illegal?
@@ -783,7 +795,6 @@ p'e
 
 bskyUMbs
 bskyUMbsHgro 
-b+g+ka
 xan
 tax
 qan
@@ -797,7 +808,6 @@ aeb
 g.ra
 r.ya
 +a
-a+ba
 e+ya
 ba+
 b+
@@ -807,7 +817,6 @@ Ma
 Mam
 ~Ma
 ~Mam
-r+ra
 
 tat
 sbla
@@ -823,3 +832,13 @@ b'o
 r'o
 'yo
 'wo
+
+// Obscure special case
+lng+ta
+
+// These were rejected by WylieWord 2.0 because they are non-TMW stacks; but they are legal Unicode stacks, 
+// so we shouldn't reject them (when in Unicode mode).
+//
+// b+g+ka
+// a+ba
+// r+ra
