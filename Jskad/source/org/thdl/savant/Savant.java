@@ -1,3 +1,21 @@
+/*
+The contents of this file are subject to the THDL Open Community License
+Version 1.0 (the "License"); you may not use this file except in compliance
+with the License. You may obtain a copy of the License on the THDL web site 
+(http://www.thdl.org/).
+
+Software distributed under the License is distributed on an "AS IS" basis, 
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the 
+License for the specific terms governing rights and limitations under the 
+License. 
+
+The Initial Developer of this software is the Tibetan and Himalayan Digital
+Library (THDL). Portions created by the THDL are Copyright 2001 THDL.
+All Rights Reserved. 
+
+Contributor(s): ______________________________________.
+*/
+
 package org.thdl.savant;
 
 import java.awt.Font;
@@ -231,7 +249,10 @@ public class Savant extends JDesktopPane
 								if (fullScreen == null)
 								{
 									fullScreen = new JFrame();
-									fullScreen.setUndecorated(true);
+
+									/* We don't do anything special if this fails: */
+									JdkVersionHacks.undecorateJFrame(fullScreen);
+
 									fullScreen.getContentPane().setBackground(Color.black);
 									Dimension screenSize = fullScreen.getToolkit().getScreenSize();
 									Dimension videoSize = sp.getVisualComponent().getPreferredSize();
@@ -266,7 +287,14 @@ public class Savant extends JDesktopPane
 								} else {
 									visual = sp.popVisualComponent();
 									fullScreen.show();
-									fullScreen.setExtendedState(Frame.MAXIMIZED_BOTH);
+
+									/* FIXME: In SavantShell, we test
+                                       to see if MAXIMIZE_BOTH is
+                                       supported, but we don't
+                                       here. */
+									/* Ignore failure: */
+									JdkVersionHacks.maximizeJFrameInBothDirections(fullScreen);
+
 									fullScreen.getContentPane().add(visual);
 									visual.setLocation(0, (fullScreen.getSize().height - fullScreenSize.height)/2);
 									visual.setSize(fullScreenSize);
