@@ -118,5 +118,5 @@ public class Word extends Token
 		if (wordSinDec==null)
 			wordSinDec=new String(super.token);
 		wordSinDec+="</p><p>";
-	}
+	}	
 }
