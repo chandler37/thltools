@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 
 <!-- @author David Chandler -->
@@ -5,6 +6,7 @@
 <!-- @editor Emacs, baby! -->
 
 <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <title>Info for THDL Tools Developers</title>
 </head>
 
@@ -26,16 +28,23 @@
 <p>
   The only thing we personally have got up on the web that's any use
   thus far are
+</p>
 
   <ul>
     <li>
       our Javadoc <a href="api/">API docs</a>.
     </li>
+    <li>
+      a description of our <a href="BuildSystems.html"> build
+      systems</a> that tells you how to compile, run, and cut releases
+      for our tools.
+    </li>
   </ul>
-</p>
 
 <p>
   Here are some links to tools of interest:
+</p>
+
   <ul>
     <li>
       Jskad, Savant and QuillDriver use an Ant build system.&nbsp; See
@@ -55,14 +64,17 @@
 
       <a href="http://junit.org/">
         JUnit</a>
-   
+
       framework.
     </li>
     <li>
       Savant and QuillDriver make use of the
 
       <a href="http://java.sun.com/products/java-media/jmf/">
-        Java(TM) Media Framework API</a>.
+        Java(TM) Media Framework API</a>
+
+      and <a href="http://www.apple.com/quicktime/"> QuickTime for
+      Java</a>.
     </li>
     <li>
       In our Java(TM) code, we load some classes at run-time.&nbsp; To
@@ -87,9 +99,16 @@
       <a href="http://xml.apache.org/xerces2-j/index.html">
         Xerces</a>.
     </li>
+    <li>
+      We use the Ant Task Suite provided by Venus Application
+      Publisher (Vamp) to make putting releases up via Java Web Start
+      less painful.  See
+
+      <a href="http://www.vamphq.com/ant.html">
+        VampHQ</a>.
+    </li>
   </ul>
 
-</p>
 
 <h3>Related Projects<a name="related"></a></h3>
 <p>
@@ -97,15 +116,16 @@
   might learn from or integrate with.  This list is by no means
   comprehensive.  I started my search from
 
-  <a href="http://sourceforge.net/softwaremap/trove_list.php?form_cat=63&discrim=198">
+  <a href="http://sourceforge.net/softwaremap/trove_list.php?form_cat=63&amp;discrim=198">
     SF.net's software map</a>,
 
   by the way (and see
 
-  <a href="http://sourceforge.net/softwaremap/trove_list.php?form_cat=70&discrim=198">
+  <a href="http://sourceforge.net/softwaremap/trove_list.php?form_cat=70&amp;discrim=198">
     this corner of the map</a>,
 
   too), and haven't yet done anything more.
+</p>
 
   <ul>
     <li>
@@ -181,7 +201,6 @@
       Java."
     </li>
   </ul>
-</p>
 
 <p>
   Finally, the
