@@ -15,21 +15,24 @@
   <property name="source" location="source"/>
   <property name="bin" location="bin"/>
   <property name="jskadbin" location="bin/jskad"/>
+  <property name="ttbin" location="bin/tt"/>
   <property name="savantbin" location="bin/savant"/>
   <property name="docs" location="docs"/>
   <property name="dist"  location="dist"/>
   <property name="ext"  location="extensions"/>
   <property name="publicjavadocs"  location="${docs}/public-javadocs"/>
   <property name="privatejavadocs"  location="${docs}/private-javadocs"/>
-
+  <property name="j2ee.sdk.home" location="F:\Program Files\j2sdkee1.3.1\lib"/>
 
   <path id="entire.class.path">
     <pathelement location="${ext}/"/> <!-- for netscape.javascript -->
-    <pathelement location="${ext}/jdom.jar"/>
-    <pathelement location="${ext}/xalan.jar"/>
-    <pathelement location="${ext}/xercesImpl.jar"/>
-    <pathelement location="${ext}/xml-apis.jar"/>
-    <pathelement location="${ext}/jmf.jar"/>
+    <fileset dir="${ext}">
+      <include name="*.jar"/>
+    </fileset>
+
+    <fileset dir="${j2ee.sdk.home}">
+      <include name="j2ee.jar"/>
+    </fileset>
 
 	<!-- this gets Ant's jars, so leave it out:
 		<pathelement path="${java.class.path}/"/> -->
@@ -37,13 +40,13 @@
     <pathelement path="${additional.class.path}"/>
   </path>
 
-
   <target name="init">
     <!-- Create the time stamp -->
     <tstamp/>
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${bin}"/>
     <mkdir dir="${jskadbin}"/>
+    <mkdir dir="${ttbin}"/>
     <mkdir dir="${savantbin}"/>
     <mkdir dir="${publicjavadocs}"/>
     <mkdir dir="${privatejavadocs}"/>
@@ -80,7 +83,7 @@
 
   <target name="jskad-compile" depends="init"
           description="compiles Jskad" >
-    <!-- Compile the java code from ${source} into ${bin} -->
+    <!-- Compile the java code from ${source} into ${jskadbin} -->
     <javac destdir="${jskadbin}"  debug="${javacdashg}">
       <classpath refid="entire.class.path"/>
       <src path="${source}"/>
@@ -93,13 +96,18 @@
 	  <exclude name="**/*Test.java" />
       <exclude name="**/*AllTests.java" />
     </javac>
+    <copy todir="${jskadbin}">
+      <fileset dir="${source}">
+        <include name="org/thdl/tib/**/*.ini"/>
+      </fileset>
+    </copy>
   </target>
 
   <!-- FIXME: create targets for the Translation tool. -->
 
   <target name="savant-compile" depends="init"
           description="compiles Savant" >
-    <!-- Compile the java code from ${source} into ${bin} -->
+    <!-- Compile the java code from ${source} into ${savantbin} -->
     <javac destdir="${savantbin}" debug="${javacdashg}">
       <classpath refid="entire.class.path"/>
       <src path="${source}"/>
@@ -112,6 +120,58 @@
 	  <exclude name="**/*Test.java" />
       <exclude name="**/*AllTests.java" />
     </javac>
+    <copy todir="${savantbin}/org/thdl/savant">
+      <fileset dir="${source}">
+        <include name="*savant*"/>
+      </fileset>
+    </copy>
+    <copy todir="${savantbin}">
+      <fileset dir="${source}">
+        <include name="org/thdl/tib/**/*.ini"/>
+      </fileset>
+    </copy>
+  </target>
+
+
+  <target name="tt-compile" depends="init"
+          description="compiles the Translation Tool" >
+    <!-- Compile the java code from ${source} into ${ttbin} -->
+    <javac destdir="${ttbin}" debug="${javacdashg}">
+      <classpath refid="entire.class.path"/>
+      <src path="${source}"/>
+      <include name="org/thdl/tib/scanner/WindowScannerFilter.java" />
+      <exclude name="**/*.ini" />
+	  <exclude name="**/*.html" />
+      <!-- Exclude JUnit tests: -->
+	  <exclude name="**/*Test.java" />
+      <exclude name="**/*AllTests.java" />
+    </javac>
+    <copy todir="${ttbin}">
+      <fileset dir="${source}">
+        <include name="org/thdl/tib/**/*.ini"/>
+      </fileset>
+    </copy>
+  </target>
+
+
+  <target name="tt-serv-compile" depends="init"
+          description="compiles the full Translation Tool, including servlets.  You'd better set the j2ee.sdk.home property first or have j2ee.jar on your CLASSPATH." >
+    <!-- Compile the java code from ${source} into ${ttbin} -->
+    <javac destdir="${ttbin}" debug="${javacdashg}">
+      <classpath refid="entire.class.path"/>
+      <src path="${source}"/>
+      <include name="org/thdl/tib/scanner/**.java" />
+      <exclude name="**/*.ini" />
+	  <exclude name="**/*.html" />
+      <!-- Exclude JUnit tests: -->
+	  <exclude name="**/*Test.java" />
+      <exclude name="**/*AllTests.java" />
+    </javac>
+    <copy todir="${ttbin}">
+      <fileset dir="${source}">
+        <include name="org/thdl/tib/**/*.ini"/>
+      </fileset>
+    </copy>
   </target>
 
 
@@ -188,12 +248,43 @@
 
   <target name="jskad-dist" depends="jskad-compile"
           description="generates the bare Jskad binary distribution" >
+    <!-- bare as in NOT double-clickable. -->
+
     <!-- Create the distribution directory -->
     <mkdir dir="${dist}/lib"/>
 
-    <!-- Put everything in ${bin} into the JAR file -->
-    <jar jarfile="${dist}/lib/Jskad-${DSTAMP}.jar" basedir="${bin}"/>
+    <!-- Put everything in ${jskadbin} into the JAR file -->
+    <jar jarfile="${dist}/lib/Jskad-${DSTAMP}.jar"
+         basedir="${jskadbin}"
+         manifest="manifests/jskad_manifest.txt"/>
   </target>
+
+
+  <target name="tt-dist" depends="tt-compile"
+          description="generates the bare TranslationDesktop binary distribution.  Call tt-serv-compile first if you want servlets in this dist." >
+    <!-- bare as in NOT double-clickable. -->
+
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/lib"/>
+
+    <!-- Put everything in ${ttbin} into the JAR file -->
+    <jar jarfile="${dist}/lib/TranslationDesktop-${DSTAMP}.jar"
+         basedir="${ttbin}"
+         manifest="manifests/translationDesktop_manifest.txt"/>
+  </target>
+
+
+  <target name="savant-dist" depends="savant-compile"
+          description="generates the bare Savant binary distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/lib"/>
+
+    <!-- Put everything in ${savantbin} into the JAR file -->
+    <jar jarfile="${dist}/lib/Savant-${DSTAMP}.jar"
+         basedir="${savantbin}"
+		 manifest="manifests/savant_manifest.txt"/>
+  </target>
+
 
 
   <target name="jskad-all-in-one-dist" depends="jskad-compile"
@@ -216,11 +307,8 @@
          basedir="${jskadbin}"
          includes="org/thdl/tib/**,org/thdl/util/**,netscape/**"
          index="true"
-         update="no">
-      <manifest>
-        <attribute name="Main-Class" value="org.thdl.tib.input.Jskad"/>
-      </manifest>
-    </jar>
+         update="no"
+         manifest="manifests/jskad_manifest.txt"/>
   </target>
 
 
@@ -371,5 +459,6 @@
             packagelistLoc="${docs}/jdom-package-list"/>
     </javadoc>
   </target>
+
 
 </project>
