@@ -205,7 +205,7 @@
 \f1\fs144 >\'ee>\f2\fs28\i0\b0\ul0 m\i0\b0\ul0\cf0  font 1; ord 238\par
 \f1\fs144 >\'ef>\f2\fs28\i0\b0\ul0 :\i0\b0\ul0\cf0  font 1; ord 239\par
 \f1\fs144 >\'f1>\f2\fs28\i0\b0\ul0 [# JSKAD_TMW_TO_ACIP_ERROR_NO_SUCH_ACIP: Cannot convert glyph with THDL Extended Wylie ~M to ACIP.  Please transcribe this yourself.]\i0\b0\ul0\cf0  font 1; ord 241\par
-\f1\fs144 >\'f2>\f2\fs28\i0\b0\ul0 [# JSKAD_TMW_TO_ACIP_ERROR_NO_SUCH_ACIP: Cannot convert glyph with THDL Extended Wylie <<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert <glyph font=TibetanMachineWeb7 charNum=95 character=_/> to THDL Extended Wylie.  Please see the documentation for the TM or TMW font and transcribe this yourself.]]>> to ACIP.  Please transcribe this yourself.]\i0\b0\ul0\cf0  font 1; ord 242\par
+\f1\fs144 >\'f2>\f2\fs28\i0\b0\ul0 [# JSKAD_TMW_TO_ACIP_ERROR_NO_SUCH_ACIP: Cannot convert glyph with THDL Extended Wylie ~M` to ACIP.  Please transcribe this yourself.]\i0\b0\ul0\cf0  font 1; ord 242\par
 \f1\fs144 >\'f3>\f2\fs28\i0\b0\ul0 Im\i0\b0\ul0\cf0  font 1; ord 243\par
 \f1\fs144 >\'f4>\f2\fs28\i0\b0\ul0 Im\i0\b0\ul0\cf0  font 1; ord 244\par
 \f1\fs144 >\'f5>\f2\fs28\i0\b0\ul0 im\i0\b0\ul0\cf0  font 1; ord 245\par
@@ -806,7 +806,7 @@
 \f1\fs144 >\f6 S\f1 >\f2\fs28\i0\b0\ul0 [# JSKAD_TMW_TO_ACIP_ERROR_NO_SUCH_ACIP: Cannot convert glyph with THDL Extended Wylie \\u0FC3 to ACIP.  Please transcribe this yourself.]\i0\b0\ul0\cf0  font 5; ord 83\par
 \f1\fs144 >\f6 T\f1 >\f2\fs28\i0\b0\ul0 [# JSKAD_TMW_TO_ACIP_ERROR_NO_SUCH_ACIP: Cannot convert glyph with THDL Extended Wylie \\uF03B to ACIP.  Please transcribe this yourself.]\i0\b0\ul0\cf0  font 5; ord 84\par
 \f1\fs144 >\f6 Z\f1 >\f2\fs28\i0\b0\ul0 [# JSKAD_TMW_TO_ACIP_ERROR_NO_SUCH_ACIP: Cannot convert glyph with THDL Extended Wylie \\uF039 to ACIP.  Please transcribe this yourself.]\i0\b0\ul0\cf0  font 5; ord 90\par
-\f1\fs144 >\f6 [\f1 >\f2\fs28\i0\b0\ul0 [# JSKAD_TMW_TO_ACIP_ERROR_NO_SUCH_ACIP: Cannot convert glyph with THDL Extended Wylie ~M` to ACIP.  Please transcribe this yourself.]\i0\b0\ul0\cf0  font 5; ord 91\par
+\f1\fs144 >\f6 [\f1 >\f2\fs28\i0\b0\ul0 [# JSKAD_TMW_TO_ACIP_ERROR_NO_SUCH_ACIP: Cannot convert glyph with THDL Extended Wylie \\uF03A to ACIP.  Please transcribe this yourself.]\i0\b0\ul0\cf0  font 5; ord 91\par
 \f1\fs144 >\f6\\\f1 >\f2\fs28\i0\b0\ul0 [# JSKAD_TMW_TO_ACIP_ERROR_NO_SUCH_ACIP: Cannot convert glyph with THDL Extended Wylie \\uF035 to ACIP.  Please transcribe this yourself.]\i0\b0\ul0\cf0  font 5; ord 92\par
 \f1\fs144 >\f6 ]\f1 >\f2\fs28\i0\b0\ul0 [# JSKAD_TMW_TO_ACIP_ERROR_NO_SUCH_ACIP: Cannot convert glyph with THDL Extended Wylie \\uF036 to ACIP.  Please transcribe this yourself.]\i0\b0\ul0\cf0  font 5; ord 93\par
 \f1\fs144 >\f6 ^\f1 >\f2\fs28\i0\b0\ul0 [# JSKAD_TMW_TO_ACIP_ERROR_NO_SUCH_ACIP: Cannot convert glyph with THDL Extended Wylie \\u0F13 to ACIP.  Please transcribe this yourself.]\i0\b0\ul0\cf0  font 5; ord 94\par

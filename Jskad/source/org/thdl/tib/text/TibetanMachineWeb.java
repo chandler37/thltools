@@ -603,6 +603,10 @@ public class TibetanMachineWeb implements THDLWylieConstants {
                                     // here for either the TMW or the
                                     // TM glyph (though the TM glyph
                                     // could well be null):
+                                    if (null != TMWtoTM[duffCodes[TMW].getFontNum()-1][duffCodes[TMW].getCharNum()-32])
+                                        throw new Error("tibwn.ini is supposed to use the TibetanMachineWeb glyph as the unique key, but "
+                                                        + val
+                                                        + " appears two or more times.");
                                     TMWtoTM[duffCodes[TMW].getFontNum()-1][duffCodes[TMW].getCharNum()-32]
                                         = duffCodes[TM]; // TMW->TM mapping
 
