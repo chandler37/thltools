@@ -121,16 +121,16 @@ class TStackList {
      *  happen. */
     public ListIterator listIterator() { return al.listIterator(); }
 
-    /** Returns a pair with {@link BoolPair#isLegal} true if and only
-     *  if this list of stacks is a legal tsheg bar by the rules of
-     *  Tibetan syntax (sometimes called rules of spelling).  If this
-     *  is legal, then {@link BoolPair#isLegalAndHasAVowelOnRoot} will
-     *  be true if and only if there is an explicit {A} vowel on the
-     *  root stack.
+    /** Returns a pair with {@link BoolTriple#isLegal} true if and
+     *  only if this list of stacks is a legal tsheg bar by the rules
+     *  of Tibetan syntax (sometimes called rules of spelling).  If
+     *  this is legal, then {@link
+     *  BoolTriple#isLegalAndHasAVowelOnRoot} will be true if and only
+     *  if there is an explicit {A} vowel on the root stack.
      *  @param noPrefixTests true if you want to pretend that every
      *  stack can take every prefix, which is not the case in
      *  reality */
-    public BoolPair isLegalTshegBar(boolean noPrefixTests) {
+    public BoolTriple isLegalTshegBar(boolean noPrefixTests) {
         // DLC handle PADMA and other Tibetanized Sanskrit fellows consistently.  Right now we only treat single-stack Sanskrit guys as legal.
 
         TTGCList tgcList = new TTGCList(this);
@@ -162,7 +162,9 @@ class TStackList {
                 }
             }
         }
-        return new BoolPair(isLegal, isLegalAndHasAVowelOnRoot);
+        return new BoolTriple(isLegal,
+                              (candidateType == "single-sanskrit-gc"),
+                              isLegalAndHasAVowelOnRoot);
     }
 
     private static final boolean ddebug = false;
@@ -232,11 +234,15 @@ class TStackList {
 }
 
 /** Too simple to comment. */
-class BoolPair {
+class BoolTriple {
     boolean isLegal;
+    boolean isLegalButSanskrit; // some subset are legal but legal Sanskrit -- the single sanskrit stacks are this way, such as B+DE.
     boolean isLegalAndHasAVowelOnRoot;
-    BoolPair(boolean isLegal, boolean isLegalAndHasAVowelOnRoot) {
+    BoolTriple(boolean isLegal,
+               boolean isLegalButSanskrit,
+               boolean isLegalAndHasAVowelOnRoot) {
         this.isLegal = isLegal;
+        this.isLegalButSanskrit = isLegalButSanskrit;
         this.isLegalAndHasAVowelOnRoot = isLegalAndHasAVowelOnRoot;
     }
 }

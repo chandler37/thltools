@@ -21,6 +21,7 @@ package org.thdl.tib.text.ttt;
 import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.StringTokenizer;
 import java.util.List;
 
 import org.thdl.tib.text.DuffCode;
@@ -30,7 +31,7 @@ import org.thdl.tib.text.TibTextUtils;
 
 /** Canonizes some facts regarding the ACIP transcription system.
  *  @author David Chandler */
-class ACIPRules {
+public class ACIPRules {
     /** {Ksh}, the longest consonant, has 3 characters, so this is
      *  three. */
     public static int MAX_CONSONANT_LENGTH = 3;
@@ -66,7 +67,7 @@ class ACIPRules {
                 // DLC I'm on my own with 'O and 'E and 'OO and 'EE, but
                 // GANG'O appears and I wonder... so here they are.  It's
                 // consistent with 'I and 'A and 'U, at least: all the vowels
-                // may appear as K'vowel.
+                // may appear as K'vowel.  DLC FIMXE: ask.
 
                 acipVowels.add(baseVowels[i][0]);
                 acipVowels.add('\'' + baseVowels[i][0]);
@@ -140,6 +141,43 @@ class ACIPRules {
         return consonants.contains(acip);
     }
 
+    private static HashMap wylieToACIP = null;
+    /** Returns the ACIP transliteration corresponding to the THDL
+        Extended Wylie <em>atom</em> EWTS, or null if EWTS is not
+        recognized. */
+    public static String getACIPForEWTS(String EWTS) {
+        getWylieForACIPConsonant(null);
+        getWylieForACIPOther(null);
+        getWylieForACIPVowel(null);
+        String ans = (String)wylieToACIP.get(EWTS);
+        if (null == ans) {
+            StringBuffer finalAns = new StringBuffer(EWTS.length());
+            StringTokenizer sTok = new StringTokenizer(EWTS, "-+", true);
+            while (sTok.hasMoreTokens()) {
+                String part, tok = sTok.nextToken();
+                if (tok.equals("-") || tok.equals("+"))
+                    part = tok;
+                else
+                    part = (String)wylieToACIP.get(tok);
+                if (null == part) return null;
+                finalAns.append(part);
+            }
+            return finalAns.toString();
+        }
+        return ans;
+    }
+
+    /** Registers acip->wylie mappings in toWylie; registers
+        wylie->acip mappings in {@link #wylieToACIP}. */
+    private static void putMapping(HashMap toWylie, String ACIP, String EWTS) {
+        toWylie.put(ACIP, EWTS);
+        if (null == wylieToACIP) {
+            wylieToACIP = new HashMap(75);
+            wylieToACIP.put("_", " "); // oddball.
+        }
+        wylieToACIP.put(EWTS, ACIP);
+    }
+
     private static HashMap acipConsonant2wylie = null;
     /** Returns the EWTS corresponding to the given ACIP consonant
      *  (without the "A" vowel).  Returns null if there is no such
@@ -149,52 +187,52 @@ class ACIPRules {
             acipConsonant2wylie = new HashMap(37);
 
             // oddball:
-            acipConsonant2wylie.put("V", "w");
+            putMapping(acipConsonant2wylie, "V", "w");
 
             // more oddballs:
-            acipConsonant2wylie.put("DH", "d+h");
-            acipConsonant2wylie.put("BH", "b+h");
-            acipConsonant2wylie.put("dH", "D+h");
-            acipConsonant2wylie.put("DZH", "dz+h");
-            acipConsonant2wylie.put("Ksh", "k+Sh");
-            acipConsonant2wylie.put("GH", "g+h");
+            putMapping(acipConsonant2wylie, "DH", "d+h");
+            putMapping(acipConsonant2wylie, "BH", "b+h");
+            putMapping(acipConsonant2wylie, "dH", "D+h");
+            putMapping(acipConsonant2wylie, "DZH", "dz+h");
+            putMapping(acipConsonant2wylie, "Ksh", "k+Sh");
+            putMapping(acipConsonant2wylie, "GH", "g+h");
 
 
-            acipConsonant2wylie.put("K", "k");
-            acipConsonant2wylie.put("KH", "kh");
-            acipConsonant2wylie.put("G", "g");
-            acipConsonant2wylie.put("NG", "ng");
-            acipConsonant2wylie.put("C", "c");
-            acipConsonant2wylie.put("CH", "ch");
-            acipConsonant2wylie.put("J", "j");
-            acipConsonant2wylie.put("NY", "ny");
-            acipConsonant2wylie.put("T", "t");
-            acipConsonant2wylie.put("TH", "th");
-            acipConsonant2wylie.put("D", "d");
-            acipConsonant2wylie.put("N", "n");
-            acipConsonant2wylie.put("P", "p");
-            acipConsonant2wylie.put("PH", "ph");
-            acipConsonant2wylie.put("B", "b");
-            acipConsonant2wylie.put("M", "m");
-            acipConsonant2wylie.put("TZ", "ts");
-            acipConsonant2wylie.put("TS", "tsh");
-            acipConsonant2wylie.put("DZ", "dz");
-            acipConsonant2wylie.put("W", "w");
-            acipConsonant2wylie.put("ZH", "zh");
-            acipConsonant2wylie.put("Z", "z");
-            acipConsonant2wylie.put("'", "'");
-            acipConsonant2wylie.put("Y", "y");
-            acipConsonant2wylie.put("R", "r");
-            acipConsonant2wylie.put("L", "l");
-            acipConsonant2wylie.put("SH", "sh");
-            acipConsonant2wylie.put("S", "s");
-            acipConsonant2wylie.put("H", "h");
-            acipConsonant2wylie.put("A", "a");
-            acipConsonant2wylie.put("t", "T");
-            acipConsonant2wylie.put("th", "Th");
-            acipConsonant2wylie.put("d", "D");
-            acipConsonant2wylie.put("n", "N");
-            acipConsonant2wylie.put("sh", "Sh");
+            putMapping(acipConsonant2wylie, "K", "k");
+            putMapping(acipConsonant2wylie, "KH", "kh");
+            putMapping(acipConsonant2wylie, "G", "g");
+            putMapping(acipConsonant2wylie, "NG", "ng");
+            putMapping(acipConsonant2wylie, "C", "c");
+            putMapping(acipConsonant2wylie, "CH", "ch");
+            putMapping(acipConsonant2wylie, "J", "j");
+            putMapping(acipConsonant2wylie, "NY", "ny");
+            putMapping(acipConsonant2wylie, "T", "t");
+            putMapping(acipConsonant2wylie, "TH", "th");
+            putMapping(acipConsonant2wylie, "D", "d");
+            putMapping(acipConsonant2wylie, "N", "n");
+            putMapping(acipConsonant2wylie, "P", "p");
+            putMapping(acipConsonant2wylie, "PH", "ph");
+            putMapping(acipConsonant2wylie, "B", "b");
+            putMapping(acipConsonant2wylie, "M", "m");
+            putMapping(acipConsonant2wylie, "TZ", "ts");
+            putMapping(acipConsonant2wylie, "TS", "tsh");
+            putMapping(acipConsonant2wylie, "DZ", "dz");
+            putMapping(acipConsonant2wylie, "W", "w");
+            putMapping(acipConsonant2wylie, "ZH", "zh");
+            putMapping(acipConsonant2wylie, "Z", "z");
+            putMapping(acipConsonant2wylie, "'", "'");
+            putMapping(acipConsonant2wylie, "Y", "y");
+            putMapping(acipConsonant2wylie, "R", "r");
+            putMapping(acipConsonant2wylie, "L", "l");
+            putMapping(acipConsonant2wylie, "SH", "sh");
+            putMapping(acipConsonant2wylie, "S", "s");
+            putMapping(acipConsonant2wylie, "H", "h");
+            putMapping(acipConsonant2wylie, "A", "a");
+            putMapping(acipConsonant2wylie, "t", "T");
+            putMapping(acipConsonant2wylie, "th", "Th");
+            putMapping(acipConsonant2wylie, "d", "D");
+            putMapping(acipConsonant2wylie, "n", "N");
+            putMapping(acipConsonant2wylie, "sh", "Sh");
         }
         return (String)acipConsonant2wylie.get(acip);
     }
@@ -207,14 +245,14 @@ class ACIPRules {
             acipVowel2wylie = new HashMap(baseVowels.length * 4);
 
             for (int i = 0; i < baseVowels.length; i++) {
-                acipVowel2wylie.put(baseVowels[i][0], baseVowels[i][1]);
-                acipVowel2wylie.put('\'' + baseVowels[i][0], baseVowels[i][2]);
-                acipVowel2wylie.put(baseVowels[i][0] + 'm', baseVowels[i][1] + 'M');
-                acipVowel2wylie.put('\'' + baseVowels[i][0] + 'm', baseVowels[i][2] + 'M');
-                acipVowel2wylie.put(baseVowels[i][0] + ':', baseVowels[i][1] + 'H');
-                acipVowel2wylie.put('\'' + baseVowels[i][0] + ':', baseVowels[i][2] + 'H');
-                acipVowel2wylie.put(baseVowels[i][0] + "m:", baseVowels[i][1] + "MH");
-                acipVowel2wylie.put('\'' + baseVowels[i][0] + "m:", baseVowels[i][2] + "MH");
+                putMapping(acipVowel2wylie, baseVowels[i][0], baseVowels[i][1]);
+                putMapping(acipVowel2wylie, '\'' + baseVowels[i][0], baseVowels[i][2]);
+                putMapping(acipVowel2wylie, baseVowels[i][0] + 'm', baseVowels[i][1] + 'M');
+                putMapping(acipVowel2wylie, '\'' + baseVowels[i][0] + 'm', baseVowels[i][2] + 'M');
+                putMapping(acipVowel2wylie, baseVowels[i][0] + ':', baseVowels[i][1] + 'H');
+                putMapping(acipVowel2wylie, '\'' + baseVowels[i][0] + ':', baseVowels[i][2] + 'H');
+                putMapping(acipVowel2wylie, baseVowels[i][0] + "m:", baseVowels[i][1] + "MH");
+                putMapping(acipVowel2wylie, '\'' + baseVowels[i][0] + "m:", baseVowels[i][2] + "MH");
             }
         }
         return (String)acipVowel2wylie.get(acip);
@@ -228,27 +266,27 @@ class ACIPRules {
             acipOther2wylie = new HashMap(20);
 
             // DLC FIXME: check all these again.
-            acipOther2wylie.put(",", "/");
-            acipOther2wylie.put(" ", " ");
-            acipOther2wylie.put(".", "*");
-            acipOther2wylie.put("|", "|");
-            acipOther2wylie.put("`", "!");
-            acipOther2wylie.put(";", ";");
-            acipOther2wylie.put("*", "@");
-            acipOther2wylie.put("#", "@#");
-            acipOther2wylie.put("%", "~X");
-            acipOther2wylie.put("&", "&");
+            putMapping(acipOther2wylie, ",", "/");
+            putMapping(acipOther2wylie, " ", " ");
+            putMapping(acipOther2wylie, ".", "*");
+            putMapping(acipOther2wylie, "|", "|");
+            putMapping(acipOther2wylie, "`", "!");
+            putMapping(acipOther2wylie, ";", ";");
+            putMapping(acipOther2wylie, "*", "@");
+            putMapping(acipOther2wylie, "#", "@#");
+            putMapping(acipOther2wylie, "%", "~X");
+            putMapping(acipOther2wylie, "&", "&");
 
-            acipOther2wylie.put("0", "0");
-            acipOther2wylie.put("1", "1");
-            acipOther2wylie.put("2", "2");
-            acipOther2wylie.put("3", "3");
-            acipOther2wylie.put("4", "4");
-            acipOther2wylie.put("5", "5");
-            acipOther2wylie.put("6", "6");
-            acipOther2wylie.put("7", "7");
-            acipOther2wylie.put("8", "8");
-            acipOther2wylie.put("9", "9");
+            putMapping(acipOther2wylie, "0", "0");
+            putMapping(acipOther2wylie, "1", "1");
+            putMapping(acipOther2wylie, "2", "2");
+            putMapping(acipOther2wylie, "3", "3");
+            putMapping(acipOther2wylie, "4", "4");
+            putMapping(acipOther2wylie, "5", "5");
+            putMapping(acipOther2wylie, "6", "6");
+            putMapping(acipOther2wylie, "7", "7");
+            putMapping(acipOther2wylie, "8", "8");
+            putMapping(acipOther2wylie, "9", "9");
         }
         return (String)acipOther2wylie.get(acip);
     }
@@ -465,39 +503,52 @@ class ACIPRules {
 
     /** Gets the duffcodes for vowel, such that they look good with
      *  the stack with hash key hashKey, and appends them to r. */
-    static void getDuffForACIPVowel(ArrayList r, DuffCode preceding, String vowel) {
+    static void getDuffForACIPVowel(ArrayList duff, DuffCode preceding, String vowel) {
         if (null == vowel) return;
         if (null == getWylieForACIPVowel(vowel)) // FIXME: expensive assertion!  Use assert.
             throw new IllegalArgumentException("Vowel " + vowel + " isn't in the small set of vowels we handle correctly.");
 
         // Order matters here.
+        boolean context_added[] = new boolean[] { false };
         if (vowel.startsWith("A")) {
-            TibTextUtils.getVowel(r, preceding, THDLWylieConstants.WYLIE_aVOWEL);
+            TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.WYLIE_aVOWEL, context_added);
         } else if (vowel.indexOf("'U") >= 0) {
-            TibTextUtils.getVowel(r, preceding, "U");
+            TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.U_VOWEL, context_added);
+        } else if (vowel.indexOf("'I") >= 0) {
+            TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.I_VOWEL, context_added);
         } else {
-            if (vowel.indexOf('\'') >= 0)
-                TibTextUtils.getVowel(r, preceding, THDLWylieConstants.A_VOWEL);
-            if (vowel.indexOf("EE") >= 0)
-                TibTextUtils.getVowel(r, preceding, THDLWylieConstants.ai_VOWEL);
-            else if (vowel.indexOf('E') >= 0)
-                TibTextUtils.getVowel(r, preceding, THDLWylieConstants.e_VOWEL);
-            if (vowel.indexOf("OO") >= 0)
-                TibTextUtils.getVowel(r, preceding, THDLWylieConstants.au_VOWEL);
-            else if (vowel.indexOf('O') >= 0)
-                TibTextUtils.getVowel(r, preceding, THDLWylieConstants.o_VOWEL);
-            if (vowel.indexOf('I') >= 0)
-                TibTextUtils.getVowel(r, preceding, THDLWylieConstants.i_VOWEL);
-            if (vowel.indexOf('U') >= 0)
-                TibTextUtils.getVowel(r, preceding, THDLWylieConstants.u_VOWEL);
-            if (vowel.indexOf('i') >= 0)
-                TibTextUtils.getVowel(r, preceding, THDLWylieConstants.reverse_i_VOWEL);
+            if (vowel.indexOf('\'') >= 0) {
+                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.A_VOWEL, context_added);
+            }
+            if (vowel.indexOf("EE") >= 0) {
+                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.ai_VOWEL, context_added);
+            } else if (vowel.indexOf('E') >= 0) {
+                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.e_VOWEL, context_added);
+            }
+            if (vowel.indexOf("OO") >= 0) {
+                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.au_VOWEL, context_added);
+            } else if (vowel.indexOf('O') >= 0) {
+                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.o_VOWEL, context_added);
+            }
+            if (vowel.indexOf('I') >= 0) {
+                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.i_VOWEL, context_added);
+            }
+            if (vowel.indexOf('U') >= 0) {
+                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.u_VOWEL, context_added);
+            }
+            if (vowel.indexOf('i') >= 0) {
+                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.reverse_i_VOWEL, context_added);
+            }
         }
+        // DLC FIXME: Use TMW9.61, the "o'i" special combination, when appropriate.
 
-        if (vowel.indexOf('m') >= 0)
-            r.add(TibetanMachineWeb.getGlyph("M"));
+        if (vowel.indexOf('m') >= 0) {
+            DuffCode last = (DuffCode)duff.get(duff.size() - 1);
+            duff.remove(duff.size() - 1);
+            TibTextUtils.getBindu(duff, last);
+        }
         if (vowel.indexOf(':') >= 0)
-            r.add(TibetanMachineWeb.getGlyph("H"));
+            duff.add(TibetanMachineWeb.getGlyph("H"));
 
     }
 }

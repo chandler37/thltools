@@ -345,18 +345,24 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * The keymap defines a default behavior for key presses
 * in both Tibetan and Roman mode.
 */
-	private void setupKeymap() {
-		Action defaultAction = new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-                DuffPane.this.performKeyStroke(e.getModifiers(),
-                                               e.getActionCommand());
-			}
-		};
-		createActionTable(this);
-		Keymap keymap = addKeymap("DuffBindings", getKeymap());
-		keymap.setDefaultAction(defaultAction);
-		setKeymap(keymap);
-	}
+    private void setupKeymap() {
+        Action defaultAction = new AbstractAction() {
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        DuffPane.this.performKeyStroke(e.getModifiers(),
+                                                       e.getActionCommand());
+                    } catch (Throwable t) {
+                        System.err.println("JSKAD ERROR: " + t);
+                        t.printStackTrace(System.err);
+                        System.exit(1);
+                    }
+                }
+            };
+        createActionTable(this);
+        Keymap keymap = addKeymap("DuffBindings", getKeymap());
+        keymap.setDefaultAction(defaultAction);
+        setKeymap(keymap);
+    }
 	
 	private void createActionTable(JTextComponent textComponent) {
 	    actions = new Hashtable();
@@ -746,78 +752,82 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * 
 * @param v the vowel (in Wylie) you want to insert
 */
-	private void putVowel(String v) {
-		if (caret.getDot()==0) {
-			if (!TibetanMachineWeb.isAChenRequiredBeforeVowel())
-				printAChenWithVowel(v);
+    private void putVowel(String v) {
+        if (caret.getDot()==0) {
+            if (!TibetanMachineWeb.isAChenRequiredBeforeVowel())
+                printAChenWithVowel(v);
 
-			return;
-		}
+            return;
+        }
 
-		AttributeSet attr = getTibDoc().getCharacterElement(caret.getDot()-1).getAttributes();
-		String fontName = StyleConstants.getFontFamily(attr);
-		int fontNum;
+        AttributeSet attr = getTibDoc().getCharacterElement(caret.getDot()-1).getAttributes();
+        String fontName = StyleConstants.getFontFamily(attr);
+        int fontNum;
 
-		if (0 != (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName))) {
-			try {
-				char c2 = getTibDoc().getText(caret.getDot()-1, 1).charAt(0);
-				int k = (int)c2;
-				if (k<32 || k>126) { //if previous character is formatting or some other non-character
-					if (!TibetanMachineWeb.isAChenRequiredBeforeVowel())
-						printAChenWithVowel(v);
+        if (0 != (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName))) {
+            try {
+                char c2 = getTibDoc().getText(caret.getDot()-1, 1).charAt(0);
+                int k = (int)c2;
+                if (k<32 || k>126) { //if previous character is formatting or some other non-character
+                    if (!TibetanMachineWeb.isAChenRequiredBeforeVowel())
+                        printAChenWithVowel(v);
 
-					return;
-				}
+                    return;
+                }
 
-				String wylie
+                String wylie
                     = TibetanMachineWeb.getWylieForGlyph(fontNum,
                                                          k,
                                                          TibTextUtils.weDoNotCareIfThereIsCorrespondingWylieOrNot);
-				if (TibetanMachineWeb.isWyliePunc(wylie)) {
-					if (charList.isEmpty() && !TibetanMachineWeb.isAChenRequiredBeforeVowel()) {
-						printAChenWithVowel(v);
-						return;
-					}
-				}
+                if (TibetanMachineWeb.isWyliePunc(wylie)) {
+                    if (charList.isEmpty() && !TibetanMachineWeb.isAChenRequiredBeforeVowel()) {
+                        printAChenWithVowel(v);
+                        return;
+                    }
+                }
 
-				DuffCode dc_1 = null;
-				DuffCode dc_2 = new DuffCode(fontNum, c2);
+                DuffCode dc_1 = null;
+                DuffCode dc_2 = new DuffCode(fontNum, c2);
 
-				if (caret.getDot() >= 2) {
-					attr = getTibDoc().getCharacterElement(caret.getDot()-2).getAttributes();
-					fontName = StyleConstants.getFontFamily(attr);
-					if (0 != (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName))) {
-						c2 = getTibDoc().getText(caret.getDot()-2, 1).charAt(0);
-						dc_1 = new DuffCode(fontNum, c2);
-					}
-				}
+                if (caret.getDot() >= 2) {
+                    attr = getTibDoc().getCharacterElement(caret.getDot()-2).getAttributes();
+                    fontName = StyleConstants.getFontFamily(attr);
+                    if (0 != (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName))) {
+                        c2 = getTibDoc().getText(caret.getDot()-2, 1).charAt(0);
+                        dc_1 = new DuffCode(fontNum, c2);
+                    }
+                }
 
-				java.util.List before_vowel = new ArrayList();
-				if (null != dc_1)
-					before_vowel.add(dc_1);
+                java.util.List before_vowel = new ArrayList();
+                if (null != dc_1)
+                    before_vowel.add(dc_1);
 
-				before_vowel.add(dc_2);
-				java.util.List after_vowel = new ArrayList();
-                                TibTextUtils.getVowel(after_vowel, dc_1, dc_2, v);
+                before_vowel.add(dc_2);
+                java.util.List after_vowel = new ArrayList();
+                try {
+                    TibTextUtils.getVowel(after_vowel, dc_1, dc_2, v);
+                } catch (IllegalArgumentException e) {
+                    // drop this vowel silently.
+                }
                 if (after_vowel.size() >= before_vowel.size()) {
                     setNumberOfGlyphsForLastVowel(after_vowel.size()
                                                   - before_vowel.size());
                 } else {
                     setNumberOfGlyphsForLastVowel(0);
-                    ThdlDebug.noteIffyCode(); // I don't think this can ever happen, but...
+                    // can happen for pou (as opposed to puo) (FIXME)
                 }
-				redrawGlyphs(before_vowel, after_vowel);
-			}
-			catch(BadLocationException ble) {
-				System.out.println("no--can't insert here");
+                redrawGlyphs(before_vowel, after_vowel);
+            }
+            catch(BadLocationException ble) {
+                System.out.println("no--can't insert here");
                 ThdlDebug.noteIffyCode();
-			}
-		}
-		else { //0 font means not Tibetan font, so begin new Tibetan font section
-			if (!TibetanMachineWeb.isAChenRequiredBeforeVowel())
-				printAChenWithVowel(v);
-		}
-	}
+            }
+        }
+        else { //0 font means not Tibetan font, so begin new Tibetan font section
+            if (!TibetanMachineWeb.isAChenRequiredBeforeVowel())
+                printAChenWithVowel(v);
+        }
+    }
 
 
 /**
@@ -840,14 +850,18 @@ public class DuffPane extends TibetanPane implements FocusListener {
 *
 * @param v the vowel (in Wylie) which you want to print with ACHEN
 */
-	private void printAChenWithVowel(String v) {
-		DuffCode[] dc_array = (DuffCode[])TibetanMachineWeb.getTibHash().get(TibetanMachineWeb.ACHEN);
-		DuffCode dc = dc_array[TibetanMachineWeb.TMW];
-		java.util.List achenlist = new ArrayList();
-                TibTextUtils.getVowel(achenlist, dc, v);
-		DuffData[] dd = TibTextUtils.convertGlyphs(achenlist);
-		getTibDoc().insertDuff(caret.getDot(), dd);		
-	}
+    private void printAChenWithVowel(String v) {
+        DuffCode[] dc_array = (DuffCode[])TibetanMachineWeb.getTibHash().get(TibetanMachineWeb.ACHEN);
+        DuffCode dc = dc_array[TibetanMachineWeb.TMW];
+        java.util.List achenlist = new ArrayList();
+        try {
+            TibTextUtils.getVowel(achenlist, dc, v);
+        } catch (IllegalArgumentException e) {
+            // drop this vowel silently.
+        }
+        DuffData[] dd = TibTextUtils.convertGlyphs(achenlist);
+        getTibDoc().insertDuff(caret.getDot(), dd);		
+    }
 
 /**
 * Puts a bindu/anusvara at the current caret position.
@@ -884,7 +898,8 @@ public class DuffPane extends TibetanPane implements FocusListener {
 				DuffCode dc = new DuffCode(fontNum, c2);
 				java.util.List beforecaret = new ArrayList();
 				beforecaret.add(dc);
-				java.util.List bindulist = TibTextUtils.getBindu(dc);
+				java.util.List bindulist = new LinkedList();
+                                TibTextUtils.getBindu(bindulist, dc);
 				redrawGlyphs(beforecaret, bindulist);
 				initKeyboard();
 				return;
@@ -895,7 +910,9 @@ public class DuffPane extends TibetanPane implements FocusListener {
 			}
 		}
 
-		DuffData[] dd = TibTextUtils.convertGlyphs(TibTextUtils.getBindu(null));
+                java.util.List binduList = new LinkedList();
+                TibTextUtils.getBindu(binduList, null);
+		DuffData[] dd = TibTextUtils.convertGlyphs(binduList);
 		getTibDoc().insertDuff(caret.getDot(), dd);
 		initKeyboard();
 	}

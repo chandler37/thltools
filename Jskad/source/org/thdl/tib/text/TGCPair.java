@@ -73,8 +73,14 @@ public class TGCPair {
         vowelWylie = null;
     }
     public String getWylie() {
+        return getWylie(false);
+    }
+    public String getWylie(boolean appendaged) {
         StringBuffer b = new StringBuffer();
         if (consonantWylie != null) {
+            if (appendaged && !"'".equals(consonantWylie))
+                b.append("a"); // pa'am...  we want 'am, not 'm; 'ang, not 'ng.
+
             // we may have {p-y}, but the user wants to see {py}.
             for (int i = 0; i < consonantWylie.length(); i++) {
                 char ch = consonantWylie.charAt(i);
@@ -87,26 +93,35 @@ public class TGCPair {
         return b.toString();
     }
     public String getACIP() {
+        return getACIP(false);
+    }
+    public String getACIP(boolean appendaged) {
         // DLC FIXME: has the EWTS change affected Manipulate.acipToWylie?
         StringBuffer b = new StringBuffer();
         if (consonantWylie != null) {
-            String consonantACIP // DLC FIXME can KAsh occur?
-                = org.thdl.tib.scanner.Manipulate.wylieToAcip(consonantWylie);
-            if (null == consonantACIP) throw new Error("how?");
-            // System.out.println("DLC: Wylie=" + consonantWylie + ", ACIP=" + consonantACIP);
-            // we may have {P-Y}, but the user wants to see {PY}.
-            for (int i = 0; i < consonantACIP.length(); i++) {
-                char ch = consonantACIP.charAt(i);
-                if ('-' != ch)
-                    b.append(ch);
+            String consonantACIP
+                = org.thdl.tib.text.ttt.ACIPRules.getACIPForEWTS(consonantWylie);
+            if (null == consonantACIP) {
+                return TibetanMachineWeb.getTMWToACIPErrorString("glyph with THDL Extended Wylie " + consonantWylie);
+            } else {
+                if (appendaged && !"'".equals(consonantWylie))
+                    b.append("A"); // PA'AM
+                // we may have {P-Y}, but the user wants to see {PY}.
+                for (int i = 0; i < consonantACIP.length(); i++) {
+                    char ch = consonantACIP.charAt(i);
+                    if ('-' != ch)
+                        b.append(ch);
+                }
             }
         }
         if (vowelWylie != null) {
-            String vowelACIP // DLC FIXME look for exceptions
-                = org.thdl.tib.scanner.Manipulate.wylieToAcip(vowelWylie);
-            // System.out.println("DLC: Wylie=" + vowelWylie + ", ACIP=" + vowelACIP);
-            if (null == vowelACIP) throw new Error("how?");
-            b.append(vowelACIP);
+            String vowelACIP
+                = org.thdl.tib.text.ttt.ACIPRules.getACIPForEWTS(vowelWylie);
+            if (null == vowelACIP) {
+                return TibetanMachineWeb.getTMWToACIPErrorString("glyph with THDL Extended Wylie " + vowelWylie);
+            } else {
+                b.append(vowelACIP);
+            }
         }
         return b.toString();
     }
@@ -150,6 +165,12 @@ public class TGCPair {
         }
 
         this.consonantWylie = consonantWylie;
+        if (null != vowelWylie) {
+            if (vowelWylie.equals("iA") || vowelWylie.equals("Ai"))
+                vowelWylie = "I";
+            if (vowelWylie.equals("uA") || vowelWylie.equals("Au"))
+                vowelWylie = "U";
+        }
         this.vowelWylie = vowelWylie;
         this.classification = realClassification;
     }

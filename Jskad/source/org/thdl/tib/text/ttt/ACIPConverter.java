@@ -446,12 +446,18 @@ public class ACIPConverter {
                                 if (!lastGuyWasNonPunct
                                     || (null != lastGuy
                                         && (lpl = lastGuy.get(lastGuy.size() - 1)).size() == 1
-                                        && lpl.get(0).getLeft().equals("G")
-                                        && // it's (G . anything)
-                                        // followed by some number
-                                        // of spaces (at least one,
-                                        // this one) and then a
-                                        // comma:
+                                        // "GU ," and "KU ," each have
+                                        // tshegs, but "GI ," and "KI
+                                        // ," each have a Tibetan
+                                        // space.
+                                        && ((lpl.get(0).getLeft().equals("G")
+                                             || lpl.get(0).getLeft().equals("K"))
+                                            && (lpl.get(0).getRight().indexOf('U') < 0))
+                                        &&
+                                        // it's (G . anything)
+                                        // followed by some number of
+                                        // spaces (at least one, this
+                                        // one) and then a comma:
                                         peekaheadFindsSpacesAndComma(scan, i+1))) {
                                     if (null != writer) {
                                         unicode = "    ";

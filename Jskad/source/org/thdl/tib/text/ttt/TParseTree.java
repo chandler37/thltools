@@ -197,32 +197,42 @@ class TParseTree {
      *  stack can take every prefix, which is not the case in
      *  reality */
     public TStackListList getUniqueParse(boolean noPrefixTests) {
-        TStackListList allLegalParses = new TStackListList(2); // save memory
+        // For Sanskrit+Tibetan:
+        TStackListList allNonillegalParses = new TStackListList(2); // save memory
+        // For Tibetan only:
+        TStackListList allStrictlyLegalParses = new TStackListList(2); // save memory
+
         TStackListList legalParsesWithVowelOnRoot = new TStackListList(1);
         ParseIterator pi = getParseIterator();
         while (pi.hasNext()) {
             TStackList sl = pi.next();
-            BoolPair bpa = sl.isLegalTshegBar(noPrefixTests);
-            if (bpa.isLegal) {
-                if (bpa.isLegalAndHasAVowelOnRoot)
+            BoolTriple bt = sl.isLegalTshegBar(noPrefixTests);
+            if (bt.isLegal) {
+                if (bt.isLegalAndHasAVowelOnRoot)
                     legalParsesWithVowelOnRoot.add(sl);
-                allLegalParses.add(sl);
+                if (!bt.isLegalButSanskrit)
+                    allStrictlyLegalParses.add(sl);
+                allNonillegalParses.add(sl);
             }
         }
         if (legalParsesWithVowelOnRoot.size() == 1)
             return legalParsesWithVowelOnRoot;
         else {
+            if (allStrictlyLegalParses.size() == 1)
+                return allStrictlyLegalParses;
+            if (allStrictlyLegalParses.size() > 2)
+                throw new Error("can this happen?");
             if (legalParsesWithVowelOnRoot.size() == 2) {
                 if (legalParsesWithVowelOnRoot.get(0).size() != 1 + legalParsesWithVowelOnRoot.get(1).size())
                     throw new Error("Something other than the G-YA vs. GYA case appeared.  Sorry for your trouble! " + legalParsesWithVowelOnRoot.get(0) + " ;; " + legalParsesWithVowelOnRoot.get(1));
                 return new TStackListList(legalParsesWithVowelOnRoot.get(1));
             }
-            if (allLegalParses.size() == 2) {
-                if (allLegalParses.get(0).size() != 1 + allLegalParses.get(1).size())
-                    throw new Error("Something other than the G-YA vs. GYA case appeared.  Sorry for your trouble! " + allLegalParses.get(0) + " ;; " + allLegalParses.get(1));
-                return new TStackListList(allLegalParses.get(1));
+            if (allNonillegalParses.size() == 2) {
+                if (allNonillegalParses.get(0).size() != 1 + allNonillegalParses.get(1).size())
+                    throw new Error("Something other than the G-YA vs. GYA case appeared.  Sorry for your trouble! " + allNonillegalParses.get(0) + " ;; " + allNonillegalParses.get(1));
+                return new TStackListList(allNonillegalParses.get(1));
             }
-            return allLegalParses;
+            return allNonillegalParses;
         }
     }
 

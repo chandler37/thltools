@@ -171,10 +171,10 @@ public class TibetanConverter implements FontConverterConstants {
                 out.println("");
                 out.println("");
                 out.println(" In --to... and --acip-to... modes, needs one argument, the name of the");
-                out.println(" TibetanMachineWeb RTF");
-                out.println(" file (for --to-wylie, --to-unicode, and --to-tibetan-machine) or the name of");
+                out.println(" TibetanMachineWeb RTF file (for --to-wylie, --to-wylie-text, --to-acip-text,");
+                out.println(" --to-acip, --to-unicode, and --to-tibetan-machine) or the name of");
                 out.println(" the TibetanMachine RTF file (for --to-tibetan-machine-web) or the name of the");
-                out.println(" ACIP text file (for --acip-to-unicode).  Writes the");
+                out.println(" ACIP text file (for --acip-to-unicode or --acip-to-tmw).  Writes the");
                 out.println(" result to standard output (after dealing with the curly brace problem if");
                 out.println(" the input is TibetanMachineWeb).  Exit code is zero on success, 42 if some");
                 out.println(" glyphs couldn't be converted (in which case the output is just those glyphs),");
@@ -364,14 +364,14 @@ public class TibetanConverter implements FontConverterConstants {
                                  + ((TMW_TO_WYLIE_TEXT == ct) ? 1 : 0)
                                  == 1);
                 long numAttemptedReplacements[] = new long[] { 0 };
-                if (TMW_TO_WYLIE == ct) {
+                if (TMW_TO_WYLIE == ct || TMW_TO_WYLIE_TEXT == ct) {
                     // Convert to THDL Wylie:
                     if (!tdoc.toWylie(0,
                                       tdoc.getLength(),
                                       numAttemptedReplacements)) {
                         exitCode = 44;
                     }
-                } else if (TMW_TO_ACIP == ct) {
+                } else if (TMW_TO_ACIP == ct || TMW_TO_ACIP_TEXT == ct) {
                     // Convert to ACIP:
                     if (!tdoc.toACIP(0,
                                      tdoc.getLength(),
@@ -411,7 +411,10 @@ public class TibetanConverter implements FontConverterConstants {
                 // Write to standard output the result:
                 if (TMW_TO_WYLIE_TEXT == ct || TMW_TO_ACIP_TEXT == ct) {
                     try {
-                        tdoc.writeTextOutput(new BufferedWriter(new OutputStreamWriter(out)));
+                        BufferedWriter bw
+                            = new BufferedWriter(new OutputStreamWriter(out));
+                        tdoc.writeTextOutput(bw);
+                        bw.flush();
                     } catch (IOException e) {
                         exitCode = 40;
                     }

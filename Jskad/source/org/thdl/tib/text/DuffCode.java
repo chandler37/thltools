@@ -168,7 +168,7 @@ public final class DuffCode {
  * recursion (manifesting as a StackOverflowError)) */
 	public String toString(boolean TMW) {
         boolean[] err = new boolean[] { false };
-		return "<duffcode font="
+		return "<glyph font="
             + (TMW
                ? TibetanMachineWeb.tmwFontNames
                : TibetanMachineWeb.tmFontNames)[fontNum]

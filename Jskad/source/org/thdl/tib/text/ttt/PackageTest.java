@@ -340,6 +340,22 @@ tstHelper("KA'", "[(K . A), (' . )]",
                   new String[] { },
                   "{G+G}{YE}{S}");
 
+        // DLC FIXME: warn about BDE vs. B+DE.  color such differently.  Maybe an inputter saw B+DE and typed in BDE, not thinking.
+        tstHelper("BDE", "{B}{DE}",
+                  new String[] { "{B}{DE}", "{B+DE}" },
+                  new String[] { "{B}{DE}" },
+                  "{B}{DE}");
+
+        tstHelper("SHR'I", "{SH}{R'I}",
+                  null,
+                  null,
+                  "{SH+R'I}");
+
+
+        // DLC FIXME: test EWTS {pouM}
+
+        // DLC FIXME: do TMW->ACIP->TMW->ACIP round-trip.
+
         tstHelper("DRUG", "{D}{RU}{G}",
                   new String[] { "{D}{RU}{G}", "{D+RU}{G}" },
                   new String[] { "{D+RU}{G}" },
@@ -7302,6 +7318,7 @@ tstHelper("ZUR");
               "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b\u0f42\u0fa2\u0f7d\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
         uhelp("*#HUm: K+DHA GRO`;.,",
               "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") K+DHA IS ESSENTIALLY NOTHING.]\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
+        // DLC FIXME: the file ACIP_SHRI should be made into an ACIP->TMW automated test case
     }
 
     /** Tests some more tsheg bars, these from Dr. Lacey's critical

@@ -994,6 +994,8 @@ private static boolean isAmbHelper(String y) {
 * @return true if x + y is ambiguous in the Extended Wylie
 * transliteration, false if not */
 public static boolean isAmbiguousWylie(String x, String y) {
+    // DLC NOW: BDE vs. B+DE -- TMW->ACIP should give B+DE to be very friendly to machines.
+
     // What about ambiguity between wa-zur and wa? dwa vs. d.wa, e.g.?
     // Some would say it doesn't matter, because that's illegal.  wa
     // doesn't take any prefixes.  But I want even illegal stuff to
@@ -1719,19 +1721,21 @@ private static String acipForGlyph(String hashKey) {
  *  documented in www/htdocs/TMW_RTF_TO_THDL_WYLIE.html, so change
  *  them both when you change this. */
 private static String getTMWToWylieErrorString(DuffCode dc) {
-    return "<<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert DuffCode "
+    return "<<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert "
         + dc.toString(true)
-        + " to THDL Extended Wylie.  Please see the documentation for the TMW font and transcribe this yourself.]]>>";
+        + " to THDL Extended Wylie.  Please see the documentation for the TM or TMW font and transcribe this yourself.]]>>";
 }
 
 /** Error that appears in a document when some TMW cannot be
  *  transcribed in ACIP.  This error message is
  *  documented in www/htdocs/TMW_RTF_TO_THDL_WYLIE.html (DLC NOT YET), so change
  *  them both when you change this. */
+static String getTMWToACIPErrorString(String it) {
+    return "[# JSKAD_TMW_TO_ACIP_ERROR_NO_SUCH_ACIP: Cannot convert " + it + " to ACIP.  Please transcribe this yourself.]";
+}
+
 private static String getTMWToACIPErrorString(DuffCode dc) {
-    return "<<[[JSKAD_TMW_TO_ACIP_ERROR_NO_SUCH_ACIP: Cannot convert DuffCode "
-        + dc.toString(true)
-        + " to ACIP.  Please see the documentation for the TMW font and transcribe this yourself.]]>>";
+    return getTMWToACIPErrorString(dc.toString(true));
 }
 
 /**
