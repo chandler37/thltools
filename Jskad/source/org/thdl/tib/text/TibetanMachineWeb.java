@@ -964,10 +964,12 @@ public static boolean isWylieSanskritConsonantStack(String s) {
 }
 
 /** Returns true if and only if s is the THDL Extended Wylie
-    representation of a legal tsheg-bar appendage 'i, 'e, 'u, 'o, 'am,
-    or 'ang.  The word le'u (chapter) contains such an appendage,
-    e.g. */
+    representation of a legal tsheg-bar appendage like 'i, 'u, 'am,
+    etc.  The word le'u (chapter) contains such an appendage, e.g. */
 public static boolean isWylieAchungAppendage(String s) {
+
+    // THIS LIST IS DOCUMENTED IN THE ACIP->TIBETAN CONVERTERS USER GUIDE.
+
     return (s.equals("'e") // Appears in transcription of foreign words at the very least.  The ACIP LEM'E is {LE}{M'E} if we don't think of 'E as "legal"... tricky, tricky (DLC FIXME: think again, verify it's doing what we want for both ACIP-> and EWTS-> and TMW->)
             || s.equals("'i")
             || s.equals("'o")
