@@ -25,6 +25,14 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import org.thdl.tib.text.TibetanHTML;
 
+/** Interfase to provide access to an on-line dictionary through a form in html; 
+    Inputs Tibetan text (Roman script only) and displays the
+    words (Roman or Tibetan script) with their definitions.
+    Runs on the server and is called upon through an HTTP request directly
+    by the browser.  Requires no additional software installed on the client.
+
+    @author Andr&eacute;s Montano Pellegrini
+*/
 public class OnLineScannerFilter extends HttpServlet {
 
     ResourceBundle rb;

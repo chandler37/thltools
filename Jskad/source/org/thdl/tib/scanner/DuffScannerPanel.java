@@ -26,10 +26,12 @@ import org.thdl.tib.input.DuffPane;
 
 /** Graphical interfase to be used by applications and applets
 	to input a Tibetan text (in Roman or Tibetan script) and
-	displays the words (in Roman or Tibetan script) with their
+	display the words (in Roman or Tibetan script) with their
 	definitions (in Roman script). Uses the THDL inputting system.
 	
     @author Andr&eacute;s Montano Pellegrini
+    @see WindowScannerFilter
+    @see AppletScannerFilter
 */
 public class DuffScannerPanel extends ScannerPanel
 {

@@ -21,8 +21,9 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-/** Inputs a Tibetan text and displays the words with
-	their definitions through the console over a shell.
+/** Inputs a Tibetan text and displays the words with their
+    definitions through the console over a shell. Use when no
+    graphical interfase is supported or for batch processes.
 
     @author Andr&eacute;s Montano Pellegrini
 */

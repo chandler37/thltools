@@ -24,6 +24,13 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+/** Running on the server, receives the tibetan text from applet/applications running on
+    the client and sends them the words with their definitions through the Internet.
+    Requests are made through {@link RemoteTibetanScanner}.
+    
+    @author Andr&eacute;s Montano Pellegrini
+    @see RemoteTibetanScanner
+*/
 public class RemoteScannerFilter extends GenericServlet
 {
 	private TibetanScanner scanner;

@@ -17,6 +17,12 @@ Contributor(s): ______________________________________.
 */
 
 package org.thdl.tib.scanner;
+
+/** Represents a basic grammatical unit; seems unnecessary but when the parser
+    is developed it will make sense.
+
+    @author Andr&eacute;s Montano Pellegrini
+*/
 public class Token
 {
     protected String token;

@@ -16,12 +16,14 @@ Pellegrini. All Rights Reserved.
 Contributor(s): ______________________________________.
 */
 
+package org.thdl.tib.scanner;
+
 /** Stores the multiple definitions (corresponding to
 	various dictionaries) for a single Tibetan word.
-
+	
+    @see Word
     @author Andr&eacute;s Montano Pellegrini
 */
-package org.thdl.tib.scanner;
 
 public class Definitions
 {

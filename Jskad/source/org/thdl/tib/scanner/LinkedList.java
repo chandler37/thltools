@@ -19,6 +19,12 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.scanner;
 import java.util.*;
 
+/** Implementation of a simple dynamic link list. Be careful with word order!
+
+    @author Andr&eacute;s Montano Pellegrini
+    @see Link
+    @see ListIterator
+*/
 public class LinkedList
 {	
 	protected Link cabeza;

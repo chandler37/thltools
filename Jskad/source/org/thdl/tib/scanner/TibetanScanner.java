@@ -19,6 +19,10 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.scanner;
 import java.util.*;
 
+/** Defines the core methods required to provide access to a dictionary; local or remote.
+
+    @author Andr&eacute;s Montano Pellegrini
+*/
 public interface TibetanScanner
 {
 	public static final String copyrightUnicode="Copyright " + '\u00A9' + " 2000-2002 by Andr" + '\u00E9' + "s Montano Pellegrini, all rights reserved.";

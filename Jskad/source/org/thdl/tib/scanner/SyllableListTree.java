@@ -27,6 +27,12 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.scanner;
 
+/** The generic interface for accesing dictionaries. An instance of
+    a SyllableListTree represents a node containing a syllable, a definition
+    (if it is the last syllable of a word) and links to its &quot;children&quot;.
+
+    @author Andr&eacute;s Montano Pellegrini
+*/
 public interface SyllableListTree
 {
 	public String getDef();

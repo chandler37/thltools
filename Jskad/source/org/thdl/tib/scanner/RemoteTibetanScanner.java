@@ -20,6 +20,13 @@ package org.thdl.tib.scanner;
 import java.net.*; 
 import java.io.*; 
 
+/** Used by applets and applications to access remote on-line dictionaries.
+    Sends Tibetan text, and receives the words with their definitions. The
+    {@link RemoteScannerFilter} receives the requests on the server.
+    
+    @author Andr&eacute;s Montano Pellegrini
+    @see RemoteScannerFilter
+*/
 public class RemoteTibetanScanner implements TibetanScanner
 {
 	private String url;

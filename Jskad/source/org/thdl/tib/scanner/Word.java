@@ -22,6 +22,10 @@ package org.thdl.tib.scanner;
 
 import org.thdl.tib.text.TibetanHTML;
 
+/** Tibetan word with its corresponding definitions.
+
+    @author Andr&eacute;s Montano Pellegrini
+*/
 public class Word extends Token
 {	
 	/** Used to rebuild the text the user entered. */

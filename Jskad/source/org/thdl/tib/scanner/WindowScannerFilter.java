@@ -28,6 +28,14 @@ import java.awt.datatransfer.*;
 import javax.swing.text.JTextComponent;
 import org.thdl.tib.input.DuffPane;
 
+/** Provides a graphical interfase to input Tibetan text (Roman or
+    Tibetan script) and displays the words (Roman or Tibetan script)
+    with their definitions. Works without Tibetan script in
+    platforms that don't support Swing. Can access dictionaries stored
+    locally or remotely.
+
+    @author Andr&eacute;s Montano Pellegrini
+*/
 public class WindowScannerFilter implements WindowListener, FocusListener, ActionListener, ItemListener
 {
 	private ScannerPanel sp;

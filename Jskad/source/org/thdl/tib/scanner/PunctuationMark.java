@@ -18,6 +18,14 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.scanner;
 
+/** Right now, it only used by {@link LocalTibetanScanner} to
+    separate &quot;paragraphs&quot;; eventually it will be one
+    of many tokens representing grammatical parts of the sentences that will be
+    interpreted by the parser.
+    
+    @author Andr&eacute;s Montano Pellegrini
+    @see LocalTibetanScanner
+*/
 class PunctuationMark extends Token
 {
     public PunctuationMark(char ch)

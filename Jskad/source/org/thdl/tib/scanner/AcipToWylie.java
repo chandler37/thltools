@@ -21,6 +21,14 @@ package org.thdl.tib.scanner;
 import java.net.*;
 import java.io.*;
 
+/** Provides interfase to convert from tibetan text transliterated in
+    the Acip scheme to THDL's extended wylie scheme.
+    
+    @author Andr&eacute;s Montano Pellegrini
+	@see WindowScannerFilter
+	@see Manipulate
+*/
+
 public class AcipToWylie
 {
 	private BufferedReader in;
@@ -32,6 +40,14 @@ public class AcipToWylie
 		this.out = out;
 	}
 	
+	/** Simply constructs object and invokes #run().
+	    @param args If no arguments are sent, it takes the ACIP text
+	    from the standard input and sends the wylie text to the standard
+	    output. If one argument is sent, it interprets it as the
+	    file name for the input. If two arguments are sent, it
+	    interprets the first one as the file name for the input and
+	    the second one as the file name for the output.
+	*/
 	public static void main (String[] args) throws Exception
 	{
 		PrintWriter out;

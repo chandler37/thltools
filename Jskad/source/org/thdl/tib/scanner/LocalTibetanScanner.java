@@ -20,6 +20,13 @@ package org.thdl.tib.scanner;
 import java.util.*;
 import java.io.*;
 
+/** Loads dictionary stored in tree format and searches for words recursively.
+    How the the dictionary is loaded depends on which implementation of
+    {@link SyllableListTree} is invoked.
+    
+    @author Andr&eacute;s Montano Pellegrini
+    @see SyllableListTree
+*/
 class LocalTibetanScanner implements TibetanScanner
 {
 	public static String archivo;

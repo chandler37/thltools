@@ -21,6 +21,11 @@ package org.thdl.tib.scanner;
 import java.awt.*;
 import java.awt.event.*;
 
+/** Window that displays copyright stuff.
+    
+    @author Andr&eacute;s Montano Pellegrini
+	@see WindowScannerFilter
+*/
 class AboutDialog extends Dialog implements ActionListener, WindowListener
 {
     public AboutDialog(Frame parent)

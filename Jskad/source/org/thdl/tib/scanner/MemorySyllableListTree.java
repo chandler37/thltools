@@ -20,6 +20,20 @@ package org.thdl.tib.scanner;
 import java.util.*;
 import java.io.*;
 
+/** Loads the whole dictionary into memory; not the preferred
+	implementation. Provides the fastest search, but takes up to
+	much resources.	The preferred implementation is the
+	{@link CachedSyllableListTree}.
+		
+	<p>The words must be stored in a binary file tree structure format.
+	This can be done using the {@link BinaryFileGenerator}.</p>
+
+    @author Andr&eacute;s Montano Pellegrini
+    @see TibetanScanner
+    @see CachedSyllableListTree
+    @see BinaryFileGenerator
+*/
+
 public class MemorySyllableListTree extends LinkedList implements SyllableListTree
 {
 	protected String sil, def;

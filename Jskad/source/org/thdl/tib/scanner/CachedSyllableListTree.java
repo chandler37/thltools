@@ -19,13 +19,13 @@ package org.thdl.tib.scanner;
 
 import java.io.*;
 
-/** Provides recommended implementation of the SyllableListTree
+/** Provides recommended implementation of the {@link SyllableListTree}
 	(currently most efficient memory-speed combination) loading
-	into memory only the &quot;trunk&quot; of the tree, and
-	searching the rest of the tree directly in the file.
+	from file into memory only the &quot;trunk&quot; of the tree,
+	and resorting to the disk when searching the rest of the tree.
 		
 	<p>The words must be stored in a binary file tree structure format.
-	This can be done using the BinaryFileGenerator.</p>
+	This can be done using the {@link BinaryFileGenerator}.</p>
 
     @author Andr&eacute;s Montano Pellegrini
     @see TibetanScanner

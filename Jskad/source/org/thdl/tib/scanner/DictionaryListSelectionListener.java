@@ -23,7 +23,7 @@ import java.awt.*;
 import javax.swing.table.*;
 
 /** Used by the DictionaryTable to display the full definition
-	of Tibetan word displaed in a table when its row is clicked.
+	of Tibetan word displayed in a table when its row is clicked.
 	
     @author Andr&eacute;s Montano Pellegrini
     @see DictionaryTable

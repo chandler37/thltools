@@ -21,10 +21,10 @@ import java.io.*;
 
 /** Searches the words directly in a file; not the preferred
 	implementation. The search is too slow!
-	The preferred implementation is the CachedSyllableListTree.
+	The preferred implementation is the {@link CachedSyllableListTree}.
 		
 	<p>The words must be stored in a binary file tree structure format.
-	This can be done using the BinaryFileGenerator.</p>
+	This can be done using the {@link BinaryFileGenerator}.</p>
 
     @author Andr&eacute;s Montano Pellegrini
     @see TibetanScanner

@@ -20,9 +20,7 @@ package org.thdl.tib.scanner;
 
 import java.io.*;
 
-/** Takes the output of ConsoleScannerFilter
-	(in RY format), converts the Wylie to Acip
-	and displays the result in csv format.
+/** Miscelaneous methods for the manipulation of Tibetan text.
 	
     @author Andr&eacute;s Montano Pellegrini
 */
@@ -220,9 +218,13 @@ public class Manipulate
 		return linea;
 	}
 	
-	/**
-	 * Sintaxis: java Manipulate [arch-palabras] < dict-orig > dict-dest
-	 * 
+	/** Not really important.
+	
+	Sintaxis: java Manipulate [word-file] < source-dic-entries > dest-dic-entries
+	
+    Takes the output of ConsoleScannerFilter
+	(in RY format), converts the Wylie to Acip
+	and displays the result in csv format.	 
 	 * arch-palabras es usado solo cuando deseamos las palabras cambiadas
 	 * a otro archivo.
 	 */

@@ -19,6 +19,14 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.scanner;
 import java.util.*;
 
+/** Used by {@link LinkedList} to provide the implementation of a
+    simple dynamic link list.
+
+    @author Andr&eacute;s Montano Pellegrini
+    @see LinkedList
+    @see Link
+*/
+
 public class ListIterator
 {
 	Link current;

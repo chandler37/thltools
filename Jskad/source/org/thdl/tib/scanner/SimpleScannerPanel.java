@@ -20,6 +20,16 @@ package org.thdl.tib.scanner;
 import java.awt.*;
 import java.awt.event.*;
 
+/** A non-Swing graphical interfase to be used by applications
+    running on platforms that don't support Swing,
+    to input a Tibetan text (in Roman script only) and
+	display the words (in Roman script only) with their
+	definitions (in Roman script).
+	
+    @author Andr&eacute;s Montano Pellegrini
+    @see WindowScannerFilter
+*/
+
 public class SimpleScannerPanel extends ScannerPanel
 {
 	private TextArea txtInput, txtOutput;
