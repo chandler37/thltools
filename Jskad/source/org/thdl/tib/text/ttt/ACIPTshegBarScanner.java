@@ -872,7 +872,7 @@ public class ACIPTshegBarScanner {
                         }
                     }
                     if ('%' == ch) {
-                        al.add(new TString("The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice",
+                        al.add(new TString("The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice.  To avoid seeing this warning again, change the input to use {\\u0F35} instead of {%}.",
                                            TString.WARNING));
                     }
                 }
@@ -924,11 +924,13 @@ public class ACIPTshegBarScanner {
                             startOfString = i+1;
                             break;
                         } else {
-                            al.add(new TString("Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.",
+                            final String msg
+                                = "Found a backslash, \\, which the ACIP Tibetan Input Code standard says represents a Sanskrit virama.  In practice, though, this is so often misused (to represent U+0F3D) that {\\} always generates this error.  If you want a Sanskrit virama, change the input document to use {\\u0F84} instead of {\\}.  If you want U+0F3D, use {/NYA/} or {/NYA\\u0F3D}.";
+                            al.add(new TString(msg,
                                                TString.ERROR));
                             if (null != errors)
                                 errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
-                                              + "Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\n");
+                                              + msg + "\n");
                         }
                     } else {
                         al.add(new TString("Found an illegal character, " + ch + ", with ordinal " + (int)ch + ".",

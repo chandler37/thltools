@@ -321,7 +321,7 @@ public class ACIPConverter {
                 }
             } else if (stype == TString.TSHEG_BAR_ADORNMENT) {
                 if (lastGuyWasNonPunct) {
-                    String err = "[#ERROR CONVERTING ACIP DOCUMENT: This converter cannot yet convert " + s.getText() + " because the converter's author is unclear what the result should be.]";
+                    String err = "[#ERROR CONVERTING ACIP DOCUMENT: This converter cannot convert the ACIP {" + s.getText() + "} to Tibetan because it is unclear what the result should be.]";
                     if (null != writer) {
                         String uni = ACIPRules.getUnicodeFor(s.getText(), false);
                         if (null == uni) {
@@ -388,7 +388,7 @@ public class ACIPConverter {
                         if ((acipError = pls[0].getACIPError()) != null
                             && (null == pls[1] || pls[1].getACIPError() != null)) {
                             hasErrors = true;
-                            String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") " + s.getText() + " HAS THESE ERRORS: " + acipError + "]";
+                            String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: The tsheg bar (\"syllable\") " + s.getText() + " has these errors: " + acipError + "]";
                             if (null != writer) writer.write(errorMessage);
                             if (null != tdoc) {
                                 tdoc.appendRoman(tdocLocation[0], errorMessage,
@@ -403,7 +403,7 @@ public class ACIPConverter {
                                               ? null : pls[1].getParseTree());
                             if (null == pt0 && null == pt1) {
                                 hasErrors = true;
-                                String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") " + s.getText() + " IS ESSENTIALLY NOTHING.]";
+                                String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: The tsheg bar (\"syllable\") " + s.getText() + " is essentially nothing.]";
                                 if (null != writer) writer.write(errorMessage);
                                 if (null != tdoc) {
                                     tdoc.appendRoman(tdocLocation[0], errorMessage,
@@ -417,8 +417,18 @@ public class ACIPConverter {
                                 TStackList sl1 = ((null == pt1)
                                                   ? null : pt1.getBestParse());
                                 if (null == sl0 && null == sl1) {
+                                    // I don't think this can happen
+                                    // nowadays; early in the
+                                    // converter's life, parsing of
+                                    // tsheg bars was handled
+                                    // differently, but now, I think
+                                    // this is impossible.  DLC FIXME:
+                                    // run with -Dthdl.debug=true on
+                                    // all ACIP Release IV texts you
+                                    // can find.
+                                    ThdlDebug.noteIffyCode();
                                     hasErrors = true;
-                                    String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") " + s.getText() + " HAS NO LEGAL PARSES.]";
+                                    String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: The tsheg bar (\"syllable\") " + s.getText() + " has no legal parses.]";
                                     if (null != writer) writer.write(errorMessage);
                                     if (null != tdoc) {
                                         tdoc.appendRoman(tdocLocation[0],

@@ -7298,15 +7298,15 @@ tstHelper("ZUR");
             uhelp(" 1\\ ", "\u0f0b\u0f21\u0f84\u0f0b");
         }
         shelp("K\\,",
-              "Offset 1: Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\n",
-              "[TIBETAN_NON_PUNCTUATION:{K}, ERROR:{Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.}, TIBETAN_PUNCTUATION:{,}]");
+              "Offset 1: Found a backslash, \\, which the ACIP Tibetan Input Code standard says represents a Sanskrit virama.  In practice, though, this is so often misused (to represent U+0F3D) that {\\} always generates this error.  If you want a Sanskrit virama, change the input document to use {\\u0F84} instead of {\\}.  If you want U+0F3D, use {/NYA/} or {/NYA\\u0F3D}.\n",
+              "[TIBETAN_NON_PUNCTUATION:{K}, ERROR:{Found a backslash, \\, which the ACIP Tibetan Input Code standard says represents a Sanskrit virama.  In practice, though, this is so often misused (to represent U+0F3D) that {\\} always generates this error.  If you want a Sanskrit virama, change the input document to use {\\u0F84} instead of {\\}.  If you want U+0F3D, use {/NYA/} or {/NYA\\u0F3D}.}, TIBETAN_PUNCTUATION:{,}]");
 
 
-        shelp("MTHAR%", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TSHEG_BAR_ADORNMENT:{%}, WARNING:{The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice}]");
+        shelp("MTHAR%", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TSHEG_BAR_ADORNMENT:{%}, WARNING:{The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice.  To avoid seeing this warning again, change the input to use {\\u0F35} instead of {%}.}]");
         shelp("MTHARo", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TSHEG_BAR_ADORNMENT:{o}]");
         shelp("MTHARx", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TSHEG_BAR_ADORNMENT:{x}]");
 
-        shelp("MTHAR\n%", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TIBETAN_PUNCTUATION:{ }, ERROR:{The ACIP % must be glued to the end of a tsheg bar, but this one was not}, WARNING:{The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice}]");
+        shelp("MTHAR\n%", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TIBETAN_PUNCTUATION:{ }, ERROR:{The ACIP % must be glued to the end of a tsheg bar, but this one was not}, WARNING:{The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice.  To avoid seeing this warning again, change the input to use {\\u0F35} instead of {%}.}]");
         shelp("MTHAR x", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TIBETAN_PUNCTUATION:{ }, ERROR:{The ACIP x must be glued to the end of a tsheg bar, but this one was not}]");
 
         shelp("PHYIR;", "", "[TIBETAN_NON_PUNCTUATION:{PHYIR}, TIBETAN_PUNCTUATION:{;}]");
@@ -7372,8 +7372,8 @@ tstHelper("ZUR");
               "Offset 13: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\nOffset 38: Found an illegal character, y, with ordinal 121.\nOffset 40: Found an illegal character, u, with ordinal 117.\nOffset 42: Found an illegal character, k, with ordinal 107.\nOffset 45: Found an illegal character, w, with ordinal 119.\nOffset 47: Found a truly unmatched close bracket, ] or }.\nOffset 47: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n",
               "[ERROR:{Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n}, COMMENT:{[# This is a [# nested comment]}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{d}, TSHEG_BAR_ADORNMENT:{o}, TIBETAN_NON_PUNCTUATION:{n't}, TIBETAN_PUNCTUATION:{ }, ERROR:{Found an illegal character, y, with ordinal 121.}, ERROR:{The ACIP o must be glued to the end of a tsheg bar, but this one was not}, ERROR:{Found an illegal character, u, with ordinal 117.}, TIBETAN_PUNCTUATION:{ }, ERROR:{Found an illegal character, k, with ordinal 107.}, TIBETAN_NON_PUNCTUATION:{n}, TSHEG_BAR_ADORNMENT:{o}, ERROR:{Found an illegal character, w, with ordinal 119.}, QUESTION:{?}, ERROR:{Found a truly unmatched close bracket, ]}, ERROR:{Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.}, TIBETAN_NON_PUNCTUATION:{KA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{KHA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{GA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{NGA}]");
         shelp("//NYA\\\\",
-              "Offset 1: Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\nOffset 5: Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\nOffset 6: Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\n",
-              "[START_SLASH:{/}, ERROR:{Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.}, END_SLASH:{/}, TIBETAN_NON_PUNCTUATION:{NYA}, ERROR:{Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.}, ERROR:{Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.}]");
+              "Offset 1: Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\nOffset 5: Found a backslash, \\, which the ACIP Tibetan Input Code standard says represents a Sanskrit virama.  In practice, though, this is so often misused (to represent U+0F3D) that {\\} always generates this error.  If you want a Sanskrit virama, change the input document to use {\\u0F84} instead of {\\}.  If you want U+0F3D, use {/NYA/} or {/NYA\\u0F3D}.\nOffset 6: Found a backslash, \\, which the ACIP Tibetan Input Code standard says represents a Sanskrit virama.  In practice, though, this is so often misused (to represent U+0F3D) that {\\} always generates this error.  If you want a Sanskrit virama, change the input document to use {\\u0F84} instead of {\\}.  If you want U+0F3D, use {/NYA/} or {/NYA\\u0F3D}.\n",
+              "[START_SLASH:{/}, ERROR:{Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.}, END_SLASH:{/}, TIBETAN_NON_PUNCTUATION:{NYA}, ERROR:{Found a backslash, \\, which the ACIP Tibetan Input Code standard says represents a Sanskrit virama.  In practice, though, this is so often misused (to represent U+0F3D) that {\\} always generates this error.  If you want a Sanskrit virama, change the input document to use {\\u0F84} instead of {\\}.  If you want U+0F3D, use {/NYA/} or {/NYA\\u0F3D}.}, ERROR:{Found a backslash, \\, which the ACIP Tibetan Input Code standard says represents a Sanskrit virama.  In practice, though, this is so often misused (to represent U+0F3D) that {\\} always generates this error.  If you want a Sanskrit virama, change the input document to use {\\u0F84} instead of {\\}.  If you want U+0F3D, use {/NYA/} or {/NYA\\u0F3D}.}]");
 
     }
     private static void uhelp(String acip) {
@@ -7441,13 +7441,13 @@ M+NA
         uhelp("KO&HAm,", "\u0F40\u0F7C\u0F85\u0F67\u0F7E\u0F0D");
         uhelp("x", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP x must be glued to the end of a tsheg bar, but this one was not]");
         uhelp("o", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP o must be glued to the end of a tsheg bar, but this one was not]");
-        uhelp("%", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP % must be glued to the end of a tsheg bar, but this one was not][#WARNING CONVERTING ACIP DOCUMENT: Lexical warning: The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice]");
-        uhelp(":", "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") : HAS THESE ERRORS: Cannot convert ACIP A: because A: is a \"vowel\" without an associated consonant]");
-        uhelp("m", "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") m HAS THESE ERRORS: Cannot convert ACIP Am because Am is a \"vowel\" without an associated consonant]");
+        uhelp("%", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP % must be glued to the end of a tsheg bar, but this one was not][#WARNING CONVERTING ACIP DOCUMENT: Lexical warning: The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice.  To avoid seeing this warning again, change the input to use {\\u0F35} instead of {%}.]");
+        uhelp(":", "[#ERROR CONVERTING ACIP DOCUMENT: The tsheg bar (\"syllable\") : has these errors: Cannot convert ACIP A: because A: is a \"vowel\" without an associated consonant]");
+        uhelp("m", "[#ERROR CONVERTING ACIP DOCUMENT: The tsheg bar (\"syllable\") m has these errors: Cannot convert ACIP Am because Am is a \"vowel\" without an associated consonant]");
 
         uhelp("N+YA", "\u0f53\u0fb1");
         uhelp("NA+YA", "\u0f53\u0fb1"); // FIXME: warn about the extra A
-        uhelp("NE+YA", "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") NE+YA HAS THESE ERRORS: Cannot convert ACIP NE+-YA because + is not an ACIP consonant]");
+        uhelp("NE+YA", "[#ERROR CONVERTING ACIP DOCUMENT: The tsheg bar (\"syllable\") NE+YA has these errors: Cannot convert ACIP NE+-YA because + is not an ACIP consonant]");
         uhelp("tRAStA", "\u0f4a\u0fb2\u0f66\u0f9a");
         uhelp("DZHDZHA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP DZHDZHA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f5c\u0fac"); // tricky because DZHDZA is not in TMW but DZHDZHA is
         uhelp("DZHDZA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP DZHDZA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f5c\u0fab");
@@ -7463,14 +7463,14 @@ M+NA
 
         uhelp("THAG PA", "\u0f50\u0f42\u0f0b\u0f54");
         uhelp("KA \nKHA\n\nGA", "\u0f40\u0f0b\u0f41\u0f0b\n\n\u0f42");
-        uhelp("KA%\nKHA", "\u0f40\u0f35[#WARNING CONVERTING ACIP DOCUMENT: Lexical warning: The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice]\u0f0b\u0f41");
-        uhelp("KA%", "\u0f40\u0f35[#WARNING CONVERTING ACIP DOCUMENT: Lexical warning: The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice]");
+        uhelp("KA%\nKHA", "\u0f40\u0f35[#WARNING CONVERTING ACIP DOCUMENT: Lexical warning: The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice.  To avoid seeing this warning again, change the input to use {\\u0F35} instead of {%}.]\u0f0b\u0f41");
+        uhelp("KA%", "\u0f40\u0f35[#WARNING CONVERTING ACIP DOCUMENT: Lexical warning: The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice.  To avoid seeing this warning again, change the input to use {\\u0F35} instead of {%}.]");
         uhelp("KAo", "\u0f40\u0f37");
         uhelp("KAo\n\nKA", "\u0f40\u0f37\u0f0b\n\n\u0f40");
         uhelp("KAo\nKHA", "\u0f40\u0f37\u0f0b\u0f41");
         uhelp("KAo KHA", "\u0f40\u0f37\u0f0b\u0f41");
         uhelp("KA KAo KHA", "\u0f40\u0f0b\u0f40\u0f37\u0f0b\u0f41");
-        uhelp("KAx", "\u0f40[#ERROR CONVERTING ACIP DOCUMENT: This converter cannot yet convert x because the converter's author is unclear what the result should be.]");
+        uhelp("KAx", "\u0f40[#ERROR CONVERTING ACIP DOCUMENT: This converter cannot convert the ACIP {x} to Tibetan because it is unclear what the result should be.]");
         uhelp("G+DHA", "\u0f42\u0fa2");
         uhelp("P'EE", "\u0f54\u0f71\u0f7b");
 
