@@ -20,6 +20,7 @@ public class DictionaryImporter
     private static String publicCons;
     private static Integer label;
     private static Statement sqlStatement;
+    private static Connection conn;
     
     public final static int delimiterGeneric=0;
     public final static int delimiterAcip=1;
@@ -70,12 +71,10 @@ public class DictionaryImporter
 		                    alternateWords = s1.split(";");
     		                for (marker2=0; marker2<alternateWords.length; marker2++)
 	    	                {
-	    	                    if (sqlStatement!=null) addRecordManually(alternateWords[marker2],s2);
-	    	                    else addRecord(alternateWords[marker2],s2);
+	    	                    addRecord(alternateWords[marker2],s2);
 		                    }
 		                }
-		                if (sqlStatement!=null) addRecordManually(s1, s2);
-		                else addRecord (s1, s2);
+		                addRecord (s1, s2);
 		            }
     		    }
     		}
@@ -86,13 +85,14 @@ public class DictionaryImporter
 		System.out.flush();
 		if (out!=null) out.flush();
 		if (sqlStatement!=null) sqlStatement.close();
+		if (conn!=null) conn.close();
 	}
 	
 	public void addRecordManually(String term, String definition) throws Exception
 	{
 	    Boolean result;
 	    ResultSet set;
-	    int metaID, metaIDTrans;
+	    int metaID, metaIDTrans, prec;
 	    String currentDef, insertMeta = "INSERT INTO meta (createdby, modifiedby, createdbyprojsub, modifiedbyprojsub, createdon, modifiedon, source, language, dialect, script, note) VALUES (" + creator.toString() + ", " + creator.toString() + ", " + proj.toString() + ", " + proj.toString() + ", NOW(), NOW(), 0, 0, 0, 1, \"" + note + "\")";
 
 	    definition = Manipulate.replace(definition, "\\", "@@@@");
@@ -135,7 +135,7 @@ public class DictionaryImporter
     	    currentDef = Manipulate.replace(currentDef, "\"", "@@@@");
 	        currentDef = Manipulate.replace(currentDef, "@@@@", "\\\"");
 	        
-	        if (!currentDef.equals(definition))
+	        if (currentDef.indexOf(definition)<0)
 	        {
 	            definition = currentDef + ". " + definition;
 	            metaIDTrans = set.getInt(2);
@@ -149,13 +149,25 @@ public class DictionaryImporter
 	        set = sqlStatement.getResultSet();
 	        set.first();
 	        metaIDTrans = set.getInt(1);
-	        sqlStatement.execute("INSERT INTO transitionaldata (metaid, parentid, precedence, transitionaldatalabel, forpublicconsumption, transitionaldatatext) VALUES ("+ metaIDTrans +", " + metaID +", 0, " + label + ", \"" + publicCons + "\", \"" + definition + "\")");
+	        sqlStatement.execute("SELECT precedence FROM transitionaldata WHERE parentid = " + metaID + " ORDER BY precedence DESC");
+	        set = sqlStatement.getResultSet();
+	        if (set.first()) prec = set.getInt(1)+1;
+	        else prec = 0;
+	        sqlStatement.execute("INSERT INTO transitionaldata (metaid, parentid, precedence, transitionaldatalabel, forpublicconsumption, transitionaldatatext) VALUES ("+ metaIDTrans +", " + metaID +", " + prec + ", " + label + ", \"" + publicCons + "\", \"" + definition + "\")");
 	    }
+	}
+	
+	private void addRecord(String term, String definition) throws Exception
+	{
+	    if (out!=null) out.println(term + " - " + definition);
+	    else if (sqlStatement!=null) addRecordManually(term, definition);
+        else addRecordViaHibernate(term, definition);
+	    
 	}
 	
 	/** Main class to map the term and its definition to the Lex Component 
 	   object model. Works but painfully slow! */
-	public void addRecord(String term, String definition) throws Exception
+	public void addRecordViaHibernate(String term, String definition) throws Exception
 	{
 	    LinkedList ll;
 	    ListIterator li;
@@ -229,7 +241,7 @@ public class DictionaryImporter
 		if (found)
 		{
 		    existingDef = trans.getTransitionalDataText(); 
-		    if (!existingDef.equals(definition))
+		    if (existingDef.indexOf(definition)<0)
 		    {
 		        definition = existingDef + ". " + definition;
 		        found = false;
@@ -296,7 +308,7 @@ public class DictionaryImporter
 
 	    // Connecting to database
         try {
-            Connection conn = DriverManager.getConnection(rb.getString("dictionaryimporter.url"));
+            conn = DriverManager.getConnection(rb.getString("dictionaryimporter.url"));
             s = conn.createStatement();
           
             // Do something with the Connection 
@@ -333,6 +345,7 @@ public class DictionaryImporter
 		publicCons = "true";
 		label = new Integer(6);
 		sqlStatement = null;
+		conn = null;
 		
 		if (argNum<=currentArg)
 		{
