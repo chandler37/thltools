@@ -78,10 +78,10 @@ class TibetanSyllable {
 // The constructor
 TibetanSyllable ( String s ){	
 	//Filter the spaces that are at the beginning or end of the syllable.
-	while (s.length()>0) if(s.charAt(0) == ' ' && s.length()>1)  s = s.substring(1,s.length());
+	/* while (s.length()>0) if(s.charAt(0) == ' ' && s.length()>1)  s = s.substring(1,s.length());
 			     else if(s.charAt(s.length()-1) == ' ' && s.length()>1) s = s.substring(0, s.length()-1);
-			     else break;
-	theSyllable = s;
+			     else break;*/
+	theSyllable = s.trim();
 	ItsComponents();	
 }
 
@@ -90,22 +90,22 @@ TibetanSyllable ( String s ){
 
 int  CompareWith( TibetanSyllable  s ){
 
-	int n = ( nVowels > s.GetnVowels()) ? nVowels : s.GetnVowels();
+	int getnV =s.GetnVowels(), n = ( nVowels > getnV) ? nVowels : getnV, valueOfThis, valueOfThat;
 
 	String [][] temp;
 
 	temp = s.GetComponents();
 
 	for (int i=0; i<n; i++){
-		for(int j=0; j<10; j++){
-		
-			if(ValueOfTibetanCharacter(Components[i][j]) > ValueOfTibetanCharacter(temp[i][j]))
+		for(int j=0; j<10; j++)
+		{
+		    valueOfThis = ValueOfTibetanCharacter(Components[i][j]);
+		    valueOfThat = ValueOfTibetanCharacter(temp[i][j]);
+			if(valueOfThis > valueOfThat)
 				return 1; // This syllable is bigger than that syllable s.
 		
-	 		else if(ValueOfTibetanCharacter(Components[i][j]) < ValueOfTibetanCharacter(temp[i][j]))
+	 		else if(valueOfThis < valueOfThat)
 				return -1; // This syllable is smaller than that syllable s.
-		
-			else; 
 		}
 	}
 	
