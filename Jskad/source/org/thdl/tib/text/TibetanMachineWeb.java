@@ -31,7 +31,7 @@ import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlLazyException;
 import org.thdl.util.Trie;
 import org.thdl.util.ThdlOptions;
-import org.thdl.tib.text.tshegbar.UnicodeCodepointToThdlWylie;
+import org.thdl.tib.text.tshegbar.UnicodeUtils;
 
 /**
 * Interfaces between Extended Wylie and the TibetanMachineWeb fonts.
@@ -41,9 +41,11 @@ import org.thdl.tib.text.tshegbar.UnicodeCodepointToThdlWylie;
 * both or neither.
 *
 * <p>In addition, this class optionally loads the TibetanMachineWeb
-* fonts manually via {@link #readInTMWFontFiles()}.
+* fonts manually via {@link #readInTMWFontFiles()}.  When we do that,
+* it means that users don't have to install the fonts on their
+* systems, so installation of Jskad becomes easier.
 * @author Edward Garrett, Tibetan and Himalayan Digital Library
-* @version 1.0
+* @author David Chandler
 */
 public class TibetanMachineWeb implements THDLWylieConstants {
     /** This addresses bug 624133, "Input freezes after impossible
@@ -57,124 +59,132 @@ public class TibetanMachineWeb implements THDLWylieConstants {
     private final static String anyOldObjectWillDo
         = "this placeholder is useful for debugging; we need a nonnull Object anyway";
 
-	private static TibetanKeyboard keyboard = null;
-	private static Set charSet = null;
-	private static Set tibSet = null;
-	private static Set sanskritStackSet = null;
-	private static Set numberSet = null;
-	private static Set vowelSet = null;
-	private static Set puncSet = null;
-	private static Set topSet = null;
-	private static Set leftSet = null;
-	private static Set rightSet = null;
-	private static Set farRightSet = null;
-	private static Map tibHash = new HashMap();
-	private static Map binduMap = new HashMap();
-	private static String[][] toHashKey = new String[11][95]; //note: toHashKey[0][..] is not used
-	private static DuffCode[][] TMtoTMW = new DuffCode[5][255-32]; // ordinal 255 doesn't occur in TM
-	private static DuffCode[][] TMWtoTM = new DuffCode[10][127-32]; // ordinal 127 doesn't occur in TMW
-	private static String[][] TMWtoUnicode = new String[10][127-32]; // ordinal 127 doesn't occur in TMW
-	private static String fileName = "tibwn.ini";
-	private static final String DELIMITER = "~";
+    private static TibetanKeyboard keyboard = null;
+    private static Set charSet = null;
+    private static Set tibSet = null;
+    private static Set sanskritStackSet = null;
+    private static Set numberSet = null;
+    private static Set vowelSet = null;
+    private static Set puncSet = null;
+    private static Set topSet = null;
+    private static Set leftSet = null;
+    private static Set rightSet = null;
+    private static Set farRightSet = null;
+    private static Map tibHash = new HashMap();
+    private static Map binduMap = new HashMap();
+    private static String[][] toHashKey = new String[11][95]; //note: toHashKey[0][..] is not used
+    private static DuffCode[][] TMtoTMW = new DuffCode[5][255-32]; // ordinal 255 doesn't occur in TM
+    private static DuffCode[][] TMWtoTM = new DuffCode[10][127-32]; // ordinal 127 doesn't occur in TMW
+    private static String[][] TMWtoUnicode = new String[10][127-32]; // ordinal 127 doesn't occur in TMW
+
+    /** For mapping single codepoints U+0F00..U+0FFF to TMW.  This
+        won't handle 0F00, 0F02, 0F03, or 0F0E, which are made by
+        using multiple glyphs from TMW, but it handles all the rest.
+        It handles U+0F90-U+0FBC rather poorly, in that you have to
+        use special formatting to get those right (FIXME: warn
+        whenever they're used). */
+    private static DuffCode[][] UnicodeToTMW = new DuffCode[256][1];
+    private static String fileName = "tibwn.ini";
+    private static final String DELIMITER = "~";
     /** vowels that appear over the glyph: */
-	private static Set top_vowels;
+    private static Set top_vowels;
     /** the font we use when we convert TMW->Unicode: */
-	private static SimpleAttributeSet defaultUnicodeFontAttributeSet = null;
+    private static SimpleAttributeSet defaultUnicodeFontAttributeSet = null;
     /** a way of encoding the choice of TibetanMachineWeb font from
         that family of 10 fonts: */
-	private static SimpleAttributeSet[] webFontAttributeSet = new SimpleAttributeSet[11];
+    private static SimpleAttributeSet[] webFontAttributeSet = new SimpleAttributeSet[11];
     /** a way of encoding the choice of TibetanMachine font from
         that family of 5 fonts: */
-	private static SimpleAttributeSet[] normFontAttributeSet = new SimpleAttributeSet[6];
-	private static boolean hasDisambiguatingKey; //to disambiguate gy and g.y=
-	private static char disambiguating_key;
-	private static boolean hasSanskritStackingKey; //for stacking Sanskrit
-	private static boolean hasTibetanStackingKey; //for stacking Tibetan
-	private static boolean isStackingMedial; //ie g+y, not +gy
-	private static char stacking_key;
-	private static boolean isAChenRequiredBeforeVowel;
-	private static boolean isAChungConsonant;
-	private static boolean hasAVowel;
-	private static String aVowel;
+    private static SimpleAttributeSet[] normFontAttributeSet = new SimpleAttributeSet[6];
+    private static boolean hasDisambiguatingKey; //to disambiguate gy and g.y=
+    private static char disambiguating_key;
+    private static boolean hasSanskritStackingKey; //for stacking Sanskrit
+    private static boolean hasTibetanStackingKey; //for stacking Tibetan
+    private static boolean isStackingMedial; //ie g+y, not +gy
+    private static char stacking_key;
+    private static boolean isAChenRequiredBeforeVowel;
+    private static boolean isAChungConsonant;
+    private static boolean hasAVowel;
+    private static String aVowel;
 
     // We use .intern() explicitly here so the code is easier to
     // understand, but all string literals are interned.
-	public static final String[] tmFontNames = {
-		null,
-		"TibetanMachine".intern(),
-		"TibetanMachineSkt1".intern(),
-		"TibetanMachineSkt2".intern(),
-		"TibetanMachineSkt3".intern(),
-		"TibetanMachineSkt4".intern()
-	};
-	public static final String[] tmwFontNames = {
-		null,
-		"TibetanMachineWeb".intern(),
-		"TibetanMachineWeb1".intern(),
-		"TibetanMachineWeb2".intern(),
-		"TibetanMachineWeb3".intern(),
-		"TibetanMachineWeb4".intern(),
-		"TibetanMachineWeb5".intern(),
-		"TibetanMachineWeb6".intern(),
-		"TibetanMachineWeb7".intern(),
-		"TibetanMachineWeb8".intern(),
-		"TibetanMachineWeb9".intern()
-	};
+    public static final String[] tmFontNames = {
+        null,
+        "TibetanMachine".intern(),
+        "TibetanMachineSkt1".intern(),
+        "TibetanMachineSkt2".intern(),
+        "TibetanMachineSkt3".intern(),
+        "TibetanMachineSkt4".intern()
+    };
+    public static final String[] tmwFontNames = {
+        null,
+        "TibetanMachineWeb".intern(),
+        "TibetanMachineWeb1".intern(),
+        "TibetanMachineWeb2".intern(),
+        "TibetanMachineWeb3".intern(),
+        "TibetanMachineWeb4".intern(),
+        "TibetanMachineWeb5".intern(),
+        "TibetanMachineWeb6".intern(),
+        "TibetanMachineWeb7".intern(),
+        "TibetanMachineWeb8".intern(),
+        "TibetanMachineWeb9".intern()
+    };
 /**
 * represents where in an array of DuffCodes you
 * find the TibetanMachine equivalence of a glyph
 */
-	public static final int TM = 0;
+    public static final int TM = 0;
 /**
 * represents where in an array of DuffCodes you
 * find the reduced character equivalent of a TMW glyph
 */
-	public static final int REDUCED_C = 1;
+    public static final int REDUCED_C = 1;
 /**
 * represents where in an array of DuffCodes you
 * find the TibetanMachineWeb glyph
 */
-	public static final int TMW = 2;
+    public static final int TMW = 2;
 /**
 * represents where in an array of DuffCodes you
 * find the gigu value for a given glyph
 */
-	public static final int VOWEL_i = 3;
+    public static final int VOWEL_i = 3;
 /**
 * represents where in an array of DuffCodes you
 * find the zhebju value for a given glyph
 */
-	public static final int VOWEL_u = 4;
+    public static final int VOWEL_u = 4;
 /**
 * represents where in an array of DuffCodes you
 * find the drengbu value for a given glyph
 */
-	public static final int VOWEL_e = 5;
+    public static final int VOWEL_e = 5;
 /**
 * represents where in an array of DuffCodes you
 * find the naro value for a given glyph
 */
-	public static final int VOWEL_o = 6;
+    public static final int VOWEL_o = 6;
 /**
 * represents where in an array of DuffCodes you
 * find the achung value for a given glyph
 */
-	public static final int VOWEL_A = 7;
+    public static final int VOWEL_A = 7;
 /**
 * represents where in an array of DuffCodes you
 * find the achung + zhebju value for a given glyph
 */
-	public static final int VOWEL_U = 8;
+    public static final int VOWEL_U = 8;
 /**
 * represents where in an array of DuffCodes you
 * find the Unicode equivalence of a given glyph
 */
-	public static final int UNICODE = 9;
+    public static final int UNICODE = 9;
 /**
 * represents where in an array of DuffCodes you
 * find the half height equivalence of a given glyph
 */
-	public static final int HALF_C = 10;
+    public static final int HALF_C = 10;
 
 
 
@@ -184,50 +194,50 @@ public class TibetanMachineWeb implements THDLWylieConstants {
     // change TMW->Wylie.
 
     /** comma-delimited list of supported Tibetan consonants: */
-	private static final String tibetanConsonants
+    private static final String tibetanConsonants
         = "k,kh,g,ng,c,ch,j,ny,t,th,d,n,p,ph,b,m,ts,tsh,dz,w,zh,z,',y,r,l,sh,s,h,a";
 
     /** comma-delimited list of supported non-Tibetan consonants, such
      *  as Sanskrit consonants: */
-	private static final String otherConsonants // va and fa are treated pretty-much like Sanskrit.
+    private static final String otherConsonants // va and fa are treated pretty-much like Sanskrit.
         = "T,Th,D,N,Sh,v,f";
 
     /** comma-delimited list of supported numbers (superscribed,
         subscribed, normal, half-numerals): */
-	private static final String numbers
+    private static final String numbers
         = "0,1,2,3,4,5,6,7,8,9";
 
     /** comma-delimited list of supported punctuation and
         miscellaneous characters: */
-	private static final String others
+    private static final String others
             = "_, ,/,|,!,:,;,@,#,$,%,(,),H,M,`,&,@#,?,=,[,],{,},*,~X,X"; // FIXME: not yet supporting all these...
 
     /** comma-delimited list of supported vowels: */
-	private static final String vowels
+    private static final String vowels
         = "a,i,u,e,o,I,U,ai,au,A,-i,-I";
 
 
 
     /** comma-delimited list of head letters (superscribed letters) */
-	private static final String tops = "r,s,l";
+    private static final String tops = "r,s,l";
     /** comma-delimited list of prefixes */
-	private static final String lefts = "g,d,b,m,'";
+    private static final String lefts = "g,d,b,m,'";
     /** comma-delimited list of suffixes */
-	private static final String rights = "g,ng,d,n,b,m,r,l,s,',T";
+    private static final String rights = "g,ng,d,n,b,m,r,l,s,',T";
     /** comma-delimited list of postsuffixes.  nga was here in the
      *  past, according to Edward, to handle cases like ya'ng.  pa'am
      *  wasn't considered, but had it been, ma probably would've gone
      *  here too.  We now handle 'am, 'ang, etc. specially, so now
      *  this set is now just the postsuffixes.  */
-	private static final String farrights = "d,s"; 
+    private static final String farrights = "d,s"; 
 
-	static {
-		readData();
+    static {
+        readData();
 
         /* Initialize to Extended Wylie keyboard.  The preferences
          * mechanism will switch this to the preferred keyboard. */
         setKeyboard(keyboard);
-	}
+    }
 
     /** If the TMW font files are resources associated with this
      *  class, those font files are loaded.  This means that the user
@@ -311,7 +321,7 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 * the character, punctuation, and vowel lists, as well as
 * performing other acts of initialization.
 */
-	private static void readData() {
+    private static void readData() {
         if (!ThdlOptions.getBooleanOption("thdl.rely.on.system.tmw.fonts")) {
             readInTMWFontFiles();
         }
@@ -323,86 +333,86 @@ public class TibetanMachineWeb implements THDLWylieConstants {
         StyleConstants.setFontFamily(defaultUnicodeFontAttributeSet,
                                      "Ximalaya");
 
-		webFontAttributeSet[0] = null;
-		for (int i=1; i<webFontAttributeSet.length; i++) {
-			webFontAttributeSet[i] = new SimpleAttributeSet();
-			StyleConstants.setFontFamily(webFontAttributeSet[i],tmwFontNames[i]);
-		}
+        webFontAttributeSet[0] = null;
+        for (int i=1; i<webFontAttributeSet.length; i++) {
+            webFontAttributeSet[i] = new SimpleAttributeSet();
+            StyleConstants.setFontFamily(webFontAttributeSet[i],tmwFontNames[i]);
+        }
 
-		normFontAttributeSet[0] = null;
-		for (int i=1; i<normFontAttributeSet.length; i++) {
-			normFontAttributeSet[i] = new SimpleAttributeSet();
-			StyleConstants.setFontFamily(normFontAttributeSet[i],tmFontNames[i]);
-		}
+        normFontAttributeSet[0] = null;
+        for (int i=1; i<normFontAttributeSet.length; i++) {
+            normFontAttributeSet[i] = new SimpleAttributeSet();
+            StyleConstants.setFontFamily(normFontAttributeSet[i],tmFontNames[i]);
+        }
 
-		StringTokenizer sTok;
+        StringTokenizer sTok;
 
-		topSet = new HashSet();
-		sTok = new StringTokenizer(tops, ",");
-		while (sTok.hasMoreTokens())
-			topSet.add(sTok.nextToken());
+        topSet = new HashSet();
+        sTok = new StringTokenizer(tops, ",");
+        while (sTok.hasMoreTokens())
+            topSet.add(sTok.nextToken());
 
-		leftSet = new HashSet();
-		sTok = new StringTokenizer(lefts, ",");
-		while (sTok.hasMoreTokens())
-			leftSet.add(sTok.nextToken());
+        leftSet = new HashSet();
+        sTok = new StringTokenizer(lefts, ",");
+        while (sTok.hasMoreTokens())
+            leftSet.add(sTok.nextToken());
 
-		rightSet = new HashSet();
-		sTok = new StringTokenizer(rights, ",");
-		while (sTok.hasMoreTokens())
-			rightSet.add(sTok.nextToken());
+        rightSet = new HashSet();
+        sTok = new StringTokenizer(rights, ",");
+        while (sTok.hasMoreTokens())
+            rightSet.add(sTok.nextToken());
 
-		farRightSet = new HashSet();
-		sTok = new StringTokenizer(farrights, ",");
-		while (sTok.hasMoreTokens())
-			farRightSet.add(sTok.nextToken());
+        farRightSet = new HashSet();
+        sTok = new StringTokenizer(farrights, ",");
+        while (sTok.hasMoreTokens())
+            farRightSet.add(sTok.nextToken());
 
         vowelSet = new HashSet();
-		sTok = new StringTokenizer(vowels, ",");
-		while (sTok.hasMoreTokens()) {
+        sTok = new StringTokenizer(vowels, ",");
+        while (sTok.hasMoreTokens()) {
             String ntk;
-			vowelSet.add(ntk = sTok.nextToken());
+            vowelSet.add(ntk = sTok.nextToken());
             validInputSequences.put(ntk, anyOldObjectWillDo);
         }
 
         puncSet = new HashSet();
-		sTok = new StringTokenizer(others, ",");
-		while (sTok.hasMoreTokens()) {
+        sTok = new StringTokenizer(others, ",");
+        while (sTok.hasMoreTokens()) {
             String ntk;
-			puncSet.add(ntk = sTok.nextToken());
+            puncSet.add(ntk = sTok.nextToken());
             validInputSequences.put(ntk, anyOldObjectWillDo);
         }
 
         charSet = new HashSet();
 
         tibSet = new HashSet();
-		sTok = new StringTokenizer(tibetanConsonants, ",");
-		while (sTok.hasMoreTokens()) {
+        sTok = new StringTokenizer(tibetanConsonants, ",");
+        while (sTok.hasMoreTokens()) {
             String ntk;
-			charSet.add(ntk = sTok.nextToken());
+            charSet.add(ntk = sTok.nextToken());
             tibSet.add(ntk);
             validInputSequences.put(ntk, anyOldObjectWillDo);
         }
 
         sanskritStackSet = new HashSet();
-		sTok = new StringTokenizer(otherConsonants, ",");
-		while (sTok.hasMoreTokens()) {
+        sTok = new StringTokenizer(otherConsonants, ",");
+        while (sTok.hasMoreTokens()) {
             String ntk;
-			charSet.add(ntk = sTok.nextToken());
+            charSet.add(ntk = sTok.nextToken());
             sanskritStackSet.add(ntk);
             validInputSequences.put(ntk, anyOldObjectWillDo);
         }
 
         numberSet = new HashSet();
-		sTok = new StringTokenizer(numbers, ",");
-		while (sTok.hasMoreTokens()) {
+        sTok = new StringTokenizer(numbers, ",");
+        while (sTok.hasMoreTokens()) {
             // DLC FIXME: don't add it to numberSet and charSet here;
             // do it in <?Input:Numbers?> so that Jskad has the same
             // TMW->Wylie conversion regardless of whether or not it
             // chooses to support inputting numbers.  Likewise for
             // tibetanConsonants, otherConsonants, others, and vowels.
             String ntk;
-			charSet.add(ntk = sTok.nextToken());
+            charSet.add(ntk = sTok.nextToken());
             numberSet.add(ntk);
             validInputSequences.put(ntk, anyOldObjectWillDo);
         }
@@ -419,165 +429,165 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 
         sTok = null;
 
-		top_vowels = new HashSet();
-		top_vowels.add(i_VOWEL);
-		top_vowels.add(e_VOWEL);
-		top_vowels.add(o_VOWEL);
-		top_vowels.add(ai_VOWEL);
-		top_vowels.add(au_VOWEL);
-		top_vowels.add(reverse_i_VOWEL);
+        top_vowels = new HashSet();
+        top_vowels.add(i_VOWEL);
+        top_vowels.add(e_VOWEL);
+        top_vowels.add(o_VOWEL);
+        top_vowels.add(ai_VOWEL);
+        top_vowels.add(au_VOWEL);
+        top_vowels.add(reverse_i_VOWEL);
 
-		try {
-			URL url = TibetanMachineWeb.class.getResource(fileName);
-			if (url == null) {
-				System.err.println("Cannot find " + fileName + "; aborting.");
-				System.exit(1);
-			}
-			InputStreamReader isr = new InputStreamReader(url.openStream());
-			BufferedReader in = new BufferedReader(isr);
+        try {
+            URL url = TibetanMachineWeb.class.getResource(fileName);
+            if (url == null) {
+                System.err.println("Cannot find " + fileName + "; aborting.");
+                System.exit(1);
+            }
+            InputStreamReader isr = new InputStreamReader(url.openStream());
+            BufferedReader in = new BufferedReader(isr);
 
             if (ThdlOptions.getBooleanOption("thdl.verbose")) {
                 System.out.println("Reading Tibetan Machine Web code table "
                                    + fileName);
             }
-			String line;
-			boolean hashOn = false;
+            String line;
+            boolean hashOn = false;
 
             // is this a Tibetan consonant or consonant stack?
-			boolean isTibetan = false;
+            boolean isTibetan = false;
 
             // is this a Sanskrit consonant stack?
-			boolean isSanskrit = false;
+            boolean isSanskrit = false;
 
-			boolean ignore = false;
+            boolean ignore = false;
 
-			while ((line = in.readLine()) != null) {
-				if (line.startsWith("<?")) { //line is command
-					if (line.equalsIgnoreCase("<?Consonants?>")) {
-						isSanskrit = false;
-						isTibetan = true;
-						hashOn = false;
+            while ((line = in.readLine()) != null) {
+                if (line.startsWith("<?")) { //line is command
+                    if (line.equalsIgnoreCase("<?Consonants?>")) {
+                        isSanskrit = false;
+                        isTibetan = true;
+                        hashOn = false;
                         ignore = false;
                         do {
                             line = in.readLine();
                         } while (line.startsWith("//") || line.equals(""));
                         // use tibSet or charSet; ignore this.
                     }
-					else if (line.equalsIgnoreCase("<?Numbers?>")) {
+                    else if (line.equalsIgnoreCase("<?Numbers?>")) {
                         // FIXME: for historical reasons, numbers go
                         // in both charSet and numberSet.
-						isSanskrit = false;
-						isTibetan = false;
-						hashOn = false;
+                        isSanskrit = false;
+                        isTibetan = false;
+                        hashOn = false;
                         ignore = false;
                         do {
                             line = in.readLine();
                         } while (line.startsWith("//") || line.equals(""));
                         // use numberSet or charSet; ignore this.
                     }
-					else if (line.equalsIgnoreCase("<?Vowels?>")) {
-						isSanskrit = false;
-						isTibetan = false;
-						hashOn = false;
+                    else if (line.equalsIgnoreCase("<?Vowels?>")) {
+                        isSanskrit = false;
+                        isTibetan = false;
+                        hashOn = false;
                         ignore = false;
                         do {
                             line = in.readLine();
                         } while (line.startsWith("//") || line.equals(""));
                         // use vowelSet; ignore this.
-					}
-					else if (line.equalsIgnoreCase("<?Other?>")) {
-						isSanskrit = false;
-						isTibetan = false;
-						hashOn = false;
+                    }
+                    else if (line.equalsIgnoreCase("<?Other?>")) {
+                        isSanskrit = false;
+                        isTibetan = false;
+                        hashOn = false;
                         ignore = false;
                         do {
                             line = in.readLine();
                         } while (line.startsWith("//") || line.equals(""));
                         // use puncSet; ignore this.
-					}
+                    }
 
-					else if (line.equalsIgnoreCase("<?Input:Punctuation?>")
+                    else if (line.equalsIgnoreCase("<?Input:Punctuation?>")
                              || line.equalsIgnoreCase("<?Input:Vowels?>")) {
-						isSanskrit = false;
-						isTibetan = false;
-						hashOn = true;
-						ignore = false;
+                        isSanskrit = false;
+                        isTibetan = false;
+                        hashOn = true;
+                        ignore = false;
                     }
                     else if (line.equalsIgnoreCase("<?Input:Tibetan?>")) {
-						isSanskrit = false;
-						isTibetan = true;
-						hashOn = true;
-						ignore = false;
-					}
-                    else if (line.equalsIgnoreCase("<?Input:Numbers?>")) {
-						isSanskrit = false;
-						isTibetan = false;
-						hashOn = true;
-						ignore = false;
-					}
-					else if (line.equalsIgnoreCase("<?Input:Sanskrit?>")) {
-						isSanskrit = true;
-						isTibetan = false;
-						hashOn = true;
-						ignore = false;
-					}
-					else if (line.equalsIgnoreCase("<?ToWylie?>")) {
-						isSanskrit = false;
-						isTibetan = false;
-						hashOn = false;
-						ignore = false;
-					}
-					else if (line.equalsIgnoreCase("<?Ignore?>")) {
-						isSanskrit = false;
-						ignore = true;
+                        isSanskrit = false;
+                        isTibetan = true;
+                        hashOn = true;
+                        ignore = false;
                     }
-				}
-				else if (line.startsWith("//")) { //comment
-					;
+                    else if (line.equalsIgnoreCase("<?Input:Numbers?>")) {
+                        isSanskrit = false;
+                        isTibetan = false;
+                        hashOn = true;
+                        ignore = false;
+                    }
+                    else if (line.equalsIgnoreCase("<?Input:Sanskrit?>")) {
+                        isSanskrit = true;
+                        isTibetan = false;
+                        hashOn = true;
+                        ignore = false;
+                    }
+                    else if (line.equalsIgnoreCase("<?ToWylie?>")) {
+                        isSanskrit = false;
+                        isTibetan = false;
+                        hashOn = false;
+                        ignore = false;
+                    }
+                    else if (line.equalsIgnoreCase("<?Ignore?>")) {
+                        isSanskrit = false;
+                        ignore = true;
+                    }
                 }
-				else if (line.equals("")) {//empty string
-					;
+                else if (line.startsWith("//")) { //comment
+                    ;
                 }
-				else {
-					StringTokenizer st = new StringTokenizer(line,DELIMITER,true);
+                else if (line.equals("")) {//empty string
+                    ;
+                }
+                else {
+                    StringTokenizer st = new StringTokenizer(line,DELIMITER,true);
 
-					String wylie = null;
+                    String wylie = null;
                     DuffCode[] duffCodes;
                     duffCodes = new DuffCode[11];
 
-					int k = 0;
+                    int k = 0;
 
                     StringBuffer escapedToken = new StringBuffer("");
                     ThdlDebug.verify(escapedToken.length() == 0);
-					while (st.hasMoreTokens()) {
-						String val = getEscapedToken(st, escapedToken);
+                    while (st.hasMoreTokens()) {
+                        String val = getEscapedToken(st, escapedToken);
 
-						if (val.equals(DELIMITER)
+                        if (val.equals(DELIMITER)
                             && escapedToken.length() == 0) {
-							k++;
+                            k++;
                         } else if (!val.equals("")) {
                             if (escapedToken.length() != 0) {
                                 escapedToken = new StringBuffer("");
                                 ThdlDebug.verify(escapedToken.length() == 0);
                             }
 
-							switch (k) {
-								case 0: //wylie key
+                            switch (k) {
+                                case 0: //wylie key
                                     wylie = val;
-									break;
+                                    break;
 
-								case 1: // Tibetan Machine glyph
-									duffCodes[TM] = new DuffCode(val,false);
-									break;
+                                case 1: // Tibetan Machine glyph
+                                    duffCodes[TM] = new DuffCode(val,false);
+                                    break;
 
-								case 2: //reduced-size character if there is one
+                                case 2: //reduced-size character if there is one
                                     if (!ignore) {
                                         duffCodes[REDUCED_C] = new DuffCode(val,true);
                                     }
-									break;
+                                    break;
 
-								case 3: //TibetanMachineWeb code
-									duffCodes[TMW] = new DuffCode(val,true);
+                                case 3: //TibetanMachineWeb code
+                                    duffCodes[TMW] = new DuffCode(val,true);
                                     // TibetanMachineWeb7.91, for
                                     // example, has no TM(win32)
                                     // equivalent (though it has a
@@ -593,14 +603,14 @@ public class TibetanMachineWeb implements THDLWylieConstants {
                                     // could well be null):
                                     TMWtoTM[duffCodes[TMW].getFontNum()-1][duffCodes[TMW].getCharNum()-32]
                                         = duffCodes[TM]; // TMW->TM mapping
-									break;
+                                    break;
                                 // Vowels etc. to use with this glyph:
-								case 4:
-								case 5:
-								case 6:
-								case 7:
-								case 8:
-								case 9:
+                                case 4:
+                                case 5:
+                                case 6:
+                                case 7:
+                                case 8:
+                                case 9:
                                     if (!ignore) {
                                       try {
                                         duffCodes[k-1] = new DuffCode(val,true);
@@ -610,7 +620,7 @@ public class TibetanMachineWeb implements THDLWylieConstants {
                                     }
                                     break;
 
-								case 10: //Unicode:
+                                case 10: //Unicode:
                                     if (!val.equals("none")) {
                                         StringBuffer unicodeBuffer = new StringBuffer();
                                         StringTokenizer uTok = new StringTokenizer(val, ",");
@@ -632,13 +642,51 @@ public class TibetanMachineWeb implements THDLWylieConstants {
                                         }
                                         TMWtoUnicode[duffCodes[TMW].getFontNum()-1][duffCodes[TMW].getCharNum()-32]
                                             = unicodeBuffer.toString(); // TMW->Unicode mapping
+                                        char ch;
+                                        if (unicodeBuffer.length() == 1
+                                            && UnicodeUtils.isInTibetanRange(ch = unicodeBuffer.charAt(0))) {
+                                            if (null != UnicodeToTMW[ch - '\u0F00'][0]
+                                                && '\u0F00' != ch
+                                                && '\u0F02' != ch
+                                                && '\u0F03' != ch
+                                                && '\u0F0B' != ch // any will do...
+                                                && '\u0F0E' != ch
+                                                && '\u0F40' != ch
+                                                && '\u0F42' != ch
+                                                && '\u0F49' != ch
+                                                && '\u0F4F' != ch
+                                                && '\u0F51' != ch
+                                                && '\u0F53' != ch
+                                                && '\u0F5E' != ch
+                                                && '\u0F62' != ch
+                                                && '\u0F64' != ch
+                                                && '\u0F67' != ch
+                                                && '\u0F6A' != ch
+                                                && '\u0F71' != ch // any will do...
+                                                && '\u0F72' != ch // any will do...
+                                                && '\u0F73' != ch
+                                                && '\u0F74' != ch // any will do...
+                                                && '\u0F75' != ch // any will do...
+                                                && '\u0F76' != ch
+                                                && '\u0F77' != ch
+                                                && '\u0F78' != ch
+                                                && '\u0F79' != ch
+                                                && '\u0F7A' != ch // any will do...
+                                                && '\u0F7C' != ch // any will do...
+                                                && '\u0F7E' != ch
+                                                && '\u0F81' != ch) {
+                                                throw new Error("tibwn.ini has more than one TMW fellow listed that has the Unicode " + val + ", but it's not on the list of specially handled glyphs");
+                                            }
+                                            UnicodeToTMW[ch - '\u0F00'][0]
+                                                = duffCodes[TMW]; // Unicode->TMW mapping
+                                        }
 
                                         // For V&V:
 
 // DLC FIXME: also check for ^[90-bc]. and ^.+[40-6a]
 
 //                                          StringBuffer wylie_minus_plusses_buf
-//                                              = UnicodeCodepointToThdlWylie.getThdlWylieForUnicodeString(unicodeBuffer.toString());
+//                                              = org.thdl.tib.text.tshegbar.UnicodeCodepointToThdlWylie.getThdlWylieForUnicodeString(unicodeBuffer.toString());
 //                                          String wylie_minus_plusses
 //                                              = ((wylie_minus_plusses_buf == null)
 //                                                 ? null
@@ -651,29 +699,29 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 //                                              System.out.println("wylie: " + wylie + "; wylie_minus_plusses: " + wylie_minus_plusses);
 //                                          }
                                     }
-									break;
+                                    break;
 
-								case 11: //half-height character if there is one
+                                case 11: //half-height character if there is one
                                     if (!ignore) {
                                         duffCodes[HALF_C] = new DuffCode(val,true);
                                     }
-									break;
+                                    break;
 
-								case 12: //special bindu-value if vowel+bindu are one glyph
+                                case 12: //special bindu-value if vowel+bindu are one glyph
                                     if (!ignore) {
                                         DuffCode binduCode = new DuffCode(val,true);
                                         binduMap.put(duffCodes[TMW],binduCode);
                                     }
-									break;
+                                    break;
                                 case 13:
                                     throw new Error("tibwn.ini has only 13 columns, you tried to use a 14th column.");
-							}
-						} else {
+                            }
+                        } else {
                           if (k == 10) {
                             throw new Error("needed none or some unicode; line is " + line);
                           }
                         }
-					}
+                    }
                     if (k < 10) {
                         throw new Error("needed none or some unicode; line is " + line);
                     }
@@ -711,14 +759,14 @@ public class TibetanMachineWeb implements THDLWylieConstants {
                         int code = duffCodes[TMW].getCharNum()-32;
                         toHashKey[font][code] = wylie;
                     }
-				}
-			}
-		}
-		catch (IOException e) {
-			System.out.println("file Disappeared");
+                }
+            }
+        }
+        catch (IOException e) {
+            System.out.println("file Disappeared");
             ThdlDebug.noteIffyCode();
-		}
-	}
+        }
+    }
 
 /**
 * (Re-)sets the keyboard.
@@ -728,41 +776,41 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 * if there was an error
 */
 public static boolean setKeyboard(TibetanKeyboard kb) {
-	keyboard = kb;
+    keyboard = kb;
 
-	if (currentKeyboardIsExtendedWylie()) { //wylie keyboard
-		hasDisambiguatingKey = true;
-		disambiguating_key = WYLIE_DISAMBIGUATING_KEY;
-		hasSanskritStackingKey = true;
-		hasTibetanStackingKey = false;
-		isStackingMedial = true;
-		stacking_key = WYLIE_SANSKRIT_STACKING_KEY;
-		isAChenRequiredBeforeVowel = false;
-		isAChungConsonant = false;
-		hasAVowel = true;
-		aVowel = WYLIE_aVOWEL;
-		if (!vowelSet.contains(WYLIE_aVOWEL)) {
-			vowelSet.add(WYLIE_aVOWEL);
+    if (currentKeyboardIsExtendedWylie()) { //wylie keyboard
+        hasDisambiguatingKey = true;
+        disambiguating_key = WYLIE_DISAMBIGUATING_KEY;
+        hasSanskritStackingKey = true;
+        hasTibetanStackingKey = false;
+        isStackingMedial = true;
+        stacking_key = WYLIE_SANSKRIT_STACKING_KEY;
+        isAChenRequiredBeforeVowel = false;
+        isAChungConsonant = false;
+        hasAVowel = true;
+        aVowel = WYLIE_aVOWEL;
+        if (!vowelSet.contains(WYLIE_aVOWEL)) {
+            vowelSet.add(WYLIE_aVOWEL);
             validInputSequences.put(WYLIE_aVOWEL, anyOldObjectWillDo);
         }
-	}
-	else {
-		hasDisambiguatingKey = keyboard.hasDisambiguatingKey();
-		if (hasDisambiguatingKey)
-			disambiguating_key = keyboard.getDisambiguatingKey();
+    }
+    else {
+        hasDisambiguatingKey = keyboard.hasDisambiguatingKey();
+        if (hasDisambiguatingKey)
+            disambiguating_key = keyboard.getDisambiguatingKey();
 
-		hasSanskritStackingKey = keyboard.hasSanskritStackingKey();
-		hasTibetanStackingKey = keyboard.hasTibetanStackingKey();
-		if (hasSanskritStackingKey || hasTibetanStackingKey) {
-			isStackingMedial = keyboard.isStackingMedial();
-			stacking_key = keyboard.getStackingKey();
-		}
+        hasSanskritStackingKey = keyboard.hasSanskritStackingKey();
+        hasTibetanStackingKey = keyboard.hasTibetanStackingKey();
+        if (hasSanskritStackingKey || hasTibetanStackingKey) {
+            isStackingMedial = keyboard.isStackingMedial();
+            stacking_key = keyboard.getStackingKey();
+        }
 
-		isAChenRequiredBeforeVowel = keyboard.isAChenRequiredBeforeVowel();
-		isAChungConsonant = keyboard.isAChungConsonant();
-		hasAVowel = keyboard.hasAVowel();
-	}
-	return true;
+        isAChenRequiredBeforeVowel = keyboard.isAChenRequiredBeforeVowel();
+        isAChungConsonant = keyboard.isAChungConsonant();
+        hasAVowel = keyboard.hasAVowel();
+    }
+    return true;
 }
 
 /**
@@ -774,18 +822,18 @@ public static boolean setKeyboard(TibetanKeyboard kb) {
 * if there was an error
 */
 public static boolean setKeyboard(URL url) {
-	try {
+    try {
         TibetanKeyboard kb = new TibetanKeyboard(url);
-		if (setKeyboard(kb))
-			return true;
-		else
-			return false;
-	}
-	catch (TibetanKeyboard.InvalidKeyboardException ike) {
-		System.out.println("can't create the keyboard associated with " + url);
+        if (setKeyboard(kb))
+            return true;
+        else
+            return false;
+    }
+    catch (TibetanKeyboard.InvalidKeyboardException ike) {
+        System.out.println("can't create the keyboard associated with " + url);
         ThdlDebug.noteIffyCode();
-		return false;
-	}
+        return false;
+    }
 }
 
 /**
@@ -799,10 +847,10 @@ public static boolean setKeyboard(URL url) {
 * a way of encoding the font itself
 */
 public static SimpleAttributeSet getAttributeSet(int font) {
-	if (font > -1 && font < webFontAttributeSet.length)
-		return webFontAttributeSet[font];
-	else
-		return null;
+    if (font > -1 && font < webFontAttributeSet.length)
+        return webFontAttributeSet[font];
+    else
+        return null;
 }
 
 /**
@@ -842,10 +890,10 @@ private static HashMap unicodeAttributeSets = new HashMap();
 * a way of encoding the font itself
 */
 public static SimpleAttributeSet getAttributeSetTM(int font) {
-	if (font > -1 && font < normFontAttributeSet.length)
-		return normFontAttributeSet[font];
-	else
-		return null;
+    if (font > -1 && font < normFontAttributeSet.length)
+        return normFontAttributeSet[font];
+    else
+        return null;
 }
 
 /**
@@ -855,17 +903,17 @@ public static SimpleAttributeSet getAttributeSetTM(int font) {
 * ENTER), false if not
 */
 public static boolean isFormatting(char c) {
-	if (c < 32 || c > 126)
-		return true;
-	else
-		return false;
+    if (c < 32 || c > 126)
+        return true;
+    else
+        return false;
 /*
-	if (		c == KeyEvent.VK_TAB
-		|| 	c == KeyEvent.VK_ENTER)
+    if (        c == KeyEvent.VK_TAB
+        ||     c == KeyEvent.VK_ENTER)
 
-		return true;
-	else
-		return false;
+        return true;
+    else
+        return false;
 */
 }
 
@@ -878,10 +926,10 @@ public static boolean isFormatting(char c) {
 * @return true if s is a character in the current keyboard, false if
 * not */
 public static boolean isChar(String s) {
-	if (currentKeyboardIsExtendedWylie())
-		return charSet.contains(s);
-	else
-		return keyboard.isChar(s);
+    if (currentKeyboardIsExtendedWylie())
+        return charSet.contains(s);
+    else
+        return keyboard.isChar(s);
 }
 
 /**
@@ -892,7 +940,7 @@ public static boolean isChar(String s) {
 * @return true if s is a character in Extended Wylie transliteration,
 * false if not */
 public static boolean isWylieChar(String s) {
-	return charSet.contains(s);
+    return charSet.contains(s);
 }
 
 
@@ -904,7 +952,7 @@ public static boolean isWylieChar(String s) {
 * @return true if s is such in Extended Wylie transliteration, false
 * if not */
 public static boolean isWylieTibetanConsonantOrConsonantStack(String s) {
-	return tibSet.contains(s);
+    return tibSet.contains(s);
 }
 
 /**
@@ -912,7 +960,7 @@ public static boolean isWylieTibetanConsonantOrConsonantStack(String s) {
 * Sanskrit multi-consonant stack.
 */
 public static boolean isWylieSanskritConsonantStack(String s) {
-	return sanskritStackSet.contains(s);
+    return sanskritStackSet.contains(s);
 }
 
 /** Returns true if and only if s is the THDL Extended Wylie
@@ -943,7 +991,7 @@ public static boolean isWylieAchungAppendage(String s) {
 * @return true if s is a number in Extended Wylie transliteration,
 * false if not */
 public static boolean isWylieNumber(String s) {
-	return numberSet.contains(s);
+    return numberSet.contains(s);
 }
 
 /**
@@ -954,10 +1002,10 @@ public static boolean isWylieNumber(String s) {
 * keyboard, false if not
 */
 public static boolean isPunc(String s) {
-	if (currentKeyboardIsExtendedWylie())
-		return puncSet.contains(s);
-	else
-		return keyboard.isPunc(s);
+    if (currentKeyboardIsExtendedWylie())
+        return puncSet.contains(s);
+    else
+        return keyboard.isPunc(s);
 }
 
 /**
@@ -968,7 +1016,7 @@ public static boolean isPunc(String s) {
 * Extended Wylie transliteration, false if not
 */
 public static boolean isWyliePunc(String s) {
-	return puncSet.contains(s);
+    return puncSet.contains(s);
 }
 
 /**
@@ -979,10 +1027,10 @@ public static boolean isWyliePunc(String s) {
 * keyboard, false if not
 */
 public static boolean isVowel(String s) {
-	if (currentKeyboardIsExtendedWylie())
-		return vowelSet.contains(s);
-	else
-		return keyboard.isVowel(s);
+    if (currentKeyboardIsExtendedWylie())
+        return vowelSet.contains(s);
+    else
+        return keyboard.isVowel(s);
 }
 
 /** By example, this returns true for le, lA-i, lA-iM, luM, l-i, etc.,
@@ -1051,7 +1099,7 @@ public static boolean isAmbiguousWylie(String x, String y) {
 * Extended Wylie transliteration, false if not
 */
 public static boolean isWylieVowel(String s) {
-	return vowelSet.contains(s);
+    return vowelSet.contains(s);
 }
 
 /** Returns true if and only if wylie is the THDL Extended Wylie for
@@ -1060,7 +1108,7 @@ public static boolean isWylieVowel(String s) {
     bindu.  Note that an adornment might be both an adornment and a
     vowel, or an adornment and punctuation. */
 public static boolean isWylieAdornment(String wylie) {
-	return (vowelSet.contains(wylie)
+    return (vowelSet.contains(wylie)
             || (wylie.equals("M") /* U+0F7E */
                 || wylie.equals("M^") /* U+0F83 */
                 || wylie.equals("iM")
@@ -1075,7 +1123,7 @@ public static boolean isWylieAdornment(String wylie) {
     an adornment {@link #isWylieAdornment(String)} that contains a
     vowel within it. */
 public static boolean isWylieAdornmentAndContainsVowel(String wylie) {
-	return (isWylieAdornment(wylie) &&
+    return (isWylieAdornment(wylie) &&
             !wylie.equals("M") /* U+0F7E */
             && !wylie.equals("M^") /* U+0F83 */);
 }
@@ -1089,7 +1137,7 @@ public static boolean isWylieAdornmentAndContainsVowel(String wylie) {
 * @return true if s is a possible leftmost character in a Tibetan
 * syllable, false if not.  */
 public static boolean isWylieLeft(String s) {
-	return leftSet.contains(s);
+    return leftSet.contains(s);
 }
 
 /**
@@ -1101,7 +1149,7 @@ public static boolean isWylieLeft(String s) {
 * @return true if s is a possible right character in a Tibetan
 * syllable, false if not.  */
 public static boolean isWylieRight(String s) {
-	return rightSet.contains(s);
+    return rightSet.contains(s);
 }
 
 /**
@@ -1111,7 +1159,7 @@ public static boolean isWylieRight(String s) {
 * @return true if s is a possible postsuffix in a Tibetan
 * syllable, false if not.  */
 public static boolean isWylieFarRight(String s) {
-	return farRightSet.contains(s);
+    return farRightSet.contains(s);
 }
 
 /**
@@ -1121,7 +1169,7 @@ public static boolean isWylieFarRight(String s) {
 * @return true if s is a possible superscribed letter in a Tibetan
 * syllable, false if not.  */
 public static boolean isWylieTop(String s) {
-	return topSet.contains(s);
+    return topSet.contains(s);
 }
 
 /**
@@ -1134,10 +1182,10 @@ public static boolean isWylieTop(String s) {
 * @see TibetanKeyboard
 */
 public static String getWylieForChar(String s) {
-	if (currentKeyboardIsExtendedWylie())
-		return s;
+    if (currentKeyboardIsExtendedWylie())
+        return s;
 
-	return keyboard.getWylieForChar(s);
+    return keyboard.getWylieForChar(s);
 }
 
     /** Returns true iff the currently active keyboard is the
@@ -1163,10 +1211,10 @@ public static String getWylieForChar(String s) {
 * @see TibetanKeyboard
 */
 public static String getWylieForPunc(String s) {
-	if (currentKeyboardIsExtendedWylie())
-		return s;
+    if (currentKeyboardIsExtendedWylie())
+        return s;
 
-	return keyboard.getWylieForPunc(s);
+    return keyboard.getWylieForPunc(s);
 }
 
 /**
@@ -1179,10 +1227,10 @@ public static String getWylieForPunc(String s) {
 * @see TibetanKeyboard
 */
 public static String getWylieForVowel(String s) {
-	if (currentKeyboardIsExtendedWylie())
-		return s;
+    if (currentKeyboardIsExtendedWylie())
+        return s;
 
-	return keyboard.getWylieForVowel(s);
+    return keyboard.getWylieForVowel(s);
 }
 
 /**
@@ -1198,12 +1246,12 @@ public static String getWylieForVowel(String s) {
 * @see DuffCode
 * @see TibTextUtils#getVowel(List,DuffCode,DuffCode,String) */
 public static DuffCode getVowel(String hashKey, int vowel) {
-	DuffCode[] dc = (DuffCode[])tibHash.get(hashKey);
-	
-	if (null == dc)
-		return null;
+    DuffCode[] dc = (DuffCode[])tibHash.get(hashKey);
+    
+    if (null == dc)
+        return null;
 
-	return dc[vowel]; //either a vowel or null
+    return dc[vowel]; //either a vowel or null
 }
 
 /**
@@ -1214,10 +1262,10 @@ public static DuffCode getVowel(String hashKey, int vowel) {
 * hashKey, false if not
 */
 public static boolean hasGlyph(String hashKey) {
-	if (tibHash.get(hashKey)==null)
-		return false;
-	else
-		return true;
+    if (tibHash.get(hashKey)==null)
+        return false;
+    else
+        return true;
 }
 
 /** Returns the Unicode correspondence for the Wylie wylie, which must
@@ -1233,7 +1281,7 @@ public static String getUnicodeForWylieForGlyph(String wylie) {
 * Returns true if and only if hashKey is a known hash key from tibwn.ini.
 */
 public static boolean isKnownHashKey(String hashKey) {
-	DuffCode[] dc = (DuffCode[])tibHash.get(hashKey);
+    DuffCode[] dc = (DuffCode[])tibHash.get(hashKey);
     return (null != dc);
 }
 
@@ -1246,10 +1294,10 @@ public static boolean isKnownHashKey(String hashKey) {
 * @see DuffCode
 */
 public static DuffCode getGlyph(String hashKey) {
-	DuffCode[] dc = (DuffCode[])tibHash.get(hashKey);
+    DuffCode[] dc = (DuffCode[])tibHash.get(hashKey);
     if (null == dc)
         throw new Error("Hash key " + hashKey + " not found; it is likely that you misconfigured tibwn.ini such that, say, M is expected (i.e., it is listed as, e.g. punctuation), but no 'M~...' line appears.");
-	return dc[TMW];
+    return dc[TMW];
 }
 
 /**
@@ -1261,11 +1309,11 @@ public static DuffCode getGlyph(String hashKey) {
 * @see DuffCode
 */
 public static DuffCode getHalfHeightGlyph(String hashKey) {
-	DuffCode[] dc = (DuffCode[])tibHash.get(hashKey);
-	if (dc == null)
-		return null;
+    DuffCode[] dc = (DuffCode[])tibHash.get(hashKey);
+    if (dc == null)
+        return null;
 
-	return dc[REDUCED_C];
+    return dc[REDUCED_C];
 }
 
 private static final DuffCode TMW_cr = new DuffCode(1, '\r');
@@ -1332,7 +1380,7 @@ public static DuffCode mapTMtoTMW(int font, int ordinal, int suggestedFont) {
     if ((0 != suggestedFont) && (32 == ordinal || 45 == ordinal)) {
         return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it wastes heap
     }
-	return TMtoTMW[font][ordinal-32];
+    return TMtoTMW[font][ordinal-32];
 }
 
 private static final DuffCode TM_cr = new DuffCode(1, '\r');
@@ -1391,7 +1439,7 @@ public static DuffCode mapTMWtoTM(int font, int ordinal, int suggestedFont) {
         return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it wastes heap
     }
     DuffCode ans = TMWtoTM[font][ordinal-32];
-	return ans;
+    return ans;
 }
 
 /** Tests the TMW-&gt;TM and TM-&gt;TMW mappings. */
@@ -1616,6 +1664,115 @@ private static final String Unicode_lf = "\n";
 private static final String Unicode_tab = "\t";
 
 
+    private static final DuffCode[] tmwFor0F00
+        = new DuffCode[] { new DuffCode(1, (char)63), new DuffCode(8, (char)102) };
+    private static final DuffCode[] tmwFor0F02
+        = new DuffCode[] { new DuffCode(1, (char)56), new DuffCode(1, (char)118), new DuffCode(8, (char)95), new DuffCode(8, (char)92) };
+    private static final DuffCode[] tmwFor0F03
+        = new DuffCode[] { new DuffCode(1, (char)56), new DuffCode(1, (char)118), new DuffCode(8, (char)95), new DuffCode(1, (char)105) };
+    private static final DuffCode[] tmwFor0F0E
+        = new DuffCode[] { new DuffCode(1, (char)107), new DuffCode(1, (char)107) };
+    // for 0F40, use the full-height, not the reduced-height, form
+    private static final DuffCode[] tmwFor0F40
+        = new DuffCode[] { new DuffCode(1, (char)92) };
+    private static final DuffCode[] tmwFor0F42
+        = new DuffCode[] { new DuffCode(1, (char)93) };
+    private static final DuffCode[] tmwFor0F49
+        = new DuffCode[] { new DuffCode(1, (char)94) };
+    private static final DuffCode[] tmwFor0F4F
+        = new DuffCode[] { new DuffCode(1, (char)95) };
+    private static final DuffCode[] tmwFor0F51
+        = new DuffCode[] { new DuffCode(1, (char)96) };
+    private static final DuffCode[] tmwFor0F53
+        = new DuffCode[] { new DuffCode(1, (char)97) };
+    private static final DuffCode[] tmwFor0F5E
+        = new DuffCode[] { new DuffCode(1, (char)98) };
+    private static final DuffCode[] tmwFor0F62
+        = new DuffCode[] { new DuffCode(8, (char)66) }; // not the full-form, use \u0F6A for that...
+    private static final DuffCode[] tmwFor0F64
+        = new DuffCode[] { new DuffCode(1, (char)99) };
+    private static final DuffCode[] tmwFor0F67
+        = new DuffCode[] { new DuffCode(1, (char)100) };
+    private static final DuffCode[] tmwFor0F6A
+        = new DuffCode[] { new DuffCode(1, (char)58) };
+    private static final DuffCode[] tmwFor0F73
+        = new DuffCode[] { new DuffCode(4, (char)106), new DuffCode(1, (char)109) };
+    private static final DuffCode[] tmwFor0F76
+        = new DuffCode[] { new DuffCode(8, (char)71), new DuffCode(8, (char)87) };
+    private static final DuffCode[] tmwFor0F77
+        = new DuffCode[] { new DuffCode(8, (char)71), new DuffCode(4, (char)106), new DuffCode(8, (char)87) };
+    private static final DuffCode[] tmwFor0F78
+        = new DuffCode[] { new DuffCode(10, (char)105), new DuffCode(8, (char)87) };
+    private static final DuffCode[] tmwFor0F79
+        = new DuffCode[] { new DuffCode(10, (char)105), new DuffCode(4, (char)106), new DuffCode(8, (char)87) };
+    private static final DuffCode[] tmwFor0F7E
+        = new DuffCode[] { new DuffCode(8, (char)91) }; // the one that lines up better -- i.e., not (8, (char)90)
+    private static final DuffCode[] tmwFor0F81
+        = new DuffCode[] { new DuffCode(4, (char)106), new DuffCode(8, (char)87) };
+
+    /** Returns an array of one, two, three, or four DuffCodes that
+        together represent the Tibetan Unicode character <i>ch</i>.
+        Returns null if there is no mapping for <i>ch</i>.  For
+        certain codepoints, multiple TMW glyphs are appropriate, and
+        we return an arbitrary one. */
+    public static DuffCode[] mapUnicodeToTMW(char ch) {
+        // FIXME WARN WHENEVER AN ESCAPE IS USED FOR: f71, f72, f73, f74, f75, f76, f77, f78, f79, f7a, f7c, f81
+        
+        // For U+0F71, U+0F72, U+0F74, U+0F75, U+0F7A, and U+0F7C,
+        // you'll get one of the possible TMW glyphs, maybe not the
+        // one that is most beautiful.
+
+        if ('\u0F00' == ch) {
+            return tmwFor0F00;
+        } else if ('\u0F02' == ch) {
+            return tmwFor0F02;
+        } else if ('\u0F03' == ch) {
+            return tmwFor0F03;
+        } else if ('\u0F0E' == ch) {
+            return tmwFor0F0E;
+        } else if ('\u0F40' == ch) {
+            return tmwFor0F40;
+        } else if ('\u0F42' == ch) {
+            return tmwFor0F42;
+        } else if ('\u0F49' == ch) {
+            return tmwFor0F49;
+        } else if ('\u0F4F' == ch) {
+            return tmwFor0F4F;
+        } else if ('\u0F51' == ch) {
+            return tmwFor0F51;
+        } else if ('\u0F53' == ch) {
+            return tmwFor0F53;
+        } else if ('\u0F5E' == ch) {
+            return tmwFor0F5E;
+        } else if ('\u0F62' == ch) {
+            return tmwFor0F62;
+        } else if ('\u0F64' == ch) {
+            return tmwFor0F64;
+        } else if ('\u0F67' == ch) {
+            return tmwFor0F67;
+        } else if ('\u0F6A' == ch) {
+            return tmwFor0F6A;
+        } else if ('\u0F73' == ch) {
+            return tmwFor0F73;
+        } else if ('\u0F76' == ch) {
+            return tmwFor0F76;
+        } else if ('\u0F77' == ch) {
+            return tmwFor0F77;
+        } else if ('\u0F78' == ch) {
+            return tmwFor0F78;
+        } else if ('\u0F79' == ch) {
+            return tmwFor0F79;
+        } else if ('\u0F7E' == ch) {
+            return tmwFor0F7E;
+        } else if ('\u0F81' == ch) {
+            return tmwFor0F81;
+        } else {
+            DuffCode[] x = UnicodeToTMW[ch - '\u0F00'];
+            if (null == x[0]) return null;
+            return x;
+        }
+    }
+
 /** Returns the sequence of Unicode corresponding to the given
     TibetanMachineWeb font
     (0=TibetanMachineWeb,1=TibetanMachineWeb1,...) and
@@ -1657,11 +1814,11 @@ public static String mapTMWtoUnicode(int font, int ordinal) {
 * of the TibetanMachine fonts, otherwise 0 */
 public static int getTMFontNumber(String name) {
     String internedName = name.intern();
-	for (int i=1; i<tmFontNames.length; i++) {
-		if (internedName == tmFontNames[i])
-			return i;
-	}
-	return 0;
+    for (int i=1; i<tmFontNames.length; i++) {
+        if (internedName == tmFontNames[i])
+            return i;
+    }
+    return 0;
 }
 
 /**
@@ -1672,12 +1829,12 @@ public static int getTMFontNumber(String name) {
 */
 public static int getTMWFontNumber(String name) {
     String internedName = name.intern();
-	for (int i=1; i<tmwFontNames.length; i++) {
+    for (int i=1; i<tmwFontNames.length; i++) {
         // Thanks to interning, we can use == rather than .equals().
-		if (internedName == tmwFontNames[i])
-			return i;
-	}
-	return 0;
+        if (internedName == tmwFontNames[i])
+            return i;
+    }
+    return 0;
 }
 
 /**
@@ -1688,8 +1845,8 @@ public static int getTMWFontNumber(String name) {
 * see {@link #getGlyph(String)} to learn about hash keys.
 */
 public static String getHashKeyForGlyph(int font, int code) {
-	code = code - 32;
-	return toHashKey[font][code];
+    code = code - 32;
+    return toHashKey[font][code];
 }
 
 /**
@@ -1700,10 +1857,10 @@ public static String getHashKeyForGlyph(int font, int code) {
 * @return the hashKey corresponding to the character at dc; see {@link
 * #getGlyph(String)} to learn about hash keys. */
 public static String getHashKeyForGlyph(DuffCode dc) {
-	int font = dc.getFontNum();
-	int code = dc.getCharNum()-32;
+    int font = dc.getFontNum();
+    int code = dc.getCharNum()-32;
         if (code < 0) return null;
-	return toHashKey[font][code];
+    return toHashKey[font][code];
 }
 
 /**
@@ -1718,19 +1875,19 @@ public static String getHashKeyForGlyph(DuffCode dc) {
 * @return the Wylie value of that hash key
 */
 public static String wylieForGlyph(String hashKey) {
-	if (hashKey.indexOf(WYLIE_SANSKRIT_STACKING_KEY) > -1)
-		return hashKey; //because '+' remains part of Extended Wylie for Sanskrit stacks
+    if (hashKey.indexOf(WYLIE_SANSKRIT_STACKING_KEY) > -1)
+        return hashKey; //because '+' remains part of Extended Wylie for Sanskrit stacks
 
-	if (hashKey.charAt(0) == '-')
-		return hashKey; //because must be '-i' or '-I' vowels
+    if (hashKey.charAt(0) == '-')
+        return hashKey; //because must be '-i' or '-I' vowels
 
-	StringTokenizer st = new StringTokenizer(hashKey, "-");
-	StringBuffer sb = new StringBuffer();
+    StringTokenizer st = new StringTokenizer(hashKey, "-");
+    StringBuffer sb = new StringBuffer();
 
-	while (st.hasMoreTokens())
-		sb.append(st.nextToken());
+    while (st.hasMoreTokens())
+        sb.append(st.nextToken());
 
-	return sb.toString();
+    return sb.toString();
 }
 
     // DLC DOC
@@ -1776,12 +1933,12 @@ private static String getTMWToACIPErrorString(DuffCode dc) {
 */
     public static String getWylieForGlyph(int font, int code,
                                           boolean noSuchWylie[]) {
-	String hashKey = getHashKeyForGlyph(font, code);
+    String hashKey = getHashKeyForGlyph(font, code);
     if (hashKey == null) {
         noSuchWylie[0] = true;
         return getTMWToWylieErrorString(new DuffCode(font, (char)code));
     }
-	return wylieForGlyph(hashKey);
+    return wylieForGlyph(hashKey);
 }
 
 /**
@@ -1794,12 +1951,12 @@ private static String getTMWToACIPErrorString(DuffCode dc) {
 * @return the Wylie value corresponding to the
 * glyph denoted by dc */
 public static String getWylieForGlyph(DuffCode dc, boolean noSuchWylie[]) {
-	String hashKey = getHashKeyForGlyph(dc);
+    String hashKey = getHashKeyForGlyph(dc);
     if (hashKey == null) {
         noSuchWylie[0] = true;
         return getTMWToWylieErrorString(dc);
     }
-	return wylieForGlyph(hashKey);
+    return wylieForGlyph(hashKey);
 }
 
 // DLC DOC
@@ -1837,11 +1994,11 @@ public static String getACIPForGlyph(DuffCode dc, boolean noSuchACIP[]) {
 * false if not
 */
 public static boolean isSanskritStack(int font, int code) {
-	String val = toHashKey[font][code];
-	if (val.indexOf(WYLIE_SANSKRIT_STACKING_KEY) == -1)
-		return false;
-	else
-		return true;
+    String val = toHashKey[font][code];
+    if (val.indexOf(WYLIE_SANSKRIT_STACKING_KEY) == -1)
+        return false;
+    else
+        return true;
 }
 
 /**
@@ -1851,13 +2008,13 @@ public static boolean isSanskritStack(int font, int code) {
 * false if not
 */
 public static boolean isSanskritStack(DuffCode dc) {
-	int font = dc.getFontNum();
-	int code = dc.getCharNum()-32;
+    int font = dc.getFontNum();
+    int code = dc.getCharNum()-32;
 
-	if (isSanskritStack(font, code))
-		return true;
-	else
-		return false;
+    if (isSanskritStack(font, code))
+        return true;
+    else
+        return false;
 }
 
 /**
@@ -1868,11 +2025,11 @@ public static boolean isSanskritStack(DuffCode dc) {
 * false if not
 */
 public static boolean isStack(int font, int code) {
-	String val = toHashKey[font][code];
-	if (val.indexOf('-') < 1) //we allow '-i' and '-I' in as vowels
-		return false;
-	else
-		return true;
+    String val = toHashKey[font][code];
+    if (val.indexOf('-') < 1) //we allow '-i' and '-I' in as vowels
+        return false;
+    else
+        return true;
 }
 
 /**
@@ -1882,10 +2039,10 @@ public static boolean isStack(int font, int code) {
 * false if not
 */
 public static boolean isStack(DuffCode dc) {
-	int font = dc.getFontNum();
-	int code = dc.getCharNum()-32;
+    int font = dc.getFontNum();
+    int code = dc.getCharNum()-32;
 
-	return isStack(font, code);
+    return isStack(font, code);
 }
 
 /**
@@ -1895,7 +2052,7 @@ public static boolean isStack(DuffCode dc) {
 * DuffCode for that key
 */
 public static Map getTibHash() {
-	return tibHash;
+    return tibHash;
 }
 
 /**
@@ -1906,7 +2063,7 @@ public static Map getTibHash() {
 * such vowel glyph
 */
 public static Map getBinduMap() {
-	return binduMap;
+    return binduMap;
 }
 
 /**
@@ -1915,7 +2072,7 @@ public static Map getBinduMap() {
 * false if not
 * @see TibetanKeyboard */
 public static boolean hasDisambiguatingKey() {
-	return hasDisambiguatingKey;
+    return hasDisambiguatingKey;
 }
 
 /**
@@ -1925,7 +2082,7 @@ public static boolean hasDisambiguatingKey() {
 * @see TibetanKeyboard
 */
 public static char getDisambiguatingKey() {
-	return disambiguating_key;
+    return disambiguating_key;
 }
 
 /**
@@ -1934,7 +2091,7 @@ public static char getDisambiguatingKey() {
 * false if not
 * @see TibetanKeyboard */
 public static boolean hasSanskritStackingKey() {
-	return hasSanskritStackingKey;
+    return hasSanskritStackingKey;
 }
 
 /**
@@ -1943,7 +2100,7 @@ public static boolean hasSanskritStackingKey() {
 * false if not
 * @see TibetanKeyboard */
 public static boolean hasTibetanStackingKey() {
-	return hasTibetanStackingKey;
+    return hasTibetanStackingKey;
 }
 
 /**
@@ -1952,7 +2109,7 @@ public static boolean hasTibetanStackingKey() {
 * there is no stacking key
 * @see TibetanKeyboard */
 public static boolean isStackingMedial() {
-	return isStackingMedial;
+    return isStackingMedial;
 }
 
 /**
@@ -1962,7 +2119,7 @@ public static boolean isStackingMedial() {
 * @see TibetanKeyboard
 */
 public static char getStackingKey() {
-	return stacking_key;
+    return stacking_key;
 }
 
 /**
@@ -1972,7 +2129,7 @@ public static char getStackingKey() {
 * in Wylie)
 * @see TibetanKeyboard */
 public static boolean isAChenRequiredBeforeVowel() {
-	return isAChenRequiredBeforeVowel;
+    return isAChenRequiredBeforeVowel;
 }
 
 /**
@@ -1981,7 +2138,7 @@ public static boolean isAChenRequiredBeforeVowel() {
 * of stacking, false if not (as in Wylie)
 * @see TibetanKeyboard */
 public static boolean isAChungConsonant() {
-	return isAChungConsonant;
+    return isAChungConsonant;
 }
 
 /**
@@ -1991,7 +2148,7 @@ public static boolean isAChungConsonant() {
 * not
 * @see TibetanKeyboard */
 public static boolean hasAVowel() {
-	return hasAVowel;
+    return hasAVowel;
 }
 
 /**
@@ -2001,7 +2158,7 @@ public static boolean hasAVowel() {
 * @see TibetanKeyboard
 */
 public static String getAVowel() {
-	return aVowel;
+    return aVowel;
 }
 
 /**
@@ -2010,13 +2167,13 @@ public static String getAVowel() {
 * @return true if the glyph is a top-hanging (superscript) vowel (i,
 * u, e, o, ai, or ao) and false if not */
 public static boolean isTopVowel(DuffCode dc) {
-	String wylie
+    String wylie
         = getWylieForGlyph(dc,
                            TibTextUtils.weDoNotCareIfThereIsCorrespondingWylieOrNot);
-	if (top_vowels.contains(wylie))
-		return true;
+    if (top_vowels.contains(wylie))
+        return true;
 
-	return false;
+    return false;
 }
 
     /** Returns true if and only if ch, which is an ASCII character
