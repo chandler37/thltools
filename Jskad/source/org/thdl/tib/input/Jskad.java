@@ -1209,7 +1209,7 @@ public class Jskad extends JPanel implements DocumentListener {
         if (i < 0)
             rtf_fileName += ".rtf";
         else
-            rtf_fileName = fileName.substring(0, i) + ".rtf";
+            rtf_fileName = rtf_fileName.substring(0, i) + ".rtf";
 
         try {
             BufferedReader in = new BufferedReader(new FileReader(txt_fileChosen));
