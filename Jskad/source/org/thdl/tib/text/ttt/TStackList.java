@@ -214,7 +214,7 @@ class TStackList {
                 if (null != isLastStack) {
                     isLastStack[0] = (i + 1 == size());
                     if (!isLastStack[0]) {
-                        System.err.println("DLC NOW: But we now stack greedily! '7 and B5 cause trouble, though, e.g. " + this);
+                        throw new Error("But we now stack greedily!");
                     }
                 }
                 return true;

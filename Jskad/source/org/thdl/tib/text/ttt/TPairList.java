@@ -348,7 +348,7 @@ class TPairList {
         // this starts at 0.
         int stackStart = (get(0).endsACIPStack()) ? 1 : 0;
 
-        int numeric = 0; // 1 means surely, 0 means we don't know yet, -1 means surely not
+        int numeric = get(0).isNumeric() ? 1 : (get(0).isDisambiguator() ? 0 : -1);
 
         for (int i = 1; i < sz; i++) {
             if (ddebug) System.out.println("i is " + i);
@@ -363,10 +363,10 @@ class TPairList {
                     return null; // you can't mix numbers and letters.
                 else if (0 == numeric)
                     numeric = 1;
-            } else {
+            } else if (!p.isDisambiguator()) {
                 if (numeric == 1)
                     return null; // you can't mix numbers and letters.
-                else if (0 == numeric && !p.isDisambiguator())
+                else if (0 == numeric)
                     numeric = -1;
             }
 
