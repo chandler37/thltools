@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE application  PUBLIC
+  "-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+  "http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<application name="Roster" engine-class="org.thdl.roster.RosterEngine">
+
+<property name="org.apache.tapestry.visit-class">org.thdl.roster.Visit</property>
+<property name="org.apache.tapestry.global-class">org.thdl.roster.Global</property>
+<property name="org.apache.tapestry.disable-caching">true</property>
+<!--front pages-->
+<page name="Home" specification-path="/org/thdl/roster/pages/Home.page"/>
+<page name="Search" specification-path="/org/thdl/roster/pages/Search.page"/>
+<page name="SearchResults" specification-path="/org/thdl/roster/pages/SearchResults.page"/>
+<page name="People" specification-path="/org/thdl/roster/pages/Members.page"/>
+<page name="Projects" specification-path="/org/thdl/roster/pages/Members.page"/>
+<page name="Organizations" specification-path="/org/thdl/roster/pages/Members.page"/>
+<page name="Announcements" specification-path="/org/thdl/roster/pages/Home.page"/>
+<page name="Login" specification-path="/org/thdl/roster/pages/Login.page"/>
+<page name="Admin" specification-path="/org/thdl/roster/pages/Admin.page"/>
+<page name="Test" specification-path="/org/thdl/roster/pages/test/Test.page"/>
+<page name="Test2" specification-path="/org/thdl/roster/pages/test/Test2.page"/>
+
+<!--display pages-->
+<page name="Person" specification-path="/org/thdl/roster/pages/Member.page"/>
+<page name="Project" specification-path="/org/thdl/roster/pages/Member.page"/>
+<page name="Organization" specification-path="/org/thdl/roster/pages/Member.page"/>  
+
+<!--forms pages-->
+<page name="Contact" specification-path="/org/thdl/roster/pages/forms/ContactInfo.page"/>
+<page name="Background" specification-path="/org/thdl/roster/pages/forms/MemberData.page"/>
+<page name="Activities" specification-path="/org/thdl/roster/pages/forms/ResearchInterests.page"/>
+<page name="Works" specification-path="/org/thdl/roster/pages/forms/Publications.page"/>
+<page name="Uploads" specification-path="/org/thdl/roster/pages/forms/Uploads.page"/>
+
+<!--display components-->
+<component-type type="Border" specification-path="/org/thdl/roster/components/Border.jwc"/>
+<component-type type="PersonDisplay" specification-path="/org/thdl/roster/components/PersonDisplay.jwc"/>
+<component-type type="AddressDisplay" specification-path="/org/thdl/roster/components/AddressDisplay.jwc"/>
+<component-type type="CountryDisplay" specification-path="/org/thdl/roster/components/CountryDisplay.jwc"/>
+<component-type type="PhoneDisplay" specification-path="/org/thdl/roster/components/PhoneDisplay.jwc"/>
+<component-type type="MemberTypeDisplay" specification-path="/org/thdl/roster/components/MemberTypeDisplay.jwc"/>
+<component-type type="OrganizationDisplay" specification-path="/org/thdl/roster/components/OrganizationDisplay.jwc"/>
+<component-type type="ProjectDisplay" specification-path="/org/thdl/roster/components/ProjectDisplay.jwc"/>
+<component-type type="DisciplineDisplay" specification-path="/org/thdl/roster/components/DisciplineDisplay.jwc"/>
+<component-type type="LanguageDisplay" specification-path="/org/thdl/roster/components/LanguageDisplay.jwc"/>
+<component-type type="CulturalAreaDisplay" specification-path="/org/thdl/roster/components/CulturalAreaDisplay.jwc"/>
+<component-type type="DateFormatter" specification-path="/org/thdl/roster/components/DateFormatter.jwc"/>
+<component-type type="DocumentDisplay" specification-path="/org/thdl/roster/components/DocumentDisplay.jwc"/>
+<component-type type="Century" specification-path="/org/thdl/roster/components/Century.jwc"/>
+<component-type type="ConditionalInsert" specification-path="/org/thdl/roster/components/ConditionalInsert.jwc"/>
+<component-type type="AbbreviatedInsert" specification-path="/org/thdl/roster/components/AbbreviatedInsert.jwc"/>
+
+<!--forms components-->
+<component-type type="PersonFields" specification-path="/org/thdl/roster/components/forms/PersonFields.jwc"/>
+<component-type type="OrganizationFields" specification-path="/org/thdl/roster/components/forms/OrganizationFields.jwc"/>
+<component-type type="ProjectFields" specification-path="/org/thdl/roster/components/forms/ProjectFields.jwc"/>
+<component-type type="AddressFields" specification-path="/org/thdl/roster/components/forms/AddressFields.jwc"/>
+<component-type type="PhoneFields" specification-path="/org/thdl/roster/components/forms/PhoneFields.jwc"/>
+<component-type type="CountryFields" specification-path="/org/thdl/roster/components/forms/CountryFields.jwc"/>
+<component-type type="WizardTabs" specification-path="/org/thdl/roster/components/forms/WizardTabs.jwc"/>
+
+<!--libraries-->
+<library id="contrib" specification-path="/org/apache/tapestry/contrib/Contrib.library"/>
+
+</application>

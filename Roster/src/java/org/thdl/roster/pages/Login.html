@@ -1,0 +1,81 @@
+<span jwcid="border">
+
+<div jwcid="@Conditional" condition="ognl: ! newUser">
+
+<div id="loginForm"><!--login form-->
+	<h2>Login</h2>
+	<form jwcid="loginForm">
+	<p>
+	<span class="warning">If you have never before registered to use a THDL
+	resource  and  therefore lack a THDL user name, please <a jwcid="register">click here</a> to
+	obtain  one.  If  you are unsure what a THDL user name is or why you
+	need it, please read the section below, "Why do I need a THDL username?".</span>
+	</p>
+	
+		<p>Enter your THDL username:  <input jwcid="loginField" size="20"/>
+		(or your e-mail address). <br />
+		Enter your THDL password : <input jwcid="passwordField"  size="20" />
+		<input type="submit" value="Login" name="submit">
+		</p>
+	</form>
+</div>
+
+<div id="sendInfoForm"><!--send info form-->
+	<h2>Forgot Your Password</h2>
+	<form jwcid="sendInfoForm">
+		<p>Please contact <a href="mailto:travis.mccauley@virginia.edu?subject=Community Roster Login Request">travis.mccauley@virginia.edu</a> for login remiders until we activate the automated reminder feature below.</p>
+		<p>
+		Did you forget your login? Enter your email address and we'll send it to you.
+		<br />
+		Email: <input jwcid="sendEmail" size="50"/>
+		<input jwcid="sendInfoSubmit"/>
+		</p>
+	</form>
+</div>
+
+<h2>Why do I need a THDL username?</h2>
+<p>
+THDL offers a variety of resources such as the Community Roster, the
+Tibetan  Dictionary,  the  Audio-Video  database  and so forth which
+allow  general users to customize these resources to their needs, as
+well  as  collaborators from around the world to simultaneously work
+on building the resources. To faciliate use of THDL, we have created
+a  unified  THDL  login  ID  respository  that  can  be  utilized to
+personalize your use of THDL, as well as access your own information
+within  THDL.  Once  you  have created your own THDL ID, you can use
+that single ID to maintain your own resources and preferences within
+THDL.  If you have never before registered with THDL and lack an ID,
+then  you  will  need  to  first  register and obtain a personalized
+username/password for this purpose. For example, individuals wanting
+to  create a Community Roster entry for themselves will first need a
+THDL user name in order to create a roster entry. To create your own
+THDL ID, please <a jwcid="register2">click here</a>.
+</p>
+
+<h2>THDL Privacy Policy</h2>
+<p>
+We will never rent, lend, sell or otherwise distribute your e-mail address, street address or phone number to anyone. 
+The Community Roster <em>is</em> a publically accessible directory, however, so if you do not wish your 
+contact information to be made public, please do not include it in your entry.
+</p>
+</div>
+
+<div jwcid="@Conditional" condition="ognl:newUser">
+
+<div id="newUserForm"><!-- new user form -->
+	<h2>Register as a New User</h2>
+	<form jwcid="newUserForm" >
+		<p>Firstname: <input jwcid="firstname" size="40"/>  </p>
+		<p>Middlename: <input jwcid="middlename" size="38"/></p>
+		<p>Lastname:  <input jwcid="lastname" size="40"/></p>
+		<p>Email:  <input jwcid="email" size="43"/> </p>
+		<p>Username:  <input jwcid="newLogin" size="40"/></p>
+		<p>Password: <input jwcid="newPassword" size="40"/> </p>
+		<p>Repeat Password:  <input jwcid="newPasswordCopy" size="34"/> </p>
+		<p>Password Hint:  <input jwcid="newPasswordHint" size="36"/> </p>
+		<p><input type="submit" value="Proceed to Community Roster Entry Form"/></p>
+	</form>
+</div>
+</div>
+
+</span>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<page-specification class="org.thdl.roster.pages.Login">
+
+  <component id="border" type="Border">
+    <static-binding name="title">Roster Login Page</static-binding>
+    <binding name="pages" expression="engine.pageNames"/>
+  </component>
+
+  <component id="register" type="DirectLink">
+  	<binding name="listener" expression="listeners.registerNewUser"/>
+  	<binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+	</component>
+
+  <component id="register2" type="DirectLink">
+  	<binding name="listener" expression="listeners.registerNewUser"/>
+  	<binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+	</component>
+
+	<!-- login form -->
+
+  <component id="loginForm" type="Form">
+    <binding name="listener" expression="listeners.loginFormSubmit"/>
+    <binding name="stateful" expression="@java.lang.Boolean@TRUE"/>
+  </component>
+
+  <component id="loginField" type="TextField">
+    <binding name="value" expression="login"/>
+  </component>
+
+   <component id="passwordField" type="TextField">
+    <binding name="value" expression="password"/>
+    <binding name="hidden" expression="@java.lang.Boolean@TRUE"/>
+  </component>
+
+  <!-- send info form -->
+  
+  <component id="sendInfoForm" type="Form">
+    <binding name="listener" expression="listeners.sendInfoFormSubmit"/>
+    <binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+ 	<binding name="delegate" expression="beans.delegate"/>
+  </component>
+
+<component id="sendEmail" type="ValidField">
+	<binding name="value" expression="visit.thdlUser.email"/>
+	<binding name="validator" expression="beans.validEmail"/>
+	<binding name="displayName" expression='"Year Began"'/>
+	<binding name="type" expression='"String"'/>
+	<binding name="disabled" expression="@java.lang.Boolean@TRUE"/>
+</component>
+
+<component id="sendInfoSubmit" type="Submit">
+	<static-binding name="label">Send Login Information</static-binding>
+	<binding name="disabled" expression="@java.lang.Boolean@TRUE"/>
+</component>
+  <!-- new user form -->
+
+<component id="newUserForm" type="Form">
+	<binding name="listener" expression="listeners.newUserFormSubmit"/>
+	<binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="delegate" expression="beans.delegate"/>
+</component>
+
+<bean name="delegate" class="org.thdl.roster.pages.forms.RosterValidationDelegate"/>
+
+<bean name="validEmail" class="org.apache.tapestry.valid.EmailValidator">
+	<set-property name="clientScriptingEnabled" expression="true"/>
+	<set-property name="required" expression="true"/>
+</bean>
+
+<bean name="validName" class="org.apache.tapestry.valid.StringValidator">
+	<set-property name="clientScriptingEnabled" expression="true"/>
+	<set-property name="required" expression="true"/>
+	<set-property name="minimumLength" expression="2"/>
+</bean>	
+
+<component id="firstname" type="ValidField">
+	<binding name="value" expression="visit.thdlUser.firstname"/>
+	<binding name="validator" expression="beans.validName"/>
+	<binding name="displayName" expression='"Firstname"'/>
+	<binding name="type" expression='"String"'/>
+</component>
+
+<component id="middlename" type="TextField">
+	<binding name="value" expression="visit.thdlUser.middlename"/>
+</component>
+
+<component id="lastname" type="ValidField">
+	<binding name="value" expression="visit.thdlUser.lastname"/>
+	<binding name="validator" expression="beans.validName"/>
+	<binding name="displayName" expression='"Lastname"'/>
+	<binding name="type" expression='"String"'/>
+</component>
+
+<component id="email" type="ValidField">
+	<binding name="value" expression="visit.thdlUser.email"/>
+	<binding name="validator" expression="beans.validEmail"/>
+	<binding name="displayName" expression='"Email"'/>
+	<binding name="type" expression='"String"'/>
+</component>
+
+<component id="newLogin" type="TextField">
+	<binding name="value" expression="visit.thdlUser.username"/>
+</component>
+
+<component id="newPassword" type="TextField">
+	<binding name="value" expression="passwordCopy"/>
+	<binding name="hidden" expression="@java.lang.Boolean@TRUE"/>
+</component>
+
+<component id="newPasswordCopy" type="TextField">
+	<binding name="value" expression="password"/>
+	<binding name="hidden" expression="@java.lang.Boolean@TRUE"/>
+</component>
+
+<component id="newPasswordHint" type="TextField">
+	<binding name="value" expression="visit.thdlUser.passwordHint"/>
+</component>
+
+</page-specification>

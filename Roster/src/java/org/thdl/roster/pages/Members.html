@@ -1,0 +1,55 @@
+<span jwcid="border">
+
+<p>
+	<div jwcid="@Conditional" condition='ognl:pageName.equals( "People" )'>
+		<a jwcid="addPerson">Add a new Person</a>
+	</div>
+	<div jwcid="@Conditional" condition='ognl:pageName.equals( "Organizations" )'>
+		<a jwcid="addOrganization">Add a new Organization</a>
+	</div>
+	<div jwcid="@Conditional" condition='ognl:pageName.equals( "Projects" )'>
+		<a jwcid="addProject">Add a new Project</a>
+	</div>
+</p>
+
+<h1>Recent Entries</h1>
+
+<div jwcid="membersLoop">
+	
+<div jwcid="@Conditional" condition='ognl:member.memberData.name != null'>
+	<p>
+		<a jwcid="viewMember"><span jwcid="@Insert" value="ognl:member.memberData.name"/></a> 
+		
+		<div jwcid="@Conditional" condition='ognl:member.memberType.equals( "person" )'>
+			(<span jwcid="personTypes"/>) 
+		</div>
+		
+		<div jwcid="@Conditional" condition='ognl:member.memberType.equals( "organization" )'>
+			(<span jwcid="organizationTypes"/>) 
+		</div>
+		
+		<div jwcid="@Conditional" condition='ognl:member.memberType.equals( "project" )'>
+			(<span jwcid="projectTypes"/>) 
+		</div>
+		
+		<strong><span jwcid="country"/></strong> 
+		
+
+		<br/>
+		
+		<em><span jwcid="parentOrganization"/></em>
+		
+	</p>
+	
+	<blockquote>
+		<p>
+			<span jwcid = "overview"/>
+		</p>
+	</blockquote>
+				
+</div>
+
+</div>
+
+
+</span>

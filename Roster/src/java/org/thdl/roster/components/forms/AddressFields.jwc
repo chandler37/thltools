@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE component-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<component-specification class="org.thdl.roster.components.forms.AddressFields" allow-informal-parameters="no">
+
+<parameter name="addressBean" direction="in" type="org.thdl.roster.om.Address" required="yes"/>
+
+<component id="address" type="TextField">
+	<binding name="value" expression="addressBean.address"/>
+</component>
+
+<component id="city" type="TextField">
+	<binding name="value" expression="addressBean.city"/>
+</component>
+
+<component id="region" type="TextField">
+	<binding name="value" expression="addressBean.region"/>
+</component>
+
+<component id="zip" type="TextField">
+	<binding name="value" expression="addressBean.zip"/>
+</component>
+
+<component id="country" type="PropertySelection">
+	<binding name="value" expression="addressBean.countryId"/>
+	<binding name="model" expression="countryModel"/>
+</component>
+
+<!-- <component id="country" type="CountryFields">
+	<binding name="countryBean" expression="addressBean.country"/>
+</component> -->
+
+</component-specification>

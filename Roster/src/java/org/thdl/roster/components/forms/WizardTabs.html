@@ -1,0 +1,40 @@
+<div>
+<script type="text/javascript">
+function tabbedSubmit( next )
+{
+	function element( id )
+	{
+		if ( document.getElementById != null )
+		{
+			return document.getElementById( id );
+		}
+		if ( document.all != null )
+		{
+			return document.all[ id ];
+		}
+		if ( document.layers != null )
+		{
+			return document.layers[ id ];
+		}
+		return null;
+	}
+	document.forms[1].next.value = next;
+	if ( element( "continue" ).click != null )
+	{
+		element( "continue" ).click();
+	}
+	else
+	{
+		document.forms[1].submit();
+	}
+}	
+</script>
+	<ul id="wizard"> <!-- class="navigationTabs" -->
+		<li jwcid="tabLinks">
+			<a jwcid="genericLink"><span jwcid="label"/></a>
+		</li>
+	</ul>
+	<div id="tabbedBody">
+		<div jwcid="renderBody"/>
+	</div>
+</div><!--END wizard-->

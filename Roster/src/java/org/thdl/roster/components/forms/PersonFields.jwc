@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE component-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<component-specification class="org.thdl.roster.components.forms.PersonFields" allow-informal-parameters="no">
+
+<parameter name="personDataBean" direction="in" type="org.thdl.roster.om.PersonData" required="yes"/>
+
+<component id="firstname" type="TextField">
+	<binding name="value" expression="personDataBean.firstname"/>
+</component>
+
+<component id="middlename" type="TextField">
+	<binding name="value" expression="personDataBean.middlename"/>
+</component>
+
+<component id="lastname" type="TextField">
+	<binding name="value" expression="personDataBean.lastname"/>
+</component>
+
+<component id="bio" type="TextArea">
+	<binding name="value" expression="personDataBean.bio"/>
+</component>
+
+<component id="parentOrganization" type="TextArea">
+	<binding name="value" expression="personDataBean.parentOrganization"/>
+</component>
+
+<component id="history" type="TextArea">
+	<binding name="value" expression="personDataBean.history"/>
+</component>
+
+<component id="school" type="TextField">
+	<binding name="value" expression="personDataBean.school"/>
+</component>
+
+<component id="department" type="TextField">
+	<binding name="value" expression="personDataBean.department"/>
+</component>
+
+<component id="program" type="TextField">
+	<binding name="value" expression="personDataBean.program"/>
+</component>
+
+<component id="advisor" type="TextField">
+	<binding name="value" expression="personDataBean.advisor"/>
+</component>
+
+<component id="highestDegree" type="TextField">
+	<binding name="value" expression="personDataBean.highestDegree"/>
+</component>
+
+<component id="yearBegan" type="ValidField">
+	<binding name="value" expression="personDataBean.yearBegan"/>
+    <binding name="validator" expression="page.beans.validInteger"/>
+    <binding name="displayName" expression='"Year Began"'/>
+    <binding name="type" expression='"Integer"'/>
+</component>
+
+<component id="yearFinished" type="ValidField">
+	<binding name="value" expression="personDataBean.yearFinished"/>
+    <binding name="validator" expression="page.beans.validInteger"/>
+    <binding name="displayName" expression='"Year Finished"'/>
+    <binding name="type" expression='"Integer"'/>
+</component>
+
+<component id="otherBackgrounds" type="TextArea">
+	<binding name="value" expression="personDataBean.otherBackgrounds"/>
+</component>
+
+<component id="organization" type="TextField">
+	<binding name="value" expression="personDataBean.organization"/>
+</component>
+
+<component id="division" type="TextField">
+	<binding name="value" expression="personDataBean.division"/>
+</component>
+
+<component id="title" type="TextField">
+	<binding name="value" expression="personDataBean.title"/>
+</component>
+
+<component id="startDate" type="ValidField">
+	<binding name="value" expression="personDataBean.startDate"/>
+    <binding name="validator" expression="page.beans.validInteger"/>
+    <binding name="displayName" expression='"Start Date"'/>
+    <binding name="type" expression='"Integer"'/>
+</component>
+
+<component id="jobDescription" type="TextArea">
+	<binding name="value" expression="personDataBean.jobDescription"/>
+</component>
+
+<component id="collaborationInterests" type="TextArea">
+	<binding name="value" expression="personDataBean.collaborationInterests"/>
+</component>
+
+</component-specification>

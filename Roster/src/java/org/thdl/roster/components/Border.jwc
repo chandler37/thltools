@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE component-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<component-specification class="org.thdl.roster.components.Border" allow-informal-parameters="no">
+
+<parameter name="title" type="java.lang.String" required="yes"/>
+<parameter name="pages" type="java.lang.String[]" required="yes"/>
+
+<context-asset name="stylesheet" path="/roster.css"/>
+
+<component id="shell" type="Shell">
+	<binding name="title" expression="page.engine.specification.name"/>
+	<binding name="stylesheet" expression="assets.stylesheet"/>
+</component>
+
+<component id="body" type="Body"/>
+
+<component id="insertPageTitle" type="Insert">
+	<inherited-binding name="value" parameter-name="title"/>
+</component>
+
+<component id="ifMessage" type="Conditional">
+	<binding name="condition" expression="page.message != null"/>
+</component>
+
+<component id="message" type="InsertText">
+	<binding name="value" expression="page.message"/>
+	<!-- <binding name="raw" expression="@java.lang.Boolean@TRUE"/> -->
+</component>
+
+<component id="ifWarning" type="Conditional">
+	<binding name="condition" expression="page.warning != null"/>
+</component>
+
+<component id="warning" type="InsertText">
+	<binding name="value" expression="page.warning"/>
+<!-- 	<binding name="raw" expression="@java.lang.Boolean@TRUE"/> -->
+</component>
+
+<component id="topLevelPages" type="Foreach">
+	<inherited-binding name="source" parameter-name="pages"/>
+	<binding name="value" expression="pageName"/>
+</component>
+
+<component id="tab" type="Any">
+	<static-binding name="element">li</static-binding>
+	<binding name="class" expression="classAttribute"/>
+</component>
+
+<component id="link" type="PageLink">
+	<binding name="page" expression="pageName"/>
+	<binding name="disabled" expression="disablePageLink"/>
+</component>
+
+<component id="insertName" type="Insert">
+	<binding name="value" expression="pageName"/>
+</component>
+
+<component id="ifLoggedIn" type="Conditional">
+	<binding name="condition" expression="page.loggedIn"/>
+</component>
+ 
+ <component id="logoutLink" type="DirectLink">
+ 	<binding name="listener" expression="page.listeners.logout"/>
+	<binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+</component>
+
+<component id="renderBody" type="RenderBody"/>
+
+<!-- <component id="showInspector" type="ShowInspector"/> -->
+  
+</component-specification>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE component-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<component-specification class="org.thdl.roster.components.CountryDisplay" allow-informal-parameters="no">
+
+<parameter name="countryBean" direction="in" type="org.thdl.roster.om.Country" required="no"/>
+
+<component id="country" type="Insert">
+	<binding name="value" expression="countryBean.country"/>
+</component>
+
+</component-specification>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+	
+<page-specification class="org.thdl.roster.pages.Edit">
+  
+  <component id="insertDate" type="Insert">
+    <binding name="value" expression="currentDate"/>
+  </component>
+  
+  <component id="refresh" type="PageLink">
+    <static-binding name="page">Home</static-binding>
+  </component>
+  
+</page-specification>

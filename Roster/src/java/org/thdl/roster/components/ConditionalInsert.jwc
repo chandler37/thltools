@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE component-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<component-specification class="org.thdl.roster.components.ConditionalInsert" allow-informal-parameters="no">
+
+<parameter name="label" type="java.lang.String" required="yes"/>
+<parameter name="paragraph" type="java.lang.Boolean" required="yes"/>
+<parameter name="value" direction="in" type="java.lang.String" required="yes"/>
+
+<component id="ifDisplayWorthy" type="Conditional">
+	<binding name="condition" expression="displayWorthy"/>
+</component>
+
+<component id="label" type="Insert">
+	<inherited-binding name="value" parameter-name="label"/>
+</component>
+
+<component id="ifParagraph" type="Conditional">
+	<inherited-binding name="condition" parameter-name="paragraph"/>
+</component>
+
+<component id="value" type="InsertText">
+	<inherited-binding name="value" parameter-name="value"/>
+</component>
+
+</component-specification>

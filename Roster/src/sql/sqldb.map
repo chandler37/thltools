@@ -1,0 +1,4 @@
+#Sqlfile -> Database map
+#Wed May 14 19:01:31 EDT 2003
+roster-schema.sql=Roster
+id-table-schema.sql=Roster

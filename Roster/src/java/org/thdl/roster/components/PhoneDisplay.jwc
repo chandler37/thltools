@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE component-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<component-specification class="org.thdl.roster.components.PhoneDisplay" allow-informal-parameters="no">
+
+<parameter name="label" type="java.lang.String" required="yes"/>
+<parameter name="phoneBean" direction="in" type="org.thdl.roster.om.Phone" required="no"/>
+
+<component id="ifDisplayWorthy" type="Conditional">
+	<binding name="condition" expression="displayWorthy"/>
+</component>
+
+<component id="label" type="Insert">
+	<inherited-binding name="value" parameter-name="label"/>
+</component>
+
+<component id="countryCode" type="Insert">
+	<binding name="value" expression="phoneBean.countryCode"/>
+</component>
+
+<component id="areaCode" type="Insert">
+	<binding name="value" expression="phoneBean.areaCode"/>
+</component>
+
+<component id="number" type="Insert">
+	<binding name="value" expression="phoneBean.number"/>
+</component>
+
+</component-specification>

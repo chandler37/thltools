@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE component-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<component-specification class="org.thdl.roster.components.AbbreviatedInsert" allow-informal-parameters="no">
+
+<parameter name="characterCount" direction="in" type="java.lang.Integer" required="yes"/>
+<parameter name="value" direction="in" type="java.lang.String" required="yes"/>
+
+<component id="abbreviatedValue" type="InsertText">
+	<binding name="value" expression="abbreviatedValue"/>
+</component>
+
+<component id="ifAbbreviated" type="Conditional">
+	<binding name="condition" expression="abbreviated"/>
+</component>
+
+<component id="body" type="RenderBody"/>
+
+</component-specification>

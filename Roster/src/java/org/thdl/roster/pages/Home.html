@@ -1,0 +1,38 @@
+<span jwcid="border">
+	<form jwcid="searchForm">
+		<h2>Search</h2>
+		<p>
+			Find a Person, Organization, or Project by Name: <br/><input jwcid="name" size="32"/><!-- <br/>
+			Any text field contains: <input jwcid="anywhere"/><br/> -->
+			<input type="submit" value="Search"/>
+		</p>	
+	</form>
+
+		<h2>Create a New Roster Entry</h2>
+		<p>
+			<a jwcid="addPerson" class="prominent">Add a new Person</a><br/>
+			<a jwcid="addOrganization" class="prominent">Add a new Organization</a><br/>
+			<a jwcid="addProject" class="prominent">Add a new Project</a>
+		</p>
+		
+		<h2>Edit an Existing Entry</h2>
+			<span jwcid="@Conditional" condition="ognl: ! visit.authenticated">
+				<form jwcid="loginForm" style="border: solid 1px silver; width: 400px;">	
+						<p>Username:  <input jwcid="loginField" size="10"/>
+						Password : <input jwcid="passwordField"  size="10" /><br/>
+						<input type="submit" value="Login to edit your own entry/entries" name="submit"><br/>
+						<span class="inline-help">For login assistance, see main <a jwcid="@PageLink" page="Login">Login Page</a>.</span>
+						</p>
+				</form>
+			</span>
+			
+			<span jwcid="@Conditional" condition="ognl: visit.authenticated">
+				<h3>Your Entries</h3>
+				<ul>
+					<li jwcid="entries">
+						<span jwcid="memberName"/> <a jwcid="editLink">EDIT</a>
+					</li>
+				</ul>
+			</span>
+			
+</span>

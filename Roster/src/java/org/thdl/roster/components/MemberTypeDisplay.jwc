@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE component-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<component-specification class="org.thdl.roster.components.MemberTypeDisplay">
+
+<parameter name="member" property-name="member" direction="in" type="org.thdl.roster.om.Member" required="yes"/>
+
+<component id="memberTypes" type="Foreach">
+	<binding name="source" expression="memberTypeList"/>
+	<binding name="value" expression="memberType"/>
+	<binding name="index" expression="index"/>
+</component>
+
+<component id="memberType" type="Insert">
+	<binding name="value" expression="memberType"/>
+</component>
+
+</component-specification>

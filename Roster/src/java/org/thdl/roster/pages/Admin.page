@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<page-specification class="org.thdl.roster.pages.RosterPage">
+
+<component id="border" type="Border">
+	<static-binding name="title">Adminstration of Roster</static-binding>
+	<binding name="pages" expression="engine.pageNames"/>
+</component>
+
+<component id="restartLink" type="ServiceLink">
+	<static-binding name="service">restart</static-binding>
+</component>
+
+<component id="resetLink" type="ServiceLink">
+	<static-binding name="service">reset</static-binding>
+</component>
+<component id="testPage" type="PageLink">
+	<static-binding name="page">Test</static-binding>
+</component>
+
+</page-specification>

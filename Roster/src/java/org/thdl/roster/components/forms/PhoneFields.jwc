@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE component-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<component-specification class="org.thdl.roster.components.forms.PhoneFields" allow-informal-parameters="no">
+
+<parameter name="phoneBean" direction="in" type="org.thdl.roster.om.Phone" required="no"/>
+
+<component id="countryCode" type="ValidField">
+	<binding name="value" expression="phoneBean.countryCode"/>
+    <binding name="validator" expression="beans.validInteger"/>
+    <binding name="displayName" expression='"Country Code"'/>
+    <binding name="type" expression='"Integer"'/>
+</component>
+<component id="areaCode" type="ValidField">
+	<binding name="value" expression="phoneBean.areaCode"/>
+    <binding name="validator" expression="beans.validInteger"/>
+    <binding name="displayName" expression='"Area Code"'/>
+    <binding name="type" expression='"Integer"'/>
+</component>
+<component id="number" type="ValidField">
+	<binding name="value" expression="phoneBean.number"/>
+    <binding name="validator" expression="beans.validInteger"/>
+    <binding name="displayName" expression='"Phone Number"'/>
+    <binding name="type" expression='"Integer"'/>
+</component>
+
+<bean name="validInteger" class="org.apache.tapestry.valid.NumberValidator">
+	 <set-property name="clientScriptingEnabled" expression="true"/>
+	 <set-property name="required" expression="false"/>
+</bean>	
+
+</component-specification>

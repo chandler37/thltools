@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE component-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<component-specification class="org.thdl.roster.components.forms.OrganizationFields" allow-informal-parameters="no">
+
+<parameter name="organizationDataBean" direction="in" type="org.thdl.roster.om.OrganizationData" required="yes"/>
+
+
+	
+<component id="name" type="TextField">
+	<binding name="value" expression="organizationDataBean.name"/>
+</component>
+
+<component id="parentOrganization" type="TextArea">
+	<binding name="value" expression="organizationDataBean.parentOrganization"/>
+</component>
+
+<component id="people" type="TextArea">
+	<binding name="value" expression="organizationDataBean.people"/>
+</component>
+
+<component id="mailingList" type="TextArea">
+	<binding name="value" expression="organizationDataBean.mailingList"/>
+</component>
+
+<component id="description" type="TextArea">
+	<binding name="value" expression="organizationDataBean.description"/>
+</component>
+
+<component id="components" type="TextArea">
+	<binding name="value" expression="organizationDataBean.divisions"/>
+</component>
+
+<component id="history" type="TextArea">
+	<binding name="value" expression="organizationDataBean.history"/>
+</component>
+
+<component id="educationPrograms" type="TextArea">
+	<binding name="value" expression="organizationDataBean.educationPrograms"/>
+</component>
+
+<component id="resources" type="TextArea">
+	<binding name="value" expression="organizationDataBean.resources"/>
+</component>
+
+</component-specification>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<page-specification class="org.thdl.roster.pages.MembersPage">
+
+<component id="border" type="Border">
+	<static-binding name="title">Search Results</static-binding>
+	<binding name="pages" expression="engine.pageNames"/>
+</component>
+
+<component id="membersLoop" type="Foreach">
+	<binding name="source" expression="members"/>
+	<binding name="value" expression="member"/>
+</component>
+
+<component id="personTypes" type="MemberTypeDisplay">
+	<binding name="member" expression="member"/>
+</component>
+
+<component id="organizationTypes" type="MemberTypeDisplay">
+	<binding name="member" expression="member"/>
+</component>
+
+<component id="projectTypes" type="MemberTypeDisplay">
+	<binding name="member" expression="member"/>
+</component>
+
+<component id="overview" type="AbbreviatedInsert">
+	<binding name="value" expression="member.memberData.description"/>
+	<binding name="characterCount" expression="new java.lang.Integer( 220 )"/>
+</component>
+
+<component id="parentOrganization" type="Insert">
+	<binding name="value" expression="member.memberData.parentOrganization"/>
+</component>
+
+<component id="viewMember" type="DirectLink">
+	<binding name="parameters" expression="member.id"/>
+	<binding name="listener" expression="listeners.viewMember"/>
+	<binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+</component>
+
+<component id="readMore" type="DirectLink">
+	<binding name="parameters" expression="member.id"/>
+	<binding name="listener" expression="listeners.viewMember"/>
+	<binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+</component>
+
+<component id="editMember" type="DirectLink">
+	<binding name="parameters" expression="member.id"/>
+	<binding name="listener" expression="listeners.editMember"/>
+	<binding name="stateful" expression="@java.lang.Boolean@TRUE"/>
+</component>
+
+<component id="country" type="Insert">
+	<binding name="value" expression="member.contactInfo.address.country.country"/>
+</component>
+
+</page-specification>

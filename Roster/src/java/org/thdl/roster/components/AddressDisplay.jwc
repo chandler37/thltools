@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE component-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<component-specification class="org.thdl.roster.components.AddressDisplay" allow-informal-parameters="no">
+
+<parameter name="addressBean" direction="in" type="org.thdl.roster.om.Address" required="yes"/>
+
+<component id="street" type="ConditionalInsert">
+	<static-binding name="label">Street</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="addressBean.address"/>
+</component>
+
+<component id="city" type="ConditionalInsert">
+	<static-binding name="label">City</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="addressBean.city"/>
+</component>
+
+<component id="region" type="ConditionalInsert">
+	<static-binding name="label">Region</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="addressBean.region"/>
+</component>
+
+<component id="zip" type="ConditionalInsert">
+	<static-binding name="label">Postal Code</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="addressBean.zip"/>
+</component>
+
+</component-specification>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<page-specification class="org.thdl.roster.pages.forms.ContactInfoPage">
+ 
+<component id="border" type="Border">
+	<static-binding name="title">Contact Information</static-binding>
+	<binding name="pages" expression="engine.pageNames"/>
+</component>
+
+<component id="personWizardTabs" type="WizardTabs">
+	<binding name="pageNames" expression="engine.personWizardPages"/>
+</component>
+
+<component id="contactInfoForm" type="Form">
+	<binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="delegate" expression="beans.delegate"/>
+</component>
+
+<component id="contactName" type="TextField">
+	<binding name="value" expression="visit.member.contactInfo.contactName"/>
+</component>
+
+<component id="email" type="TextField">
+	<binding name="value" expression="visit.member.contactInfo.email"/>
+</component>
+
+<component id="website" type="TextField">
+	<binding name="value" expression="visit.member.contactInfo.website"/>
+</component>
+
+<component id="next" type="Hidden">
+	<binding name="value" expression="nextPage"/>
+	<binding name="encode" expression="@java.lang.Boolean@FALSE"/>
+</component>
+
+<component id="address" type="AddressFields">
+	<binding name="addressBean" expression="visit.member.contactInfo.address"/>
+</component>
+
+<component id="phone" type="PhoneFields">
+	<binding name="phoneBean" expression="visit.member.contactInfo.phoneRelatedByPhone"/>
+</component>
+
+<component id="fax" type="PhoneFields">
+	<binding name="phoneBean" expression="visit.member.contactInfo.phoneRelatedByFax"/>
+</component>
+
+<component id="continue" type="Submit">
+	<binding name="listener" expression="listeners.forward"/>
+	<static-binding name="label">Continue</static-binding>
+	<static-binding name="id">continue</static-binding>
+</component>
+
+<component id="finish" type="Submit">
+	<binding name="listener" expression="listeners.finish"/>
+	<static-binding name="label">Finish</static-binding>
+	<binding name="disabled" expression="visit.member.contactInfo.isNew()"/>
+	<static-binding name="id">finish</static-binding>
+</component>
+
+<bean name="delegate" class="org.thdl.roster.pages.forms.RosterValidationDelegate"/>
+
+</page-specification>

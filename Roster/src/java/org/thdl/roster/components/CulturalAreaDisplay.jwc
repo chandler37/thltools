@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE component-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<component-specification class="org.thdl.roster.components.CulturalAreaDisplay">
+
+<parameter name="researchInterestBean" property-name="researchInterest" direction="in" type="org.thdl.roster.om.ResearchInterest" required="yes"/>
+
+<component id="culturalAreas" type="Foreach">
+	<binding name="source" expression="culturalAreaList"/>
+	<binding name="value" expression="culturalArea"/>
+	<binding name="index" expression="index"/>
+</component>
+
+<component id="culturalArea" type="Insert">
+	<binding name="value" expression="culturalArea"/>
+</component>
+
+</component-specification>

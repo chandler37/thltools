@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE component-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<component-specification class="org.thdl.roster.components.DisciplineDisplay">
+
+<parameter name="researchInterestBean" property-name="researchInterest" direction="in" type="org.thdl.roster.om.ResearchInterest" required="yes"/>
+
+<component id="disciplines" type="Foreach">
+	<binding name="source" expression="disciplineList"/>
+	<binding name="value" expression="discipline"/>
+	<binding name="index" expression="index"/>
+</component>
+
+<!-- <component id="comma" type="Conditional">
+	<binding name="condition" expression="disciplineLoop.index > 0"/>
+</component> -->
+
+<component id="discipline" type="Insert">
+	<binding name="value" expression="discipline"/>
+</component>
+
+</component-specification>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE component-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<component-specification class="org.thdl.roster.components.forms.WizardTabs" allow-informal-parameters="no">
+
+<parameter name="pageNames"  type="java.lang.String[]" required="yes"/>
+
+<component id="tabLinks" type="Foreach">
+	<inherited-binding name="source" parameter-name="pageNames"/>
+	<binding name="value" expression="pageName"/>
+	<static-binding name="element">li</static-binding>
+	<binding name="class" expression="classAttribute"/>
+</component>
+
+<component id="link" type="PageLink">
+	<binding name="page" expression="pageName"/>
+	<binding name="disabled" expression="disablePageLink"/>
+</component>
+
+<component id="directLink" type="DirectLink">
+	<binding name="parameters" expression="pageName"/>
+	<binding name="listener" expression="page.listeners.forward"/>
+	<binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="disabled" expression="disablePageLink"/>
+</component>
+
+<component id="genericLink" type="GenericLink">
+	<binding name="href" expression="href"/>
+	<binding name="disabled" expression="disablePageLink"/>
+</component>
+
+<component id="label" type="Insert">
+	<binding name="value" expression="pageName"/>
+</component>
+
+<component id="renderBody" type="RenderBody"/>
+
+</component-specification>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<page-specification class="org.thdl.roster.pages.forms.Uploads">
+ 
+<component id="border" type="Border">
+ <static-binding name="title">Uploads</static-binding>
+ <binding name="pages" expression="engine.pageNames"/>
+</component>
+
+<component id="personWizardTabs" type="WizardTabs">
+	<binding name="pageNames" expression="engine.personWizardPages"/>
+</component>
+
+<component id="uploadsForm" type="Form">
+ <binding name="stateful" expression="@java.lang.Boolean@TRUE"/>
+</component>
+
+<component id="documentTypes" type="PropertySelection">
+	<binding name="model" expression="documentTypeModel"/>
+	<binding name="value" expression="documentType"/>
+</component>
+
+<!-- <component id="documentDisplay" type="DocumentDisplay">
+	<binding name="member" expression="visit.member"/>
+</component> -->
+
+<component id="document" type="Upload">
+	<binding name="file" expression="file"/>
+</component>
+
+<component id="next" type="Hidden">
+	<binding name="value" expression="nextPage"/>
+	<binding name="encode" expression="@java.lang.Boolean@FALSE"/>
+</component>
+
+<component id="token" type="Hidden">
+	<binding name="value" expression="token"/>
+	<binding name="encode" expression="@java.lang.Boolean@FALSE"/>
+</component>
+
+<context-asset name="transparentGif" path="/images/transparent.gif"/>
+
+<component id="continue" type="Submit">
+	<binding name="listener" expression="listeners.forward"/>
+	<!-- <binding name="image" expression="assets.transparentGif"/> -->
+	<static-binding name="id">continue</static-binding>
+	<static-binding name="style">display: none;</static-binding>
+</component>
+
+<component id="moreUploads" type="Submit">
+	<binding name="listener" expression="listeners.processForm"/>
+	<static-binding name="label">Upload</static-binding>
+	<binding name="disabled" expression="@java.lang.Boolean@FALSE"/>
+	<static-binding name="id">moreUploads</static-binding>
+</component>
+
+<component id="finish" type="Submit">
+	<binding name="listener" expression="listeners.finish"/>
+	<static-binding name="label">Finish</static-binding>
+	<binding name="disabled" expression="@java.lang.Boolean@FALSE"/>
+	<static-binding name="id">finish</static-binding>
+</component>
+
+<component id="deleteDocuments" type="Foreach">
+	<binding name="source" expression="visit.member.documents"/>
+	<binding name="value" expression="document"/>
+	<static-binding name="element">li</static-binding>
+</component>
+
+<component id="documentName" type="Insert">
+	<binding name="value" expression="document.filename"/>
+</component>
+
+<component id="documentDeleteLink" type="DirectLink">
+	<binding name="parameters" expression="document.id"/>
+	<binding name="listener" expression="listeners.deleteFile"/>
+	<binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+</component>
+
+</page-specification>

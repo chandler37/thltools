@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE component-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<component-specification class="org.thdl.roster.components.DateFormatter" allow-informal-parameters="no">
+
+<parameter name="date" direction="in" type="java.util.Date" required="no"/>
+
+<component id="date" type="Insert">
+	<binding name="value" expression="formattedDate"/>
+</component>
+
+</component-specification>

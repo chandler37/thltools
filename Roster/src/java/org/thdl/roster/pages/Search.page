@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<page-specification class="org.thdl.roster.pages.Search">
+
+<component id="name" type="TextField">
+	<binding name="value" expression="rosterQuery.name"/>
+</component>
+
+<component id="organizationalBase" type="TextField">
+	<binding name="value" expression="rosterQuery.organizationalBase"/>
+</component>
+
+<component id="anywhere" type="TextField">
+	<binding name="value" expression="rosterQuery.anywhere"/>
+</component>
+
+<component id="border" type="Border">
+	<static-binding name="title">Search</static-binding>
+	<binding name="pages" expression="engine.pageNames"/>
+</component>
+  
+<component id="searchForm" type="Form">
+	<binding name="listener" expression="listeners.processForm"/>
+	<binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+</component>
+
+<!-- <component id="memberTypes" type="Foreach">
+	<binding name="source" expression="rosterQuery.memberTypes.keySet()"/>
+	<binding name="value" expression="rosterQuery.memberType"/>
+</component>
+
+<component id="memberType" type="Checkbox">
+  	<binding name="selected" expression="rosterQuery.selectedMemberType"/>
+</component>
+
+<component id="memberTypeLabel" type="Insert">
+  	<binding name="value" expression="rosterQuery.memberType"/>
+</component>
+ -->
+ 
+ <component id="people" type="Checkbox">
+  	<binding name="selected" expression="rosterQuery.people"/>
+</component>
+
+ <component id="projects" type="Checkbox">
+  	<binding name="selected" expression="rosterQuery.projects"/>
+</component>
+
+ <component id="organizations" type="Checkbox">
+  	<binding name="selected" expression="rosterQuery.organizations"/>
+</component>
+
+<component id="countries" type="Foreach">
+	<binding name="source" expression="rosterQuery.countries.keySet()"/>
+	<binding name="value" expression="rosterQuery.country"/>
+</component>
+
+<component id="country" type="Checkbox">
+  	<binding name="selected" expression="rosterQuery.selectedCountry"/>
+</component>
+
+<component id="countryLabel" type="Insert">
+  	<binding name="value" expression="rosterQuery.country.country"/>
+</component>
+
+<component id="discipline" type="PropertySelection">
+	<binding name="model" expression="disciplineModel"/>
+	<binding name="value" expression="rosterQuery.selectedDiscipline"/> 
+</component>
+
+<component id="language" type="PropertySelection">
+	<binding name="model" expression="languageModel"/>
+	<binding name="value" expression="rosterQuery.selectedLanguage"/> 
+</component>
+
+<component id="culturalArea" type="PropertySelection">
+	<binding name="model" expression="culturalAreaModel"/>
+	<binding name="value" expression="rosterQuery.selectedCulturalArea"/> 
+</component>
+
+<component id="personType" type="PropertySelection">
+	<binding name="model" expression="personTypeModel"/>
+	<binding name="value" expression="rosterQuery.selectedPersonType"/> 
+</component>
+
+<component id="projectType" type="PropertySelection">
+	<binding name="model" expression="projectTypeModel"/>
+	<binding name="value" expression="rosterQuery.selectedProjectType"/> 
+</component>
+
+<component id="organizationType" type="PropertySelection">
+	<binding name="model" expression="organizationTypeModel"/>
+	<binding name="value" expression="rosterQuery.selectedOrganizationType"/> 
+</component>
+
+</page-specification>

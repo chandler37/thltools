@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+  
+<page-specification class="org.thdl.roster.pages.MembersPage">
+
+<component id="border" type="Border">
+	<binding name="title" expression="pageName"/>
+	<binding name="pages" expression="engine.pageNames"/>
+</component>
+
+
+<component id="addPerson" type="DirectLink">
+	<static-binding name="parameters">person</static-binding>
+	<binding name="listener" expression="listeners.addNewMember"/>
+	<binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+</component>
+
+<component id="addOrganization" type="DirectLink">
+	<static-binding name="parameters">organization</static-binding>
+	<binding name="listener" expression="listeners.addNewMember"/>
+	<binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+</component>
+
+<component id="addProject" type="DirectLink">
+	<static-binding name="parameters">project</static-binding>
+	<binding name="listener" expression="listeners.addNewMember"/>
+	<binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+</component>
+
+<component id="membersLoop" type="Foreach">
+	<binding name="source" expression="allGivenTypeOfMembers"/>
+	<binding name="value" expression="member"/>
+	<static-binding name="element" value="p"/>
+</component>
+
+<component id="personTypes" type="MemberTypeDisplay">
+	<binding name="member" expression="member"/>
+</component>
+
+<component id="organizationTypes" type="MemberTypeDisplay">
+	<binding name="member" expression="member"/>
+</component>
+
+<component id="projectTypes" type="MemberTypeDisplay">
+	<binding name="member" expression="member"/>
+</component>
+
+<component id="overview" type="Insert">
+	<binding name="value" expression="member.memberData.description"/>
+</component>
+
+<component id="parentOrganization" type="Insert">
+	<binding name="value" expression="member.memberData.parentOrganization"/>
+</component>
+
+<component id="viewMember" type="DirectLink">
+	<binding name="parameters" expression="member.id"/>
+	<binding name="listener" expression="listeners.viewMember"/>
+	<binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+</component>
+
+<component id="editMember" type="DirectLink">
+	<binding name="parameters" expression="member.id"/>
+	<binding name="listener" expression="listeners.editMember"/>
+	<binding name="stateful" expression="@java.lang.Boolean@TRUE"/>
+</component>
+
+<component id="country" type="Insert">
+	<binding name="value" expression="member.contactInfo.address.country.country"/>
+</component>
+
+</page-specification>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE component-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<component-specification class="org.thdl.roster.components.PersonDisplay" allow-informal-parameters="no">
+
+<parameter name="personBean" direction="in" type="org.thdl.roster.om.Person" required="yes"/>
+
+<component id="personTypes" type="MemberTypeDisplay">
+	<binding name="member" expression="personBean"/>
+</component>
+
+<component id="firstname" type="Insert">
+	<binding name="value" expression="personBean.personData.firstname"/>
+</component>
+
+<component id="middlename" type="Insert">
+	<binding name="value" expression="personBean.personData.middlename"/>
+</component>
+
+<component id="lastname" type="Insert">
+	<binding name="value" expression="personBean.personData.lastname"/>
+</component>
+
+<component id="bio" type="ConditionalInsert">
+	<static-binding name="label">Overview Bio</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@TRUE"/>
+	<binding name="value" expression="personBean.personData.bio"/>
+</component>
+
+<component id="history" type="ConditionalInsert">
+	<static-binding name="label">History</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="personBean.personData.history"/>
+</component>
+
+<component id="parentOrganization" type="ConditionalInsert">
+	<static-binding name="label">Organizational Base</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="personBean.memberData.parentOrganization"/>
+</component>
+
+<component id="school" type="ConditionalInsert">
+	<static-binding name="label">School</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="personBean.personData.school"/>
+</component>
+
+<component id="department" type="ConditionalInsert">
+	<static-binding name="label">Department</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="personBean.personData.department"/>
+</component>
+
+<component id="program" type="ConditionalInsert">
+	<static-binding name="label">Program</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="personBean.personData.program"/>
+</component>
+
+<component id="advisor" type="ConditionalInsert">
+	<static-binding name="label">Advisor</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="personBean.personData.advisor"/>
+</component>
+
+<component id="highestDegree" type="ConditionalInsert">
+	<static-binding name="label">Highest Degree Earned</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="personBean.personData.highestDegree"/>
+</component>
+
+<component id="yearBegan" type="ConditionalInsert">
+	<static-binding name="label">Year Began</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="personBean.personData.yearBegan"/>
+</component>
+
+<component id="yearFinished" type="ConditionalInsert">
+	<static-binding name="label">Finished</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="personBean.personData.yearFinished"/>
+</component>
+
+<component id="otherBackgrounds" type="ConditionalInsert">
+	<static-binding name="label">Other Backgrounds</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@TRUE"/>
+	<binding name="value" expression="personBean.personData.otherBackgrounds"/>
+</component>
+
+<component id="organization" type="ConditionalInsert">
+	<static-binding name="label">Organization</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="personBean.personData.organization"/>
+</component>
+
+<component id="division" type="ConditionalInsert">
+	<static-binding name="label">Division</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="personBean.personData.division"/>
+</component>
+
+<component id="title" type="ConditionalInsert">
+	<static-binding name="label">Title</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="personBean.personData.title"/>
+</component>
+
+<component id="startDate" type="ConditionalInsert">
+	<static-binding name="label">Start Date</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="personBean.personData.startDate"/>
+</component>
+
+<component id="jobDescription" type="ConditionalInsert">
+	<static-binding name="label">Job Description</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@TRUE"/>
+	<binding name="value" expression="personBean.personData.jobDescription"/>
+</component>
+
+</component-specification>

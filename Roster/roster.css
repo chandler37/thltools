@@ -1,0 +1,189 @@
+/* STYLE */
+
+h2 {
+text-transform: uppercase;
+}
+
+.highlightBox
+{
+	clear: left;
+}
+
+.highlightBox h2
+{
+text-transform: none;
+}
+
+#status
+{
+float: right;
+text-align: right;
+width: 50%;
+}
+
+.viewOptions
+{
+width: 34%;
+border: solid 1px green;
+}
+
+div.viewOptions select
+{
+width: 18em;
+}
+
+/* .nowrap
+{
+display: inline;
+border: solid 2px blue;
+width: 60%;
+} */
+
+.titleCaption
+{
+float:right;;
+border: solid 1px yellow;
+width: 45%;
+}
+
+.options
+{
+float:right;;
+border: solid 1px green;
+width: 19%;
+}
+
+*
+{
+font-family: 'Arial Unicode MS', 'Lucida Grande', Verdana, Helvetica, Arial, sans-serif !important;
+} 
+
+.warning
+{
+color: red;
+}
+
+.message
+{
+color: #006666;
+}
+
+.prominent
+{
+font-size: 1.1em;
+}
+
+.label
+{
+font-weight: bold;
+}
+
+.inline-help
+{
+font-size: .9em;
+color: #006666;
+}
+p.palette 
+{
+margin: 10px 10px 10px 10px;
+padding-left: 10px;
+border: 1px solid gray;
+background-color: white;
+}
+
+TABLE.palette TH
+{
+font-weight: bold;
+color: black;
+background-color: silver;
+border: 1px solid gray;
+text-align: center;
+}
+
+TABLE.palette SELECT
+{
+  font-weight: bold;
+  background-color: silver;
+  width: 200px;
+}
+TABLE.palette TD.controls
+{
+   text-align: center;
+}
+TABLE.palette TD.controls a:hover
+{
+   background-color:white;
+}
+
+img
+{
+	border: 0  !important;
+}
+/* LAYOUT */
+
+#columnCenter {
+margin-left: 20px;
+max-width: 1000px;
+}
+
+#loginForm, #sendInfoForm, #newUserForm
+{
+margin: 10px 10px 10px 10px;
+padding: 10px 0 10px 0;
+border: 1px solid silver;
+}
+
+#wizard
+{
+border-bottom: 2px solid black;
+margin: 30px 20px 0px 20px;
+padding: 0px;
+z-index: 1;
+padding-left: 10px
+}
+
+#wizard li
+{
+display: inline;
+overflow: hidden;
+list-style-type: none;
+}	
+
+#wizard li
+{
+background-color: #E5E5E5;
+font-weight: bold;
+border: 2px solid black;
+padding: 5px 5px 0px 5px;
+margin: 0px 3px 0px 0px;
+text-decoration: none;
+}
+
+#wizard li.activeTab
+{
+background-color: white;
+border-bottom: 2px solid white;
+}
+
+#wizard a:hover
+{
+background-color: white;
+}	
+
+
+#wizard h1, #wizard h2, #wizard h3
+{
+clear: left;
+}
+
+#tabbedBody 
+{
+margin: 0px 20px 20px 20px;
+background-color: white;
+height: auto;
+padding: 20px;
+border: 2px solid black;	
+border-top: none;
+z-index: 2;	
+}
+

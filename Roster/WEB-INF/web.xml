@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
+ "http://java.sun.com/j2ee/dtds/web-app_2_2.dtd">
+<web-app>
+  <display-name>Roster</display-name>
+
+	<servlet>
+		
+		<servlet-name>roster-application</servlet-name>
+		
+		<servlet-class>org.apache.tapestry.ApplicationServlet</servlet-class>
+		
+		<init-param>
+			<param-name>org.apache.tapestry.application-specification</param-name>
+			<param-value>/org/thdl/roster/Roster.application</param-value>
+		</init-param>
+		
+		<init-param>
+			<param-name>org.apache.tapestry.disable-caching</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		
+		<init-param>
+			<param-name>torque-properties-path</param-name>
+			<!-- this path is relative to the root of the classpath-->
+			<param-value>/org/thdl/roster/roster-torque.properties</param-value>
+		</init-param>
+		
+		<init-param>
+			<param-name>roster-uploads-directory</param-name>
+			<!-- this is an absolute System classpath-->
+			<param-value>/Users/travis/webapps/roster/uploads/</param-value>
+		</init-param>
+		
+		<load-on-startup>0</load-on-startup>
+		
+	</servlet>
+
+   <servlet>
+    <servlet-name>test-servlet</servlet-name>
+    <servlet-class>org.thdl.commons.TestServlet</servlet-class>
+  	<load-on-startup>0</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>roster-application</servlet-name>
+    <url-pattern>/tapestry</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>test-servlet</servlet-name>
+    <url-pattern>/test</url-pattern>
+  </servlet-mapping>
+
+  <session-config>
+  	<session-timeout>120</session-timeout>
+  </session-config>
+
+ 
+  
+<!-- <taglib>
+  <taglib-uri>http://java.sun.com/jstl/core</taglib-uri>
+  <taglib-location>/WEB-INF/tld/c.tld</taglib-location>
+</taglib> -->
+
+<welcome-file-list>
+    <welcome-file>roster.html</welcome-file>
+</welcome-file-list>
+  
+</web-app>

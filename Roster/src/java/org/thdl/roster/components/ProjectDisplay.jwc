@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE component-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<component-specification class="org.thdl.roster.components.ProjectDisplay" allow-informal-parameters="no">
+
+<parameter name="projectBean" direction="in" type="org.thdl.roster.om.Project" required="yes"/>
+
+<component id="name" type="InsertText">
+	<binding name="value" expression="projectBean.memberData.name"/>
+</component>
+
+<component id="parentOrganization" type="ConditionalInsert">
+	<static-binding name="label">Parent Organization</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="projectBean.memberData.parentOrganization"/>
+</component>
+
+<component id="people" type="ConditionalInsert">
+	<static-binding name="label">People</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@TRUE"/>
+	<binding name="value" expression="projectBean.memberData.people"/>
+</component>
+
+<component id="mailingList" type="ConditionalInsert">
+	<static-binding name="label">Mailing List</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@TRUE"/>
+	<binding name="value" expression="projectBean.memberData.mailingList"/>
+</component>
+
+<component id="description" type="ConditionalInsert">
+	<static-binding name="label">Overview</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@TRUE"/>
+	<binding name="value" expression="projectBean.memberData.description"/>
+</component>
+
+<component id="components" type="ConditionalInsert">
+	<static-binding name="label">Components</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@TRUE"/>
+	<binding name="value" expression="projectBean.memberData.divisions"/>
+</component>
+
+<component id="history" type="ConditionalInsert">
+	<static-binding name="label">History</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="projectBean.memberData.history"/>
+</component>
+
+<component id="educationPrograms" type="ConditionalInsert">
+	<static-binding name="label">Education programs</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="projectBean.memberData.educationPrograms"/>
+</component>
+
+<component id="resources" type="ConditionalInsert">
+	<static-binding name="label">Resources</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="projectBean.memberData.resources"/>
+</component>
+
+<component id="projectTypes" type="MemberTypeDisplay">
+	<binding name="member" expression="projectBean"/>
+</component>
+
+</component-specification>

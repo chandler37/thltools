@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<page-specification class="org.thdl.roster.pages.Home">
+
+<component id="border" type="Border">
+	<static-binding name="title">Home</static-binding>
+	<binding name="pages" expression="engine.pageNames"/>
+</component>
+  
+<component id="searchForm" type="Form">
+	<binding name="listener" expression="listeners.processForm"/>
+	<binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+</component>
+
+<component id="name" type="TextField">
+	<binding name="value" expression="rosterQuery.name"/>
+</component>
+
+<component id="anywhere" type="TextField">
+	<binding name="value" expression="rosterQuery.anywhere"/>
+</component>
+
+<component id="addPerson" type="DirectLink">
+	<static-binding name="parameters">person</static-binding>
+	<binding name="listener" expression="listeners.addNewMember"/>
+	<binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+</component>
+
+<component id="addOrganization" type="DirectLink">
+	<static-binding name="parameters">organization</static-binding>
+	<binding name="listener" expression="listeners.addNewMember"/>
+	<binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+</component>
+
+<component id="addProject" type="DirectLink">
+	<static-binding name="parameters">project</static-binding>
+	<binding name="listener" expression="listeners.addNewMember"/>
+	<binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+</component>
+
+	<!-- login to edit edit entry/entries -->
+  <component id="loginForm" type="Form">
+    <binding name="listener" expression="listeners.loginToEdit"/>
+    <binding name="stateful" expression="@java.lang.Boolean@TRUE"/>
+  </component>
+
+  <component id="loginField" type="TextField">
+    <binding name="value" expression="login"/>
+  </component>
+
+   <component id="passwordField" type="TextField">
+    <binding name="value" expression="password"/>
+    <binding name="hidden" expression="@java.lang.Boolean@TRUE"/>
+  </component>
+
+  <component id="entries" type="Foreach">
+    <binding name="source" expression="personalEntries"/>
+    <binding name="value" expression="member"/>
+    <static-binding name="element">li</static-binding>
+  </component>
+
+	<component id="memberName" type="InsertText">
+		<binding name="value" expression="member.memberData.name"/>
+	</component>
+
+	<component id="editLink" type="DirectLink">
+		<binding name="parameters" expression="member.id"/>
+		<binding name="listener" expression="listeners.editMember"/>
+		<binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+	</component>
+
+</page-specification>

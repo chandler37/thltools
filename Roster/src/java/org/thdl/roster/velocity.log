@@ -1,0 +1,236 @@
+2003-02-27 15:11:04,008 - SimpleLog4JLogSystem initialized using logfile 'velocity.log'
+2003-02-27 15:11:04,011 - ************************************************************** 
+2003-02-27 15:11:04,011 - Starting Jakarta Velocity v1.3
+2003-02-27 15:11:04,012 - RuntimeInstance initializing.
+2003-02-27 15:11:04,012 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2003-02-27 15:11:04,012 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogSystem
+2003-02-27 15:11:04,015 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogSystem or necessary supporting classes in classpath. Exception : java.lang.NoClassDefFoundError: org/apache/log/format/Formatter
+2003-02-27 15:11:04,015 - Trying to use logger class org.apache.velocity.runtime.log.SimpleLog4JLogSystem
+2003-02-27 15:11:04,015 - Using logger class org.apache.velocity.runtime.log.SimpleLog4JLogSystem
+2003-02-27 15:11:04,036 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2003-02-27 15:11:04,059 - Resource Loader Instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:04,060 - FileResourceLoader : initialization starting.
+2003-02-27 15:11:04,061 - FileResourceLoader : adding path '/Users/travis/torque-3.0/templates'
+2003-02-27 15:11:04,062 - FileResourceLoader : initialization complete.
+2003-02-27 15:11:04,073 - ResourceCache : initialized. (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2003-02-27 15:11:04,078 - Default ResourceManager initialization complete.
+2003-02-27 15:11:04,089 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2003-02-27 15:11:04,098 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2003-02-27 15:11:04,109 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2003-02-27 15:11:04,123 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2003-02-27 15:11:04,134 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2003-02-27 15:11:04,799 - Created: 20 parsers.
+2003-02-27 15:11:04,800 - Velocimacro : initialization starting.
+2003-02-27 15:11:04,800 - Velocimacro : adding VMs from VM library template : VM_global_library.vm
+2003-02-27 15:11:04,814 - ResourceManager : unable to find resource 'VM_global_library.vm' in any resource loader.
+2003-02-27 15:11:04,814 - Velocimacro : error using  VM library template VM_global_library.vm : org.apache.velocity.exception.ResourceNotFoundException: Unable to find resource 'VM_global_library.vm'
+2003-02-27 15:11:04,815 - Velocimacro :  VM library template macro registration complete.
+2003-02-27 15:11:04,815 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2003-02-27 15:11:04,816 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2003-02-27 15:11:04,816 - Velocimacro : allowInlineLocal = false : VMs defined inline will be  global in scope if allowed.
+2003-02-27 15:11:04,816 - Velocimacro : messages on  : VM system will output logging messages
+2003-02-27 15:11:04,817 - Velocimacro : autoload off  : VM system will not automatically reload global library macros
+2003-02-27 15:11:04,817 - Velocimacro : initialization complete.
+2003-02-27 15:11:04,818 - Velocity successfully started.
+2003-02-27 15:11:06,045 - ResourceManager : found om/Control.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:06,982 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:07,353 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:07,356 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:07,827 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:07,943 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:07,950 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:07,961 - ResourceManager : found om/MultiExtendObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:07,970 - ResourceManager : found om/MultiExtendObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:07,979 - ResourceManager : found om/MultiExtendObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:08,268 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:08,331 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:08,333 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:09,076 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:09,186 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:09,193 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:09,414 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:09,468 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:09,484 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:09,841 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:09,920 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:09,928 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:10,463 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:10,511 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:10,513 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:10,811 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:10,917 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:10,924 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:11,108 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:11,174 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:11,176 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:11,472 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:11,522 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:11,531 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:12,080 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:12,144 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:12,146 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:12,411 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:12,453 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:12,459 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:12,659 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:12,694 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:12,696 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:12,958 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:13,373 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:13,379 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:13,548 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:13,583 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:13,585 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:13,845 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:13,921 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:13,928 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:14,105 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:14,161 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:14,163 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:14,432 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:14,821 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:14,827 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:14,997 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:15,035 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:15,037 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:15,300 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:15,393 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:15,399 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:15,744 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:15,776 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:15,778 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:16,036 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:16,062 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:16,067 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:16,253 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:16,305 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:16,307 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:16,907 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:16,937 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:16,943 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:17,124 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:17,191 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:17,193 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:17,462 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:17,487 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:17,493 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:17,669 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:17,702 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:17,705 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:18,353 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:18,379 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:18,385 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:18,590 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:18,624 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:18,626 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:18,890 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:18,917 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:18,924 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:19,105 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:19,159 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:19,161 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:19,816 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:19,847 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:19,852 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:20,024 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:20,057 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:20,059 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:20,322 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:20,348 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:20,354 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:20,544 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:20,576 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:20,579 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:20,848 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:20,873 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:20,879 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:21,398 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:21,441 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:21,443 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:21,728 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:21,753 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:21,780 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:21,937 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:22,001 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:22,004 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:22,250 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:22,296 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:22,302 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:22,485 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:22,526 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:22,528 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:23,157 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:23,182 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:23,187 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:23,356 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:23,398 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:23,400 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:23,655 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:23,680 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:23,686 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:23,865 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:23,906 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:23,908 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:24,165 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:24,202 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:24,207 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:24,386 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:24,427 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:24,429 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:24,997 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:25,044 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:25,051 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:25,209 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:25,273 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:25,275 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:25,543 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:25,568 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:25,574 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:25,758 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:25,799 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:25,801 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:26,060 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:26,085 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:26,091 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:26,577 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:26,618 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:26,620 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:26,925 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:26,956 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:26,961 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:27,141 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:27,185 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:27,187 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:27,445 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:27,473 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:27,500 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:27,655 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:27,718 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:27,720 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:28,330 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:28,373 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:28,379 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:28,555 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:28,595 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:28,597 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:28,854 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:28,880 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:28,885 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:29,061 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:29,101 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:29,103 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:29,378 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:29,403 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:29,409 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:29,920 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:29,965 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:29,967 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:30,223 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:30,256 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:30,263 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:30,439 - ResourceManager : found om/Peer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:30,480 - ResourceManager : found om/MapBuilder.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:30,482 - Error in evaluation of == expression. Both arguments must be of the same Class. Currently left = class java.lang.Boolean, right = class java.lang.String. om/MapBuilder.vm [line 28, column 28] (ASTEQNode)
+2003-02-27 15:11:30,950 - ResourceManager : found om/Object.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:31,009 - ResourceManager : found om/ExtensionObject.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2003-02-27 15:11:31,016 - ResourceManager : found om/ExtensionPeer.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader

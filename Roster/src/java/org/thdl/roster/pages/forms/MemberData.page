@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<page-specification class="org.thdl.roster.pages.forms.MemberData">
+ 
+ <component id="border" type="Border">
+    <static-binding name="title">Background Information</static-binding>
+    <binding name="pages" expression="engine.pageNames"/>
+  </component>
+
+ <component id="personWizardTabs" type="WizardTabs">
+	<binding name="pageNames" expression="engine.personWizardPages"/>
+</component>
+	
+  <component id="memberForm" type="Form">
+    <binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+	 <binding name="delegate" expression="beans.delegate"/>
+  </component>
+
+	<bean name="delegate" class="org.thdl.roster.pages.forms.RosterValidationDelegate"/>
+
+	<bean name="validInteger" class="org.apache.tapestry.valid.NumberValidator">
+	    <set-property name="clientScriptingEnabled" expression="true"/>
+	    <set-property name="required" expression="false"/>
+	</bean>	
+	
+	<component id="ifPerson" type="Conditional">
+		<binding name="condition" expression="visit.member.personMember"/>
+	</component>
+
+	<component id="personFields" type="PersonFields">
+		<binding name="personDataBean" expression="visit.member.memberData"/>
+	</component>
+
+	<component id="personTypePalette" type="contrib:Palette">
+		<binding name="model" expression="personTypeModel"/>
+		<binding name="selected" expression="visit.member.personData.personTypeIdList"/>
+		<binding name="sort" expression="@org.apache.tapestry.contrib.palette.SortMode@USER"/>
+		<static-binding name="tableClass">palette</static-binding>
+	</component>
+	
+	<component id="ifOrganization" type="Conditional">
+		<binding name="condition" expression="visit.member.organizationMember"/>
+	</component>
+
+	<component id="organizationFields" type="OrganizationFields">
+		<binding name="organizationDataBean" expression="visit.member.memberData"/>
+	</component>
+
+	<component id="organizationTypePalette" type="contrib:Palette">
+		<binding name="model" expression="organizationTypeModel"/>
+		<binding name="selected" expression="visit.member.organizationData.organizationTypeIdList"/>
+		<binding name="sort" expression="@org.apache.tapestry.contrib.palette.SortMode@USER"/>
+		<static-binding name="tableClass">palette</static-binding>
+	</component>
+
+	<component id="ifProject" type="Conditional">
+		<binding name="condition" expression="visit.member.projectMember"/>
+	</component>
+
+	<component id="projectFields" type="ProjectFields">
+		<binding name="projectDataBean" expression="visit.member.memberData"/>
+	</component>
+
+	<component id="projectTypePalette" type="contrib:Palette">
+		<binding name="model" expression="projectTypeModel"/>
+		<binding name="selected" expression="visit.member.projectData.projectTypeIdList"/>
+		<binding name="sort" expression="@org.apache.tapestry.contrib.palette.SortMode@USER"/>
+		<static-binding name="tableClass">palette</static-binding>
+	</component>
+
+<component id="next" type="Hidden">
+	<binding name="value" expression="nextPage"/>
+	<binding name="encode" expression="@java.lang.Boolean@FALSE"/>
+</component>
+
+<component id="continue" type="Submit">
+	<binding name="listener" expression="listeners.forward"/>
+	<static-binding name="label">Continue</static-binding>
+	<static-binding name="id">continue</static-binding>
+</component>
+
+<component id="finish" type="Submit">
+	<binding name="listener" expression="listeners.finish"/>
+	<static-binding name="label">Finish</static-binding>
+	<binding name="disabled" expression="visit.member.memberData.isNew()"/>
+	<static-binding name="id">finish</static-binding>
+</component>
+
+</page-specification>

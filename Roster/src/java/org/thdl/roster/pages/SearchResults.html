@@ -1,0 +1,42 @@
+<span jwcid="border">
+
+<div jwcid="membersLoop">
+	
+	<div jwcid="@Conditional" condition='ognl:memberTypeChanged'>
+		<h2><span jwcid="@Insert" value="ognl:memberTypeHeader"/></h2>
+	</div>
+
+<div jwcid="@Conditional" condition='ognl:member.memberData.name != null'>
+
+	<p>
+		<a jwcid="viewMember"><span jwcid="@Insert" value="ognl:member.memberData.name"/></a> 
+		
+		<div jwcid="@Conditional" condition='ognl:member.memberType.equals( "person" )'>
+			(<span jwcid="personTypes"/>) 
+		</div>
+		
+		<div jwcid="@Conditional" condition='ognl:member.memberType.equals( "organization" )'>
+			(<span jwcid="organizationTypes"/>) 
+		</div>
+		
+		<div jwcid="@Conditional" condition='ognl:member.memberType.equals( "project" )'>
+			(<span jwcid="projectTypes"/>) 
+		</div>
+		
+		<strong><span jwcid="country"/></strong> 
+
+		<br/>
+		
+		<em><span jwcid="parentOrganization"/></em>
+		
+		<br/>
+		
+		<span jwcid = "overview"><a jwcid="readMore">read more</a></span>
+
+		</p>
+	
+</div>
+				
+</div>
+
+</span>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<page-specification class="org.thdl.roster.pages.MemberPage">
+
+<component id="border" type="Border">
+	<binding name="title" expression="member.memberData.name"/>
+	<binding name="pages" expression="engine.pageNames"/>
+</component>
+
+<component id="createdDate" type="DateFormatter">
+	<binding name="date" expression="member.createdOn"/>
+</component>
+
+<component id="revisionDate" type="DateFormatter">
+	<binding name="date" expression="member.modifiedOn"/>
+</component>
+
+<component id="contactName" type="ConditionalInsert">
+	<static-binding name="label">Contact Name</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="member.contactInfo.contactName"/>
+</component>
+
+<component id="memberTypes" type="MemberTypeDisplay">
+	<binding name="member" expression="member"/>
+</component>
+
+<component id="description" type="ConditionalInsert">
+	<static-binding name="label">Website</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@TRUE"/>
+	<binding name="value" expression="member.memberData.description"/>
+</component>
+
+<component id="email" type="ConditionalInsert">
+	<static-binding name="label">Email</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="member.contactInfo.email"/>
+</component>
+
+<component id="website" type="ConditionalInsert">
+	<static-binding name="label">Website</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@FALSE"/>
+	<binding name="value" expression="member.contactInfo.website"/>
+</component>
+
+<component id="address" type="AddressDisplay">
+	<binding name="addressBean" expression="member.contactInfo.address"/>
+</component>
+
+<component id="phone" type="PhoneDisplay">
+	<binding name="phoneBean" expression="member.contactInfo.phoneRelatedByPhone"/>
+	<static-binding name="label">Phone</static-binding>
+</component>
+
+<component id="fax" type="PhoneDisplay">
+	<binding name="phoneBean" expression="member.contactInfo.phoneRelatedByFax"/>
+	<static-binding name="label">Fax</static-binding>
+</component>
+
+<component id="ifPerson" type="Conditional">
+	<binding name="condition" expression="member.personMember"/>
+</component>
+
+<component id="personData" type="PersonDisplay">
+	<binding name="personBean" expression="member"/>
+</component>
+
+<component id="ifOrganization" type="Conditional">
+	<binding name="condition" expression="member.organizationMember"/>
+</component>
+
+<component id="organizationData" type="OrganizationDisplay">
+	<binding name="organizationBean" expression="member"/>
+</component>
+
+<component id="ifProject" type="Conditional">
+	<binding name="condition" expression="member.projectMember"/>
+</component>
+
+<component id="projectData" type="ProjectDisplay">
+	<binding name="projectBean" expression="member"/>
+</component>
+
+<component id="formalPublications" type="ConditionalInsert">
+	<static-binding name="label">Formal Products/Publications</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@TRUE"/>
+	<binding name="value" expression="member.publication.formalPublications"/>
+</component>
+
+<component id="worksInProgress" type="ConditionalInsert">
+	<static-binding name="label">Works In Progress</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@TRUE"/>
+	<binding name="value" expression="member.publication.worksInProgress"/>
+</component>
+
+<component id="projects" type="ConditionalInsert">
+	<static-binding name="label">Projects</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@TRUE"/>
+	<binding name="value" expression="member.publication.projects"/>
+</component>
+
+<component id="disciplines" type="DisciplineDisplay">
+	<binding name="researchInterestBean" expression="member.researchInterest"/>
+</component>
+
+<component id="culturalAreas" type="CulturalAreaDisplay">
+	<binding name="researchInterestBean" expression="member.researchInterest"/>
+</component>
+
+<component id="languages" type="LanguageDisplay">
+	<binding name="researchInterestBean" expression="member.researchInterest"/>
+</component>
+
+<component id="historicalDisplayOk" type="Conditional">
+	<binding name="condition" expression="historicalDisplayOk"/>
+</component>
+
+<component id="focusFrom" type="Century">
+	<binding name="century" expression="member.researchInterest.focusFrom "/>
+</component>
+
+<component id="focusTo" type="Century">
+	<binding name="century" expression="member.researchInterest.focusTo"/>
+</component>
+
+<component id="activities" type="ConditionalInsert">
+	<static-binding name="label">Activities</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@TRUE"/>
+	<binding name="value" expression="member.researchInterest.activities"/>
+</component>
+
+<component id="interests" type="ConditionalInsert">
+	<static-binding name="label">Research Interests</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@TRUE"/>
+	<binding name="value" expression="member.researchInterest.interests"/>
+</component>
+
+<component id="collaborationInterests" type="ConditionalInsert">
+	<static-binding name="label">Collaboration Interests</static-binding>
+	<binding name="paragraph" expression="@java.lang.Boolean@TRUE"/>
+	<binding name="value" expression="member.researchInterest.collaborationInterests"/>
+</component>
+
+<component id="document" type="DocumentDisplay">
+	<binding name="member" expression="member"/>
+</component>
+
+</page-specification>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<page-specification class="org.thdl.roster.pages.test.TestPage">
+
+<component id="theBody" type="Border">
+ <static-binding name="title">Test Page</static-binding>
+ <binding name="pages" expression="engine.pageNames"/>
+</component>
+
+<component id="resetMember" type="DirectLink">
+	<binding name="listener" expression="listeners.processForm"/>
+</component>
+
+<component id="testValidate" type="DirectLink">
+	<binding name="listener" expression="listeners.testValidate"/>
+</component>
+
+<component id="testForm" type="Form">
+ <binding name="listener" expression="listeners.processFile"/>
+ <binding name="stateful" expression="@java.lang.Boolean@FALSE"/>
+</component>
+
+<component id="tokenLoop" type="Foreach">
+	<binding name="source" expression="tokens"/>
+	<binding name="value" expression="token"/>
+</component>
+
+<component id="token" type="Insert">
+	<binding name="value" expression="token"/>
+</component>
+
+<component id="testFile" type="Upload">
+	<binding name="file" expression="theFile"/>
+</component>
+
+<component id="testPalette" type="contrib:Palette">
+	<binding name="model" expression="testModel"/>
+	<binding name="selected" expression="theSelected"/>
+	<binding name="sort" expression="@org.apache.tapestry.contrib.palette.SortMode@USER"/>
+</component>
+
+<component id="testPalette2" type="contrib:Palette">
+	<binding name="model" expression="testModel"/>
+	<binding name="selected" expression="theSelected2"/>
+	<binding name="sort" expression="@org.apache.tapestry.contrib.palette.SortMode@USER"/>
+</component>
+
+<component id="testPalette3" type="contrib:Palette">
+	<binding name="model" expression="testModel"/>
+	<binding name="selected" expression="theSelected3"/>
+	<binding name="sort" expression="@org.apache.tapestry.contrib.palette.SortMode@USER"/>
+</component>
+
+<component id="printTheSelected" type="Insert">
+	<binding name="value" expression="theSelected"/>
+</component>
+
+</page-specification>

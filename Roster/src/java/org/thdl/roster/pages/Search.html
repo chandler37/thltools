@@ -1,0 +1,38 @@
+<span jwcid="border">
+	<form jwcid="searchForm">
+		<h2>Names and Text Fields</h2>
+		<p>
+			<em>These text search fields are optional. You can leave them blank <br/>and narrow your search with the other parameters below.</em><br/>
+			Name contains: <input jwcid="name"/><br/>
+			Organizational Base contains: <input jwcid="organizationalBase"/><br/>
+			Any text field contains: <input jwcid="anywhere"/>
+		</p>
+		<h2>Roster Member Types</h2>
+		<p>
+			<!-- <div jwcid="memberTypes">
+				<span jwcid="memberType"/> <span jwcid="memberTypeLabel"/> | 
+			</div> -->
+			<checkbox jwcid="people"/> <label for="people">People</label> <select jwcid="personType"/><br/>
+			<checkbox jwcid="projects"/> <label for="projects">Projects</label> <select jwcid="projectType"/><br/>
+			<checkbox jwcid="organizations"/> <label for="organizations">Organizations</label><select jwcid="organizationType"/> 
+		</p>
+		<h2>Countries</h2>
+		<p>
+			<em>Only countries for which there is a roster entry are listed.</em> <br/>
+			<div jwcid="countries">
+				<span jwcid="country"/> <span jwcid="countryLabel"/>
+			</div>
+		</p>
+		<h2>Other Search Categories</h2>
+		<p>
+			Choose a discipline: <select jwcid="discipline"/><br/>
+			Choose a language: <select jwcid="language"/><br/>
+			Choose a cultural focus:<select jwcid="culturalArea"/><br/>
+		</p>
+		
+		<p>
+			<input type="submit" value="Search the Community Roster"/>
+		</p>
+		
+	</form>
+</span>

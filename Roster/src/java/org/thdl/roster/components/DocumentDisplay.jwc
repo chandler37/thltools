@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE component-specification PUBLIC 
+"-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+"http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<component-specification class="org.thdl.roster.components.DocumentDisplay">
+
+<parameter name="member" property-name="member" direction="in" type="org.thdl.roster.om.Member" required="yes"/>
+
+<component id="documents" type="Foreach">
+	<binding name="source" expression="member.documents"/>
+	<binding name="value" expression="document"/>
+	<static-binding name="element">li</static-binding>
+</component>
+
+<component id="documentLink" type="Any">
+	<static-binding name="element">a</static-binding>
+<!-- 	<static-binding name="onclick">clickAlert()</static-binding>
+ -->	<binding name="href" expression="document.path + document.filename"/>
+</component>
+
+</component-specification>
