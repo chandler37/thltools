@@ -208,6 +208,8 @@ Contributor(s): ______________________________________.
          inheritAll="false" inheritRefs="false">
        <reference refid="entire.class.path"/>
        <property name="junitbin" value="${junitbin}"/>
+       <property name="java.awt.headless" value="true"/>
+       <property name="java.awt.graphicsenv" value=""/>
     </ant>
     <echo message=""/>
     <echo message="You may now examine the files TEST-* for more details."/>
@@ -659,9 +661,27 @@ Contributor(s): ______________________________________.
       <zipfileset dir="${source}"
                   includes="**"
                   prefix="source"/>
+      <zipfileset dir="${ext}/drop-ins"
+                  includes="README.TXT"
+                  prefix="extensions/drop-ins"/>
+      <zipfileset dir="${ext}/calpa/html"
+                  includes="*.class"
+                  prefix="extensions/calpa/html"/>
+
+      <!-- Without a Fonts dir, the build from source will fail. Cludge: hack: FIXME: -->
+      <zipfileset dir="Fonts/TibetanMachine"
+                  includes="*.txt"
+                  prefix="Fonts/TibetanMachine"/>
+      <zipfileset dir="Fonts/TibetanMachineWeb"
+                  includes="*.txt"
+                  prefix="Fonts/TibetanMachineWeb"/>
+
       <zipfileset dir="${license}"
                   includes="*"
                   prefix="."/>
+      <zipfileset dir="${license}"
+                  includes="*"
+                  prefix="license"/>
       <zipfileset dir="."
                   includes="*build.xml"
                   prefix="."/>
