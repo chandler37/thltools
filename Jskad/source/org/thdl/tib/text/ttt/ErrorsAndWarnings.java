@@ -128,13 +128,13 @@ public class ErrorsAndWarnings {
         case 103:
             return "" + code + ": Found a truly unmatched close bracket, '" + translit + "'.";
 
-        case 104:
+        case 104: // See also 140
             return "" + code + ": Found a closing bracket, '" + translit + "', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.";
 
         case 105:
             return "" + code + ": Found a truly unmatched open bracket, '[' or '{', prior to this current illegal open bracket, '" + translit + "'.";
 
-        case 106:
+        case 106: // see also 139
             return "" + code + ": Found an illegal open bracket (in context, this is '" + translit + "').  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?";
 
         case 107:
@@ -220,7 +220,7 @@ public class ErrorsAndWarnings {
             return "" + code + ": The ACIP {" + translit + "} must be glued to the end of a tsheg bar, but this one was not.";
 
         case 133:
-            return "" + code + ": Cannot convert the ACIP {" + translit + "} to Tibetan because it is unclear what the result should be.";
+            return "" + code + ": Cannot convert the ACIP {" + translit + "} to Tibetan because it is unclear what the result should be.  The correct output would likely require special mark-up.";
 
         case 134:
             return "" + code + ": The tsheg bar (\"syllable\") {" + translit + "} has no legal parses.";
@@ -238,6 +238,20 @@ public class ErrorsAndWarnings {
         case 138:
             ThdlDebug.verify(translit.length() == 1);
             return "" + code + ": The Unicode escape '" + translit + "' with ordinal (in decimal) " + (int)translit.charAt(0) + " is in the Tibetan range of Unicode (i.e., [U+0F00, U+0FFF]), but is a reserved code in that area.";
+
+            // See also 106.
+        case 139:
+            return "" + code + ": Found an illegal open bracket (in context, this is '" + translit + "').  There is no matching closing bracket.";
+
+        case 140:
+            // see also 104
+            ThdlDebug.verify(translit.length() == 1);
+            return "" + code + ": Unmatched closing bracket, '" + translit + "', found.  Pairs are expected, as in [#THIS] or [THAT].  Nesting is not allowed.";
+
+        case 141:
+            ThdlDebug.verify(translit.length() == 1);
+            return "" + code + ": While waiting for a closing bracket, an opening bracket, '" + translit + "', was found instead.  Nesting of bracketed expressions is not permitted.";
+
 
 
 
@@ -280,7 +294,7 @@ public class ErrorsAndWarnings {
         // ERROR 137 and WARNING 511 are the same:
         case 137: /* fall through */
         case 511:
-            return "" + code + ": The ACIP {" + translit + "} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.";
+            return "" + code + ": The ACIP {" + translit + "} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.  The TibetanMachineWeb font has only a limited number of ready-made, precomposed glyphs, and {" + translit + "} is not one of them.";
 
         case 512:
             return "" + code + ": There is a chance that the ACIP {" + translit + "} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.  In fact, there are glyphs in the Tibetan Machine font for N+N+Y, N+G+H, G+N+Y, G+H+N+Y, T+N+Y, T+S+TH, T+S+N, T+S+N+Y, TS+NY, TS+N+Y, H+N+Y, M+N+Y, T+S+M, T+S+M+Y, T+S+Y, T+S+R, T+S+V, N+T+S, T+S, S+H, R+T+S, R+T+S+N, R+T+S+N+Y, and N+Y, indicating the importance of these easily mistyped stacks, so the possibility is very real.";
@@ -312,7 +326,7 @@ public class ErrorsAndWarnings {
     }
 
     private static final int MIN_ERROR = 101; // inclusive
-    private static final int MAX_ERROR = 138; // inclusive
+    private static final int MAX_ERROR = 141; // inclusive
 
     private static final int MIN_WARNING = 501; // inclusive
     private static final int MAX_WARNING = 512; // inclusive

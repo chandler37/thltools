@@ -32,6 +32,12 @@ import java.io.*;
 * kind.  Scanning errors are also encoded as TStrings using a special
 * type.
 *
+* <p><em>Note well</em> that when parsing ACIP, certain types of
+* TStrings (corrections, comments, question, dd, bp, etc.) will not be
+* encountered if {@link
+* ACIPTshegBarScanner#BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED} is
+* true.</p>
+*
 * @author David Chandler */
 public class TString {
     private int type;

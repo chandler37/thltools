@@ -7226,10 +7226,20 @@ tstHelper("ZUR");
         }
         if (null != expectedErrors) {
             if (!expectedErrors.equals(errors.toString())) {
+                int i;
                 System.out.println("Scanning " + s + " into tsheg bars was expected to cause the following errors:");
                 System.out.print(expectedErrors);
                 System.out.println("Instead, it caused the following errors:");
                 System.out.print(errors);
+                if (errors.length() == expectedErrors.length()) {
+                    for (i = 0; i < expectedErrors.length(); i++) {
+                        if (errors.charAt(i) != expectedErrors.charAt(i))
+                            break;
+                    }
+                    System.out.println("Lengths are equal, zero-based index of mismatch is " + i);
+                } else {
+                    System.out.println("The lengths of the above strings are inequal.");
+                }
                 assertTrue(false);
             }
         }
@@ -7277,24 +7287,39 @@ tstHelper("ZUR");
         shelp("", "", "[]");
         shelp("[DD]", "");
         shelp("[",
-              "Offset 0: ERROR 106: Found an illegal open bracket (in context, this is '[').  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset END: ERROR 117: Unexpected end of input; truly unmatched open bracket found.\n");
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "Offset 0: ERROR 139: Found an illegal open bracket (in context, this is '[').  There is no matching closing bracket.\nOffset END: ERROR 117: Unexpected end of input; truly unmatched open bracket found.\n"
+              : "Offset 0: ERROR 106: Found an illegal open bracket (in context, this is '[').  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset END: ERROR 117: Unexpected end of input; truly unmatched open bracket found.\n");
         shelp("{",
-              "Offset 0: ERROR 106: Found an illegal open bracket (in context, this is '{').  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset END: ERROR 117: Unexpected end of input; truly unmatched open bracket found.\n");
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "Offset 0: ERROR 139: Found an illegal open bracket (in context, this is '{').  There is no matching closing bracket.\nOffset END: ERROR 117: Unexpected end of input; truly unmatched open bracket found.\n"
+              : "Offset 0: ERROR 106: Found an illegal open bracket (in context, this is '{').  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset END: ERROR 117: Unexpected end of input; truly unmatched open bracket found.\n");
+
         shelp("DD", "");
         shelp("DD]",
-              "Offset 2: ERROR 103: Found a truly unmatched close bracket, ']'.\nOffset 2: ERROR 104: Found a closing bracket, ']', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "Offset 2: ERROR 103: Found a truly unmatched close bracket, ']'.\nOffset 2: ERROR 140: Unmatched closing bracket, ']', found.  Pairs are expected, as in [#THIS] or [THAT].  Nesting is not allowed.\n"
+              : "Offset 2: ERROR 103: Found a truly unmatched close bracket, ']'.\nOffset 2: ERROR 104: Found a closing bracket, ']', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
+        shelp("DD}",
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "Offset 2: ERROR 103: Found a truly unmatched close bracket, '}'.\nOffset 2: ERROR 140: Unmatched closing bracket, '}', found.  Pairs are expected, as in [#THIS] or [THAT].  Nesting is not allowed.\n"
+              : "Offset 2: ERROR 103: Found a truly unmatched close bracket, '}'.\nOffset 2: ERROR 104: Found a closing bracket, '}', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
 
         shelp("///NYA", "Offset 1: ERROR 110: Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\nOffset END: ERROR 120: Slashes are supposed to occur in pairs, but the input had an unmatched '/' character.\n");
         shelp("/NYA/", "");
         shelp("[?][BP][LS][DD1][DD2][DDD][DR][# (<{A COMMENT)}>]", "");
         shelp("[LS][# A [[[[[COMMENT][LS]",
-              "Offset 9: ERROR 102: Found an open bracket, '[', within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "Offset 9: ERROR 141: While waiting for a closing bracket, an opening bracket, '[', was found instead.  Nesting of bracketed expressions is not permitted.\nOffset 10: ERROR 141: While waiting for a closing bracket, an opening bracket, '[', was found instead.  Nesting of bracketed expressions is not permitted.\nOffset 11: ERROR 141: While waiting for a closing bracket, an opening bracket, '[', was found instead.  Nesting of bracketed expressions is not permitted.\nOffset 12: ERROR 141: While waiting for a closing bracket, an opening bracket, '[', was found instead.  Nesting of bracketed expressions is not permitted.\nOffset 13: ERROR 141: While waiting for a closing bracket, an opening bracket, '[', was found instead.  Nesting of bracketed expressions is not permitted.\nOffset END: ERROR 117: Unexpected end of input; truly unmatched open bracket found.\n"
+              : "Offset 9: ERROR 102: Found an open bracket, '[', within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
               + "Offset 10: ERROR 102: Found an open bracket, '[', within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
               + "Offset 11: ERROR 102: Found an open bracket, '[', within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
               + "Offset 12: ERROR 102: Found an open bracket, '[', within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
-              + "Offset 13: ERROR 102: Found an open bracket, '[', within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n");
+              + "Offset 13: ERROR 102: Found an open bracket, '[', within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"); 
         shelp("[ILLEGAL COMMENT]",
-              "Offset 0: ERROR 106: Found an illegal open bracket (in context, this is '[ILLEGAL C...').  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset 16: ERROR 104: Found a closing bracket, ']', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? ""
+              : "Offset 0: ERROR 106: Found an illegal open bracket (in context, this is '[ILLEGAL C...').  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset 16: ERROR 104: Found a closing bracket, ']', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
         shelp("(BSKYABS GRO)", "");
         shelp("BSKYABS GRO)", "Offset 11: ERROR 112: Unexpected closing parenthesis, ')', found.\n");
         shelp("BSKYABS GRO(", "Offset END: ERROR 121: Parentheses are supposed to occur in pairs, but the input had an unmatched parenthesis, '('.\n");
@@ -7303,23 +7328,63 @@ tstHelper("ZUR");
         shelp("NYAx", "");
         shelp("NYA x",
               "Offset 4: ERROR 132: The ACIP {x} must be glued to the end of a tsheg bar, but this one was not.\n");
-        shelp("[# A PARTIAL COM", "Offset END: ERROR 118: Unmatched open bracket found.  A comment does not terminate.\n");
-        shelp("[* BSKYABS ", "Offset END: ERROR 119: Unmatched open bracket found.  A correction does not terminate.\n");
+        shelp("[# A PARTIAL COM",
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "Offset 0: ERROR 139: Found an illegal open bracket (in context, this is '[# A PARTI...').  There is no matching closing bracket.\nOffset END: ERROR 117: Unexpected end of input; truly unmatched open bracket found.\n"
+              : "Offset END: ERROR 118: Unmatched open bracket found.  A comment does not terminate.\n");
+        shelp("[* BSKYABS ",
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "Offset 0: ERROR 139: Found an illegal open bracket (in context, this is '[* BSKYABS...').  There is no matching closing bracket.\nOffset END: ERROR 117: Unexpected end of input; truly unmatched open bracket found.\n"
+              : "Offset END: ERROR 119: Unmatched open bracket found.  A correction does not terminate.\n");
         shelp("SKYABS [*BSKYABS?] GRO [?]", "");
         shelp(" SKYABS GRO ", "");
-        shelp("SKYABS [*BSKYABS] GRO [?]", "", "[TIBETAN_NON_PUNCTUATION:{SKYABS}, TIBETAN_PUNCTUATION:{ }, CORRECTION_START:{[*}, TIBETAN_NON_PUNCTUATION:{BSKYABS}, PROBABLE_CORRECTION:{]}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{GRO}, TIBETAN_PUNCTUATION:{ }, QUESTION:{[?]}]");
-        shelp("[*RVA]", "", "[CORRECTION_START:{[*}, TIBETAN_NON_PUNCTUATION:{RVA}, PROBABLE_CORRECTION:{]}]");
-        shelp("[*RVA?]", "", "[CORRECTION_START:{[*}, TIBETAN_NON_PUNCTUATION:{RVA}, POSSIBLE_CORRECTION:{?]}]");
-        shelp("[* RVA ]", "", "[CORRECTION_START:{[*}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{RVA}, TIBETAN_PUNCTUATION:{ }, PROBABLE_CORRECTION:{]}]");
-        shelp("[*RVA ?]", "", "[CORRECTION_START:{[*}, TIBETAN_NON_PUNCTUATION:{RVA}, TIBETAN_PUNCTUATION:{ }, POSSIBLE_CORRECTION:{?]}]");
+        shelp("SKYABS [*BSKYABS] GRO [?]", "",
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "[TIBETAN_NON_PUNCTUATION:{SKYABS}, TIBETAN_PUNCTUATION:{ }, LATIN:{[*BSKYABS]}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{GRO}, TIBETAN_PUNCTUATION:{ }, LATIN:{[?]}]"
+              : "[TIBETAN_NON_PUNCTUATION:{SKYABS}, TIBETAN_PUNCTUATION:{ }, CORRECTION_START:{[*}, TIBETAN_NON_PUNCTUATION:{BSKYABS}, PROBABLE_CORRECTION:{]}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{GRO}, TIBETAN_PUNCTUATION:{ }, QUESTION:{[?]}]");
+        shelp("[*RVA]", "", 
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "[LATIN:{[*RVA]}]"
+              : "[CORRECTION_START:{[*}, TIBETAN_NON_PUNCTUATION:{RVA}, PROBABLE_CORRECTION:{]}]");
+        shelp("[*RVA?]", "",
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "[LATIN:{[*RVA?]}]"
+              : "[CORRECTION_START:{[*}, TIBETAN_NON_PUNCTUATION:{RVA}, POSSIBLE_CORRECTION:{?]}]");
+        shelp("[* RVA ]", "",
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "[LATIN:{[* RVA ]}]"
+              : "[CORRECTION_START:{[*}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{RVA}, TIBETAN_PUNCTUATION:{ }, PROBABLE_CORRECTION:{]}]");
+        shelp("[*RVA ?]", "",
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "[LATIN:{[*RVA ?]}]"
+              : "[CORRECTION_START:{[*}, TIBETAN_NON_PUNCTUATION:{RVA}, TIBETAN_PUNCTUATION:{ }, POSSIBLE_CORRECTION:{?]}]");
         shelp("[*RVA? ]",
-              "Offset 5: ERROR 113: The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.\n",
-              "[CORRECTION_START:{[*}, TIBETAN_NON_PUNCTUATION:{RVA}, ERROR:{113: The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.}, TIBETAN_PUNCTUATION:{ }, PROBABLE_CORRECTION:{]}]");
-        shelp("[*LINE BREAK]", "", "[CORRECTION_START:{[*}, LATIN:{LINE BREAK}, PROBABLE_CORRECTION:{]}]");
-        shelp("[*LINE BREAK?]", "", "[CORRECTION_START:{[*}, LATIN:{LINE BREAK}, POSSIBLE_CORRECTION:{?]}]");
-        shelp("[*\n\t\r  LINEYO ?]", "", "[CORRECTION_START:{[*}, LATIN:{\n\t\r  LINEYO }, POSSIBLE_CORRECTION:{?]}]");
-        shelp("[*\n\t\r  LINEYO ]", "", "[CORRECTION_START:{[*}, LATIN:{\n\t\r  LINEYO }, PROBABLE_CORRECTION:{]}]");
-        shelp("[*DATA INCOMPLETE HERE?]", "", "[CORRECTION_START:{[*}, LATIN:{DATA INCOMPLETE HERE}, POSSIBLE_CORRECTION:{?]}]");
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? ""
+              : "Offset 5: ERROR 113: The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.\n",
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "[LATIN:{[*RVA? ]}]"
+              : "[CORRECTION_START:{[*}, TIBETAN_NON_PUNCTUATION:{RVA}, ERROR:{113: The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.}, TIBETAN_PUNCTUATION:{ }, PROBABLE_CORRECTION:{]}]");
+        shelp("[*LINE BREAK]", "",
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "[LATIN:{[*LINE BREAK]}]"
+              : "[CORRECTION_START:{[*}, LATIN:{LINE BREAK}, PROBABLE_CORRECTION:{]}]");
+        shelp("[*LINE BREAK?]", "",
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "[LATIN:{[*LINE BREAK?]}]"
+              : "[CORRECTION_START:{[*}, LATIN:{LINE BREAK}, POSSIBLE_CORRECTION:{?]}]");
+        shelp("[*\n\t\r  LINEYO ?]", "",
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "[LATIN:{[*\n\t\r  LINEYO ?]}]"
+              : "[CORRECTION_START:{[*}, LATIN:{\n\t\r  LINEYO }, POSSIBLE_CORRECTION:{?]}]");
+        shelp("[*\n\t\r  LINEYO ]", "",
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "[LATIN:{[*\n\t\r  LINEYO ]}]"
+              : "[CORRECTION_START:{[*}, LATIN:{\n\t\r  LINEYO }, PROBABLE_CORRECTION:{]}]");
+        shelp("[*DATA INCOMPLETE HERE?]", "",
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "[LATIN:{[*DATA INCOMPLETE HERE?]}]"
+              : "[CORRECTION_START:{[*}, LATIN:{DATA INCOMPLETE HERE}, POSSIBLE_CORRECTION:{?]}]");
         shelp("[*THIS\r\nWAS SUPPOSED TO BE THE SIXTH CATEGORY; THE CATEGORIES MENTIONED\r\nABOVE SEEM TO BE OUT OF ORDER THROUGH THIS SECTION]\r\n", "");
 
         shelp("x o % : m", "Offset 0: ERROR 132: The ACIP {x} must be glued to the end of a tsheg bar, but this one was not.\nOffset 2: ERROR 132: The ACIP {o} must be glued to the end of a tsheg bar, but this one was not.\nOffset 4: ERROR 132: The ACIP {%} must be glued to the end of a tsheg bar, but this one was not.\n");
@@ -7327,14 +7392,18 @@ tstHelper("ZUR");
 
         shelp("/NYA ", "Offset END: ERROR 120: Slashes are supposed to occur in pairs, but the input had an unmatched '/' character.\n");
         shelp("(NYA ", "Offset END: ERROR 121: Parentheses are supposed to occur in pairs, but the input had an unmatched parenthesis, '('.\n");
-        shelp("[*NYA ", "Offset END: ERROR 119: Unmatched open bracket found.  A correction does not terminate.\n");
-        shelp("[?]", "", "[QUESTION:{[?]}]");
+        shelp("[?]", "",
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "[LATIN:{[?]}]"
+              : "[QUESTION:{[?]}]");
         shelp("?",
               "Offset 0: ERROR 113: The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.\n",
               "[ERROR:{113: The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.}]");
         shelp("KHAN~ BAR ", "Offset 4: ERROR 116: Found an illegal character, '~', with ordinal (in decimal) 126.\n");
         shelp("[* Correction with []]",
-              "Offset 5: ERROR 116: Found an illegal character, 'r', with ordinal (in decimal) 114.\nOffset 6: ERROR 116: Found an illegal character, 'r', with ordinal (in decimal) 114.\nOffset 7: ERROR 116: Found an illegal character, 'e', with ordinal (in decimal) 101.\nOffset 8: ERROR 116: Found an illegal character, 'c', with ordinal (in decimal) 99.\nOffset 14: ERROR 116: Found an illegal character, 'w', with ordinal (in decimal) 119.\nOffset 19: ERROR 106: Found an illegal open bracket (in context, this is '[]]').  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset 21: ERROR 104: Found a closing bracket, ']', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "Offset 19: ERROR 141: While waiting for a closing bracket, an opening bracket, '[', was found instead.  Nesting of bracketed expressions is not permitted.\nOffset 21: ERROR 140: Unmatched closing bracket, ']', found.  Pairs are expected, as in [#THIS] or [THAT].  Nesting is not allowed.\n"
+              : "Offset 5: ERROR 116: Found an illegal character, 'r', with ordinal (in decimal) 114.\nOffset 6: ERROR 116: Found an illegal character, 'r', with ordinal (in decimal) 114.\nOffset 7: ERROR 116: Found an illegal character, 'e', with ordinal (in decimal) 101.\nOffset 8: ERROR 116: Found an illegal character, 'c', with ordinal (in decimal) 99.\nOffset 14: ERROR 116: Found an illegal character, 'w', with ordinal (in decimal) 119.\nOffset 19: ERROR 106: Found an illegal open bracket (in context, this is '[]]').  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset 21: ERROR 104: Found a closing bracket, ']', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
 
         shelp(",NGES ? PA",
               "Offset 6: ERROR 113: The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.\n",
@@ -7375,7 +7444,10 @@ tstHelper("ZUR");
 
         // Test that we handle some known comments that occur in
         // illegal syntax:
-        shelp("[text missing]", "", "[COMMENT:{[#text missing]}]");
+        shelp("[text missing]", "",
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "[LATIN:{[text missing]}]"
+              : "[COMMENT:{[#text missing]}]");
 
         {
             // In {G'EEm: ,MDO}, is the space a tsheg?  We say no
@@ -7395,8 +7467,11 @@ tstHelper("ZUR");
               "[TIBETAN_NON_PUNCTUATION:{KA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{KHA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_PUNCTUATION:{\n}, TIBETAN_PUNCTUATION:{\n}, TIBETAN_NON_PUNCTUATION:{GA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{NGA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{TA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{THA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_PUNCTUATION:{\n}, TIBETAN_PUNCTUATION:{\n}, TIBETAN_NON_PUNCTUATION:{DA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{NA}, TIBETAN_PUNCTUATION:{ }]");
 
         shelp("[FIRST][SECOND][MISSING PAGE][MISSING FOLIO]", "");
-        shelp("[THE INITIAL PART OF THIS TEXT WAS INPUT BY THE SERA MEY LIBRARY IN\nTIBETAN FONT AND NEEDS TO BE REDONE BY DOUBLE INPUT]\r\n\r\n", "", "[COMMENT:{[#THE INITIAL PART OF THIS TEXT WAS INPUT BY THE SERA MEY LIBRARY IN\nTIBETAN FONT AND NEEDS TO BE REDONE BY DOUBLE INPUT]}, TIBETAN_PUNCTUATION:{\r\n}, TIBETAN_PUNCTUATION:{\r\n}]");
-        shelp("[THE INITIAL PART OF THIS TEXT WAS INPUT BY THE SERA MEY LIBRARY IN\r\nTIBETAN FONT AND NEEDS TO BE REDONE BY DOUBLE INPUT]\r\n\r\n", "", "[COMMENT:{[#THE INITIAL PART OF THIS TEXT WAS INPUT BY THE SERA MEY LIBRARY IN\r\nTIBETAN FONT AND NEEDS TO BE REDONE BY DOUBLE INPUT]}, TIBETAN_PUNCTUATION:{\r\n}, TIBETAN_PUNCTUATION:{\r\n}]");
+        shelp("[THE INITIAL PART OF THIS TEXT WAS INPUT BY THE SERA MEY LIBRARY IN\nTIBETAN FONT AND NEEDS TO BE REDONE BY DOUBLE INPUT]\r\n\r\n", "",
+              (ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED ? "[LATIN:{[" : "[COMMENT:{[#") + "THE INITIAL PART OF THIS TEXT WAS INPUT BY THE SERA MEY LIBRARY IN\nTIBETAN FONT AND NEEDS TO BE REDONE BY DOUBLE INPUT]}, TIBETAN_PUNCTUATION:{\r\n}, TIBETAN_PUNCTUATION:{\r\n}]");
+        shelp("[THE INITIAL PART OF THIS TEXT WAS INPUT BY THE SERA MEY LIBRARY IN\r\nTIBETAN FONT AND NEEDS TO BE REDONE BY DOUBLE INPUT]\r\n\r\n", "",
+              (ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED ? "[LATIN:{[" : "[COMMENT:{[#") + 
+              "THE INITIAL PART OF THIS TEXT WAS INPUT BY THE SERA MEY LIBRARY IN\r\nTIBETAN FONT AND NEEDS TO BE REDONE BY DOUBLE INPUT]}, TIBETAN_PUNCTUATION:{\r\n}, TIBETAN_PUNCTUATION:{\r\n}]");
 
         // Test folio markers:
         shelp("@01A.3 ", "", "[FOLIO_MARKER:{@01A.3}, TIBETAN_PUNCTUATION:{ }]");
@@ -7423,12 +7498,22 @@ tstHelper("ZUR");
         shelp("GA-YENG", "", "[TIBETAN_NON_PUNCTUATION:{GA-YENG}]");
         shelp("N+YA", "", "[TIBETAN_NON_PUNCTUATION:{N+YA}]");
 
-        shelp("{ DD }", "", "[DD:{{ DD }}]"); // TD3790E2.ACT
-        shelp("{ BP }", "", "[BP:{{ BP }}]"); // TD3790E2.ACT
+        shelp("{ DD }", "",
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "[LATIN:{ DD }]"
+              : "[DD:{{ DD }}]"); // TD3790E2.ACT
+        shelp("{ BP }", "",
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "[LATIN:{ BP }]"
+              : "[BP:{{ BP }}]"); // TD3790E2.ACT
         // LOW-PRIORITY FIXME: support nested comments.
         shelp("[# This is a [# nested comment] don't you know?]KA KHA GA NGA",
-              "Offset 13: ERROR 102: Found an open bracket, '[', within a [#COMMENT]-style comment.  Brackets may not appear in comments.\nOffset 38: ERROR 116: Found an illegal character, 'y', with ordinal (in decimal) 121.\nOffset 39: ERROR 132: The ACIP {o} must be glued to the end of a tsheg bar, but this one was not.\nOffset 40: ERROR 116: Found an illegal character, 'u', with ordinal (in decimal) 117.\nOffset 42: ERROR 116: Found an illegal character, 'k', with ordinal (in decimal) 107.\nOffset 45: ERROR 116: Found an illegal character, 'w', with ordinal (in decimal) 119.\nOffset 46: ERROR 113: The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.\nOffset 47: ERROR 103: Found a truly unmatched close bracket, ']'.\nOffset 47: ERROR 104: Found a closing bracket, ']', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n",
-              "[ERROR:{102: Found an open bracket, '[', within a [#COMMENT]-style comment.  Brackets may not appear in comments.}, COMMENT:{[# This is a [# nested comment]}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{d}, TSHEG_BAR_ADORNMENT:{o}, TIBETAN_NON_PUNCTUATION:{n't}, TIBETAN_PUNCTUATION:{ }, ERROR:{116: Found an illegal character, 'y', with ordinal (in decimal) 121.}, ERROR:{132: The ACIP {o} must be glued to the end of a tsheg bar, but this one was not.}, ERROR:{116: Found an illegal character, 'u', with ordinal (in decimal) 117.}, TIBETAN_PUNCTUATION:{ }, ERROR:{116: Found an illegal character, 'k', with ordinal (in decimal) 107.}, TIBETAN_NON_PUNCTUATION:{n}, TSHEG_BAR_ADORNMENT:{o}, ERROR:{116: Found an illegal character, 'w', with ordinal (in decimal) 119.}, ERROR:{113: The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.}, ERROR:{103: Found a truly unmatched close bracket, ']'.}, ERROR:{104: Found a closing bracket, ']', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.}, TIBETAN_NON_PUNCTUATION:{KA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{KHA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{GA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{NGA}]");
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "Offset 13: ERROR 141: While waiting for a closing bracket, an opening bracket, '[', was found instead.  Nesting of bracketed expressions is not permitted.\nOffset 38: ERROR 116: Found an illegal character, 'y', with ordinal (in decimal) 121.\nOffset 39: ERROR 132: The ACIP {o} must be glued to the end of a tsheg bar, but this one was not.\nOffset 40: ERROR 116: Found an illegal character, 'u', with ordinal (in decimal) 117.\nOffset 42: ERROR 116: Found an illegal character, 'k', with ordinal (in decimal) 107.\nOffset 45: ERROR 116: Found an illegal character, 'w', with ordinal (in decimal) 119.\nOffset 46: ERROR 113: The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.\nOffset 47: ERROR 140: Unmatched closing bracket, ']', found.  Pairs are expected, as in [#THIS] or [THAT].  Nesting is not allowed.\n"
+              : "Offset 13: ERROR 102: Found an open bracket, '[', within a [#COMMENT]-style comment.  Brackets may not appear in comments.\nOffset 38: ERROR 116: Found an illegal character, 'y', with ordinal (in decimal) 121.\nOffset 39: ERROR 132: The ACIP {o} must be glued to the end of a tsheg bar, but this one was not.\nOffset 40: ERROR 116: Found an illegal character, 'u', with ordinal (in decimal) 117.\nOffset 42: ERROR 116: Found an illegal character, 'k', with ordinal (in decimal) 107.\nOffset 45: ERROR 116: Found an illegal character, 'w', with ordinal (in decimal) 119.\nOffset 46: ERROR 113: The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.\nOffset 47: ERROR 103: Found a truly unmatched close bracket, ']'.\nOffset 47: ERROR 104: Found a closing bracket, ']', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n",
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "[ERROR:{141: While waiting for a closing bracket, an opening bracket, '[', was found instead.  Nesting of bracketed expressions is not permitted.}, LATIN:{[# This is a [# nested comment]}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{d}, TSHEG_BAR_ADORNMENT:{o}, TIBETAN_NON_PUNCTUATION:{n't}, TIBETAN_PUNCTUATION:{ }, ERROR:{116: Found an illegal character, 'y', with ordinal (in decimal) 121.}, ERROR:{132: The ACIP {o} must be glued to the end of a tsheg bar, but this one was not.}, ERROR:{116: Found an illegal character, 'u', with ordinal (in decimal) 117.}, TIBETAN_PUNCTUATION:{ }, ERROR:{116: Found an illegal character, 'k', with ordinal (in decimal) 107.}, TIBETAN_NON_PUNCTUATION:{n}, TSHEG_BAR_ADORNMENT:{o}, ERROR:{116: Found an illegal character, 'w', with ordinal (in decimal) 119.}, ERROR:{113: The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.}, ERROR:{140: Unmatched closing bracket, ']', found.  Pairs are expected, as in [#THIS] or [THAT].  Nesting is not allowed.}, TIBETAN_NON_PUNCTUATION:{KA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{KHA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{GA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{NGA}]"
+              : "[ERROR:{102: Found an open bracket, '[', within a [#COMMENT]-style comment.  Brackets may not appear in comments.}, COMMENT:{[# This is a [# nested comment]}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{d}, TSHEG_BAR_ADORNMENT:{o}, TIBETAN_NON_PUNCTUATION:{n't}, TIBETAN_PUNCTUATION:{ }, ERROR:{116: Found an illegal character, 'y', with ordinal (in decimal) 121.}, ERROR:{132: The ACIP {o} must be glued to the end of a tsheg bar, but this one was not.}, ERROR:{116: Found an illegal character, 'u', with ordinal (in decimal) 117.}, TIBETAN_PUNCTUATION:{ }, ERROR:{116: Found an illegal character, 'k', with ordinal (in decimal) 107.}, TIBETAN_NON_PUNCTUATION:{n}, TSHEG_BAR_ADORNMENT:{o}, ERROR:{116: Found an illegal character, 'w', with ordinal (in decimal) 119.}, ERROR:{113: The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.}, ERROR:{103: Found a truly unmatched close bracket, ']'.}, ERROR:{104: Found a closing bracket, ']', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.}, TIBETAN_NON_PUNCTUATION:{KA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{KHA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{GA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{NGA}]");
         shelp("//NYA\\\\",
               "Offset 1: ERROR 110: Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\nOffset 5: ERROR 115: Found a backslash, \\, which the ACIP Tibetan Input Code standard says represents a Sanskrit virama.  In practice, though, this is so often misused (to represent U+0F3D) that {\\} always generates this error.  If you want a Sanskrit virama, change the input document to use {\\u0F84} instead of {\\}.  If you want U+0F3D, use {/NYA/} or {/NYA\\u0F3D}.\nOffset 6: ERROR 115: Found a backslash, \\, which the ACIP Tibetan Input Code standard says represents a Sanskrit virama.  In practice, though, this is so often misused (to represent U+0F3D) that {\\} always generates this error.  If you want a Sanskrit virama, change the input document to use {\\u0F84} instead of {\\}.  If you want U+0F3D, use {/NYA/} or {/NYA\\u0F3D}.\n",
               "[START_SLASH:{/}, ERROR:{110: Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.}, END_SLASH:{/}, TIBETAN_NON_PUNCTUATION:{NYA}, ERROR:{115: Found a backslash, \\, which the ACIP Tibetan Input Code standard says represents a Sanskrit virama.  In practice, though, this is so often misused (to represent U+0F3D) that {\\} always generates this error.  If you want a Sanskrit virama, change the input document to use {\\u0F84} instead of {\\}.  If you want U+0F3D, use {/NYA/} or {/NYA\\u0F3D}.}, ERROR:{115: Found a backslash, \\, which the ACIP Tibetan Input Code standard says represents a Sanskrit virama.  In practice, though, this is so often misused (to represent U+0F3D) that {\\} always generates this error.  If you want a Sanskrit virama, change the input document to use {\\u0F84} instead of {\\}.  If you want U+0F3D, use {/NYA/} or {/NYA\\u0F3D}.}]");
@@ -7520,23 +7605,33 @@ M+NA
         uhelp("\\uF020", "\uF020"); /* not in EWTS's domain */
 
         uhelp("[illegal comment, no '#' mark]",
-              "[#ERROR 106: Found an illegal open bracket (in context, this is '[illegal c...').  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket\u003f][#ERROR 128: Cannot convert ACIP {i} because i is a \"vowel\" without an associated consonant.][#ERROR 116: Found an illegal character, 'l', with ordinal (in decimal) 108.][#ERROR 116: Found an illegal character, 'l', with ordinal (in decimal) 108.][#ERROR 116: Found an illegal character, 'e', with ordinal (in decimal) 101.][#ERROR 116: Found an illegal character, 'g', with ordinal (in decimal) 103.][#ERROR 116: Found an illegal character, 'a', with ordinal (in decimal) 97.][#ERROR 116: Found an illegal character, 'l', with ordinal (in decimal) 108.]\u0f0b[#ERROR 116: Found an illegal character, 'c', with ordinal (in decimal) 99.][#ERROR 132: The ACIP {o} must be glued to the end of a tsheg bar, but this one was not.][#ERROR 128: Cannot convert ACIP {mm} because Am is a \"vowel\" without an associated consonant.][#ERROR 116: Found an illegal character, 'e', with ordinal (in decimal) 101.]\u0f4e\u0f9a\u0f0d \u0f4e\u0f37\u0f0b\u0f60\u0f04\u0f05\u0f05\u0f60\u0f0b[#ERROR 128: Cannot convert ACIP {m} because Am is a \"vowel\" without an associated consonant.][#ERROR 116: Found an illegal character, 'a', with ordinal (in decimal) 97.][#ERROR 116: Found an illegal character, 'r', with ordinal (in decimal) 114.][#ERROR 116: Found an illegal character, 'k', with ordinal (in decimal) 107.][#ERROR 104: Found a closing bracket, ']', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.]");
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "[illegal comment, no '#' mark]"
+              : "[#ERROR 106: Found an illegal open bracket (in context, this is '[illegal c...').  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket\u003f][#ERROR 128: Cannot convert ACIP {i} because i is a \"vowel\" without an associated consonant.][#ERROR 116: Found an illegal character, 'l', with ordinal (in decimal) 108.][#ERROR 116: Found an illegal character, 'l', with ordinal (in decimal) 108.][#ERROR 116: Found an illegal character, 'e', with ordinal (in decimal) 101.][#ERROR 116: Found an illegal character, 'g', with ordinal (in decimal) 103.][#ERROR 116: Found an illegal character, 'a', with ordinal (in decimal) 97.][#ERROR 116: Found an illegal character, 'l', with ordinal (in decimal) 108.]\u0f0b[#ERROR 116: Found an illegal character, 'c', with ordinal (in decimal) 99.][#ERROR 132: The ACIP {o} must be glued to the end of a tsheg bar, but this one was not.][#ERROR 128: Cannot convert ACIP {mm} because Am is a \"vowel\" without an associated consonant.][#ERROR 116: Found an illegal character, 'e', with ordinal (in decimal) 101.]\u0f4e\u0f9a\u0f0d \u0f4e\u0f37\u0f0b\u0f60\u0f04\u0f05\u0f05\u0f60\u0f0b[#ERROR 128: Cannot convert ACIP {m} because Am is a \"vowel\" without an associated consonant.][#ERROR 116: Found an illegal character, 'a', with ordinal (in decimal) 97.][#ERROR 116: Found an illegal character, 'r', with ordinal (in decimal) 114.][#ERROR 116: Found an illegal character, 'k', with ordinal (in decimal) 107.][#ERROR 104: Found a closing bracket, ']', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.]");
         uhelpShortMessages("[illegal comment, no '#' mark]",
-                           "[#ERROR 106: {[illegal c...}][#ERROR 128: {i}][#ERROR 116: {l}][#ERROR 116: {l}][#ERROR 116: {e}][#ERROR 116: {g}][#ERROR 116: {a}][#ERROR 116: {l}]\u0f0b[#ERROR 116: {c}][#ERROR 132: {o}][#ERROR 128: {mm}][#ERROR 116: {e}]\u0f4e\u0f9a\u0f0d \u0f4e\u0f37\u0f0b\u0f60\u0f04\u0f05\u0f05\u0f60\u0f0b[#ERROR 128: {m}][#ERROR 116: {a}][#ERROR 116: {r}][#ERROR 116: {k}][#ERROR 104: ']']");
+                           ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+                           ? "[illegal comment, no '#' mark]"
+                           : "[#ERROR 106: {[illegal c...}][#ERROR 128: {i}][#ERROR 116: {l}][#ERROR 116: {l}][#ERROR 116: {e}][#ERROR 116: {g}][#ERROR 116: {a}][#ERROR 116: {l}]\u0f0b[#ERROR 116: {c}][#ERROR 132: {o}][#ERROR 128: {mm}][#ERROR 116: {e}]\u0f4e\u0f9a\u0f0d \u0f4e\u0f37\u0f0b\u0f60\u0f04\u0f05\u0f05\u0f60\u0f0b[#ERROR 128: {m}][#ERROR 116: {a}][#ERROR 116: {r}][#ERROR 116: {k}][#ERROR 104: ']']");
 
         uhelp("[illegal [nested comment], no '#' marks either]",
-              "[#ERROR 106: Found an illegal open bracket (in context, this is '[illegal [...').  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket\u003f][#ERROR 128: Cannot convert ACIP {i} because i is a \"vowel\" without an associated consonant.][#ERROR 116: Found an illegal character, 'l', with ordinal (in decimal) 108.][#ERROR 116: Found an illegal character, 'l', with ordinal (in decimal) 108.][#ERROR 116: Found an illegal character, 'e', with ordinal (in decimal) 101.][#ERROR 116: Found an illegal character, 'g', with ordinal (in decimal) 103.][#ERROR 116: Found an illegal character, 'a', with ordinal (in decimal) 97.][#ERROR 116: Found an illegal character, 'l', with ordinal (in decimal) 108.]\u0f0b[#ERROR 105: Found a truly unmatched open bracket, '[' or '{', prior to this current illegal open bracket, '['.][#ERROR 106: Found an illegal open bracket (in context, this is '[nested co...').  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket\u003f]\u0f4e[#ERROR 116: Found an illegal character, 'e', with ordinal (in decimal) 101.][#ERROR 129: Cannot convert ACIP {st} because s is not an ACIP consonant.][#ERROR 116: Found an illegal character, 'e', with ordinal (in decimal) 101.]\u0f4c\u0f0b[#ERROR 116: Found an illegal character, 'c', with ordinal (in decimal) 99.][#ERROR 132: The ACIP {o} must be glued to the end of a tsheg bar, but this one was not.][#ERROR 128: Cannot convert ACIP {mm} because Am is a \"vowel\" without an associated consonant.][#ERROR 116: Found an illegal character, 'e', with ordinal (in decimal) 101.]\u0f4e\u0f9a[#ERROR 104: Found a closing bracket, ']', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.]\u0f0d \u0f4e\u0f37\u0f0b\u0f60\u0f04\u0f05\u0f05\u0f60\u0f0b[#ERROR 128: Cannot convert ACIP {m} because Am is a \"vowel\" without an associated consonant.][#ERROR 116: Found an illegal character, 'a', with ordinal (in decimal) 97.][#ERROR 116: Found an illegal character, 'r', with ordinal (in decimal) 114.][#ERROR 116: Found an illegal character, 'k', with ordinal (in decimal) 107.][#ERROR 129: Cannot convert ACIP {s} because s is not an ACIP consonant.]\u0f0b[#ERROR 116: Found an illegal character, 'e', with ordinal (in decimal) 101.][#ERROR 128: Cannot convert ACIP {ith} because i is a \"vowel\" without an associated consonant.][#ERROR 116: Found an illegal character, 'e', with ordinal (in decimal) 101.][#ERROR 116: Found an illegal character, 'r', with ordinal (in decimal) 114.][#ERROR 103: Found a truly unmatched close bracket, ']'.][#ERROR 104: Found a closing bracket, ']', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.]");
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "[#ERROR 141: While waiting for a closing bracket, an opening bracket, '[', was found instead.  Nesting of bracketed expressions is not permitted.][illegal [nested comment]\u0f0d \u0f4e\u0f37\u0f0b\u0f60\u0f04\u0f05\u0f05\u0f60\u0f0b[#ERROR 128: Cannot convert ACIP {m} because Am is a \"vowel\" without an associated consonant.][#ERROR 116: Found an illegal character, 'a', with ordinal (in decimal) 97.][#ERROR 116: Found an illegal character, 'r', with ordinal (in decimal) 114.][#ERROR 116: Found an illegal character, 'k', with ordinal (in decimal) 107.][#ERROR 129: Cannot convert ACIP {s} because s is not an ACIP consonant.]\u0f0b[#ERROR 116: Found an illegal character, 'e', with ordinal (in decimal) 101.][#ERROR 128: Cannot convert ACIP {ith} because i is a \"vowel\" without an associated consonant.][#ERROR 116: Found an illegal character, 'e', with ordinal (in decimal) 101.][#ERROR 116: Found an illegal character, 'r', with ordinal (in decimal) 114.][#ERROR 140: Unmatched closing bracket, ']', found.  Pairs are expected, as in [#THIS] or [THAT].  Nesting is not allowed.]"
+              : "[#ERROR 106: Found an illegal open bracket (in context, this is '[illegal [...').  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket\u003f][#ERROR 128: Cannot convert ACIP {i} because i is a \"vowel\" without an associated consonant.][#ERROR 116: Found an illegal character, 'l', with ordinal (in decimal) 108.][#ERROR 116: Found an illegal character, 'l', with ordinal (in decimal) 108.][#ERROR 116: Found an illegal character, 'e', with ordinal (in decimal) 101.][#ERROR 116: Found an illegal character, 'g', with ordinal (in decimal) 103.][#ERROR 116: Found an illegal character, 'a', with ordinal (in decimal) 97.][#ERROR 116: Found an illegal character, 'l', with ordinal (in decimal) 108.]\u0f0b[#ERROR 105: Found a truly unmatched open bracket, '[' or '{', prior to this current illegal open bracket, '['.][#ERROR 106: Found an illegal open bracket (in context, this is '[nested co...').  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket\u003f]\u0f4e[#ERROR 116: Found an illegal character, 'e', with ordinal (in decimal) 101.][#ERROR 129: Cannot convert ACIP {st} because s is not an ACIP consonant.][#ERROR 116: Found an illegal character, 'e', with ordinal (in decimal) 101.]\u0f4c\u0f0b[#ERROR 116: Found an illegal character, 'c', with ordinal (in decimal) 99.][#ERROR 132: The ACIP {o} must be glued to the end of a tsheg bar, but this one was not.][#ERROR 128: Cannot convert ACIP {mm} because Am is a \"vowel\" without an associated consonant.][#ERROR 116: Found an illegal character, 'e', with ordinal (in decimal) 101.]\u0f4e\u0f9a[#ERROR 104: Found a closing bracket, ']', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.]\u0f0d \u0f4e\u0f37\u0f0b\u0f60\u0f04\u0f05\u0f05\u0f60\u0f0b[#ERROR 128: Cannot convert ACIP {m} because Am is a \"vowel\" without an associated consonant.][#ERROR 116: Found an illegal character, 'a', with ordinal (in decimal) 97.][#ERROR 116: Found an illegal character, 'r', with ordinal (in decimal) 114.][#ERROR 116: Found an illegal character, 'k', with ordinal (in decimal) 107.][#ERROR 129: Cannot convert ACIP {s} because s is not an ACIP consonant.]\u0f0b[#ERROR 116: Found an illegal character, 'e', with ordinal (in decimal) 101.][#ERROR 128: Cannot convert ACIP {ith} because i is a \"vowel\" without an associated consonant.][#ERROR 116: Found an illegal character, 'e', with ordinal (in decimal) 101.][#ERROR 116: Found an illegal character, 'r', with ordinal (in decimal) 114.][#ERROR 103: Found a truly unmatched close bracket, ']'.][#ERROR 104: Found a closing bracket, ']', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.]");
         uhelpShortMessages("[illegal [nested comment], no '#' marks either]",
-                           "[#ERROR 106: {[illegal [...}][#ERROR 128: {i}][#ERROR 116: {l}][#ERROR 116: {l}][#ERROR 116: {e}][#ERROR 116: {g}][#ERROR 116: {a}][#ERROR 116: {l}]\u0f0b[#ERROR 105: '['][#ERROR 106: {[nested co...}]\u0f4e[#ERROR 116: {e}][#ERROR 129: {st}][#ERROR 116: {e}]\u0f4c\u0f0b[#ERROR 116: {c}][#ERROR 132: {o}][#ERROR 128: {mm}][#ERROR 116: {e}]\u0f4e\u0f9a[#ERROR 104: ']']\u0f0d \u0f4e\u0f37\u0f0b\u0f60\u0f04\u0f05\u0f05\u0f60\u0f0b[#ERROR 128: {m}][#ERROR 116: {a}][#ERROR 116: {r}][#ERROR 116: {k}][#ERROR 129: {s}]\u0f0b[#ERROR 116: {e}][#ERROR 128: {ith}][#ERROR 116: {e}][#ERROR 116: {r}][#ERROR 103: ']'][#ERROR 104: ']']"); 
+                           ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+                           ? "[#ERROR 141: '['][illegal [nested comment]\u0f0d \u0f4e\u0f37\u0f0b\u0f60\u0f04\u0f05\u0f05\u0f60\u0f0b[#ERROR 128: {m}][#ERROR 116: {a}][#ERROR 116: {r}][#ERROR 116: {k}][#ERROR 129: {s}]\u0f0b[#ERROR 116: {e}][#ERROR 128: {ith}][#ERROR 116: {e}][#ERROR 116: {r}][#ERROR 140: ']']"
+                           : "[#ERROR 106: {[illegal [...}][#ERROR 128: {i}][#ERROR 116: {l}][#ERROR 116: {l}][#ERROR 116: {e}][#ERROR 116: {g}][#ERROR 116: {a}][#ERROR 116: {l}]\u0f0b[#ERROR 105: '['][#ERROR 106: {[nested co...}]\u0f4e[#ERROR 116: {e}][#ERROR 129: {st}][#ERROR 116: {e}]\u0f4c\u0f0b[#ERROR 116: {c}][#ERROR 132: {o}][#ERROR 128: {mm}][#ERROR 116: {e}]\u0f4e\u0f9a[#ERROR 104: ']']\u0f0d \u0f4e\u0f37\u0f0b\u0f60\u0f04\u0f05\u0f05\u0f60\u0f0b[#ERROR 128: {m}][#ERROR 116: {a}][#ERROR 116: {r}][#ERROR 116: {k}][#ERROR 129: {s}]\u0f0b[#ERROR 116: {e}][#ERROR 128: {ith}][#ERROR 116: {e}][#ERROR 116: {r}][#ERROR 103: ']'][#ERROR 104: ']']");
 
         uhelp("VA", "[#ERROR 124: Cannot convert ACIP {VA} because {V}, wa-zur, appears without being subscribed to a consonant.]");
         uhelp("A", "[#ERROR 125: Cannot convert ACIP {A} because we would be required to assume that {A} is a consonant, when it is not clear if it is a consonant or a vowel.]");
         uhelp("A-DZU", "[#ERROR 134: The tsheg bar (\"syllable\") {A-DZU} has no legal parses.]");
 
         uhelp("[# a [# nested comment]]",
-              "[#ERROR 102: Found an open bracket, '[', within a [#COMMENT]-style comment.  Brackets may not appear in comments.][# a [# nested comment][#ERROR 103: Found a truly unmatched close bracket, ']'.][#ERROR 104: Found a closing bracket, ']', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.]");
+              ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+              ? "[#ERROR 141: While waiting for a closing bracket, an opening bracket, '[', was found instead.  Nesting of bracketed expressions is not permitted.][# a [# nested comment][#ERROR 140: Unmatched closing bracket, ']', found.  Pairs are expected, as in [#THIS] or [THAT].  Nesting is not allowed.]"
+              : "[#ERROR 102: Found an open bracket, '[', within a [#COMMENT]-style comment.  Brackets may not appear in comments.][# a [# nested comment][#ERROR 103: Found a truly unmatched close bracket, ']'.][#ERROR 104: Found a closing bracket, ']', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.]");
 
-        uhelp("RTSNYA", "[#WARNING 512: There is a chance that the ACIP {RTSNYA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.  In fact, there are glyphs in the Tibetan Machine font for N+N+Y, N+G+H, G+N+Y, G+H+N+Y, T+N+Y, T+S+TH, T+S+N, T+S+N+Y, TS+NY, TS+N+Y, H+N+Y, M+N+Y, T+S+M, T+S+M+Y, T+S+Y, T+S+R, T+S+V, N+T+S, T+S, S+H, R+T+S, R+T+S+N, R+T+S+N+Y, and N+Y, indicating the importance of these easily mistyped stacks, so the possibility is very real.][#WARNING 511: The ACIP {R+TS+NYA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f62\u0faa\u0f99"); // FIXME 936998
+        uhelp("RTSNYA", "[#WARNING 512: There is a chance that the ACIP {RTSNYA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.  In fact, there are glyphs in the Tibetan Machine font for N+N+Y, N+G+H, G+N+Y, G+H+N+Y, T+N+Y, T+S+TH, T+S+N, T+S+N+Y, TS+NY, TS+N+Y, H+N+Y, M+N+Y, T+S+M, T+S+M+Y, T+S+Y, T+S+R, T+S+V, N+T+S, T+S, S+H, R+T+S, R+T+S+N, R+T+S+N+Y, and N+Y, indicating the importance of these easily mistyped stacks, so the possibility is very real.][#WARNING 511: The ACIP {R+TS+NYA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.  The TibetanMachineWeb font has only a limited number of ready-made, precomposed glyphs, and {R+TS+NYA} is not one of them.]\u0f62\u0faa\u0f99"); // FIXME 936998
 
         uhelp("KO&HAm,", "\u0F40\u0F7C\u0F85\u0F67\u0F7E\u0F0D");
         uhelp("x", "[#ERROR 132: The ACIP {x} must be glued to the end of a tsheg bar, but this one was not.]");
@@ -7548,13 +7643,13 @@ M+NA
         uhelp("N+YA", "\u0f53\u0fb1");
         uhelp("NA+YA", "\u0f53\u0fb1"); // FIXME: warn about the extra A
         uhelp("NE+YA", "[#ERROR 129: Cannot convert ACIP {NE+YA} because + is not an ACIP consonant.]");
-        uhelp("tRAStA", "[#WARNING 511: The ACIP {t+RA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f4a\u0fb2\u0f66\u0f9a");
+        uhelp("tRAStA", "[#WARNING 511: The ACIP {t+RA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.  The TibetanMachineWeb font has only a limited number of ready-made, precomposed glyphs, and {t+RA} is not one of them.]\u0f4a\u0fb2\u0f66\u0f9a");
         uhelp("DZHDZHA", "[#WARNING 507: There is a chance that the ACIP {DZHDZHA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.]\u0f5b\u0fb7\u0fab\u0fb7"); // tricky because DZHDZA is not in TMW but DZHDZHA is
-        uhelp("DZHDZA", "[#WARNING 507: There is a chance that the ACIP {DZHDZA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.][#WARNING 511: The ACIP {DZH+DZA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f5b\u0fb7\u0fab");
+        uhelp("DZHDZA", "[#WARNING 507: There is a chance that the ACIP {DZHDZA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.][#WARNING 511: The ACIP {DZH+DZA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.  The TibetanMachineWeb font has only a limited number of ready-made, precomposed glyphs, and {DZH+DZA} is not one of them.]\u0f5b\u0fb7\u0fab");
         uhelp("P+S+N+YA", "\u0f54\u0fb6\u0fa3\u0fb1");
-        uhelp("P+S+NYA", "[#WARNING 511: The ACIP {P+S+NYA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f54\u0fb6\u0f99");
-        uhelp("PSNYA", "[#WARNING 507: There is a chance that the ACIP {PSNYA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.][#WARNING 511: The ACIP {P+S+NYA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f54\u0fb6\u0f99"); // Is this P+S+N+YA?  No, it's P+S+NYA.  But warn!
-        uhelp("NNYA", "[#WARNING 512: There is a chance that the ACIP {NNYA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.  In fact, there are glyphs in the Tibetan Machine font for N+N+Y, N+G+H, G+N+Y, G+H+N+Y, T+N+Y, T+S+TH, T+S+N, T+S+N+Y, TS+NY, TS+N+Y, H+N+Y, M+N+Y, T+S+M, T+S+M+Y, T+S+Y, T+S+R, T+S+V, N+T+S, T+S, S+H, R+T+S, R+T+S+N, R+T+S+N+Y, and N+Y, indicating the importance of these easily mistyped stacks, so the possibility is very real.][#WARNING 511: The ACIP {N+NYA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f53\u0f99");
+        uhelp("P+S+NYA", "[#WARNING 511: The ACIP {P+S+NYA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.  The TibetanMachineWeb font has only a limited number of ready-made, precomposed glyphs, and {P+S+NYA} is not one of them.]\u0f54\u0fb6\u0f99");
+        uhelp("PSNYA", "[#WARNING 507: There is a chance that the ACIP {PSNYA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.][#WARNING 511: The ACIP {P+S+NYA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.  The TibetanMachineWeb font has only a limited number of ready-made, precomposed glyphs, and {P+S+NYA} is not one of them.]\u0f54\u0fb6\u0f99"); // Is this P+S+N+YA?  No, it's P+S+NYA.  But warn!
+        uhelp("NNYA", "[#WARNING 512: There is a chance that the ACIP {NNYA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.  In fact, there are glyphs in the Tibetan Machine font for N+N+Y, N+G+H, G+N+Y, G+H+N+Y, T+N+Y, T+S+TH, T+S+N, T+S+N+Y, TS+NY, TS+N+Y, H+N+Y, M+N+Y, T+S+M, T+S+M+Y, T+S+Y, T+S+R, T+S+V, N+T+S, T+S, S+H, R+T+S, R+T+S+N, R+T+S+N+Y, and N+Y, indicating the importance of these easily mistyped stacks, so the possibility is very real.][#WARNING 511: The ACIP {N+NYA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.  The TibetanMachineWeb font has only a limited number of ready-made, precomposed glyphs, and {N+NYA} is not one of them.]\u0f53\u0f99");
         uhelp("GHNYA", "[#WARNING 512: There is a chance that the ACIP {GHNYA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.  In fact, there are glyphs in the Tibetan Machine font for N+N+Y, N+G+H, G+N+Y, G+H+N+Y, T+N+Y, T+S+TH, T+S+N, T+S+N+Y, TS+NY, TS+N+Y, H+N+Y, M+N+Y, T+S+M, T+S+M+Y, T+S+Y, T+S+R, T+S+V, N+T+S, T+S, S+H, R+T+S, R+T+S+N, R+T+S+N+Y, and N+Y, indicating the importance of these easily mistyped stacks, so the possibility is very real.]\u0f42\u0fb7\u0f99"); // FIXME 946043: GH is f43, not f42+fb7, you could say
 
         // no 507; the inputter uses '+':
@@ -7578,7 +7673,7 @@ M+NA
         uhelp("KAo\nKHA", "\u0f40\u0f37\u0f0b\u0f41");
         uhelp("KAo KHA", "\u0f40\u0f37\u0f0b\u0f41");
         uhelp("KA KAo KHA", "\u0f40\u0f0b\u0f40\u0f37\u0f0b\u0f41");
-        uhelp("KAx", "\u0f40[#ERROR 133: Cannot convert the ACIP {x} to Tibetan because it is unclear what the result should be.]");
+        uhelp("KAx", "\u0f40[#ERROR 133: Cannot convert the ACIP {x} to Tibetan because it is unclear what the result should be.  The correct output would likely require special mark-up.]");
         uhelp("G+DHA", "\u0f42\u0fa1\u0fb7");
         uhelp("P'EE", "\u0f54\u0f71\u0f7b");
 
@@ -7668,7 +7763,7 @@ M+NA
         uhelp("*#HUm: G+DHOO GRO`;.,",
               "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b\u0f42\u0fa1\u0fb7\u0f7d\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
         uhelp("*#HUm: K+DHA GRO`;.,",
-              "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b[#WARNING 511: The ACIP {K+DHA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f40\u0fa1\u0fb7\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
+              "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b[#WARNING 511: The ACIP {K+DHA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.  The TibetanMachineWeb font has only a limited number of ready-made, precomposed glyphs, and {K+DHA} is not one of them.]\u0f40\u0fa1\u0fb7\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
         uhelp("HA,\nHA\n\nHA", "\u0f67\u0f0d \u0f67\u0f0b\n\n\u0f67");
         uhelp("NGA,", "\u0f44\u0f0c\u0f0d");
         uhelp("NGA,\nHA\n\nHA", "\u0f44\u0f0c\u0f0d \u0f67\u0f0b\n\n\u0f67");
@@ -7681,8 +7776,8 @@ M+NA
         uhelp("GU, ,KHO", "\u0f42\u0f74\u0f0d \u0f0d\u0f41\u0f7c");
         uhelp("GU  ,KHO", "\u0f42\u0f74\u0f0b \u0f0d\u0f41\u0f7c"); // FIXME: missing a shad after GU, warn about that.
         uhelp("GA  HA", "\u0f42\u0f0b \u0f67");
-        uhelp("BCWA", "[#WARNING 511: The ACIP {B+C+WA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f56\u0f95\u0fba");
-        uhelp("'KYO", "[#WARNING 501: Using {'+K+YO} for the ACIP {'KYO}, but only because the tool's knowledge of prefix rules (see the documentation) says that {'}{K+YO} is not a legal Tibetan tsheg bar (\"syllable\")][#WARNING 511: The ACIP {'+K+YO} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f60\u0f90\u0fb1\u0f7c");
+        uhelp("BCWA", "[#WARNING 511: The ACIP {B+C+WA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.  The TibetanMachineWeb font has only a limited number of ready-made, precomposed glyphs, and {B+C+WA} is not one of them.]\u0f56\u0f95\u0fba");
+        uhelp("'KYO", "[#WARNING 501: Using {'+K+YO} for the ACIP {'KYO}, but only because the tool's knowledge of prefix rules (see the documentation) says that {'}{K+YO} is not a legal Tibetan tsheg bar (\"syllable\")][#WARNING 511: The ACIP {'+K+YO} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.  The TibetanMachineWeb font has only a limited number of ready-made, precomposed glyphs, and {'+K+YO} is not one of them.]\u0f60\u0f90\u0fb1\u0f7c");
         uhelp("WA", "\u0f5d");
         uhelp("W", "\u0f5d");
         uhelp("WO", "\u0f5d\u0f7c");
@@ -7700,21 +7795,21 @@ M+NA
         uhelp("WRA", "\u0f5d\u0fb2");
         uhelp("W+RA", "\u0f5d\u0fb2");
         uhelp("W+R", "\u0f5d\u0fb2");
-        uhelp("BCWA", "[#WARNING 511: The ACIP {B+C+WA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f56\u0f95\u0fba");
-        uhelp("BCW", "[#WARNING 511: The ACIP {B+C+W} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f56\u0f95\u0fba");
-        uhelp("BCWO", "[#WARNING 511: The ACIP {B+C+WO} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f56\u0f95\u0fba\u0f7c");
+        uhelp("BCWA", "[#WARNING 511: The ACIP {B+C+WA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.  The TibetanMachineWeb font has only a limited number of ready-made, precomposed glyphs, and {B+C+WA} is not one of them.]\u0f56\u0f95\u0fba");
+        uhelp("BCW", "[#WARNING 511: The ACIP {B+C+W} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.  The TibetanMachineWeb font has only a limited number of ready-made, precomposed glyphs, and {B+C+W} is not one of them.]\u0f56\u0f95\u0fba");
+        uhelp("BCWO", "[#WARNING 511: The ACIP {B+C+WO} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.  The TibetanMachineWeb font has only a limited number of ready-made, precomposed glyphs, and {B+C+WO} is not one of them.]\u0f56\u0f95\u0fba\u0f7c");
         uhelp("BCVA", "\u0f56\u0f45\u0fad");
         uhelp("BCV", "\u0f56\u0f45\u0fad");
         uhelp("BCV'O", "\u0f56\u0f45\u0fad\u0f71\u0f7c");
         uhelp("BCV'A", "\u0f56\u0f45\u0fad\u0f71");
-        uhelp("BCV'", "[#WARNING 511: The ACIP {B+C+V+'} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f56\u0f95\u0fad\u0fb0");
+        uhelp("BCV'", "[#WARNING 511: The ACIP {B+C+V+'} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.  The TibetanMachineWeb font has only a limited number of ready-made, precomposed glyphs, and {B+C+V+'} is not one of them.]\u0f56\u0f95\u0fad\u0fb0");
         uhelp("GYA", "\u0f42\u0fb1");
         uhelp("GY", "\u0f42\u0fb1");
         uhelp("G-YA", "\u0f42\u0f61");
         uhelp("GA-YA", "[#WARNING 505: There is a useless disambiguator in {GA-YA}.]\u0f42\u0f61");
         uhelp("GA-YO", "[#WARNING 505: There is a useless disambiguator in {GA-YO}.]\u0f42\u0f61\u0F7c");
         uhelp("RTZVA", "[#WARNING 507: There is a chance that the ACIP {RTZVA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.]\u0f62\u0fa9\u0fad");
-        uhelp("RTZWA", "[#WARNING 507: There is a chance that the ACIP {RTZWA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.][#WARNING 511: The ACIP {R+TZ+WA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f62\u0fa9\u0fba");
+        uhelp("RTZWA", "[#WARNING 507: There is a chance that the ACIP {RTZWA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.][#WARNING 511: The ACIP {R+TZ+WA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.  The TibetanMachineWeb font has only a limited number of ready-made, precomposed glyphs, and {R+TZ+WA} is not one of them.]\u0f62\u0fa9\u0fba");
     }
     public void testFixedFormSubjoinedConsonants() {
         // Usual subjoined RA:
@@ -10226,6 +10321,32 @@ M+NA
 tstHelper("shKA");
 
     }
+
+    public void testBrackets() {
+        if (ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED) {
+            uhelpShortMessages("{ DD }", " DD ");
+            uhelpShortMessages("{D X}", "D X");
+            uhelpShortMessages("{D[ X]}", "D[ X]");
+
+            uhelpShortMessages("[ DD ]", "[ DD ]");
+            uhelpShortMessages("[D X]", "[D X]");
+            uhelpShortMessages("[D{ X}]", "[D{ X}]");
+
+            uhelpShortMessages("SHA [i forgot to close",
+                               "\u0f64\u0f0b[#ERROR 139: {[i forgot ...}][#ERROR 117: {-*-END OF FILE-*-}]");
+            uhelpShortMessages("SHA [pass me thru] HA [*LA and pass me too] KA [# note THIS, \uF022] [?] [DD] [ DD  ] KHA [ note the\r\nline break ] GA ",
+                               "\u0f64\u0f0b[pass me thru] \u0f67\u0f0b[*LA and pass me too] \u0f40\u0f0b[# note THIS, \uf022] [?] [DD] [ DD  ] \u0f41\u0f0b[ note the\r\nline break ] \u0f42\u0f0b");
+            uhelpShortMessages("SHA {pass me thru} HA {*LA and pass me too} KA {# note THIS, \uF022} {?} {DD} { DD  } KHA { note the\r\nline break } GA ",
+                               "\u0f64\u0f0bpass me thru \u0f67\u0f0b*LA and pass me too \u0f40\u0f0b# note THIS, \uf022 ? DD  DD   \u0f41\u0f0b note the\r\nline break  \u0f42\u0f0b");
+            uhelpShortMessages("SHA [nested [# thingy] ]",
+                               "\u0f64\u0f0b[#ERROR 141: '['][nested [# thingy] [#ERROR 140: ']']");
+            uhelpShortMessages("SHA [nested [# thingy] unterminated",
+                               "\u0f64\u0f0b[#ERROR 141: '['][nested [# thingy] [#ERROR 116: {u}]\u0f4e\u0f9a[#ERROR 116: {e}][#ERROR 116: {r}][#ERROR 128: {min}][#ERROR 116: {a}]\u0f4a[#ERROR 116: {e}]\u0f4c[#ERROR 117: {-*-END OF FILE-*-}]");
+            uhelpShortMessages("SHA [*{this 'nesting' is ok }]",
+                               "\u0f64\u0f0b[*{this 'nesting' is ok }]");
+        }
+    }
+
 
     public void test512And507() {
         // Plain "GNY" is interpreted as two stacks, so no 512 warning

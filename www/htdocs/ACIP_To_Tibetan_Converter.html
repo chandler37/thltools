@@ -303,9 +303,9 @@
   where XXX is the error number, e.g. 501, to your choice of
   <tt>DISABLED</tt>, <tt>Some</tt>, <tt>Most</tt>, or
   <tt>All</tt>.&nbsp; Alternatively, alter <tt>options.txt</tt>, a
-  file found inside the top level of the JAR file, as the comments
-  indicate.&nbsp; These instructions are for experts; please contact
-  <a href="mailto:thdltools-devel@lists.sourceforge.net">the
+  file found inside the top level of the JAR file, as the comments in
+  that file indicate.&nbsp; These instructions are for experts; please
+  contact <a href="mailto:thdltools-devel@lists.sourceforge.net">the
   developers</a> if you need help.
 </p>
 
@@ -316,84 +316,172 @@
   {X}]</tt>.&nbsp; The long forms are as follows:
 </p>
 
+<a name="101">
 <p><tt>101: There's not even a unique, non-illegal parse for {X}</tt></p>
+</a>
 
+<a name="102">
 <p><tt>102: Found an open bracket, 'X', within a [#COMMENT]-style comment.  Brackets may not appear in comments.</tt></p>
+</a>
 
+<a name="103">
 <p><tt>103: Found a truly unmatched close bracket, 'X'.</tt></p>
+</a>
 
+<a name="104">
 <p><tt>104: Found a closing bracket, 'X', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.</tt></p>
+</a>
 
+<a name="105">
 <p><tt>105: Found a truly unmatched open bracket, '[' or '{', prior to this current illegal open bracket, 'X'.</tt></p>
+</a>
 
+<a name="106">
 <p><tt>106: Found an illegal open bracket (in context, this is 'X').  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?</tt></p>
+</a>
 
+<a name="107">
 <p><tt>107: Found an illegal at sign, @ (in context, this is X).  This folio marker has a period, '.', at the end of it, which is illegal.</tt></p>
+</a>
 
+<a name="108">
 <p><tt>108: Found an illegal at sign, @ (in context, this is X).  This folio marker is not followed by whitespace, as is expected.</tt></p>
+</a>
 
+<a name="109">
 <p><tt>109: Found an illegal at sign, @ (in context, this is X).  @012B is an example of a legal folio marker.</tt></p>
+</a>
 
+<a name="110">
 <p><tt>110: Found //, which could be legal (the Unicode would be \u0F3C\u0F3D), but is likely in an illegal construct like //NYA\\.</tt></p>
+</a>
 
+<a name="111">
 <p><tt>111: Found an illegal open parenthesis, '('.  Nesting of parentheses is not allowed.</tt></p>
+</a>
 
+<a name="112">
 <p><tt>112: Unexpected closing parenthesis, ')', found.</tt></p>
+</a>
 
+<a name="113">
 <p><tt>113: The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.</tt></p>
+</a>
 
+<a name="114">
 <p><tt>114: Found an illegal, unprintable character.</tt></p>
+</a>
 
+<a name="115">
 <p><tt>115: Found a backslash, \, which the ACIP Tibetan Input Code standard says represents a Sanskrit virama.  In practice, though, this is so often misused (to represent U+0F3D) that {\} always generates this error.  If you want a Sanskrit virama, change the input document to use {\u0F84} instead of {\}.  If you want U+0F3D, use {/NYA/} or {/NYA\u0F3D}.</tt></p>
+</a>
 
-<p><tt>116: Found an illegal character, 'X', with ordinal (in decimal) Y.</tt></p>
+<a name="116">
+<p><tt>116: Found an illegal character, 'X', with ordinal (in decimal) 88.</tt></p>
+</a>
 
+<a name="117">
 <p><tt>117: Unexpected end of input; truly unmatched open bracket found.</tt></p>
+</a>
 
+<a name="118">
 <p><tt>118: Unmatched open bracket found.  A comment does not terminate.</tt></p>
+</a>
 
+<a name="119">
 <p><tt>119: Unmatched open bracket found.  A correction does not terminate.</tt></p>
+</a>
 
+<a name="120">
 <p><tt>120: Slashes are supposed to occur in pairs, but the input had an unmatched '/' character.</tt></p>
+</a>
 
+<a name="121">
 <p><tt>121: Parentheses are supposed to occur in pairs, but the input had an unmatched parenthesis, '('.</tt></p>
+</a>
 
+<a name="122">
 <p><tt>122: Warning, empty tsheg bar found while converting from ACIP!</tt></p>
+</a>
 
+<a name="123">
 <p><tt>123: Cannot convert ACIP {X} because it contains a number but also a non-number.</tt></p>
+</a>
 
+<a name="124">
 <p><tt>124: Cannot convert ACIP {X} because {V}, wa-zur, appears without being subscribed to a consonant.</tt></p>
+</a>
 
+<a name="125">
 <p><tt>125: Cannot convert ACIP {X} because we would be required to assume that {A} is a consonant, when it is not clear if it is a consonant or a vowel.</tt></p>
+</a>
 
+<a name="126">
 <p><tt>126: Cannot convert ACIP {X} because it ends with a '+'.</tt></p>
+</a>
 
+<a name="127">
 <p><tt>127: Cannot convert ACIP {X} because it ends with a '-'.</tt></p>
+</a>
 
-<a name="128"><p><tt>128: Cannot convert ACIP {X} because A: is a "vowel" without an associated consonant.</tt></p></a>
+<a name="128">
+<p><tt>128: Cannot convert ACIP {X} because A: is a "vowel" without an associated consonant.</tt></p>
+</a>
 
+<a name="129">
 <p><tt>129: Cannot convert ACIP {X} because + is not an ACIP consonant.</tt></p>
+</a>
 
+<a name="130">
 <p><tt>130: The tsheg bar ("syllable") {X} is essentially nothing.</tt></p>
+</a>
 
-<a name="131"><p><tt>131: The ACIP caret, {^}, must precede a tsheg bar.</tt></p></a>
+<a name="131">
+<p><tt>131: The ACIP caret, {^}, must precede a tsheg bar.</tt></p>
+</a>
 
-<a name="132"><p><tt>132: The ACIP {X} must be glued to the end of a tsheg bar, but this one was not.</tt></p></a>
+<a name="132">
+<p><tt>132: The ACIP {X} must be glued to the end of a tsheg bar, but this one was not.</tt></p>
+</a>
 
+<a name="133">
 <p><tt>133: Cannot convert the ACIP {X} to Tibetan because it is unclear what the result should be.  The correct output would likely require special mark-up.</tt></p>
+</a>
 
+<a name="134">
 <p><tt>134: The tsheg bar ("syllable") {X} has no legal parses.</tt></p>
+</a>
 
-<p><tt>135: The Unicode escape 'X' with ordinal (in decimal) Y is specified by the Extended Wylie Transliteration Scheme (EWTS), but is in the private-use area (PUA) of Unicode and will thus not be written out into the output lest you think other tools will be able to understand this non-standard construction.</tt></p>
+<a name="135">
+<p><tt>135: The Unicode escape 'X' with ordinal (in decimal) 88 is specified by the Extended Wylie Transliteration Scheme (EWTS), but is in the private-use area (PUA) of Unicode and will thus not be written out into the output lest you think other tools will be able to understand this non-standard construction.</tt></p>
+</a>
 
-<p><tt>136: The Unicode escape with ordinal (in decimal) Y does not match up with any TibetanMachineWeb glyph.</tt></p>
+<a name="136">
+<p><tt>136: The Unicode escape with ordinal (in decimal) 88 does not match up with any TibetanMachineWeb glyph.</tt></p>
+</a>
 
+<a name="137">
 <p><tt>137: The ACIP {X} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.  The TibetanMachineWeb font has only a limited number of ready-made, precomposed glyphs, and {X} is not one of them.</tt></p>
+</a>
 
-<p><tt>138: The Unicode escape 'X' with ordinal (in decimal) Y is in the Tibetan range of Unicode (i.e., [U+0F00, U+0FFF]), but is a reserved code in that area.</tt></p>
+<a name="138">
+<p><tt>138: The Unicode escape 'X' with ordinal (in decimal) 88 is in the Tibetan range of Unicode (i.e., [U+0F00, U+0FFF]), but is a reserved code in that area.</tt></p>
+</a>
+
+<a name="139">
+<p><tt>139: Found an illegal open bracket (in context, this is 'X').  There is no matching closing bracket.</tt></p>
+</a>
+
+<a name="140">
+<p><tt>140: Unmatched closing bracket, 'X', found.  Pairs are expected, as in [#THIS] or [THAT].  Nesting is not allowed.</tt></p>
+</a>
+
+<a name="141">
+<p><tt>141: While waiting for a closing bracket, an opening bracket, 'X', was found instead.  Nesting of bracketed expressions is not permitted.</tt></p>
+</a>
+
 
 <hr>
-
 
 <p>
   Just as with ERRORS, one may choose to have WARNINGS appear in
@@ -401,29 +489,53 @@
   follows:
 </p>
 
-<a name="501"><p><tt>501: Using X, but only because the tool's knowledge of prefix rules (see the documentation) says that XX is not a legal Tibetan tsheg bar ("syllable")</tt></p></a>
+<a name="501">
+<p><tt>501: Using X, but only because the tool's knowledge of prefix rules (see the documentation) says that XX is not a legal Tibetan tsheg bar ("syllable")</tt></p>
+</a>
 
+<a name="502">
 <p><tt>502: The last stack does not have a vowel in {X}; this may indicate a typo, because Sanskrit, which this probably is (because it's not legal Tibetan), should have a vowel after each stack.</tt></p>
+</a>
 
+<a name="503">
 <p><tt>503: Though {X} is unambiguous, it would be more computer-friendly if '+' signs were used to stack things because there are two (or more) ways to interpret this ACIP if you're not careful.</tt></p>
+</a>
 
-<a name="504"><p><tt>504: The ACIP {X} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice.  To avoid seeing this warning again, change the input to use {\u0F35} instead of {X}.</tt></p></a>
+<a name="504">
+<p><tt>504: The ACIP {X} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice.  To avoid seeing this warning again, change the input to use {\u0F35} instead of {X}.</tt></p>
+</a>
 
+<a name="505">
 <p><tt>505: There is a useless disambiguator in {X}.</tt></p>
+</a>
 
+<a name="506">
 <p><tt>506: There is a stack of three or more consonants in {X} that uses at least one '+' but does not use a '+' between each consonant.</tt></p>
+</a>
 
+<a name="507">
 <p><tt>507: There is a chance that the ACIP {X} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.</tt></p>
+</a>
 
-<a name="508"><p><tt>508: The ACIP {X} has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack (because there is such a stack used in Sanskrit transliteration for this particular sequence) and forget to input it with '+' characters.</tt></p></a>
+<a name="508">
+<p><tt>508: The ACIP {X} has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack (because there is such a stack used in Sanskrit transliteration for this particular sequence) and forget to input it with '+' characters.</tt></p>
+</a>
 
-<a name="509"><p><tt>509: The ACIP {X} has an initial sequence that has been interpreted as two stacks, a prefix and a root stack, not one nonnative stack, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack (because there is such a stack used in Sanskrit transliteration for this particular sequence) and forget to input it with '+' characters.</tt></p></a>
+<a name="509">
+<p><tt>509: The ACIP {X} has an initial sequence that has been interpreted as two stacks, a prefix and a root stack, not one nonnative stack, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack (because there is such a stack used in Sanskrit transliteration for this particular sequence) and forget to input it with '+' characters.</tt></p>
+</a>
 
+<a name="510">
 <p><tt>510: A non-breaking tsheg, 'X', appeared, but not like "...," or ".," or ".dA" or ".DA".</tt></p>
+</a>
 
+<a name="511">
 <p><tt>511: The ACIP {X} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.  The TibetanMachineWeb font has only a limited number of ready-made, precomposed glyphs, and {X} is not one of them.</tt></p>
+</a>
 
+<a name="512">
 <p><tt>512: There is a chance that the ACIP {X} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.  In fact, there are glyphs in the Tibetan Machine font for N+N+Y, N+G+H, G+N+Y, G+H+N+Y, T+N+Y, T+S+TH, T+S+N, T+S+N+Y, TS+NY, TS+N+Y, H+N+Y, M+N+Y, T+S+M, T+S+M+Y, T+S+Y, T+S+R, T+S+V, N+T+S, T+S, S+H, R+T+S, R+T+S+N, R+T+S+N+Y, and N+Y, indicating the importance of these easily mistyped stacks, so the possibility is very real.</tt></p>
+</a>
 
 <hr>
 
@@ -639,10 +751,11 @@
 </p>
 
 <p>
-  Outside of comments, {\uKLMN} is interpreted as referring to the
-  Unicode character with ordinal <i>KLMN</i>, where each of K, L, M,
-  and N are case-insensitive hexadecimal digits.&nbsp; For example,
-  the ACIP {KA KHA GA NGA&nbsp;} is exactly equivalent to
+  Outside of comments and the like, {\uKLMN} is interpreted as
+  referring to the Unicode character with ordinal <i>KLMN</i>, where
+  each of K, L, M, and N are case-insensitive hexadecimal
+  digits.&nbsp; For example, the ACIP {KA KHA GA NGA&nbsp;} is exactly
+  equivalent to
   {\u0F40\u0f0B\u0F41\u0F0B\u0F42\u0F0B\u0F44\u0f0b}.&nbsp; Unicode
   escapes produce the obvious Unicode in an ACIP-&gt;Unicode
   conversion, and they produce the correct TMW glyph in an
@@ -767,6 +880,21 @@ THUGS RJE CHE ... and so on ...
 </p>
 
 <p>
+  Text inside a matching pair of square brackets (e.g., <tt>[# A
+  COMMENT]</tt> or <tt>[BP]</tt>) is passed through untouched into the
+  output; the brackets <em>remain</em>.&nbsp; Nesting is not
+  allowed.&nbsp; Text inside a matching pair of curly brackets (e.g.,
+  <tt>{# A COMMENT}</tt> or <tt>{BP}</tt>) is passed through untouched
+  into the output; the brackets <em>disappear</em>.&nbsp; Nesting is
+  not allowed.&nbsp; (Note that the source code implements two
+  algorithms for handling square and curly brackets; the one described
+  here is presently in use.&nbsp; But if you desire different
+  handling, please e-mail the <a
+  href="mailto:thdltools-devel@lists.sourceforge.net">developers</a>
+  to ask if it isn't a five-minute job to make that happen.)
+</p>
+<!-- The old method, ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED==false:
+<p>
   Comments appear in a Latin typeface always.&nbsp; Comments are not
   allowed just anywhere -- a comment cannot occur within a single
   <i>tsheg bar</i>, for example, and it cannot appear between a
@@ -865,6 +993,7 @@ From S0195A1.INC:
 "[THE INITIAL PART OF THIS TEXT WAS INPUT BY THE SERA MEY LIBRARY IN
 TIBETAN FONT AND NEEDS TO BE REDONE BY DOUBLE INPUT]"
 </pre>
+-->
 
 <p>
   The converter also supports several non-standard folio
@@ -885,17 +1014,22 @@ TIBETAN FONT AND NEEDS TO BE REDONE BY DOUBLE INPUT]"
 @[00007A]
 </pre>
 
+<!-- If ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED==false:
 <p>
   Similarly, to support real ACIP Release V texts, the converter
   treats {[DD1]}, {[DD2]}, {[ DD ]}, and {[DDD]} just like {[DD]}
   (which is specified in the ACIP standard).&nbsp; It treats {[ BP ]}
   and {[BLANK PAGE]} just like {[BP]}, also.
-</p>
+</p> -->
 
 <p>
-  The lists above were created by a most fallible process of reviewing
-  a large number of ACIP Release V texts.&nbsp; Your suggestions for
-  additions to these lists are highly valued; please contact <a
+  The <!-- The old method,
+  ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED==false:
+  lists above were --> list above was created by a most fallible
+  process of reviewing a large number of ACIP Release V texts.&nbsp;
+  Your suggestions for additions to <!-- The old method,
+  ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED==false:
+  these lists --> this list are highly valued; please contact <a
   href="mailto:thdltools-devel@lists.sourceforge.net">the
   developers</a>.
 </p>
@@ -965,11 +1099,11 @@ GA
   Though the ACIP standard does not mention it, it appears that some
   ACIP Release V texts use a period (i.e., {.}) to indicate a
   non-breaking tsheg (i.e., U+0F0C).&nbsp; Search for {NGO.,},
-  {....,DAM}, etc.&nbsp; Unless {,}, {.}, or a letter (i.e., a through
-  z) follows the {.}, it is only grudingly interpreted as a
-  non-breaking tsheg -- a warning is generated, too.&nbsp; FIXME: Is
-  this right?&nbsp; Allow for treating {.} as an outright error.<!--
-  DLC FIXME -->
+  {....,DAM}, etc.&nbsp; Unless {,}, {.}, or a letter (i.e., 'a'
+  through 'z' or 'A' through 'Z') follows the {.}, it is only
+  grudingly interpreted as a non-breaking tsheg -- a warning is
+  generated, too.<!-- &nbsp; FIXME: Is this right?&nbsp; Allow for
+  treating {.} as an outright error.  DLC FIXME -->
 </p>
 
 <p>

@@ -38,6 +38,15 @@ import org.thdl.util.ThdlOptions;
 *
 * @author David Chandler */
 public class ACIPTshegBarScanner {
+    /** True if those ACIP snippets inside square brackets (e.g.,
+        "[THIS]") are to be passed through into the output unmodified
+        while retaining the brackets and if those ACIP snippets inside
+        curly brackets (e.g., "{THAT}") are to be passed through into
+        the output unmodified while dropping the brackets.  (Nesting
+        of brackets is not allowed regardless.) */
+    public static final boolean BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+        = true; // Robert Chilton's e-mail from April 2004 calls for 'true'
+
     /** Useful for testing.  Gives error messages on standard output
      *  about why we can't scan the document perfectly and exits with
      *  non-zero return code, or says "Good scan!" otherwise and exits
@@ -253,7 +262,8 @@ public class ACIPTshegBarScanner {
                             return null;
                     }
                     waitingForMatchingIllegalClose = false;
-                    if (queueError(104, "" + ch,
+                    if (queueError(BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED ? 140 : 104,
+                                   "" + ch,
                                    shortMessages, i, numNewlines, maxErrors, al, errors, numErrorsArray))
                         return null;
                     startOfString = i+1;
@@ -289,7 +299,9 @@ public class ACIPTshegBarScanner {
 
             case '{': // NOTE WELL: KX0016I.ACT, KD0095M.ACT, and a
                       // host of other ACIP files use {} brackets like
-                      // [] brackets.  I treat both the same.
+                      // [] brackets.  I treat both the same if
+                      // BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED
+                      // is false.
                 
                 // fall through...
             case '[':
@@ -300,236 +312,287 @@ public class ACIPTshegBarScanner {
                     startOfString = i;
                     currentType = TString.ERROR;
                 }
-                String thingy = null;
-
-                if (i + "[DD]".length() <= sl
-                    && (s.substring(i, i + "[DD]".length()).equals("[DD]")
-                        || s.substring(i, i + "[DD]".length()).equals("{DD}"))) {
-                    thingy = "[DD]";
-                    currentType = TString.DD;
-                } else if (i + "[DD1]".length() <= sl
-                           && (s.substring(i, i + "[DD1]".length()).equals("[DD1]")
-                               || s.substring(i, i + "[DD1]".length()).equals("{DD1}"))) {
-                    thingy = "[DD1]";
-                    currentType = TString.DD;
-                } else if (i + "[DD2]".length() <= sl
-                           && (s.substring(i, i + "[DD2]".length()).equals("[DD2]")
-                               || s.substring(i, i + "[DD2]".length()).equals("{DD2}"))) {
-                    thingy = "[DD2]";
-                    currentType = TString.DD;
-                } else if (i + "[DDD]".length() <= sl
-                           && (s.substring(i, i + "[DDD]".length()).equals("[DDD]")
-                               || s.substring(i, i + "[DDD]".length()).equals("{DDD}"))) {
-                    thingy = "[DDD]";
-                    currentType = TString.DD;
-                } else if (i + "[DR]".length() <= sl
-                           && (s.substring(i, i + "[DR]".length()).equals("[DR]")
-                               || s.substring(i, i + "[DR]".length()).equals("{DR}"))) {
-                    thingy = "[DR]";
-                    currentType = TString.DR;
-                } else if (i + "[LS]".length() <= sl
-                           && (s.substring(i, i + "[LS]".length()).equals("[LS]")
-                               || s.substring(i, i + "[LS]".length()).equals("{LS}"))) {
-                    thingy = "[LS]";
-                    currentType = TString.LS;
-                } else if (i + "[BP]".length() <= sl
-                           && (s.substring(i, i + "[BP]".length()).equals("[BP]")
-                               || s.substring(i, i + "[BP]".length()).equals("{BP}"))) {
-                    thingy = "[BP]";
-                    currentType = TString.BP;
-                } else if (i + "[BLANK PAGE]".length() <= sl
-                           && (s.substring(i, i + "[BLANK PAGE]".length()).equals("[BLANK PAGE]")
-                               || s.substring(i, i + "[BLANK PAGE]".length()).equals("{BLANK PAGE}"))) {
-                    thingy = "[BLANK PAGE]";
-                    currentType = TString.BP;
-                } else if (i + "[ BP ]".length() <= sl
-                           && (s.substring(i, i + "[ BP ]".length()).equals("[ BP ]")
-                               || s.substring(i, i + "[ BP ]".length()).equals("{ BP }"))) {
-                    thingy = "{ BP }"; // found in TD3790E2.ACT
-                    currentType = TString.BP;
-                } else if (i + "[ DD ]".length() <= sl
-                           && (s.substring(i, i + "[ DD ]".length()).equals("[ DD ]")
-                               || s.substring(i, i + "[ DD ]".length()).equals("{ DD }"))) {
-                    thingy = "{ DD }"; // found in TD3790E2.ACT
-                    currentType = TString.DD;
-                } else if (i + "[?]".length() <= sl
-                           && (s.substring(i, i + "[?]".length()).equals("[?]")
-                               || s.substring(i, i + "[?]".length()).equals("{?}"))) {
-                    thingy = "[?]";
-                    currentType = TString.QUESTION;
-                } else {
-                    //  We see comments appear not as [#COMMENT], but
-                    //  as [COMMENT] sometimes.  We make special cases
-                    //  for some English comments.  There's no need to
-                    //  make this mechanism extensible, because you
-                    //  can easily edit the ACIP text so that it uses
-                    //  [#COMMENT] notation instead of [COMMENT].
-
-                    String[] englishComments = new String[] {
-                        "FIRST", "SECOND", // S5274I.ACT
-                        "Additional verses added by Khen Rinpoche here are", // S0216M.ACT
-                        "ADDENDUM: The text of", // S0216M.ACT
-                        "END OF ADDENDUM", // S0216M.ACT
-                        "Some of the verses added here by Khen Rinpoche include:", // S0216M.ACT
-                        "Note that, in the second verse, the {YUL LJONG} was orignally {GANG LJONG},\nand is now recited this way since the ceremony is not only taking place in Tibet.", // S0216M.ACT
-                        "Note that, in the second verse, the {YUL LJONG} was orignally {GANG LJONG},\r\nand is now recited this way since the ceremony is not only taking place in Tibet.", // S0216M.ACT
-                        "text missing", // S6954E1.ACT
-                        "INCOMPLETE", // TD3817I.INC
-                        "MISSING PAGE", // S0935m.act
-                        "MISSING FOLIO", // S0975I.INC
-                        "UNCLEAR LINE", // S0839D1I.INC
-                        "THE FOLLOWING TEXT HAS INCOMPLETE SECTIONS, WHICH ARE ON ORDER", // SE6260A.INC
-                        "@DATA INCOMPLETE HERE", // SE6260A.INC
-                        "@DATA MISSING HERE", // SE6260A.INC
-                        "LINE APPARENTLY MISSING THIS PAGE", // TD4035I.INC
-                        "DATA INCOMPLETE HERE", // TD4226I2.INC
-                        "DATA MISSING HERE", // just being consistent
-                        "FOLLOWING SECTION WAS NOT AVAILABLE WHEN THIS EDITION WAS\nPRINTED, AND IS SUPPLIED FROM ANOTHER, PROBABLY THE ORIGINAL:", // S0018N.ACT
-                        "FOLLOWING SECTION WAS NOT AVAILABLE WHEN THIS EDITION WAS\r\nPRINTED, AND IS SUPPLIED FROM ANOTHER, PROBABLY THE ORIGINAL:", // S0018N.ACT
-                        "THESE PAGE NUMBERS RESERVED IN THIS EDITION FOR PAGES\nMISSING FROM ORIGINAL ON WHICH IT WAS BASED", // S0018N.ACT
-                        "THESE PAGE NUMBERS RESERVED IN THIS EDITION FOR PAGES\r\nMISSING FROM ORIGINAL ON WHICH IT WAS BASED", // S0018N.ACT
-                        "PAGE NUMBERS RESERVED FROM THIS EDITION FOR MISSING\nSECTION SUPPLIED BY PRECEDING", // S0018N.ACT
-                        "PAGE NUMBERS RESERVED FROM THIS EDITION FOR MISSING\r\nSECTION SUPPLIED BY PRECEDING", // S0018N.ACT
-                        "SW: OK", // S0057M.ACT
-                        "m:ok", // S0057M.ACT
-                        "A FIRST ONE\nMISSING HERE?", // S0057M.ACT
-                        "A FIRST ONE\r\nMISSING HERE?", // S0057M.ACT
-                        "THE INITIAL PART OF THIS TEXT WAS INPUT BY THE SERA MEY LIBRARY IN\nTIBETAN FONT AND NEEDS TO BE REDONE BY DOUBLE INPUT", // S0195A1.INC
-                        "THE INITIAL PART OF THIS TEXT WAS INPUT BY THE SERA MEY LIBRARY IN\r\nTIBETAN FONT AND NEEDS TO BE REDONE BY DOUBLE INPUT", // S0195A1.INC
-                    };
-                    boolean foundOne = false;
-                    for (int ec = 0; ec < englishComments.length; ec++) {
-                        if (i + 2 + englishComments[ec].length() <= sl
-                            && (s.substring(i, i + 2 + englishComments[ec].length()).equals("[" + englishComments[ec] + "]")
-                                || s.substring(i, i + 2 + englishComments[ec].length()).equals("[" + englishComments[ec] + "]"))) {
-                            al.add(new TString("ACIP", "[#" + englishComments[ec] + "]",
-                                               TString.COMMENT));
-                            startOfString = i + 2 + englishComments[ec].length();
+                if (BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED) {
+                    int indexPastCloseBracket = i;
+                    boolean foundClose = false;
+                    while (++indexPastCloseBracket < sl) {
+                        if ((('[' == ch) ? '[' : '{')
+                            == s.charAt(indexPastCloseBracket)) { // "[i am [nested], you see]" is not allowed.
+                            waitingForMatchingIllegalClose = true;
+                            if (queueError(141, "" + ch,
+                                           shortMessages, indexPastCloseBracket, numNewlines, maxErrors, al, errors, numErrorsArray))
+                                return null;
+                        } else if ((('[' == ch) ? ']' : '}') == s.charAt(indexPastCloseBracket)) {
+                            al.add(new TString("ACIP",
+                                               s.substring(startOfString + (('[' == ch) ? 0 : 1),
+                                                           indexPastCloseBracket + (('[' == ch) ? 1 : 0)),
+                                               TString.LATIN));
+                            startOfString = indexPastCloseBracket + 1;
                             i = startOfString - 1;
-                            foundOne = true;
+                            currentType = TString.ERROR;
+                            foundClose = true;
                             break;
                         }
                     }
-                    if (!foundOne && i+1 < sl && s.charAt(i+1) == '*') {
-                        // Identify [*LINE BREAK?] as an English
-                        // correction.  Every correction not on this
-                        // list is considered to be Tibetan.
-                        // FIXME: make this extensible via a config
-                        // file or at least a System property (which
-                        // could be a comma-separated list of these
-                        // creatures.
-                        
-                        // If "LINE" is in the list below, then [*
-                        // LINE], [* LINE?], [*LINE], [*LINE?], [*
-                        // LINE OUT ?], etc. will be considered
-                        // English corrections.  I.e., whitespace
-                        // before and anything after doesn't prevent a
-                        // match.
-                        String[] englishCorrections = new String[] {
-                            "LINE", // KD0001I1.ACT
-                            "DATA", // KL0009I2.INC
-                            "BLANK", // KL0009I2.INC
-                            "NOTE", // R0001F.ACM
-                            "alternate", // R0018F.ACE
-                            "02101-02150 missing", // R1003A3.INC
-                            "51501-51550 missing", // R1003A52.ACT
-                            "BRTAGS ETC", // S0002N.ACT
-                            "TSAN, ETC", // S0015N.ACT
-                            "SNYOMS, THROUGHOUT", // S0016N.ACT
-                            "KYIS ETC", // S0019N.ACT
-                            "MISSING", // S0455M.ACT
-                            "this", // S6850I1B.ALT
-                            "THIS", // S0057M.ACT
+                    if (!foundClose) {
+                        // FIXME: duplciated code, search for 106:
+                        {
+                            String inContext = s.substring(i, i+Math.min(sl-i, 10));
+                            if (inContext.indexOf("\r") >= 0) {
+                                inContext = inContext.substring(0, inContext.indexOf("\r"));
+                            } else if (inContext.indexOf("\n") >= 0) {
+                                inContext = inContext.substring(0, inContext.indexOf("\n"));
+                            } else {
+                                if (sl-i > 10) {
+                                    inContext = inContext + "...";
+                                }
+                            }
+                            if (queueError(139, inContext,
+                                           shortMessages, i, numNewlines, maxErrors, al, errors, numErrorsArray))
+                                return null;
+                        }
+                        if (queueError(117, "-*-END OF FILE-*-",
+                                       shortMessages, -1, numNewlines, maxErrors, al, errors, numErrorsArray))
+                            return null;
+                        // we're done here:
+                        {
+                            i = sl;
+                            startOfString = sl;
+                        }
+                    }
+                } else {
+                    String thingy = null;
+
+                    if (i + "[DD]".length() <= sl
+                        && (s.substring(i, i + "[DD]".length()).equals("[DD]")
+                            || s.substring(i, i + "[DD]".length()).equals("{DD}"))) {
+                        thingy = "[DD]";
+                        currentType = TString.DD;
+                    } else if (i + "[DD1]".length() <= sl
+                               && (s.substring(i, i + "[DD1]".length()).equals("[DD1]")
+                                   || s.substring(i, i + "[DD1]".length()).equals("{DD1}"))) {
+                        thingy = "[DD1]";
+                        currentType = TString.DD;
+                    } else if (i + "[DD2]".length() <= sl
+                               && (s.substring(i, i + "[DD2]".length()).equals("[DD2]")
+                                   || s.substring(i, i + "[DD2]".length()).equals("{DD2}"))) {
+                        thingy = "[DD2]";
+                        currentType = TString.DD;
+                    } else if (i + "[DDD]".length() <= sl
+                               && (s.substring(i, i + "[DDD]".length()).equals("[DDD]")
+                                   || s.substring(i, i + "[DDD]".length()).equals("{DDD}"))) {
+                        thingy = "[DDD]";
+                        currentType = TString.DD;
+                    } else if (i + "[DR]".length() <= sl
+                               && (s.substring(i, i + "[DR]".length()).equals("[DR]")
+                                   || s.substring(i, i + "[DR]".length()).equals("{DR}"))) {
+                        thingy = "[DR]";
+                        currentType = TString.DR;
+                    } else if (i + "[LS]".length() <= sl
+                               && (s.substring(i, i + "[LS]".length()).equals("[LS]")
+                                   || s.substring(i, i + "[LS]".length()).equals("{LS}"))) {
+                        thingy = "[LS]";
+                        currentType = TString.LS;
+                    } else if (i + "[BP]".length() <= sl
+                               && (s.substring(i, i + "[BP]".length()).equals("[BP]")
+                                   || s.substring(i, i + "[BP]".length()).equals("{BP}"))) {
+                        thingy = "[BP]";
+                        currentType = TString.BP;
+                    } else if (i + "[BLANK PAGE]".length() <= sl
+                               && (s.substring(i, i + "[BLANK PAGE]".length()).equals("[BLANK PAGE]")
+                                   || s.substring(i, i + "[BLANK PAGE]".length()).equals("{BLANK PAGE}"))) {
+                        thingy = "[BLANK PAGE]";
+                        currentType = TString.BP;
+                    } else if (i + "[ BP ]".length() <= sl
+                               && (s.substring(i, i + "[ BP ]".length()).equals("[ BP ]")
+                                   || s.substring(i, i + "[ BP ]".length()).equals("{ BP }"))) {
+                        thingy = "{ BP }"; // found in TD3790E2.ACT
+                        currentType = TString.BP;
+                    } else if (i + "[ DD ]".length() <= sl
+                               && (s.substring(i, i + "[ DD ]".length()).equals("[ DD ]")
+                                   || s.substring(i, i + "[ DD ]".length()).equals("{ DD }"))) {
+                        thingy = "{ DD }"; // found in TD3790E2.ACT
+                        currentType = TString.DD;
+                    } else if (i + "[?]".length() <= sl
+                               && (s.substring(i, i + "[?]".length()).equals("[?]")
+                                   || s.substring(i, i + "[?]".length()).equals("{?}"))) {
+                        thingy = "[?]";
+                        currentType = TString.QUESTION;
+                    } else {
+                        //  We see comments appear not as [#COMMENT], but
+                        //  as [COMMENT] sometimes.  We make special cases
+                        //  for some English comments.  There's no need to
+                        //  make this mechanism extensible, because you
+                        //  can easily edit the ACIP text so that it uses
+                        //  [#COMMENT] notation instead of [COMMENT].
+
+                        String[] englishComments = new String[] {
+                            "FIRST", "SECOND", // S5274I.ACT
+                            "Additional verses added by Khen Rinpoche here are", // S0216M.ACT
+                            "ADDENDUM: The text of", // S0216M.ACT
+                            "END OF ADDENDUM", // S0216M.ACT
+                            "Some of the verses added here by Khen Rinpoche include:", // S0216M.ACT
+                            "Note that, in the second verse, the {YUL LJONG} was orignally {GANG LJONG},\nand is now recited this way since the ceremony is not only taking place in Tibet.", // S0216M.ACT
+                            "Note that, in the second verse, the {YUL LJONG} was orignally {GANG LJONG},\r\nand is now recited this way since the ceremony is not only taking place in Tibet.", // S0216M.ACT
+                            "text missing", // S6954E1.ACT
+                            "INCOMPLETE", // TD3817I.INC
+                            "MISSING PAGE", // S0935m.act
+                            "MISSING FOLIO", // S0975I.INC
+                            "UNCLEAR LINE", // S0839D1I.INC
+                            "THE FOLLOWING TEXT HAS INCOMPLETE SECTIONS, WHICH ARE ON ORDER", // SE6260A.INC
+                            "@DATA INCOMPLETE HERE", // SE6260A.INC
+                            "@DATA MISSING HERE", // SE6260A.INC
+                            "LINE APPARENTLY MISSING THIS PAGE", // TD4035I.INC
+                            "DATA INCOMPLETE HERE", // TD4226I2.INC
+                            "DATA MISSING HERE", // just being consistent
+                            "FOLLOWING SECTION WAS NOT AVAILABLE WHEN THIS EDITION WAS\nPRINTED, AND IS SUPPLIED FROM ANOTHER, PROBABLY THE ORIGINAL:", // S0018N.ACT
+                            "FOLLOWING SECTION WAS NOT AVAILABLE WHEN THIS EDITION WAS\r\nPRINTED, AND IS SUPPLIED FROM ANOTHER, PROBABLY THE ORIGINAL:", // S0018N.ACT
+                            "THESE PAGE NUMBERS RESERVED IN THIS EDITION FOR PAGES\nMISSING FROM ORIGINAL ON WHICH IT WAS BASED", // S0018N.ACT
+                            "THESE PAGE NUMBERS RESERVED IN THIS EDITION FOR PAGES\r\nMISSING FROM ORIGINAL ON WHICH IT WAS BASED", // S0018N.ACT
+                            "PAGE NUMBERS RESERVED FROM THIS EDITION FOR MISSING\nSECTION SUPPLIED BY PRECEDING", // S0018N.ACT
+                            "PAGE NUMBERS RESERVED FROM THIS EDITION FOR MISSING\r\nSECTION SUPPLIED BY PRECEDING", // S0018N.ACT
+                            "SW: OK", // S0057M.ACT
+                            "m:ok", // S0057M.ACT
+                            "A FIRST ONE\nMISSING HERE?", // S0057M.ACT
+                            "A FIRST ONE\r\nMISSING HERE?", // S0057M.ACT
+                            "THE INITIAL PART OF THIS TEXT WAS INPUT BY THE SERA MEY LIBRARY IN\nTIBETAN FONT AND NEEDS TO BE REDONE BY DOUBLE INPUT", // S0195A1.INC
+                            "THE INITIAL PART OF THIS TEXT WAS INPUT BY THE SERA MEY LIBRARY IN\r\nTIBETAN FONT AND NEEDS TO BE REDONE BY DOUBLE INPUT", // S0195A1.INC
                         };
-                        int begin;
-                        for (begin = i+2; begin < sl; begin++) {
-                            if (!isWhitespace(s.charAt(begin)))
+                        boolean foundOne = false;
+                        for (int ec = 0; ec < englishComments.length; ec++) {
+                            if (i + 2 + englishComments[ec].length() <= sl
+                                && (s.substring(i, i + 2 + englishComments[ec].length()).equals("[" + englishComments[ec] + "]")
+                                    || s.substring(i, i + 2 + englishComments[ec].length()).equals("[" + englishComments[ec] + "]"))) {
+                                al.add(new TString("ACIP", "[#" + englishComments[ec] + "]",
+                                                   TString.COMMENT));
+                                startOfString = i + 2 + englishComments[ec].length();
+                                i = startOfString - 1;
+                                foundOne = true;
                                 break;
+                            }
                         }
-                        int end;
-                        for (end = i+2; end < sl; end++) {
-                            if (s.charAt(end) == ']')
-                                break;
-                        }
-                        int realEnd = end;
-                        if (end < sl && s.charAt(end-1) == '?')
-                            --realEnd;
-                        if (end < sl && begin < realEnd) {
-                            String interestingSubstring
-                                = s.substring(begin, realEnd);
-                            for (int ec = 0; ec < englishCorrections.length; ec++) {
-                                if (interestingSubstring.startsWith(englishCorrections[ec])) {
-                                    al.add(new TString("ACIP", s.substring(i, i+2),
-                                                       TString.CORRECTION_START));
-                                    al.add(new TString("ACIP", s.substring(i+2, realEnd),
-                                                       TString.LATIN));
-                                    if (s.charAt(end - 1) == '?') {
-                                        al.add(new TString("ACIP", s.substring(end-1, end+1),
-                                                           TString.POSSIBLE_CORRECTION));
-                                    } else {
-                                        al.add(new TString("ACIP", s.substring(end, end+1),
-                                                           TString.PROBABLE_CORRECTION));
-                                    }
-                                    foundOne = true;
-                                    startOfString = end+1;
-                                    i = startOfString - 1;
+                        if (!foundOne && i+1 < sl && s.charAt(i+1) == '*') {
+                            // Identify [*LINE BREAK?] as an English
+                            // correction.  Every correction not on this
+                            // list is considered to be Tibetan.
+                            // FIXME: make this extensible via a config
+                            // file or at least a System property (which
+                            // could be a comma-separated list of these
+                            // creatures.
+                        
+                            // If "LINE" is in the list below, then [*
+                            // LINE], [* LINE?], [*LINE], [*LINE?], [*
+                            // LINE OUT ?], etc. will be considered
+                            // English corrections.  I.e., whitespace
+                            // before and anything after doesn't prevent a
+                            // match.
+                            String[] englishCorrections = new String[] {
+                                "LINE", // KD0001I1.ACT
+                                "DATA", // KL0009I2.INC
+                                "BLANK", // KL0009I2.INC
+                                "NOTE", // R0001F.ACM
+                                "alternate", // R0018F.ACE
+                                "02101-02150 missing", // R1003A3.INC
+                                "51501-51550 missing", // R1003A52.ACT
+                                "BRTAGS ETC", // S0002N.ACT
+                                "TSAN, ETC", // S0015N.ACT
+                                "SNYOMS, THROUGHOUT", // S0016N.ACT
+                                "KYIS ETC", // S0019N.ACT
+                                "MISSING", // S0455M.ACT
+                                "this", // S6850I1B.ALT
+                                "THIS", // S0057M.ACT
+                            };
+                            int begin;
+                            for (begin = i+2; begin < sl; begin++) {
+                                if (!isWhitespace(s.charAt(begin)))
                                     break;
+                            }
+                            int end;
+                            for (end = i+2; end < sl; end++) {
+                                if (s.charAt(end) == ']')
+                                    break;
+                            }
+                            int realEnd = end;
+                            if (end < sl && s.charAt(end-1) == '?')
+                                --realEnd;
+                            if (end < sl && begin < realEnd) {
+                                String interestingSubstring
+                                    = s.substring(begin, realEnd);
+                                for (int ec = 0; ec < englishCorrections.length; ec++) {
+                                    if (interestingSubstring.startsWith(englishCorrections[ec])) {
+                                        al.add(new TString("ACIP", s.substring(i, i+2),
+                                                           TString.CORRECTION_START));
+                                        al.add(new TString("ACIP", s.substring(i+2, realEnd),
+                                                           TString.LATIN));
+                                        if (s.charAt(end - 1) == '?') {
+                                            al.add(new TString("ACIP", s.substring(end-1, end+1),
+                                                               TString.POSSIBLE_CORRECTION));
+                                        } else {
+                                            al.add(new TString("ACIP", s.substring(end, end+1),
+                                                               TString.PROBABLE_CORRECTION));
+                                        }
+                                        foundOne = true;
+                                        startOfString = end+1;
+                                        i = startOfString - 1;
+                                        break;
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (foundOne)
-                        break;
-                }
-                if (null != thingy) {
-                    al.add(new TString("ACIP", thingy,
-                                       currentType));
-                    startOfString = i + thingy.length();
-                    i = startOfString - 1;
-                } else {
-                    if (i + 1 < sl) {
-                        char nextCh = s.charAt(i+1);
-                        if ('*' == nextCh) {
-                            currentType = TString.CORRECTION_START;
-                            bracketTypeStack.push(new Integer(currentType));
-                            al.add(new TString("ACIP", s.substring(i, i+2),
-                                               TString.CORRECTION_START));
-                            currentType = TString.ERROR;
-                            startOfString = i+2;
-                            i = startOfString - 1;
+                        if (foundOne)
                             break;
-                        } else if ('#' == nextCh) {
-                            currentType = TString.COMMENT;
-                            bracketTypeStack.push(new Integer(currentType));
-                            break;
-                        }
                     }
-                    // This is an error.  Sometimes [COMMENTS APPEAR
-                    // WITHOUT # MARKS].  Though "... [" could cause
-                    // this too.
-                    if (waitingForMatchingIllegalClose) {
-                        if (queueError(105, "" + ch,
-                                       shortMessages, i, numNewlines, maxErrors, al, errors, numErrorsArray))
-                            return null;
-                    }
-                    waitingForMatchingIllegalClose = true;
-                    {
-                        String inContext = s.substring(i, i+Math.min(sl-i, 10));
-                        if (inContext.indexOf("\r") >= 0) {
-                            inContext = inContext.substring(0, inContext.indexOf("\r"));
-                        } else if (inContext.indexOf("\n") >= 0) {
-                            inContext = inContext.substring(0, inContext.indexOf("\n"));
-                        } else {
-                            if (sl-i > 10) {
-                                inContext = inContext + "...";
+                    if (null != thingy) {
+                        al.add(new TString("ACIP", thingy,
+                                           currentType));
+                        startOfString = i + thingy.length();
+                        i = startOfString - 1;
+                    } else {
+                        if (i + 1 < sl) {
+                            char nextCh = s.charAt(i+1);
+                            if ('*' == nextCh) {
+                                currentType = TString.CORRECTION_START;
+                                bracketTypeStack.push(new Integer(currentType));
+                                al.add(new TString("ACIP", s.substring(i, i+2),
+                                                   TString.CORRECTION_START));
+                                currentType = TString.ERROR;
+                                startOfString = i+2;
+                                i = startOfString - 1;
+                                break;
+                            } else if ('#' == nextCh) {
+                                currentType = TString.COMMENT;
+                                bracketTypeStack.push(new Integer(currentType));
+                                break;
                             }
                         }
-                        if (queueError(106, inContext,
-                                       shortMessages, i, numNewlines, maxErrors, al, errors, numErrorsArray))
-                            return null;
+                        // This is an error.  Sometimes [COMMENTS APPEAR
+                        // WITHOUT # MARKS].  Though "... [" could cause
+                        // this too.
+                        if (waitingForMatchingIllegalClose) {
+                            if (queueError(105, "" + ch,
+                                           shortMessages, i, numNewlines, maxErrors, al, errors, numErrorsArray))
+                                return null;
+                        }
+                        waitingForMatchingIllegalClose = true;
+                        // FIXME: duplciated code, search for 139:
+                        {
+                            String inContext = s.substring(i, i+Math.min(sl-i, 10));
+                            if (inContext.indexOf("\r") >= 0) {
+                                inContext = inContext.substring(0, inContext.indexOf("\r"));
+                            } else if (inContext.indexOf("\n") >= 0) {
+                                inContext = inContext.substring(0, inContext.indexOf("\n"));
+                            } else {
+                                if (sl-i > 10) {
+                                    inContext = inContext + "...";
+                                }
+                            }
+                            if (queueError(106, inContext,
+                                           shortMessages, i, numNewlines, maxErrors, al, errors, numErrorsArray))
+                                return null;
+                        }
+                        startOfString = i + 1;
+                        currentType = TString.ERROR;
                     }
-                    startOfString = i + 1;
-                    currentType = TString.ERROR;
                 }
                 break; // end '[','{' case
 
