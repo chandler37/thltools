@@ -114,7 +114,7 @@ rdzogs > dzok
 phreng > treng
 
 ; Test of second-suffix d removal.  Made-up word because I don't know real ones.
-rand > ren
+srand > sen
 ; Test that we don't spazz out on single-letter words.
 a > a
 ai > ai
