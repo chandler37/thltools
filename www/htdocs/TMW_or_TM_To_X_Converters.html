@@ -1,0 +1,368 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<!-- @author David Chandler -->
+<!-- @editor Emacs, baby! -->
+
+
+<head>
+   <title>Converting from TM or TMW</title>
+
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+   <script type="text/javascript" src="http://iris.lib.virginia.edu/tibet/scripts/thdl_scripts.js"></script>
+   <link rel="stylesheet" type="text/css" href="http://iris.lib.virginia.edu/tibet/style/thdl-styles.css"/>
+</head>
+
+<body>
+
+<div id="banner">
+   <a id="logo" href="http://iris.lib.virginia.edu/tibet/index.html"><img id="test" alt="THDL Logo" src="http://iris.lib.virginia.edu/tibet/images/logo.png"/></a>
+   <h1>The Tibetan &amp; Himalayan Digital Library</h1>
+
+   <div id="menubar">
+   <script type='text/javascript'>function Go(){return}</script>
+   <script type='text/javascript' src='http://iris.lib.virginia.edu/tibet/scripts/new/thdl_menu_config.js'></script>
+
+   <script type='text/javascript' src='http://iris.lib.virginia.edu/tibet/scripts/new/menu_new.js'></script>
+   <script type='text/javascript' src='http://iris.lib.virginia.edu/tibet/scripts/new/menu9_com.js'></script>
+   <noscript><p>Your browser does not support javascript.</p></noscript>
+   <div id='MenuPos' >Menu Loading...  </div>
+	</div><!--END menubar-->
+
+</div><!--END banner-->
+
+<div id="sub_banner">
+	<div id="search">
+		<form  method="get" action="http://www.google.com/u/thdl">
+			<p>
+				<input type="text" name="q" id="q" size="15" maxlength="255" value="" />
+				<input type="submit" name="sa" id="sa" value="Search"/>
+				<input type="hidden" name="hq" id="hq"  value="inurl:iris.lib.virginia.edu"/>
+			</p>
+		</form>
+
+	</div>
+	<div id="breadcrumbs">
+		<a href="http://iris.lib.virginia.edu/tibet/index.html">Home</a> &gt; <a href="index.html">Tools</a> &gt; <a href="http://iris.lib.virginia.edu/tibet/tools/allfonts.html">Fonts &amp; Input</a> &gt; <a href="http://iris.lib.virginia.edu/tibet/tools/conv.html">Converters</a> &gt; <a href="TMW_RTF_TO_THDL_WYLIE.html">Converters in Jskad</a> &gt; Converting from TM or TMW
+	</div>
+</div><!--END banner-->
+
+
+<div id="main">
+
+<h2>Converting from Tibetan Machine or Tibetan Machine Web</h2>
+
+<p>
+  Among the <a href="TMW_RTF_TO_THDL_WYLIE.html">converters in
+  Jskad</a> are some converters that take input that is encoded to use
+  either the <a
+  href="http://iris.lib.virginia.edu/tibet/tools/tm.html">Tibetan
+  Machine</a> (TM) or <a
+  href="http://iris.lib.virginia.edu/tibet/tools/tmw.html">Tibetan
+  Machine Web</a> (TMW) fonts.&nbsp; These converters are described
+  here.
+</p>
+
+<p>
+  First, to learn how to invoke the converters, see <a
+  href="TMW_RTF_TO_THDL_WYLIE.html#invok">these instructions</a>.
+</p>
+
+<p>
+  The converters embody the same technology as <a
+  href="http://iris.lib.virginia.edu/tibet/tools/jskad.html">Jskad</a>
+  itself, but often work even when Jskad fails due to Java's presently
+  poor support for viewing Rich Text Format (RTF) documents.&nbsp;
+  These converters can convert a TMW-encoded RTF file to any of these
+  output formats:
+</p>
+<ul>
+  <li>an RTF file using <a href="http://www.unicode.org/">Unicode</a>,
+  a standard encoding that will be widely supported in the future</li>
+
+  <li>an RTF file using the appropriate THDL Extended Wylie (<a
+  href="http://iris.lib.virginia.edu/tibet/collections/langling/ewts/">EWTS</a>)
+  instead of TMW</li>
+
+  <li>a text file using the appropriate THDL Extended Wylie (<a
+  href="http://iris.lib.virginia.edu/tibet/collections/langling/ewts/">EWTS</a>)
+  instead of TMW</li>
+
+  <li>an RTF file using the appropriate <a
+  href="http://asianclassics.org">Asian Classics Input Project</a>
+  (ACIP) <a
+  href="http://asianclassics.org/download/tibetancode/ticode.pdf">Tibetan
+  Input Code</a> instead of TMW</li>
+
+  <li>a text file using the appropriate <a
+  href="http://asianclassics.org">Asian Classics Input Project</a>
+  (ACIP) <a
+  href="http://asianclassics.org/download/tibetancode/ticode.pdf">Tibetan
+  Input Code</a> instead of TMW</li>
+
+  <li>an RTF file using the Tibetan Machine encoding (used in legacy
+  systems).</li>
+</ul>
+
+<p>
+  In addition, this converter can convert a Tibetan Machine RTF file to
+  a Tibetan Machine Web RTF file.
+</p>
+
+<a name="vv"></a>
+<p>
+  All the converters take precautions to ensure that only a 100%
+  perfect conversion is done.&nbsp; One such precaution is that two
+  independent teams (Garrett and Garson, Chandler) turned the Tibetan
+  Machine Web <a
+  href="http://iris.lib.virginia.edu/tibet/tools/tmw.html#doc">
+  documentation</a> into TM&lt;-&gt;TMW tables.&nbsp; These tables
+  were compared, giving full confidence that the tables are as
+  accurate as the documentation (which has a few flaws itself,
+  documented in the <a href="Tibetan51Errata.html">errata</a> we have
+  created).&nbsp; That documentation has been verified against the
+  actual fonts.&nbsp; David Chapman's assistance in this area has been
+  invaluable.
+</p>
+
+<p>
+  Another precaution is that any unknown characters (in the font being
+  converted from) cause the conversion to <a href="#failure">fail</a>,
+  and the result is either a document containing merely the unknown
+  characters or a document with conspicuous error messages
+  interspersed.
+</p>
+
+<p>
+  These converters are smart enough to solve the &quot;curly-brace
+  problem&quot;, wherein '{', '}', and '\' characters in the Tahoma
+  font appear instead of the TMW stacks they are supposed to
+  represent.&nbsp; This problem originates with certain versions of
+  Microsoft Word's Rich Text Format writing capabilities.&nbsp; These
+  converters are also smart enough to work around Java's <a
+  href="http://developer.java.sun.com/developer/bugParade/bugs/4907759.html">Bug
+  4907759</a>.
+</p>
+
+<p>
+  Furthermore, these converters give a polite error message when a
+  given RTF file simply cannot be read by the version of Java used.
+</p>
+
+
+<h2>Invoking the Converters</h2>
+
+<p>
+  See <a href="TMW_RTF_TO_THDL_WYLIE.html#invok">here</a> for details
+  on how to invoke the converters.
+</p>
+
+<!-- DLC TEST TMW->UNICODE F021... does that appear? -->
+
+<a name="failure"></a><h2>Failed Conversions</h2>
+
+<p>
+  In this section, you'll learn how to tell if a conversion has
+  succeeded in full, ran into minor problems, or failed altogether.
+</p>
+
+<h3>TMW to ACIP</h3>
+
+<p>
+  When a TMW-&gt;ACIP conversion fails, a message such as
+  <tt>[#&nbsp;JSKAD_TMW_TO_ACIP_ERROR_NO_SUCH_ACIP: Cannot convert
+  &lt;glyph font=TibetanMachineWeb8 charNum=38 character=&/&gt; to
+  ACIP.  Please transcribe this yourself.]</tt> will appear in your
+  output, but it will be amidst the successfully converted text.
+</p>
+
+<h3>TMW to Wylie (i.e., EWTS)</h3>
+
+<p>
+  A TMW to EWTS conversion rarely fails; EWTS is almost entirely
+  comprehensive (and may have been revised to be comprehensive by the
+  time you read this.
+</p>
+
+<p>
+  That said, you may want to search the output for EWTS constructs
+  that you don't like, such as <tt>\u0F39</tt>- and
+  <tt>\uF021</tt>-style escape sequences.
+</p>
+
+<p>
+  If a TMW glyph has no transliteration according to <a
+  href="http://iris.lib.virginia.edu/tibet/collections/langling/ewts/">EWTS</a>,
+  then an error message like
+  <tt>&lt;&lt;[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert
+  &lt;glyph font=TibetanMachineWeb7 charNum=95 character=_/&gt; to
+  THDL Extended Wylie.  Please see the documentation for the TM or TMW
+  font and transcribe this yourself.]]&gt;&gt;</tt> appears in the
+  output.
+</p>
+
+<p>
+  Upon finding such a message in your output, you should consult the
+  <a href="http://iris.lib.virginia.edu/tibet/tools/tmw.html#doc">
+  documentation</a> for the specific TMW font named.&nbsp; Find the
+  glyph and decide how to proceed.&nbsp; If you find a glyph that you
+  believe should have been converted into Extended Wylie by the tool,
+  please report this as a bug through the SourceForge website or via
+  e-mail.
+</p>
+
+
+<h3>TMW to Unicode, TM to TMW, and TMW to TM Conversions</h3>
+
+<p>
+  The TMW-&gt;Unicode, TM-&gt;TMW, and TMW-&gt;TM conversions are
+  all-or-nothing.&nbsp; That is, if you run into any trouble
+  whatsoever, the result will be a file containing just the
+  problematic glyphs, each preceded by a-chen (i.e., U+0F68, the
+  letter whose THDL Extended Wylie representation is 'a').&nbsp; These
+  glyphs will be bracketed on the left by U+0F3C (for which the THDL
+  Extended Wylie is '(') and on the right by U+0F3D (for which the
+  THDL Extended Wylie is ')').&nbsp; If your result is as long as your
+  input, then the conversion went flawlessly.
+</p>
+
+<p>
+  There is one TMW glyph (TibetanMachineWeb7, glyph 91 [\tmw7091])
+  that has no Tibetan Machine equivalent.&nbsp; This glyph is the only
+  TMW glyph that can cause a TMW-&gt;TM conversion to fail.&nbsp; It
+  is fairly common, though, especially if you've used Jskad to prepare
+  your document.&nbsp; It might be appropriate to change the document
+  to use TibetanMachineWeb7, glyph 90 (decimal ordinal 90, that is), a
+  similar glyph that does have a TM equivalent.
+</p>
+
+<p>
+  You might consider using the GUI converter interface in Jskad to
+  convert documents that give impenetrable errors when converted by
+  the command-line tool, as the GUI has better error reporting and can
+  tell you just what's wrong.
+</p>
+
+
+<h2>Finding Potential Problems Before Conversion</h2>
+
+<p>
+  The converters that take TM and TMW input deal with problematic
+  input in a clean way, but you might prefer the mechanism described
+  here.
+</p>
+
+<p>
+  There is a <tt>--find-some-non-tmw</tt> mode of operation that gives
+  you, the user, confidence that RTF reading and writing
+  idiosyncrasies are not going to interfere with a flawless
+  conversion.&nbsp; It does so by printing out the first occurrence of
+  a given character in a non-TMW font.&nbsp; Here is some example
+  output:
+</p>
+<pre>
+java -cp "c:\my thdl tools\Jskad.jar" \
+     org.thdl.tib.input.TibetanConverter \
+        --find-some-non-tmw \
+        "Dalai Lama Fifth History 01.rtf"
+
+Non-TMW character newline [decimal 10] in the font Tahoma appears first at location 39
+Non-TMW character ' ' [decimal 32] in the font TimesNewRoman appears first at location 45
+Non-TMW character '}' [decimal 125] in the font Tahoma appears first at location 66
+Non-TMW character '{' [decimal 123] in the font Tahoma appears first at location 219
+Non-TMW character '\' [decimal 92] in the font Tahoma appears first at location 1237
+Non-TMW character newline [decimal 10] in the font Times New Roman appears first at location 9754
+</pre>
+
+<p>
+  Given the above output, you can be sure that a flawless conversion
+  (barring the appearance of <a href="#knownbugs">known bugs</a>) will
+  result when you run <tt>java -cp "c:\my thdl tools\Jskad.jar"
+  org.thdl.tib.input.TibetanConverter --to-wylie "Dalai Lama Fifth
+  History 01.rtf" &gt; "Dalai Lama Fifth History 01 in THDL Extended
+  Wylie.rtf"</tt>.&nbsp; (Note that the '&gt;' causes the output to be
+  directed to the file named thereafter; this is quite handy.)&nbsp;
+  This is because the only text in the input file besides Tibetan is
+  whitespace and the Tahoma characters <tt>'{'</tt>, <tt>'}'</tt>, and
+  <tt>'\'</tt>.  These Tahoma characters are understood by the tool;
+  they are symptoms of the &quot;curly-brace problem&quot;.
+</p>
+
+<p>
+  There is a similar <tt>--find-some-non-tm</tt> mode of operation,
+  useful for ensuring a trouble-free TM-&gt;TMW conversion.
+</p>
+
+
+<a name="knownbugs"></a><h2>Known Bugs</h2>
+
+<p>
+  All known bugs are listed in this section.&nbsp; They're more likely
+  to be fixed if users complain, so complain away.&nbsp; And if you
+  ever encounter problems in a conversion that are not listed here,
+  please send us mail with the error report (and the problem input
+  document's resulting document) so that we can improve our
+  tools.&nbsp; The bugs are as follows:
+</p>
+
+<ul>
+  <li>
+    TMW-&gt;ACIP does not produce {KA (KHA)} to indicate differing
+    font sizes.
+  </li>
+  <li>
+    TMW to Unicode fails subtly when the TMW for {\u0F28\u0F3E} is
+    converted: {\u0F3E\u0F28} appears instead.&nbsp; [<a
+    href="http://sourceforge.net/tracker/index.php?func=detail&aid=855480&group_id=61934&atid=502515">855480</a>]
+  </li>
+</ul>
+
+<p>
+</p>
+
+<h2>License</h2>
+
+<p>Both the converters and this document are released under the <a
+href="http://iris.lib.virginia.edu/tibet/tools/thdl_license.txt">THDL
+Open Community License Version 1.0</a>.</p>
+
+
+
+<p>
+    Please
+
+    <a href="mailto:thdltools-devel@lists.sourceforge.net">
+      e-mail us</a> 
+
+    your comments about this page.
+</p>
+
+<p>
+The
+<a href="http://www.sourceforge.net/projects/thdltools">
+  THDL Tools</a>
+project is generously hosted by:
+<!--
+
+DO NOT DELETE THE SF.NET LOGO.
+
+We have a choice of colors and sizes for this logo (see
+"https://sourceforge.net/docman/display_doc.php?docid=790&group_id=1"),
+but we do not have the option of removing it.  SourceForge requests
+that we put it on each web page for our project, and to give us
+incentive to do so, they will not track the number of hits for our
+project web pages unless we put this link in.  To track hits, see
+"http://sourceforge.net/project/stats/index.php?report=months&group_id=61934".
+
+-->
+<a href="http://sourceforge.net/">
+  <img src="http://sourceforge.net/sflogo.php?group_id=61934&amp;type=1"
+       width="88" height="31" alt="SourceForge Logo" />
+</a>
+<!-- AGAIN, DO NOT DELETE THE SF.NET LOGO. -->
+</p>
+</div>
+
+
+</body>
+</html>

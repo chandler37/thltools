@@ -7,7 +7,7 @@
 
 
 <head>
-   <title>Tibetan Machine Web Converter</title>
+   <title>Converters in Jskad</title>
 
    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
    <script type="text/javascript" src="http://iris.lib.virginia.edu/tibet/scripts/thdl_scripts.js"></script>
@@ -44,259 +44,141 @@
 
 	</div>
 	<div id="breadcrumbs">
-		<a href="http://iris.lib.virginia.edu/tibet/index.html">Home</a> &gt; <a href="index.html">Tools</a> &gt; <a href="http://iris.lib.virginia.edu/tibet/tools/software.html">Software</a> &gt; Nightly Builds
+		<a href="http://iris.lib.virginia.edu/tibet/index.html">Home</a> &gt; <a href="index.html">Tools</a> &gt; <a href="http://iris.lib.virginia.edu/tibet/tools/allfonts.html">Fonts &amp; Input</a> &gt; <a href="http://iris.lib.virginia.edu/tibet/tools/conv.html">Converters</a> &gt; Converters in Jskad
 	</div>
 </div><!--END banner-->
 
 
 <div id="main">
 
-<h2>Tibetan Machine Web Converter</h2>
+<h2>Converters in Jskad</h2>
 
 <p>
   In recent versions of Jskad, the 'Tools' menu has an option 'Launch
-  Converter...'.&nbsp; If you use that option, you will find a
-  first-class Tibetan-to-Tibetan and Tibetan-to-Wylie converter.&nbsp;
-  That converter has a user-friendly GUI interface, and it tells you
-  when things go wrong (even things as subtle as your having selected
-  the wrong conversion).&nbsp; If you need a command-line interface to
-  that converter, however, read on.
+  Converter...'.&nbsp; If you use that option, you will find a set of
+  first-class converters that can convert digital Tibetan from one
+  form to another.&nbsp; (A command-line interface is also available;
+  see below.)
 </p>
 
 <p>
-  In the same JAR file as Jskad, power users will find a command-line
-  utility that converts Tibetan documents from one digital
-  representation to another.&nbsp; The converter embodies the same
-  technology as Jskad itself, but often works even when Jskad fails
-  due to Java's presently poor support for viewing RTF
-  documents.&nbsp; This command-line utility converts a Tibetan
-  Machine Web-encoded (TMW-encoded) Rich Text Format (RTF) file to
-  either of these three output formats:
+  Some of the converters there are based on Jskad technology, but all
+  are first-class in the sense that they are well though-out, well
+  tested<!-- DLC LINK TO V&amp;V story -->, and handle errors
+  nicely.&nbsp; Certain features in Jskad are quite buggy; for
+  example, its keyboards do not work as desired, but even when they
+  do, they silently drop certain input characters.&nbsp; Do not worry
+  that the converters described here suffer from these flaws; not one
+  character of input is ever silently dropped.&nbsp; It is the
+  intention of the developers that a Buddhist canon one day could be
+  entrusted to these converters.&nbsp; Before you do that, though,
+  please contact <a
+  href="mailto:thdltools-devel@lists.sourceforge.net">the
+  developers</a> to be sure that this documentation is up-to-date and
+  to develop a custom validation and verification plan.&nbsp; None of
+  the converters has yet been hand-validated on a real text of any
+  size, but extensive unit testing has been performed for each
+  conversion at every stage of development.
 </p>
 
 <p>
-  In the same JAR file as Jskad, power users will find a command-line
-  utility that converts Tibetan documents from one digital
-  representation to another.&nbsp; The converter embodies the same
-  technology as Jskad itself, but often works even when Jskad fails
-  due to Java's presently poor support for viewing RTF
-  documents.&nbsp; This command-line utility converts a Tibetan
-  Machine Web-encoded (TMW-encoded) Rich Text Format (RTF) file to
-  either of these three output formats:
+  The following converters are available:
 </p>
+
 <ul>
-  <li>RTF files in Unicode</li>
-  <li>RTF files with the appropriate THDL Extended Wylie (Wylie) used
-   instead of TMW</li>
-  <li>RTF files in Tibetan Machine (used in legacy systems)</li>
+  <li><a href="ACIP_To_Tibetan_Converter.html">ACIP-&gt;Unicode</a>
+  (Text-&gt;Text)</li>
+
+  <li><a href="ACIP_To_Tibetan_Converter.html">ACIP-&gt;Tibetan
+  Machine Web</a> (Text-&gt;RTF)</li>
+
+  <li><a href="TMW_or_TM_To_X_Converters.html">TMW-&gt;ACIP</a> (RTF-&gt;RTF)</li>
+
+  <li><a href="TMW_or_TM_To_X_Converters.html">TMW-&gt;ACIP</a> (RTF-&gt;Text)</li>
+
+  <li><a href="TMW_or_TM_To_X_Converters.html">TM-&gt;TMW</a> (RTF-&gt;RTF)</li>
+
+  <li><a href="TMW_or_TM_To_X_Converters.html">TMW-&gt;TM</a> (RTF-&gt;RTF)</li>
+
+  <li><a href="TMW_or_TM_To_X_Converters.html">TMW-&gt;Unicode</a> (RTF-&gt;RTF)</li>
+
+  <li><a href="TMW_or_TM_To_X_Converters.html">TMW-&gt;EWTS</a> (RTF-&gt;RTF)</li>
+
+  <li><a href="TMW_or_TM_To_X_Converters.html">TMW-&gt;EWTS</a> (RTF-&gt;Text)</li>
 </ul>
 
 <p>
-  In addition, this converter can convert Tibetan Machine RTF files to
-  Tibetan Machine Web RTF files, and takes precautions to ensure that
-  only a 100% perfect conversion is done in both directions
-  (TM-&gt;TMW and TMW&gt;TM).&nbsp; One such precaution is that two
-  independent teams (Garrett and Garson, Chandler) turned the Tibetan
-  Machine Web <a
-  href="http://iris.lib.virginia.edu/tibet/tools/tmw.html#doc">
-  documentation</a> into TM&lt;-&gt;TMW tables.&nbsp; These tables
-  were compared, giving full confidence that the tables are as
-  accurate as the documentation (which has a <a
-  href="http://sourceforge.net/tracker/index.php?func=detail&aid=746871&group_id=61934&atid=502515">
-  few flaws</a> itself).&nbsp; That documentation has not been
-  extensively verified against the actual fonts, however.&nbsp;
-  Another precaution is that any unknown characters cause the
-  conversion to fail, and the result is a document containing merely
-  the unknown characters.&nbsp; (There are some known, illegal glyphs
-  created by Tibet Doc, and the converter handles the ones it knows of
-  and treats the rest as unknown.)
+  Moreover, EWTS-&gt;Unicode and EWTS-&gt;TMW converters are in
+  development.&nbsp; <a
+  href="http://iris.lib.virginia.edu/tibet/tools/wyword.html">Wylie
+  Word 2.0</a> has better EWTS support at present.
 </p>
 
 <p>
-  This converter is smart enough to solve the &quot;curly-brace
-  problem&quot;, wherein Tahoma '{', '}', and '\' characters appear
-  instead of the TMW stacks they are supposed to represent.&nbsp; This
-  problem originates with certain versions of Microsoft Word's Rich
-  Text Format writing capabilities.
+  Above, <em>RTF</em> is an abbreviation for Rich Text Format;
+  <em>Text</em> refers to an unformatted text file (in one of several
+  encodings); <em>TMW</em> refers to the <a
+  href="http://iris.lib.virginia.edu/tibet/tools/tmw.html">Tibetan
+  Machine Web</a> font; <em>TM</em> refers to the <a
+  href="http://iris.lib.virginia.edu/tibet/tools/tm.html">Tibetan
+  Machine</a> font; <em>Unicode</em> refers to the Tibetan <a
+  href="http://www.unicode.org/">Unicode</a> characters in the range
+  U+0F00-U+0FFF mainly but also sometimes includes other Unicode
+  characters; <em>EWTS</em> refers to Tibetan encoded using the <a
+  href="http://iris.lib.virginia.edu/tibet/collections/langling/ewts/">Extended
+  Wylie Transliteration Scheme</a>, a Roman transliteration scheme;
+  <em>ACIP</em> refers to Tibetan encoded using <a
+  href="http://asianclassics.org">Asian Classics Input Project</a>
+  (ACIP) <a
+  href="http://asianclassics.org/download/tibetancode/ticode.pdf">Tibetan
+  Input Code</a>, another Roman transliteration scheme.
+</p>
+
+<a name="#invok"></a><h3>Invoking the Converters</h3>
+
+<p>
+  The converters have a user-friendly GUI interface, and it tells you
+  when things go wrong (from things like the lack of a needed glyph in
+  the output font to things like your having selected the wrong
+  conversion).&nbsp; The GUI is not properly documented here, and
+  probably will not be until you contact <a
+  href="mailto:thdltools-devel@lists.sourceforge.net">the
+  developers</a> and ask them to document it.
 </p>
 
 <p>
-  Further, this converter gives a polite error message when a given
-  .rtf file simply cannot be read by the version of Java used.
+  To use the GUI, first launch <a
+  href="http://iris.lib.virginia.edu/tibet/tools/jskad.html">Jskad</a>
+  itself.&nbsp; Then select 'Launch Converter...' from the 'Tools'
+  menu.&nbsp; Let's hope from there it's self-explanatory, because it
+  is not yet properly documented.<!-- DLC -->
 </p>
 
 <p>
-  Perhaps most importantly, the converter has a
-  <tt>--find-some-non-tmw</tt> mode of operation that gives you, the
-  user, confidence that RTF reading and writing idiosyncrasies are not
-  going to interfere with a flawless conversion.&nbsp; It does so by
-  printing out the first occurrence of a given character in a non-TMW
-  font.&nbsp; Here is some example output:
+  For batch conversions of many files, a command-line interface to the
+  converters may be more suitable than the GUI interface.&nbsp; In the
+  same JAR file as Jskad, power users will find a command-line utility
+  that can do everything the GUI interface to the converters can
+  do.&nbsp; To learn how to invoke it, see the output you get when you
+  use this invocation:
 </p>
 <pre>
 java -cp "c:\my thdl tools\Jskad.jar" \
-     org.thdl.tib.input.TibetanConverter \
-        --find-some-non-tmw \
-        "Dalai Lama Fifth History 01.rtf"
-
-Non-TMW character newline [decimal 10] in the font Tahoma appears first at location 39
-Non-TMW character ' ' [decimal 32] in the font TimesNewRoman appears first at location 45
-Non-TMW character '}' [decimal 125] in the font Tahoma appears first at location 66
-Non-TMW character '{' [decimal 123] in the font Tahoma appears first at location 219
-Non-TMW character '\' [decimal 92] in the font Tahoma appears first at location 1237
-Non-TMW character newline [decimal 10] in the font Times New Roman appears first at location 9754
+     org.thdl.tib.input.TibetanConverter --help
 </pre>
-
 <p>
-  Given the above output, you can be sure that a flawless conversion
-  (barring the appearance of <a href="#knownbugs">known bugs</a>) will
-  result when you run <tt>java -cp "c:\my thdl tools\Jskad.jar"
-  org.thdl.tib.input.TibetanConverter --to-wylie "Dalai Lama Fifth
-  History 01.rtf" &gt; "Dalai Lama Fifth History 01 in THDL Extended
-  Wylie.rtf"</tt>.&nbsp; (Note that the '&gt;' causes the output to be
-  directed to the file named thereafter; this is quite handy.)&nbsp;
-  This is because the only text in the input file besides Tibetan is
-  whitespace and the Tahoma characters <tt>'{'</tt>, <tt>'}'</tt>, and
-  <tt>'\'</tt>.  These Tahoma characters are understood by the tool;
-  they are symptoms of the &quot;curly-brace problem&quot;.
+  where you must replace "c:\my thdl tools\Jskad.jar" with the
+  appropriate path on your system.
 </p>
 
-<h3>Failed Conversions</h3>
+<!-- DLC link to V&amp;V story... -->
 
-<p>
-  In this section, you'll learn how to tell if a conversion has
-  succeeded in full, ran into minor problems, or failed altogether.
-</p>
+<h5>License</h5>
 
-<h4>TMW to Wylie</h4>
+<p>Both the converters and this document are released under the <a
+href="http://iris.lib.virginia.edu/tibet/tools/thdl_license.txt">THDL
+Open Community License Version 1.0</a>.</p>
 
-<p>
-<font color="red">
-  This section is too up-to-date -- this is documenting plans for the
-  future.  At present, an error message like
-  <code>&lt;&lt;[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot
-  convert DuffCode &lt;duffcode font=TibetanMachineWeb7 charNum=72
-  character=H/&gt; to THDL Extended Wylie.  Please see the
-  documentation for the TMW font and transcribe this
-  yourself.]]&gt;&gt;</code> appears.
-</font>
-</p>
-
-<p>
-  Note that some TMW glyphs have no transliteration in Exteded
-  Wylie.&nbsp; When you encounter such a glyph, you'll find
-  <tt>\tmwXYYY</tt> in your output, where X tells you which TMW font
-  the troublesome glyph comes from and YYY is the decimal number of
-  the glyph in that font (which is a number between 000 and 255
-  inclusive, usually between 33 and 126).&nbsp; The following are
-  values corresponding to X:
-</p>
-
-<ul>
-  <li>
-    When X is 0, the TibetanMachineWeb font contains the glyph.
-  </li>
-  <li>
-    When X is 1, the TibetanMachineWeb1 font contains the glyph.
-  </li>
-  <li>
-    When X is 2, the TibetanMachineWeb2 font contains the glyph.
-  </li>
-  <li>
-    When X is 3, the TibetanMachineWeb3 font contains the glyph.
-  </li>
-  <li>
-    When X is 4, the TibetanMachineWeb4 font contains the glyph.
-  </li>
-  <li>
-    When X is 5, the TibetanMachineWeb5 font contains the glyph.
-  </li>
-  <li>
-    When X is 6, the TibetanMachineWeb6 font contains the glyph.
-  </li>
-  <li>
-    When X is 7, the TibetanMachineWeb7 font contains the glyph.
-  </li>
-  <li>
-    When X is 8, the TibetanMachineWeb8 font contains the glyph.
-  </li>
-  <li>
-    When X is 9, the TibetanMachineWeb9 font contains the glyph.
-  </li>
-</ul>
-
-<p>
-  Upon finding a <tt>\tmwXYYY</tt> sequence in your output, you should
-  consult the <a
-  href="http://iris.lib.virginia.edu/tibet/tools/tmw.html#doc">
-  documentation</a> for the specific TMW font named.&nbsp; Find the
-  glyph (by its YYY value) and decide how to proceed.&nbsp; If you
-  find a glyph that you believe should have been converted into
-  Extended Wylie by the tool, please report this as a bug through the
-  SourceForge website or via e-mail.
-</p>
-
-<h4>Other Conversions</h4>
-
-<p>
-  The other conversions are all-or-nothing.&nbsp; That is, if you run
-  into any trouble whatsoever, the result will be a file containing
-  just the problematic glyphs, each preceded by achen (i.e., U+0F68,
-  the letter whose THDL Extended Wylie representation is 'a').&nbsp;
-  These glyphs will be bracketed on the left by U+0F3C (for which the
-  THDL Extended Wylie is '(') and on the right by U+0F3D (for which
-  the THDL Extended Wylie is ')').&nbsp; If your result is as long as
-  your input, then the conversion went flawlessly.
-</p>
-
-<p>
-  There is one TMW glyph (TibetanMachineWeb7, glyph 91 [\tmw7091])
-  that has no Tibetan Machine equivalent.&nbsp; This glyph is the only
-  TMW glyph that can cause a TMW-&gt;TM conversion to fail.&nbsp; It
-  is fairly common, though, especially if you've used Jskad to prepare
-  your document.&nbsp; It might be appropriate to change the document
-  to use TibetanMachineWeb7, glyph 90 [\tmw7090], a similar glyph that
-  does have a TM equivalent.
-</p>
-
-<p>
-  You might consider using Jskad to convert documents that give
-  errors, as it has better error reporting and can tell you just
-  what's wrong.
-</p>
-<p>
-  If you ever encounter problems in a TM-&gt;TMW conversion, please
-  send us mail with the error report (and the problem input document's
-  resulting document) so that we can improve our tools.
-</p>
-
-<h3>Invoking the Converter</h3>
-
-<p>
-  First add Jskad.jar to your CLASSPATH.&nbsp; You can do this by
-  setting an environment variable CLASSPATH to contain the absolute
-  path of the Jskad.jar file and then running the command <tt>java
-  org.thdl.tib.input.TibetanConverter</tt>.&nbsp; Alternatively, you
-  can use <code>java -cp "c:\my tibetan documents\Jskad.jar"
-  org.thdl.tib.input.TibetanConverter</code> where you put in the
-  appropriate path to Jskad.jar.&nbsp; You will see usage information
-  appear if you do this correctly; you'll see a message like
-  <code>java.lang.NoClassDefFoundError:
-  org/thdl/tib/input/TibetanConverter; Exception in thread
-  "main"</code> if you've not correctly told Java where to find
-  Jskad.jar.
-</p>
-
-<h3><a name="knownbugs"></a>Known Bugs</h3>
-
-<p>
-  All known bugs are listed in this section.&nbsp; They're more likely
-  to be fixed if users complain, so complain away.
-</p>
-
-<p>
-  There are no known bugs at present.
-</p>
 
 <p>
     Please
