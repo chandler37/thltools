@@ -1,0 +1,55 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*"  %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<!--registerForm.jsf-->
+<c:out value='<a name="${ component }" ></a>' escapeXml="false" />
+<c:choose>
+	<c:when test="${ ! empty param.formMode && param.formMode == 'insert'}">
+		<c:set var="updateMode" value="${ false }" />		
+		<c:set var="newCmd" value="insert" />
+		<c:set var="register" value="" />
+		<c:set var="id" value="" />
+		<%-- <c:set var="precedence" value="1" /> --%>
+		<c:set var="note" value="" />
+	</c:when>
+	<c:when test="${ ! empty param.formMode && param.formMode == 'update'}">
+		<c:set var="updateMode" value="${ true }" />		
+		<c:set var="newCmd" value="update" />
+		<c:set var="register" value="${ component.register }" />
+		<c:set var="id" value="${ component.id }" />
+		<%-- <c:set var="precedence" value="${ component.precedence }" /> --%>
+		<c:set var="note" value="${ component.note }" />
+	</c:when>
+	<c:otherwise>
+		<c:set var="updateMode" value="${ false }" />		
+		<c:set var="newCmd" value="" />
+		<c:set var="register" value="ERROR" />
+		<%-- <c:set var="precedence" value="ERROR" /> --%>
+		<c:set var="note" value="ERROR" />
+	</c:otherwise>
+</c:choose>
+
+<form id="newCompForm" action="/lex/action" method="post">
+<p>
+<input type="hidden" name="comp" value="register" />
+<c:if test="${ updateMode }">
+<c:out value='<input type="hidden" name="id" value="${id}" />' escapeXml="false" />
+</c:if>
+<c:out value='<input type="hidden" name="cmd" value="${newCmd}" />' escapeXml='false' />
+<c:out value='<input type="hidden" name="parentId" value="${ param.parentId }" />' escapeXml='false' />
+
+Register: 
+<select name="register">
+	<c:forEach var="reg" items="${ applicationScope.flatData.registers }" >
+		<c:set var="sel" value="" />
+		<c:if test="${ reg.key == register }">
+			<c:set var="sel" value="selected='selected'" />
+		</c:if>
+		<c:out value="<option value='${ reg.key }' ${sel}>${ reg.value }</option>" escapeXml="false" /> <br />
+	</c:forEach>
+</select>
+<br />
+<jsp:include page="metaForm.jsf" />
+
+<input type="submit" value="Submit Register" />
+</p>
+</form>

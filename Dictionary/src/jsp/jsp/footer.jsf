@@ -1,0 +1,27 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*"  %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<%@ taglib prefix = "req" uri = "http://jakarta.apache.org/taglibs/request-1.0" %>
+
+<c:if test="${ ! empty sessionScope.user }">
+	<c:if test="${ sessionScope.user.developer }">
+	<jsp:include page="debug.jsf" flush="false" />
+	</c:if>
+</c:if>
+
+<c:if test="${ ! empty jumpToLocation }">
+	<script type="text/javascript">
+		function scrollIt(anchorname) {
+		 if (document.all)
+		document.all(anchorname).scrollIntoView()
+		 else if (document.anchors)
+			window.scrollTo(0,document.anchors[anchorname].y);
+		}
+		scrollIt('<c:out value="${ jumpToLocation }"/>');
+	</script>
+
+</c:if>
+
+</div><!--END Main-->
+
+</body>
+</html>

@@ -1,0 +1,55 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<%-- <%@ taglib prefix="input" uri="http://jakarta.apache.org/taglibs/input-1.0" %> --%>
+<!--transitionalDataForm.jsf-->
+<c:out value='<a name="${ component }" ></a>' escapeXml="false" />
+<c:choose>
+	<c:when test="${ ! empty param.formMode && param.formMode == 'insert'}">
+		<c:set var="updateMode" value="${ false }" />		
+		<c:set var="newCmd" value="" />
+		<c:set var="transitionalDataText" value="ERROR: This is not a supported feature. Please go back." />
+	</c:when>
+	<c:when test="${ ! empty param.formMode && param.formMode == 'update'}">
+		<c:set var="updateMode" value="${ true }" />		
+		<c:set var="newCmd" value="update" />
+		<c:set var="transitionalDataText" value="${ component.transitionalDataText }" />
+		<c:set var="id" value="${ component.id }" />
+	</c:when>
+	<c:otherwise>
+		<c:set var="updateMode" value="${ false }" />		
+		<c:set var="newCmd" value="" />
+		<c:set var="transitionalDataText" value="ERROR: This is not a supported feature. Please go back." />
+	</c:otherwise>
+</c:choose>
+
+<c:set var="translateMode" value="${ false }" />
+<c:if test="${ component.translationOf > 0 }">
+	<c:set var="translateMode" value="${ true }" />
+	<c:set var="originalTransitionalDataText" 
+			 value="Original Text: ${ original.transitionalDataText } <br /> Translation " />
+</c:if>
+
+<form id="newCompForm" action="/lex/action" method="post">
+<p>
+<c:if test="${ translateMode }">
+	<c:out value='<input type="hidden" name="translationOf" value="${ component.translationOf }" />' escapeXml="false" />
+</c:if>
+
+<input type="hidden" name="comp" value="transitionalData" />
+<c:if test="${ updateMode }">
+<c:out value='<input type="hidden" name="id" value="${id}" />' escapeXml="false" />
+</c:if>
+<c:out value='<input type="hidden" name="cmd" value="${newCmd}" />' escapeXml='false' />
+<c:out value='<input type="hidden" name="parentId" value="${ param.parentId }" />' escapeXml='false' />
+
+<c:out value="${ originalEtymologyDescription } " escapeXml='false' />
+
+<c:out value="${ applicationScope.flatData.transitionalDataLabels[ component.transitionalDataLabel ] }" /> Text: <br />
+<textarea name="transitionalDataText" rows="8" cols="90"><c:if test="${ param.cmd != 'getTranslationForm'}"><c:out value='${ transitionalDataText }' escapeXml='false' /></c:if></textarea>
+<br />
+
+<jsp:include page="metaForm.jsf" />
+
+<input type="submit" value="Submit" />
+</p>
+</form>

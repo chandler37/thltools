@@ -1,0 +1,19 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false"%>
+<%-- <%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" errorPage="/jsp/error.jsp" buffer="512kb" autoFlush="false" %> --%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<!--encyclopedia.jsf-->
+
+<!--ENCYCLOPEDIA ARTICLES-->
+
+	<h1>Encyclopedia Article</h1>
+	<p class="data">
+	<span class="label">Title:</span>  <c:out value="${ component.articleTitle }"  escapeXml="false"/>   <br />
+	</p>
+	<p class="data">
+	<span class="label">Author:</span> 
+	<c:out value="${ component.metaDisplayMap['createdBy'] }" escapeXml="false"/>
+	</p>
+	<p class="data">
+	<span class="label"> Article:</span> <br />
+	<c:out value="${ component.article }"  escapeXml="false"/> <br />
+	</p>

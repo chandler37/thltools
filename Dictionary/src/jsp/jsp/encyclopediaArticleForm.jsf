@@ -1,0 +1,55 @@
+<%-- <%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" errorPage="/jsp/error.jsp" %> --%>
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" %><%@ page import="java.util.HashMap" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<%-- <%@ taglib prefix="input" uri="http://jakarta.apache.org/taglibs/input-1.0" %> --%>
+<!--encyclopediaArticleForm.jsf-->
+<c:out value='<a name="${ component }" ></a>' escapeXml="false" />
+<c:choose>
+	<c:when test="${ ! empty param.formMode && param.formMode == 'insert'}">
+		<c:set var="updateMode" value="${ false }" />		
+		<c:set var="newCmd" value="insert" />
+		<c:set var="article" value="" />
+		<c:set var="articleTitle" value="" />
+		<c:set var="id" value="" />
+		<c:set var="note" value="" />
+	</c:when>
+	<c:when test="${ ! empty param.formMode && param.formMode == 'update'}">
+		<c:set var="updateMode" value="${ true }" />		
+		<c:set var="newCmd" value="update" />
+		<c:set var="article" value="${ component.article }" />
+		<c:set var="articleTitle" value="${ component.articleTitle }" />
+		<c:set var="id" value="${ component.id }" />
+		<c:set var="note" value="${ component.note }" />
+	</c:when>
+	<c:otherwise>
+		<c:set var="updateMode" value="${ false }" />		
+		<c:set var="newCmd" value="" />
+		<c:set var="article" value="ERROR" />
+		<c:set var="articleTitle" value="ERROR" />
+		<c:set var="id" value="ERROR" />
+		<c:set var="note" value="ERROR" />
+	</c:otherwise>
+</c:choose>
+
+<form id="newCompForm" action="/lex/action" method="post">
+<p>
+<input type="hidden" name="comp" value="encyclopediaArticle" />
+<c:if test="${ updateMode }">
+<c:out value='<input type="hidden" name="id" value="${id}" />' escapeXml="false" />
+</c:if>
+<c:out value='<input type="hidden" name="cmd" value="${newCmd}" />' escapeXml='false' />
+<c:out value='<input type="hidden" name="parentId" value="${ param.parentId }" />' escapeXml='false' />
+
+Article Title: <br />
+<textarea name="articleTitle" rows="2" cols="90"><c:out value='${ articleTitle }' escapeXml='false' /></textarea>
+<br />
+
+Article: <br />
+<textarea name="article" rows="24" cols="100"><c:out value='${ article }' escapeXml='false' /></textarea>
+<br />
+
+<jsp:include page="metaForm.jsf" />
+
+<input type="submit" value="Submit Encyclopedia Article" />
+</p>
+</form>

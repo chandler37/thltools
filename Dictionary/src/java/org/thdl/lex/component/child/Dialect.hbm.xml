@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+
+
+
+<class name="org.thdl.lex.component.child.Dialect" table="Dialects">
+	<id name="id" type="java.lang.Integer" column="id">
+		<generator class="native" />
+	</id>
+	<property name="majorDialectFamily" type="short" column="majorDialectFamily" not-null="true" length="6"/>
+	<property name="specificDialect" type="short" column="specificDialect" not-null="true" length="6"/>
+
+	<!-- associations -->
+
+</class>
+</hibernate-mapping>

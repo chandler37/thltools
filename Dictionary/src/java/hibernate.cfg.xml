@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD//EN"
+                                         "http://hibernate.sourceforge.net/hibernate-configuration-2.0.dtd">
+
+<hibernate-configuration>
+
+    <session-factory>
+
+        <property name="connection.datasource">java:comp/env/jdbc/lex-datasource</property>
+        <property name="show_sql">true</property>
+        <property name="use_outer_join">false</property>
+        <property name="dialect">net.sf.hibernate.dialect.MySQLDialect</property>
+<!--         <property name="max_fetch_depth">15</property>
+ --> 
+        <!-- Mapping files -->
+	<mapping resource="org/thdl/lex/component/LexComponent.hbm.xml"/>
+<!-- 	<mapping resource="org/thdl/lex/component/child/Author.hbm.xml"/>
+	<mapping resource="org/thdl/lex/component/child/Dialect.hbm.xml"/>
+	<mapping resource="org/thdl/lex/component/child/EtymologyType.hbm.xml"/>
+	<mapping resource="org/thdl/lex/component/child/Function.hbm.xml"/>
+	<mapping resource="org/thdl/lex/component/child/FunctionsGeneral.hbm.xml"/>
+	<mapping resource="org/thdl/lex/component/child/FunctionsSpecific.hbm.xml"/>
+	<mapping resource="org/thdl/lex/component/child/Language.hbm.xml"/>
+	<mapping resource="org/thdl/lex/component/child/LiteraryForm.hbm.xml"/>
+	<mapping resource="org/thdl/lex/component/child/LiteraryGenre.hbm.xml"/>
+	<mapping resource="org/thdl/lex/component/child/LiteraryPeriod.hbm.xml"/>
+	<mapping resource="org/thdl/lex/component/child/LiterarySource.hbm.xml"/>
+	<mapping resource="org/thdl/lex/component/child/MajorDialectFamily.hbm.xml"/>
+	<mapping resource="org/thdl/lex/component/child/PhoneticsType.hbm.xml"/>
+	<mapping resource="org/thdl/lex/component/child/ProjectSubject.hbm.xml"/>
+	<mapping resource="org/thdl/lex/component/child/Register.hbm.xml"/>
+	<mapping resource="org/thdl/lex/component/child/RelatedTermType.hbm.xml"/>
+	<mapping resource="org/thdl/lex/component/child/Script.hbm.xml"/>
+	<mapping resource="org/thdl/lex/component/child/Source.hbm.xml"/>
+	<mapping resource="org/thdl/lex/component/child/SpecificDialect.hbm.xml"/>
+	<mapping resource="org/thdl/lex/component/child/SpellingType.hbm.xml"/>
+	<mapping resource="org/thdl/lex/component/child/TransitionalDataLabel.hbm.xml"/> -->
+    </session-factory>
+
+</hibernate-configuration>

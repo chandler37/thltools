@@ -1,0 +1,36 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+
+<c:if test="${ sessionScope.user.developer }">
+<span class="label"> Id: </span><c:out value="${ component.metaId }"  />	
+<br />
+</c:if>
+<span class="label">Created by </span><c:out value="${ applicationScope.flatData.users[ component.meta.createdBy ] }"   escapeXml="false"/>		
+<c:if test="${ ! sessionScope.user.guest }">
+<span class="label">on </span><c:out value="${  component.meta.createdOn }"  default="unknown"  escapeXml="false"/>		
+<span class="label">for </span><c:out value="${ applicationScope.flatData.projectSubjects[ component.meta.createdByProjSub ] }"  default="none"  escapeXml="false"/>
+<br />
+<span class="label">Modified by </span><c:out value="${ applicationScope.flatData.users[ component.meta.modifiedBy ] }"  default="unknown"  escapeXml="false"/>
+<span class="label">on </span><c:out value="${ component.meta.modifiedOn }"  default="unknown"  escapeXml="false"/>
+<span class="label">for </span><c:out value="${  applicationScope.flatData.projectSubjects[ component.meta.modifiedByProjSub ] }"  default="none"  escapeXml="false"/>
+<br />
+<span class="label">Source:	</span><c:out value="${  applicationScope.flatData.sources[ component.meta.source ] }"  default="unknown"  escapeXml="false"/> 
+<br />
+<span class="label">Script:	</span><c:out value="${  applicationScope.flatData.scripts[ component.meta.script ] }" default="unknown"  escapeXml="false"/>
+<br />
+<span class="label">Language:	</span><c:out value="${  applicationScope.flatData.languages[ component.meta.language ] }"  default="unknown"  escapeXml="false"/>
+<br />
+<span class="label">Dialect:	</span><c:out value="${ applicationScope.flatData.majorDialectFamilies[ component.meta.dialect ] }"  default="unknown"  escapeXml="false"/>
+<br />
+<span class="label">Translation: </span>
+<c:choose>
+<c:when test="${ component.translationOf > 0 }">
+Yes (of <c:out value="${ component.translationOf }"  default="unknown"  escapeXml="false"/>)
+</c:when>
+<c:otherwise>
+No
+</c:otherwise>
+</c:choose>
+<br />
+<span class="label">Note:	</span><c:out value="${ component.meta.note }"  default="unknown"  escapeXml="false"/>	<br />
+</c:if>
+

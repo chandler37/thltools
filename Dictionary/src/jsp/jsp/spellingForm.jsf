@@ -1,0 +1,61 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" %>
+<%-- <%@ page import="java.util.HashMap" %> --%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<!--spellingForm.jsf-->
+<c:out value='<a name="${ component }" ></a>' escapeXml="false" />
+<c:choose>
+	<c:when test="${ ! empty param.formMode && param.formMode == 'insert'}">
+		<c:set var="updateMode" value="${ false }" />		
+		<c:set var="newCmd" value="insert" />
+		<c:set var="spelling" value="" />
+		<c:set var="spellingType" value="0" />
+		<c:set var="id" value="" />
+		<c:set var="note" value="" />
+	</c:when>
+	<c:when test="${ ! empty param.formMode && param.formMode == 'update'}">
+		<c:set var="updateMode" value="${ true }" />		
+		<c:set var="newCmd" value="update" />
+		<c:set var="spelling" value="${ component.spelling }" />
+		<c:set var="spellingType" value="${ component.spellingType }" />
+		<c:set var="id" value="${ component.id }" />
+		<c:set var="note" value="${ component.note }" />
+	</c:when>
+	<c:otherwise>
+		<c:set var="updateMode" value="${ false }" />		
+		<c:set var="newCmd" value="" />
+		<c:set var="spelling" value="ERROR" />
+		<c:set var="spellingType" value="ERROR" />
+		<c:set var="id" value="ERROR" />
+		<c:set var="note" value="ERROR" />
+	</c:otherwise>
+</c:choose>
+
+<form id="newCompForm" action="/lex/action" method="post">
+<p>
+<input type="hidden" name="comp" value="spelling" />
+<c:if test="${ updateMode }">
+<c:out value='<input type="hidden" name="id" value="${id}" />' escapeXml="false" />
+</c:if>
+<c:out value='<input type="hidden" name="cmd" value="${newCmd}" />' escapeXml='false' />
+<c:out value='<input type="hidden" name="parentId" value="${ param.parentId }" />' escapeXml='false' />
+
+Spelling: <br />
+<textarea name="spelling" rows="8" cols="90"><c:out value='${ spelling }' escapeXml='false' /></textarea>
+<br />
+
+Spelling Type: 
+<select name="spellingType">
+	<c:forEach var="varTypes" items="${ applicationScope.flatData.spellingTypes }" >
+		<c:set var="sel" value="" />
+		<c:if test="${ varTypes.key == spellingType }">
+			<c:set var="sel" value="selected='selected'" />
+		</c:if>
+		<c:out value="<option value='${ varTypes.key }' ${sel}>${ varTypes.value }</option>" escapeXml="false" /> <br />
+	</c:forEach>
+</select>
+<br />
+<jsp:include page="metaForm.jsf" />
+
+<input type="submit" value="Submit Spelling" />
+</p>
+</form>

@@ -1,0 +1,116 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<%-- <%@ taglib prefix="input" uri="http://jakarta.apache.org/taglibs/input-1.0" %> --%>
+<!--etymologyForm.jsf-->
+<c:out value='<a name="${ component }" ></a>' escapeXml="false" />
+<c:choose>
+	<c:when test="${ ! empty param.formMode && param.formMode == 'insert'}">
+		<c:set var="updateMode" value="${ false }" />		
+		<c:set var="newCmd" value="insert" />
+		<c:set var="etymologyDescription" value="" />
+		<c:set var="derivation" value="" />
+		<c:set var="etymologyType" value="0" />
+		<c:set var="loanLanguage" value="0" />
+		<c:set var="id" value="" />
+		<c:set var="note" value="" />
+	</c:when>
+	<c:when test="${ ! empty param.formMode && param.formMode == 'update'}">
+		<c:set var="updateMode" value="${ true }" />		
+		<c:set var="newCmd" value="update" />
+		<c:set var="derivation" value="${ component.derivation }" />
+		<c:set var="etymologyDescription" value="${ component.etymologyDescription }" />
+		<c:set var="id" value="${ component.id }" />
+		<c:set var="etymologyType" value="${ component.etymologyType }" />
+		<c:set var="loanLanguage" value="${ component.loanLanguage }" />
+		<c:set var="note" value="${ component.note }" />
+	</c:when>
+	<c:otherwise>
+		<c:set var="updateMode" value="${ false }" />		
+		<c:set var="newCmd" value="" />
+		<c:set var="derivation" value="ERROR" />
+		<c:set var="etymologyDescription" value="ERROR" />
+		<c:set var="etymologyType" value="ERROR" />
+		<c:set var="loanLanguage" value="ERROR" />
+		<c:set var="note" value="ERROR" />
+	</c:otherwise>
+</c:choose>
+
+<c:set var="translateMode" value="${ false }" />
+<c:if test="${ component.translationOf > 0 }">
+	<c:set var="translateMode" value="${ true }" />
+	<c:set var="originalEtymologyDescription" 
+			 value="Original Etymology Description: ${ original.etymologyDescription } <br /> Translation " />
+</c:if>
+
+<form id="newCompForm" action="/lex/action" method="post">
+<p>
+<c:if test="${ translateMode }">
+	<c:out value='<input type="hidden" name="translationOf" value="${ component.translationOf }" />' escapeXml="false" />
+</c:if>
+
+<input type="hidden" name="comp" value="etymology" />
+<c:if test="${ updateMode }">
+<c:out value='<input type="hidden" name="id" value="${id}" />' escapeXml="false" />
+</c:if>
+<c:out value='<input type="hidden" name="cmd" value="${newCmd}" />' escapeXml='false' />
+<c:out value='<input type="hidden" name="parentId" value="${ param.parentId }" />' escapeXml='false' />
+
+<c:out value="${ originalEtymologyDescription } " escapeXml='false' />
+
+Etymology Description: <br />
+<textarea name="etymologyDescription" rows="8" cols="90"><c:if test="${ param.cmd != 'getTranslationForm'}"><c:out value='${ etymologyDescription }' escapeXml='false' /></c:if></textarea>
+<br />
+
+Etymology Type: 
+<select name="etymologyType">
+	<c:set var="sel" value="" />
+	<c:if test="${ 0 == etymologyType }">
+		<c:set var="sel" value="selected='selected'" />
+	</c:if>
+	<c:out value="<option value='0' ${sel}>none</option>" escapeXml="false" /> 
+	<c:forEach var="etymTypes" items="${ applicationScope.flatData.etymologyTypes }" >
+		<c:set var="sel" value="" />
+		<c:if test="${ etymTypes.key == etymologyType }">
+			<c:set var="sel" value="selected='selected'" />
+		</c:if>
+		<c:out value="<option value='${ etymTypes.key }' ${sel}>${ etymTypes.value }</option>" escapeXml="false" /> 
+	</c:forEach>
+</select>
+<br />
+Loan Language: 
+<select name="loanLanguage">
+	<c:set var="sel" value="" />
+	<c:if test="${ 0 == loanLanguage }">
+		<c:set var="sel" value="selected='selected'" />
+	</c:if>
+	<c:out value="<option value='0' ${sel}>none</option>" escapeXml="false" /> 
+	<c:forEach var="loanLangs" items="${ applicationScope.flatData.languages }" >
+		<c:set var="sel" value="" />
+			<c:if test="${ loanLangs.key == loanLanguage }">
+				<c:set var="sel" value="selected='selected'" />
+			</c:if>
+		<c:out value="<option value='${ loanLangs.key }' ${sel}>${ loanLangs.value }</option>" escapeXml="false" />
+	</c:forEach>
+</select>
+<br />
+Derivation:
+<select name="derivation">
+<option value="none" selected="selected">none</option>
+<c:set var="sel" value="" />
+<c:set var="temp" value="Primary,'dod rgyal/" />
+<c:if test='${ derivation == temp }'>
+	<c:set var="sel" value="selected='selected'" />
+</c:if>
+<c:out value='<option value="${ temp }" ${sel}>' escapeXml="false" />Primary,'dod rgyal/</option>
+<c:set var="sel" value="" />
+<c:if test='${ derivation == "Etymological derivate,rjes grub/" }'>
+	<c:set var="sel" value="selected='selected'" />
+</c:if>
+<c:out value='<option value="Etymological derivate,rjes grub/" ${sel}>' escapeXml="false" />Etymological derivate,rjes grub/</option>
+</select> 
+
+<jsp:include page="metaForm.jsf" />
+
+<input type="submit" value="Submit Etymology" />
+</p>
+</form>

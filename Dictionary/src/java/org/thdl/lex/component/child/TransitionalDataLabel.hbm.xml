@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+
+
+
+<class name="org.thdl.lex.component.child.TransitionalDataLabel" table="TransitionalDataLabels">
+	<id name="id" type="short" column="id">
+		<generator class="native" />
+	</id>
+	<property name="transitionalDataLabel" type="java.lang.String" column="transitionalDataLabel" length="65535"/>
+
+	<!-- associations -->
+
+</class>
+</hibernate-mapping>
