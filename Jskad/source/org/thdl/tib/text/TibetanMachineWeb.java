@@ -441,8 +441,9 @@ public class TibetanMachineWeb implements THDLWylieConstants {
                                         ThdlDebug.verify(subval.length() == 4);
                                         try {
                                             int x;
-                                            ThdlDebug.verify((x = Integer.parseInt(subval, 16)) >= 0x0F00
-                                                             && x <= 0x0FFF);
+                                            ThdlDebug.verify(((x = Integer.parseInt(subval, 16)) >= 0x0F00
+                                                              && x <= 0x0FFF)
+                                                             || x == 0x0020);
                                         } catch (NumberFormatException e) {
                                             ThdlDebug.verify(false);
                                         }
@@ -1016,62 +1017,68 @@ public static void main(String[] args) {
     such oddballs in a first-class fashion. */
 private static DuffCode getUnusualTMtoTMW(int font, int code) {
     if (code > 255) {
-        if (font == 0) {
-            switch (code) {
-            case 347: // reduced-height ha
-				return TMtoTMW[font][156 - 32];
+        switch (code) {
+        case 347: // 0=reduced-height ha
+            return TMtoTMW[font][156 - 32];
 
-            case 353: // d-r-w
-				return TMtoTMW[font][154 - 32];
+        case 352: // 1=dz-wazur, 0=k-wazur
+            return TMtoTMW[font][138 - 32];
 
-            case 377: // t-w
-				return TMtoTMW[font][143 - 32];
+        case 353: // 0=d-r-w
+            return TMtoTMW[font][154 - 32];
 
-            case 710: // s-b-r
-				return TMtoTMW[font][136 - 32];
+        case 377: // 0=t-w
+            return TMtoTMW[font][143 - 32];
 
-            case 1026: // s-g-y
-				return TMtoTMW[font][128 - 32];
+        case 402: // 1=dz-ny 2=n-r 3=h-y
+            return TMtoTMW[font][131 - 32];
 
-            case 1027: // s-p-y
-				return TMtoTMW[font][129 - 32];
+        case 710: // 0=s-b-r
+            return TMtoTMW[font][136 - 32];
 
-            case 1106: // d-w
-				return TMtoTMW[font][144 - 32];
+        case 1026: // 0=s-g-y
+            return TMtoTMW[font][128 - 32];
 
-			case 8117: // tsh-w
-				return TMtoTMW[font][146 - 32];
+        case 1027: // 0=s-p-y
+            return TMtoTMW[font][129 - 32];
 
-			case 8126: // r-w
-				return TMtoTMW[font][149 - 32];
+        case 1106: // 0=d-w
+            return TMtoTMW[font][144 - 32];
 
-            case 8218: // s-b-y
-                return TMtoTMW[font][130 - 32];
+        case 8117: // 0=tsh-w
+            return TMtoTMW[font][146 - 32];
 
-			case 8225: // s-p-r
-				return TMtoTMW[font][135 - 32];
+        case 8126: // 0=r-w
+            return TMtoTMW[font][149 - 32];
 
-			case 8230: // s-g-r
-				return TMtoTMW[font][133 - 32];
+        case 8218: // 0=s-b-y 2=n-y
+            return TMtoTMW[font][130 - 32];
 
-            case 8240: // s-m-r
-				return TMtoTMW[font][137 - 32];
+        case 8222: // 0=s-k-r
+            return TMtoTMW[font][132 - 32];
 
-			case 8482: // g-r-w
-				return TMtoTMW[font][153 - 32];
+        case 8224: // 0=s-n-r
+            return TMtoTMW[font][134 - 32];
 
-			default:
-				return null;
-            }
-        } else if (font == 3) {
-            switch (code) {
-            case 402: // h+y
-                return TMtoTMW[font][131 - 32];
+        case 8225: // 0=s-p-r
+            return TMtoTMW[font][135 - 32];
 
-			default:
-				return null;
-            }
-        } else {
+        case 8230: // 0=s-g-r
+            return TMtoTMW[font][133 - 32];
+
+        case 8240: // 0=s-m-r 1=dz-r
+            return TMtoTMW[font][137 - 32];
+
+        case 8249: // 0=kh-wazur 1=dz-h
+            return TMtoTMW[font][139 - 32];
+
+        case 8250: // 0=ph-y-wazur
+            return TMtoTMW[font][155 - 32];
+
+        case 8482: // 0=g-r-w
+            return TMtoTMW[font][153 - 32];
+
+        default:
             return null;
         }
     } else {
