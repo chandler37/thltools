@@ -69,7 +69,8 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 	private static Map tibHash = new HashMap();
 	private static Map binduMap = new HashMap();
 	private static String[][] toHashKey = new String[11][95]; //note: toHashKey[0][..] is not used
-	private static DuffCode[][] TMtoTMW = new DuffCode[5][255-32];
+	private static DuffCode[][] TMtoTMW = new DuffCode[5][255-32]; // ordinal 255 doesn't occur in TM
+	private static DuffCode[][] TMWtoTM = new DuffCode[10][127-32]; // ordinal 127 doesn't occur in TMW
 	private static String fileName = "tibwn.ini";
 	private static final String DELIMITER = "~";
 	private static Set top_vowels;
@@ -354,15 +355,21 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 					;
 				else if (line.equals("")) //empty string
 					;
-				else if (!ignore) {
+				else {
 					StringTokenizer st = new StringTokenizer(line,DELIMITER,true);
 
-					String wylie = new String();
-					DuffCode[] duffCodes = new DuffCode[11];
+					String wylie = null;
+                    DuffCode[] duffCodes;
+                    if (ignore) {
+                        duffCodes = new DuffCode[TMW + 1];
+                    } else {
+                        duffCodes = new DuffCode[11];
+                    }
 
 					int k = 0;
 
-					while (st.hasMoreTokens()) {
+					while (st.hasMoreTokens()
+                           && (!ignore || (k <= 3 /* 3 from 'case 3:' */))) {
 						String val = st.nextToken();
 
 						if (val.equals(DELIMITER))
@@ -371,7 +378,9 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 						else if (!val.equals("")) {							
 							switch (k) {
 								case 0: //wylie key
-									wylie = val;
+                                    if (!ignore) {
+                                        wylie = val;
+                                    }
 									break;
 
 								case 1:
@@ -379,11 +388,13 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 									break;
 
 								case 2: //reduced-size character if there is one
-									duffCodes[REDUCED_C] = new DuffCode(val,true);
+                                    if (!ignore) {
+                                        duffCodes[REDUCED_C] = new DuffCode(val,true);
+                                    }
 									break;
 
 								case 3: //TibetanMachineWeb code
-									duffCodes[k-1/* TMW */] = new DuffCode(val,true);
+									duffCodes[TMW] = new DuffCode(val,true);
                                     // TibetanMachineWeb7.91, for
                                     // example, has no TM(win32)
                                     // equivalent (though it has a
@@ -391,39 +402,68 @@ public class TibetanMachineWeb implements THDLWylieConstants {
                                     // test for null here:
                                     if (null != duffCodes[TM]) {
                                         TMtoTMW[duffCodes[TM].getFontNum()-1][duffCodes[TM].getCharNum()-32]
-                                            = duffCodes[TMW];
+                                            = duffCodes[TMW]; // TM->TMW mapping
                                     }
+                                    // but no null test is necessary
+                                    // here for either the TMW or the
+                                    // TM glyph (though the TM glyph
+                                    // could well be null):
+                                    TMWtoTM[duffCodes[TMW].getFontNum()-1][duffCodes[TMW].getCharNum()-32]
+                                        = duffCodes[TM]; // TMW->TM mapping
 									break;
+                                // Vowels etc. to use with this glyph:
 								case 4:
 								case 5:
 								case 6:
 								case 7:
 								case 8:
 								case 9:
-									duffCodes[k-1] = new DuffCode(val,true);
+                                    if (!ignore) {
+                                        duffCodes[k-1] = new DuffCode(val,true);
+                                    }
 									break;
 
 								case 10: //Unicode: ignore for now
+                                    ThdlDebug.verify(val.length() == 4);
+                                    try {
+                                        int x;
+                                        ThdlDebug.verify((x = Integer.parseInt(val, 16)) >= 0x0F00
+                                                         && x <= 0x0FFF);
+                                    } catch (NumberFormatException e) {
+                                        ThdlDebug.verify(false);
+                                    }
 									break;
 
 								case 11: //half-height character if there is one
-									duffCodes[HALF_C] = new DuffCode(val,true);
+                                    if (!ignore) {
+                                        duffCodes[HALF_C] = new DuffCode(val,true);
+                                    }
 									break;
 
 								case 12: //special bindu-value if vowel+bindu are one glyph
-									DuffCode binduCode = new DuffCode(val,true);
-									binduMap.put(duffCodes[TMW],binduCode);
+                                    if (!ignore) {
+                                        DuffCode binduCode = new DuffCode(val,true);
+                                        binduMap.put(duffCodes[TMW],binduCode);
+                                    }
 									break;
 							}
 						}
 					}
 
-					if (hashOn)
-						tibHash.put(wylie,duffCodes);
+                    if (!ignore) {
+                        if (null == wylie)
+                            throw new Error(fileName
+                                            + " has a line ^"
+                                            + DELIMITER
+                                            + " which means that no Wylie is assigned.  That isn't supported.");
+                        if (hashOn) {
+                            tibHash.put(wylie, duffCodes);
+                        }
 
-					int font = duffCodes[2].getFontNum();
-					int code = duffCodes[2].getCharNum()-32;
-					toHashKey[font][code] = wylie;
+                        int font = duffCodes[2].getFontNum();
+                        int code = duffCodes[2].getCharNum()-32;
+                        toHashKey[font][code] = wylie;
+                    }
 				}
 			}
 		}
@@ -811,7 +851,95 @@ public static DuffCode getHalfHeightGlyph(String hashKey) {
 	return dc[REDUCED_C];
 }
 
+/** Returns the DuffCode for the TibetanMachineWeb glyph corresponding
+    to the given TibetanMachine font
+    (0=norm,1=Skt1,2=Skt2,3=Skt3,4=Skt4) and character(32-254).
+
+    Null is never returned for an existing TibetanMachine glyph,
+    because every TibetanMachine glyph has a corresponding
+    TibetanMachineWeb glyph.  But if (font, ord) doesn't correspond to
+    an existing TibetanMachine glyph, null is returned.  In general,
+    though, this method may raise a runtime exception if you pass in a
+    (font, ord) that doesn't correspond to an existing TibetanMachine
+    glyph. */
+public static DuffCode mapTMtoTMW(int font, int ordinal) {
+    DuffCode ans = TMtoTMW[font][ordinal-32];
+    // comment this out to test via main(..):
+    ThdlDebug.verify(null != ans);
+	return ans;
+}
+
+/** Returns the DuffCode for the TibetanMachine glyph corresponding to
+    the given TibetanMachineWeb font
+    (0=TibetanMachineWeb,1=TibetanMachineWeb1,...) and character(32-127).
+
+    Null is returned for an existing TibetanMachineWeb glyph only if
+    that glyph is TibetanMachineWeb7.91, because every other
+    TibetanMachineWeb glyph has a corresponding TibetanMachine glyph.
+    But if (font, ord) isn't (7, 91) and doesn't correspond to an
+    existing TibetanMachineWeb glyph, null is returned.  In general,
+    though, this method may raise a runtime exception if you pass in a
+    (font, ord) that doesn't correspond to an existing
+    TibetanMachineWeb glyph. */
+public static DuffCode mapTMWtoTM(int font, int ordinal) {
+    DuffCode ans = TMWtoTM[font][ordinal-32];
+    // comment this out to test via main(..):
+    ThdlDebug.verify(null != ans || (font == 7 && ordinal == 91));
+	return ans;
+}
+
+/** Tests the TMW-&gt;TM and TM-&gt;TMW mappings. */
+public static void main(String[] args) {
+    int font, ord, count;
+
+    count = 0;
+    for (font = 0; font < 5; font++) {
+        for (ord = 32; ord < 255; ord++) {
+            if (mapTMtoTMW(font, ord) != null) {
+                count++;
+            }
+        }
+        System.out.println("Found " + count + " TM->TMW mappings (thus far).");
+    }
+
+    count = 0;
+    for (font = 0; font < 10; font++) {
+        for (ord = 32; ord < 127; ord++) {
+            if (mapTMWtoTM(font, ord) != null) {
+                count++;
+            }
+        }
+        System.out.println("Found " + count + " TMW->TM mappings (thus far).");
+    }
+
+    System.out.println("TMWtoTM: ");
+    for (font = 0; font < 10; font++) {
+        for (ord = 32; ord < 127; ord++) {
+            DuffCode dc;
+            if ((dc = mapTMWtoTM(font, ord)) != null) {
+                System.out.println(dc.getCharNum() + " "
+                                   + (dc.getFontNum()-1) + " "
+                                   + font + " "
+                                   + ord);
+            }
+        }
+    }
+
+    System.out.println("TMtoTMW: (use sort -g -k 3 -k 4): ");
+    for (font = 0; font < 5; font++) {
+        for (ord = 32; ord < 255; ord++) {
+            DuffCode dc;
+            if ((dc = mapTMtoTMW(font, ord)) != null) {
+                System.out.println(ord + " " + font + " "
+                                   + (dc.getFontNum()-1) + " "
+                                   + dc.getCharNum());
+            }
+        }
+    }
+}
+
 private static DuffCode getTMtoTMW(int font, int code) {
+    if (false) { // DLC FIXME: why was this here?
 	if (code > 255-32) {
 		switch (code) {
 			case 8218-32: //sby
@@ -842,6 +970,7 @@ private static DuffCode getTMtoTMW(int font, int code) {
 				return null;
 		}
 	}
+    }
 
 	return TMtoTMW[font][code];
 }
@@ -947,7 +1076,7 @@ public static String getWylieForGlyph(DuffCode dc) {
         // This error message is documented in
         // www/htdocs/TMW_RTF_TO_THDL_WYLIE.html, so change them both
         // when you change this.
-        return "<<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert DuffCode " + dc + " to THDL Extended Wylie.  Please see the documentation for the TMW font and transcribe this yourself.]]>>";
+        return "<<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert DuffCode " + dc.toString(true) + " to THDL Extended Wylie.  Please see the documentation for the TMW font and transcribe this yourself.]]>>";
     }
 	return wylieForGlyph(hashKey);
 }

@@ -23,18 +23,13 @@ import java.util.StringTokenizer;
 import org.thdl.util.ThdlDebug;
 
 /**
-* A wrapper for the primitive data types
-* that combine to represent a Tibetan glyph in the
-* TibetanMachineWeb family of fonts.
+* An immutable representation of a Tibetan glyph in the
+* TibetanMachineWeb or TibetanMachine families of fonts.
 *
-* A DuffCode consists of a font number, a character, and
-* a character number. A font identification and a character 
-* (or character number) are sufficient to uniquely identify
-* any TibetanMachineWeb glyph.
+* A DuffCode consists of a font number, a character, and a character
+* number. A font identification and a character are sufficient to
+* uniquely identify any TibetanMachineWeb or TibetanMachine glyph.
 *
-* Note that DuffCodes are sometimes used, internally, to represent
-* glyphs in other fonts, e.g. the TibetanMachine font.  But mainly
-* they represent TibetanMachineWeb glyphs.
 * @author Edward Garrett, Tibetan and Himalayan Digital Library
 * @version 1.0 */
 
@@ -154,10 +149,20 @@ public final class DuffCode {
 	}
 
 /**
-* @return a string representation of this object
-*/
+* @return a string representation of this object */
 	public String toString() {
-		return "<duffcode font=" + TibetanMachineWeb.tmwFontNames[fontNum]
+		return "<duffcode font=" + fontNum
+            + " charNum=" + charNum + " character="
+            + new Character(getCharacter()).toString() + "/>";
+	}
+/**
+ * @param TMW if this DuffCode represents a TMW glyph, not a TM glyph
+ * @return a string representation of this object */
+	public String toString(boolean TMW) {
+		return "<duffcode font="
+            + (TMW
+               ? TibetanMachineWeb.tmwFontNames
+               : TibetanMachineWeb.tmFontNames)[fontNum]
             + " charNum=" + charNum + " character="
             + new Character(getCharacter()).toString() + "/>";
 	}
