@@ -675,14 +675,12 @@ public void setMedia(URL url) {
 			}
 
 			try {
-				if (thdl_mediaplayer_property == null)
-					thdl_mediaplayer_property = getMediaPlayerProperty();
-
-				Class mediaClass = Class.forName(thdl_mediaplayer_property);
+				Class mediaClass = Class.forName(getMediaPlayerProperty());
 				Class[] mediaArgsClass = new Class[] {Container.class, URL.class};
 				Object[] mediaArgs = new Object[] {QD.this, url};
 				Constructor mediaConstructor = mediaClass.getConstructor(mediaArgsClass);
-				player = (SmartMoviePanel)createObject(mediaConstructor, mediaArgs);
+				player = (SmartMoviePanel)QD.createObject(mediaConstructor, mediaArgs);
+                if (null == player) throw new ClassNotFoundException("FIXME: the constructor failed.");
 				media = url;
 				mediaField.setText(media.getPath());
 				startTimer();
@@ -699,29 +697,6 @@ public void setMedia(URL url) {
 			}
 	}
 }
-
-public Object createObject(Constructor constructor, 
-                                     Object[] arguments) {
-
-      System.out.println ("Constructor: " + constructor.toString());
-      Object object = null;
-
-      try {
-        object = constructor.newInstance(arguments);
-        System.out.println ("Object: " + object.toString());
-        return object;
-      } catch (InstantiationException e) {
-          System.out.println(e);
-      } catch (IllegalAccessException e) {
-          System.out.println(e);
-      } catch (IllegalArgumentException e) {
-          System.out.println(e);
-      } catch (InvocationTargetException e) {
-          System.out.println(e);
-      }
-      return object;
-   }
-
 
 public Project() {
 	JPanel p = new JPanel(new GridLayout(2,2));
@@ -1786,4 +1761,34 @@ class RadioListener extends ThdlActionListener {
 		}
 	}
 }
+
+    /* FIXME: needs better error handling */
+    /** Creates an object via reflection.
+     *  @returns nonnull on succes, null on error */
+    public static Object createObject(Constructor constructor,
+                                      Object[] arguments) {
+
+      System.out.println ("Constructor: " + constructor.toString());
+      Object object = null;
+
+      try {
+        object = constructor.newInstance(arguments);
+        System.out.println ("Object: " + object.toString());
+        return object;
+      } catch (InstantiationException e) {
+          System.out.println(e);
+          ThdlDebug.noteIffyCode();
+      } catch (IllegalAccessException e) {
+          System.out.println(e);
+          ThdlDebug.noteIffyCode();
+      } catch (IllegalArgumentException e) {
+          System.out.println(e);
+          ThdlDebug.noteIffyCode();
+      } catch (InvocationTargetException e) {
+          System.out.println(e);
+          System.out.println(e.getTargetException());
+          ThdlDebug.noteIffyCode();
+      }
+      return object;
+   }
 }

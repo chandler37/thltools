@@ -54,7 +54,7 @@ public class SmartQT4JPlayer extends SmartMoviePanel
 	private TimeBaseTimeCallBackStopper theStopper;
 
 //accessors
-	public static String getName() {
+	public String getName() {
 		return "Quicktime for Java";
 	}
 	public void setParentContainer(Container c) {

@@ -23,7 +23,7 @@ import java.net.*;
 
 public abstract class SmartMoviePanel extends Panel
 {
-	public abstract static String getName();
+	public abstract String getName();
 	public abstract void setParentContainer(Container c);
 
 //helper methods - initialize

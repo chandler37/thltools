@@ -68,9 +68,11 @@ public class Jskad extends JPanel implements DocumentListener {
     private final static String enableKeypressStatusProp
         = "thdl.Jskad.enable.tibetan.mode.status";
 
+    /** the middleman that keeps code regarding Tibetan keyboards
+     *  clean */
     private final static JskadKeyboardManager keybdMgr
 		= new JskadKeyboardManager(JskadKeyboardFactory.getAllAvailableJskadKeyboards());
-    
+
 	private JComboBox fontFamilies, fontSizes;
 	private JFileChooser fileChooser;
 	private javax.swing.filechooser.FileFilter rtfFilter;

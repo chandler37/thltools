@@ -30,11 +30,20 @@ import javax.swing.text.rtf.*;
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlActionListener;
 import org.thdl.util.ThdlOptions;
+import org.thdl.tib.input.JskadKeyboardManager;
+import org.thdl.tib.input.JskadKeyboardFactory;
+import org.thdl.tib.input.JskadKeyboard;
 
 import org.thdl.savant.JdkVersionHacks;
 
 
 public class QDShell extends JFrame {
+
+    /** the middleman that keeps code regarding Tibetan keyboards
+     *  clean */
+    private final static JskadKeyboardManager keybdMgr
+		= new JskadKeyboardManager(JskadKeyboardFactory.getAllAvailableJskadKeyboards());
+
     /** When opening a file, this is the only extension QuillDriver
         cares about.  This is case-insensitive. */
     protected final static String dotQuillDriver = ".xml";
@@ -261,8 +270,8 @@ public class QDShell extends JFrame {
                 JMenuItem keybdItem = new JMenuItem(kbd.getIdentifyingString());
                 keybdItem.addActionListener(new ThdlActionListener() {
                         public void theRealActionPerformed(ActionEvent e) {
-					qd.changeKeyboard(kbd);
-                         }
+                            qd.changeKeyboard(kbd);
+                        }
                     });
                 keyboardMenu.add(keybdItem);
             }
@@ -270,20 +279,6 @@ public class QDShell extends JFrame {
 
 
 		JMenu mediaPlayerMenu = new JMenu(messages.getString("MediaPlayer"));
-
-        for (int i = 0; i < keybdMgr.size(); i++) {
-            final JskadKeyboard kbd = keybdMgr.elementAt(i);
-            if (kbd.hasQuickRefFile()) {
-                JMenuItem keybdItem = new JMenuItem(kbd.getIdentifyingString());
-                keybdItem.addActionListener(new ThdlActionListener() {
-                        public void theRealActionPerformed(ActionEvent e) {
-					qd.changeKeyboard(kbd);
-                         }
-                    });
-                keyboardMenu.add(keybdItem);
-            }
-        }
-
 
 		JMenuItem jmfItem = new JMenuItem("Java Media Framework");
 		jmfItem.addActionListener(new ThdlActionListener() {

@@ -54,7 +54,7 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 
 		private Float			to = null;
 /*-----------------------------------------------------------------------*/
-	public static String getName() {
+	public String getName() {
 		return "Java Media Framework";
 	}
 	public SmartJMFPlayer() {
