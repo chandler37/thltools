@@ -157,6 +157,9 @@ public class ACIPRules {
         getWylieForACIPOther(null);
         getWylieForACIPVowel(null);
         String ans = (String)wylieToACIP.get(EWTS);
+        boolean useCapitalW = false;
+        if (EWTS.startsWith("w"))
+            useCapitalW = true; // We want W+NA, not V+NA; we want WA, not VA.
         if (null == ans) {
             StringBuffer finalAns = new StringBuffer(EWTS.length());
             StringTokenizer sTok = new StringTokenizer(EWTS, "-+", true);
@@ -182,9 +185,14 @@ public class ACIPRules {
                 if (null == part) return null;
                 finalAns.append(part);
             }
+            if (useCapitalW)
+                finalAns.setCharAt(0, 'W');
             return finalAns.toString();
         }
-        return ans;
+        if (useCapitalW)
+            return "W" + ans.substring(1);
+        else
+            return ans;
     }
 
     /** Registers acip->wylie mappings in toWylie; registers
@@ -193,6 +201,12 @@ public class ACIPRules {
         toWylie.put(ACIP, EWTS);
         if (null == wylieToACIP) {
             wylieToACIP = new HashMap(75);
+
+            // We don't want to put "/" in toWylie:
+            wylieToACIP.put("(", "/");
+            wylieToACIP.put(")", "/");
+            wylieToACIP.put("?", "\\");
+
             wylieToACIP.put("_", " "); // oddball.
             wylieToACIP.put("o'i", "O'I"); // oddball for TMW9.61.
         }
@@ -307,14 +321,20 @@ public class ACIPRules {
         if (acipOther2wylie == null) {
             acipOther2wylie = new HashMap(20);
 
+            // don't use putMapping for this.  We don't want TMW->ACIP
+            // to produce "." for a U+0F0C because ACIP doesn't say
+            // that "." means U+0F0C.  It just seems to in practice
+            // for ACIP Release IV texts.
+            acipOther2wylie.put(".", "*");
+
+            putMapping(acipOther2wylie, "m", "M");
+            putMapping(acipOther2wylie, ":", "H");
             putMapping(acipOther2wylie, ",", "/");
             putMapping(acipOther2wylie, " ", " ");
-            putMapping(acipOther2wylie, ".", "*");
-            putMapping(acipOther2wylie, "|", "|");
+            putMapping(acipOther2wylie, ";", "|");
             putMapping(acipOther2wylie, "`", "!");
-            putMapping(acipOther2wylie, ";", ";");
-            putMapping(acipOther2wylie, "*", "@");
-            putMapping(acipOther2wylie, "#", "@#");
+            putMapping(acipOther2wylie, "*", "@#");
+            // There is no glyph in TMW with the EWTS @##, so we don't do this: putMapping(acipOther2wylie, "#", "@##");
             putMapping(acipOther2wylie, "%", "~X");
             putMapping(acipOther2wylie, "o", "X");
             putMapping(acipOther2wylie, "&", "&");

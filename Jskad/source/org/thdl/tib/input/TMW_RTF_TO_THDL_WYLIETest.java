@@ -77,10 +77,12 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
             + "tib" + File.separator
             + "input" + File.separator
             + "TMW_RTF_TO_THDL_WYLIE" + testName + ".expected";
-        assertTrue(new File(actualFile).exists());
-        assertTrue(new File(expectedFile).exists());
+        assertTrue("The file the converter should've produced doesn't exist",
+                   new File(actualFile).exists());
+        assertTrue("The baseline file, the file containing the expected results, doesn't exist",
+                   new File(expectedFile).exists());
         Revision rev = JDiff.getDiff(expectedFile, actualFile);
-        assertTrue(null != rev);
+        assertTrue("JDiff.getDiff returned null", null != rev);
         String lineSep = System.getProperty("line.separator");
         boolean foundExpectedDiff = false;
         String expectedDiff
@@ -92,7 +94,8 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
             && !(foundExpectedDiff = expectedDiff.equals(rev.toString()))) {
             System.out.println("Oops! the diff is this:");
             System.out.print(rev.toString());
-            assertTrue(false);
+            assertTrue("There was a difference between the actual and expected results",
+                       false);
         }
     }
 
@@ -110,11 +113,13 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
         try {
             int rc = TibetanConverter.realMain(args, new PrintStream(new FileOutputStream("bin/for-junit/TMW_RTF_TO_THDL_WYLIE" + testName + "Result" + extension + ".out")));
             if (erc != rc) System.out.println("erc: rc is " + rc);
-            assertTrue(rc == erc);
+            assertTrue("the return code of the real conversion was " + rc + " but we expected " + erc,
+                       rc == erc);
         } catch (FileNotFoundException e) {
             fileNotFound = true;
         }
-        assertTrue(!fileNotFound);
+        assertTrue("file not found, probably the bin/for-junit/TMW*Result*.out file",
+                   !fileNotFound);
 
         testActualAndExpected(testName + "Result" + extension);
     }
@@ -148,12 +153,14 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
         helper("Test2", "--to-wylie", "Conversion", 44);
     }
 
-    /** Tests the --to-tibetan-machine converter mode of {@link
+    /** Tests the --to-tibetan-machine, --to-tibetan-machine-web,
+     *  --to-acip, and --acip-to-tmw converter modes of {@link
      *  org.thdl.tib.input.TibetanConverter}. */
     public void testTMConverterMode() {
         helper("Test1", "--to-tibetan-machine", "TM", 0);
         helper("Test2", "--to-tibetan-machine", "TM", 0);
         helper("Test2", "--to-tibetan-machine-web", "TMW", 0);
+        helper("Test2", "--to-acip", "ACIP", 49);
         helper("Test3", "--acip-to-tmw", "TMW", 0);
     }
 }

@@ -64,7 +64,8 @@ public class Manipulate
 	public static String wylieToAcip(String palabra)
 	{
 		// DLC FIXME: for unknown things, return null.
-		if (palabra.equals("@#")) return "#";
+		if (palabra.equals("@##")) return "#";
+		if (palabra.equals("@#")) return "*";
 		if (palabra.equals("!")) return "`";
 		if (palabra.equals("b+h")) return "BH";
 		if (palabra.equals("d+h")) return "DH";
@@ -118,6 +119,7 @@ public class Manipulate
 		nuevaPalabra = replace(nuevaPalabra, "-I", "i");
 		nuevaPalabra = replace(nuevaPalabra, "/", ",");
 		nuevaPalabra = replace(nuevaPalabra, "_", " ");
+		nuevaPalabra = replace(nuevaPalabra, "|", ";");
 		nuevaPalabra = fixWazur(nuevaPalabra);
 		return nuevaPalabra;
 	}

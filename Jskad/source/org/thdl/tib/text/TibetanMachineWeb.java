@@ -966,9 +966,12 @@ public static boolean isWylieTibetanConsonantOrConsonantStack(String s) {
 }
 
 /**
-* Returns true if and only if s is the THDL Extended Wylie for a
-* Sanskrit multi-consonant stack.
-*/
+* Returns true if and only if s is necessarily the THDL Extended Wylie
+* for a Sanskrit (non-Tibetan, to be more correct) multi-consonant
+* stack.  If s is "w", then it might be the EWTS for TWM7.69, and that
+* glyph is only used in non-Tibetan stacks, but "w" also stands for
+* TMW.53, which is Tibetan, so this will return false for such a
+* glyph. */
 public static boolean isWylieSanskritConsonantStack(String s) {
     return sanskritStackSet.contains(s);
 }
@@ -1909,11 +1912,18 @@ public static String wylieForGlyph(String hashKey) {
     return sb.toString();
 }
 
-    // DLC DOC
+/** Returns the ACIP transliteration for a glyph with hash key
+    hashKey, or returns null if there is none. */
 private static String acipForGlyph(String hashKey) {
-    String ACIP // DLC FIXME: test this.
-        = org.thdl.tib.scanner.Manipulate.wylieToAcip(hashKey);
-    return ACIP;
+    if (1 == hashKey.length()
+        // ~X is a special case because the EWTS is 2 characters in
+        // length
+        || "~X".equals(hashKey)) // hard-coded EWTS value
+        return org.thdl.tib.text.ttt.ACIPRules.getACIPForEWTS(hashKey);
+    else
+        // else we are not be able to use it because it's not smart
+        // about stacks (e.g., W+W)
+        return org.thdl.tib.scanner.Manipulate.wylieToAcip(hashKey);
 }
 
 /** Error that appears in a document when some TMW cannot be
@@ -1927,15 +1937,15 @@ private static String getTMWToWylieErrorString(DuffCode dc) {
 }
 
 /** Error that appears in a document when some TMW cannot be
- *  transcribed in ACIP.  This error message is
- *  documented in www/htdocs/TMW_RTF_TO_THDL_WYLIE.html (DLC NOT YET), so change
- *  them both when you change this. */
-static String getTMWToACIPErrorString(String it) {
-    return "[# JSKAD_TMW_TO_ACIP_ERROR_NO_SUCH_ACIP: Cannot convert " + it + " to ACIP.  Please transcribe this yourself.]";
+ *  transcribed in ACIP.  This error message is documented in
+ *  www/htdocs/TMW_or_TM_To_X_Converters.html, so change them both
+ *  when you change this. */
+static String getTMWToACIPErrorString(String it, String explanation) {
+    return "[# JSKAD_TMW_TO_ACIP_ERROR_NO_SUCH_ACIP: Cannot convert " + it + " to ACIP" + explanation + ".  Please transcribe this yourself.]";
 }
 
-private static String getTMWToACIPErrorString(DuffCode dc) {
-    return getTMWToACIPErrorString(dc.toString(true));
+private static String getTMWToACIPErrorString(DuffCode dc, String explanation) {
+    return getTMWToACIPErrorString(dc.toString(true), explanation);
 }
 
 /**
@@ -1979,65 +1989,103 @@ public static String getWylieForGlyph(DuffCode dc, boolean noSuchWylie[]) {
 }
 
 /** Returns ACIP transliteration or an error message stating why no
-    ACIP transliteration exists for the sole glyph dc or the two
-    glyphs dc and optionalNextDC as a whole.  noSuchACIP[0] will be
-    set (to true) if and only if there is no ACIP representation for
-    dc; in that case, an error message is returned rather than valid
-    ACIP.  optionalNextDC should be null if there is no context
-    information available (such as if dc is the last DuffCode being
-    converted from TMW to ACIP) or the DuffCode following dc
-    otherwise.  If the ACIP (or error message) returned captures both
-    dc and the nonnull optionalNextDC, then howManyGlyphsUsed[0] will
-    be set to 2, otherwise it will be set to 1.
+    ACIP transliteration exists for one, two, or three TMW glyphs.
+    This gobbles up three TMW glyphs when and only when "#" is
+    returned; this gobbles up two TMW glyphs when and only when "@" is
+    returned; this gobbles up one TMW glyph otherwise.  The number
+    gobbled is stored into howManyGlyphsUsed[0].  Always pass in as
+    many glyphs as possible.
+
+    <p>noSuchACIP[0] will be set (to true) if and only if there is no
+    ACIP representation; in that case, an error message is returned
+    rather than valid ACIP.  dc2 and/or dc3 should be null if there is
+    no context information available (i.e., if dc1 or dc2 is the last
+    DuffCode being converted from TMW to ACIP).  Otherwise, dc2 should
+    be the DuffCode following dc1 and dc3 should be the DuffCode
+    following dc2.  If the ACIP (or error message) returned captures
+    both dc1 and the (nonnull) dc2 and the (nonnull) dc3, then
+    howManyGlyphsUsed[0] will be set to 3.  If the ACIP (or error
+    message) returned captures both dc1 and the nonnull dc2, then
+    howManyGlyphsUsed[0] will be set to 2.  Otherwise it will be set
+    to 1.
 
     <p>This would be more straightforward if it were not the case that
     a TMW-&gt;ACIP conversion requires context information in the case
-    of U+0F04 and U+0F05.  Because it does, two DuffCodes, not one,
+    of U+0F04 and U+0F05.  Because it does, three DuffCodes, not one,
     must be passed in whenever possible.
 
-    <p>We opt to treat a lone U+0F05 as an error in TMW-&gt;ACIP
-    conversions rather than return the pseudo-ACIP Unicode character
-    escape for U+0F05.  After all, the conversion is TMW-&gt;ACIP, not
-    TMW-&gt;pseudo-ACIP.
+    <p>We opt to treat a lone U+0F05 or U+0F04 as an error in
+    TMW-&gt;ACIP conversions rather than return the pseudo-ACIP
+    Unicode character escape.  After all, the conversion is
+    TMW-&gt;ACIP, not TMW-&gt;pseudo-ACIP.
 
     @return error message or valid ACIP, never pseudo-ACIP like
     Unicode character escapes
-    @param dc the leftmost DuffCode if optionalNextDC is nonnull, or
-    the sole DuffCode
-    @param optionalNextDC null if dc is the last (rightmost) DuffCode
-    in the sequence, or the DuffCode following dc.  If you pass in dc
-    equal to the DuffCode for U+0F04, and optionalNextDC null, then
-    "*" will be returned, so don't leave this out unless dc is the
-    rightmost DuffCode.
+    @param dc1 the leftmost TMW DuffCode if dc2 is nonnull,
+    or the sole TMW DuffCode
+    @param dc2 null if dc1 is the last (rightmost) TMW DuffCode in the
+    sequence, or the TMW DuffCode following dc1.  If you pass in dc1
+    equal to the TMW DuffCode for U+0F04, and dc2 null, then "*" will
+    be returned, so don't leave this out unless dc1 is the rightmost
+    TMW DuffCode.
+    @param dc3 null if dc2 is null or is the last (rightmost) TMW
+    DuffCode in the sequence, or the TMW DuffCode following dc2
+    otherwise.
     @param noSuchACIP an array whose first element will be set to true
     if and only if an error message is returned instead of valid ACIP;
     the first element is never set to false, so nominally caller will
     initialize the first element to false
     @param howManyGlyphsUsed an array whose first element will be set
-    to 2 if valid ACIP that describes both dc and optionalNextDC is
-    returned, or 1 otherwise */
-public static String getACIPForGlyph(DuffCode dc,
-                                     DuffCode optionalNextDC,
+    to 3 if valid ACIP that desribes dc1, dc2, and dc3 is returned, to
+    2 if valid ACIP that describes both dc1 and dc2 is returned, or to
+    1 otherwise */
+public static String getACIPForGlyph(DuffCode dc1,
+                                     DuffCode dc2,
+                                     DuffCode dc3,
                                      boolean noSuchACIP[],
                                      int howManyGlyphsUsed[]) {
-    String hashKey = getHashKeyForGlyph(dc);
+
+    // DLC FIXME: TMW.53 is probably going to come out all wrong (VA
+    // vs. WA) from this function, but
+    // ACIPRules.getACIPForEWTS(String) seems to come through... will
+    // it always?
+
+    String hashKey = getHashKeyForGlyph(dc1);
     if (null != hashKey && hashKey.equals("@")) { // hard-coded EWTS value
         String nextHashKey
-            = ((null == optionalNextDC)
-               ? null : getHashKeyForGlyph(optionalNextDC));
+            = ((null == dc2)
+               ? null : getHashKeyForGlyph(dc2));
         if (null != nextHashKey && nextHashKey.equals("#")) { // hard-coded EWTS value
+            String nextNextHashKey
+                = ((null == dc3)
+                   ? null : getHashKeyForGlyph(dc3));
+            if (null != nextNextHashKey && nextNextHashKey.equals("#")) { // hard-coded EWTS value
+                howManyGlyphsUsed[0] = 3;
+                return "#"; // hard-coded ACIP value
+            }
             howManyGlyphsUsed[0] = 2;
-            return "#"; // hard-coded ACIP value
-        } else {
-            howManyGlyphsUsed[0] = 1;
             return "*"; // hard-coded ACIP value
-        }
+        } // else fall through
     }
+    if (null != hashKey && hashKey.equals("@#")) { // hard-coded EWTS value
+        String nextHashKey
+            = ((null == dc2)
+               ? null : getHashKeyForGlyph(dc2));
+        if (null != nextHashKey && nextHashKey.equals("#")) { // hard-coded EWTS value
+            howManyGlyphsUsed[0] = 2; // not 3
+            return "#"; // hard-coded ACIP value
+        }
+        howManyGlyphsUsed[0] = 1; // not 2
+        return "*"; // hard-coded ACIP value
+    }
+
     howManyGlyphsUsed[0] = 1;
     String ans = (hashKey == null) ? null : acipForGlyph(hashKey);
-    if (hashKey == null || ans == null) {
+    if (null == ans) {
         noSuchACIP[0] = true;
-        return getTMWToACIPErrorString(dc);
+        if (null != hashKey && hashKey.startsWith("R+"))
+            return getTMWToACIPErrorString(dc1, " because the ACIP R+... could imply the short superscribed form, but this most likely intends the full form (i.e., Unicode character U+0F6A)");
+        return getTMWToACIPErrorString(dc1, "");
     }
     return ans;
 }

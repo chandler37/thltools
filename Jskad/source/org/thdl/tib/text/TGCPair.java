@@ -112,17 +112,28 @@ public class TGCPair implements THDLWylieConstants {
     public String getACIP() {
         return getACIP(null);
     }
-    /** Like {@link #getWylie(String)} but for ACIP transliteration, not EWTS. */
+    /** Like {@link #getWylie(String)} but for ACIP transliteration,
+        not EWTS. */
     public String getACIP(String previousTranslitIfAppendaged) {
         // DLC FIXME: has the EWTS change affected Manipulate.acipToWylie?
         StringBuffer b = new StringBuffer();
         if (consonantWylie != null) {
             String consonantACIP
-                = org.thdl.tib.text.ttt.ACIPRules.getACIPForEWTS(consonantWylie);
+                = null;
+            if ("w".equals(consonantWylie)
+                && (SANSKRIT_WITHOUT_VOWEL == classification
+                    || SANSKRIT_WITH_VOWEL == classification))
+                consonantACIP = "V";
+            else
+                consonantACIP
+                    = org.thdl.tib.text.ttt.ACIPRules.getACIPForEWTS(consonantWylie);
             if (null == consonantACIP) {
-                return TibetanMachineWeb.getTMWToACIPErrorString("glyph with THDL Extended Wylie " + consonantWylie);
+                if (null != consonantWylie && consonantWylie.startsWith("R+"))
+                    return TibetanMachineWeb.getTMWToACIPErrorString("glyph with THDL Extended Wylie " + consonantWylie, " because the ACIP R+... could imply the short superscribed form, but this most likely intends the full form (i.e., Unicode character U+0F6A)");
+                return TibetanMachineWeb.getTMWToACIPErrorString("glyph with THDL Extended Wylie " + consonantWylie, "");
             } else {
-                // Think of pa'am...  we want 'am, not 'm; 'ang, not 'ng.  But we want 'ur, not 'uar, 'is, not 'ias.
+                // Think of pa'am...  we want 'am, not 'm; 'ang, not
+                // 'ng.  But we want 'ur, not 'uar, 'is, not 'ias.
                 if (null != previousTranslitIfAppendaged
                     && "'".equals(previousTranslitIfAppendaged)) {
                     b.append("A");
@@ -140,7 +151,7 @@ public class TGCPair implements THDLWylieConstants {
             String vowelACIP
                 = org.thdl.tib.text.ttt.ACIPRules.getACIPForEWTS(vowelWylie);
             if (null == vowelACIP) {
-                return TibetanMachineWeb.getTMWToACIPErrorString("glyph with THDL Extended Wylie " + vowelWylie);
+                return TibetanMachineWeb.getTMWToACIPErrorString("glyph with THDL Extended Wylie " + vowelWylie, "");
             } else {
                 b.append(vowelACIP);
             }

@@ -900,10 +900,13 @@ public class TibTextUtils implements THDLWylieConstants {
     /** Returns "a"/"A", unless wylie (which really is EWTS, not ACIP)
         is already "a". */
     private static String aVowelToUseAfter(boolean EWTSNotACIP, String wylie) {
-        if (wylie.equals(ACHEN))
-            return ""; // it's a, not aa, for achen alone.
-        else
-            return (EWTSNotACIP) ? WYLIE_aVOWEL : "A";
+        if (wylie.equals(ACHEN) && EWTSNotACIP) {
+            /* it's EWTS{a}, not EWTS{aa}, for achen alone. But it's
+               ACIP{AA}. */
+            return "";
+        } else
+            return ((EWTSNotACIP)
+                    ? WYLIE_aVOWEL : "A" /* hard-coded ACIP constant */);
     }
 
     private static String unambiguousPostAVowelTranslit(boolean EWTSNotACIP,
@@ -929,7 +932,7 @@ public class TibTextUtils implements THDLWylieConstants {
 * EWTSNotACIP is true, or the ACIP otherwise.
 * @param EWTSNotACIP true if you want THDL Extended Wylie, false if
 * you want ACIP
-* @param dcs an array of glyphs
+* @param dcs an array of TMW glyphs
 * @param noSuch an array which will not be touched if this is
 * successful; however, if there is no THDL Extended Wylie/ACIP
 * corresponding to these glyphs, then noSuch[0] will be set to true
@@ -959,9 +962,9 @@ public class TibTextUtils implements THDLWylieConstants {
     // DLC FIXME: {H}, U+0F7F, is part of a grapheme cluster!
     // David Chapman and I both need a comprehensive list of these
     // guys.  Get it from Unicode 4.0 spec?
-    /** Scans the glyphs in glyphList and creates the returned list of
-        grapheme clusters based on them.  A grapheme cluster is a
-        consonant or consonant stack with optional adornment or a
+    /** Scans the TMW glyphs in glyphList and creates the returned
+        list of grapheme clusters based on them.  A grapheme cluster
+        is a consonant or consonant stack with optional adornment or a
         number (possibly super- or subscribed) or some other glyph
         alone. */
     private static TGCList breakTshegBarIntoGraphemeClusters(java.util.List glyphList,
@@ -986,7 +989,12 @@ public class TibTextUtils implements THDLWylieConstants {
             String wylie = TibetanMachineWeb.getWylieForGlyph(dc, noSuchWylie);
             boolean buildingUpSanskritNext = false;
             if ((buildingUpSanskritNext
-                 = TibetanMachineWeb.isWylieSanskritConsonantStack(wylie))
+                 = (TibetanMachineWeb.isWylieSanskritConsonantStack(wylie)
+                    ||
+                    /* U+0FAD, which should become ACIP "V", not "W",
+                       though the EWTS is "w" just as it is for
+                       TMW(fontNum==1).53: */
+                    (8 == dc.getFontNum() && 69 == dc.getCharNum())))
                 || TibetanMachineWeb.isWylieTibetanConsonantOrConsonantStack(wylie)) {
                 if (buildingUpVowel.length() > 0 || null != nonVowelWylie) {
                     gcs.add(new TGCPair(nonVowelWylie,
@@ -1612,7 +1620,7 @@ public class TibTextUtils implements THDLWylieConstants {
         ArrayList glyphList = new ArrayList();
         StringBuffer translitBuffer = new StringBuffer();
 
-        // DLC FIXME: "    " should become " ", and test with ACIP # and *.
+        // DLC FIXME: "    " should become " " for ACIP
         for (int i=0; i<dcs.length; i++) {
             char ch = dcs[i].getCharacter();
             int k = dcs[i].getCharNum();
@@ -1650,13 +1658,18 @@ public class TibTextUtils implements THDLWylieConstants {
                                                              ((i+1<dcs.length)
                                                               ? dcs[i+1]
                                                               : null),
+                                                             ((i+2<dcs.length)
+                                                              ? dcs[i+2]
+                                                              : null),
                                                              noSuch,
                                                              howManyConsumed);
                     if (howManyConsumed[0] == 1) {
                         // nothing to do
-                    } else {
-                        ThdlDebug.verify(howManyConsumed[0] == 2);
+                    } else if (howManyConsumed[0] == 2) {
                         ++i;
+                    } else {
+                        ThdlDebug.verify(howManyConsumed[0] == 3);
+                        ++i; ++i;
                     }
                 }
                 if (TibetanMachineWeb.isWyliePunc(wylie)
@@ -1683,8 +1696,9 @@ public class TibTextUtils implements THDLWylieConstants {
                 warnings.append("The stretch of Tibetan ended without final punctuation.");
         }
 
-        if (translitBuffer.length() > 0)
+        if (translitBuffer.length() > 0) {
             return translitBuffer.toString();
+        }
         else
             return null;
     }

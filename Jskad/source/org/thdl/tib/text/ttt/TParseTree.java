@@ -359,6 +359,7 @@ class TParseTree {
                         }
                     }
                     if (stackSize > 1 && tp.getLeft() != null && tp.getLeft().length() > 1) {
+                        // DLC FIXME: gives a false positive warning for Rsh
                         hasAmbiguousConsonant = true;
                     }
                 }
