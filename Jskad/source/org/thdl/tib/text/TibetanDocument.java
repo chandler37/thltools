@@ -379,7 +379,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 * these glyphs, then noSuchACIP[0] will be set to true
 * @return the string of ACIP corresponding to this document */
     public String getACIP(int begin, int end, boolean noSuchACIP[]) {
-        return getTranslit(true, begin, end, noSuchACIP);
+        return getTranslit(false, begin, end, noSuchACIP);
     }
 
 	private String getTranslit(boolean EWTSNotACIP, int begin, int end, boolean noSuch[]) {
