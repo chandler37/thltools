@@ -1122,7 +1122,8 @@ public static boolean isWylieVowel(String s) {
 public static boolean isWylieAdornment(String wylie) {
     return (vowelSet.contains(wylie)
             || (wylie.equals("M") /* U+0F7E */
-                || wylie.equals("M^") /* U+0F83 */
+                || wylie.equals("~M") /* U+0F83 */
+                || wylie.equals("~M`") /* U+0F82 */
                 || wylie.equals("iM")
                 || wylie.equals("-iM")
                 || wylie.equals("eM")
@@ -1137,7 +1138,8 @@ public static boolean isWylieAdornment(String wylie) {
 public static boolean isWylieAdornmentAndContainsVowel(String wylie) {
     return (isWylieAdornment(wylie) &&
             !wylie.equals("M") /* U+0F7E */
-            && !wylie.equals("M^") /* U+0F83 */);
+            && !wylie.equals("~M") /* U+0F83 */
+            && !wylie.equals("~M`") /* U+0F82 */);
 }
 
 /**

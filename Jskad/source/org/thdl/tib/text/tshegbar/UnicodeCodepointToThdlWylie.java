@@ -218,8 +218,8 @@ public class UnicodeCodepointToThdlWylie {
 
         case '\u0F80': return "-i";
         case '\u0F81': return "-I";
-        case '\u0F82': return "\\u0F82";
-        case '\u0F83': return "^M"; // DLC unsupported in Jskad
+        case '\u0F82': return "~M`";
+        case '\u0F83': return "~M"; // DLC unsupported in Jskad, and 0F82 too probably
         case '\u0F84': return "?";
         case '\u0F85': return "&";
         case '\u0F86': return "\\u0F86";

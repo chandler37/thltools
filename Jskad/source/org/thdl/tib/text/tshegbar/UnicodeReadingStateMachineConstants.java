@@ -41,7 +41,7 @@ interface UnicodeReadingStateMachineConstants {
     static final int CC_MCWD = 1;
 
     /** for combining marks in the Tibetan range of Unicode, minus
-     *  CC_MCWD, U+0F82, and U+0F39 */
+     *  CC_MCWD, U+0F82, (DLC U+0F83???) and U+0F39 */
     static final int CC_CM = 2;
 
     /** for combining consonants, that is to say U+0F90-U+0FBC minus
@@ -62,7 +62,7 @@ interface UnicodeReadingStateMachineConstants {
     static final int CC_0F8A = 6;
 
     /** for U+0F82, which is treated like {@link #CC_CM} except after
-     *  U+0F8A */
+     *  U+0F8A (DLC FIXME -- do we need similar treatment for 0F83???) */
     static final int CC_0F82 = 7;
 
     /** for U+0F39, an integral part of a consonant when it directly
