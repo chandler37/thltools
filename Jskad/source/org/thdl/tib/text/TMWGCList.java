@@ -45,4 +45,8 @@ class TMWGCList implements TGCList {
     void add(TGCPair tp) {
         al.add(tp);
     }
+
+    public String toString() {
+        return al.toString();
+    }
 }
