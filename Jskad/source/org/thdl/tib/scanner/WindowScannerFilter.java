@@ -46,6 +46,7 @@ import org.thdl.util.*;
 public class WindowScannerFilter implements WindowListener, FocusListener, ActionListener, ItemListener
 {
 	private static String defOpenOption = "thdl.scanner.default.open";
+	private static String dictOpenType = "thdl.scanner.default.type";
     
 	private ScannerPanel sp;
 	private MenuItem mnuExit, mnuCut, mnuCopy, mnuPaste, mnuDelete, mnuSelectAll, mnuAbout, mnuClear, mnuOpen, mnuPreferences, mnuSavePref;
@@ -57,14 +58,15 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 
 	public WindowScannerFilter(boolean pocketpc)
 	{
-		String response;
+		String response, dictType;
 		this.pocketpc = pocketpc;
 		
 		if (!pocketpc) response = ThdlOptions.getStringOption(defOpenOption);
 		else response=null;
+		
 		if (response==null || response.equals(""))
 		{
-		    mainWindow = new Frame("Tibetan Scanner");
+		    mainWindow = new Frame("Tibetan Translation Tool");
 		    mainWindow.show();
 		    mainWindow.toFront();
 		    WhichDictionaryFrame wdf = new WhichDictionaryFrame(mainWindow, pocketpc);
@@ -74,9 +76,12 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		    if (response.equals("")) System.exit(0);
 		    else
 		    {
+		        dictType = wdf.getDictionaryType();
+		        mainWindow.setTitle("Tibetan Translation Tool: Connected to " + dictType + " database");
 		        if (!pocketpc && wdf.getDefaultOption())
 		        {
 		            ThdlOptions.setUserPreference(defOpenOption, response);
+		            ThdlOptions.setUserPreference(dictOpenType, dictType);		            
 		            try
 		            {
 		                ThdlOptions.saveUserPreferences();
@@ -110,8 +115,16 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 	}	
 
 	public void makeWindow(String file)
-	{ 
-	    if (mainWindow==null) mainWindow = new Frame("Tibetan Scanner");
+	{
+	    if (mainWindow==null)
+	    {
+	        String dictType=null;
+	        if (!pocketpc) dictType = ThdlOptions.getStringOption(dictOpenType);
+	        if (dictType!=null && !dictType.equals(""))
+	            mainWindow = new Frame("Tibetan Translation Tool: Connected to " + dictType + " database");
+	        else
+	            mainWindow = new Frame("Tibetan Translation Tool");
+	    }
 	    else mainWindow.setVisible(false);
 		mainWindow.setLayout(new GridLayout(1,1));
 		mainWindow.setBackground(Color.white);

@@ -12,6 +12,7 @@ import javax.swing.*;
 class WhichDictionaryFrame extends Dialog implements ActionListener, ItemListener
 {
     private String response;
+    private int dictType;
     private Button ok, cancel;
     private Checkbox useOnline, useOffline, createNewDictDB;
     private Choice availDictsOnline;
@@ -20,19 +21,20 @@ class WhichDictionaryFrame extends Dialog implements ActionListener, ItemListene
     private Frame owner;
     private boolean pocketpc;
     private DictionaryFileFilter dicFilter;
-    private String dictsOnline[];
+    private String dictsOnline[], dictTypes[];
     private Checkbox ckbDefault;
     private CreateDatabaseWizard cdw;
     
     public WhichDictionaryFrame(Frame owner, boolean pocketpc)
     {
         super(owner, "Welcome to the Tibetan to English Translation Tool", true);
+        Panel p;
+        CheckboxGroup cbg = new CheckboxGroup();
+
         this.owner = owner;
         this.pocketpc = pocketpc;
         dicFilter = null;
         response="";
-        Panel p;
-        CheckboxGroup cbg = new CheckboxGroup();
         
         this.setLayout(new GridLayout(6, 1));
         if (pocketpc)
@@ -43,6 +45,10 @@ class WhichDictionaryFrame extends Dialog implements ActionListener, ItemListene
         if (pocketpc) this.add(new Label("Would you like open:"));
         else this.add(new Label("Would you like to:"));
         
+        // FIXME: values should not be hardwired
+        dictsOnline = new String[2];
+        dictTypes = new String[3];        
+        
         availDictsOnline = null;
         p = new Panel(new BorderLayout());
         if (pocketpc) useOnline = new Checkbox("An on-line dict", false, cbg);
@@ -50,17 +56,17 @@ class WhichDictionaryFrame extends Dialog implements ActionListener, ItemListene
         useOnline.addItemListener(this);
         p.add(useOnline, BorderLayout.WEST);
 
-        // FIXME: values should not be hardwired
-        dictsOnline = new String[2];
         availDictsOnline = new Choice();
         
         if (pocketpc) availDictsOnline.add("Public");
         else availDictsOnline.add("Public version");
         dictsOnline[0] = "http://iris.lib.virginia.edu/tibetan/servlet/org.thdl.tib.scanner.RemoteScannerFilter";
+        dictTypes[0] = "public";
         
         if (pocketpc) availDictsOnline.add("Private version");
         else availDictsOnline.add("Private version (only within UVa)");
         dictsOnline[1] = "http://wyllie.lib.virginia.edu/tibetan/servlet/org.thdl.tib.scanner.RemoteScannerFilter";
+        dictTypes[1] = "private";
         
         //availDictsOnline.add("Local (only on my computer!)");
         //dictsOnline[2] = "http://localhost:8080/tibetan/servlet/org.thdl.tib.scanner.RemoteScannerFilter";        
@@ -75,9 +81,13 @@ class WhichDictionaryFrame extends Dialog implements ActionListener, ItemListene
         else useOffline = new Checkbox("Access a local dictionary: ", true, cbg);
         useOffline.addItemListener(this);
         p.add(useOffline, BorderLayout.WEST);
+        
         localDict = new Label();
         localDict.setEnabled(true);
         p.add(localDict, BorderLayout.CENTER);
+        dictTypes[2] = "local";
+        dictType = 2;
+        
         browse = new Button("Browse...");
         browse.setEnabled(true);
         browse.addActionListener(this);
@@ -87,6 +97,7 @@ class WhichDictionaryFrame extends Dialog implements ActionListener, ItemListene
         else createNewDictDB = new Checkbox("Create a new dictionary...", false, cbg);
         createNewDictDB.addItemListener(this);
         this.add(createNewDictDB);
+        
         p = new Panel(new FlowLayout());
         ok = new Button("Ok");
         ok.setEnabled(false);
@@ -180,7 +191,8 @@ class WhichDictionaryFrame extends Dialog implements ActionListener, ItemListene
 	            browse.setEnabled(false);
 	            availDictsOnline.setEnabled(true);
 	            ok.setEnabled(true);
-	            response = dictsOnline[availDictsOnline.getSelectedIndex()];
+	            dictType = availDictsOnline.getSelectedIndex();
+	            response = dictsOnline[dictType];
 	        }
 	        else if (chx == useOffline)
 	        {
@@ -189,6 +201,7 @@ class WhichDictionaryFrame extends Dialog implements ActionListener, ItemListene
 	            if (availDictsOnline!=null)  availDictsOnline.setEnabled(false);
 	            ok.setEnabled(!localDict.getText().equals(""));
 	            response = localDict.getText();
+	            dictType = 2;
 	        }
 	        else if (chx == createNewDictDB)
 	        {
@@ -197,6 +210,7 @@ class WhichDictionaryFrame extends Dialog implements ActionListener, ItemListene
 	            if (availDictsOnline!=null) availDictsOnline.setEnabled(false);
 	            ok.setEnabled(true);
 	            response="";
+	            dictType = 2;
 	        }
 	    }
 	    else if (obj instanceof Choice)
@@ -214,5 +228,10 @@ class WhichDictionaryFrame extends Dialog implements ActionListener, ItemListene
     public boolean getDefaultOption()
     {
         return ckbDefault.getState();
+    }
+    
+    public String getDictionaryType()
+    {
+        return dictTypes[dictType];
     }
 }
