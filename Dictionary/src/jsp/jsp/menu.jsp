@@ -108,7 +108,7 @@
 		<c:out value="<a href='/lex/action?cmd=displayFull&comp=term&metaId=${term.metaId}'><span class='tmw-roman'>${ term.term }</span></a>" escapeXml='false' /> 
 		&nbsp;&nbsp;
 		<span class="tmw-roman">
-		Modified by <c:out value="${ applicationScope.flatData.users[ term.meta.modifiedBy ] }" /> 
+		Created by <c:out value="${ applicationScope.flatData.users[ term.meta.createdBy ] }" /> 
 		<c:set target="${ sessionScope.visit.helper }" property="date" value="${ term.meta.modifiedOn }"/>
 		<c:out value="${ sessionScope.visit.helper.formattedDate }"  />
 		</span>
