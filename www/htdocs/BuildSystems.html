@@ -14,14 +14,15 @@
 <h1>THDL Tools Build Systems</h1>
 
 <p>
-  David Chandler has put together a build system for Jskad, Savant,
-  QuillDriver, the translation tool, Tibbibl, and for the fonts.  This
-  document describes them, and should be updated if we put together
-  build systems for the two diacritics packages and for Wylie Word
-  (but see e-mail to thdl-devel@lists.sourceforge.net that tells why
-  we probably will continue to require Wylie Word developers to edit
-  from within MS Word on account of the difficulty of using CVS with
-  VBA).
+  David Chandler has put together a build system for Jskad, the
+  translation tool, Tibbibl, and for the fonts.  In the CVS
+  repository, you'll find that the build system once worked for Savant
+  and QuillDriver as well.  This document describes them, and should
+  be updated if we put together build systems for the two diacritics
+  packages and for Wylie Word (but see e-mail to
+  thdl-devel@lists.sourceforge.net that tells why we probably will
+  continue to require Wylie Word developers to edit from within MS
+  Word on account of the difficulty of using CVS with VBA).
 </p>
 <p>
   What is a <i>build system</i>, you ask?  A build system is a set of
@@ -237,8 +238,9 @@
     by the <a href="http://www.vamphq.com/"> Venus Application
     Publisher</a>.  You need this to cut <a
     href="http://java.sun.com/products/javawebstart/"> Java Web
-    Start</a> releases of Jskad, Savant, QuillDriver, and the
-    translation tool.  You <b>do not</b> need it otherwise.
+    Start</a> releases of Jskad, [Tibbibl if I ever get my act
+    together], and the translation tool.  You <b>do not</b> need it
+    otherwise.
 
     <p>
       Installing Vamp's Ant task is simple enough, and is in fact
@@ -443,8 +445,8 @@ module<a name="updateapidocs"></a></h4>
   Not all of the material up at our SF.net <a
   href="http://thdltools.sourceforge.net/"> website</a> is in the
   <code>www</code> CVS module, but most of it is.  Currently, the only
-  exception is the Javadoc API documentation for Jskad, Savant,
-  QuillDriver, and the translation tool.
+  exception is the Javadoc API documentation for Jskad, Tibbibl, and
+  the translation tool.
 </p>
 
 <p>
@@ -598,7 +600,7 @@ module<a name="updateapidocs"></a></h4>
 <p>
   The first thing to note is that the <code>Jskad</code> module is
   misnamed.  We have all our Java code inside this module, including
-  Jskad, Savant, QuillDriver, and the translation tool.
+  Jskad, Tibbibl, and the translation tool.
 </p>
 
 
@@ -646,7 +648,7 @@ module<a name="jskadsetup"></a></h4>
     builds that also requires XSLT (i.e., the presence of those JARs,
     but in a place that Ant recognizes).&nbsp; A consequence of using
     this location is that you'll probably find using targets like
-    <code>qd-run</code> much easier than specifying your own
+    <code>jskad-run</code> much easier than specifying your own
     CLASSPATH.
   </li>
 
@@ -697,7 +699,7 @@ module<a name="daytoday"></a></h4>
 
 <p>
   This section describes how our build system interacts with your
-  daily work hacking on Jskad, Savant, QuillDriver, and the
+  daily work hacking on Jskad, Tibbibl, and the
   translation tool.
 </p>
 
@@ -752,13 +754,13 @@ module<a name="daytoday"></a></h4>
 <p>
   Running the tools is easy for a developer.  Just run <code>'ant
   <i>program</i>-run'</code>, where <i>program</i> is one of
-  <code>jskad</code>, <code>tt</code>, <code>savant</code>, or
-  <code>qd</code>.  This deals with classpaths and all of that, and it
-  compiles beforehand if needed.  Note the gotcha above if you're
-  rerunning after changing the source code -- you'll have to use
-  <code>'ant clean <i>program</i>-run'</code>.  If you modify a
-  resource, such as <code>Jskad/source/options.txt</code>, there are
-  no gotchas -- Ant is smart enough to handle this.
+  <code>jskad</code>, <code>tt</code>, or <code>tibbibl</code>.  This
+  deals with classpaths and all of that, and it compiles beforehand if
+  needed.  Note the gotcha above if you're rerunning after changing
+  the source code -- you'll have to use <code>'ant clean
+  <i>program</i>-run'</code>.  If you modify a resource, such as
+  <code>Jskad/source/options.txt</code>, there are no gotchas -- Ant
+  is smart enough to handle this.
 </p>
 
 
@@ -872,8 +874,8 @@ module<a name="daytoday"></a></h4>
 <p>
   <a href="http://java.sun.com/products/javawebstart/"> Java Web
   Start</a> makes it possible (in theory, anyway) to install a complex
-  application like Savant with one mouse click of a link in your
-  favorite web browser and one more click of a "Yes, install Savant"
+  application like Jskad with one mouse click of a link in your
+  favorite web browser and one more click of a "Yes, install Jskad"
   button in a dialog box (necessary because our applications require
   security privileges to read and write from disk etc.).  Upon the
   second run of the program, Java Web Start asks the user if they want
@@ -986,9 +988,9 @@ module<a name="daytoday"></a></h4>
 &nbsp;&nbsp;&nbsp;&nbsp;<i>program</i>-jws'</code>
 </blockquote>
 <p>
-  where <i>program</i> is one of <code>jskad</code>, <code>tt</code>,
-  <code>savant</code>, or <code>qd</code>.  This cleans first, so your
-  changes will be respected.  This then creates a WAR file
+  where <i>program</i> is one of <code>jskad</code> or
+  <code>tt</code>.  This cleans first, so your changes will be
+  respected.  This then creates a WAR file
   <code>Jskad/dist/java-web-start/<i>program</i>-JWS.war</code>.  This
   also extracts the signed JAR from inside that WAR, which is handy if
   you're deploying to a web server that isn't running a J2EE
@@ -1048,11 +1050,11 @@ module<a name="daytoday"></a></h4>
 <p>
   You're done!  <b>Except, of course, for the gotcha:</b> At present,
   only the translation tool and Jskad have working Java Web Start
-  releases; Savant's and QuillDriver's are on the way.  Savant and
-  QuillDriver, like Jskad, requires all-permissions security.  That
-  means that <code>xalan.jar</code>, <code>xercesImpl.jar</code>, and
-  <code>xml-apis.jar</code> need to be jar-signed by the same
-  certificate as QuillDriver.  We do this automatically via <code>'ant
+  releases; Tibbibl's is on the way.  Tibbibl, like Jskad, requires
+  all-permissions security.  That means that <code>xalan.jar</code>,
+  <code>xercesImpl.jar</code>, and <code>xml-apis.jar</code> [or
+  whichever subset is used...] need to be jar-signed by the same
+  certificate as Tibbibl.  We do this automatically via <code>'ant
   self-contained-dist'</code> or <code>'ant
   web-start-releases'</code>, but here's how to do this manually:<!--
   DLC FIXME: automate this further. -->
