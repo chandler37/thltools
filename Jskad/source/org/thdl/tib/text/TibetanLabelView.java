@@ -20,7 +20,6 @@ package org.thdl.tib.text;
 
 import javax.swing.*; 
 import javax.swing.text.*;
-import javax.swing.text.rtf.RTFEditorKit;
 
 /** A TibetanLabelView is a LabelView that has its own idea, informed
  *  by its knowledge of Tibetan, about where a good place to break
@@ -37,10 +36,13 @@ import javax.swing.text.rtf.RTFEditorKit;
  *
  *  @author David Chandler */
 class TibetanLabelView extends LabelView {
+    private boolean logging;
     /** Creates a new TibetanLabelView. */
-    public TibetanLabelView(Element e) {
+    public TibetanLabelView(Element e, boolean debugLog) {
         super(e);
         // FIXME: assert (e == this.getElement())
+
+        logging = debugLog;
     }
 
     public int getBreakWeight(int axis, float pos, float len) {
@@ -107,31 +109,63 @@ class TibetanLabelView extends LabelView {
         // Grab the underlying characters:
         Segment seggy = this.getText(startOffset, endOffset);
 
-        //        System.out.println("DLC: getGoodBreakingLocation(start=" + startOffset + ", end=" + endOffset + "\"" + new String(seggy.array, seggy.offset, seggy.count) + "\"");
-
-        // Now look for whitespace:
-        //
-        // FIXME: does going backwards or forwards matter?
-        char currentChar = seggy.first();
-        for (; currentChar != Segment.DONE; currentChar = seggy.next()) {
+        // Now look for whitespace.  Going from the back is what you
+        // want--otherwise, your 2nd line of text will be fuller than
+        // your first.
+        char currentChar = seggy.last();
+        for (; currentChar != Segment.DONE; currentChar = seggy.previous()) {
             // FIXME: eeek!  How do we know when we're dealing with
-            // Tibetan and when we're not?  I'm assuming it's all
-            // Tibetan, all the time.
-            if (Character.isWhitespace(currentChar)
-                || '-' /* FIXME: this is the TSHEG (i.e., the Wylie is ' '), but we have no constant for it. */ == currentChar
-                || ' ' /* FIXME: this is space (i.e., the Wylie is '_'), but we have no constant for it. */ == currentChar
+            // Tibetan and when we're not?  This is styled text, so
+            // where are the attributes etc.?  We should find the font
+            // and decide about breaking based on that.  Well, we
+            // should if we want a clean solution and don't mind a
+            // little performance hit.
+            //
+            // This question only needs to be answered if you want a
+            // clean solution, I think, because the code below should
+            // work exactly the same.  Here's what's up: Even though
+            // we aren't testing to see if we're typing Roman or
+            // Tibetan, a character that's good for a line break in
+            // one is also good in the other.  Methinks Tony Duff was
+            // smart like that.
+            //
+            // To be explicit, the test below seems to work perfectly
+            // for both Tibetan and Roman text.  (Maybe Roman text
+            // will break after hyphens more quickly, but hey.)
+            //
+            // That said, this is still a FIXME.  But note that the
+            // obvious fix will slow things down.
 
-                // FIXME: am I missing anything?  move this into TibetanMachineWeb, anyway.
-                )
+            if (Character.isWhitespace(currentChar) // FIXME: is this OK for Tibetan text?  Tony Duff may have made it so, but maybe not.  Test!
+                || TibetanMachineWeb.isTMWFontCharBreakable(currentChar))
                 {
-                    //                    System.out.println("DLC: We've got a good place to break: " + (startOffset + seggy.getIndex() - seggy.getBeginIndex()
-                    //                        + 1));
-                    return startOffset + seggy.getIndex() - seggy.getBeginIndex()
-                        + 1 /* FIXME: why this foo work so good? */
-                        ;
+                    // The '+ 1' is because you want to break after a
+                    // tsheg or what not rather than before it.
+                    int goodPlace = (startOffset + seggy.getIndex()
+                                     - seggy.getBeginIndex() + 1);
+                    if (logging) {
+                        String s = new String(seggy.array, seggy.offset, seggy.count);
+                        if (!"\n".equals(s)) {
+                            System.out.println("TibetanLabelView: found a good break in \""
+                                               + new String(seggy.array, seggy.offset, seggy.count)
+                                                   + "\"; we should break after character "
+                                               + (seggy.getIndex() - seggy.getBeginIndex() + 1)
+                                               + " (counting begins at one)");
+                        }
+                    }
+                    return goodPlace;
                 }
         }
-        // System.out.println("DLC: We DO NOT have any good place to break.");
+
+        // There is no good place.  Return a negative number.
+        if (logging) {
+            String s = new String(seggy.array, seggy.offset, seggy.count);
+            if (!"\n".equals(s)) {
+                System.out.println("TibetanLabelView: found NO good break in \""
+                                   + new String(seggy.array, seggy.offset, seggy.count)
+                                       + "\"");
+            }
+        }
         return -1;
     }
 

@@ -1117,4 +1117,33 @@ public static boolean isTopVowel(DuffCode dc) {
 
 	return false;
 }
+
+    /** Returns true if and only if ch, which is an ASCII character
+        that you can think of as an arbitrary index into one of the
+        Tibetan fonts, is a character that is appropriate for ending a
+        line of Tibetan.  <code>'-'</code>, for example, represents
+        the tsheg (the little dot after a syllable) in (FIXME: Edward,
+        is this true?) all of the TMW fonts.  Thus, this would return
+        true for <code>'-'</code>.
+
+        Note that ch is <b>not</b> the Wylie transliteration; it is an
+        arbitrary character (well, not quite, since ' ', '\t', '\n' et
+        cetera seem to have been wisely chosen to represent Tibetan
+        whitespace, but pretty arbitrary).  If you open up MS Word,
+        select TibetanMachineWeb1, and type a hyphen,
+        i.e. <code>'-'</code>, you'll see a tsheg appear.  If you open
+        Jskad and type a hyphen, you won't see a tsheg.
+                    
+        @param ch the ASCII character "index" into the TMW font
+
+        @return true iff this is a tsheg or whitespace or the like */
+    public static boolean isTMWFontCharBreakable(char ch) {
+        return ('-' == ch /* FIXME: this is the tsheg (i.e., the Wylie is ' '), but we have no constant for it. */
+                || ' ' == ch /* FIXME: this is space (i.e., the Wylie is '_'), but we have no constant for it. */
+                || '\t' == ch /* FIXME: this is some sort of whitespace */
+                || '\n' == ch /* FIXME: this is some sort of whitespace */
+                );
+
+        // FIXME: am I missing anything?  tabs etc.?
+    }
 }

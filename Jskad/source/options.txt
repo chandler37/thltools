@@ -69,7 +69,8 @@ thdl.use.temp.file.directory.for.log = false
 
 # Set this to the directory in which you want the debugging output,
 # the .log files, placed.  You cannot set this to true AND set
-# thdl.use.temp.file.directory.for.log to true.
+# thdl.use.temp.file.directory.for.log to true.  Setting it to the
+# empty string means to use the current working directory.
 thdl.log.directory =
 
 # Set this to true only if you are a developer and want to see what
@@ -85,3 +86,12 @@ thdl.debug = false
 # Set this to true if you want Savant to treat all files as valid
 # input.  Otherwise, only .savant files are acceptable.
 thdl.treat.all.files.as.dot.savant.files.regardless.of.extension = false
+
+# Do you want a developer-only option on the bottom of the Tools menu
+# in Jskad?
+thdl.add.developer.options.to.menu = false
+
+# Set this to true if you want the console and the log file to tell
+# you about the messy details of how Jskad decides when and where to
+# break lines for display.
+thdl.log.line.breaking.algorithm = false

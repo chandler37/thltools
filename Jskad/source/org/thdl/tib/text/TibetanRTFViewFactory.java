@@ -20,14 +20,42 @@ package org.thdl.tib.text;
 
 import javax.swing.*; 
 import javax.swing.text.*;
-import javax.swing.text.rtf.RTFEditorKit;
+
+import org.thdl.util.ThdlOptions;
 
 /** A ViewFactory that is cognizant of the line-wrapping rules for
  *  Tibetan text.  That is, this class knows about the tsheg and other
  *  Tibetan punctuation.
  *  @author David Chandler */
 class TibetanRTFViewFactory implements ViewFactory {
-    private TibetanRTFViewFactory() { super(); }
+
+    /** the delegatee */
+    private ViewFactory delegatee = null;
+
+    /** true iff the Tibetan-aware views that we create should include
+        copious debugging output */
+    private static boolean debugLog = false;
+
+    /** true if we've already inquired about the preference and stored
+        it in debugLog */
+    private static boolean debugLogInitialized = false;
+
+    /** Returns true iff the Tibetan-aware views that we create should
+        include copious debugging output. */
+    private static boolean getDebugLog() {
+        if (false == debugLogInitialized) {
+            debugLogInitialized = true;
+            debugLog
+                = ThdlOptions.getBooleanOption("thdl.log.line.breaking.algorithm");
+        }
+        return debugLog;
+    }
+    
+    
+    /** Do not call this. */
+    private TibetanRTFViewFactory() {
+        super();
+    }
 
     /** Creates a new TibetanRTFViewFactory that delegates to vf when
      *  unknown elements are encountered.
@@ -39,23 +67,16 @@ class TibetanRTFViewFactory implements ViewFactory {
         delegatee = d;
     }
     
-    /** the delegatee */
-    private ViewFactory delegatee = null;
-
     /** Returns a View that will break correctly at Tibetan
      *  punctuation. */
     public View create(Element el) {
         String elName = el.getName();
         if (null != elName
-            && elName.equals(AbstractDocument.ContentElementName)) { // FIXME: is this right?
-            return new TibetanLabelView(el);
+            && elName.equals(AbstractDocument.ContentElementName)) { // FIXME: is this right?  what about paragraph-level stuff?
+            return new TibetanLabelView(el, getDebugLog());
         } else {
-            // we don't know what to do, so delegate
-            View r = delegatee.create(el);
-            // DLC for debugging:
-//             System.out.println("DLC: creating a view '" + r + "'");
-//             System.out.println("DLC:   for element   '" + el + "'");
-            return r;
+            // We don't know what to do, so delegate:
+            return delegatee.create(el);
         }
     }
 }
