@@ -1220,6 +1220,10 @@ public class TibetanDocument extends DefaultStyledDocument {
                     if (i != start) {
                         dc_array = (DuffCode[])dcs.toArray(any_dc_array);
 
+                        /* Low-priority FIXME: If the font size
+                           changes within a tsheg bar, the roman
+                           output will not mimic such changes. */
+
                         // SPEED_FIXME: determining font size might be slow
                         int fontSize = 72; /* the failure ought to be
                                               obvious at this size */
