@@ -67,6 +67,7 @@ a
 i
 'o
 'a
+
 // Bare polyvowels; not clear if these are really legal, but:
 a'o
 i'u'i
@@ -201,6 +202,7 @@ gayaradasa
 la'i
 a'i
 od
+bem a ra
 
 // Taken from THDL Sechen text collection
 dashadigAMsarbatimirabi ni saranan+nAmashrIguh+yagar+b+hatatwaMsh+ts+yayastanataras+yaTa'ikAbiharatisma
@@ -213,10 +215,49 @@ A I U -i -I
 aiga
 -Iba
 // two or more vowels in a row
-A.I.ai
 a.a
-ai.-i
+// A.I.ai !!! WW is known not to be able to deal with .-
+ai.a
+I.a
+A.a
+A.A
+a.a
+// ai.-i  !!! WW is known not to be able to deal with .-
 -I.e
+he.a
+ha.e
+ha.a
+hai.a
+ha.ai
+hU.a
+ha.A
+ha.U
+
+// fun with weird vowels; these test cases look similar, but actually mostly go through different paths 
+// in the (wretchedly convoluted) code.
+hA.A
+hA.a
+hA.e
+hA.ai
+// hA.-i  !!! WW is known not to be able to deal with .-
+hU.A
+hU.a
+hU.e
+hU.ai
+// hU.-i  !!! WW is known not to be able to deal with .-
+hAMA
+hAMa
+hAMe
+hAMai
+hAM-i
+hAMu
+hA.Ada
+hA.ada
+hA.eda
+hA.aida
+hiMa
+ho~M`a
+// hA.-ida  !!! WW is known not to be able to deal with .-
 
 // M,H on bare vowel
 aiM
