@@ -10,7 +10,7 @@ License for the specific terms governing rights and limitations under the
 License. 
 
 The Initial Developer of this software is the Tibetan and Himalayan Digital
-Library (THDL). Portions created by the THDL are Copyright 2001-2003 THDL.
+Library (THDL). Portions created by the THDL are Copyright 2001-2004 THDL.
 All Rights Reserved. 
 
 Contributor(s): ______________________________________.
@@ -33,14 +33,13 @@ import org.thdl.tib.text.tshegbar.UnicodeUtils;
 
 /**
 * Provides methods for converting back and forth between Extended
-* Wylie and Tibetan represented in TibetanMachineWeb glyphs.  This
-* class is not instantiable.
+* Wylie/ACIP and Tibetan represented in TibetanMachineWeb glyphs.
+* This class is not instantiable.
 *
-* <p>
-* The class provides a variety of static methods for converting
-* back and forth between Extended Wylie and TibetanMachineWeb.  The
-* Wylie can be accessed as a String, while the TibetanMachineWeb can
-* be exported as Rich Text Format.
+* <p> The class provides a variety of static methods for converting
+* back and forth between Extended Wylie or ACIP and TibetanMachineWeb.
+* The Wylie/ACIP can be accessed as a String, while the
+* TibetanMachineWeb can be exported as Rich Text Format.
 *
 * @author Edward Garrett, Tibetan and Himalayan Digital Library */
 public class TibTextUtils implements THDLWylieConstants {
@@ -1578,6 +1577,17 @@ public class TibTextUtils implements THDLWylieConstants {
                 lastPairTranslit = (EWTSNotACIP
                                     ? tp.getWylie(null)
                                     : tp.getACIP(null));
+                if (!translitBuffer.toString().endsWith(lastPairTranslit)) {
+                    int l;
+                    if ((l = translitBuffer.length()) > 0) {
+                        char lc = translitBuffer.charAt(l - 1);
+                        ThdlDebug.verify(lc == ((EWTSNotACIP) ? 'a' : 'A') /* hard-coded ACIP and EWTS values */);
+                        lastPairTranslit = lastPairTranslit + lc; /* 'da'i can cause this */
+                    } else {
+                        ThdlDebug.verify(false); // this better never happen.
+                        lastPairTranslit = null;
+                    }
+                }
             }
             for (int i = leftover; i < sz; i++) {
                 TGCPair tp = (TGCPair)gcs.get(i);
