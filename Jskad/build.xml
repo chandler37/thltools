@@ -142,6 +142,7 @@ Contributor(s): ______________________________________.
        more compatibility, but maybe there will be a performance hit
        or something.  -->
   <property name="target.jvm" value="1.1"/>
+  <property name="source.jvm" value="1.1"/>
 
   <!-- Only the tt-servlet-compile target changes this.  Humans
        shouldn't mess with this. -->
@@ -1170,7 +1171,7 @@ Contributor(s): ______________________________________.
           unless="found.file.to.compile"/>
 
 
-    <javac destdir="${mybin}" debug="${javacdashg}" target="${target.jvm}">
+    <javac destdir="${mybin}" debug="${javacdashg}" target="${target.jvm}" source="${source.jvm}">
       <classpath refid="${our.javac.classpathref}"/>
       <src path="${source}"/>
       <include name="${my.included.source.file}" />
