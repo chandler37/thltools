@@ -141,7 +141,8 @@ info on where to find these.
           description="compiles Jskad" >
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${jskadbin}"/>
-      <param name="my.included.source.file" value="org/thdl/tib/input/Jskad.java"/>
+      <param name="my.included.source.file"
+             value="org/thdl/tib/input/Jskad.java"/>
     </antcall>
     <antcall target="copy-ini-files-to-bin-dir-for-jarring">
       <param name="mybin" value="${jskadbin}"/>
@@ -155,7 +156,8 @@ info on where to find these.
           description="compiles Savant" >
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${savantbin}"/>
-      <param name="my.included.source.file" value="org/thdl/savant/SavantShell.java"/>
+      <param name="my.included.source.file"
+             value="org/thdl/savant/SavantShell.java"/>
     </antcall>
 
     <!-- Copy the .rtf files; they're needed resources: -->
@@ -179,7 +181,13 @@ info on where to find these.
           description="compiles the standalone Translation Tool" >
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${ttstandalonebin}"/>
-      <param name="my.included.source.file" value="org/thdl/tib/scanner/WindowScannerFilter.java"/>
+      <param name="my.included.source.file"
+             value="org/thdl/tib/scanner/BinaryFileGenerator.java"/>
+    </antcall>
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${ttstandalonebin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/tib/scanner/WindowScannerFilter.java"/>
     </antcall>
     <antcall target="copy-ini-files-to-bin-dir-for-jarring">
       <param name="mybin" value="${ttstandalonebin}"/>
@@ -198,7 +206,8 @@ info on where to find these.
     <antcall target="our-internal-javac-task">
       <param name="target.jvm" value="1.1"/>
       <param name="mybin" value="${tthandheldbin}"/>
-      <param name="my.included.source.file" value="org/thdl/tib/scanner/WindowScannerFilter.java"/>
+      <param name="my.included.source.file"
+             value="org/thdl/tib/scanner/WindowScannerFilter.java"/>
     </antcall>
     <antcall target="copy-license-to-bin-dir-for-jarring">
       <param name="mybin" value="${tthandheldbin}"/>
@@ -211,11 +220,13 @@ info on where to find these.
           description="compiles the applet + Java Web Start forms of the Translation Tool" >
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${ttappletjwsbin}"/>
-      <param name="my.included.source.file" value="org/thdl/tib/scanner/AppletScannerFilter.java"/>
+      <param name="my.included.source.file"
+             value="org/thdl/tib/scanner/AppletScannerFilter.java"/>
     </antcall>
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${ttappletjwsbin}"/>
-      <param name="my.included.source.file" value="org/thdl/tib/scanner/WindowScannerFilter.java"/>
+      <param name="my.included.source.file"
+             value="org/thdl/tib/scanner/WindowScannerFilter.java"/>
     </antcall>
     <antcall target="copy-ini-files-to-bin-dir-for-jarring">
       <param name="mybin" value="${ttappletjwsbin}"/>
@@ -230,7 +241,8 @@ info on where to find these.
           description="compiles the servlet form of the Translation Tool.  You'd better set the j2ee.sdk.home property first or have j2ee.jar on your CLASSPATH, because this is a J2EE program." >
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${ttservletbin}"/>
-      <param name="my.included.source.file" value="org/thdl/tib/scanner/ConsoleScannerFilter.java"/>
+      <param name="my.included.source.file"
+             value="org/thdl/tib/scanner/ConsoleScannerFilter.java"/>
     </antcall>
     <antcall target="copy-license-to-bin-dir-for-jarring">
       <param name="mybin" value="${ttbin}"/>
@@ -243,7 +255,8 @@ info on where to find these.
     <!-- Compile the java code from ${source} into ${qdbin} -->
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${qdbin}"/>
-      <param name="my.included.source.file" value="org/thdl/quilldriver/QDShell.java"/>
+      <param name="my.included.source.file"
+             value="org/thdl/quilldriver/QDShell.java"/>
     </antcall>
 
     <!-- Copy over QuillDriver-specific resources: -->
@@ -304,7 +317,8 @@ info on where to find these.
     <jar jarfile="${dist}/lib/DictionarySearchStandalone-${DSTAMP}.jar"
          basedir="${ttstandalonebin}">
       <manifest>
-        <attribute name="Main-Class" value="org.thdl.tib.scanner.WindowScannerFilter"/>
+        <attribute name="Main-Class"
+                   value="org.thdl.tib.scanner.WindowScannerFilter"/>
       </manifest>
     </jar>
   </target>
@@ -316,7 +330,8 @@ info on where to find these.
     <jar jarfile="${dist}/lib/DictionarySearchHandheld-${DSTAMP}.jar"
          basedir="${tthandheldbin}">
       <manifest>
-        <attribute name="Main-Class" value="org.thdl.tib.scanner.WindowScannerFilter"/>
+        <attribute name="Main-Class"
+                   value="org.thdl.tib.scanner.WindowScannerFilter"/>
       </manifest>
     </jar>
   </target>
@@ -331,7 +346,8 @@ info on where to find these.
            AppletScannerFilter, so the double-click should open the
            standalone version, WindowScannerFilter: -->
       <manifest>
-        <attribute name="Main-Class" value="org.thdl.tib.scanner.WindowScannerFilter"/>
+        <attribute name="Main-Class"
+                   value="org.thdl.tib.scanner.WindowScannerFilter"/>
       </manifest>
     </jar>
   </target>
@@ -342,9 +358,12 @@ info on where to find these.
     <!-- Put everything in ${ttservletbin} into the JAR file -->
     <jar jarfile="${dist}/lib/DictionarySearchServlet-${DSTAMP}.jar"
          basedir="${ttservletbin}">
-      <!-- I don't think this'll work, but the main class is the following, so why not: -->
+
+      <!-- I don't think this'll work (I don't know servlets, mind
+           you), but the main class is the following, so why not: -->
       <manifest>
-        <attribute name="Main-Class" value="org.thdl.tib.scanner.ConsoleScannerFilter"/>
+        <attribute name="Main-Class"
+                   value="org.thdl.tib.scanner.ConsoleScannerFilter"/>
       </manifest>
     </jar>
   </target>
@@ -419,8 +438,10 @@ info on where to find these.
     HEY PROJECT MANAGER:
 
     http://thdltools.sf.net/api lives at
-    /home/groups/t/th/thdltools/htdocs/api.  To update it, simple run
-    'ant private-javadocs-dist', which creates dist/docs/private-javadocs-DSTAMP.zip.  Then scp that file over with the command
+    /home/groups/t/th/thdltools/htdocs/api.  To update it, simply run
+    'ant private-javadocs-dist', which creates
+    dist/docs/private-javadocs-DSTAMP.zip.  Then scp that file over
+    with the command
 
     scp dist/docs/private-javadocs-WHATEVER.zip \
         yourUserId@thdltools.sf.net/home/groups/t/th/thdltools/
@@ -524,7 +545,8 @@ info on where to find these.
   <target name="tt-run" depends="tt-standalone-dist" description="runs the standalone translation tool">
     <java classname="org.thdl.tib.scanner.WindowScannerFilter" fork="yes">
       <classpath>
-        <pathelement location="${dist}/lib/DictionarySearchStandalone-${DSTAMP}.jar"/>
+        <pathelement
+          location="${dist}/lib/DictionarySearchStandalone-${DSTAMP}.jar"/>
         <path refid="entire.class.path"/>
       </classpath>
       <jvmarg value="-DTHDL_DEBUG=${thdl.debug}"/>
@@ -649,7 +671,8 @@ info on where to find these.
           description="INTERNAL TASK: Compiles according to Ant properties.  Usually not called directly.">
 
     <!-- Be sure we're going to be able to compile something: -->
-    <available file="${source}/${my.included.source.file}" property="found.file.to.compile"/>
+    <available file="${source}/${my.included.source.file}"
+               property="found.file.to.compile"/>
     <fail message="Can't find the file '${source}/${my.included.source.file}' to compile it!  Don't worry about forward vs. backward slashes, by the way--Ant is smart about those."
           unless="found.file.to.compile"/>
 
