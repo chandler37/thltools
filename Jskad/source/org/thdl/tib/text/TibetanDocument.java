@@ -700,7 +700,6 @@ public class TibetanDocument extends DefaultStyledDocument {
         if (end < 0) {
             end = getLength();
         }
-        Element[] paragraphs = getParagraphs(begin, end);
         try {
             finalEndPos = createPosition(end);
         } catch (BadLocationException e) {
@@ -708,25 +707,35 @@ public class TibetanDocument extends DefaultStyledDocument {
         }
 
         ConversionErrorHelper ceh = new ConversionErrorHelper();
-        int pl = paragraphs.length;
-        for (int i = 0; i < pl; i++) {
-            int p_end = paragraphs[i].getEndOffset();
-            if (i + 1 == paragraphs.length)
+        int pl = 0;
+        pl = getParagraphs(begin, end).length;
+        boolean warn = false;
+        int lastTimeWeExamined = -1; // must be -1
+        boolean noMore = false;
+        while (!noMore
+               && lastTimeWeExamined != ceh.lastOffsetExamined) {
+            lastTimeWeExamined = ceh.lastOffsetExamined;
+            Element thisParagraph
+                = getParagraphElement(lastTimeWeExamined + 1);
+            int p_end = thisParagraph.getEndOffset();
+            if (p_end >= finalEndPos.getOffset()) {
+                noMore = true;
                 ceh.doErrorWrapup = true;
-            convertHelperHelper(paragraphs[i].getStartOffset(),
+            }
+            convertHelperHelper(thisParagraph.getStartOffset(),
                                 ((finalEndPos.getOffset() < p_end)
                                  ? finalEndPos.getOffset()
                                  : p_end),
                                 toTM, toUnicode, errors, ceh);
-
-            // Now that we've changed paragraph i, recalculate
-            // paragraphs.  (PERFORMANCE FIXME: this is O(N*N), and we
-            // could make it O(N) by calculating just one paragraph at
-            // a time.)
-            paragraphs = getParagraphs(begin, finalEndPos.getOffset());
-            if (paragraphs.length != pl)
-                throw new Error("Conversion failed: the number of paragraphs changed, indicating that formatting was lost.");
         }
+        if (!ceh.errorReturn
+            && pl != getParagraphs(begin, finalEndPos.getOffset()).length) {
+            System.err.println("Conversion WARNING: the number of paragraphs changed from "
+                               + pl + " to " + getParagraphs(begin, end).length
+                               + ", indicating that formatting may have been lost.");
+            ThdlDebug.noteIffyCode();
+        }
+
         return ceh.errorReturn;
     }
 
@@ -762,7 +771,7 @@ public class TibetanDocument extends DefaultStyledDocument {
         // than TMW.33 -- that's because each of the ten TMW fonts has
         // the same glyph at position 32 (space) and the same glyph at
         // position 45 (tsheg).  Note that we're building up a big
-        // ArrayList; we're trading space for time.
+        // StringBuffer; we're trading space for time.
         try {
             int replacementStartIndex = begin;
             StringBuffer replacementQueue = new StringBuffer();
@@ -770,7 +779,6 @@ public class TibetanDocument extends DefaultStyledDocument {
             int replacementFontSize = -1;
 
             int i = begin;
-            HashMap problemGlyphsTable = new HashMap();
             Position endPos = createPosition(end);
             DuffData[] equivalent = new DuffData[1];
             equivalent[0] = new DuffData();
@@ -871,8 +879,8 @@ public class TibetanDocument extends DefaultStyledDocument {
                         ceh.errorReturn = true;
                         CharacterInAGivenFont cgf
                             = new CharacterInAGivenFont(getText(i,1), fontName);
-                        if (!problemGlyphsTable.containsKey(cgf)) {
-                            problemGlyphsTable.put(cgf, "yes this character appears once");
+                        if (!ceh.problemGlyphsTable.containsKey(cgf)) {
+                            ceh.problemGlyphsTable.put(cgf, "yes this character appears once");
                             if (null != errors) {
                                 String err
                                     = (toUnicode
@@ -889,7 +897,13 @@ public class TibetanDocument extends DefaultStyledDocument {
                                 }
 
                                 // Now also put this problem glyph at
-                                // the beginning of the document:
+                                // the beginning of the document,
+                                // after a 'a' character (i.e.,
+                                // \tm0062 or \tmw0063):
+                                equivalent[0].setData((toUnicode || toTM) ? (char)63 : (char)62, 1);
+                                insertDuff(72, ceh.errorGlyphLocation++,
+                                           equivalent, toUnicode || toTM);
+                                ++i;
                                 equivalent[0].setData(getText(i,1), fontNum);
                                 insertDuff(72, ceh.errorGlyphLocation++,
                                            equivalent, toUnicode || toTM);
@@ -933,6 +947,7 @@ public class TibetanDocument extends DefaultStyledDocument {
                                  !toTM);
                 }
             }
+            ceh.lastOffsetExamined = endPos.getOffset() - 1;
 
             if (!ThdlOptions.getBooleanOption("thdl.leave.bad.tm.tmw.conversions.in.place")) {
                 // Remove all characters other than the oddballs:
@@ -962,10 +977,14 @@ public class TibetanDocument extends DefaultStyledDocument {
         while (pos <= end) {
             Element pe = getParagraphElement(pos);
             v.add(pe);
-            if (pe.getEndOffset() == pos)
-                pos = pe.getEndOffset() + 1;
-            else
-                pos = pe.getEndOffset();
+            int peo = pe.getEndOffset();
+            if (peo == pos) {
+                // Avoids an infinite loop I've run into:
+                if (getParagraphElement(peo + 1).getEndOffset() > pos)
+                    pos = peo + 1;
+                break;
+            } else
+                pos = peo;
         }
         return (Element[])v.toArray(arrayType);
     }
@@ -979,9 +998,13 @@ class ConversionErrorHelper {
      *  error glyphs yet exist */
     int errorGlyphLocation;
     boolean doErrorWrapup;
+    int lastOffsetExamined;
+    HashMap problemGlyphsTable;
     ConversionErrorHelper() {
         errorReturn = false;
         errorGlyphLocation = 0;
         doErrorWrapup = false;
+        lastOffsetExamined = 0;
+        problemGlyphsTable = new HashMap();
     }
 }
