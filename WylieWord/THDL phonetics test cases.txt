@@ -58,7 +58,6 @@ sbyin bdag > jindak
 smyong > nyong
 dmyal ba > nyelwa
 sgrol ma > drölma
-rten 'brel > tendrel
 'bras spungs  > drepung
 'phrin las > trinlé
 srung ma > sungma
@@ -110,20 +109,22 @@ sems dpa'i > sempé
 bon po'i > bönpö
 rdzogs > dzok
 
-; Tests of nasalization rule (taken from specification document as of 6 Apr 04)
-chos 'phel > chömpel
-dpal 'bar > pembar
-sku 'bum > kumbum
+; Tests of nasalization rule (taken from specification document as of 15 Apr 04)
 bka' 'gyur > kangyur
 dge 'dun > gendün
-rgyu 'bras > gyundré
 ngos 'dzin > ngöndzin
 rig 'dzin > rindzin
 mkha' 'gro > khandro
 dkyil 'khor > kyinkhor
+chos 'phel > chömpel
+dpal 'bar > pembar
+sku 'bum > kumbum
+rgyu 'bras > gyundré
 dpal 'byor > penjor
-; This one is an exception, actually
+; These are exceptions: by the rule they should be kyandro, tendrel, landré
 skyabs 'gro > kyamdro
+rten 'brel > tendrel
+lam 'bras > lamdré
 
 ; Other random tests
 phreng > treng
