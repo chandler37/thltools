@@ -148,22 +148,25 @@ public class ACIPConverter {
         TibetanDocument tdoc = new TibetanDocument();
         boolean rv
             = convertToTMW(scan, tdoc, errors, warnings,
-                           writeWarningsToResult, warningLevel, colors);
+                           writeWarningsToResult, warningLevel, colors,
+                           tdoc.getLength());
         tdoc.writeRTFOutputStream(out);
         return rv;
     }
 
-    private static boolean convertToTMW(ArrayList scan,
-                                        TibetanDocument tdoc,
-                                        StringBuffer errors,
-                                        StringBuffer warnings,
-                                        boolean writeWarningsToResult,
-                                        String warningLevel,
-                                        boolean colors)
+    public static boolean convertToTMW(ArrayList scan,
+                                       TibetanDocument tdoc,
+                                       StringBuffer errors,
+                                       StringBuffer warnings,
+                                       boolean writeWarningsToResult,
+                                       String warningLevel,
+                                       boolean colors,
+                                       int loc)
         throws IOException
     {
         return convertTo(false, scan, null, tdoc, errors, warnings,
-                         writeWarningsToResult, warningLevel, colors);
+                         writeWarningsToResult, warningLevel, colors,
+                         loc, loc == tdoc.getLength());
     }
 
     /** Returns UTF-8 encoded Unicode.  A bit indirect, so use this
@@ -225,7 +228,7 @@ public class ACIPConverter {
         throws IOException
     {
         return convertTo(true, scan, out, null, errors, warnings,
-                         writeWarningsToOut, warningLevel, false);
+                         writeWarningsToOut, warningLevel, false, -1, true);
     }
 
     private static boolean peekaheadFindsSpacesAndComma(ArrayList /* of TString */ scan,
@@ -254,9 +257,12 @@ public class ACIPConverter {
                                      StringBuffer warnings,
                                      boolean writeWarningsToOut,
                                      String warningLevel,
-                                     boolean colors)
+                                     boolean colors,
+                                     int tdocstart,
+                                     boolean isCleanDoc)
         throws IOException
     {
+        try {
         int smallFontSize = -1;
         int regularFontSize = -1;
         if (null != tdoc) {
@@ -297,7 +303,10 @@ public class ACIPConverter {
                 hasErrors = true;
                 String text = "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: " + s.getText() + "]";
                 if (null != writer) writer.write(text);
-                if (null != tdoc) tdoc.appendRoman(text, Color.RED);
+                if (null != tdoc) {
+                    tdoc.appendRoman(tdocstart, text, Color.RED);
+                    tdocstart += text.length();
+                }
             } else if (stype == TString.TSHEG_BAR_ADORNMENT) {
                 if (lastGuyWasNonPunct) {
                     String err = "[#ERROR CONVERTING ACIP DOCUMENT: This converter cannot yet convert " + s.getText() + " because the converter's author is unclear what the result should be.]";
@@ -314,9 +323,11 @@ public class ACIPConverter {
                             = ACIPRules.getWylieForACIPOther(s.getText());
                         if (null == wylie) {
                             hasErrors = true;
-                            tdoc.appendRoman(err, Color.RED);
+                            tdoc.appendRoman(tdocstart, err, Color.RED);
+                            tdocstart += err.length();
                         } else {
-                            tdoc.appendDuffCode(TibetanMachineWeb.getGlyph(wylie),
+                            tdoc.appendDuffCode(tdocstart++,
+                                                TibetanMachineWeb.getGlyph(wylie),
                                                 Color.BLACK);
                         }
                     }
@@ -331,7 +342,10 @@ public class ACIPConverter {
                 if (writeWarningsToOut) {
                     String text = "[#WARNING CONVERTING ACIP DOCUMENT: Lexical warning: " + s.getText() + "]";
                     if (null != writer) writer.write(text);
-                    if (null != tdoc) tdoc.appendRoman(text, Color.RED);
+                    if (null != tdoc) {
+                        tdoc.appendRoman(tdocstart, text, Color.RED);
+                        tdocstart += text.length();
+                    }
                 }
 
                 if (null != warnings) {
@@ -348,7 +362,10 @@ public class ACIPConverter {
                            + s.getText()
                            + ((stype == TString.FOLIO_MARKER) ? "}" : ""));
                     if (null != writer) writer.write(text);
-                    if (null != tdoc) tdoc.appendRoman(text, Color.BLACK);
+                    if (null != tdoc) {
+                        tdoc.appendRoman(tdocstart, text, Color.BLACK);
+                        tdocstart += text.length();
+                    }
                 } else {
                     String unicode = null;
                     Object[] duff = null;
@@ -362,7 +379,11 @@ public class ACIPConverter {
                             hasErrors = true;
                             String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") " + s.getText() + " HAS THESE ERRORS: " + acipError + "]";
                             if (null != writer) writer.write(errorMessage);
-                            if (null != tdoc) tdoc.appendRoman(errorMessage, Color.RED);
+                            if (null != tdoc) {
+                                tdoc.appendRoman(tdocstart, errorMessage,
+                                                 Color.RED);
+                                tdocstart += errorMessage.length();
+                            }
                             if (null != errors)
                                 errors.append(errorMessage + "\n");
                         } else {
@@ -373,7 +394,11 @@ public class ACIPConverter {
                                 hasErrors = true;
                                 String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") " + s.getText() + " IS ESSENTIALLY NOTHING.]";
                                 if (null != writer) writer.write(errorMessage);
-                                if (null != tdoc) tdoc.appendRoman(errorMessage, Color.RED);
+                                if (null != tdoc) {
+                                    tdoc.appendRoman(tdocstart, errorMessage,
+                                                     Color.RED);
+                                    tdocstart += errorMessage.length();
+                                }
                                 if (null != errors)
                                     errors.append(errorMessage + "\n");
                             } else {
@@ -384,7 +409,12 @@ public class ACIPConverter {
                                     hasErrors = true;
                                     String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") " + s.getText() + " HAS NO LEGAL PARSES.]";
                                     if (null != writer) writer.write(errorMessage);
-                                    if (null != tdoc) tdoc.appendRoman(errorMessage, Color.RED);
+                                    if (null != tdoc) {
+                                        tdoc.appendRoman(tdocstart,
+                                                         errorMessage,
+                                                         Color.RED);
+                                        tdocstart += errorMessage.length();
+                                    }
                                     if (null != errors)
                                         errors.append(errorMessage + "\n");
                                 } else {
@@ -420,7 +450,12 @@ public class ACIPConverter {
                                                 = ("[#WARNING CONVERTING ACIP DOCUMENT: "
                                                    + warning + "]");
                                             if (null != writer) writer.write(text);
-                                            if (null != tdoc) tdoc.appendRoman(text, Color.RED);
+                                            if (null != tdoc) {
+                                                tdoc.appendRoman(tdocstart,
+                                                                 text,
+                                                                 Color.RED);
+                                                tdocstart += text.length();
+                                            }
                                         }
                                         if (null != warnings) {
                                             warnings.append(warning);
@@ -494,7 +529,11 @@ public class ACIPConverter {
                                         done = true;
                                     }
                                     if (null != tdoc) {
-                                        tdoc.appendRoman("    ", Color.BLACK);
+                                        String x = "    ";
+                                        tdoc.appendRoman(tdocstart,
+                                                         x,
+                                                         Color.BLACK);
+                                        tdocstart += x.length();
                                         continue;
                                     }
 //  DLC AM I DOING THIS? By normal Tibetan & Dzongkha spelling, writing, and input rules
@@ -511,7 +550,8 @@ public class ACIPConverter {
                                        && lpl.get(0).getLeft().equals("NG")) {
                                 DuffCode tshegDuff = TibetanMachineWeb.getGlyph(" ");
                                 if (null == tshegDuff) throw new Error("tsheg duff");
-                                tdoc.appendDuffCode(tshegDuff, lastColor);
+                                tdoc.appendDuffCode(tdocstart++,
+                                                    tshegDuff, lastColor);
                             }
 
                             if (!done) {
@@ -521,7 +561,9 @@ public class ACIPConverter {
                                         || s.getText().equals("\t")
                                         || s.getText().equals("\n")
                                         || s.getText().equals("\r\n")) {
-                                        tdoc.appendRoman(s.getText(), Color.BLACK);
+                                        tdoc.appendRoman(tdocstart, s.getText(),
+                                                         Color.BLACK);
+                                        tdocstart += s.getText().length();
                                         continue;
                                     } else {
                                         String wy = ACIPRules.getWylieForACIPOther(s.getText());
@@ -555,14 +597,17 @@ public class ACIPConverter {
                         if (null != duff && 0 != duff.length) {
                             for (int j = 0; j < duff.length; j++) {
                                 if (duff[j] instanceof DuffCode)
-                                    tdoc.appendDuffCode((DuffCode)duff[j],
+                                    tdoc.appendDuffCode(tdocstart++,
+                                                        (DuffCode)duff[j],
                                                         color);
                                 else {
                                     hasErrors = true;
                                     if (null != errors)
                                         errors.append((String)duff[j] + "\n");
-                                    tdoc.appendRoman((String)duff[j],
+                                    tdoc.appendRoman(tdocstart,
+                                                     (String)duff[j],
                                                      Color.RED);
+                                    tdocstart += ((String)duff[j]).length();
                                 }
                             }
                         } else {
@@ -579,6 +624,11 @@ public class ACIPConverter {
         if (null != writer) {
             writer.close();
         }
+        if (isCleanDoc && null != tdoc && tdocstart != tdoc.getLength())
+            throw new Error("Oops -- we dropped something from the output!  tdocstart++; and tdocstart+=xyz; are not being used correctly.");
         return !hasErrors;
+    } catch (javax.swing.text.BadLocationException e) {
+        throw new IllegalArgumentException("tdocstart is no good: " + tdocstart);
+    }
     }
 }

@@ -154,7 +154,7 @@ public class ACIPTshegBarScanner {
                     al.add(new TString("Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n",
                                        TString.ERROR));
                     if (null != errors)
-                        errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
+                        errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
                                       + "Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n");
                     if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                 }
@@ -173,7 +173,7 @@ public class ACIPTshegBarScanner {
                         al.add(new TString("Found a truly unmatched close bracket, " + s.substring(i, i+1),
                                            TString.ERROR));
                         if (null != errors) {
-                            errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
+                            errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
                                           + "Found a truly unmatched close bracket, ] or }.\n");
                         }
                         if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
@@ -182,7 +182,7 @@ public class ACIPTshegBarScanner {
                     al.add(new TString("Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.",
                                        TString.ERROR));
                     if (null != errors)
-                        errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
+                        errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
                                       + "Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
                     if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     startOfString = i+1;
@@ -438,7 +438,7 @@ public class ACIPTshegBarScanner {
                         al.add(new TString("Found a truly unmatched open bracket, [ or {, prior to this current illegal open bracket.",
                                            TString.ERROR));
                         if (null != errors) {
-                            errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
+                            errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
                                           + "Found a truly unmatched open bracket, [ or {, prior to this current illegal open bracket.\n");
                         }
                         if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
@@ -457,7 +457,7 @@ public class ACIPTshegBarScanner {
                         }
                         al.add(new TString("Found an illegal open bracket (in context, this is " + inContext + ").  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?",
                                            TString.ERROR));
-                        errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
+                        errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
                                       + "Found an illegal open bracket (in context, this is " + inContext + ").  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\n");
                         if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     }
@@ -512,7 +512,7 @@ public class ACIPTshegBarScanner {
                                     al.add(new TString("Found an illegal at sign, @ (in context, this is " + inContext + ").  This folio marker has a period, '.', at the end of it, which is illegal.",
                                                        TString.ERROR));
                                     if (null != errors)
-                                        errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
+                                        errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
                                                       + "Found an illegal at sign, @ (in context, this is " + inContext + ").  This folio marker has a period, '.', at the end of it, which is illegal.\n");
                                     if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                                     startOfString = i+numdigits+3;
@@ -534,7 +534,7 @@ public class ACIPTshegBarScanner {
                                     al.add(new TString("Found an illegal at sign, @ (in context, this is " + inContext + ").  This folio marker is not followed by whitespace, as is expected.",
                                                        TString.ERROR));
                                     if (null != errors)
-                                        errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
+                                        errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
                                                       + "Found an illegal at sign, @ (in context, this is " + inContext + ").  This folio marker is not followed by whitespace, as is expected.\n");
                                     if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                                     startOfString = i+1; // DLC FIXME: skip over more?
@@ -630,7 +630,7 @@ public class ACIPTshegBarScanner {
                     al.add(new TString("Found an illegal at sign, @ (in context, this is " + inContext + ").  @012B is an example of a legal folio marker.",
                                        TString.ERROR));
                     if (null != errors)
-                        errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
+                        errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
                                       + "Found an illegal at sign, @ (in context, this is " + inContext + ").  @012B is an example of a legal folio marker.\n");
                     if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     startOfString = i+1;
@@ -656,7 +656,7 @@ public class ACIPTshegBarScanner {
                         al.add(new TString("Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.",
                                            TString.ERROR));
                         if (errors != null) {
-                            errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
+                            errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
                                           + "Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\n");
                         }
                         if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
@@ -692,7 +692,7 @@ public class ACIPTshegBarScanner {
                         al.add(new TString("Found an illegal open parenthesis, (.  Nesting of parentheses is not allowed.",
                                            TString.ERROR));
                         if (null != errors)
-                            errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
+                            errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
                                           + "Found an illegal open parenthesis, (.  Nesting of parentheses is not allowed.\n");
                         if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     } else {
@@ -706,7 +706,7 @@ public class ACIPTshegBarScanner {
                         al.add(new TString("Unexpected closing parenthesis, ), found.",
                                            TString.ERROR));
                         if (null != errors)
-                            errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
+                            errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
                                           + "Unexpected closing parenthesis, ), found.\n");
                         if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     } else {
@@ -851,19 +851,19 @@ public class ACIPTshegBarScanner {
                         al.add(new TString("Found an illegal, unprintable character.",
                                            TString.ERROR));
                         if (null != errors)
-                            errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
+                            errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
                                           + "Found an illegal, unprintable character.\n");
                     } else if ('\\' == ch) {
                         al.add(new TString("Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.",
                                            TString.ERROR));
                         if (null != errors)
-                            errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
+                            errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
                                           + "Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\n");
                     } else {
                         al.add(new TString("Found an illegal character, " + ch + ", with ordinal " + (int)ch + ".",
                                            TString.ERROR));
                         if (null != errors)
-                            errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
+                            errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
                                           + "Found an illegal character, " + ch + ", with ordinal " + (int)ch + ".\n");
                     }
                     if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;

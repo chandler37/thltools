@@ -1549,7 +1549,7 @@ public void paste(int offset) {
                         ThdlDebug.noteIffyCode();
                     }
                 } else {
-                    DuffData[] dd = TibTextUtils.getTibetanMachineWeb(next);
+                    DuffData[] dd = TibTextUtils.getTibetanMachineWebForEWTS(next);
                     offset = getTibDoc().insertDuff(offset, dd);
                 }
             }
@@ -1563,21 +1563,24 @@ public void paste(int offset) {
     }
 
 /**
-* Converts the currently selected text from Extended Wylie to TibetanMachineWeb.
-*/
-    public void toTibetanMachineWeb() {
+* Converts the currently selected text from Roman transliteration to
+* TibetanMachineWeb.
+* @param fromACIP true if the selection is ACIP, false if it is EWTS
+* */
+    public void toTibetanMachineWeb(boolean fromACIP) {
         int start = getSelectionStart();
         int end = getSelectionEnd();
 
-        toTibetanMachineWeb(start, end);
+        toTibetanMachineWeb(fromACIP, start, end);
     }
 
 /**
 * Converts a stretch of text from Extended Wylie to TibetanMachineWeb.
+* @param fromACIP true if the selection is ACIP, false if it is EWTS
 * @param start the begin point for the conversion
 * @param end the end point for the conversion
 */
-    public void toTibetanMachineWeb(int start, int end) {
+    public void toTibetanMachineWeb(boolean fromACIP, int start, int end) {
         if (start == end)
             return;
 
@@ -1599,16 +1602,27 @@ public void paste(int offset) {
                 if ((0 != TibetanMachineWeb.getTMWFontNumber(fontName)) || i==endPos.getOffset()) {
                     if (i != start) {
                         try {
-                            DuffData[] duffdata = TibTextUtils.getTibetanMachineWeb(sb.toString());
-                            getTibDoc().remove(start, i-start);
-                            getTibDoc().insertDuff(start, duffdata);
-                        }
-                        catch (InvalidWylieException iwe) {
+                            DuffData[] duffdata = null;
+                            if (fromACIP) {
+                                getTibDoc().remove(start, i-start);
+                                TibTextUtils.insertTibetanMachineWebForACIP(sb.toString(), getTibDoc(), start);
+                            }
+                            else
+                                duffdata = TibTextUtils.getTibetanMachineWebForEWTS(sb.toString());
+                            if (!fromACIP) {
+                                getTibDoc().remove(start, i-start);
+                                getTibDoc().insertDuff(start, duffdata);
+                            }
+                        } catch (InvalidWylieException iwe) {
                             JOptionPane.showMessageDialog(this,
                                 "The Wylie you are trying to convert is invalid, " +
                                 "beginning from:\n     " + iwe.getCulpritInContext() +
                                 "\nThe culprit is probably the character '" +
                                 iwe.getCulprit() + "'.");
+                            return;
+                        } catch (InvalidACIPException iae) {
+                            JOptionPane.showMessageDialog(this,
+                                "The ACIP you are trying to convert is invalid:\n" + iae.getMessage());
                             return;
                         }
                     }

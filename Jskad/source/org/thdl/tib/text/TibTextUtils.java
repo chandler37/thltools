@@ -25,6 +25,8 @@ import javax.swing.text.rtf.RTFEditorKit;
 import java.io.*;
 
 import org.thdl.util.ThdlDebug;
+import org.thdl.tib.text.ttt.ACIPTshegBarScanner;
+import org.thdl.tib.text.ttt.ACIPConverter;
 import org.thdl.tib.text.tshegbar.LegalTshegBar;
 import org.thdl.tib.text.tshegbar.UnicodeConstants;
 import org.thdl.tib.text.tshegbar.UnicodeUtils;
@@ -311,6 +313,44 @@ public class TibTextUtils implements THDLWylieConstants {
         = new boolean[] { false };
 
 /**
+* Converts a string of ACIP into TibetanMachineWeb and inserts that
+* into tdoc at offset loc.
+* @param acip the ACIP you want to convert
+* @param tdoc the document in which to insert the TMW
+* @param lco the offset inside the document at which to insert the TMW
+* @throws InvalidACIPException if the ACIP is deemed invalid, i.e. if
+* it does not conform to the ACIP transcription rules (those in the
+* official document and the subtler rules pieced together by David
+* Chandler through study and private correspondence with Robert
+* Chilton) */
+    public static void insertTibetanMachineWebForACIP(String acip, TibetanDocument tdoc, int loc)
+        throws InvalidACIPException
+    {
+        StringBuffer errors = new StringBuffer();
+        ArrayList al = ACIPTshegBarScanner.scan(acip, errors, 500);
+        if (null == al || errors.length() > 0) {
+            if (errors.length() > 0)
+                throw new InvalidACIPException(errors.toString());
+            else
+                throw new InvalidACIPException("Fatal error converting ACIP to TMW.");
+        }
+        String warningLevel = "Most";
+        boolean colors = false;
+        StringBuffer warnings = null;
+        boolean putWarningsInOutput = false;
+        if ("None" != warningLevel) {
+            warnings = new StringBuffer();
+            putWarningsInOutput = true;
+        }
+        try {
+            ACIPConverter.convertToTMW(al, tdoc, errors, warnings,
+                                       putWarningsInOutput, warningLevel, colors, loc);
+        } catch (IOException e) {
+            throw new Error("Can't happen: " + e);
+        }
+    }
+
+/**
 * Converts a string of Extended Wylie into {@link DuffData DuffData}.
 * @param wylie the Wylie you want to convert
 * @return an array of TibetanMachineWeb data
@@ -318,7 +358,7 @@ public class TibTextUtils implements THDLWylieConstants {
 * @throws InvalidWylieException if the Wylie is deemed invalid,
 * i.e. if it does not conform to the Extended Wylie standard
 */
-    public static DuffData[] getTibetanMachineWeb(String wylie) throws InvalidWylieException {
+    public static DuffData[] getTibetanMachineWebForEWTS(String wylie) throws InvalidWylieException {
         List chars = new ArrayList();
         DuffCode dc;
         int start = 0;

@@ -7203,28 +7203,28 @@ tstHelper("ZUR");
         shelp("", "", "[]");
         shelp("[DD]", "");
         shelp("[",
-              "Offset 0 or maybe 0: Found an illegal open bracket (in context, this is [).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset END: Truly unmatched open bracket found.\n");
+              "Offset 0: Found an illegal open bracket (in context, this is [).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset END: Truly unmatched open bracket found.\n");
         shelp("{",
-              "Offset 0 or maybe 0: Found an illegal open bracket (in context, this is {).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset END: Truly unmatched open bracket found.\n");
+              "Offset 0: Found an illegal open bracket (in context, this is {).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset END: Truly unmatched open bracket found.\n");
         shelp("DD", "");
         shelp("DD]",
-              "Offset 2 or maybe 2: Found a truly unmatched close bracket, ] or }.\nOffset 2 or maybe 2: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
+              "Offset 2: Found a truly unmatched close bracket, ] or }.\nOffset 2: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
 
-        shelp("///NYA", "Offset 1 or maybe 1: Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\nOffset END: Slashes are supposed to occur in pairs, but the input had an unmatched '/' character.\n");
+        shelp("///NYA", "Offset 1: Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\nOffset END: Slashes are supposed to occur in pairs, but the input had an unmatched '/' character.\n");
         shelp("/NYA/", "");
         shelp("[?][BP][LS][DD1][DD2][DDD][DR][# (<{A COMMENT)}>]", "");
         shelp("[LS][# A [[[[[COMMENT][LS]",
-              "Offset 9 or maybe 9: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
-              + "Offset 10 or maybe 10: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
-              + "Offset 11 or maybe 11: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
-              + "Offset 12 or maybe 12: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
-              + "Offset 13 or maybe 13: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n");
+              "Offset 9: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
+              + "Offset 10: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
+              + "Offset 11: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
+              + "Offset 12: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
+              + "Offset 13: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n");
         shelp("[ILLEGAL COMMENT]",
-              "Offset 0 or maybe 0: Found an illegal open bracket (in context, this is [ILLEGAL C...).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset 16 or maybe 16: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
+              "Offset 0: Found an illegal open bracket (in context, this is [ILLEGAL C...).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset 16: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
         shelp("(BSKYABS GRO)", "");
-        shelp("BSKYABS GRO)", "Offset 11 or maybe 11: Unexpected closing parenthesis, ), found.\n");
+        shelp("BSKYABS GRO)", "Offset 11: Unexpected closing parenthesis, ), found.\n");
         shelp("BSKYABS GRO(", "Offset END: Unmatched open parenthesis, (, found.\n");
-        shelp("((NESTAGE))", "Offset 1 or maybe 1: Found an illegal open parenthesis, (.  Nesting of parentheses is not allowed.\nOffset 10 or maybe 10: Unexpected closing parenthesis, ), found.\n");
+        shelp("((NESTAGE))", "Offset 1: Found an illegal open parenthesis, (.  Nesting of parentheses is not allowed.\nOffset 10: Unexpected closing parenthesis, ), found.\n");
         shelp("(BA)(PA)NYA(CA)", "");
         shelp("NYAx", "");
         shelp("NYA x", "");
@@ -7253,9 +7253,9 @@ tstHelper("ZUR");
         shelp("(NYA ", "Offset END: Unmatched open parenthesis, (, found.\n");
         shelp("[*NYA ", "Offset END: Unmatched open bracket found.  A correction does not terminate.\n");
         shelp("?", "", "[QUESTION:{?}]");
-        shelp("KHAN~ BAR ", "Offset 4 or maybe 4: Found an illegal character, ~, with ordinal 126.\n");
+        shelp("KHAN~ BAR ", "Offset 4: Found an illegal character, ~, with ordinal 126.\n");
         shelp("[* Correction with []]",
-              "Offset 5 or maybe 5: Found an illegal character, r, with ordinal 114.\nOffset 6 or maybe 6: Found an illegal character, r, with ordinal 114.\nOffset 7 or maybe 7: Found an illegal character, e, with ordinal 101.\nOffset 8 or maybe 8: Found an illegal character, c, with ordinal 99.\nOffset 14 or maybe 14: Found an illegal character, w, with ordinal 119.\nOffset 19 or maybe 19: Found an illegal open bracket (in context, this is []]).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset 21 or maybe 21: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
+              "Offset 5: Found an illegal character, r, with ordinal 114.\nOffset 6: Found an illegal character, r, with ordinal 114.\nOffset 7: Found an illegal character, e, with ordinal 101.\nOffset 8: Found an illegal character, c, with ordinal 99.\nOffset 14: Found an illegal character, w, with ordinal 119.\nOffset 19: Found an illegal open bracket (in context, this is []]).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset 21: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
 
         // DLC DOC: the line SDIG PA'I GROGS PO'I LAG TU SON PAR 'GYUR PA is followed by a blank line.  Note that it's "PA", not "PA ", ending it.  We autocorrect to the latter.
 
@@ -7271,7 +7271,7 @@ tstHelper("ZUR");
             uhelp(" 1\\ ", "\u0f0b\u0f21\u0f84\u0f0b");
         }
         shelp("K\\,",
-              "Offset 1 or maybe 1: Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\n",
+              "Offset 1: Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\n",
               "[TIBETAN_NON_PUNCTUATION:{K}, ERROR:{Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.}, TIBETAN_PUNCTUATION:{,}]");
 
 
@@ -7315,14 +7315,14 @@ tstHelper("ZUR");
         shelp("@01A.3 ", "", "[FOLIO_MARKER:{@01A.3}, TIBETAN_PUNCTUATION:{ }]");
         shelp("@001 ", "", "[FOLIO_MARKER:{@001}, TIBETAN_PUNCTUATION:{ }]");
         shelp("@19-20A",
-              "Offset 0 or maybe 0: Found an illegal at sign, @ (in context, this is @19-20A).  @012B is an example of a legal folio marker.\n",
+              "Offset 0: Found an illegal at sign, @ (in context, this is @19-20A).  @012B is an example of a legal folio marker.\n",
               "[ERROR:{Found an illegal at sign, @ (in context, this is @19-20A).  @012B is an example of a legal folio marker.}, TIBETAN_NON_PUNCTUATION:{19-20A}]");  // DLC FIXME: yes it occurs in the kangyur.
         shelp("@[7B]", "");
         shelp("@012A.3KA",
               "",
               "[FOLIO_MARKER:{@012A.3}, TIBETAN_NON_PUNCTUATION:{KA}]");
         shelp("@012A.34",
-              "Offset 0 or maybe 0: Found an illegal at sign, @ (in context, this is @012A.34).  This folio marker has a period, '.', at the end of it, which is illegal.\n",
+              "Offset 0: Found an illegal at sign, @ (in context, this is @012A.34).  This folio marker has a period, '.', at the end of it, which is illegal.\n",
               "[ERROR:{Found an illegal at sign, @ (in context, this is @012A.34).  This folio marker has a period, '.', at the end of it, which is illegal.}, TIBETAN_NON_PUNCTUATION:{34}]");
         shelp("@[07B]", "");
         shelp("@[00007B]", "");
@@ -7339,7 +7339,7 @@ tstHelper("ZUR");
         shelp("{ DD }", "", "[DD:{{ DD }}]"); // TD3790E2.ACT
         shelp("{ BP }", "", "[BP:{{ BP }}]"); // TD3790E2.ACT
         shelp("//NYA\\\\",
-              "Offset 1 or maybe 1: Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\nOffset 5 or maybe 5: Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\nOffset 6 or maybe 6: Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\n",
+              "Offset 1: Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\nOffset 5: Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\nOffset 6: Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\n",
               "[START_SLASH:{/}, ERROR:{Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.}, END_SLASH:{/}, TIBETAN_NON_PUNCTUATION:{NYA}, ERROR:{Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.}, ERROR:{Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.}]");
 
     }

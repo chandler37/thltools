@@ -227,29 +227,16 @@ public class TibetanDocument extends DefaultStyledDocument {
 	}
 
 /**
-* Appends all DuffCodes in glyphs to the end of this document.
-* @param glyphs the array of Tibetan data you want to insert
-* @param color the color in which to insert, which is used if and only
-* if {@link #colorsEnabled() colors are enabled}
-*/
-    public void appendDuffCodes(DuffCode[] glyphs, Color color) {
-        // PERFORMANCE FIXME: this isn't so speedy, but it reuses
-        // existing code.
-        for (int i = 0; i < glyphs.length; i++) {
-            appendDuffCode(glyphs[i], color);
-        }
-    }
-
-/**
 * Appends glyph to the end of this document.
+* @param loc the position at which to insert these glyphs
 * @param glyph the Tibetan glyph you want to insert
 * @param color the color in which to insert, which is used if and only
 * if {@link #colorsEnabled() colors are enabled}
 */
-    public void appendDuffCode(DuffCode glyph, Color color) {
+    public void appendDuffCode(int loc, DuffCode glyph, Color color) {
         // PERFORMANCE FIXME: this isn't so speedy, but it reuses
         // existing code.
-        insertDuff(getLength(),
+        insertDuff(loc,
                    new DuffData[] { new DuffData(new String(new char[] { glyph.getCharacter() }),
                                                  glyph.getFontNum()) },
                    color);

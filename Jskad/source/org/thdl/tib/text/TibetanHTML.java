@@ -26,11 +26,11 @@ public class TibetanHTML {
 				String next = tokenizer.nextToken();
 				if (next.equals("\t") || next.equals("\n")) {
 					buffer.append("<wbr/>");
-					buffer.append(getHTML(TibTextUtils.getTibetanMachineWeb("_")));
+					buffer.append(getHTML(TibTextUtils.getTibetanMachineWebForEWTS("_")));
 					buffer.append("<wbr/>");
 				}
 				else
-					buffer.append(getHTML(TibTextUtils.getTibetanMachineWeb(next)));
+					buffer.append(getHTML(TibTextUtils.getTibetanMachineWebForEWTS(next)));
 			}
 			return buffer.toString();
 		} catch (InvalidWylieException ive) {
@@ -95,11 +95,11 @@ public class TibetanHTML {
 				String next = tokenizer.nextToken();
 				if (next.equals("\t") || next.equals("\n")) {
 					buffer.append("<wbr/>");
-					buffer.append(getHTML(TibTextUtils.getTibetanMachineWeb("_")));
+					buffer.append(getHTML(TibTextUtils.getTibetanMachineWebForEWTS("_")));
 					buffer.append("<wbr/>");
 				}
 				else
-					buffer.append(getHTML(TibTextUtils.getTibetanMachineWeb(next)));
+					buffer.append(getHTML(TibTextUtils.getTibetanMachineWebForEWTS(next)));
 			}
 			return buffer.toString();
 		} catch (InvalidWylieException ive) {
@@ -163,11 +163,11 @@ public class TibetanHTML {
 				String next = tokenizer.nextToken();
 				if (next.equals("\t") || next.equals("\n")) {
 					buffer.append("<wbr>");
-					buffer.append(getHTML(TibTextUtils.getTibetanMachineWeb("_")));
+					buffer.append(getHTML(TibTextUtils.getTibetanMachineWebForEWTS("_")));
 					buffer.append("<wbr>");
 				}
 				else
-					buffer.append(getHTML(TibTextUtils.getTibetanMachineWeb(next)));
+					buffer.append(getHTML(TibTextUtils.getTibetanMachineWebForEWTS(next)));
 			}
 			return buffer.toString();
 		} catch (InvalidWylieException ive) {
