@@ -13,8 +13,8 @@
   <!-- Configure the context path for this application -->
 	<property name="path" value="/lex"/>
 
-	<property file="${user.home}/.${ant.project.name}-build.properties"/>
-	<property file="${user.home}/.build.properties"/>
+<!-- 	<property file="${user.home}/.${ant.project.name}-build.properties"/>
+	<property file="${user.home}/.build.properties"/> -->
 	<property file="build.properties"/> 
 
   <!-- Configure the custom Ant tasks for the Manager application 
@@ -181,7 +181,27 @@
 	<target name="install-test" description="Remove and Re-install web application" depends="install">
 		<antcall target="test"/>
 	</target>
-	
+
+
+<target name="jmeter">
+<taskdef name="jmeter" classname="org.programmerplanet.ant.taskdefs.jmeter.JMeterTask"/> 
+<echo message="${jmeterhome}"/>
+<jmeter
+    jmeterhome="../jmeter"
+    testplan="${basedir}/loadtests/LoadTest.jmx"
+    resultlog="${basedir}/loadtests/JMeterResults.jtl"/> 
+
+<!--
+For the following task to work, jmeter.properties needs to have the following properties set thusly:
+jmeter.save.saveservice.assertion_results=all 
+jmeter.save.saveservice.output_format=xml 
+-->
+<xslt
+    in="${basedir}/loadtests/JMeterResults.jtl"
+    out="${basedir}/loadtests/JMeterResults.html"
+    style="${jmeterhome}/extras/jmeter-results-report.xsl"/> 
+</target>	
+
 	<target name="hbm2java" description="generate source code">
 		<tstamp prefix="now"/>
 		<echo message="time is: ${now.DSTAMP}_${now.TSTAMP}"/>
