@@ -35,15 +35,18 @@ import javax.servlet.http.*;
 
     @author Andr&eacute;s Montano Pellegrini
 */
-public class OnLineScannerFilter extends HttpServlet {
-
+public class OnLineScannerFilter extends HttpServlet
+{
+    private final static String propertyFile = "dictionary";
+    private final static String dictNameProperty = "onlinescannerfilter.dict-file-name";
+    private final static String otherLinksProperty = "onlinescannerfilter.links-to-other-stuff";
     ResourceBundle rb;
 	private TibetanScanner scanner;
-		
+	
 	public OnLineScannerFilter() throws Exception
 	{
-		rb = ResourceBundle.getBundle("dictionary");
-		scanner = new LocalTibetanScanner(rb.getString("onlinescannerfilter.dict-file-name"));
+		rb = ResourceBundle.getBundle(propertyFile);
+		scanner = new LocalTibetanScanner(rb.getString(dictNameProperty));
 	}
 
     public void doGet(HttpServletRequest request,
@@ -63,7 +66,7 @@ public class OnLineScannerFilter extends HttpServlet {
 		
 		if (useTHDLBanner)
 		{
-		    out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"> <html xmlns=\"http://www.w3.org/1999/xhtml\">");
+		    out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">");
 		}
 		else out.println("<html>");
 		
@@ -106,7 +109,6 @@ public class OnLineScannerFilter extends HttpServlet {
         out.println("</head>");
         out.println("<body>");
         
-        
 		if (useTHDLBanner)
 		{
             out.println("<div id=\"banner\">");
@@ -134,15 +136,23 @@ public class OnLineScannerFilter extends HttpServlet {
             out.println("  </form>");
             out.println(" </div>");
             out.println(" <div id=\"breadcrumbs\">");
-            out.println("  <a href=\"/tibet/index.html\">Home</a> &gt; <a href=\"/tibet/reference/index.html\">Reference</a> &gt; Translation Tool |");
-            out.println("  <a href=\"http://www.people.virginia.edu/~am2zb/tibetan/TibetanEnglishTranslationTool.jnlp\">Tibetan Script Input Version </a> (<a target=\"_blank\" href=\"http://java.sun.com/getjava/\">Java</a> needed) |");
-            out.println("  <a href=\"http://www.people.virginia.edu/~am2zb/tibetan/\" target=\"_blank\">Documentation</a>");
+            out.println("  <a href=\"/tibet/index.html\">Home</a> &gt; <a href=\"/tibet/reference/index.html\">Reference</a> &gt; Translation Tool");
             out.println(" </div>");
             out.println("</div><!--END sub_banner-->");
             out.println("<div id=\"main\">");
         }
         
         out.println("<h3 align=\"center\">The Online Tibetan to English Translation/Dictionary Tool</h3>");
+        
+        try
+        {
+            out.println(rb.getString(otherLinksProperty));
+        }
+        catch (MissingResourceException e)
+        {
+            // do nothing
+        }
+        
 		if (useTHDLBanner)
 		{
             out.println("<form action=\"org.thdl.tib.scanner.OnLineScannerFilter?thdlBanner=on\" method=POST>");
