@@ -142,7 +142,7 @@ public class Jskad extends JPanel implements DocumentListener {
 			JMenu fileMenu = new JMenu("File");
 
 			JMenuItem newItem = new JMenuItem("New");
-//			newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,2)); //Ctrl-n
+//			newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,java.awt.Event.CTRL_MASK)); //Ctrl-n
 			newItem.addActionListener(new ThdlActionListener() {
 				public void theRealActionPerformed(ActionEvent e) {
 					newFile();
@@ -151,7 +151,7 @@ public class Jskad extends JPanel implements DocumentListener {
 			fileMenu.add(newItem);
 
 			JMenuItem openItem = new JMenuItem("Open");
-//			openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,2)); //Ctrl-o
+//			openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,java.awt.Event.CTRL_MASK)); //Ctrl-o
 			openItem.addActionListener(new ThdlActionListener() {
 				public void theRealActionPerformed(ActionEvent e) {
 					openFile();
@@ -179,7 +179,7 @@ public class Jskad extends JPanel implements DocumentListener {
 			}
 
 			JMenuItem saveItem = new JMenuItem("Save");
-//			saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,2)); //Ctrl-s
+//			saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,java.awt.Event.CTRL_MASK)); //Ctrl-s
 			saveItem.addActionListener(new ThdlActionListener() {
 				public void theRealActionPerformed(ActionEvent e) {
 					if (fileName == null)
@@ -207,7 +207,8 @@ public class Jskad extends JPanel implements DocumentListener {
 
 		if (parentObject instanceof JFrame || parentObject instanceof JInternalFrame) {
 			JMenuItem cutItem = new JMenuItem("Cut");
-			cutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,2)); //Ctrl-x
+			cutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,
+                                                          java.awt.Event.CTRL_MASK)); //Ctrl-x
 			cutItem.addActionListener(new ThdlActionListener() {
 				public void theRealActionPerformed(ActionEvent e) {
 					cutSelection();					
@@ -216,7 +217,8 @@ public class Jskad extends JPanel implements DocumentListener {
 			editMenu.add(cutItem);
 
 			JMenuItem copyItem = new JMenuItem("Copy");
-			copyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,2)); //Ctrl-c
+			copyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
+                                                           java.awt.Event.CTRL_MASK)); //Ctrl-c
 			copyItem.addActionListener(new ThdlActionListener() {
 				public void theRealActionPerformed(ActionEvent e) {
 					copySelection();
@@ -225,7 +227,8 @@ public class Jskad extends JPanel implements DocumentListener {
 			editMenu.add(copyItem);
 
 			JMenuItem pasteItem = new JMenuItem("Paste");
-			pasteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,2)); //Ctrl-v
+			pasteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
+                                                            java.awt.Event.CTRL_MASK)); //Ctrl-v
 			pasteItem.addActionListener(new ThdlActionListener() {
 				public void theRealActionPerformed(ActionEvent e) {
 					pasteSelection();
@@ -235,7 +238,8 @@ public class Jskad extends JPanel implements DocumentListener {
 			editMenu.addSeparator();
 
 			JMenuItem selectallItem = new JMenuItem("Select All");
-			selectallItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A,2)); //Ctrl-a
+			selectallItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A,
+                                                                java.awt.Event.CTRL_MASK)); //Ctrl-a
 			selectallItem.addActionListener(new ThdlActionListener() {
 				public void theRealActionPerformed(ActionEvent e) {
 					dp.setSelectionStart(0);
@@ -706,11 +710,11 @@ public class Jskad extends JPanel implements DocumentListener {
 	}
 
 	private void cutSelection() {
-		dp.copy(dp.getSelectionStart(), dp.getSelectionEnd(), true);
+        dp.cutCurrentSelection();
 	}
 
 	private void copySelection() {
-		dp.copy(dp.getSelectionStart(), dp.getSelectionEnd(), false);
+        dp.copyCurrentSelection();
 	}
 
 	private void pasteSelection() {

@@ -212,32 +212,56 @@ public Clipboard rtfBoard;
 public DataFlavor rtfFlavor;
 public RTFEditorKit rtfEd = null;
 
+    /** Initializes this object.  All constructors should call
+        this. */
+    private void initialize(StatusBar sb,
+                            TibetanKeyboard keyboard,
+                            java.net.URL keyboardURL)
+    {
+		if (null != keyboard)
+            TibetanMachineWeb.setKeyboard(keyboard);
+		if (null != keyboardURL)
+            TibetanMachineWeb.setKeyboard(keyboardURL);
+		setupKeyboard();
+		setupEditor();
+        if (null != sb)
+            setStatusBar(sb);
+//		this(new StyledEditorKit(), keyboardURL);
+    }
+
+    // DLC 
+    private Action getActionByName(String name) {
+        Action[] actions = this.getActions();
+        for (int i = 0; i < actions.length; i++) {
+            if (actions[i].getValue(Action.NAME).equals(name)) {
+                return actions[i];
+            }
+        }
+        return null;
+    }
+
+
     /** Creates a new DuffPane that updates sb, if sb is not null,
         with messages about how the users' keypresses are being
         interpreted. */
 	public DuffPane(StatusBar sb) {
-        this();
-        setStatusBar(sb);
+        super();
+        initialize(sb, null, null);
     }
 
 	public DuffPane() {
-		setupKeyboard();
-		setupEditor();
-//		this(new StyledEditorKit());
+        super();
+        initialize(null, null, null);
 	}
 
 	public DuffPane(TibetanKeyboard keyboard) {
-		TibetanMachineWeb.setKeyboard(keyboard);
-		setupKeyboard();
-		setupEditor();	
-//		this(new StyledEditorKit(), keyboard);
+        super();
+        initialize(null, keyboard, null);
 	}
 
 	public DuffPane(java.net.URL keyboardURL) {
-		TibetanMachineWeb.setKeyboard(keyboardURL);
-		setupKeyboard();
-		setupEditor();
-//		this(new StyledEditorKit(), keyboardURL);
+        super();
+        initialize(null, null, keyboardURL);
 	}
 
     /** Sets the status bar to update with mode information.  If sb is
@@ -247,7 +271,7 @@ public RTFEditorKit rtfEd = null;
     }
 
     /** If we have a status bar, update it. */
-    private void updateStatus(String newStatus) {
+    protected void updateStatus(String newStatus) {
         if (statBar != null) {
             /* If we've seen this message just before, append " x2" to
                the end of it. The third message will cause a toggle,
@@ -260,30 +284,11 @@ public RTFEditorKit rtfEd = null;
     }
 
     /** If we have a status bar, append msg to its current status. */
-    private void appendStatus(String msg) {
+    protected void appendStatus(String msg) {
         if (statBar != null) {
             statBar.replaceStatus(statBar.currentStatus() + msg);
         }
     }
-
-/*
-	public DuffPane() {
-		setupKeyboard();
-		setupEditor(styledEditorKit);
-	}
-
-	public DuffPane(TibetanKeyboard keyboard) {
-		TibetanMachineWeb.setKeyboard(keyboard);
-		setupKeyboard();
-		setupEditor();
-	}
-
-	public DuffPane(java.net.URL keyboardURL) {
-		TibetanMachineWeb.setKeyboard(keyboardURL);
-		setupKeyboard();
-		setupEditor();
-	}
-*/
 
     private static int defaultTibFontSize() {
         // FIXME: at program exit, or when the user selects "Save
@@ -305,7 +310,7 @@ public RTFEditorKit rtfEd = null;
 *
 * @param sek the StyledEditorKit for the editing window
 */
-	public void setupEditor() {
+	private void setupEditor() {
 		rtfBoard = getToolkit().getSystemClipboard();
 		rtfFlavor = new DataFlavor("text/rtf", "Rich Text Format");
 		rtfEd = new RTFEditorKit();
@@ -384,8 +389,7 @@ public RTFEditorKit rtfEd = null;
 * but don't register it here.
 */
 	public void registerKeyboard() {
-		TibetanKeyboard tk = null;
-		registerKeyboard(tk);
+		registerKeyboard((TibetanKeyboard)null);
 	}
 
 /**
@@ -796,12 +800,13 @@ public RTFEditorKit rtfEd = null;
 /**
 * Required by implementations of the
 * {@link java.awt.event.FocusListener FocusListener} interface,
-* this method does nothing.
+* this method resets the keyboard.
 *
 * @param e a FocusEvent
 */
 	public void focusLost(FocusEvent e) {
 		initKeyboard();
+        appendStatus(" (because the window focus was lost)");
 	}
 
 class RTFSelection implements ClipboardOwner, Transferable {
@@ -858,6 +863,18 @@ class RTFSelection implements ClipboardOwner, Transferable {
 	}
 }
 
+    /** Copies the current selection to the system clipboard, unless
+        cut-and-paste operations are disabled. */
+	public void copyCurrentSelection() {
+        copy(getSelectionStart(), getSelectionEnd(), false);
+    }
+
+    /** If this.isEditable(), then this copies the current selection
+        to the system clipboard and then deletes it. */
+	public void cutCurrentSelection() {
+        copy(getSelectionStart(), getSelectionEnd(), true);
+    }
+
 /**
 * Cuts or copies the specified portion of this object's document
 * to the system clipboard. What is cut/copied is Wylie text -
@@ -870,7 +887,8 @@ class RTFSelection implements ClipboardOwner, Transferable {
 * @param remove this should be true if the operation is 'cut',
 * false if it is 'copy'
 */
-	public void copy(int start, int end, boolean remove) {
+	private void copy(int start, int end, boolean remove) {
+        updateStatus("Copied to clipboard");
 		int p1 = start;
 		int p2 = end;
 		if (p1 != p2) {
@@ -918,6 +936,11 @@ public void paste(int offset) {
 
 			//construct new document that contains only portion of text you want to paste
 			StyledDocument sd = new DefaultStyledDocument();
+
+            // I swear this happened once when I pasted in some
+            // random junk just after Jskad started up.
+            ThdlDebug.verify(null != in);
+
 			rtfEd.read(in, sd, 0);
 			for (int i=0; i<sd.getLength()-1; i++) { //getLength()-1 so that final newline is not included in paste
 				try {
@@ -955,6 +978,11 @@ public void paste(int offset) {
 		isCutAndPasteEnabled = true;
 	}
 
+    /** Returns true iff cut-and-paste operations are enabled. */
+	public boolean isCutAndPasteOn() {
+		return isCutAndPasteEnabled;
+	}
+
 /**
 * Disables cutting and pasting of Tibetan text.
 * Cut and paste must be disabled if Jskad's
@@ -983,7 +1011,6 @@ public void paste(int offset) {
 			case KeyEvent.VK_ESCAPE:
 				e.consume();
 				initKeyboard();
-//				toggleLanguage();
 				break;
 
 			case KeyEvent.VK_A:
@@ -1017,20 +1044,24 @@ public void paste(int offset) {
 
 			case KeyEvent.VK_TAB:
 				e.consume();
-				initKeyboard();
-				if (isTibetan)
-					doc.appendDuff(caret.getDot(),"	",TibetanMachineWeb.getAttributeSet(1));
-				else
-					append("	", romanAttributeSet);
+                if (this.isEditable()) {
+                    initKeyboard();
+                    if (isTibetan)
+                        doc.appendDuff(caret.getDot(),"	",TibetanMachineWeb.getAttributeSet(1));
+                    else
+                        append("	", romanAttributeSet);
+                }
 				break;
 
 			case KeyEvent.VK_ENTER:
 				e.consume();
-				initKeyboard();
-				if (isTibetan)
-					doc.appendDuff(caret.getDot(),"\n",TibetanMachineWeb.getAttributeSet(1)); // FIXME does this work on all platforms?
-				else
-					append("\n", romanAttributeSet); // FIXME does this work on all platforms?
+                if (this.isEditable()) {
+                    initKeyboard();
+                    if (isTibetan)
+                        doc.appendDuff(caret.getDot(),"\n",TibetanMachineWeb.getAttributeSet(1)); // FIXME does this work on all platforms?
+                    else
+                        append("\n", romanAttributeSet); // FIXME does this work on all platforms?
+                }
 				break;
 		}
 	}
@@ -1109,13 +1140,14 @@ public void paste(int offset) {
 *
 * @param e a KeyEvent */
 	public void processTibetan(KeyEvent e) {
-        boolean changedStatus = false;
 		char c = e.getKeyChar();
 
 		int start = getSelectionStart();
 		int end = getSelectionEnd();
 		boolean shouldIBackSpace = true;
 
+        // We don't handle just any old keypress.  We handle only the
+        // ones that enter text.
 		if (e.isControlDown() || e.isAltDown())
 			return;
 
@@ -1130,6 +1162,9 @@ public void paste(int offset) {
 				}
 			}
 		}
+
+        // Have we modified the status bar?
+		boolean changedStatus = false;
 
 		key_block: 
 		{
