@@ -174,27 +174,16 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
         returnCode = 0;
         try {
             final ConvertDialog convDialog;
-            String[] choices = new String[]{
-                ACIP_TO_UNI,
-                TM_TO_TMW,
-                TMW_TO_UNI,
-                TMW_TO_WYLIE,
-                TMW_TO_TM,
-                FIND_SOME_NON_TMW,
-                FIND_SOME_NON_TM,
-                FIND_ALL_NON_TMW,
-                FIND_ALL_NON_TM
-            };
             if (null == owner) {
                 convDialog
                     = new ConvertDialog(new ConverterGUI(),
-                                        choices,
+                                        CHOICES,
                                         true);
             } else {
                 convDialog
                     = new ConvertDialog(owner,
                                         new ConverterGUI(),
-                                        choices,
+                                        CHOICES,
                                         true);
             }
 

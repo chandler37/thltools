@@ -38,25 +38,23 @@ class ConvertDialog extends JDialog
     private static final boolean debug = false;
 
     // Attributes
-    FontConversion controller;
+    private FontConversion controller;
 
-    Box fileBox, buttonBox;
+    private Box fileBox, buttonBox;
 
-    JPanel content, choicePanel;
+    private JPanel content;
 
-    JComboBox choices;
+    JPanel getContentPanel() { return content; }
+
+    private JComboBox choices;
 
     private JComboBox warningLevels;
 
-    JTextField oldTextField, newTextField;
+    private JTextField oldTextField, newTextField;
 
-    JButton browseOld, browseNew, convert, cancel, openDocOld, openDocNew, about;
+    private JButton browseOld, browseNew, convert, cancel, openDocOld, openDocNew, about;
 
-    JLabel oldLabel, newLabel;
-
-    String[] choiceNames;
-
-    JFileChooser jfc;
+    private JFileChooser jfc;
 
     private static final String BROWSENEW     = "Browse...";
     private static final String BROWSEOLD     = BROWSENEW;
@@ -98,8 +96,7 @@ class ConvertDialog extends JDialog
         content.add(temp);
 
         temp = new JPanel(new FlowLayout(FlowLayout.CENTER,5,5));
-        oldLabel = new JLabel("Original File: ");
-        temp.add(oldLabel);
+        temp.add(new JLabel("Original File: "));
 
         oldTextField = new JTextField(25);
         JPanel tfTemp = new JPanel();
@@ -115,8 +112,7 @@ class ConvertDialog extends JDialog
         content.add(temp);
 
         temp = new JPanel(new FlowLayout(FlowLayout.CENTER,5,5));
-        newLabel = new JLabel("Converted File: ");
-        temp.add(newLabel);
+        temp.add(new JLabel("Converted File: "));
 
         newTextField = new JTextField(25);
         tfTemp = new JPanel();
@@ -158,8 +154,7 @@ class ConvertDialog extends JDialog
 
     private void setChoices(String[] choices)
     {
-        choiceNames = choices;
-        this.choices = new JComboBox(choiceNames);
+        this.choices = new JComboBox(choices);
         this.choices.addActionListener(tal);
     }
 

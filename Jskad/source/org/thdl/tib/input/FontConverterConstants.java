@@ -36,6 +36,17 @@ interface FontConverterConstants
     final String FIND_ALL_NON_TMW = "Find all non-TMW";
     final String FIND_ALL_NON_TM = "Find all non-TM";
 
+    final String[] CHOICES = new String[]{
+        TM_TO_TMW,
+        TMW_TO_UNI,
+        TMW_TO_WYLIE,
+        TMW_TO_TM,
+        FIND_SOME_NON_TMW,
+        FIND_SOME_NON_TM,
+        FIND_ALL_NON_TMW,
+        FIND_ALL_NON_TM
+    };
+
     final String suggested_WYLIE_prefix = "THDL_Wylie_";
     final String suggested_TO_TMW_prefix = "TMW_";
     final String suggested_TO_UNI_prefix = "Uni_";
