@@ -78,6 +78,9 @@ thdl.Jskad.do.not.confirm.quit = false
 # the correct Tibetan Machine Web glyphs.
 thdl.Jskad.do.not.fix.curly.braces.in.rtf = false
 
+# What font should be used for the result of TMW->Unicode conversions?
+thdl.tmw.to.unicode.font = Arial Unicode MS
+
 
 ############################################################################
 #######################    Developer Preferences    ########################
