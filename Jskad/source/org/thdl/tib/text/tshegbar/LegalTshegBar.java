@@ -101,16 +101,17 @@ And also there are cases where they combine. For ex you can have
  *
  *  <p>Note that this class uses only a subset of Unicode to represent
  *  consonants and vowels.  In some situations, you should use {@link
- *  #EWSUB_wa_zur} to represent the consonant wa, while in others
- *  you should use {@link #EWC_wa}, even though you mean to subscribe
- *  a fixed-form wa.  Basically, stick to the characters for which
- *  enumerations exist in {@link #UnicodeConstants} and use your
- *  common sense.</p>
+ *  #EWSUB_wa_zur} to represent the consonant wa, while in others you
+ *  should use {@link #EWC_wa}, even though you mean to subscribe a
+ *  fixed-form wa.  Basically, stick to the characters for which
+ *  enumerations exist in {@link
+ *  org.thdl.tib.text.tshegbar.UnicodeConstants} and use your common
+ *  sense.</p>
  *
  *  <p>For a pretty good, concise summary of the rules this class
  *  knows about, see Joe B. Wilson's <i>Translating Buddhism from
- *  Tibetan</i> from {@see http://snowlionpubs.com/ Snow Lion
- *  Publications}, Appendix 1, e.g. p. 548.</p>
+ *  Tibetan</i> from Snow Lion Publications, Appendix 1,
+ *  e.g. p. 548.</p>
  *
  *  @author David Chandler */
 public class LegalTshegBar
@@ -186,13 +187,13 @@ public class LegalTshegBar
     }
 
     /** Like {@link
-     *  #LegalTshegBar(char,char,char,char,boolean,boolean,String,char,char)
-     *  but for the common case where the suffix is simply a
+     *  #LegalTshegBar(char,char,char,char,boolean,boolean,String,char,char)}
+     *  but geared for the common case where the suffix is simply a
      *  consonant. */
     public LegalTshegBar(char prefix, char headLetter, char rootLetter,
                          char subjoinedLetter,
-                         boolean hasWaZur, // DLC FIXME handle this
-                         boolean hasAChung, // DLC FIXME handle this
+                         boolean hasWaZur,
+                         boolean hasAChung,
                          char suffix, char postsuffix, char vowel)
         throws IllegalArgumentException
     {
@@ -302,7 +303,7 @@ public class LegalTshegBar
     }
 
     /** Returns the vowel, or EW_ABSENT if there is no {@link
-     *  hasExplicitVowel() explicit vowel} (the syllable has the
+     *  #hasExplicitVowel() explicit vowel} (the syllable has the
      *  built-in "ah" sound in this case). */
     public char getVowel() {
         // DLC assert this is one of { EWV_i, EWV_u, EWV_e, EWV_o }
@@ -367,7 +368,7 @@ public class LegalTshegBar
      *  representations of the thirty consonants.  The consonants are
      *  in the usual order you find them in the 8 row by 4 column
      *  table that students of the language memorize.
-     *  @see org.thdl.tib.text.tshegbar#UnicodeConstants */
+     *  @see org.thdl.tib.text.tshegbar.UnicodeConstants */
     public static String getTheThirtyConsonants() {
         ThdlDebug.verify(thirtyConsonants.length() == 30); // DLC put this into a JUnit test to avoid the slow-down.
         return thirtyConsonants;
@@ -398,7 +399,7 @@ public class LegalTshegBar
     /** Returns a String containing the nominal Unicode
      *  representations of the five prefixes.  The prefixes are in
      *  dictionary order.
-     *  @see org.thdl.tib.text.tshegbar#UnicodeConstants */
+     *  @see org.thdl.tib.text.tshegbar.UnicodeConstants */
     public static String getTheFivePrefixes() {
         final String s = new String(new char[] {
             EWC_ga, EWC_da, EWC_ba, EWC_ma, EWC_achen
@@ -417,7 +418,7 @@ public class LegalTshegBar
      *  representations of the ten suffixes.  The suffixes are in
      *  dictionary order.
      *  @see #getConnectiveCaseSuffix()
-     *  @see org.thdl.tib.text.tshegbar#UnicodeConstants */
+     *  @see org.thdl.tib.text.tshegbar.UnicodeConstants */
     public static String getTheTenSuffixes() {
         final String s = new String(new char[] {
             EWC_ga, EWC_nga, EWC_da, EWC_na, EWC_ba,
@@ -442,7 +443,7 @@ public class LegalTshegBar
         tibwn.ini. (DLC FIXME: are these all legal?  are any others?)
 
         @param rootLetter the root consonant (in {@link
-        UnicodeUtils#isPreferredFormOfConsonant() preferred form} in
+        UnicodeUtils#isPreferredFormOfConsonant(char) preferred form} in
         you expect true to be returned)
         @param subjoinedLetter the letter subscribed to rootLetter,
         which should not {@link UnicodeUtils#isWa(char) be wa} if you
@@ -603,8 +604,8 @@ public class LegalTshegBar
                                              char headLetter,
                                              char rootLetter,
                                              char subjoinedLetter,
-                                             boolean hasWaZur, // DLC FIXME handle this
-                                             boolean hasAChung, // DLC FIXME handle this
+                                             boolean hasWaZur,
+                                             boolean hasAChung,
                                              String suffix,
                                              char postsuffix,
                                              char vowel)
@@ -619,14 +620,15 @@ public class LegalTshegBar
     }
 
     /** Like {@link
-     *  #formsLegalTshegBar(char,char,char,char,boolean,boolean,String,char,char)
-     *  but for the common case where the suffix is simply a consonant. */
+     *  #formsLegalTshegBar(char,char,char,char,boolean,boolean,String,char,char)}
+     *  but geared for the common case where the suffix is simply a
+     *  consonant. */
     public static boolean formsLegalTshegBar(char prefix,
                                              char headLetter,
                                              char rootLetter,
                                              char subjoinedLetter,
-                                             boolean hasWaZur, // DLC FIXME handle this
-                                             boolean hasAChung, // DLC FIXME handle this
+                                             boolean hasWaZur,
+                                             boolean hasAChung,
                                              char suffix,
                                              char postsuffix,
                                              char vowel)
@@ -643,13 +645,13 @@ public class LegalTshegBar
      *  @exception IllegalArgumentException if the syllable does not
      *  follow the rules of a Tibetan syllable.  To learn about the
      *  arguments, see {@link
-     *  #formsLegalTshegBar(char,char,char,char,String,char,char)}. */
+     *  #formsLegalTshegBar(char,char,char,char,boolean,boolean,String,char,char)}. */
     private static void throwIfNotLegalTshegBar(char prefix,
                                                 char headLetter,
                                                 char rootLetter,
                                                 char subjoinedLetter,
-                                                boolean hasWaZur, // DLC FIXME handle this
-                                                boolean hasAChung, // DLC FIXME handle this
+                                                boolean hasWaZur,
+                                                boolean hasAChung,
                                                 String suffix,
                                                 char postsuffix,
                                                 char vowel)
@@ -671,7 +673,7 @@ public class LegalTshegBar
     /** If you get through this gauntlet without having an exception
      *  thrown, then this combination makes a legal Tibetan syllable.
      *  To learn about the arguments, see {@link
-     *  #formsLegalTshegBar(char,char,char,char,String,char,char)}.
+     *  #formsLegalTshegBar(char,char,char,char,boolean,boolean,String,char,char)}.
      *  @return true if this syllable is legal, false if this syllable
      *  is illegal and throwIfIllegal is false, does not return if
      *  this syllable is illegal and throwIfIllegal is true
@@ -682,8 +684,8 @@ public class LegalTshegBar
                                                 char headLetter,
                                                 char rootLetter,
                                                 char subjoinedLetter,
-                                                boolean hasWaZur, // DLC FIXME handle this
-                                                boolean hasAChung, // DLC FIXME handle this
+                                                boolean hasWaZur,
+                                                boolean hasAChung,
                                                 String suffix,
                                                 char postsuffix,
                                                 char vowel,
@@ -968,7 +970,7 @@ public class LegalTshegBar
     }
 
 
-    /** Overrides {@link org.thdl.tib.text.tshegbar#UnicodeReadyThunk
+    /** Overrides {@link org.thdl.tib.text.tshegbar.UnicodeReadyThunk}
         method to return {@link UnicodeUtils#toCanonicalForm(String)
         canonically-formed Unicode}.
         @exception UnsupportedOperationException is never thrown */
@@ -1013,7 +1015,7 @@ public class LegalTshegBar
         return sb.toString();
     }
 
-    /** Overrides {@link org.thdl.tib.text.tshegbar#UnicodeReadyThunk
+    /** Overrides {@link org.thdl.tib.text.tshegbar.UnicodeReadyThunk}
         method to return true. */
     public boolean hasEquivalentUnicode() {
         return true;

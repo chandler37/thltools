@@ -208,7 +208,7 @@ public class UnicodeUtils {
     }
 
     /** Returns true iff there exists at least one character ch in
-        unicodeString such that ch {@link #isRa() is ra} or contains
+        unicodeString such that ch {@link #isRa(char) is ra} or contains
         ra (like <code>\u0F77</code>).  This method is not implemented
         as fast as it could be.  It calls on the canonicalization code
         in order to maximize reuse and minimize the possibility of

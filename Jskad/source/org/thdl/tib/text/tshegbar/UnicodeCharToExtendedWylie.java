@@ -29,8 +29,9 @@ import org.thdl.tib.text.TibetanMachineWeb;
  *  <p>See the document by Nathaniel Garson and David Germano entitled
  *  <i>Extended Wylie Transliteration Scheme</i>.  Note that there are
  *  a couple of issues with the November 18, 2001 revision of that
- *  document; these issues are in the Bugs tracker at {@see
- *  http://sourceforge.net/projects/thdltools}.</p>
+ *  document; these issues are in the Bugs tracker at our SourceForge site.</p>
+ *
+ *  @see <a href="http://sourceforge.net/projects/thdltools">SourceForge site</a>
  *
  *  @author David Chandler */
 public class UnicodeCharToExtendedWylie {

@@ -25,7 +25,7 @@ package org.thdl.tib.text.tshegbar;
  *  Wylie by "i" is EWV_i, and so on.  There is at least one exception
  *  to the naming scheme, but exceptions are well-commented.
  *
- *  @see org.thdl.tib.text.tshegbar#ValidTshegBar
+ *  @see org.thdl.tib.text.tshegbar.LegalTshegBar
  *
  *  @author David Chandler */
 public interface UnicodeConstants {
@@ -77,17 +77,17 @@ public interface UnicodeConstants {
 
     /* Four of the five vowels, some say, or, others say, "the four
        vowels": */
-    /** "gi gu" (DLC?), the 'i' sound in the English word keep: */
+    /** "gi gu", the 'i' sound in the English word keep: */
     static final char EWV_i = '\u0F72';
     /** "zhabs kyu", the 'u' sound in the English word tune: */
     static final char EWV_u = '\u0F74';
     /** "'greng bu" (also known as "'greng po", and pronounced <i>dang-bo</i>), the 'a' sound in the English word gate: */
     static final char EWV_e = '\u0F7A';
-    /** "na ro" (DLC?), the 'o' sound in the English word bone: */
+    /** "na ro", the 'o' sound in the English word bone: */
     static final char EWV_o = '\u0F7C';
 
     
-    /** subscribed form of EWC_wa, a.k.a. wa-btags */
+    /** subscribed form of EWC_wa, also known as wa-btags */
     static final char EWSUB_wa_zur = '\u0FAD';
     /** subscribed form of EWC_ya */
     static final char EWSUB_ya_btags = '\u0FB1';
