@@ -1,4 +1,4 @@
-<project name="Jskad" default="dist" basedir=".">
+<project name="THDLTools" default="dist" basedir=".">
 
 
   <description>
@@ -127,7 +127,7 @@
     <!-- Create the distribution directory -->
     <mkdir dir="${dist}/source"/>
 
-    <!-- Put everything necessary into the JAR file -->
+    <!-- Put everything necessary into the zip file -->
     <zip destfile="${dist}/source/Jskad-src-${DSTAMP}.zip">
       <zipfileset dir="${source}"
                   includes="org/thdl/tib/**,org/thdl/util/**"
@@ -147,7 +147,7 @@
     <!-- Create the distribution directory -->
     <mkdir dir="${dist}/source"/>
 
-    <!-- Put everything necessary into the JAR file -->
+    <!-- Put everything necessary into the zip file -->
     <zip destfile="${dist}/source/Savant-src-${DSTAMP}.zip"
          basedir="${source}"
          includes="org/thdl/savant/**,org/thdl/tib/**,org/thdl/util/**"/>
@@ -159,7 +159,7 @@
     <!-- Create the distribution directory -->
     <mkdir dir="${dist}/source"/>
 
-    <!-- Put everything necessary into the JAR file -->
+    <!-- Put everything necessary into the zip file -->
     <zip destfile="${dist}/source/THDL-Tools-src-${DSTAMP}.zip">
       <zipfileset dir="${source}"
                   includes="**"
@@ -284,7 +284,8 @@
 
 
   <target name="public-javadocs"
-          description="makes Javadoc documentation for public/protected classes, methods, and fields" >
+          description="makes Javadoc documentation for public/protected classes, methods, and fields"
+          depends="init" >
     <antcall target="our-javadocs">
       <param name="access" value="protected"/>
       <param name="our-javadocs-destdir" value="${publicjavadocs}"/>
@@ -293,7 +294,8 @@
 
 
   <target name="private-javadocs"
-          description="makes Javadoc documentation for all classes, methods, and fields, regardless of their protection level (public, private, etc.)" >
+          description="makes Javadoc documentation for all classes, methods, and fields, regardless of their protection level (public, private, etc.)"
+          depends="init" >
     <antcall target="our-javadocs">
       <param name="access" value="private"/>
       <param name="our-javadocs-destdir" value="${privatejavadocs}"/>
