@@ -504,17 +504,20 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 		                {
 		                    s1 = deleteQuotes(entrada.substring(0,marker).trim());
 		                    s2 = deleteQuotes(entrada.substring(marker+1).trim());
-		                    marker2 = s1.indexOf(';');
-            		        if (marker2>0)
-            		        {
-		                        alternateWords = Manipulate.parseFields(s1, ';');
-    		                    for (marker2=0; marker2<alternateWords.length; marker2++)
-	    	                    {
-		                            add(alternateWords[marker2],s2, defNum);
+		                    if (!s2.equals(""))
+		                    {
+		                        marker2 = s1.indexOf(';');
+            		            if (marker2>0)
+            		            {
+		                            alternateWords = Manipulate.parseFields(s1, ';');
+    		                        for (marker2=0; marker2<alternateWords.length; marker2++)
+	    	                        {
+		                                add(alternateWords[marker2],s2, defNum);
+		                            }
+    		                        
 		                        }
-		                        
+		                        else add(s1, s2 , defNum);
 		                    }
-		                    else add(s1, s2 , defNum);
     		            }
     		        }
 		    	    currentLine++;            
@@ -529,7 +532,7 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 		BinaryFileGenerator ultimo;
 		String firstSillable;
 		int marker = word.indexOf(" "), comp;
-				
+		
 		if (marker<0)
 			firstSillable = word;
 		else firstSillable = word.substring(0,marker);

@@ -32,13 +32,19 @@ public abstract class TibetanScanner
 	"Warning: Since version 1.3.0. the dictionary database format changed and " +
 	"is incompatible with previous versions. In order to use the newest version " +
 	"you have to re-build the dictionary database.\n\n" +
-	"The Tibetan to English Translation Tool, version 2.1.0\n" +
-	"Copyright " + '\u00A9' + " 2000-2002 Andr" + '\u00E9' + "s Montano Pellegrini, all rights reserved.\n\n" + 
+	"The Tibetan to English Translation Tool, version 2.1.0, compiled on " + ThdlVersion.getTimeOfCompilation() + ". " +
+	"Copyright " + '\u00A9' + " 2000-2003 Andr" + '\u00E9' + "s Montano Pellegrini, all rights reserved.\n\n" + 
 	"This software is protected by the terms of the AMP Open Community License, " +
 	"Version 1.0 (available at www.tibet.iteso.mx/Guatemala/). The Tibetan script " +
 	"input facility was built by THDL's Edward Garrett (http://www.thdl.org/).\n" +
 	"It uses Tibetan Computer Company (http://www.tibet.dk/tcc/)fonts created by " +
 	"Tony Duff and made available by the Trace Foundation (http://trace.org/).\n\n" +
+    "About the Tibetan-Sanskrit Table of Buddhist Terminology based on the Yogacarabhumi:\n\n" +
+    "The Tibetan-Sanskrit tab separated database file was extracted, converted, " +
+    "filtered, and sorted by Richard B. Mahoney from YOKOYAMA, Koitsu & HIROSAWA, " + 
+    "Takayuki, eds., Index to the Yogacarabhumi (Chinese-Sanskrit-Tibetan) (Tokyo : " +
+    "Sankibo Busshorin, 1996). See http://homepages.comnet.co.nz/~r-mahoney/links/links.html " +
+    "for details.\n\n" +
 	"About Rangjung Yeshe Tibetan-English Dharma Dictionary 3.0:\n\n" +
 	"Copyright "  + '\u00A9' + " Rangjung Yeshe Publications and the individual contributors.\n\n" + 
 	"The Rangjung Yeshe Tibetan-English Dharma Dictionary is specifically licensed to " + 
