@@ -100,7 +100,14 @@ public class DuffPaneTest extends TestCase {
      *  keyboard, turning those into our internal representation (IR),
      *  and then converting the result to Extended Wylie. */
     public void testWylieToIRToWylie() {
+        ensureKeysGiveCorrectWylie("kue ");
+        ensureKeysGiveCorrectWylie("kuau ");
+        ensureKeysGiveCorrectWylie("ku-i ");
+        ensureKeysGiveCorrectWylie("kuai ");
+        ensureKeysGiveCorrectWylie("cuig ");
+        ensureKeysGiveCorrectWylie("kcuig ");
         ensureKeysGiveCorrectWylie("nga ");
+        ensureKeysGiveCorrectWylie("nga /");
 
         ensureKeysGiveCorrectWylie("nag");
 
