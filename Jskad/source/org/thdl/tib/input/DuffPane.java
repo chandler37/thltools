@@ -1024,30 +1024,43 @@ public void paste(int offset) {
             // random junk just after Jskad started up.
             ThdlDebug.verify(null != in);
 
-			rtfEd.read(in, sd, 0);
-			
-			/** Added by AM, to fix copy-paste issues for Translation Tool.
-			    Assumes that if roman is disabled and you are pasting something
-			    in RTF but is not TibetanMachineWeb it most be wylie.
-			*/
-			if (!sd.getFont((sd.getCharacterElement(0).getAttributes())).getFamily().startsWith("TibetanMachineWeb") && !isRomanEnabled && contents.isDataFlavorSupported(DataFlavor.stringFlavor))
-			{
-				String data = (String)contents.getTransferData(DataFlavor.stringFlavor);
-				toTibetanMachineWeb(data, offset);			    
-			}
-			else
-			{
-			    for (int i=0; i<sd.getLength()-1; i++) { //getLength()-1 so that final newline is not included in paste
-				    try {
-					    String s = sd.getText(i,1);
-					    AttributeSet as = sd.getCharacterElement(i).getAttributes();
-					    getTibDoc().insertString(p1+i, s, as);
-				    } catch (BadLocationException ble) {
-					    ble.printStackTrace();
-					    ThdlDebug.noteIffyCode();
-				    }
-			    }
-			}
+            boolean errorReading = false;
+
+            try {
+                rtfEd.read(in, sd, 0);
+            } catch (Exception e) {
+                errorReading = true;
+                JOptionPane.showMessageDialog(this,
+                                              "You cannot paste from the application from which you copied.\nIt uses an RTF format that is too advanced for the version\nof Java Jskad is running atop.");
+            }
+
+            if (!errorReading) {
+                /** Added by AM, to fix copy-paste issues for
+                    Translation Tool.  Assumes that if roman is
+                    disabled and you are pasting something in RTF but
+                    is not TibetanMachineWeb it most be wylie.  */
+                if (!sd.getFont((sd.getCharacterElement(0).getAttributes())).getFamily().startsWith("TibetanMachineWeb")
+                    && !isRomanEnabled
+                    && contents.isDataFlavorSupported(DataFlavor.stringFlavor))
+                    {
+                        String data = (String)contents.getTransferData(DataFlavor.stringFlavor);
+                        toTibetanMachineWeb(data, offset);			    
+                    }
+                else
+                    {
+                        for (int i=0; i<sd.getLength()-1; i++) { //getLength()-1 so that final newline is not included in paste
+                            try {
+                                String s = sd.getText(i,1);
+                                AttributeSet as
+                                    = sd.getCharacterElement(i).getAttributes();
+                                getTibDoc().insertString(p1+i, s, as);
+                            } catch (BadLocationException ble) {
+                                ble.printStackTrace();
+                                ThdlDebug.noteIffyCode();
+                            }
+                        }
+                    }
+            }
 		} else if (contents.isDataFlavorSupported(DataFlavor.stringFlavor))
 		{
 		    if (!isRomanEnabled) {
@@ -1068,9 +1081,6 @@ public void paste(int offset) {
 		ThdlDebug.noteIffyCode();
 	} catch (IllegalStateException ise) {
 		ise.printStackTrace();
-		ThdlDebug.noteIffyCode();
-	} catch (BadLocationException ble) {
-		ble.printStackTrace();
 		ThdlDebug.noteIffyCode();
 	}
 }
