@@ -35,6 +35,9 @@ import org.thdl.tib.text.*;
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.StatusBar;
 import org.thdl.util.ThdlActionListener;
+import org.thdl.util.RTFPane;
+import org.thdl.util.SimpleFrame;
+import org.thdl.util.ThdlLazyException;
 
 
 
@@ -61,6 +64,21 @@ public class Jskad extends JPanel implements DocumentListener {
         being interpreted */
     private final static String enableKeypressStatusProp
         = "thdl.Jskad.enable.tibetan.mode.status";
+
+    /* The .rtf files named below better be included in the jar in the
+       same directory as 'Jskad.class'. */
+    private final String keybd1Description = "Extended Wylie Keyboard";
+    private final String keybd1HelpFile = "Wylie_keyboard.rtf";
+
+    private final String keybd2Description = "TCC Keyboard #1";
+    private final String keybd2HelpFile = "TCC_keyboard_1.rtf";
+
+    private final String keybd3Description = "TCC Keyboard #2";
+    private final String keybd3HelpFile = "TCC_keyboard_2.rtf";
+
+    private final String keybd4Description = "Sambhota Keymap One";
+    private final String keybd4HelpFile = "Sambhota_keymap_one.rtf";
+
 
 	private String fontName = "";
 	private JComboBox fontFamilies, fontSizes;
@@ -266,22 +284,63 @@ public class Jskad extends JPanel implements DocumentListener {
 		aboutItem.addActionListener(new ThdlActionListener() {
 			public void theRealActionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(Jskad.this,
-					"Copyright 2001 Tibetan and Himalayan Digital Library\n"+
+					"Copyright 2001-2002 Tibetan and Himalayan Digital Library\n"+
 					"Programmed by Edward Garrett\n\n"+
 					"This software is protected by the terms of the\n"+
 					"THDL Open Community License, Version 1.0.\n"+
 					"It uses Tibetan Computer Company (http://www.tibet.dk/tcc/)\n"+
 					"fonts created by Tony Duff and made available by the\n"+
-					"Trace Foundation (http://trace.org/). Jskad also includes\n"+
-					"software written and copyrighted by Wildcrest Associates\n"+
-					"(http://www.wildcrest.com).\n\n"+
+					"Trace Foundation (http://trace.org/).\n\n"+
 					"For more information, or to download the source code\n"+
 					"for Jskad, see our web site:\n"+
 					"     http://www.thdl.org/",
-					"About Jskad 1.0",
+                    "About Jskad 1.0", /* FIXME HARD-CODED VERSION NUMBER */
 					JOptionPane.PLAIN_MESSAGE);
 			}
 		});
+
+        {
+            JMenuItem keybd1Item = new JMenuItem(keybd1Description);
+            keybd1Item.addActionListener(new ThdlActionListener() {
+                    public void theRealActionPerformed(ActionEvent e) {
+                        new SimpleFrame(keybd1Description, getKeybd1RTFPane());
+                    }
+                });
+            infoMenu.add(keybd1Item);
+        }
+
+        {
+            JMenuItem keybd2Item = new JMenuItem(keybd2Description);
+            keybd2Item.addActionListener(new ThdlActionListener() {
+                    public void theRealActionPerformed(ActionEvent e) {
+                        new SimpleFrame(keybd2Description, getKeybd2RTFPane());
+                    }
+                });
+            infoMenu.add(keybd2Item);
+        }
+
+        {
+            JMenuItem keybd3Item = new JMenuItem(keybd3Description);
+            keybd3Item.addActionListener(new ThdlActionListener() {
+                    public void theRealActionPerformed(ActionEvent e) {
+                        new SimpleFrame(keybd3Description, getKeybd3RTFPane());
+                    }
+                });
+            infoMenu.add(keybd3Item);
+        }
+
+        {
+            JMenuItem keybd4Item = new JMenuItem(keybd4Description);
+            keybd4Item.addActionListener(new ThdlActionListener() {
+                    public void theRealActionPerformed(ActionEvent e) {
+                        new SimpleFrame(keybd4Description, getKeybd4RTFPane());
+                    }
+                });
+            infoMenu.add(keybd4Item);
+        }
+
+		infoMenu.addSeparator();
+
 		infoMenu.add(aboutItem);
 
 		menuBar.add(infoMenu);
@@ -319,7 +378,10 @@ public class Jskad extends JPanel implements DocumentListener {
 		toolBar.add(new JLabel("Keyboard:"));
 		toolBar.addSeparator();
 
-		String[] keyboard_options = {"Extended Wylie","TCC Keyboard #1","TCC Keyboard #2","Sambhota Keymap One"};
+		String[] keyboard_options = {keybd1Description,
+                                     keybd2Description,
+                                     keybd3Description,
+                                     keybd4Description};
 		final JComboBox keyboards = new JComboBox(keyboard_options);
 		keyboards.addActionListener(new ThdlActionListener() {
 			public void theRealActionPerformed(ActionEvent e) {
@@ -931,6 +993,80 @@ public class Jskad extends JPanel implements DocumentListener {
 			return "Text file (.txt)";
 		}
 	}
+
+    /** Cached RTFPane displaying the contents of the .rtf file
+        associated with keyboard 1. */
+    private static RTFPane keybd1RTFPane = null;
+
+    /** Returns an RTFPane displaying the contents of the .rtf file
+        associated with keyboard 1. */
+    private RTFPane getKeybd1RTFPane() {
+        if (keybd1RTFPane == null) {
+            try {
+                keybd1RTFPane = new RTFPane(Jskad.class, keybd1HelpFile);
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+                throw new ThdlLazyException(e); /* FIXME--handle this better. */
+            }
+        }
+        return keybd1RTFPane;
+    }
+
+    /** Cached RTFPane displaying the contents of the .rtf file
+        associated with keyboard 2. */
+    private static RTFPane keybd2RTFPane = null;
+
+    /** Returns an RTFPane displaying the contents of the .rtf file
+        associated with keyboard 2. */
+    private RTFPane getKeybd2RTFPane() {
+        if (keybd2RTFPane == null) {
+            try {
+                keybd2RTFPane = new RTFPane(Jskad.class, keybd2HelpFile);
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+                throw new ThdlLazyException(e); /* FIXME--handle this better. */
+            }
+        }
+        return keybd2RTFPane;
+    }
+
+    /** Cached RTFPane displaying the contents of the .rtf file
+        associated with keyboard 3. */
+    private static RTFPane keybd3RTFPane = null;
+
+    /** Returns an RTFPane displaying the contents of the .rtf file
+        associated with keyboard 3. */
+    private RTFPane getKeybd3RTFPane() {
+        if (keybd3RTFPane == null) {
+            try {
+                keybd3RTFPane = new RTFPane(Jskad.class, keybd3HelpFile);
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+                throw new ThdlLazyException(e); /* FIXME--handle this better. */
+            }
+        }
+        return keybd3RTFPane;
+    }
+
+    /** Cached RTFPane displaying the contents of the .rtf file
+        associated with keyboard 4. */
+    private static RTFPane keybd4RTFPane = null;
+
+    /** Returns an RTFPane displaying the contents of the .rtf file
+        associated with keyboard 4. */
+    private RTFPane getKeybd4RTFPane() {
+        if (keybd4RTFPane == null) {
+            try {
+                keybd4RTFPane = new RTFPane(Jskad.class, keybd4HelpFile);
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+                throw new ThdlLazyException(e); /* FIXME--handle this better. */
+            }
+        }
+        return keybd4RTFPane;
+    }
+
+
 
 /**
 * Runs Jskad.  System output, including errors, is redirected to
