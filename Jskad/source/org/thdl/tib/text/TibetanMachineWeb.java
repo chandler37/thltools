@@ -503,12 +503,18 @@ public static SimpleAttributeSet getAttributeSet(int font) {
 * ENTER), false if not
 */
 public static boolean isFormatting(char c) {
+	if (c < 32 || c > 126)
+		return true;
+	else
+		return false;
+/*
 	if (		c == KeyEvent.VK_TAB
 		|| 	c == KeyEvent.VK_ENTER)
 
 		return true;
 	else
 		return false;
+*/
 }
 
 /**

@@ -50,7 +50,6 @@ import org.thdl.tib.text.*;
 * @version 1.0
 */
 public class Jskad extends JPanel implements DocumentListener {
-	private RTFEditorKit rtfEditor;
 	private String fontName = "";
 	private JComboBox fontFamilies, fontSizes;
 	private JFileChooser fileChooser;
@@ -153,16 +152,6 @@ public class Jskad extends JPanel implements DocumentListener {
 				}
 			});
 			fileMenu.add(saveAsItem);
-
-			JMenuItem printItem = new JMenuItem("Print");
-			printItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					PrintDuffPane printer = new PrintDuffPane(Jskad.this, dp);
-					printer.preview();
-				}
-			});
-			fileMenu.addSeparator();
-			fileMenu.add(printItem);
 
 			menuBar.add(fileMenu);
 		}
@@ -343,8 +332,7 @@ public class Jskad extends JPanel implements DocumentListener {
 		toolBar.add(keyboards);
 		toolBar.add(Box.createHorizontalGlue());
 
-		rtfEditor = new RTFEditorKit();
-		dp = new DuffPane(rtfEditor);
+		dp = new DuffPane();
 		JScrollPane sp = new JScrollPane(dp, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		dp.getDocument().addDocumentListener(this);
 
@@ -491,11 +479,11 @@ public class Jskad extends JPanel implements DocumentListener {
 				newFrame.setLocation(point.x+50, point.y+50);
 				Jskad newRTF = new Jskad(newFrame);
 				newFrame.getContentPane().add(newRTF);
-				rtfEditor.read(in, newRTF.dp.getDocument(), 0);
+				newRTF.dp.rtfEd.read(in, newRTF.dp.getDocument(), 0);
 				newRTF.dp.getDocument().addDocumentListener(newRTF);
 				in.close();
 				newFrame.setTitle(f_name);
-				newRTF.fileName = f_name;
+				newRTF.fileName = new String(f_name);
 				newRTF.hasChanged = false;
 				newRTF.dp.getCaret().setDot(0);
 				newFrame.setVisible(true);
@@ -521,12 +509,12 @@ public class Jskad extends JPanel implements DocumentListener {
 			try {
 				InputStream in = new FileInputStream(fileChosen);
 				dp.newDocument();
-				rtfEditor.read(in, dp.getDocument(), 0);
+				dp.rtfEd.read(in, dp.getDocument(), 0);
 				in.close();
 				dp.getCaret().setDot(0);
 				dp.getDocument().addDocumentListener(Jskad.this);
 				hasChanged = false;
-				fileName = f_name;
+				fileName = new String(f_name);
 
 				if (parentObject instanceof JFrame) {
 					JFrame parentFrame = (JFrame)parentObject;
@@ -553,12 +541,12 @@ public class Jskad extends JPanel implements DocumentListener {
 			if (parentObject instanceof JFrame) {
 				JFrame parentFrame = (JFrame)parentObject;
 				parentFrame.setTitle(s);
-				fileName = s;
+				fileName = new String(s);
 			}
 			else if (parentObject instanceof JInternalFrame) {
 				JInternalFrame parentFrame = (JInternalFrame)parentObject;
 				parentFrame.setTitle(s);
-				fileName = s;
+				fileName = new String(s);
 			}
 		}
 	}
@@ -569,12 +557,12 @@ public class Jskad extends JPanel implements DocumentListener {
 			if (parentObject instanceof JFrame) {
 				JFrame parentFrame = (JFrame)parentObject;
 				parentFrame.setTitle(s);
-				fileName = s;
+				fileName = new String(s);
 			}
 			else if (parentObject instanceof JInternalFrame) {
 				JInternalFrame parentFrame = (JInternalFrame)parentObject;
 				parentFrame.setTitle(s);
-				fileName = s;
+				fileName = new String(s);
 			}
 		}
 	}
@@ -587,8 +575,9 @@ public class Jskad extends JPanel implements DocumentListener {
 				return true;
 
 			case JOptionPane.YES_OPTION: //save and continue
-				if (fileName == null)
+				if (fileName == null) {
 					saveAsFile();
+}
 				else
 					saveFile();
 				return true;
@@ -602,16 +591,17 @@ public class Jskad extends JPanel implements DocumentListener {
 		File fileChosen = new File(f_name);
 
 		try {
-			OutputStream out = new FileOutputStream(fileChosen);
-			rtfEditor.write(out, dp.getDocument(), 0, dp.getDocument().getLength());
+			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileChosen));
+			dp.rtfEd.write(out, dp.getDocument(), 0, dp.getDocument().getLength());
+			out.flush();
 			out.close();
 			hasChanged = false;
-		}
-		catch (Exception exception) {
+		} catch (IOException exception) {
 			exception.printStackTrace();
 			return null;
+		} catch (BadLocationException ble) {
+			ble.printStackTrace();
 		}
-
 		return f_name;
 	}
 
@@ -914,7 +904,7 @@ public class Jskad extends JPanel implements DocumentListener {
 * to include the jskad.log file as an attachment.
 */
 	public static void main(String[] args) {
-/*
+
 		try {
 			PrintStream ps = new PrintStream(new FileOutputStream("jskad.log"));
 			System.setErr(ps);
@@ -922,7 +912,7 @@ public class Jskad extends JPanel implements DocumentListener {
 		}
 		catch (Exception e) {
 		}	
-*/
+
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
