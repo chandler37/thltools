@@ -26,26 +26,30 @@ import java.awt.*;
     @author Nathaniel Garson, Tibetan and Himalayan Digital Library */
 interface FontConverterConstants
 {
-    final String ACIP_TO_UNI = "ACIP to Unicode";
-    final String ACIP_TO_TMW = "ACIP to TMW";
-    final String TM_TO_TMW = "TM to TMW";
-    final String TMW_TO_UNI = "TMW to Unicode";
-    final String TMW_TO_WYLIE = "TMW to Wylie";
-    final String TMW_TO_ACIP = "TMW to ACIP";
-    final String TMW_TO_TM = "TMW to TM";
-    final String FIND_SOME_NON_TMW = "Find some non-TMW";
-    final String FIND_SOME_NON_TM = "Find some non-TM";
-    final String FIND_ALL_NON_TMW = "Find all non-TMW";
-    final String FIND_ALL_NON_TM = "Find all non-TM";
+    final String ACIP_TO_UNI_TEXT = "ACIP to Unicode (Text->Text)";
+    final String ACIP_TO_TMW = "ACIP to TMW (Text->RTF)";
+    final String TMW_TO_ACIP = "TMW to ACIP (RTF->RTF)";
+    final String TMW_TO_ACIP_TEXT = "TMW to ACIP (RTF->Text)";
+    final String TM_TO_TMW = "TM to TMW (RTF->RTF)";
+    final String TMW_TO_TM = "TMW to TM (RTF->RTF)";
+    final String TMW_TO_UNI = "TMW to Unicode (RTF->RTF)";
+    final String TMW_TO_WYLIE = "TMW to Wylie (RTF->RTF)";
+    final String TMW_TO_WYLIE_TEXT = "TMW to Wylie (RTF->Text)";
+    final String FIND_SOME_NON_TMW = "Find some non-TMW (in RTF)";
+    final String FIND_SOME_NON_TM = "Find some non-TM (in RTF)";
+    final String FIND_ALL_NON_TMW = "Find all non-TMW (in RTF)";
+    final String FIND_ALL_NON_TM = "Find all non-TM (in RTF)";
 
     final String[] CHOICES = new String[] {
-        ACIP_TO_UNI,
+        ACIP_TO_UNI_TEXT,
         ACIP_TO_TMW,
+        TMW_TO_ACIP,
+        TMW_TO_ACIP_TEXT,
         TM_TO_TMW,
+        TMW_TO_TM,
         TMW_TO_UNI,
         TMW_TO_WYLIE,
-        TMW_TO_ACIP,
-        TMW_TO_TM,
+        TMW_TO_WYLIE_TEXT,
         FIND_SOME_NON_TMW,
         FIND_SOME_NON_TM,
         FIND_ALL_NON_TMW,

@@ -443,6 +443,7 @@ class ACIPRules {
             superACIP2unicode.put(";", "\u0F11");
             superACIP2unicode.put("\r", "\r");
             superACIP2unicode.put("\t", "\t");
+            superACIP2unicode.put("\r\n", "\r\n");
             superACIP2unicode.put("\n", "\n");
             superACIP2unicode.put("\\", "\u0F84"); // DLC FIXME: make this like a vowel
             // DLC FIXME: what's the Unicode for caret, ^?

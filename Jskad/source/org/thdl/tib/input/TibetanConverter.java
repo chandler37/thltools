@@ -70,15 +70,15 @@ public class TibetanConverter implements FontConverterConstants {
             boolean convertACIPToUniMode = false;
             boolean convertACIPToTMWMode = false;
             boolean convertToTMWMode = false;
-            boolean convertToWylieMode = false;
-            boolean convertToACIPMode = false;
+            boolean convertToWylieRTFMode = false;
+            boolean convertToWylieTextMode = false;
+            boolean convertToACIPRTFMode = false;
+            boolean convertToACIPTextMode = false;
             boolean findSomeNonTMWMode = false;
             boolean findAllNonTMWMode = false;
             boolean findSomeNonTMMode = false;
             boolean findAllNonTMMode = false;
             
-            boolean textOutput = false;
-
             // Process arguments:
             if ((args.length != 1 && args.length != 2)
                 || (args.length == 1
@@ -97,15 +97,13 @@ public class TibetanConverter implements FontConverterConstants {
                              = args[0].equals("--acip-to-tmw"))
                          || (convertToUnicodeMode
                              = args[0].equals("--to-unicode"))
-                         || (convertToWylieMode
+                         || (convertToWylieRTFMode
                              = args[0].equals("--to-wylie"))
-                         || (convertToWylieMode
-                             = textOutput
+                         || (convertToWylieTextMode
                              = args[0].equals("--to-wylie-text"))
-                         || (convertToACIPMode
+                         || (convertToACIPRTFMode
                              = args[0].equals("--to-acip"))
-                         || (convertToACIPMode
-                             = textOutput
+                         || (convertToACIPTextMode
                              = args[0].equals("--to-acip-text"))
                          || (findSomeNonTMWMode
                              = args[0].equals("--find-some-non-tmw"))
@@ -204,16 +202,20 @@ public class TibetanConverter implements FontConverterConstants {
             } else if (findAllNonTMMode) {
                 conversionTag = FIND_ALL_NON_TM;
             } else { // conversion {to Wylie or TM} mode
-                if (convertToWylieMode) {
+                if (convertToWylieRTFMode) {
                     conversionTag = TMW_TO_WYLIE;
-                } else if (convertToACIPMode) {
+                } else if (convertToWylieTextMode) {
+                    conversionTag = TMW_TO_WYLIE_TEXT;
+                } else if (convertToACIPRTFMode) {
                     conversionTag = TMW_TO_ACIP;
+                } else if (convertToACIPTextMode) {
+                    conversionTag = TMW_TO_ACIP_TEXT;
                 } else if (convertToUnicodeMode) {
                     conversionTag = TMW_TO_UNI;
                 } else if (convertToTMWMode) {
                     conversionTag = TM_TO_TMW;
                 } else if (convertACIPToUniMode) {
-                    conversionTag = ACIP_TO_UNI;
+                    conversionTag = ACIP_TO_UNI_TEXT;
                 } else if (convertACIPToTMWMode) {
                     conversionTag = ACIP_TO_TMW;
                 } else {
@@ -221,7 +223,7 @@ public class TibetanConverter implements FontConverterConstants {
                     conversionTag = TMW_TO_TM;
                 }
             }
-            return reallyConvert(in, out, conversionTag, textOutput,
+            return reallyConvert(in, out, conversionTag,
                                  "Most" // DLC make me configurable
                                  );
         } catch (ThdlLazyException e) {
@@ -241,8 +243,8 @@ public class TibetanConverter implements FontConverterConstants {
         return code so that TibetanConverter's usage message is
         honored. */
     static int reallyConvert(InputStream in, PrintStream out, String ct,
-                             boolean textOutput, String warningLevel) {
-        if (ACIP_TO_UNI == ct || ACIP_TO_TMW == ct) {
+                             String warningLevel) {
+        if (ACIP_TO_UNI_TEXT == ct || ACIP_TO_TMW == ct) {
             try {
                 ArrayList al = ACIPTshegBarScanner.scanStream(in, null,
                                                               250 - 1 // DLC FIXME: make me configurable
@@ -251,7 +253,7 @@ public class TibetanConverter implements FontConverterConstants {
                     return 47;
                 StringBuffer warnings = new StringBuffer();
                 boolean embeddedWarnings = (warningLevel != "None");
-                if (ACIP_TO_UNI == ct) {
+                if (ACIP_TO_UNI_TEXT == ct) {
                     if (!ACIPConverter.convertToUnicode(al, out, null, warnings,
                                                         embeddedWarnings,
                                                         warningLevel))
@@ -344,7 +346,9 @@ public class TibetanConverter implements FontConverterConstants {
                                  + ((TMW_TO_UNI == ct) ? 1 : 0)
                                  + ((TM_TO_TMW == ct) ? 1 : 0)
                                  + ((TMW_TO_ACIP == ct) ? 1 : 0)
+                                 + ((TMW_TO_ACIP_TEXT == ct) ? 1 : 0)
                                  + ((TMW_TO_WYLIE == ct) ? 1 : 0)
+                                 + ((TMW_TO_WYLIE_TEXT == ct) ? 1 : 0)
                                  == 1);
                 long numAttemptedReplacements[] = new long[] { 0 };
                 if (TMW_TO_WYLIE == ct) {
@@ -392,7 +396,7 @@ public class TibetanConverter implements FontConverterConstants {
                 }
 
                 // Write to standard output the result:
-                if (textOutput) {
+                if (TMW_TO_WYLIE_TEXT == ct || TMW_TO_ACIP_TEXT == ct) {
                     try {
                         tdoc.writeTextOutput(new BufferedWriter(new OutputStreamWriter(out)));
                     } catch (IOException e) {

@@ -69,7 +69,7 @@ class ConvertDialog extends JDialog
                 ConvertDialog.this.theRealActionPerformed(e);
             }};
     private void updateWarningLevels() {
-        if (choices.getSelectedItem() == ACIP_TO_UNI
+        if (choices.getSelectedItem() == ACIP_TO_UNI_TEXT
             || choices.getSelectedItem() == ACIP_TO_TMW)
             this.warningLevels.enable();
         else
@@ -79,7 +79,8 @@ class ConvertDialog extends JDialog
     {
         jfc = new JFileChooser(controller.getDefaultDirectory());
         jfc.setDialogTitle(LOCATE_FILE);
-        jfc.setFileFilter(new RTFFileFilter());
+        jfc.addChoosableFileFilter(new ACIPFileFilter());
+        jfc.addChoosableFileFilter(new RTFFileFilter());
 
         content = new JPanel(new GridLayout(0,1));
         JPanel temp = new JPanel(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -406,27 +407,49 @@ class ConvertDialog extends JDialog
         }
 
         String ct = (String)choices.getSelectedItem();
-        if ("Find all non-TMW" == ct) {
-            newFileNamePrefix = "FindAllNonTMW__";
+        String newFileNameExtension = null;
+        if (FIND_ALL_NON_TMW == ct) {
+            newFileNamePrefix = "AllNonTMW__";
+            newFileNameExtension = ".TXT";
         } else if (FIND_SOME_NON_TMW == ct) {
-            newFileNamePrefix = "FindSomeNonTMW__";
+            newFileNamePrefix = "SomeNonTMW__";
+            newFileNameExtension = ".TXT";
         } else if (FIND_SOME_NON_TM == ct) {
-            newFileNamePrefix = "FindSomeNonTM__";
+            newFileNamePrefix = "SomeNonTM__";
+            newFileNameExtension = ".TXT";
         } else if (FIND_ALL_NON_TM == ct) {
-            newFileNamePrefix = "FindAllNonTM__";
+            newFileNamePrefix = "AllNonTM__";
+            newFileNameExtension = ".TXT";
         } else { // conversion {to Wylie or TM} mode
             if (TMW_TO_WYLIE == ct) {
                 newFileNamePrefix = suggested_WYLIE_prefix;
+            } else if (TMW_TO_WYLIE_TEXT == ct) {
+                newFileNamePrefix = suggested_WYLIE_prefix;
+                newFileNameExtension = ".TXT";
             } else if (TMW_TO_ACIP == ct) {
                 newFileNamePrefix = suggested_ACIP_prefix;
-            } else if (TMW_TO_UNI == ct || ACIP_TO_UNI == ct) {
+            } else if (TMW_TO_ACIP_TEXT == ct) {
+                newFileNamePrefix = suggested_ACIP_prefix;
+                newFileNameExtension = ".TXT";
+            } else if (TMW_TO_UNI == ct || ACIP_TO_UNI_TEXT == ct) {
                 newFileNamePrefix = suggested_TO_UNI_prefix;
+                if (ACIP_TO_UNI_TEXT == ct)
+                    newFileNameExtension = ".TXT";
             } else if (TM_TO_TMW == ct || ACIP_TO_TMW == ct) {
                 newFileNamePrefix = suggested_TO_TMW_prefix;
+                if (ACIP_TO_TMW == ct)
+                    newFileNameExtension = ".RTF";
             } else {
                 ThdlDebug.verify(TMW_TO_TM == ct);
                 newFileNamePrefix = suggested_TO_TM_prefix;
             }
+        }
+        if (null != newFileNameExtension) {
+            int li = oldFileNameSansThingy.lastIndexOf('.');
+            if (li >= 0)
+                oldFileNameSansThingy
+                    = (oldFileNameSansThingy.substring(0, li)
+                       + newFileNameExtension);
         }
         newTextField.setText(oldFileDirName
                              + newFileNamePrefix
@@ -437,13 +460,37 @@ class ConvertDialog extends JDialog
     {
         public boolean accept(File f)
         {
-            if(f.isDirectory() || f.getName().indexOf(".rtf")>-1) { return true; }
-            return false;
+            return (f.isDirectory() || f.getName().endsWith(".rtf"));
         }
 
         public String getDescription()
         {
             return "RTF files only";
+        }
+    }
+
+    public class ACIPFileFilter extends javax.swing.filechooser.FileFilter
+    {
+        public boolean accept(File f)
+        {
+            return (f.isDirectory()
+                    || f.getName().toUpperCase().endsWith(".ACIP")
+                    || f.getName().toUpperCase().endsWith(".TXT")
+                    || f.getName().toUpperCase().endsWith(".ACE")
+                    || f.getName().toUpperCase().endsWith(".ACM")
+                    || f.getName().toUpperCase().endsWith(".ACT")
+                    || f.getName().toUpperCase().endsWith(".AET")
+                    || f.getName().toUpperCase().endsWith(".ALT")
+                    || f.getName().toUpperCase().endsWith(".AT1")
+                    || f.getName().toUpperCase().endsWith(".INC")
+                    || f.getName().toUpperCase().endsWith(".INE")
+                    || f.getName().toUpperCase().endsWith(".INL")
+                    || f.getName().toUpperCase().endsWith(".INM"));
+        }
+
+        public String getDescription()
+        {
+            return "ACIP text files only";
         }
     }
 }
