@@ -127,7 +127,7 @@ public class DictionaryImporter
 	    // if there is, append the definition if it is different. If not add it.
 	    if (set.first())
 	    {
-	        currentDef = set.getString(1);
+	        currentDef = set.getString(1).trim();
 
     	    currentDef = Manipulate.replace(currentDef, "\\", "@@@@");
 	        currentDef = Manipulate.replace(currentDef, "@@@@", "\\\\");
@@ -137,7 +137,7 @@ public class DictionaryImporter
 	        
 	        if (currentDef.indexOf(definition)<0)
 	        {
-	            definition = currentDef + ". " + definition;
+	            if (!currentDef.equals("")) definition = currentDef + ". " + definition;
 	            metaIDTrans = set.getInt(2);
    	            sqlStatement.execute("UPDATE transitionaldata SET transitionaldatatext = \"" + definition + "\" WHERE metaid = " + metaIDTrans);
 	        }
@@ -159,6 +159,7 @@ public class DictionaryImporter
 	
 	private void addRecord(String term, String definition) throws Exception
 	{
+	    term = Manipulate.replace(term, "  ", " ");
 	    if (out!=null) out.println(term + " - " + definition);
 	    else if (sqlStatement!=null) addRecordManually(term, definition);
         else addRecordViaHibernate(term, definition);
@@ -240,8 +241,9 @@ public class DictionaryImporter
 		
 		if (found)
 		{
-		    existingDef = trans.getTransitionalDataText(); 
-		    if (existingDef.indexOf(definition)<0)
+		    existingDef = trans.getTransitionalDataText().trim(); 
+		    if (existingDef.equals("")) found = false;
+		    else if (existingDef.indexOf(definition)<0)
 		    {
 		        definition = existingDef + ". " + definition;
 		        found = false;
