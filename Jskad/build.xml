@@ -35,7 +35,7 @@
   </description>
 
   <!-- set global properties for this build -->
-  <property name="my.jar.suffix" value="vanilla"/>
+  <property name="my.jar.suffix" value=""/>
   <property name="link.offline" value="false"/>
   <property name="javacdashg" value="yes"/>
   <property name="source" location="source"/>
@@ -50,6 +50,9 @@
   <property name="savantbin" location="bin/savant"/>
   <property name="docs" location="docs"/>
   <property name="dist"  location="dist"/>
+  <property name="vanillalib"  location="${dist}/lib-vanilla"/>
+  <property name="jwslib"  location="${dist}/lib-jws"/>
+  <property name="lib"  location="${vanillalib}"/>
   <property name="ext"  location="extensions"/>
   <property name="publicjavadocs"  location="${docs}/public-javadocs"/>
   <property name="privatejavadocs"  location="${docs}/private-javadocs"/>
@@ -132,7 +135,9 @@
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${dist}/releases"/>
     <mkdir dir="${dist}/docs"/>
-    <mkdir dir="${dist}/lib"/>
+    <mkdir dir="${vanillalib}"/>
+    <mkdir dir="${jwslib}"/>
+    <mkdir dir="${lib}"/>
     <mkdir dir="${dist}/java-web-start"/>
     <mkdir dir="${dist}/source"/>
     <mkdir dir="${bin}"/>
@@ -382,6 +387,7 @@
     <antcall target="compile-from-scratch-and-call-jws-subbuild">
       <param name="my.app" value="Jskad"/>
       <param name="my.prereq" value="jskad-dist"/>
+      <param name="lib" value="${jwslib}"/>
     </antcall>
   </target>
 
@@ -394,6 +400,7 @@
     <antcall target="compile-from-scratch-and-call-jws-subbuild">
       <param name="my.app" value="Savant"/>
       <param name="my.prereq" value="savant-dist"/>
+      <param name="lib" value="${jwslib}"/>
     </antcall>
   </target>
 
@@ -406,6 +413,7 @@
     <antcall target="compile-from-scratch-and-call-jws-subbuild">
       <param name="my.app" value="QuillDriver"/>
       <param name="my.prereq" value="qd-dist"/>
+      <param name="lib" value="${jwslib}"/>
     </antcall>
   </target>
 
@@ -416,6 +424,7 @@
     <antcall target="compile-from-scratch-and-call-jws-subbuild">
       <param name="my.app" value="DictionarySearchAppletAndJavaWebStart"/>
       <param name="my.prereq" value="tt-applet-plus-jws-dist"/>
+      <param name="lib" value="${jwslib}"/>
     </antcall>
   </target>
 
@@ -443,7 +452,7 @@
   <target name="jskad-dist" depends="jskad-compile"
           description="generates the bare Jskad binary distribution" >
     <!-- Put everything in ${jskadbin} into the JAR file -->
-    <jar jarfile="${dist}/lib/Jskad-${my.jar.suffix}.jar"
+    <jar jarfile="${lib}/Jskad${my.jar.suffix}.jar"
          basedir="${jskadbin}">
       <manifest>
         <attribute name="Main-Class" value="org.thdl.tib.input.Jskad"/>
@@ -457,7 +466,7 @@
   <target name="tt-standalone-dist" depends="tt-standalone-compile"
           description="generates the standalone translation tool's binary distribution." >
     <!-- Put everything in ${ttstandalonebin} into the JAR file -->
-    <jar jarfile="${dist}/lib/DictionarySearchStandalone-${my.jar.suffix}.jar"
+    <jar jarfile="${lib}/DictionarySearchStandalone${my.jar.suffix}.jar"
          basedir="${ttstandalonebin}">
       <manifest>
         <attribute name="Main-Class"
@@ -470,7 +479,7 @@
   <target name="tt-handheld-dist" depends="tt-handheld-compile"
           description="generates the handheld translation tool's binary distribution." >
     <!-- Put everything in ${tthandheldbin} into the JAR file -->
-    <jar jarfile="${dist}/lib/DictionarySearchHandheld-${my.jar.suffix}.jar"
+    <jar jarfile="${lib}/DictionarySearchHandheld${my.jar.suffix}.jar"
          basedir="${tthandheldbin}">
       <manifest>
         <attribute name="Main-Class"
@@ -483,7 +492,7 @@
   <target name="tt-applet-plus-jws-dist" depends="tt-applet-plus-jws-compile"
           description="generates the applet-plus-jws translation tool's binary distribution." >
     <!-- Put everything in ${ttappletjwsbin} into the JAR file -->
-    <jar jarfile="${dist}/lib/DictionarySearchAppletAndJavaWebStart-${my.jar.suffix}.jar"
+    <jar jarfile="${lib}/DictionarySearchAppletAndJavaWebStart${my.jar.suffix}.jar"
          basedir="${ttappletjwsbin}">
       <!-- We have two choices here, but the web page will call for
            AppletScannerFilter, so the double-click should open the
@@ -500,7 +509,7 @@
           if="found.servlet.classes"
           description="generates the servlet translation tool's binary distribution." >
     <!-- Put everything in ${ttservletbin} into the JAR file -->
-    <jar jarfile="${dist}/lib/DictionarySearchServlet-${my.jar.suffix}.jar"
+    <jar jarfile="${lib}/DictionarySearchServlet${my.jar.suffix}.jar"
          basedir="${ttservletbin}">
 
       <!-- I don't think this'll work (I don't know servlets, mind
@@ -516,7 +525,7 @@
   <target name="savant-dist" depends="savant-compile"
           description="generates the bare Savant binary distribution" >
     <!-- Put everything in ${savantbin} into the JAR file -->
-    <jar jarfile="${dist}/lib/Savant-${my.jar.suffix}.jar"
+    <jar jarfile="${lib}/Savant${my.jar.suffix}.jar"
          basedir="${savantbin}">
       <manifest>
         <attribute name="Main-Class" value="org.thdl.savant.SavantShell"/>
@@ -528,7 +537,7 @@
   <target name="qd-dist" depends="qd-compile"
           description="generates the bare QuillDriver binary distribution" >
     <!-- Put everything in ${qdbin} into the JAR file -->
-    <jar jarfile="${dist}/lib/QuillDriver-${my.jar.suffix}.jar"
+    <jar jarfile="${lib}/QuillDriver${my.jar.suffix}.jar"
          basedir="${qdbin}">
       <manifest>
         <attribute name="Main-Class" value="org.thdl.quilldriver.QDShell"/>
@@ -547,7 +556,7 @@
     <copy todir="${jskadbin}/netscape">
       <fileset dir="${ext}/netscape"/>
     </copy>
-    <jar jarfile="${dist}/lib/Jskad-self-contained-${my.jar.suffix}.jar"
+    <jar jarfile="${lib}/Jskad-self-contained${my.jar.suffix}.jar"
          basedir="${jskadbin}"
          includes="org/thdl/tib/**,org/thdl/util/**,netscape/**"
          index="true"
@@ -564,7 +573,9 @@
     <!-- Delete the ${bin} and ${dist} directory trees -->
     <delete dir="${bin}"/>
     <delete dir="${dist}/docs"/>
-    <delete dir="${dist}/lib"/>
+    <delete dir="${vanillalib}"/>
+    <delete dir="${jwslib}"/>
+    <delete dir="${lib}"/>
     <delete dir="${dist}/releases"/>
     <delete dir="${dist}/source"/>
     <delete file="${dist}/DictionarySearchAppletAndJavaWebStart.jnlp"/>
@@ -635,7 +646,7 @@
   <target name="qd-run" depends="qd-dist" description="runs QuillDriver">
     <java classname="org.thdl.quilldriver.QDShell" fork="yes">
       <classpath>
-        <pathelement location="${dist}/lib/QuillDriver-${my.jar.suffix}.jar"/>
+        <pathelement location="${lib}/QuillDriver${my.jar.suffix}.jar"/>
         <path refid="entire.class.path"/>
       </classpath>
       <jvmarg value="-Dthdl.debug=${thdl.debug}"/>
@@ -645,7 +656,7 @@
   <target name="savant-run" depends="savant-dist" description="runs Savant">
     <java classname="org.thdl.savant.SavantShell" fork="yes">
       <classpath>
-        <pathelement location="${dist}/lib/Savant-${my.jar.suffix}.jar"/>
+        <pathelement location="${lib}/Savant${my.jar.suffix}.jar"/>
         <path refid="entire.class.path"/>
       </classpath>
       <jvmarg value="-Dthdl.debug=${thdl.debug}"/>
@@ -655,7 +666,7 @@
   <target name="jskad-run" depends="jskad-dist" description="runs Jskad">
     <java classname="org.thdl.tib.input.Jskad" fork="yes">
       <classpath>
-        <pathelement location="${dist}/lib/Jskad-${my.jar.suffix}.jar"/>
+        <pathelement location="${lib}/Jskad${my.jar.suffix}.jar"/>
         <path refid="entire.class.path"/>
       </classpath>
       <jvmarg value="-Dthdl.debug=${thdl.debug}"/>
@@ -666,7 +677,7 @@
     <java classname="org.thdl.tib.scanner.WindowScannerFilter" fork="yes">
       <classpath>
         <pathelement
-          location="${dist}/lib/DictionarySearchStandalone-${my.jar.suffix}.jar"/>
+          location="${lib}/DictionarySearchStandalone${my.jar.suffix}.jar"/>
         <path refid="entire.class.path"/>
       </classpath>
       <jvmarg value="-Dthdl.debug=${thdl.debug}"/>
@@ -842,9 +853,9 @@
     <!-- Clean:  (FIXME: clean only what you must clean, the appropriate bin dir.) -->
     <antcall target="clean"/>
 
-    <!-- Now, having cleaned, we create ${my.app}-JWS.jar: -->
+    <!-- Now, having cleaned, we create ${my.app}.jar: -->
     <antcall target="${my.prereq}">
-      <param name="my.jar.suffix" value="JWS"/>
+      <param name="my.jar.suffix" value=""/>
       <param name="javacdashg" value="no"/>
     </antcall>
 
@@ -861,6 +872,7 @@
     <ant antfile="jwsbuild.xml" target="package-for-java-web-start"
          inheritAll="false" inheritRefs="false">
       <property name="dist" value="${dist}"/>
+      <property name="lib" value="${jwslib}"/>
 
       <property name="dgkey.password" value="${dgkey.password}"/>
       <property name="keystore.password" value="${keystore.password}"/>
@@ -907,7 +919,7 @@
 </security>
 <resources>
   <j2se version="1.2+"/>
-  <jar href="Jskad-JWS.jar" />
+  <jar href="Jskad.jar" />
 </resources>
 <application-desc />
 </jnlp>
@@ -952,7 +964,7 @@
 </security>
 <resources>
   <j2se version="1.2+"/>
-  <jar href="Savant-JWS.jar" />
+  <jar href="Savant.jar" />
 </resources>
 <application-desc />
 </jnlp>
@@ -995,7 +1007,7 @@
 </security>
 <resources>
   <j2se version="1.2+"/>
-  <jar href="QuillDriver-JWS.jar" />
+  <jar href="QuillDriver.jar" />
 </resources>
 <application-desc />
 </jnlp>
@@ -1040,7 +1052,7 @@
 </security>
 <resources>
   <j2se version="1.2+"/>
-  <jar href="DictionarySearchAppletAndJavaWebStart-JWS.jar" />
+  <jar href="DictionarySearchAppletAndJavaWebStart.jar" />
 </resources>
 <application-desc />
 </jnlp>
@@ -1092,7 +1104,6 @@
     <antcall target="compile-JMF-classes-accessed-by-reflection"/>
     <antcall target="compile-QT4J-classes-accessed-by-reflection"/>
   </target>
-
 
 </project>
 

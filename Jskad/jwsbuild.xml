@@ -60,7 +60,7 @@
          are only appropriate to Tomcat-type environments.
 
          Thus, you non-Tomcat-users should run 'jar xf
-         ${my.app}-web-start.war ${my.app}-JWS.jar' to extract the
+         ${my.app}-web-start.war ${my.app}.jar' to extract the
          signed JAR file and copy the .jar and the
          ${dist}/${my.app}.jnlp file (NOT the one in the WAR) to the
          web server.  (Be sure that the web server has its MIME types
@@ -88,8 +88,8 @@
     <vampwar dest="${dist}/java-web-start/${my.app}-web-start.war">
       <jnlp src="${dist}/${my.app}.jnlp">
         <resources>
-          <fileset dir="${dist}/lib">
-            <include name="${my.app}-JWS.jar" />
+          <fileset dir="${lib}">
+            <include name="${my.app}.jar" />
           </fileset>
         </resources>
       </jnlp>
@@ -105,7 +105,7 @@
     <unwar src="${dist}/java-web-start/${my.app}-web-start.war"
            dest="${dist}/java-web-start/">
       <patternset>
-        <include name="${my.app}-JWS.jar"/>
+        <include name="${my.app}.jar"/>
         <exclude name="**/*"/>
       </patternset>
     </unwar>
