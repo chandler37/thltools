@@ -41,7 +41,7 @@ import org.thdl.tib.text.tshegbar.UnicodeCodepointToThdlWylie;
 * both or neither.
 *
 * <p>In addition, this class optionally loads the TibetanMachineWeb
-* fonts manually via {@link #readInFontFiles()}.
+* fonts manually via {@link #readInTMWFontFiles()}.
 * @author Edward Garrett, Tibetan and Himalayan Digital Library
 * @version 1.0
 */
@@ -195,40 +195,46 @@ public class TibetanMachineWeb implements THDLWylieConstants {
         setKeyboard(keyboard);
 	}
 
-    /** Assumes that the TMW font files are resources associated with
-     *  this class and loads those font files.
-     *  @throws Error if that assumption does not hold */
-    private static void readInFontFiles() {
+    /** If the TMW font files are resources associated with this
+     *  class, those font files are loaded.  This means that the user
+     *  need not install the fonts on their system, but it does make
+     *  the JAR bigger and takes time at startup.
+     *  @return true upon successful loading, false otherwise */
+    private static boolean readInTMWFontFiles() {
         /* Note the leading slashes on these paths: */
-        readInFontFile("/Fonts/TibetanMachineWeb/timwn.ttf");
-        readInFontFile("/Fonts/TibetanMachineWeb/timwn1.ttf");
-        readInFontFile("/Fonts/TibetanMachineWeb/timwn2.ttf");
-        readInFontFile("/Fonts/TibetanMachineWeb/timwn3.ttf");
-        readInFontFile("/Fonts/TibetanMachineWeb/timwn4.ttf");
-        readInFontFile("/Fonts/TibetanMachineWeb/timwn5.ttf");
-        readInFontFile("/Fonts/TibetanMachineWeb/timwn6.ttf");
-        readInFontFile("/Fonts/TibetanMachineWeb/timwn7.ttf");
-        readInFontFile("/Fonts/TibetanMachineWeb/timwn8.ttf");
-        readInFontFile("/Fonts/TibetanMachineWeb/timwn9.ttf");
+        if (!readInFontFile("/Fonts/TibetanMachineWeb/timwn.ttf")) return false;
+        if (!readInFontFile("/Fonts/TibetanMachineWeb/timwn1.ttf")) return false;
+        if (!readInFontFile("/Fonts/TibetanMachineWeb/timwn2.ttf")) return false;
+        if (!readInFontFile("/Fonts/TibetanMachineWeb/timwn3.ttf")) return false;
+        if (!readInFontFile("/Fonts/TibetanMachineWeb/timwn4.ttf")) return false;
+        if (!readInFontFile("/Fonts/TibetanMachineWeb/timwn5.ttf")) return false;
+        if (!readInFontFile("/Fonts/TibetanMachineWeb/timwn6.ttf")) return false;
+        if (!readInFontFile("/Fonts/TibetanMachineWeb/timwn7.ttf")) return false;
+        if (!readInFontFile("/Fonts/TibetanMachineWeb/timwn8.ttf")) return false;
+        if (!readInFontFile("/Fonts/TibetanMachineWeb/timwn9.ttf")) return false;
+        return true;
     }
 
-    /** Assumes that the TM font files are resources associated with
-     *  this class and loads those font files.
-     *  @throws Error if that assumption does not hold */
-    private static void readInTMFontFiles() {
+    /** If the TM font files are resources associated with this
+     *  class, those font files are loaded.  This means that the user
+     *  need not install the fonts on their system, but it does make
+     *  the JAR bigger and takes time at startup.
+     *  @return true upon successful loading, false otherwise */
+    private static boolean readInTMFontFiles() {
         /* Note the leading slashes on these paths: */
-        readInFontFile("/Fonts/TibetanMachine/Timn.ttf");
-        readInFontFile("/Fonts/TibetanMachine/Tims1.ttf");
-        readInFontFile("/Fonts/TibetanMachine/Tims2.ttf");
-        readInFontFile("/Fonts/TibetanMachine/Tims3.ttf");
-        readInFontFile("/Fonts/TibetanMachine/Tims4.ttf");
+        if (!readInFontFile("/Fonts/TibetanMachine/Timn.ttf")) return false;
+        if (!readInFontFile("/Fonts/TibetanMachine/Tims1.ttf")) return false;
+        if (!readInFontFile("/Fonts/TibetanMachine/Tims2.ttf")) return false;
+        if (!readInFontFile("/Fonts/TibetanMachine/Tims3.ttf")) return false;
+        if (!readInFontFile("/Fonts/TibetanMachine/Tims4.ttf")) return false;
+        return true;
     }
 
-    /** Assumes that the TMW font file at the given path is a resource
-     *  associated with this class and loads that font file.
+    /** If the TMW font file at the given path is a resource
+     *  associated with this class, that font file is loaded.
      *  @param path a path within the JAR containing this class file
-     *  @throws Error if that assumption does not hold */
-    private static void readInFontFile(String path) {
+     *  @return true upon successful loading, false otherwise */
+    private static boolean readInFontFile(String path) {
 
         // Note that the TM and TMW fonts do not have hanging
         // baselines.  They have Roman baselines.  Tony Duff said this
@@ -238,14 +244,15 @@ public class TibetanMachineWeb implements THDLWylieConstants {
         try {
             InputStream is = TibetanMachineWeb.class.getResourceAsStream(path);
             if (null == is) {
-                throw new Error("You selected the optional behavior of loading the TibetanMachineWeb font family manually, but the resource "
-                                + path + " could not be found.");
+                return false;
             }
             Font.createFont(Font.TRUETYPE_FONT, is);
         } catch( Exception e ) {
             e.printStackTrace();
             ThdlDebug.noteIffyCode();
+            return false;
         }
+        return true;
     }
 
     /** Returns the next token in st with the first occurrence of
@@ -272,14 +279,9 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 */
 	private static void readData() {
         if (!ThdlOptions.getBooleanOption("thdl.rely.on.system.tmw.fonts")) {
-            readInFontFiles();
+            readInTMWFontFiles();
         }
-
-        // DLC FIXME: include TM fonts with Jskad but not with other
-        // packages.  Right now you can get them manually by editing
-        // build.xml and your options.txt or my_thdl_preferences.txt
-        // file.
-        if (ThdlOptions.getBooleanOption("thdl.do.not.rely.on.system.tm.fonts")) {
+        if (!ThdlOptions.getBooleanOption("thdl.rely.on.system.tm.fonts")) {
             readInTMFontFiles();
         }
 

@@ -43,6 +43,11 @@ thdl.Jskad.working.directory =
 # faster.
 thdl.rely.on.system.tmw.fonts = false
 
+# Should the TibetanMachine fonts not be loaded from within the JAR?  Set
+# this to true if you can get away with it and want your THDL tools to load
+# faster.  Note that TibetanMachine is not the default font for Jskad.
+thdl.rely.on.system.tm.fonts = false
+
 # Sets the Tibetan keyboard that Jskad uses on startup.
 # Here are the acceptable values:
 #

@@ -287,11 +287,9 @@
     <antcall target="copy-tmw-fonts-to-bin-dir">
       <param name="my.bin" value="${jskadbin}"/>
     </antcall>
-<!-- DLC FIMXE: put these in Jskad
     <antcall target="copy-tm-fonts-to-bin-dir">
       <param name="my.bin" value="${jskadbin}"/>
     </antcall>
--->
     <antcall target="create-timestamp-source-code"/> <!-- DLC NOW! The -run targets are mucking with this! It isn't fatal, but it should be fixed. -->
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${jskadbin}"/>
