@@ -63,6 +63,8 @@ import org.thdl.util.ThdlLazyException;
 */
 public class Jskad extends JPanel implements DocumentListener {
 
+    private static final String rtfErrorMessage = "The Rich Text Format (RTF) file selected contains constructs that\nJskad cannot handle.  If you got the RTF file from saving a Word\ndocument as RTF, try saving that same document as RTF in\nWord 2000 instead of Word XP or in Word 97 instead of\nWord 2000.  Older versions of Word produce RTF that Jskad\ncan more easily deal with.  OpenOffice and StarOffice also\nproduce better-behaved RTF.";
+
     /** the name of the property a developer should set to see
         low-level info on how keypresses in "Tibetan" input mode are
         being interpreted */
@@ -653,33 +655,54 @@ public class Jskad extends JPanel implements DocumentListener {
                 newFrame.setLocation(point.x+50, point.y+50);
                 Jskad newRTF = new Jskad(newFrame);
                 newFrame.getContentPane().add(newRTF);
-                newRTF.dp.rtfEd.read(in, newRTF.dp.getDocument(), 0);
-                newRTF.dp.getDocument().addDocumentListener(newRTF);
+                boolean error = false;
+                try {
+                    newRTF.dp.rtfEd.read(in, newRTF.dp.getDocument(), 0);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(newFrame,
+                                                  rtfErrorMessage);
+                    error = true;
+                }
                 in.close();
-                newFrame.setTitle(f_name);
-                newRTF.fileName = new String(f_name);
-                newRTF.hasChanged = false;
-                newRTF.dp.getCaret().setDot(0);
-                newFrame.setVisible(true);
+                if (error) {
+                    newFrame.dispose();
+                    numberOfTibsRTFOpen--;
+                } else {
+                    newRTF.dp.getDocument().addDocumentListener(newRTF);
+                    newFrame.setTitle("Jskad: " + f_name);
+                    newRTF.fileName = new String(f_name);
+                    newRTF.hasChanged = false;
+                    newRTF.dp.getCaret().setDot(0);
+                    newFrame.setVisible(true);
+                }
             } else {
                 InputStream in = new FileInputStream(fileChosen);
                 ThdlOptions.setUserPreference("thdl.Jskad.working.directory",
                                               fileChosen.getParentFile().getAbsolutePath());
                 dp.newDocument();
-                dp.rtfEd.read(in, dp.getDocument(), 0);
-                in.close();
-                dp.getCaret().setDot(0);
-                dp.getDocument().addDocumentListener(Jskad.this);
-                hasChanged = false;
-                fileName = new String(f_name);
-
-                if (parentObject instanceof JFrame) {
-                    JFrame parentFrame = (JFrame)parentObject;
-                    parentFrame.setTitle(fileName);
+                boolean error = false;
+                try {
+                    dp.rtfEd.read(in, dp.getDocument(), 0);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(this,
+                                                  rtfErrorMessage);
+                    error = true;
                 }
-                else if (parentObject instanceof JInternalFrame) {
-                    JInternalFrame parentFrame = (JInternalFrame)parentObject;
-                    parentFrame.setTitle(fileName);
+
+                in.close();
+                if (!error) {
+                    dp.getCaret().setDot(0);
+                    dp.getDocument().addDocumentListener(Jskad.this);
+                    hasChanged = false;
+                    fileName = new String(f_name);
+                    if (parentObject instanceof JFrame) {
+                        JFrame parentFrame = (JFrame)parentObject;
+                        parentFrame.setTitle("Jskad: " + fileName);
+                    }
+                    else if (parentObject instanceof JInternalFrame) {
+                        JInternalFrame parentFrame = (JInternalFrame)parentObject;
+                        parentFrame.setTitle("Jskad: " + fileName);
+                    }
                 }
             }
         }
@@ -695,9 +718,6 @@ public class Jskad extends JPanel implements DocumentListener {
                                           "Open File Error",
                                           JOptionPane.ERROR_MESSAGE);
         }
-        catch (BadLocationException ble) {
-            ThdlDebug.noteIffyCode();
-        }
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 
@@ -706,12 +726,12 @@ public class Jskad extends JPanel implements DocumentListener {
 		if (null != s) {
 			if (parentObject instanceof JFrame) {
 				JFrame parentFrame = (JFrame)parentObject;
-				parentFrame.setTitle(s);
+				parentFrame.setTitle("Jskad: " + s);
 				fileName = new String(s);
 			}
 			else if (parentObject instanceof JInternalFrame) {
 				JInternalFrame parentFrame = (JInternalFrame)parentObject;
-				parentFrame.setTitle(s);
+				parentFrame.setTitle("Jskad: " + s);
 				fileName = new String(s);
 			}
 		}
@@ -722,12 +742,12 @@ public class Jskad extends JPanel implements DocumentListener {
 		if (null != s) {
 			if (parentObject instanceof JFrame) {
 				JFrame parentFrame = (JFrame)parentObject;
-				parentFrame.setTitle(s);
+				parentFrame.setTitle("Jskad: " + s);
 				fileName = new String(s);
 			}
 			else if (parentObject instanceof JInternalFrame) {
 				JInternalFrame parentFrame = (JInternalFrame)parentObject;
-				parentFrame.setTitle(s);
+				parentFrame.setTitle("Jskad: " + s);
 				fileName = new String(s);
 			}
 		}
