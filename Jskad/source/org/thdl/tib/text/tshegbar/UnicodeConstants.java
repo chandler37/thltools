@@ -40,6 +40,12 @@ public interface UnicodeConstants {
     static final byte NORM_NFD = 3;
     /** Refers to Normalization Form KD: */
     static final byte NORM_NFKD = 4;
+    /** Refers to Normalization Form THDL, which is NFD except for
+        <code>U+0F77</code> and <code>U+0F79</code>, which are
+        normalized according to NFKD.  This is the One True
+        Normalization Form, as it leaves no precomposed codepoints and
+        does not normalize <code>U+0F0C</code>. */
+    static final byte NORM_NFTHDL = 5;
 
 
     /** for those times when you need a char to represent a

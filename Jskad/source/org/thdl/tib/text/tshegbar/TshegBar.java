@@ -58,7 +58,7 @@ package org.thdl.tib.text.tshegbar;
  *  <p> This class allows for invalid tsheg bars, like those
  *  containing more than one prefix, more than two suffixes, an
  *  invalid postsuffix (secondary suffix), more than one consonant
- *  stack (excluding the special case of what we call in Extended
+ *  stack (excluding the special case of what we call in THDL Extended
  *  Wylie "'i", which is technically a consonant stack but is used in
  *  Tibetan like a suffix).</p>.
  *

@@ -94,35 +94,34 @@ public class UnicodeUtils implements UnicodeConstants {
     }
 
     /** Puts the Tibetan codepoints in tibetanUnicode, a sequence of
-        Unicode codepoints, into Normalization Form KD (NFKD) as
-        specified by Unicode 3.2.  The Tibetan passages of the
-        returned string are in NFKD, but codepoints outside of the
-        range <code>U+0F00</code>-<code>U+0FFF</code> are not
-        necessarily put into NFKD.  This form uses a maximum of
+        Unicode codepoints, into either Normalization Form KD (NFKD),
+        D (NFD), or THDL (NFTHDL), depending on the value of normForm.
+        NFD and NFKD are specified by Unicode 3.2; NFTHDL is needed
+        for {@link org.thdl.tib.text.tshegbar#GraphemeCluster} because
+        NFKD normalizes <code>U+0F0C</code>.  NFTHDL uses a maximum of
         codepoints, and it never uses codepoints whose use has been
-        {@link #isDiscouraged(char) discouraged}.  It would be David
-        Chandler's very favorite form if not for the fact that
-        <code>U+0F0C</code> normalizes to <code>U+0F0B</code> in NFKD.
-        NFD is thus David Chandler's favorite, though it does not
-        decompose <code>U+0F77</code> and <code>U+0F79</code> (for
-        some reason, hopefully a well-thought-out one).
+        {@link #isDiscouraged(char) discouraged}.
 
-        <p>Recall that NFKD, as it applies to Tibetan codepoints, is
-        closed under string concatenation and under substringing.
-        Note again that if the input contains codepoints for which
-        {@link #isInTibetanRange(char)} is not true, then they will
-        not be modified.</p>
+        <p>The Tibetan passages of the returned string are in the
+        chosen normalized form, but codepoints outside of the {@link
+        #isInTibetanRange(char) range}
+        <code>U+0F00</code>-<code>U+0FFF</code> are not necessarily
+        put into normalized form.</p>
+
+        <p>Recall that normalized forms are not necessarily closed
+        under string concatenation, but are closed under
+        substringing.</p>
     
         <p>Note well that only well-formed input guarantees
         well-formed output.</p>
 
         @param tibetanUnicode the codepoints to be decomposed
-        @param normForm NORM_NFKD or NORM_NFD */
+        @param normForm NORM_NFKD, NORM_NFTHDL, or NORM_NFD */
     public static void toMostlyDecomposedUnicode(StringBuffer tibetanUnicode,
                                                  byte normForm)
     {
-        if (normForm != NORM_NFD && normForm != NORM_NFKD)
-            throw new IllegalArgumentException("normForm must be NORM_NFD or NORM_NFKD for decomposition to work");
+        if (normForm != NORM_NFD && normForm != NORM_NFKD && normForm != NORM_NFTHDL)
+            throw new IllegalArgumentException("normForm must be NORM_NFD, NORM_NFTHDL, or NORM_NFKD for decomposition to work");
         int offset = 0;
         while (offset < tibetanUnicode.length()) {
             String s
@@ -157,15 +156,19 @@ public class UnicodeUtils implements UnicodeConstants {
         and returns null for codepoints that are already normalized or
         are not in the Tibetan range of Unicode.
         @param tibetanUnicodeCP the codepoint to normalize
-        @param normalizationForm NORM_NFKD or NORM_NFD if you expect
-        something nontrivial to happen
+        @param normalizationForm NORM_NFTHDL, NORM_NFKD, or NORM_NFD
+        if you expect something nontrivial to happen
         @return null if tibetanUnicodeCP is already in the chosen
         normalized form, or a string of two or three codepoints
         otherwise */
-    public static String toNormalizedForm(char tibetanUnicodeCP, byte normalizationForm) {
+    public static String toNormalizedForm(char tibetanUnicodeCP,
+                                          byte normalizationForm)
+    {
         if (normalizationForm == NORM_NFKD
-            || normalizationForm == NORM_NFD) {
-            // Where not specified, the NFKD form is also the NFD form.
+            || normalizationForm == NORM_NFD
+            || normalizationForm == NORM_NFTHDL) {
+            // Where not specified, the NFKD and NFTHDL forms are
+            // identical to the NFD form.
             switch (tibetanUnicodeCP) {
             case '\u0F0C': return ((normalizationForm == NORM_NFKD)
                                    ? "\u0F0B" : null);
@@ -178,14 +181,25 @@ public class UnicodeUtils implements UnicodeConstants {
             case '\u0F73': return "\u0F71\u0F72";
             case '\u0F75': return "\u0F71\u0F74";
             case '\u0F76': return "\u0FB2\u0F80";
-            // I do not understand why NFD does not decompose this codepoint:
-            case '\u0F77': return ((normalizationForm == NORM_NFKD)
-                                   ? "\u0FB2\u0F71\u0F80" : null);
+            case '\u0F77': {
+                // I do not understand why NFD does not decompose this
+                // codepoint, hence NORM_NFTHDL does:
+                if (normalizationForm == NORM_NFKD
+                    || normalizationForm == NORM_NFTHDL)
+                    return "\u0FB2\u0F71\u0F80";
+                else
+                    return null;
+            }
             case '\u0F78': return "\u0FB3\u0F80";
-            // I do not understand why NFD does not decompose this codepoint:
-            case '\u0F79': return ((normalizationForm == NORM_NFKD)
-                                   ? "\u0FB3\u0F71\u0F80" : null);
-
+            case '\u0F79': {
+                // I do not understand why NFD does not decompose this
+                // codepoint, hence NORM_NFTHDL does:
+                if (normalizationForm == NORM_NFKD
+                    || normalizationForm == NORM_NFTHDL)
+                    return "\u0FB3\u0F71\u0F80";
+                else
+                    return null;
+            }
             case '\u0F81': return "\u0F71\u0F80";
             case '\u0F93': return "\u0F92\u0FB7";
             case '\u0F9D': return "\u0F9C\u0FB7";

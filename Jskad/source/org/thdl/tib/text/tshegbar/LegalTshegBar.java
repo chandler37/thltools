@@ -346,7 +346,7 @@ public class LegalTshegBar
         });
 
     /** Returns a two-codepoint string consisting of the Unicode
-     *  representation of what Extended Wylie calls
+     *  representation of what THDL Extended Wylie calls
      *  <code>'i</code>. */
     public static String getConnectiveCaseSuffix() {
         return connectiveCaseSuffix;
@@ -382,8 +382,8 @@ public class LegalTshegBar
 
 
     /** Returns an array of Unicode strings, all the legal suffix
-        particles.  In Extended Wylie, these are: <ul> <li>'i</li>
-        <li>'o</li> <li>'u</li> <li>'am</li> </ul>
+        particles.  In THDL Extended Wylie, these are: <ul>
+        <li>'i</li> <li>'o</li> <li>'u</li> <li>'am</li> </ul>
     
         <p>This is not very efficient.</p> */
     public static String[] getPossibleSuffixParticles() {
@@ -823,9 +823,9 @@ public class LegalTshegBar
       isTransliteratedSanskrit(), boolean isTransliteratedChinese()
       (design: contains fa or va, maybe?). */
 
-    /** Returns a StringBuffer that holds the extended wylie
+    /** Returns a StringBuffer that holds the THDL extended wylie
      *  representation of this syllable. */
-    public StringBuffer getExtendedWylie() {
+    public StringBuffer getThdlWylie() {
         StringBuffer sb = new StringBuffer();
         char rootLetter = getRootLetter();
         if (hasPrefix()) {
@@ -837,7 +837,7 @@ public class LegalTshegBar
 
             boolean disambiguatorNeeded = false;
             char prefix = getPrefix();
-            sb.append(UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar(prefix));
+            sb.append(UnicodeCharToThdlWylie.getThdlWylieForUnicodeChar(prefix));
             if (!hasHeadLetter()) {
                 if (EWC_ya == rootLetter) {
                     if (isConsonantThatTakesYaBtags(prefix))
@@ -857,67 +857,67 @@ public class LegalTshegBar
                 sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
         }
         if (hasHeadLetter())
-            sb.append(UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar(getHeadLetter()));
-        sb.append(UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar(rootLetter));
+            sb.append(UnicodeCharToThdlWylie.getThdlWylieForUnicodeChar(getHeadLetter()));
+        sb.append(UnicodeCharToThdlWylie.getThdlWylieForUnicodeChar(rootLetter));
         if (hasSubjoinedLetter())
-            sb.append(UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar(getSubjoinedLetter()));
+            sb.append(UnicodeCharToThdlWylie.getThdlWylieForUnicodeChar(getSubjoinedLetter()));
         if (hasWaZurSubjoinedToRootLetter())
-            sb.append(UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar(EWSUB_wa_zur));
+            sb.append(UnicodeCharToThdlWylie.getThdlWylieForUnicodeChar(EWSUB_wa_zur));
 
-        // a-chung is treated, in Extended Wylie, like a vowel.  I.e.,
-        // you don't have 'pAa', you have 'pA'.
+        // a-chung is treated, in THDL Extended Wylie, like a vowel.
+        // I.e., you don't have 'pAa', you have 'pA'.
         if (hasAChungOnRootLetter()) {
             if (hasExplicitVowel()) {
                 if (EWV_i == getVowel()) {
-                    sb.append(UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar('\u0F73'));
+                    sb.append(UnicodeCharToThdlWylie.getThdlWylieForUnicodeChar('\u0F73'));
                 } else if (EWV_u == getVowel()) {
-                    sb.append(UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar('\u0F75'));
+                    sb.append(UnicodeCharToThdlWylie.getThdlWylieForUnicodeChar('\u0F75'));
                 } else if (EWV_e == getVowel() || EWV_o == getVowel()) {
                     // The exception to the rule for a-chung and vowels...
 
                     // DLC FIXME: are these allowed in legal Tibetan?
                     // EWTS would have special cases for them if so,
                     // I'd wager...
-                    sb.append(UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar(EW_achung));
-                    sb.append(UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar(getVowel()));
+                    sb.append(UnicodeCharToThdlWylie.getThdlWylieForUnicodeChar(EW_achung));
+                    sb.append(UnicodeCharToThdlWylie.getThdlWylieForUnicodeChar(getVowel()));
                 } else {
                     ThdlDebug.abort("only simple vowels occur in this class, how did this get past internalLegalityTest(..)?");
                 }
             } else {
-                sb.append(UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar(EW_achung));
+                sb.append(UnicodeCharToThdlWylie.getThdlWylieForUnicodeChar(EW_achung));
             }
         } else {
             if (hasExplicitVowel())
-                sb.append(UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar(getVowel()));
+                sb.append(UnicodeCharToThdlWylie.getThdlWylieForUnicodeChar(getVowel()));
             else
                 sb.append("a");
         }
 
         if (hasSuffix()) {
             String suf = getSuffix();
-            sb.append(UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar(suf.charAt(0)));
+            sb.append(UnicodeCharToThdlWylie.getThdlWylieForUnicodeChar(suf.charAt(0)));
             if (suf.length() > 1) {
                 // DLC assert, don't verify, that the length is two.
                 // This could change if I learn of more suffix
                 // particles.
                 ThdlDebug.verify(2 == suf.length());
-                sb.append(UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar(suf.charAt(1)));
+                sb.append(UnicodeCharToThdlWylie.getThdlWylieForUnicodeChar(suf.charAt(1)));
             }
         }
         if (hasPostsuffix())
-            sb.append(UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar(getPostsuffix()));
+            sb.append(UnicodeCharToThdlWylie.getThdlWylieForUnicodeChar(getPostsuffix()));
         return sb;
     }
 
 
-    // DLC: toXML for the dense XML
     /** Returns a <legalTibetanSyllable> element that contains only
-     *  the Extended Wylie transliteration for the whole syllable and a note that the . */
+     *  the THDL Extended Wylie transliteration for the whole syllable
+     *  and a note about the transliteration. */
     public String toConciseXML() {
         // DLC version-control the EWTS document. 0.5 is used below:
         return ("<legalTibetanSyllable "
                 + "transliterationType=\"THDL Extended Wylie 0.5\" "
-                + "transliteration=\"" + getExtendedWylie() + "\"" + "/>");
+                + "transliteration=\"" + getThdlWylie() + "\"" + "/>");
     }
 
     /** Returns a <legalTibetanSyllable> element that contains the
@@ -929,18 +929,18 @@ public class LegalTshegBar
                 + "transliterationType=\"THDL Extended Wylie 0.5\" "
                 + (hasPrefix()
                    ? ("prefix=\""
-                      + UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar(getPrefix()) + "\" ")
+                      + UnicodeCharToThdlWylie.getThdlWylieForUnicodeChar(getPrefix()) + "\" ")
                    : "")
                 + (hasHeadLetter()
                    ? ("headLetter=\""
-                      + UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar(getHeadLetter())
+                      + UnicodeCharToThdlWylie.getThdlWylieForUnicodeChar(getHeadLetter())
                       + "\" ")
                    : "")
                 + ("rootLetter=\""
-                   + UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar(getRootLetter()) + "\" ")
+                   + UnicodeCharToThdlWylie.getThdlWylieForUnicodeChar(getRootLetter()) + "\" ")
                 + (hasSubjoinedLetter()
                    ? ("subjoinedLetter=\""
-                      + UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar(getSubjoinedLetter())
+                      + UnicodeCharToThdlWylie.getThdlWylieForUnicodeChar(getSubjoinedLetter())
                       + "\" ")
                    : "")
                 + (hasWaZurSubjoinedToRootLetter()
@@ -953,17 +953,17 @@ public class LegalTshegBar
                 // DLC NOW: what about the root letter a, i.e. &#92;u0F68 ?  do we want the EWTS to be 'aa' ?
                 + ("vowel=\""
                    + (hasExplicitVowel()
-                      ? UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar(getVowel())
+                      ? UnicodeCharToThdlWylie.getThdlWylieForUnicodeChar(getVowel())
                       : "a")
                    + "\" ")
                 + (hasSuffix()
                    ? ("suffix=\""
-                      + UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeString(getSuffix())
+                      + UnicodeCharToThdlWylie.getThdlWylieForUnicodeString(getSuffix())
                       + "\" ")
                    : "")
                 + (hasPostsuffix()
                    ? ("postsuffix=\""
-                      + UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar(getPostsuffix())
+                      + UnicodeCharToThdlWylie.getThdlWylieForUnicodeChar(getPostsuffix())
                       + "\" ")
                    : "")
                 + "/>");
