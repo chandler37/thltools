@@ -23,6 +23,7 @@ import org.thdl.tib.text.DuffCode;
 import org.thdl.tib.text.TGCPair;
 import org.thdl.util.ThdlDebug;
 
+import java.util.HashMap;
 import java.util.ArrayList;
 
 /** A list of {@link TPair TPairs}, typically corresponding to
@@ -592,13 +593,57 @@ class TPairList {
         }
     }
 
+    private static HashMap unicodeExceptionsMap = null;
+
     /** Appends legal Unicode corresponding to this stack to sb.
      *  FIXME: which normalization form, if any? */
     void getUnicode(StringBuffer sb) {
+        // The question is this: U+0FB1 or U+0FBB?  U+0FB2 or U+0FBC?
+        // The answer: always the usual form, not the full form,
+        // except for a few known stacks (all the ones with full-form,
+        // non-WA subjoined consonants in TMW: [in EWTS, they are:]
+        // r+Y, N+D+Y, N+D+R+y, k+Sh+R).  Note that wa-zur, U+0FAD, is
+        // never confused for U+0FBA because "V" and "W" are different
+        // transliterations.  EWTS {r+W} thus needs no special
+        // treatment during ACIP->Unicode.
+
+        StringBuffer nonVowelSB = new StringBuffer();
+        int beginningIndex = sb.length();
         boolean subscribed = false;
-        for (int i = 0; i < size(); i++) {
-            get(i).getUnicode(sb, subscribed);
+        int szz = size();
+        int i;
+        for (i = 0; i + ((1 == szz) ? 0 : 1) < szz; i++) {
+            TPair p = get(i);
+
+            // FIXME: change this to an assertion:
+            if ((1 != szz) && null != p.getRight() && !"+".equals(p.getRight()))
+                throw new Error("Oops -- this stack (i.e., " + toString() + ") is funny, so we can't generate proper Unicode for it.  i is " + i + " and size is " + szz);
+
+            p.getUnicode(nonVowelSB, subscribed);
             subscribed = true;
+        }
+        if (szz > 1) {
+            TPair p = get(i);
+            StringBuffer vowelSB = new StringBuffer();
+            p.getUnicode(nonVowelSB, vowelSB, subscribed /* which is true */);
+
+            if (null == unicodeExceptionsMap) {
+                unicodeExceptionsMap = new HashMap();
+                unicodeExceptionsMap.put("\u0f69\u0fb2", "\u0f69\u0fbc"); // KshR (variety 1)
+                unicodeExceptionsMap.put("\u0f40\u0fb5\u0fb2", "\u0f40\u0fb5\u0fbc"); // KshR (variety 2)
+                unicodeExceptionsMap.put("\u0f4e\u0f9c\u0fb2\u0fb1", "\u0f4e\u0f9c\u0fbc\u0fb1"); // ndRY
+                unicodeExceptionsMap.put("\u0f4e\u0f9c\u0fb1", "\u0f4e\u0f9c\u0fbb"); // ndY
+                unicodeExceptionsMap.put("\u0f61\u0fb1", "\u0f61\u0fbb"); // YY
+                unicodeExceptionsMap.put("\u0f62\u0fb1", "\u0f62\u0fbb"); // RY
+            }
+            String mapEntry = (String)unicodeExceptionsMap.get(nonVowelSB.toString());
+            if (null != mapEntry)
+                sb.append(mapEntry);
+            else
+                sb.append(nonVowelSB);
+            sb.append(vowelSB);
+        } else {
+            sb.append(nonVowelSB);
         }
     }
 
@@ -629,6 +674,23 @@ class TPairList {
             }
             if (sawWazur)
                 hashKey = "r-w";
+            else
+                hashKey = "r+W"; // because EWTS has special handling
+                                 // for full-formed subjoined
+                                 // consonants
+        } else {
+            // Because EWTS has special handling for full-formed
+            // subjoined consonants, we have special handling here.
+            if ("r+y".equals(hashKey))
+                hashKey = "r+Y";
+            else if ("y+y".equals(hashKey))
+                hashKey = "y+Y";
+            else if ("N+D+y".equals(hashKey))
+                hashKey = "N+D+Y";
+            else if ("N+D+r+y".equals(hashKey))
+                hashKey = "N+D+R+y";
+            else if ("k+Sh+r".equals(hashKey))
+                hashKey = "k+Sh+R";
         }
         if (!TibetanMachineWeb.isKnownHashKey(hashKey)) {
             hashKey = hashKey.replace('+', '-');

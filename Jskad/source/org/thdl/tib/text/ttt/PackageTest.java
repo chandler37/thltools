@@ -7553,6 +7553,21 @@ M+NA
         uhelp("n+d+Y", "\u0f4e\u0f9c\u0fbb");
         uhelp("Y+Y", "\u0f61\u0fbb");
         uhelp("R+Y", "\u0f62\u0fbb");
+
+        uhelp("RVA R+VEE RWA R+WEE YYA Y+YEE ndRYA n+d+R+YEE KshR K+sh+REE ndY n+d+YEE,",
+              "\u0f62\u0fad\u0f0b" // RVA
+              + "\u0f62\u0fad\u0f7b\u0f0b" //R+VEE
+              + "\u0f62\u0fba\u0f0b" // RWA
+              + "\u0f62\u0fba\u0f7b\u0f0b" // R+WEE
+              + "\u0f61\u0fbb\u0f0b" // YYA
+              + "\u0f61\u0fbb\u0f7b\u0f0b" // Y+YEE
+              + "\u0f4e\u0f9c\u0fbc\u0fb1\u0f0b" // ndRYA
+              + "\u0f4e\u0f9c\u0fbc\u0fb1\u0f7b\u0f0b" // n+d+R+YEE
+              + "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP KshR was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f69\u0fbc\u0f0b" // KshR
+              + "\u0f40\u0fb5\u0fbc\u0f7b\u0f0b" // K+sh+REE
+              + "\u0f4e\u0f9c\u0fbb\u0f0b" // ndY
+              + "\u0f4e\u0f9c\u0fbb\u0f7b\u0f0d" // n+d+YEE
+              ); // DLC FIXME: test the TMW for these, too, it was broken once.
     }
 
     /** Tests some more tsheg bars, these from Dr. Lacey's critical

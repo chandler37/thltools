@@ -211,16 +211,25 @@ class TPair {
      *  subscribed) pair to sb.  FIXME: which normalization form,
      *  if any? */
     void getUnicode(StringBuffer sb, boolean subscribed) {
+        getUnicode(sb, sb, subscribed);
+    }
+
+    /** Appends legal Unicode corresponding to this (possible
+     *  subscribed) pair to consonantSB (for the non-vowel part) and
+     *  vowelSB (for the vowelish part ({'EEm:}, e.g.).  FIXME: which
+     *  normalization form, if any? */
+    void getUnicode(StringBuffer consonantSB, StringBuffer vowelSB,
+                    boolean subscribed) {
         if (null != getLeft()) {
             String x = ACIPRules.getUnicodeFor(getLeft(), subscribed);
             if (null == x) throw new Error("TPair: " + getLeft() + " has no Uni");
-            sb.append(x);
+            consonantSB.append(x);
         }
         if (null != getRight()
             && !("-".equals(getRight()) || "+".equals(getRight()) || "A".equals(getRight()))) {
             String x = ACIPRules.getUnicodeFor(getRight(), subscribed);
             if (null == x) throw new Error("TPair: " + getRight() + " has no Uni");
-            sb.append(x);
+            vowelSB.append(x);
         }
     }
 

@@ -225,37 +225,13 @@ class TStackList {
         return false;
     }
 
-    private static HashMap unicodeExceptionsMap = null;
-
     /** Returns legal Unicode corresponding to this tsheg bar.  FIXME: which normalization form, if any? */
     String getUnicode() {
-        // The question is this: U+0FB1 or U+0FBB?  U+0FB2 or
-        // U+0FBC?  The answer: always the usual form, not the
-        // full form, except for a few known stacks (all the ones
-        // with full form subjoined consonants in TMW).  Note that
-        // wa-zur, U+0FAD, is never confused for U+0FBA because
-        // "V" and "W" are different transliterations.
-
         StringBuffer u = new StringBuffer(size());
         for (int i = 0; i < size(); i++) {
             get(i).getUnicode(u);
         }
-
-        String us = u.toString();
-        if (null == unicodeExceptionsMap) {
-            unicodeExceptionsMap = new HashMap();
-            unicodeExceptionsMap.put("\u0f69\u0fb2", "\u0f69\u0fbc"); // KshR
-            unicodeExceptionsMap.put("\u0f40\u0fb5\u0fb2", "\u0f40\u0fb5\u0fbc"); // KshR
-            unicodeExceptionsMap.put("\u0f4e\u0f9c\u0fb2\u0fb1", "\u0f4e\u0f9c\u0fbc\u0fb1"); // ndRY
-            unicodeExceptionsMap.put("\u0f4e\u0f9c\u0fb1", "\u0f4e\u0f9c\u0fbb"); // ndY
-            unicodeExceptionsMap.put("\u0f61\u0fb1", "\u0f61\u0fbb"); // YY
-            unicodeExceptionsMap.put("\u0f62\u0fb1", "\u0f62\u0fbb"); // RY
-        }
-        String mapEntry = (String)unicodeExceptionsMap.get(us);
-        if (null != mapEntry)
-            return mapEntry;
-        else
-            return us;
+        return u.toString();
     }
 
     /** Returns the DuffCodes and errors corresponding to this stack
