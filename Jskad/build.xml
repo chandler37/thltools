@@ -747,7 +747,7 @@
 
   <target name="public-javadocs"
           description="makes Javadoc documentation for public/protected classes, methods, and fields"
-          depends="init" >
+          depends="init,create-timestamp-source-code" >
     <antcall target="our-javadocs">
       <param name="access" value="protected"/>
       <param name="our-javadocs-destdir" value="${publicjavadocs}"/>
@@ -757,7 +757,7 @@
 
   <target name="private-javadocs"
           description="makes Javadoc documentation for all classes, methods, and fields, regardless of their protection level (public, private, etc.)"
-          depends="init" >
+          depends="init,create-timestamp-source-code" >
     <antcall target="our-javadocs">
       <param name="access" value="private"/>
       <param name="our-javadocs-destdir" value="${privatejavadocs}"/>
