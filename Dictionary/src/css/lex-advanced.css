@@ -4,6 +4,7 @@
 {
 }
 
+
 #message 
 { 
 }
@@ -36,7 +37,10 @@ margin-top: 2px;
 #termChildren, #defChildren, #subdefChildren
 {
 }
-
+#columnLeft select, #columnLeft input
+{
+	width: 120px;
+}
 #columnCenter p
 {
 	text-align: justify;

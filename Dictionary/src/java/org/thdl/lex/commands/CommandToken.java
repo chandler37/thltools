@@ -1,49 +1,88 @@
 package org.thdl.lex.commands;
 
-import org.thdl.lex.*;
-import org.thdl.lex.component.*;
-
 import java.security.MessageDigest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.thdl.lex.*;
+import org.thdl.lex.component.*;
+
+
+/**
+ *  Description of the Class
+ *
+ * @author     travis
+ * @created    October 22, 2003
+ */
 public class CommandToken
 {
-	public static void set(HttpServletRequest req)
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  req  Description of the Parameter
+	 */
+	public static void set( HttpServletRequest req )
 	{
-		HttpSession session = req.getSession(true);
+		HttpSession session = req.getSession( true );
+		Visit visit = UserSessionManager.getInstance().getVisit( session );
 		long systime = System.currentTimeMillis();
-		byte[] time = new Long(systime).toString().getBytes();
+		byte[] time = new Long( systime ).toString().getBytes();
 		byte[] id = session.getId().getBytes();
 		try
 		{
-			MessageDigest md5 = MessageDigest.getInstance("MD5");
-			md5.update(id);
-			md5.update(time);
+			MessageDigest md5 = MessageDigest.getInstance( "MD5" );
+			md5.update( id );
+			md5.update( time );
 			String token = toHex( md5.digest() );
-			req.setAttribute("token", token);
-			session.setAttribute("token", token);
+			req.setAttribute( "token", token );
+			visit.setToken( token );
 		}
-		catch (Exception e)
+		catch ( Exception e )
 		{
-			System.err.println("Unable to calculate MD5 Digests.\nCould not create unique token");
+			System.err.println( "Unable to calculate MD5 Digests.\nCould not create unique token" );
 		}
 	}
-	public static boolean isValid(HttpServletRequest req)
+
+
+	/**
+	 *  Gets the valid attribute of the CommandToken class
+	 *
+	 * @param  req  Description of the Parameter
+	 * @return      The valid value
+	 */
+	public static boolean isValid( HttpServletRequest req )
 	{
-		HttpSession session = req.getSession(true);
-		String requestToken = req.getParameter("token");
-		String sessionToken = (String) session.getAttribute("token");
-		if (requestToken == null && sessionToken == null)
-			return false;
+		boolean valid;
+		HttpSession session = req.getSession( true );
+		Visit visit = UserSessionManager.getInstance().getVisit( session );
+		String requestToken = req.getParameter( "token" );
+		String sessionToken = visit.getToken();
+		if ( requestToken == null && sessionToken == null )
+		{
+			valid = false;
+		}
 		else
-			return requestToken.equals(sessionToken);//this is a boolean
+		{
+			valid = requestToken.equals( sessionToken );
+		}
+		return valid;
 	}
-	public static String toHex(byte[] digest)
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  digest  Description of the Parameter
+	 * @return         Description of the Return Value
+	 */
+	public static String toHex( byte[] digest )
 	{
 		StringBuffer buf = new StringBuffer();
-		for (int i = 0; i < digest.length; i++)
-			buf.append( Integer.toHexString( (int)digest[i] & 0x00ff ) );//param=BITWISE operation
+		for ( int i = 0; i < digest.length; i++ )
+		{
+			buf.append( Integer.toHexString( (int) digest[i] & 0x00ff ) );
+		}//param=BITWISE operation
 		return buf.toString();
 	}
 }
+

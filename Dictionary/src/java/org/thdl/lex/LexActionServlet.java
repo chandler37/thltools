@@ -25,8 +25,6 @@ public class LexActionServlet extends HttpServlet
 {
 //attributes
 	private HashMap commands;
-	private String cmd;
-
 
 //accessors
 
@@ -42,17 +40,6 @@ public class LexActionServlet extends HttpServlet
 	}
 
 
-	/**
-	 *  Sets the cmd attribute of the LexActionServlet object
-	 *
-	 * @param  cmd  The new cmd value
-	 * @since
-	 */
-	public void setCmd( String cmd )
-	{
-		this.cmd = cmd;
-	}
-
 
 	/**
 	 *  Gets the commands attribute of the LexActionServlet object
@@ -65,17 +52,6 @@ public class LexActionServlet extends HttpServlet
 		return commands;
 	}
 
-
-	/**
-	 *  Gets the cmd attribute of the LexActionServlet object
-	 *
-	 * @return    The cmd value
-	 * @since
-	 */
-	public String getCmd()
-	{
-		return cmd;
-	}
 
 
 //helper methods
@@ -122,8 +98,8 @@ public class LexActionServlet extends HttpServlet
 		String next;
 		try
 		{
-			setCmd( req.getParameter( LexConstants.COMMAND_REQ_PARAM ) );
-			Command command = lookupCommand( getCmd() );
+			String cmd = req.getParameter( LexConstants.COMMAND_REQ_PARAM );
+			Command command = lookupCommand( cmd );
 			LexComponent component = (LexComponent) req.getAttribute( LexConstants.COMPONENT_REQ_ATTR );
 			next = command.execute( req, component );
 			CommandToken.set( req );
@@ -187,7 +163,7 @@ public class LexActionServlet extends HttpServlet
 		}
 		else
 		{
-			throw new CommandException( "Invalid Command Identifier: '" + getCmd() + "'" );
+			throw new CommandException( "Invalid Command Identifier: '" + cmdKey + "'" );
 		}
 	}
 

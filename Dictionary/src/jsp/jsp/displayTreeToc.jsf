@@ -124,8 +124,8 @@
 </c:forEach><!--END DEFINITIONS-->
 </c:if>
 
-</ol>
-</li>
+<%-- </ol>
+</li> --%>
 
 </ol>	
 

@@ -4,7 +4,7 @@
 @import url( "lex-advanced.css" );
 
 
-#main *
+#main input, #main textarea, #main p, #main li
 {  /*---------    '*' = everything     -------------*/
 font-family: 'Arial Unicode MS', 'Lucida Grande', sans-serif !important;
 }
@@ -12,6 +12,7 @@ font-family: 'Arial Unicode MS', 'Lucida Grande', sans-serif !important;
 h1
 {
 	font-size: 1.5em;
+	text-transform: none;
 }
 
 li, ol, ul
@@ -19,7 +20,6 @@ li, ol, ul
 		padding: 0 1em 0 1em;
 		margin-top: 0;
 		border-width:  0px;
-
 }
 li
 {
@@ -46,7 +46,15 @@ li
 ol        
 { 
 list-style-type: upper-roman; 
+}
+
+#entry ol, #entry ul, #entry li
+{
+clear: right;
+margin-right: 0 !important;
+padding-right: 0 !important;
 } 
+
 #results ol
 {
 	list-style-type: decimal;
@@ -79,4 +87,62 @@ margin-left: 0 !important;
 padding-left: 0 !important;
 } 
 
+div.tmw-block
+{
+	margin-top: 1ex !important;
+} 
 
+span
+{
+	 /* border: solid 1px red;   */
+}
+a.tmw-link:hover
+{
+	background-color: inherit;
+}
+span.tmw-roman {position: relative;	top: 0pt; padding-left: .25em;}
+span.tmw {font: 20pt TibetanMachineWeb !important; text-transform: none; position: relative; top: -5pt;}
+span.tmw1 {font: 20pt TibetanMachineWeb1 !important; text-transform: none;  position: relative; top: -5pt;}
+span.tmw2 {font: 20pt TibetanMachineWeb2 !important; text-transform: none;  position: relative; top: -5pt;}
+span.tmw3 {font: 20pt TibetanMachineWeb3 !important; text-transform: none;  position: relative; top: -5pt;}
+span.tmw4 {font: 20pt TibetanMachineWeb4 !important; text-transform: none;  position: relative; top: -5pt;}
+span.tmw5 {font: 20pt TibetanMachineWeb5 !important; text-transform: none;  position: relative; top: -5pt;}
+span.tmw6 {font: 20pt TibetanMachineWeb6 !important; text-transform: none;  position: relative; top: -5pt;}
+span.tmw7 {font: 20pt TibetanMachineWeb7 !important; text-transform: none;  position: relative; top: -5pt;}
+span.tmw8 {font: 20pt TibetanMachineWeb8 !important; text-transform: none;  position: relative; top: -5pt;}
+span.tmw9 {font: 20pt TibetanMachineWeb9 !important; text-transform: none;  position: relative; top: -5pt;}
+
+h1 span.tmw-roman { top: 0pt; }
+h1 span.tmw {font-size: 32pt  !important; top: -8pt;}
+h1 span.tmw1 {font-size: 32pt  !important; top: -8pt;}
+h1 span.tmw2 {font-size: 32pt  !important; top: -8pt;}
+h1 span.tmw3 {font-size: 32pt  !important; top: -8pt;}
+h1 span.tmw4 {font-size: 32pt  !important; top: -8pt;}
+h1 span.tmw5 {font-size: 32pt  !important; top: -8pt;}
+h1 span.tmw6 {font-size: 32pt  !important; top: -8pt;}
+h1 span.tmw7 {font-size: 32pt  !important; top: -8pt;}
+h1 span.tmw8 {font-size: 32pt  !important; top: -8pt;}
+h1 span.tmw9 {font-size: 32pt  !important; top: -8pt;}
+
+p span.tmw {font-size: 20pt  !important; }
+p span.tmw1 {font-size: 20pt  !important; }
+p span.tmw2 {font-size: 20pt  !important; }
+p span.tmw3 {font-size: 20pt  !important; }
+p span.tmw4 {font-size: 20pt  !important; }
+p span.tmw5 {font-size: 20pt  !important; }
+p span.tmw6 {font-size: 20pt  !important; }
+p span.tmw7 {font-size: 20pt  !important; }
+p span.tmw8 {font-size: 20pt  !important; }
+p span.tmw9 {font-size: 20pt  !important; }
+
+
+li span.tmw {font-size: 20pt  !important; }
+li span.tmw1 {font-size: 20pt  !important; }
+li span.tmw2 {font-size: 20pt  !important; }
+li span.tmw3 {font-size: 20pt  !important; }
+li span.tmw4 {font-size: 20pt  !important; }
+li span.tmw5 {font-size: 20pt  !important; }
+li span.tmw6 {font-size: 20pt  !important; }
+li span.tmw7 {font-size: 20pt  !important; }
+li span.tmw8 {font-size: 20pt  !important; }
+li span.tmw9 {font-size: 20pt  !important; }

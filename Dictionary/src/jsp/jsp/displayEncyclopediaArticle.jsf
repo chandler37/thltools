@@ -7,8 +7,8 @@
 
 <c:if test="${ editMode }">
 <span class="compEditOptions">
-<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=encyclopediaArticle&amp;metaId=${ encyclopediaArticle.metaId }" label="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
-<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=encyclopediaArticle&amp;metaId=${ encyclopediaArticle.metaId }" label="Edit this encyclopediaArticle"><img alt="Edit this encyclopediaArticle" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=encyclopediaArticle&amp;metaId=${ encyclopediaArticle.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=encyclopediaArticle&amp;metaId=${ encyclopediaArticle.metaId }" title="Edit this encyclopediaArticle"><img alt="Edit this encyclopediaArticle" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
 </span>
 </c:if>
 <!--<span class="label">Encyclopedia Article:</span>-->  

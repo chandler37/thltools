@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.util.*;
 import org.apache.commons.beanutils.*;
 import org.thdl.lex.component.*;
+import org.thdl.tib.text.TibetanHTML;
 
 
 /**
@@ -19,10 +20,35 @@ public class DisplayHelper
 	private ILexComponent note;
 	private Date date;
 	private final static DateFormat DATE_FORMAT = DateFormat.getDateInstance( DateFormat.LONG );
+
 	private boolean showNotes;
 	private boolean showMeta;
 	private boolean showEditOptions;
 	private boolean showTranslations;
+
+	private String wylie;
+
+
+	/**
+	 *  Sets the wylie attribute of the DisplayHelper object
+	 *
+	 * @param  wylie  The new wylie value
+	 */
+	public void setWylie( String wylie )
+	{
+		this.wylie = wylie;
+	}
+
+
+	/**
+	 *  Gets the wylie attribute of the DisplayHelper object
+	 *
+	 * @return    The wylie value
+	 */
+	public String getWylie()
+	{
+		return wylie;
+	}
 
 
 	/**
@@ -233,6 +259,17 @@ public class DisplayHelper
 			b = t.getTranslationOf() != null ? true : false;
 		}
 		return b;
+	}
+
+
+	/**
+	 *  Gets the tibetan attribute of the DisplayHelper object
+	 *
+	 * @return    The tibetan value
+	 */
+	public String getTibetan()
+	{
+		return TibetanHTML.getHTMLX( getWylie() );
 	}
 
 

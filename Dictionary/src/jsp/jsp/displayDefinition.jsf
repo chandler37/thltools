@@ -10,10 +10,10 @@
 <c:out value='<a name="${ definition }" ></a>' escapeXml="false" />
 		<c:if test="${ editMode }">
 		<span class="compEditOptions">
-			<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=definition&amp;metaId=${ definition.metaId }" label="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
-			<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=definition&amp;metaId=${ definition.metaId }" label="Edit this Definition"><img alt="Edit this Definition" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
-			<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=definition&amp;parentId=${definition.parentId}&amp;translationOf=${definition.metaId}" label="Translate this Definition"><img alt="Translate this Definition" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
-			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=subdefinition&amp;parentId=${definition.metaId}" label="Add a Subdefinition"><img alt="Add a Subdefinition" src="/lex/images/subdef.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=definition&amp;metaId=${ definition.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=definition&amp;metaId=${ definition.metaId }" title="Edit this Definition"><img alt="Edit this Definition" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=definition&amp;parentId=${definition.parentId}&amp;translationOf=${definition.metaId}" title="Translate this Definition"><img alt="Translate this Definition" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
+			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=subdefinition&amp;parentId=${definition.metaId}" title="Add a Subdefinition"><img alt="Add a Subdefinition" src="/lex/images/subdef.gif"/></a>' escapeXml="false" />
 		</span>
 </c:if>
 

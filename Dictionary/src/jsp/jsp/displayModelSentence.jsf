@@ -9,9 +9,9 @@
 <c:out value='<a name="${ modelSentence }" ></a>' escapeXml="false" />
 		<c:if test="${ editMode }">
 	<span class="compEditOptions">
-		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }" label="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
-		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }" label="Edit this modelSentence"><img alt="Edit this modelSentence" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
-		<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=modelSentence&amp;parentId=${modelSentence.parentId}&amp;translationOf=${modelSentence.metaId}" label="Translate this modelSentence"><img alt="Translate this modelSentence" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
+		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }" title="Edit this modelSentence"><img alt="Edit this modelSentence" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=modelSentence&amp;parentId=${modelSentence.parentId}&amp;translationOf=${modelSentence.metaId}" title="Translate this modelSentence"><img alt="Translate this modelSentence" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
 		</span>
 	</c:if>
 

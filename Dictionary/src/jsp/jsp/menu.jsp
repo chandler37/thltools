@@ -88,8 +88,11 @@
 	<div id="recentTerms">
 	<c:forEach var="term" items="${applicationScope.global.recentTerms }">
 		<p>
-		<c:out value='<a href="/lex/action?cmd=displayFull&comp=term&metaId=${term.metaId}">${ term.term}</a>' escapeXml='false' /><br/>
-		Modified by <c:out value="${ applicationScope.flatData.users[ term.meta.modifiedBy ] }" /><br/>
+		<c:set target="${ sessionScope.visit.helper}" property="wylie" value="${ term.term }"/>
+		<c:set var="tib" value="${ sessionScope.visit.helper.tibetan } " />
+		<c:set var="wylie" value=" <span class='tmw-roman'>${ term.term }</span>" />
+		<c:out value='<a class="tmw-link" href="/lex/action?cmd=displayFull&comp=term&metaId=${term.metaId}">${ tib } ${ wylie }</a>' escapeXml='false' /> 
+		Modified by <c:out value="${ applicationScope.flatData.users[ term.meta.modifiedBy ] }" /> 
 		<c:set target="${ sessionScope.visit.helper }" property="date" value="${ term.meta.modifiedOn }"/>
 		<c:out value="${ sessionScope.visit.helper.formattedDate }"  />
 		</p>

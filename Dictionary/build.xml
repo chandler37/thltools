@@ -108,6 +108,9 @@
 			</fileset>
 			<fileset dir="${basedir}/lib/hibernate">
 				<include name="*.jar"/>
+			</fileset>			
+			<fileset dir="${basedir}/lib/thdl">
+				<include name="*.jar"/>
 			</fileset>
 		</copy>
 	

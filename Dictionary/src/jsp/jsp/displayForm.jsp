@@ -19,7 +19,7 @@
 <c:if test="${ ! empty termEntry }">
 <div id="backButton">
 Back to:
-<c:out value='<a href="/lex/action?cmd=displayFull&comp=term&id=${ termEntry.term.id }">${ termEntry.term.term }</a>' escapeXml="false" />
+<c:out value='<a href="/lex/action?cmd=displayFull&amp;comp=term&id=${ termEntry.term.id }">${ termEntry.term.term }</a>' escapeXml="false" />
 </div>
 </c:if>
 

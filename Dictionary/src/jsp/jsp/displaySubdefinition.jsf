@@ -11,15 +11,15 @@
 					<c:if test="${ editMode }">
 	<span class="compEditOptions">
 
-			<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=subdefinition&amp;metaId=${ subdefinition.metaId }" label="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
-			<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=subdefinition&amp;metaId=${ subdefinition.metaId }" label="Edit this subdefinition"><img alt="Edit this subdefinition" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
-			<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=subdefinition&amp;parentId=${subdefinition.parentId}&amp;translationOf=${subdefinition.metaId}" label="Translate this subdefinition"><img alt="Translate this subdefinition" src="/lex/images/trans.gif"/></a>' escapeXml="false" />
-			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=keyword&amp;parentId=${subdefinition.metaId}" label="Add a Keyword"><img alt="Add a Keyword" src="/lex/images/key.gif"/></a>' escapeXml="false" />
-			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=modelSentence&amp;parentId=${subdefinition.metaId}" label="Add a Model Sentence"><img alt="Add a Model Sentence" src="/lex/images/sent.gif"/></a>' escapeXml="false" />
-			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=translationEquivalent&amp;parentId=${subdefinition.metaId}" label="Add a Translation Equivalent"><img alt="Add a Translation Equivalent" src="/lex/images/trans-eqv.gif"/></a>' escapeXml="false" />
-			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=relatedTerm&amp;parentId=${subdefinition.metaId}" label="Add a Related Term"><img alt="Add a Related Term" src="/lex/images/rel-term.gif"/></a>' escapeXml="false" />
-			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=passage&amp;parentId=${subdefinition.metaId}" label="Add a Passage"><img alt="Add a Passage" src="/lex/images/pass.gif"/></a>' escapeXml="false" />
-			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=speechRegister&amp;parentId=${subdefinition.metaId}" label="Add a Speech Register"><img alt="Add a Speech Register" src="/lex/images/reg.gif"/></a>' escapeXml="false" />			
+			<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=subdefinition&amp;metaId=${ subdefinition.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=subdefinition&amp;metaId=${ subdefinition.metaId }" title="Edit this subdefinition"><img alt="Edit this subdefinition" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=subdefinition&amp;parentId=${subdefinition.parentId}&amp;translationOf=${subdefinition.metaId}" title="Translate this subdefinition"><img alt="Translate this subdefinition" src="/lex/images/trans.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=keyword&amp;parentId=${subdefinition.metaId}" title="Add a Keyword"><img alt="Add a Keyword" src="/lex/images/key.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=modelSentence&amp;parentId=${subdefinition.metaId}" title="Add a Model Sentence"><img alt="Add a Model Sentence" src="/lex/images/sent.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=translationEquivalent&amp;parentId=${subdefinition.metaId}" title="Add a Translation Equivalent"><img alt="Add a Translation Equivalent" src="/lex/images/trans-eqv.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=relatedTerm&amp;parentId=${subdefinition.metaId}" title="Add a Related Term"><img alt="Add a Related Term" src="/lex/images/rel-term.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=passage&amp;parentId=${subdefinition.metaId}" title="Add a Passage"><img alt="Add a Passage" src="/lex/images/pass.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=speechRegister&amp;parentId=${subdefinition.metaId}" title="Add a Speech Register"><img alt="Add a Speech Register" src="/lex/images/reg.gif"/></a>' escapeXml="false" />			
 
 			</span>
 		</c:if>

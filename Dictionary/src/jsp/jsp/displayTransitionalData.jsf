@@ -11,8 +11,8 @@
 
 		<c:if test="${ editMode }">
 		<span class="compEditOptions">
-		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=transitionalData&amp;metaId=${ transitionalData.metaId }" label="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
-		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=transitionalData&amp;metaId=${ transitionalData.metaId }" label="Edit this component"><img alt="Edit this component" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=transitionalData&amp;metaId=${ transitionalData.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=transitionalData&amp;metaId=${ transitionalData.metaId }" title="Edit this component"><img alt="Edit this component" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
 		</span>
 		</c:if>
 

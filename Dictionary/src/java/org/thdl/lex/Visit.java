@@ -17,11 +17,34 @@ public class Visit
 {
 //attributes
 	HttpSession session;
+	String token;
 	DisplayHelper helper;
 	Preferences preferences;
 	LexQuery query;
 	ThdlUser user;
 	String displayMode;
+
+
+	/**
+	 *  Sets the token attribute of the Visit object
+	 *
+	 * @param  token  The new token value
+	 */
+	public void setToken( String token )
+	{
+		this.token = token;
+	}
+
+
+	/**
+	 *  Gets the token attribute of the Visit object
+	 *
+	 * @return    The token value
+	 */
+	public String getToken()
+	{
+		return token;
+	}
 
 
 	/**

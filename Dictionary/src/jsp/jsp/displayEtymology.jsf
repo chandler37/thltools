@@ -10,9 +10,9 @@
 <c:out value='<a name="${ etymology }" ></a>' escapeXml="false" />
 		<c:if test="${ editMode }">
 			<span class="compEditOptions">			
-			<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=etymology&amp;metaId=${etymology.metaId}" label="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
-			<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=etymology&amp;metaId=${ etymology.metaId }&amp;parentId=${etymology.parentId}" label="Edit this Etymology"><img alt="Edit this component" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
-			<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=etymology&amp;parentId=${etymology.parentId}&amp;translationOf=${etymology.metaId}" label="Translate this Etymology"><img alt="Translate this Etymology" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
+			<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=etymology&amp;metaId=${etymology.metaId}" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=etymology&amp;metaId=${ etymology.metaId }&amp;parentId=${etymology.parentId}" title="Edit this Etymology"><img alt="Edit this component" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=etymology&amp;parentId=${etymology.parentId}&amp;translationOf=${etymology.metaId}" title="Translate this Etymology"><img alt="Translate this Etymology" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
 			</span>
 		</c:if>
 

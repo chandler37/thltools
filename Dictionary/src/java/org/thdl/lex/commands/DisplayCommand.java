@@ -86,7 +86,7 @@ public class DisplayCommand extends LexCommand implements Command
 			}
 			else
 			{
-				setNext( "menu.jsp" );
+				next = "menu.jsp";
 				msg = "The component set for display was not a term.";
 				LexLogger.error( msg );
 			}

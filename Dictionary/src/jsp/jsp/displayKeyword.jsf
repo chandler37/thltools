@@ -9,8 +9,8 @@
 <c:out value='<a name="${ keyword }" ></a>' escapeXml="false" />
 		<c:if test="${ editMode }">
 			<span class="compEditOptions">
-		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=keyword&amp;metaId=${ keyword.metaId }" label="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
-		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=keyword&amp;metaId=${ keyword.metaId }" label="Edit this keyword"><img alt="Edit this keyword" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=keyword&amp;metaId=${ keyword.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=keyword&amp;metaId=${ keyword.metaId }" title="Edit this keyword"><img alt="Edit this keyword" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
 		</span>
 	</c:if>
 

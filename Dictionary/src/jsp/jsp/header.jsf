@@ -18,6 +18,7 @@ p.data
 border: none;
 }
 </c:if>
+/* <%= org.thdl.tib.text.TibetanHTML.getStyles( "20" ) %> */
 </style>
 </head>
 <body> 

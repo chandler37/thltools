@@ -9,8 +9,8 @@
 		<c:out value='<a name="${ register }" ></a>' escapeXml="false" />
 		<c:if test="${ editMode }">
 		<span class="compEditOptions">
-		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=speechRegister&amp;metaId=${ register.metaId }" label="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
-		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=speechRegister&amp;metaId=${ register.metaId }" label="Edit this speechRegister"><img alt="Edit this speechRegister" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=speechRegister&amp;metaId=${ register.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=speechRegister&amp;metaId=${ register.metaId }" title="Edit this speechRegister"><img alt="Edit this speechRegister" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
 		</span>
 		</c:if>
 	<!--<span class="label">Speech Register:</span>-->
