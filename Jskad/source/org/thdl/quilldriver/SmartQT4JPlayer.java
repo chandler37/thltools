@@ -199,6 +199,9 @@ public class SmartQT4JPlayer extends SmartMoviePanel
 	{
 		return true;
 	}
+	public boolean isPlaying() {
+		return false; //FIXME
+	}
 	public int getCurrentTime()
 	{
 		try {

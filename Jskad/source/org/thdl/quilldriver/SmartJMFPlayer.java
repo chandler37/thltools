@@ -178,8 +178,10 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 				weird results if you do player.start() without setting the media
 				time.*/
 
-			if (!(event instanceof RestartingEvent))
+			if (!(event instanceof RestartingEvent)) {
 				player.setMediaTime(pauseTime);
+				player.prefetch();
+			}
 
 //			player.setStopTime(Clock.RESET);
 			stopTime = null;
@@ -274,6 +276,13 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 		}
 	}
 /*-----------------------------------------------------------------------*/
+	public boolean isPlaying() {
+		if (player == null)
+			return false;
+		if (player.getState() == Controller.Started)
+			return true;
+		return false;
+	}
 	public int getCurrentTime() {
 		if (player == null)
 			return -1;

@@ -17,6 +17,7 @@ public abstract class SmartMoviePanel extends Panel
 	
 //helper methods - media status
 	public abstract boolean isInitialized();
+	public abstract boolean isPlaying();
 	public abstract int getCurrentTime();
 	public abstract int getEndTime();
 

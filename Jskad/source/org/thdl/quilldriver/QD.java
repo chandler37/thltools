@@ -504,40 +504,31 @@ class TimeCodeManager extends JPanel {
 		JPanel ps = new JPanel();
 		ps.add(playSegButton);
 
-/*
-		JButton playButton = new JButton(messages.getString("Play"));
-		JButton pauseButton = new JButton(messages.getString("Pause"));
+		JButton playPauseButton = new JButton(messages.getString("PlayPause"));
+		playPauseButton.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e) {
+				if (player != null) {
+					try {
+						if (player.isPlaying())
+							player.cmd_stop();
+						else
+							player.cmd_playOn();
+					} catch (SmartMoviePanelException smpe) {
+						smpe.printStackTrace();
+						ThdlDebug.noteIffyCode();
+					}
+				}
+			}
+		});
 
-		playButton.addActionListener(new ThdlActionListener() {
-			public void theRealActionPerformed(ActionEvent e) {
-				if (player != null) {
-					try {
-						player.cmd_playOn();
-					} catch (SmartMoviePanelException smpe) {
-						smpe.printStackTrace();
-						ThdlDebug.noteIffyCode();
-					}
-				}
-			}
-		});
-		pauseButton.addActionListener(new ThdlActionListener() {
-			public void theRealActionPerformed(ActionEvent e) {
-				if (player != null) {
-					try {
-						player.cmd_stop();
-					} catch (SmartMoviePanelException smpe) {
-						smpe.printStackTrace();
-						ThdlDebug.noteIffyCode();
-					}
-				}
-			}
-		});
-*/
+		JPanel playPausePanel = new JPanel();
+		playPausePanel.add(playPauseButton);
 
 		Box box = Box.createVerticalBox();
 		box.add(inPanel);
 		box.add(outPanel);
 		box.add(ps);
+		box.add(playPausePanel);
 
 		add("North", box);
 	}
