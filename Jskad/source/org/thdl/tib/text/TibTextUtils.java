@@ -375,7 +375,7 @@ public class TibTextUtils implements THDLWylieConstants {
 				if (!chars.isEmpty()) {
 					glyphs.addAll(getGlyphs(chars, true, !isSanskrit, isSanskrit));
 					dc = (DuffCode)glyphs.removeLast(); //LinkedList implementation
-					glyphs.addAll(getVowel(dc, next));
+					getVowel(glyphs, dc, next);
 					chars.clear();
 				}
 				else { //if previous is punctuation or null, then achen plus vowel - otherwise, previous could be vowel
@@ -387,13 +387,13 @@ public class TibTextUtils implements THDLWylieConstants {
 							if (!TibetanMachineWeb.isWyliePunc(TibetanMachineWeb.getWylieForGlyph(dc, weDoNotCareIfThereIsCorrespondingWylieOrNot))) {
 								DuffCode dc_2 = (DuffCode)glyphs.removeLast();
 								DuffCode dc_1 = (DuffCode)glyphs.removeLast();
-								glyphs.addAll(getVowel(dc_1, dc_2, next));
+								getVowel(glyphs, dc_1, dc_2, next);
 								break vowel_block;
 							}
 						}
 						DuffCode[] dc_array = (DuffCode[])TibetanMachineWeb.getTibHash().get(ACHEN);
 						dc = dc_array[TibetanMachineWeb.TMW];
-						glyphs.addAll(getVowel(dc, next));
+						getVowel(glyphs, dc, next);
 					}
 
 					chars.clear();
@@ -442,6 +442,7 @@ public class TibTextUtils implements THDLWylieConstants {
 						default:
 							String top_char = (String)chars.get(chars.size()-1);
 							chars.remove(chars.size()-1);
+                                                        // DLC PERFORMANCE FIXME: make glyphs a parameter
 							glyphs.addAll(getGlyphs(chars, true, !isSanskrit, isSanskrit));
 							chars.clear();
 							chars.add(top_char);
@@ -520,39 +521,39 @@ public class TibTextUtils implements THDLWylieConstants {
 * @param vowel the vowel you want to affix, in Wylie
 * @return a List of glyphs equal to the vowel in context
 */
-	public static List getVowel(DuffCode context, String vowel) {
-		return getVowel(null, context, vowel);
-	}
+    public static void getVowel(List l, DuffCode context, String vowel) {
+        getVowel(l, null, context, vowel);
+    }
 
 /**
-* Gets the vowel sequence for a given vowel in a given context.
-* Given a context, this method affixes a vowel and returns the context plus the vowel.
-* Since the choice of vowel glyph depends on the consonant to which it is attached,
-* generally it is enough to provide just the immediately preceding context. However,
-* in some cases, double vowels are allowed - for example 'buo'. To find the correct
-* glyph for 'o', we need 'b' in this case, not 'u'. Note also that some Extended
-* Wylie vowels correspond to multiple glyphs in TibetanMachineWeb. For example,
-* the vowel I consists of both an achung and a reverse gigu. All required glyphs
-* are part of the returned List.
-* @param context_1 the glyph occurring two glyphs before the vowel you want to affix
-* @param context_2 the glyph immediately before the vowel you want to affix
-* @param vowel the vowel you want to affix, in Wylie
-* @return a List of glyphs equal to the vowel in context
-*/
+* Gets the vowel sequence for a given vowel in a given context and
+* appends it to l.  Given a context, this method affixes a vowel and
+* appends the context plus the vowel to l.  Since the choice of vowel
+* glyph depends on the consonant to which it is attached, generally it
+* is enough to provide just the immediately preceding
+* context. However, in some cases, double vowels are allowed - for
+* example 'buo'. To find the correct glyph for 'o', we need 'b' in
+* this case, not 'u'. Note also that some Extended Wylie vowels
+* correspond to multiple glyphs in TibetanMachineWeb. For example, the
+* vowel I consists of both an achung and a reverse gigu. All required
+* glyphs are appended to l.
+* @param context_1 the glyph occurring two glyphs before the vowel you
+* want to affix
+* @param context_2 the glyph immediately before the vowel you want to
+* affix
+* @param vowel the vowel you want to affix, in Wylie */
 
-	public static List getVowel(DuffCode context_1, DuffCode context_2, String vowel) {
-		List vowels = new ArrayList();
-
+	public static void getVowel(List l, DuffCode context_1, DuffCode context_2, String vowel) {
 //this vowel doesn't correspond to a glyph -
 //so you just return the original context
 
 		if (	vowel.equals(WYLIE_aVOWEL) ||
 			TibetanMachineWeb.isTopVowel(context_2)) {
 			if (context_1 != null)
-				vowels.add(context_1);
+				l.add(context_1);
 
-			vowels.add(context_2);
-			return vowels;
+			l.add(context_2);
+			return;
 		}
 
 //first, the three easiest cases: ai, au, and <i
@@ -561,36 +562,36 @@ public class TibTextUtils implements THDLWylieConstants {
 
 		if (vowel.equals(ai_VOWEL)) {
 			if (context_1 != null)
-				vowels.add(context_1);
+				l.add(context_1);
 
-			vowels.add(context_2);
+			l.add(context_2);
 			DuffCode[] dc_v = (DuffCode[])TibetanMachineWeb.getTibHash().get(ai_VOWEL);
-			vowels.add(dc_v[TibetanMachineWeb.TMW]);
-			return vowels;
+			l.add(dc_v[TibetanMachineWeb.TMW]);
+			return;
 		}
 
 		if (vowel.equals(au_VOWEL)) {
 			if (context_1 != null)
-				vowels.add(context_1);
+				l.add(context_1);
 
-			vowels.add(context_2);
+			l.add(context_2);
 			DuffCode[] dc_v = (DuffCode[])TibetanMachineWeb.getTibHash().get(au_VOWEL);
-			vowels.add(dc_v[TibetanMachineWeb.TMW]);
-			return vowels;
+			l.add(dc_v[TibetanMachineWeb.TMW]);
+			return;
 		}
 
 		if (vowel.equals(reverse_i_VOWEL)) {
 			if (context_1 != null)
-				vowels.add(context_1);
+				l.add(context_1);
 
-			vowels.add(context_2);
+			l.add(context_2);
 
 			if (!TibetanMachineWeb.isTopVowel(context_2)) {
 				DuffCode[] dc_v = (DuffCode[])TibetanMachineWeb.getTibHash().get(reverse_i_VOWEL);
-				vowels.add(dc_v[TibetanMachineWeb.TMW]);
+				l.add(dc_v[TibetanMachineWeb.TMW]);
 			}
 
-			return vowels;
+			return;
 		}
 
 //second, the vowels i, e, and o
@@ -609,14 +610,14 @@ public class TibTextUtils implements THDLWylieConstants {
 			}
 
 			if (context_1 != null)
-				vowels.add(context_1);
+				l.add(context_1);
 
-			vowels.add(context_2);
+			l.add(context_2);
 
 			if (null != dc_v)
-				vowels.add(dc_v);
+				l.add(dc_v);
 
-			return vowels;
+			return;
 		}
 
 		if (vowel.equals(e_VOWEL)) {
@@ -628,14 +629,14 @@ public class TibTextUtils implements THDLWylieConstants {
 			}
 
 			if (context_1 != null)
-				vowels.add(context_1);
+				l.add(context_1);
 
-			vowels.add(context_2);
+			l.add(context_2);
 
 			if (null != dc_v)
-				vowels.add(dc_v);
+				l.add(dc_v);
 
-			return vowels;
+			return;
 		}
 
 		if (vowel.equals(o_VOWEL)) {
@@ -647,14 +648,14 @@ public class TibTextUtils implements THDLWylieConstants {
 			}
 
 			if (context_1 != null)
-				vowels.add(context_1);
+				l.add(context_1);
 
-			vowels.add(context_2);
+			l.add(context_2);
 
 			if (null != dc_v)
-				vowels.add(dc_v);
+				l.add(dc_v);
 
-			return vowels;
+			return;
 		}
 
 //next come the vowels u, A, and U
@@ -669,17 +670,17 @@ public class TibTextUtils implements THDLWylieConstants {
 			DuffCode dc_v = TibetanMachineWeb.getVowel(hashKey_context, TibetanMachineWeb.VOWEL_u);
 
 			if (null != context_1)
-				vowels.add(context_1);
+				l.add(context_1);
 
 			if (null == halfHeight)
-				vowels.add(context_2);
+				l.add(context_2);
 			else
-				vowels.add(halfHeight);
+				l.add(halfHeight);
 
 			if (null != dc_v)
-				vowels.add(dc_v);
+				l.add(dc_v);
 
-			return vowels;
+			return;
 		}
 
 		if (vowel.equals(A_VOWEL)) {
@@ -688,18 +689,18 @@ public class TibTextUtils implements THDLWylieConstants {
 			DuffCode dc_v = TibetanMachineWeb.getVowel(hashKey_context, TibetanMachineWeb.VOWEL_A);
 
 			if (null != context_1)
-				vowels.add(context_1);
+				l.add(context_1);
 
 			if (null == halfHeight)
-				vowels.add(context_2);
+				l.add(context_2);
 			else
-				vowels.add(halfHeight);
+				l.add(halfHeight);
 
 			if (null != dc_v)
 
-				vowels.add(dc_v);
+				l.add(dc_v);
 
-			return vowels;
+			return;
 		}
 
 		if (vowel.equals(U_VOWEL)) {
@@ -708,17 +709,17 @@ public class TibTextUtils implements THDLWylieConstants {
 			DuffCode dc_v = TibetanMachineWeb.getVowel(hashKey_context, TibetanMachineWeb.VOWEL_U);
 
 			if (null != context_1)
-				vowels.add(context_1);
+				l.add(context_1);
 
 			if (null == halfHeight)
-				vowels.add(context_2);
+				l.add(context_2);
 			else
-				vowels.add(halfHeight);
+				l.add(halfHeight);
 
 			if (null != dc_v && !TibetanMachineWeb.isTopVowel(context_2))
-				vowels.add(dc_v);
+				l.add(dc_v);
 
-			return vowels;
+			return;
 		}
 
 //finally, the vowels I and <I
@@ -733,19 +734,19 @@ public class TibTextUtils implements THDLWylieConstants {
 			DuffCode dc_v_sup = TibetanMachineWeb.getVowel(hashKey_context, TibetanMachineWeb.VOWEL_i);
 
 			if (null != context_1)
-				vowels.add(context_1);
+				l.add(context_1);
 
 			if (null == halfHeight)
-				vowels.add(context_2);
+				l.add(context_2);
 			else
-				vowels.add(halfHeight);
+				l.add(halfHeight);
 
 			if (null != dc_v_sub && null != dc_v_sup) {
-				vowels.add(dc_v_sub);
-				vowels.add(dc_v_sup);
+				l.add(dc_v_sub);
+				l.add(dc_v_sup);
 			}
 
-			return vowels;
+			return;
 		}
 
 		if (vowel.equals(reverse_I_VOWEL)) {
@@ -756,22 +757,22 @@ public class TibTextUtils implements THDLWylieConstants {
 			DuffCode dc_v_sup = tv_array[TibetanMachineWeb.TMW];
 
 			if (null != context_1)
-				vowels.add(context_1);
+				l.add(context_1);
 
 			if (null == halfHeight)
-				vowels.add(context_2);
+				l.add(context_2);
 			else
-				vowels.add(halfHeight);
+				l.add(halfHeight);
 
 			if (null != dc_v_sub && null != dc_v_sup) {
-				vowels.add(dc_v_sub);
-				vowels.add(dc_v_sup);
+				l.add(dc_v_sub);
+				l.add(dc_v_sup);
 			}
 
-			return vowels;
+			return;
 		}
 
-		return null;
+                throw new Error("DLC can this happen? " + vowel);
 	}
 
     /**

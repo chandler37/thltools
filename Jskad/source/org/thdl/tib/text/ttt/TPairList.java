@@ -19,6 +19,7 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.text.ttt;
 
 import org.thdl.tib.text.TibetanMachineWeb;
+import org.thdl.tib.text.DuffCode;
 import org.thdl.tib.text.TGCPair;
 import org.thdl.util.ThdlDebug;
 
@@ -612,6 +613,7 @@ class TPairList {
     /** Appends the DuffCodes that correspond to this grapheme cluster
      *  to duff.  Assumes this is one grapheme cluster. */
     void getDuff(ArrayList duff) {
+        int previousSize = duff.size();
         StringBuffer wylieForConsonant = new StringBuffer();
         for (int x = 0; x + 1 < size(); x++) {
             wylieForConsonant.append(get(x).getWylie(false));
@@ -625,8 +627,15 @@ class TPairList {
                 throw new Error("How did this happen?");
             }
         }
-        duff.add(TibetanMachineWeb.getGlyph(hashKey));
-        ACIPRules.getDuffForACIPVowel(duff, hashKey, lastPair.getRight());
+        if (lastPair.getRight() == null || lastPair.equals("-")) {
+            duff.add(TibetanMachineWeb.getGlyph(hashKey));
+        } else {
+            ACIPRules.getDuffForACIPVowel(duff,
+                                          TibetanMachineWeb.getGlyph(hashKey),
+                                          lastPair.getRight());
+        }
+        if (previousSize == duff.size())
+            throw new Error("TPairList with no duffs? " + toString()); // DLC FIXME: change to assertion.
     }
 }
 // DLC FIXME: handle 'o' and 'x', e.g. KAo and NYAx.

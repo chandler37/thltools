@@ -797,7 +797,8 @@ public class DuffPane extends TibetanPane implements FocusListener {
 					before_vowel.add(dc_1);
 
 				before_vowel.add(dc_2);
-				java.util.List after_vowel = TibTextUtils.getVowel(dc_1, dc_2, v);
+				java.util.List after_vowel = new ArrayList();
+                                TibTextUtils.getVowel(after_vowel, dc_1, dc_2, v);
                 if (after_vowel.size() >= before_vowel.size()) {
                     setNumberOfGlyphsForLastVowel(after_vowel.size()
                                                   - before_vowel.size());
@@ -842,7 +843,8 @@ public class DuffPane extends TibetanPane implements FocusListener {
 	private void printAChenWithVowel(String v) {
 		DuffCode[] dc_array = (DuffCode[])TibetanMachineWeb.getTibHash().get(TibetanMachineWeb.ACHEN);
 		DuffCode dc = dc_array[TibetanMachineWeb.TMW];
-		java.util.List achenlist = TibTextUtils.getVowel(dc,v);
+		java.util.List achenlist = new ArrayList();
+                TibTextUtils.getVowel(achenlist, dc, v);
 		DuffData[] dd = TibTextUtils.convertGlyphs(achenlist);
 		getTibDoc().insertDuff(caret.getDot(), dd);		
 	}

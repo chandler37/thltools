@@ -778,11 +778,22 @@ public class ACIPTshegBarScanner {
                 // careful, so "KA\r\n" and "GA\n" appear where "KA
                 // \r\n" and "GA \n" should appear.
                 if (('\r' == ch
-                     || '\n' == ch)
+                     || ('\n' == ch && i > 0 && s.charAt(i - 1) != '\r'))
                     && !al.isEmpty()
                     && ((ACIPString)al.get(al.size() - 1)).getType() == ACIPString.TIBETAN_NON_PUNCTUATION) {
-                    al.add(new ACIPString(" ",
-                                          ACIPString.TIBETAN_PUNCTUATION));
+                    al.add(new ACIPString(" ", ACIPString.TIBETAN_PUNCTUATION));
+                }
+
+                // "DANG,\nLHAG" is really "DANG, LHAG".  But always?  Not if you have "MDO,\n\nKA...".
+                if (('\r' == ch
+                     || ('\n' == ch && i > 0 && s.charAt(i - 1) != '\r'))
+                    && !al.isEmpty()
+                    && ((ACIPString)al.get(al.size() - 1)).getType() == ACIPString.TIBETAN_PUNCTUATION
+                    && ((ACIPString)al.get(al.size() - 1)).getText().equals(",")
+                    && s.charAt(i-1) == ','
+                    && (i + (('\r' == ch) ? 2 : 1) < sl
+                        && (s.charAt(i+(('\r' == ch) ? 2 : 1)) != ch))) {
+                    al.add(new ACIPString(" ", ACIPString.TIBETAN_PUNCTUATION));
                 }
 
                 // Don't add in a "\r\n" or "\n" unless there's a

@@ -132,7 +132,10 @@ public class ACIPConverter {
         throws IOException
     {
         TibetanDocument tdoc = new TibetanDocument();
-		tdoc.setRomanAttributeSet("Courier", 20); // DLC make me configurable.
+        tdoc.setRomanAttributeSet(ThdlOptions.getStringOption("thdl.acip.to.x.latin.font",
+                                                              "Courier New"),
+                                  ThdlOptions.getIntegerOption("thdl.acip.to.x.latin.font.size",
+                                                               20));
         boolean rv
             = convertToTMW(scan, tdoc, errors, warnings,
                            writeWarningsToResult, warningLevel);
@@ -357,7 +360,7 @@ public class ACIPConverter {
                         } else if (stype == ACIPString.END_SLASH) {
                             if (null != writer) unicode = "\u0F3D";
                             if (null != tdoc) duff = new DuffCode[] { TibetanMachineWeb.getGlyph(")") };
-                        } else {
+                        } else if (stype == ACIPString.TIBETAN_PUNCTUATION) {
                             // For ACIP, tshegs are used as both
                             // tshegs and whitespace.  We treat a
                             // space as a tsheg if and only if it
@@ -368,8 +371,8 @@ public class ACIPConverter {
                             // typesetting.
                             boolean done = false;
                             // DLC what about after numbers?  marks?
+                            TPairList lpl = null;
                             if (s.getText().equals(" ")) {
-                                TPairList lpl = null;
                                 if (!lastGuyWasNonPunct
                                     || (null != lastGuy
                                         && (lpl = lastGuy.get(lastGuy.size() - 1)).size() == 1
@@ -389,7 +392,16 @@ public class ACIPConverter {
                                         continue;
                                     }
                                 }
+                            } else if (s.getText().equals(",")
+                                       && lastGuyWasNonPunct
+                                       && null != lastGuy
+                                       && (lpl = lastGuy.get(lastGuy.size() - 1)).size() == 1
+                                       && lpl.get(0).getLeft().equals("NG")) {
+                                DuffCode tshegDuff = TibetanMachineWeb.getGlyph(" ");
+                                if (null == tshegDuff) throw new Error("tsheg duff");
+                                tdoc.appendDuffCodes(new DuffCode[] { tshegDuff });
                             }
+
                             if (!done) {
                                 if (null != writer) unicode = ACIPRules.getUnicodeFor(s.getText(), false);
                                 if (null != tdoc) {
@@ -406,6 +418,8 @@ public class ACIPConverter {
                                     }
                                 }
                             }
+                        } else {
+                            throw new Error("forgot a case");
                         }
                         if (null != writer && null == unicode)
                             throw new Error("FIXME: make this an assertion 1");

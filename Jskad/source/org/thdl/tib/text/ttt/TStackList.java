@@ -217,7 +217,7 @@ class TStackList {
         }
         return u.toString();
     }
-    /** DLC DOC */
+    /** Returns the DuffCodes corresponding to this stack list. */
     DuffCode[] getDuff() {
         ArrayList al = new ArrayList(size()*2); // rough estimate
         int count = 0;

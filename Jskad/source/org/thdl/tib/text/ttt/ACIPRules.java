@@ -21,9 +21,12 @@ package org.thdl.tib.text.ttt;
 import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.thdl.tib.text.DuffCode;
+import org.thdl.tib.text.THDLWylieConstants;
 import org.thdl.tib.text.TibetanMachineWeb;
+import org.thdl.tib.text.TibTextUtils;
 
 /** Canonizes some facts regarding the ACIP transcription system.
  *  @author David Chandler */
@@ -460,38 +463,41 @@ class ACIPRules {
 
 
 
-    /** DLC DOC: Gets the duffcodes for vowel, such that they look good with hashKey, and appends them to r. */
-    static void getDuffForACIPVowel(ArrayList r, String hashKey, String vowel) {
+    /** Gets the duffcodes for vowel, such that they look good with
+     *  the stack with hash key hashKey, and appends them to r. */
+    static void getDuffForACIPVowel(ArrayList r, DuffCode preceding, String vowel) {
         if (null == vowel) return;
         if (null == getWylieForACIPVowel(vowel)) // FIXME: expensive assertion!  Use assert.
             throw new IllegalArgumentException("Vowel " + vowel + " isn't in the small set of vowels we handle correctly.");
-        if (!TibetanMachineWeb.isKnownHashKey(hashKey)) // FIXME: expensive assertion!  Use assert.
-            throw new IllegalArgumentException("bad hashKey");
 
         // Order matters here.
-        if (vowel.indexOf("'U") >= 0)
-            r.add(TibetanMachineWeb.getVowel(hashKey, TibetanMachineWeb.VOWEL_U));
-        else {
+        if (vowel.startsWith("A")) {
+            TibTextUtils.getVowel(r, preceding, THDLWylieConstants.WYLIE_aVOWEL);
+        } else if (vowel.indexOf("'U") >= 0) {
+            TibTextUtils.getVowel(r, preceding, "U");
+        } else {
             if (vowel.indexOf('\'') >= 0)
-                r.add(TibetanMachineWeb.getVowel(hashKey, TibetanMachineWeb.VOWEL_A));
+                TibTextUtils.getVowel(r, preceding, THDLWylieConstants.A_VOWEL);
             if (vowel.indexOf("EE") >= 0)
-                r.add(TibetanMachineWeb.getGlyph("ai"));
+                TibTextUtils.getVowel(r, preceding, THDLWylieConstants.ai_VOWEL);
             else if (vowel.indexOf('E') >= 0)
-                r.add(TibetanMachineWeb.getVowel(hashKey, TibetanMachineWeb.VOWEL_e));
+                TibTextUtils.getVowel(r, preceding, THDLWylieConstants.e_VOWEL);
             if (vowel.indexOf("OO") >= 0)
-                r.add(TibetanMachineWeb.getGlyph("au"));
+                TibTextUtils.getVowel(r, preceding, THDLWylieConstants.au_VOWEL);
             else if (vowel.indexOf('O') >= 0)
-                r.add(TibetanMachineWeb.getVowel(hashKey, TibetanMachineWeb.VOWEL_o));
+                TibTextUtils.getVowel(r, preceding, THDLWylieConstants.o_VOWEL);
             if (vowel.indexOf('I') >= 0)
-                r.add(TibetanMachineWeb.getVowel(hashKey, TibetanMachineWeb.VOWEL_i));
+                TibTextUtils.getVowel(r, preceding, THDLWylieConstants.i_VOWEL);
             if (vowel.indexOf('U') >= 0)
-                r.add(TibetanMachineWeb.getVowel(hashKey, TibetanMachineWeb.VOWEL_u));
+                TibTextUtils.getVowel(r, preceding, THDLWylieConstants.u_VOWEL);
             if (vowel.indexOf('i') >= 0)
-                r.add(TibetanMachineWeb.getGlyph("-i"));
+                TibTextUtils.getVowel(r, preceding, THDLWylieConstants.reverse_i_VOWEL);
         }
+
         if (vowel.indexOf('m') >= 0)
             r.add(TibetanMachineWeb.getGlyph("M"));
         if (vowel.indexOf(':') >= 0)
             r.add(TibetanMachineWeb.getGlyph("H"));
+
     }
 }
