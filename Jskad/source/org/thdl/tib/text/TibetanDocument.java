@@ -1348,7 +1348,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 
     /** I used this to create a document that helped me validate the
         TM->TMW conversion. */
-    private void insertAllTMGlyphs2(MutableAttributeSet roman) {
+    private void insertAllTMGlyphs2() {
         int font;
         int ord;
         DuffData[] equivalent = new DuffData[1];
@@ -1383,7 +1383,7 @@ public class TibetanDocument extends DefaultStyledDocument {
                     }
                     try {
                         String s = " font " + (font+1) + "; ord " + ord + "\n";
-                        insertString(count, s, roman);
+                        insertString(count, s, getRomanAttributeSet());
                         count += s.length();
                     } catch (BadLocationException e) {
                         throw new Error("badness");
