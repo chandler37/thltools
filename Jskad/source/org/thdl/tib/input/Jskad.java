@@ -36,6 +36,7 @@ import java.util.Vector;
 import org.thdl.tib.text.*;
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlOptions;
+import org.thdl.util.ThdlVersion;
 import org.thdl.util.StatusBar;
 import org.thdl.util.ThdlActionListener;
 import org.thdl.util.RTFPane;
@@ -310,13 +311,17 @@ public class Jskad extends JPanel implements DocumentListener {
 					"Copyright 2001-2002 Tibetan and Himalayan Digital Library\n"+
 					"Programmed by Edward Garrett\n\n"+
 					"This software is protected by the terms of the\n"+
-					"THDL Open Community License, Version 1.0.\n"+
+					"THDL Open Community License, Version 1.0.\n"+ /* FIXME HARD-CODED VERSION NUMBER */
 					"It uses Tibetan Computer Company (http://www.tibet.dk/tcc/)\n"+
 					"fonts created by Tony Duff and made available by the\n"+
 					"Trace Foundation (http://trace.org/).\n\n"+
 					"For more information, or to download the source code\n"+
 					"for Jskad, see our web site:\n"+
-					"     http://www.thdl.org/",
+					"     http://www.thdl.org/\n" +
+                    "\n" +
+                    "When submitting bug reports, please indicate that the\n" +
+                    "time of compilation is "
+                        + ThdlVersion.getTimeOfCompilation() + "\n",
                     "About Jskad 1.0", /* FIXME HARD-CODED VERSION NUMBER */
 					JOptionPane.PLAIN_MESSAGE);
 			}
@@ -481,6 +486,8 @@ public class Jskad extends JPanel implements DocumentListener {
 
 		JOptionPane pane = new JOptionPane(preferencesPanel);
 		JDialog dialog = pane.createDialog(this, "Preferences");
+
+        // This returns only when the user has closed the dialog:
 		dialog.show();
 
 		int size;
@@ -561,10 +568,13 @@ public class Jskad extends JPanel implements DocumentListener {
 				newFrame.setVisible(true);
 			}
 			catch (FileNotFoundException fnfe) {
+                ThdlDebug.noteIffyCode();
 			}
 			catch (IOException ioe) {
+                ThdlDebug.noteIffyCode();
 			}
 			catch (BadLocationException ble) {
+                ThdlDebug.noteIffyCode();
 			}
 		}
 		else {
@@ -598,10 +608,13 @@ public class Jskad extends JPanel implements DocumentListener {
 				}
 			}
 			catch (FileNotFoundException fnfe) {
+                ThdlDebug.noteIffyCode();
 			}
 			catch (IOException ioe) {
+                ThdlDebug.noteIffyCode();
 			}
 			catch (BadLocationException ble) {
+                ThdlDebug.noteIffyCode();
 			}
 		}
 		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -792,10 +805,12 @@ public class Jskad extends JPanel implements DocumentListener {
 				t_doc.writeRTFOutputStream(new FileOutputStream(new File(rtf_fileName)));
 			}
 			catch (IOException ioe) {
+                ThdlDebug.noteIffyCode();
 				System.out.println("problem reading or writing file");
 			}
 		}
 		catch (FileNotFoundException fnfe) {
+                ThdlDebug.noteIffyCode();
 			System.out.println("problem reading file");
 		}
 	}
@@ -965,6 +980,7 @@ public class Jskad extends JPanel implements DocumentListener {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             }
             catch (Exception e) {
+                ThdlDebug.noteIffyCode();
             }
 
             JFrame f = new JFrame("Jskad");
@@ -976,8 +992,10 @@ public class Jskad extends JPanel implements DocumentListener {
             f.getContentPane().add(new Jskad(f));
             f.setVisible(true);
         } catch (ThdlLazyException e) {
+            // FIXME: tell the users how to submit bug reports.
             System.err.println("Jskad has a BUG:");
             e.getRealException().printStackTrace(System.err);
+            System.exit(1);
         }
 	}
 }
