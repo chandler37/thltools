@@ -217,6 +217,12 @@
       <param name="my.included.source.file"
              value="org/thdl/tib/input/Jskad.java"/>
     </antcall>
+    <!-- DLC NOW -->
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${jskadbin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/tib/text/tshegbar/test.java"/>
+    </antcall>
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${jskadbin}"/>
       <param name="my.included.source.file"
@@ -746,7 +752,7 @@
 
 
   <target name="public-javadocs"
-          description="makes Javadoc documentation for public/protected classes, methods, and fields"
+          description="makes Javadoc documentation for public/protected classes, methods, and fields.  Expect warnings, as private-javadocs is preferred."
           depends="init,create-timestamp-source-code" >
     <antcall target="our-javadocs">
       <param name="access" value="protected"/>
@@ -787,6 +793,17 @@
 
   <target name="jskad-run" depends="jskad-dist" description="runs Jskad">
     <java classname="org.thdl.tib.input.Jskad" fork="yes">
+      <classpath>
+        <pathelement location="${lib}/Jskad${my.jar.suffix}.jar"/>
+        <path refid="entire.class.path"/>
+      </classpath>
+      <jvmarg value="-Dthdl.debug=${thdl.debug}"/>
+    </java>
+  </target>
+
+<!-- DLC NOW -->
+  <target name="test-tsheg-bar" depends="jskad-dist" description="runs tsheg bar tests">
+    <java classname="org.thdl.tib.text.tshegbar.test" fork="yes">
       <classpath>
         <pathelement location="${lib}/Jskad${my.jar.suffix}.jar"/>
         <path refid="entire.class.path"/>
