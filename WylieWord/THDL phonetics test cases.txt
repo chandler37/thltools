@@ -110,6 +110,21 @@ sems dpa'i > sempé
 bon po'i > bönpö
 rdzogs > dzok
 
+; Tests of nasalization rule (taken from specification document as of 6 Apr 04)
+chos 'phel > chömpel
+dpal 'bar > pembar
+sku 'bum > kumbum
+bka' 'gyur > kangyur
+dge 'dun > gendün
+rgyu 'bras > gyundré
+ngos 'dzin > ngöndzin
+rig 'dzin > rindzin
+mkha' 'gro > khandro
+dkyil 'khor > kyinkhor
+dpal 'byor > penjor
+; This one is an exception, actually
+skyabs 'gro > kyamdro
+
 ; Other random tests
 phreng > treng
 

@@ -74,3 +74,5 @@ kla col > lachöl
 ; Aro-specific exceptions
 mtsho rgyal > tsogyèl
 
+; Verify that the nasalization code does not apply
+dpal 'byor > pèljor
