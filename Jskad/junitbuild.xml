@@ -43,6 +43,7 @@
                                   build.xml check-report' will fail. -->
       <test name="org.thdl.util.ThdlLazyExceptionTest"/>
       <test name="org.thdl.util.TrieTest"/>
+      <test name="org.thdl.tib.text.tshegbar.UnicodeUtilsTest"/>
     </junit>
   </target>
 

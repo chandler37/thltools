@@ -350,7 +350,7 @@
   </target>
 
   <target name="compile-junit-tests" depends="init"
-          description="compiles all JUnit test cases that can be compiled in the present CLASSPATH (NB that this distinction is just wishful thinking for now becuase we have such weak test coverage at this point)" >
+          description="compiles all JUnit test cases that can be compiled in the present CLASSPATH (NB that this distinction is just wishful thinking for now because we have such weak test coverage at this point)" >
     <mkdir dir="${junitbin}"/>
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${junitbin}"/>
@@ -361,6 +361,11 @@
       <param name="mybin" value="${junitbin}"/>
       <param name="my.included.source.file"
              value="org/thdl/util/TrieTest.java"/>
+    </antcall>
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${junitbin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/tib/text/tshegbar/UnicodeUtilsTest.java"/>
     </antcall>
   </target>
 
