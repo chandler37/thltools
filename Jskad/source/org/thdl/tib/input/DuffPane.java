@@ -1023,8 +1023,11 @@ public class DuffPane extends TibetanPane implements FocusListener {
 public void paste() {
     /* added by AM. If we are pasting over selected text, such text
     such be substituted by the text to be pasted. */
-    deleteCurrentSelection();
-    paste(getSelectionStart());
+    // Respect setEditable(boolean):
+    if (this.isEditable()) {
+        deleteCurrentSelection();
+        paste(getSelectionStart());
+    }
 }
 
 /**
@@ -1047,10 +1050,9 @@ public void paste(int offset)
     try 
     {
         Transferable contents = rtfBoard.getContents(this);
-
+        
         if (contents.isDataFlavorSupported(rtfFlavor))
         {
-
             InputStream in = (InputStream)contents.getTransferData(rtfFlavor);
             int p1 = offset;
 
