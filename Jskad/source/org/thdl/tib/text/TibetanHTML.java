@@ -71,7 +71,7 @@ public class TibetanHTML {
 							break;
 					}
 					htmlBuffer.append("</span>");
-					String wylie = TibetanMachineWeb.getWylieForGlyph(duffData[i].font, c[k]);
+					String wylie = TibetanMachineWeb.getWylieForGlyph(duffData[i].font, c[k], TibTextUtils.weDoNotCareIfThereIsCorrespondingWylieOrNot);
 					if (TibetanMachineWeb.isWyliePunc(wylie))
 						htmlBuffer.append("<wbr/>");
 				} else {
@@ -138,7 +138,7 @@ public class TibetanHTML {
 							htmlBuffer.append(c[k]);
 							break;
 					}
-					String wylie = TibetanMachineWeb.getWylieForGlyph(duffData[i].font, c[k]);
+					String wylie = TibetanMachineWeb.getWylieForGlyph(duffData[i].font, c[k], TibTextUtils.weDoNotCareIfThereIsCorrespondingWylieOrNot);
 					if (TibetanMachineWeb.isWyliePunc(wylie))
 						htmlBuffer.append("<wbr/>");
 				} else {
@@ -209,7 +209,7 @@ public class TibetanHTML {
 							htmlBuffer.append(c[k]);
 							break;
 					}
-					String wylie = TibetanMachineWeb.getWylieForGlyph(duffData[i].font, c[k]);
+					String wylie = TibetanMachineWeb.getWylieForGlyph(duffData[i].font, c[k], TibTextUtils.weDoNotCareIfThereIsCorrespondingWylieOrNot);
 					if (TibetanMachineWeb.isWyliePunc(wylie))
 						htmlBuffer.append("<wbr>");
 				} else {

@@ -1414,12 +1414,17 @@ private static String getTMWToWylieErrorString(DuffCode dc) {
 * glyph you want the Wylie of
 * @param code the ordinal, minus 32, of the TibetanMachineWeb glyph
 * you want the Wylie of
+* @param noSuchWylie an array which will not be touched if this is
+* successful; however, if there is no THDL Extended Wylie
+* corresponding to the glyph, then noSuchWylie[0] will be set to true
 * @return the Wylie value corresponding to the
 * glyph denoted by font, code
 */
-public static String getWylieForGlyph(int font, int code) {
+    public static String getWylieForGlyph(int font, int code,
+                                          boolean noSuchWylie[]) {
 	String hashKey = getHashKeyForGlyph(font, code);
     if (hashKey == null) {
+        noSuchWylie[0] = true;
         return getTMWToWylieErrorString(new DuffCode(font, (char)code));
     }
 	return wylieForGlyph(hashKey);
@@ -1429,12 +1434,15 @@ public static String getWylieForGlyph(int font, int code) {
 * Gets the Extended Wylie value for this glyph.
 * @param dc the DuffCode of the glyph you want
 * the Wylie of
+* @param noSuchWylie an array which will not be touched if this is
+* successful; however, if there is no THDL Extended Wylie
+* corresponding to the glyph, then noSuchWylie[0] will be set to true
 * @return the Wylie value corresponding to the
-* glyph denoted by dc
-*/
-public static String getWylieForGlyph(DuffCode dc) {
+* glyph denoted by dc */
+public static String getWylieForGlyph(DuffCode dc, boolean noSuchWylie[]) {
 	String hashKey = getHashKeyForGlyph(dc);
     if (hashKey == null) {
+        noSuchWylie[0] = true;
         return getTMWToWylieErrorString(dc);
     }
 	return wylieForGlyph(hashKey);
@@ -1637,7 +1645,9 @@ public static String getAVowel() {
 * @return true if the glyph is a top-hanging (superscript) vowel (i,
 * u, e, o, ai, or ao) and false if not */
 public static boolean isTopVowel(DuffCode dc) {
-	String wylie = getWylieForGlyph(dc);
+	String wylie
+        = getWylieForGlyph(dc,
+                           TibTextUtils.weDoNotCareIfThereIsCorrespondingWylieOrNot);
 	if (top_vowels.contains(wylie))
 		return true;
 

@@ -20,6 +20,8 @@ package org.thdl.tib.input;
 
 import java.io.*;
 import javax.swing.text.rtf.RTFEditorKit;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 
 import org.thdl.util.*;
 import org.thdl.tib.text.*;
@@ -122,6 +124,10 @@ public class TibetanConverter implements FontConverterConstants {
                 out.println(" result to standard output (after dealing with the curly brace problem if");
                 out.println(" the input is TibetanMachineWeb).  Exit code is zero on success, 42 if some");
                 out.println(" glyphs couldn't be converted (in which case the output is just those glyphs),");
+                out.println(" 44 if a TMW->Wylie conversion ran into some glyphs that couldn't be");
+                out.println(" converted, in which case ugly error messages like");
+                out.println("    \"<<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert DuffCode...\"");
+                out.println(" are in your document waiting for your personal attention,");
                 out.println(" 43 if not even one glyph found was eligible for this conversion, which means");
                 out.println(" that you probably selected the wrong conversion or the wrong document, or ");
                 out.println(" nonzero otherwise.");
@@ -186,6 +192,16 @@ public class TibetanConverter implements FontConverterConstants {
         honored. */
     static int reallyConvert(InputStream in, PrintStream out, String ct) {
         TibetanDocument tdoc = new TibetanDocument();
+        {
+            SimpleAttributeSet ras = new SimpleAttributeSet();
+            StyleConstants.setFontFamily(ras,
+                                         ThdlOptions.getStringOption("thdl.default.roman.font.face",
+                                                                     "Serif"));
+            StyleConstants.setFontSize(ras,
+                                       ThdlOptions.getIntegerOption("thdl.default.roman.font.size",
+                                                                    14));
+            tdoc.setRomanAttributeSet(ras);
+        }
         try {
             // Read in the rtf file.
             if (debug) System.err.println("Start: reading in old RTF file");
@@ -253,9 +269,11 @@ public class TibetanConverter implements FontConverterConstants {
             long numAttemptedReplacements[] = new long[] { 0 };
             if (TMW_TO_WYLIE == ct) {
                 // Convert to THDL Wylie:
-                tdoc.toWylie(0,
-                             tdoc.getLength(),
-                             numAttemptedReplacements);
+                if (!tdoc.toWylie(0,
+                                  tdoc.getLength(),
+                                  numAttemptedReplacements)) {
+                    exitCode = 44;
+                }
             } else if (TMW_TO_UNI == ct) {
                 StringBuffer errors = new StringBuffer();
                 // Convert to Unicode:

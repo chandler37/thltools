@@ -299,12 +299,11 @@ public class DuffPane extends TibetanPane implements FocusListener {
 	private void setupEditor() {
 		rtfBoard = getToolkit().getSystemClipboard();
 
-		newDocument();
-
 		romanFontFamily = ThdlOptions.getStringOption("thdl.default.roman.font.face",
                                                       "Serif");
 		romanFontSize = defaultRomanFontSize();
-		setRomanAttributeSet(romanFontFamily, romanFontSize);
+
+		newDocument();
 
 		caret = getCaret();
 
@@ -470,6 +469,9 @@ public class DuffPane extends TibetanPane implements FocusListener {
 		Style defaultStyle = styleContext.getStyle(StyleContext.DEFAULT_STYLE);
 		StyleConstants.setFontFamily(defaultStyle, "TibetanMachineWeb");
 		StyleConstants.setFontSize(defaultStyle, defaultTibFontSize());
+
+		setRomanAttributeSet(romanFontFamily, romanFontSize);
+
 
 		newGlyphList.clear();
         initKeyboard();
@@ -773,7 +775,10 @@ public class DuffPane extends TibetanPane implements FocusListener {
 					return;
 				}
 
-				String wylie = TibetanMachineWeb.getWylieForGlyph(fontNum, k);
+				String wylie
+                    = TibetanMachineWeb.getWylieForGlyph(fontNum,
+                                                         k,
+                                                         TibTextUtils.weDoNotCareIfThereIsCorrespondingWylieOrNot);
 				if (TibetanMachineWeb.isWyliePunc(wylie)) {
 					if (charList.isEmpty() && !TibetanMachineWeb.isAChenRequiredBeforeVowel()) {
 						printAChenWithVowel(v);
@@ -873,7 +878,10 @@ public class DuffPane extends TibetanPane implements FocusListener {
 				if (k<32 || k>126) //if previous character is formatting or some other non-character
 					break special_bindu_block;
 
-				String wylie = TibetanMachineWeb.getWylieForGlyph(fontNum, k);
+				String wylie
+                    = TibetanMachineWeb.getWylieForGlyph(fontNum,
+                                                         k,
+                                                         TibTextUtils.weDoNotCareIfThereIsCorrespondingWylieOrNot);
 				if (!TibetanMachineWeb.isWylieVowel(wylie))
 					break special_bindu_block;
 
@@ -1587,10 +1595,14 @@ public void paste(int offset) {
 * Converts the entire associated document into Extended Wylie.  If the
 * document consists of both Tibetan and non-Tibetan fonts, however,
 * the conversion stops at the first non-Tibetan font.
+* @param noSuchWylie an array which will not be touched if this is
+* successful; however, if there is no THDL Extended Wylie
+* corresponding to one of these glyphs, then noSuchWylie[0] will be
+* set to true
 * @return the string of Wylie corresponding to the associated document
 * @see org.thdl.tib.text.TibetanDocument#getWylie() */
-    public String getWylie() {
-        return getTibDoc().getWylie();
+    public String getWylie(boolean noSuchWylie[]) {
+        return getTibDoc().getWylie(noSuchWylie);
     }
 
 

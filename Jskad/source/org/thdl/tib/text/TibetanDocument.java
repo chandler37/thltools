@@ -246,10 +246,13 @@ public class TibetanDocument extends DefaultStyledDocument {
 * If the document consists of both Tibetan and
 * non-Tibetan fonts, however, the conversion stops
 * at the first non-Tibetan font.
-* @return the string of Wylie corresponding to this document
-*/
-	public String getWylie() {
-		return getWylie(0, getLength());
+* @param noSuchWylie an array which will not be touched if this is
+* successful; however, if there is no THDL Extended Wylie
+* corresponding to one of these glyphs, then noSuchWylie[0] will be
+* set to true
+* @return the string of Wylie corresponding to this document */
+	public String getWylie(boolean noSuchWylie[]) {
+		return getWylie(0, getLength(), noSuchWylie);
 	}
 
 /**
@@ -259,9 +262,12 @@ public class TibetanDocument extends DefaultStyledDocument {
 * at the first non-Tibetan font.
 * @param begin the beginning of the region to convert
 * @param end the end of the region to convert
-* @return the string of Wylie corresponding to this document
-*/
-	public String getWylie(int begin, int end) {
+* @param noSuchWylie an array which will not be touched if this is
+* successful; however, if there is no THDL Extended Wylie
+* corresponding to one of these glyphs, then noSuchWylie[0] will be
+* set to true
+* @return the string of Wylie corresponding to this document */
+	public String getWylie(int begin, int end, boolean noSuchWylie[]) {
 		AttributeSet attr;
 		String fontName;
 		int fontNum;
@@ -287,7 +293,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 					if (dcs.size() > 0) {
 						DuffCode[] dc_array = new DuffCode[0];
 						dc_array = (DuffCode[])dcs.toArray(dc_array);
-						wylieBuffer.append(TibTextUtils.getWylie(dc_array));
+						wylieBuffer.append(TibTextUtils.getWylie(dc_array, noSuchWylie));
 						dcs.clear();
 					}
 					wylieBuffer.append(ch);
@@ -298,7 +304,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 					if (dcs.size() > 0) {
 						DuffCode[] dc_array = new DuffCode[0];
 						dc_array = (DuffCode[])dcs.toArray(dc_array);
-						wylieBuffer.append(TibTextUtils.getWylie(dc_array));
+						wylieBuffer.append(TibTextUtils.getWylie(dc_array, noSuchWylie));
 						dcs.clear();
 					}
 				}
@@ -313,7 +319,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 			if (dcs.size() > 0) {
 				DuffCode[] dc_array = new DuffCode[0];
 				dc_array = (DuffCode[])dcs.toArray(dc_array);
-				wylieBuffer.append(TibTextUtils.getWylie(dc_array));
+				wylieBuffer.append(TibTextUtils.getWylie(dc_array, noSuchWylie));
 			}
 			return wylieBuffer.toString();
 		}
@@ -761,66 +767,6 @@ public class TibetanDocument extends DefaultStyledDocument {
         return ceh.errorReturn;
     }
 
-    /** Appends to sb a text representation of the characters (glyphs)
-        in this document in the range [begin, end).  In this
-        representation, \tmwXYYY and \tmXYYY are used for TMW and TM
-        glyphs, respectively.  \otherYYY is used for all other
-        characters.  X is zero-based; Y is the decimal glyph number.
-        After every 10 characters, '\n' is added.  Note well that some
-        TM oddballs (see TibetanMachineWeb.getUnusualTMtoTMW(int,
-        int)) are not handled well, so you may get \tm08222 etc. */
-    public void getTextRepresentation(int begin, int end, StringBuffer sb) {
-        if (end < 0)
-            end = getLength();
-        if (begin >= end)
-            return; // nothing to do
-
-        // For speed, do as few replaces as possible.  To preserve
-        // formatting, we'll try to replace one paragraph at a time.
-        // But we *must* replace when we hit a different font (TMW3 as
-        // opposed to TMW2, e.g.), so we'll likely replace many times
-        // per paragraph.  One very important optimization is that we
-        // don't have to treat TMW3.45 or TMW3.32 as a different font
-        // than TMW.33 -- that's because each of the ten TMW fonts has
-        // the same glyph at position 32 (space) and the same glyph at
-        // position 45 (tsheg).  Note that we're building up a big
-        // StringBuffer; we're trading space for time.
-        try {
-            int i = begin;
-            int tenCount = 0;
-            while (i < end) {
-                AttributeSet attr = getCharacterElement(i).getAttributes();
-                String fontName = StyleConstants.getFontFamily(attr);
-				int tmwFontNum
-                    = TibetanMachineWeb.getTMWFontNumber(fontName);
-                int tmFontNum;
-                if (tmwFontNum != 0) {
-                    sb.append("\\tmw" + (tmwFontNum - 1));
-                } else if ((tmFontNum
-                            = TibetanMachineWeb.getTMFontNumber(fontName))
-                           != 0) {
-                    sb.append("\\tm" + (tmFontNum - 1));
-                } else {
-                    // non-tmw, non-tm character:
-                    sb.append("\\other");
-                }
-                int ordinal = (int)getText(i,1).charAt(0);
-                if (ordinal < 100)
-                    sb.append('0');
-                if (ordinal < 10)
-                    sb.append('0');
-                sb.append("" + ordinal);
-                if ((++tenCount) % 10 == 0) {
-                    tenCount = 0;
-                    sb.append('\n');
-                }
-                i++;
-            }
-        } catch (BadLocationException e) {
-            throw new ThdlLazyException(e);
-        }
-    }
-
     /** See the sole caller, convertHelper. */
     private void convertHelperHelper(int begin, int end, boolean toTM,
                                      boolean toUnicode, StringBuffer errors,
@@ -1101,13 +1047,17 @@ public class TibetanDocument extends DefaultStyledDocument {
 * @param end the point at which to stop converting to Wylie
 * @param numAttemptedReplacements an array that contains one element;
 * this first element will be, upon exit, incremented by the number of
-* TMW glyphs that we encountered and attempted to convert to Wylie */
-    public void toWylie(int start, int end,
-                        long numAttemptedReplacements[]) {
+* TMW glyphs that we encountered and attempted to convert to Wylie
+* @return true if entirely successful, false if we put some
+* "<<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert
+* DuffCode..." text into the document */
+    public boolean toWylie(int start, int end,
+                           long numAttemptedReplacements[]) {
         if (start >= end)
-            return;
+            return true;
 
         try {
+            boolean noSuchWylie[] = new boolean[] { false };
             DuffCode[] any_dc_array = new DuffCode[0];
             DuffCode[] dc_array;
             Position endPos = createPosition(end);
@@ -1124,8 +1074,9 @@ public class TibetanDocument extends DefaultStyledDocument {
                     if (i != start) {
                         dc_array = (DuffCode[])dcs.toArray(any_dc_array);
                         remove(start, i-start);
+                        ThdlDebug.verify(getRomanAttributeSet() != null);
                         insertString(start,
-                                     TibTextUtils.getWylie(dc_array),
+                                     TibTextUtils.getWylie(dc_array, noSuchWylie),
                                      getRomanAttributeSet());
                         dcs.clear();
                     }
@@ -1138,9 +1089,11 @@ public class TibetanDocument extends DefaultStyledDocument {
 
                 i++;
             }
+            return !noSuchWylie[0];
         } catch (BadLocationException ble) {
             ble.printStackTrace();
             ThdlDebug.noteIffyCode();
+            return false;
         }
     }
 
@@ -1170,6 +1123,66 @@ public class TibetanDocument extends DefaultStyledDocument {
                 pos = peo;
         }
         return (Element[])v.toArray(arrayType);
+    }
+
+    /** Appends to sb a text representation of the characters (glyphs)
+        in this document in the range [begin, end).  In this
+        representation, \tmwXYYY and \tmXYYY are used for TMW and TM
+        glyphs, respectively.  \otherYYY is used for all other
+        characters.  X is zero-based; Y is the decimal glyph number.
+        After every 10 characters, '\n' is added.  Note well that some
+        TM oddballs (see TibetanMachineWeb.getUnusualTMtoTMW(int,
+        int)) are not handled well, so you may get \tm08222 etc. */
+    public void getTextRepresentation(int begin, int end, StringBuffer sb) {
+        if (end < 0)
+            end = getLength();
+        if (begin >= end)
+            return; // nothing to do
+
+        // For speed, do as few replaces as possible.  To preserve
+        // formatting, we'll try to replace one paragraph at a time.
+        // But we *must* replace when we hit a different font (TMW3 as
+        // opposed to TMW2, e.g.), so we'll likely replace many times
+        // per paragraph.  One very important optimization is that we
+        // don't have to treat TMW3.45 or TMW3.32 as a different font
+        // than TMW.33 -- that's because each of the ten TMW fonts has
+        // the same glyph at position 32 (space) and the same glyph at
+        // position 45 (tsheg).  Note that we're building up a big
+        // StringBuffer; we're trading space for time.
+        try {
+            int i = begin;
+            int tenCount = 0;
+            while (i < end) {
+                AttributeSet attr = getCharacterElement(i).getAttributes();
+                String fontName = StyleConstants.getFontFamily(attr);
+				int tmwFontNum
+                    = TibetanMachineWeb.getTMWFontNumber(fontName);
+                int tmFontNum;
+                if (tmwFontNum != 0) {
+                    sb.append("\\tmw" + (tmwFontNum - 1));
+                } else if ((tmFontNum
+                            = TibetanMachineWeb.getTMFontNumber(fontName))
+                           != 0) {
+                    sb.append("\\tm" + (tmFontNum - 1));
+                } else {
+                    // non-tmw, non-tm character:
+                    sb.append("\\other");
+                }
+                int ordinal = (int)getText(i,1).charAt(0);
+                if (ordinal < 100)
+                    sb.append('0');
+                if (ordinal < 10)
+                    sb.append('0');
+                sb.append("" + ordinal);
+                if ((++tenCount) % 10 == 0) {
+                    tenCount = 0;
+                    sb.append('\n');
+                }
+                i++;
+            }
+        } catch (BadLocationException e) {
+            throw new ThdlLazyException(e);
+        }
     }
 
     /** For debugging only.  Start with an empty document, and call

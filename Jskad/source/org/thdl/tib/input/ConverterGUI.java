@@ -67,6 +67,12 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
                                           "Conversion failed",
                                           JOptionPane.ERROR_MESSAGE);
             return false;
+        } else if (44 == returnCode) {
+            JOptionPane.showMessageDialog(cd,
+                                          "Though an output file has been created, it contains ugly\nerror messages like\n\"<<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE:\n    Cannot convert DuffCode...\".\nPlease edit the output by hand to replace all such\ncreatures with the correct EWTS transliteration.",
+                                          "Attention required",
+                                          JOptionPane.ERROR_MESSAGE);
+            return false;
         } else if (43 == returnCode) {
             JOptionPane.showMessageDialog(cd,
                                           "Though an output file has been created, this conversion did nothing.\nDid you choose the correct original file?\nDid you choose the correct type of conversion?",

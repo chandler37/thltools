@@ -1076,9 +1076,14 @@ public class Jskad extends JPanel implements DocumentListener {
 
 	private void toWylie() {
 		Jskad.this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		((TibetanDocument)dp.getDocument()).toWylie(dp.getSelectionStart(),
-                                                    dp.getSelectionEnd(),
-                                                    new long[] { 0 });
+		if (!((TibetanDocument)dp.getDocument()).toWylie(dp.getSelectionStart(),
+                                                         dp.getSelectionEnd(),
+                                                         new long[] { 0 })) {
+            JOptionPane.showMessageDialog(Jskad.this,
+                                          "Though some Extended Wylie has been produced, it\ncontains ugly error messages like\n\"<<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE:\n    Cannot convert DuffCode...\".\nPlease edit the output by hand to replace all such\ncreatures with the correct EWTS transliteration.",
+                                          "Attention Required",
+                                          JOptionPane.ERROR_MESSAGE);
+        }
 		Jskad.this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 

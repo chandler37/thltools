@@ -297,6 +297,12 @@ public class TibTextUtils implements THDLWylieConstants {
 		return s;
 	}
 
+    /** An array containing one boolean value.  Pass this to
+        TibetanMachineWeb.getWylieForGlyph(..) if you don't care if a
+        certain glyph has corresponding Wylie or not. */
+    public static final boolean[] weDoNotCareIfThereIsCorrespondingWylieOrNot
+        = new boolean[] { false };
+
 /**
 * Converts a string of Extended Wylie into {@link DuffData DuffData}.
 * @param wylie the Wylie you want to convert
@@ -371,7 +377,7 @@ public class TibTextUtils implements THDLWylieConstants {
 					vowel_block: {
 						if (size > 1) {
 							dc = (DuffCode)glyphs.get(glyphs.size()-1);
-							if (!TibetanMachineWeb.isWyliePunc(TibetanMachineWeb.getWylieForGlyph(dc))) {
+							if (!TibetanMachineWeb.isWyliePunc(TibetanMachineWeb.getWylieForGlyph(dc, weDoNotCareIfThereIsCorrespondingWylieOrNot))) {
 								DuffCode dc_2 = (DuffCode)glyphs.removeLast();
 								DuffCode dc_1 = (DuffCode)glyphs.removeLast();
 								glyphs.addAll(getVowel(dc_1, dc_2, next));
@@ -805,9 +811,12 @@ public class TibTextUtils implements THDLWylieConstants {
 * @param glyphList a list of TibetanMachineWeb glyphs, i.e. {@link
 * org.thdl.tib.text.DuffCode DuffCodes}.  Pass in an ArrayList if you
 * care at all for speed.
-* @return the Wylie string corresponding to this glyph list, with 'a' inserted.
-*/
-	public static String withA(java.util.List glyphList) {
+* @param noSuchWylie an array which will not be touched if this is
+* successful; however, if there is no THDL Extended Wylie
+* corresponding to these glyphs, then noSuchWylie[0] will be set to
+* true
+* @return the Wylie string corresponding to this glyph list, with 'a' inserted.  */
+	public static String withA(java.util.List glyphList, boolean noSuchWylie[]) {
 		StringBuffer sb = new StringBuffer();
 		int size = glyphList.size();
 		String wylie;
@@ -818,16 +827,16 @@ public class TibTextUtils implements THDLWylieConstants {
             return "";
 
         case 1: //only one glyph: 'a' goes after it
-            wylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(0));
+            wylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(0), noSuchWylie);
             sb.append(wylie);
             sb.append(aVowelToUseAfter(wylie));
 
             return sb.toString();
 
         case 2: //two glyphs: 'a' either goes after first or after both
-            lastWylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(0));
+            lastWylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(0), noSuchWylie);
             sb.append(lastWylie);
-            wylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(1));
+            wylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(1), noSuchWylie);
             if (TibetanMachineWeb.isWylieRight(wylie)) {
                 sb.append(aVowelToUseAfter(lastWylie));
                 sb.append(wylie);
@@ -870,17 +879,17 @@ public class TibTextUtils implements THDLWylieConstants {
                 StringBuffer tailEndWylie = null;
                 int effectiveSize = size - 2;
                 while (effectiveSize >= 0
-                       && TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(effectiveSize)).equals(ACHUNG)) {
+                       && TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(effectiveSize), noSuchWylie).equals(ACHUNG)) {
                     if (null == tailEndWylie) tailEndWylie = new StringBuffer();
                     // prepend:
                     tailEndWylie.insert(0,
                                         ACHUNG
                                         + aVowelToUseAfter(ACHUNG)
-                                        + TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(effectiveSize + 1)));
+                                        + TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(effectiveSize + 1), noSuchWylie));
                     effectiveSize -= 2;
                 }
                 if (null != tailEndWylie) {
-                    return (withA(glyphList.subList(0, effectiveSize + 2))
+                    return (withA(glyphList.subList(0, effectiveSize + 2), noSuchWylie)
                             + tailEndWylie.toString());
                 }
             }
@@ -890,17 +899,17 @@ public class TibTextUtils implements THDLWylieConstants {
                     // this is illegal because it doesn't begin
                     // with a prefix:
                     || (size == 4
-                        && (!TibetanMachineWeb.isWylieLeft(TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(0)))
+                        && (!TibetanMachineWeb.isWylieLeft(TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(0), weDoNotCareIfThereIsCorrespondingWylieOrNot))
                             // this is illegal because it doesn't have a
                             // suffix in the proper place, e.g. mjskad:
-                            || !TibetanMachineWeb.isWylieRight(TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(size - 2)))
+                            || !TibetanMachineWeb.isWylieRight(TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(size - 2), weDoNotCareIfThereIsCorrespondingWylieOrNot))
                             // this is illegal because it doesn't have a
                             // postsuffix in the proper place,
                             // e.g. 'lan.g, which would otherwise become
                             // 'lang (with nga, not na and then ga):
-                            || !TibetanMachineWeb.isWylieFarRight(TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(size - 1))))))) {
+                            || !TibetanMachineWeb.isWylieFarRight(TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(size - 1), weDoNotCareIfThereIsCorrespondingWylieOrNot)))))) {
                 for (int i = 0; i < size; i++) {
-                    wylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(i));
+                    wylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(i), noSuchWylie);
                     if (TibetanMachineWeb.isAmbiguousWylie(lastWylie, wylie)
                         || (i != 0 && wylie.equals(ACHEN)))
                         sb.append(WYLIE_DISAMBIGUATING_KEY);
@@ -914,7 +923,7 @@ public class TibTextUtils implements THDLWylieConstants {
             /* Else, chew up all the glyphs except for the last two.  Then decide. */
             int i = 0;
             while (i+2 < size) {
-                wylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(i));
+                wylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(i), noSuchWylie);
                 if (TibetanMachineWeb.isAmbiguousWylie(lastWylie, wylie)
                     || (i != 0 && wylie.equals(ACHEN)))
                     sb.append(WYLIE_DISAMBIGUATING_KEY);
@@ -925,9 +934,9 @@ public class TibTextUtils implements THDLWylieConstants {
             }
 
             String wylie1
-                = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(i));
+                = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(i), noSuchWylie);
             String wylie2
-                = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(i + 1));
+                = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(i + 1), noSuchWylie);
 
             if (size == 3) {
                 String wylie0 = lastWylie;
@@ -1047,9 +1056,12 @@ public class TibTextUtils implements THDLWylieConstants {
 * org.thdl.tib.text.DuffCode DuffCodes}
 * @param isBeforeVowel true if these glyphs occur before a vowel,
 * false if these glyphs occur after a vowel
-* @return the Wylie string corresponding to this glyph list
-*/
-	public static String withoutA(java.util.ArrayList glyphList, boolean isBeforeVowel) {
+* @param noSuchWylie an array which will not be touched if this is
+* successful; however, if there is no THDL Extended Wylie
+* corresponding to these glyphs, then noSuchWylie[0] will be set to
+* true
+* @return the Wylie string corresponding to this glyph list */
+	public static String withoutA(java.util.ArrayList glyphList, boolean isBeforeVowel, boolean noSuchWylie[]) {
 		StringBuffer sb = new StringBuffer();
 		Iterator iter = glyphList.iterator();
 		DuffCode dc;
@@ -1058,7 +1070,7 @@ public class TibTextUtils implements THDLWylieConstants {
 
 		while (iter.hasNext()) {
 			dc = (DuffCode)iter.next();
-			currWylie = TibetanMachineWeb.getWylieForGlyph(dc);
+			currWylie = TibetanMachineWeb.getWylieForGlyph(dc, noSuchWylie);
 
 			if (TibetanMachineWeb.isAmbiguousWylie(lastWylie, currWylie)
 				|| (!lastWylie.equals("")
@@ -1084,9 +1096,12 @@ public class TibTextUtils implements THDLWylieConstants {
 /**
 * Gets the Extended Wylie for a sequence of glyphs.
 * @param dcs an array of glyphs
-* @return the Extended Wylie corresponding to these glyphs
-*/
-	public static String getWylie(DuffCode[] dcs) {
+* @param noSuchWylie an array which will not be touched if this is
+* successful; however, if there is no THDL Extended Wylie
+* corresponding to these glyphs, then noSuchWylie[0] will be set to
+* true
+* @return the Extended Wylie corresponding to these glyphs */
+	public static String getWylie(DuffCode[] dcs, boolean noSuchWylie[]) {
 		if (dcs.length == 0)
 			return null;
 
@@ -1108,9 +1123,9 @@ public class TibTextUtils implements THDLWylieConstants {
                 if (wylieBuffer.length() > 0 || !glyphList.isEmpty()) {
                     String thisPart;
                     if (needsVowel)
-                        thisPart = withA(glyphList);
+                        thisPart = withA(glyphList, noSuchWylie);
                     else
-                        thisPart = withoutA(glyphList, false);
+                        thisPart = withoutA(glyphList, false, noSuchWylie);
                     wylieBuffer.append(thisPart);
 
                     glyphList.clear();
@@ -1120,7 +1135,7 @@ public class TibTextUtils implements THDLWylieConstants {
 
                 wylieBuffer.append(ch);
             } else {
-                wylie = TibetanMachineWeb.getWylieForGlyph(dcs[i]);
+                wylie = TibetanMachineWeb.getWylieForGlyph(dcs[i], noSuchWylie);
 
                 boolean containsBindu = false;
                 if (wylie.length() > 1 && wylie.charAt(wylie.length()-1) == BINDU) {
@@ -1138,9 +1153,9 @@ public class TibTextUtils implements THDLWylieConstants {
                         } else {
                             String thisPart;
                             if (needsVowel)
-                                thisPart = withA(glyphList);
+                                thisPart = withA(glyphList, noSuchWylie);
                             else
-                                thisPart = withoutA(glyphList, false);
+                                thisPart = withoutA(glyphList, false, noSuchWylie);
                             wylieBuffer.append(thisPart);
 
                             wylieBuffer.append(wylie); //append the punctuation
@@ -1185,7 +1200,7 @@ public class TibTextUtils implements THDLWylieConstants {
 
                             if (0 != glyphCount) {
                                 DuffCode top_dc = (DuffCode)glyphList.get(glyphCount-1);
-                                String top_wylie = TibetanMachineWeb.getWylieForGlyph(top_dc);
+                                String top_wylie = TibetanMachineWeb.getWylieForGlyph(top_dc, noSuchWylie);
 
                                 if (top_wylie.equals(ACHEN)) {
                                     glyphList.remove(glyphCount-1);
@@ -1198,15 +1213,15 @@ public class TibTextUtils implements THDLWylieConstants {
                                     }
                                 }
 
-                                if (top_dc == null || !TibetanMachineWeb.getWylieForGlyph(top_dc).equals(ACHUNG)) {
-                                    String thisPart = withoutA(glyphList, true);
+                                if (top_dc == null || !TibetanMachineWeb.getWylieForGlyph(top_dc, noSuchWylie).equals(ACHUNG)) {
+                                    String thisPart = withoutA(glyphList, true, noSuchWylie);
                                     wylieBuffer.append(thisPart); //append consonants in glyphList
                                 } else {
                                     glyphCount = glyphList.size();
                                     glyphList.remove(glyphCount-1);
 										
                                     if (glyphCount-1 != 0) {
-                                        String thisPart = withA(glyphList);
+                                        String thisPart = withA(glyphList, noSuchWylie);
                                         wylieBuffer.append(thisPart);
                                     }
 
@@ -1231,7 +1246,7 @@ public class TibTextUtils implements THDLWylieConstants {
 
                 if (containsBindu) {
                     isLastVowel = false;
-                    wylieBuffer.append(withoutA(glyphList, false));
+                    wylieBuffer.append(withoutA(glyphList, false, noSuchWylie));
                     wylieBuffer.append(BINDU); //append the bindu
                     glyphList.clear();
                 }
@@ -1243,9 +1258,9 @@ public class TibTextUtils implements THDLWylieConstants {
         if (!glyphList.isEmpty()) {
             String thisPart;
             if (needsVowel)
-                thisPart = withA(glyphList);
+                thisPart = withA(glyphList, noSuchWylie);
             else
-                thisPart = withoutA(glyphList, false);
+                thisPart = withoutA(glyphList, false, noSuchWylie);
             wylieBuffer.append(thisPart);
         }
 
