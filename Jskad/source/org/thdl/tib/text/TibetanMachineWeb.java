@@ -60,6 +60,9 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 
 	private static TibetanKeyboard keyboard = null;
 	private static Set charSet = null;
+	private static Set tibSet = null;
+	private static Set sanskritStackSet = null;
+	private static Set numberSet = null;
 	private static Set vowelSet = null;
 	private static Set puncSet = null;
 	private static Set topSet = null;
@@ -346,26 +349,64 @@ public class TibetanMachineWeb implements THDLWylieConstants {
             }
 			String line;
 			boolean hashOn = false;
-			boolean isSanskrit = false; //FIXME: this is never read.
+
+            // is this a Tibetan consonant or consonant stack?
+			boolean isTibetan = false;
+
+            // is this a Sanskrit consonant stack?
+			boolean isSanskrit = false;
+
 			boolean ignore = false;
+
+            tibSet = new HashSet();
+            sanskritStackSet = new HashSet();
 
 			while ((line = in.readLine()) != null) {
 				if (line.startsWith("<?")) { //line is command
 					if (line.equalsIgnoreCase("<?Consonants?>")) {
 						isSanskrit = false;
+						isTibetan = true;
 						hashOn = false;
+                        ignore = false;
 						line = in.readLine();
-						charSet = new HashSet();
+						if (null == charSet) charSet = new HashSet();
 						StringTokenizer st = new StringTokenizer(line,",");
 						while (st.hasMoreTokens()) {
                             String ntk;
 							charSet.add(ntk = st.nextToken());
+							tibSet.add(ntk);
                             validInputSequences.put(ntk, anyOldObjectWillDo);
                         }
 					}
+					else if (line.equalsIgnoreCase("<?Numbers?>")) {
+                        // FIXME: for historical reasons, numbers go
+                        // in both charSet and numberSet.
+						isSanskrit = false;
+						isTibetan = false;
+						hashOn = false;
+                        ignore = false;
+						line = in.readLine();
+                        if (null == charSet) charSet = new HashSet();
+						numberSet = new HashSet();
+						StringTokenizer st = new StringTokenizer(line,",");
+						while (st.hasMoreTokens()) {
+                            String ntk;
+                            // DLC FIXME: don't add it to numberSet
+                            // and charSet here; do it in
+                            // <?Input:Numbers?> so that Jskad has the
+                            // same TMW->Wylie conversion regardless
+                            // of whether or not it chooses to support
+                            // inputting numbers.
+							numberSet.add(ntk = st.nextToken());
+							charSet.add(ntk);
+                            validInputSequences.put(ntk, anyOldObjectWillDo);
+                        }
+                    }
 					else if (line.equalsIgnoreCase("<?Vowels?>")) {
 						isSanskrit = false;
+						isTibetan = false;
 						hashOn = false;
+                        ignore = false;
 						line = in.readLine();
 						vowelSet = new HashSet();
 						StringTokenizer st = new StringTokenizer(line,",");
@@ -377,7 +418,9 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 					}
 					else if (line.equalsIgnoreCase("<?Other?>")) {
 						isSanskrit = false;
+						isTibetan = false;
 						hashOn = false;
+                        ignore = false;
 						line = in.readLine();
 						puncSet = new HashSet();
 						StringTokenizer st = new StringTokenizer(line,",");
@@ -389,29 +432,47 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 					}
 
 					else if (line.equalsIgnoreCase("<?Input:Punctuation?>")
-						|| line.equalsIgnoreCase("<?Input:Vowels?>")
-						|| line.equalsIgnoreCase("<?Input:Tibetan?>")) {
+                             || line.equalsIgnoreCase("<?Input:Vowels?>")) {
 						isSanskrit = false;
+						isTibetan = false;
+						hashOn = true;
+						ignore = false;
+                    }
+                    else if (line.equalsIgnoreCase("<?Input:Tibetan?>")) {
+						isSanskrit = false;
+						isTibetan = true;
+						hashOn = true;
+						ignore = false;
+					}
+                    else if (line.equalsIgnoreCase("<?Input:Numbers?>")) {
+						isSanskrit = false;
+						isTibetan = false;
 						hashOn = true;
 						ignore = false;
 					}
 					else if (line.equalsIgnoreCase("<?Input:Sanskrit?>")) {
 						isSanskrit = true;
+						isTibetan = false;
 						hashOn = true;
 						ignore = false;
 					}
 					else if (line.equalsIgnoreCase("<?ToWylie?>")) {
 						isSanskrit = false;
+						isTibetan = false;
 						hashOn = false;
 						ignore = false;
 					}
-					else if (line.equalsIgnoreCase("<?Ignore?>"))
+					else if (line.equalsIgnoreCase("<?Ignore?>")) {
+						isSanskrit = false;
 						ignore = true;
+                    }
 				}
-				else if (line.startsWith("//")) //comment
+				else if (line.startsWith("//")) { //comment
 					;
-				else if (line.equals("")) //empty string
+                }
+				else if (line.equals("")) {//empty string
 					;
+                }
 				else {
 					StringTokenizer st = new StringTokenizer(line,DELIMITER,true);
 
@@ -558,6 +619,21 @@ public class TibetanMachineWeb implements THDLWylieConstants {
                                             + " which means that no Wylie is assigned.  That isn't supported.");
                         if (hashOn) {
                             tibHash.put(wylie, duffCodes);
+                        }
+                        if (isTibetan) {
+                            // Delete the dashes:
+                            StringBuffer wylieWithoutDashes = new StringBuffer(wylie);
+                            for (int wl = 0; wl < wylieWithoutDashes.length(); wl++) {
+                                if (wylieWithoutDashes.charAt(wl) == '-') {
+                                    wylieWithoutDashes.deleteCharAt(wl);
+                                    --wl;
+                                }
+                            }
+                            tibSet.add(wylieWithoutDashes.toString());
+                        }
+
+                        if (isSanskrit) {
+                            sanskritStackSet.add(wylie);
                         }
 
                         if (null == duffCodes[TMW])
@@ -726,13 +802,13 @@ public static boolean isFormatting(char c) {
 }
 
 /**
-* Checks to see if the passed string
-* is a character in the installed keyboard.
+* Checks to see if the passed string is a character (a single
+* [possibly Sanskrit or va or fa] consonant or a number [possibly
+* super- or subscribed]) in the installed keyboard.
 *
 * @param s the string you want to check
-* @return true if s is a character in the current keyboard,
-* false if not
-*/
+* @return true if s is a character in the current keyboard, false if
+* not */
 public static boolean isChar(String s) {
 	if (currentKeyboardIsExtendedWylie())
 		return charSet.contains(s);
@@ -741,14 +817,56 @@ public static boolean isChar(String s) {
 }
 
 /**
-* Checks to see if the passed string
-* is a character in Extended Wylie.
+* Checks to see if the passed string is a character (a single
+* [possibly Sanskrit or va or fa] consonant or a number [possibly
+* super- or subscribed]) in Extended Wylie.
 * @param s the string to be checked
-* @return true if s is a character in
-* Extended Wylie transliteration, false if not
-*/
+* @return true if s is a character in Extended Wylie transliteration,
+* false if not */
 public static boolean isWylieChar(String s) {
 	return charSet.contains(s);
+}
+
+
+/**
+* Checks to see if the passed string is a consonant or unadorned
+* consonant stack in Extended Wylie.
+* @param s the string to be checked
+* @return true if s is such in Extended Wylie transliteration, false
+* if not */
+public static boolean isWylieTibetanConsonantOrConsonantStack(String s) {
+	return tibSet.contains(s);
+}
+
+/**
+* Returns true if and only if s is the THDL Extended Wylie for a
+* Sanskrit multi-consonant stack.
+*/
+public static boolean isWylieSanskritConsonantStack(String s) {
+	return sanskritStackSet.contains(s);
+}
+
+/** Returns true if and only if s is the THDL Extended Wylie
+    representation of a legal tsheg-bar appendage 'i, 'e, 'u, 'o, 'am,
+    or 'ang.  The word le'u (chapter) contains such an appendage,
+    e.g. */
+public static boolean isWylieAchungAppendage(String s) {
+    return (s.equals("'e")
+            || s.equals("'i")
+            || s.equals("'o")
+            || s.equals("'u")
+            || s.equals("'ang")
+            || s.equals("'am"));
+}
+
+/**
+* Checks to see if the passed string is a number [possibly super- or
+* subscribed]) in Extended Wylie.
+* @param s the string to be checked
+* @return true if s is a number in Extended Wylie transliteration,
+* false if not */
+public static boolean isWylieNumber(String s) {
+	return numberSet.contains(s);
 }
 
 /**
@@ -826,6 +944,32 @@ public static boolean isWylieVowel(String s) {
 	return vowelSet.contains(s);
 }
 
+/** Returns true if and only if wylie is the THDL Extended Wylie for
+    an adornment.  An adornment is something that is part of a stack
+    but is not a consonant, such as a Tibetan or Sanskrit vowel or a
+    bindu.  Note that an adornment might be both an adornment and a
+    vowel, or an adornment and punctuation. */
+public static boolean isWylieAdornment(String wylie) {
+	return (vowelSet.contains(wylie)
+            || (wylie.equals("M") /* U+0F7E */
+                || wylie.equals("M^") /* U+0F83 */
+                || wylie.equals("iM")
+                || wylie.equals("-iM")
+                || wylie.equals("eM")
+                || wylie.equals("aiM")
+                || wylie.equals("oM")
+                || wylie.equals("auM")));
+}
+
+/** Returns true if and only if wylie is the THDL Extended Wylie for
+    an adornment {@link #isWylieAdornment(String)} that contains a
+    vowel within it. */
+public static boolean isWylieAdornmentAndContainsVowel(String wylie) {
+	return (isWylieAdornment(wylie) &&
+            !wylie.equals("M") /* U+0F7E */
+            && !wylie.equals("M^") /* U+0F83 */);
+}
+
 /**
 * Returns true iff this Wylie is valid as a leftmost character in a
 * Tibetan syllable.  For example, in the syllable 'brgyad', 'b' is the
@@ -839,9 +983,9 @@ public static boolean isWylieLeft(String s) {
 }
 
 /**
-* Returns true iff this Wylie is valid as a right (post-vowel)
-* character in a Tibetan syllable.  For example, in the syllable
-* 'lags', 'g' is in the right character position. Valid right
+* Returns true iff this Wylie is valid as a suffix (i.e., a right
+* (post-vowel) character) in a Tibetan syllable.  For example, in the
+* syllable 'lags', 'g' is in the right character position. Valid right
 * characters include g, ng, d, n, b, m, r, l, s, ', and T.
 * @param s the (Wylie) string to be checked
 * @return true if s is a possible right character in a Tibetan

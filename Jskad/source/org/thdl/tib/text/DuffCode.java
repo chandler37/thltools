@@ -152,7 +152,11 @@ public final class DuffCode {
 /**
 * @return a string representation of this object */
 	public String toString() {
-		return "<duffcode font=" + fontNum
+        boolean[] err = new boolean[] { false };
+        String wylie = TibetanMachineWeb.getWylieForGlyph(this, err);
+        if (err[0]) wylie = "undefined";
+		return "<duffcode wylie="
+            + wylie + " font=" + fontNum
             + " charNum=" + charNum + " character="
             + new Character(getCharacter()).toString() + "/>";
 	}
@@ -160,7 +164,11 @@ public final class DuffCode {
  * @param TMW if this DuffCode represents a TMW glyph, not a TM glyph
  * @return a string representation of this object */
 	public String toString(boolean TMW) {
-		return "<duffcode font="
+        boolean[] err = new boolean[] { false };
+        String wylie = TibetanMachineWeb.getWylieForGlyph(this, err);
+        if (err[0]) wylie = "undefined";
+		return "<duffcode wylie="
+            + wylie + " font="
             + (TMW
                ? TibetanMachineWeb.tmwFontNames
                : TibetanMachineWeb.tmFontNames)[fontNum]

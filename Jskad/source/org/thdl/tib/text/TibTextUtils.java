@@ -39,6 +39,10 @@ import org.thdl.util.ThdlDebug;
 *
 * @author Edward Garrett, Tibetan and Himalayan Digital Library */
 public class TibTextUtils implements THDLWylieConstants {
+    /** Change to true to see various things on System.out and
+        System.err. */
+    private static final boolean debug = false;
+
     /** Do not use this contructor. */
     private TibTextUtils() { super(); }
 
@@ -795,303 +799,9 @@ public class TibTextUtils implements THDLWylieConstants {
         // any head letters, so only da needs to be considered.
         if (TibetanMachineWeb.isWylieTop(wylie1)
             && wylie2.equals(/* FIXME: hard-coded */ "d"))
-            disambiguator
-                = new String(new char[] { WYLIE_DISAMBIGUATING_KEY });
+            disambiguator = WYLIE_DISAMBIGUATING_KEY_STRING;
         return wylie1 + disambiguator + wylie2;
     }
-
-/**
-* Scans a list of glyphs and returns an Extended Wylie string with 'a' inserted.
-* Passed a list of TibetanMachineWeb glyphs that constitute a partial
-* syllable that is in need of an 'a' vowel, this method scans the list,
-* figures out where to put the 'a' vowel, and then returns a string
-* of Wylie corresponding to this sequence. This method is used
-* heavily during TibetanMachineWeb to Extended Wylie conversion,
-* since there is no glyph corresponding to the Extended Wylie 'a' vowel.
-* @param glyphList a list of TibetanMachineWeb glyphs, i.e. {@link
-* org.thdl.tib.text.DuffCode DuffCodes}.  Pass in an ArrayList if you
-* care at all for speed.
-* @param noSuchWylie an array which will not be touched if this is
-* successful; however, if there is no THDL Extended Wylie
-* corresponding to these glyphs, then noSuchWylie[0] will be set to
-* true
-* @return the Wylie string corresponding to this glyph list, with 'a' inserted.  */
-	public static String withA(java.util.List glyphList, boolean noSuchWylie[]) {
-		StringBuffer sb = new StringBuffer();
-		int size = glyphList.size();
-		String wylie;
-		String lastWylie = "";
-
-		switch (size) {
-        case 0:
-            return "";
-
-        case 1: //only one glyph: 'a' goes after it
-            wylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(0), noSuchWylie);
-            sb.append(wylie);
-            sb.append(aVowelToUseAfter(wylie));
-
-            return sb.toString();
-
-        case 2: //two glyphs: 'a' either goes after first or after both
-            lastWylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(0), noSuchWylie);
-            sb.append(lastWylie);
-            wylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(1), noSuchWylie);
-            if (TibetanMachineWeb.isWylieRight(wylie)) {
-                sb.append(aVowelToUseAfter(lastWylie));
-                sb.append(wylie);
-            } else {
-                /* handle illegal two-glyph combinations,
-                 * e.g., skaska */
-                if (makeIllegalTibetanGoEndToEnd
-                    && !TibetanMachineWeb.isWylieLeft(lastWylie)) {
-                    sb.append(aVowelToUseAfter(lastWylie));
-                }
-
-                if (TibetanMachineWeb.isAmbiguousWylie(lastWylie, wylie))
-                    sb.append(WYLIE_DISAMBIGUATING_KEY);
-
-                if (!wylie.equals(ACHEN)) {
-                    sb.append(wylie);
-                    sb.append(WYLIE_aVOWEL);
-                } else {
-                    sb.append(WYLIE_DISAMBIGUATING_KEY);
-                    sb.append(wylie);
-                }
-            }
-            return sb.toString();
-
-        default:
-            /* Three or more characters: 'a' goes before last two,
-             * between last two, or in final position, unless we have
-             * something like pa'am, in which case the vowel comes
-             * before the first ACHEN. */
-
-            /* First, allow for pa'am, and even pa'am'ang, and
-             * even bskyars'am'ang.  'i, 'o, 'i, 'u, etc. will not
-             * occur because this is a call to withA, so vowels
-             * aren't in the glyphList.  We will look at the end
-             * of the glyphList (and no, with an ArrayList, this
-             * is not O(glyphList.size()), it is O(1)) and work
-             * our way backward, building up tailEndWylie as we
-             * go. */
-            {
-                StringBuffer tailEndWylie = null;
-                int effectiveSize = size - 2;
-                while (effectiveSize >= 0
-                       && TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(effectiveSize), noSuchWylie).equals(ACHUNG)) {
-                    if (null == tailEndWylie) tailEndWylie = new StringBuffer();
-                    // prepend:
-                    tailEndWylie.insert(0,
-                                        ACHUNG
-                                        + aVowelToUseAfter(ACHUNG)
-                                        + TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(effectiveSize + 1), noSuchWylie));
-                    effectiveSize -= 2;
-                }
-                if (null != tailEndWylie) {
-                    return (withA(glyphList.subList(0, effectiveSize + 2), noSuchWylie)
-                            + tailEndWylie.toString());
-                }
-            }
-
-            if (makeIllegalTibetanGoEndToEnd
-                && (size > 4 // this is too many glyphs to be legal
-                    // this is illegal because it doesn't begin
-                    // with a prefix:
-                    || (size == 4
-                        && (!TibetanMachineWeb.isWylieLeft(TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(0), weDoNotCareIfThereIsCorrespondingWylieOrNot))
-                            // this is illegal because it doesn't have a
-                            // suffix in the proper place, e.g. mjskad:
-                            || !TibetanMachineWeb.isWylieRight(TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(size - 2), weDoNotCareIfThereIsCorrespondingWylieOrNot))
-                            // this is illegal because it doesn't have a
-                            // postsuffix in the proper place,
-                            // e.g. 'lan.g, which would otherwise become
-                            // 'lang (with nga, not na and then ga):
-                            || !TibetanMachineWeb.isWylieFarRight(TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(size - 1), weDoNotCareIfThereIsCorrespondingWylieOrNot)))))) {
-                for (int i = 0; i < size; i++) {
-                    wylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(i), noSuchWylie);
-                    if (TibetanMachineWeb.isAmbiguousWylie(lastWylie, wylie)
-                        || (i != 0 && wylie.equals(ACHEN)))
-                        sb.append(WYLIE_DISAMBIGUATING_KEY);
-
-                    sb.append(wylie + aVowelToUseAfter(wylie));
-                    lastWylie = wylie;
-                }
-                return sb.toString();
-            }
-
-            /* Else, chew up all the glyphs except for the last two.  Then decide. */
-            int i = 0;
-            while (i+2 < size) {
-                wylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(i), noSuchWylie);
-                if (TibetanMachineWeb.isAmbiguousWylie(lastWylie, wylie)
-                    || (i != 0 && wylie.equals(ACHEN)))
-                    sb.append(WYLIE_DISAMBIGUATING_KEY);
-
-                sb.append(wylie);
-                lastWylie = wylie;
-                i++;
-            }
-
-            String wylie1
-                = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(i), noSuchWylie);
-            String wylie2
-                = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(i + 1), noSuchWylie);
-
-            if (size == 3) {
-                String wylie0 = lastWylie;
-                // Let's see if wylie0+wylie1+wylie2 is ambiguous
-                // -- if wylie0 could be a prefix and if wylie1
-                // could be a suffix, and if wylie2 is "s".  If
-                // it's ambigous, let's look up
-                // wylie0+wylie1+wylie2 in our magic table.
-                // Otherwise, see if we have a prefix, and if we
-                // do, the "a" vowel comes after wylie1.  Else the
-                // "a" vowel comes after wylie0.
-                if (TibetanMachineWeb.isWylieLeft(wylie0)) {
-                    /* is it ambiguous? */
-                    if (TibetanMachineWeb.isWylieRight(wylie1)
-                        && SA.equals(wylie2) /* isWylieFarRight would
-                                              * work, but the list of
-                                              * 9 words doesn't have
-                                              * any ending with d --
-                                              * all end with s. */) {
-                        /* Yes, this is ambiguous. How do we handle
-                         * it?  See this from Andres:
-                         *
-                         * I'm posting this upon David Chandler's
-                         * request. According to Lobsang Thonden in
-                         * Modern Tibetan Grammar Language (page 42),
-                         * with regards to identifying the root letter
-                         * in 3 lettered words there are only 23
-                         * ambiguous cases. He writes:
-                         *
-                         * If the last letter is 'sa' and the first
-                         * two letters are affixes, then the SECOND
-                         * ONE is the root letter in the following 9
-                         * WORDS ONLY:
-                         *
-                         * gdas gnas gsas dgas dmas bdas mdas 'gas
-                         * 'das
-                         *
-                         * And the FIRST is the root letter in the
-                         * following 14 WORDS ONLY:
-                         *
-                         * rags lags nags bags bangs gangs rangs langs
-                         * nangs sangs babs rabs rams nams
-                         *
-                         * As I mentioned before, I think that the
-                         * best solution for now is to hard-wire these
-                         * cases. Even if the list is not exhaustive,
-                         * at least we'll have most cases covered.
-                         */
-
-                        /* FIXME: these constants are hard-wired here,
-                         * rather than in TibetanMachineWeb, because
-                         * I'm lazy. */
-                        if ((wylie0.equals("g") && (wylie1.equals("d") || wylie1.equals("n") || wylie1.equals("s")))
-                            || (wylie0.equals("d") && (wylie1.equals("g") || wylie1.equals("m")))
-                            || (wylie0.equals("b") && wylie1.equals("d"))
-                            || (wylie0.equals("m") && wylie1.equals("d"))
-                            || (wylie0.equals("'") && (wylie1.equals("g") || wylie1.equals("d")))) {
-                            sb.append(wylie1
-                                      + aVowelToUseAfter(wylie1)
-                                      + wylie2);
-                        } else {
-                            sb.append(aVowelToUseAfter(wylie0)
-                                      + unambiguousPostAVowelWylie(wylie1,
-                                                                   wylie2));
-                        }
-
-                    } else {
-                        /* no ambiguity. the "a" vowel comes after
-                         * wylie1. */
-                        if (TibetanMachineWeb.isAmbiguousWylie(wylie0, wylie1))
-                            sb.append(WYLIE_DISAMBIGUATING_KEY);
-                        sb.append(wylie1
-                                  + aVowelToUseAfter(wylie1)
-                                  + wylie2);
-                    }
-                } else {
-                    if (makeIllegalTibetanGoEndToEnd
-                        && !(TibetanMachineWeb.isWylieRight(wylie1)
-                             && TibetanMachineWeb.isWylieFarRight(wylie2))) {
-                        /* handle skaskaska, e.g. */
-                        sb.append(aVowelToUseAfter(wylie0)
-                                  + wylie1
-                                  + aVowelToUseAfter(wylie1)
-                                  + wylie2
-                                  + aVowelToUseAfter(wylie2));
-                    } else {
-                        /* no ambiguity. the "a" vowel comes after
-                         * wylie0. */
-                        sb.append(aVowelToUseAfter(wylie0)
-                                  + unambiguousPostAVowelWylie(wylie1,
-                                                               wylie2));
-                    }
-                }
-            } else {
-                /* If size==4, then we assume this is legal.  If
-                 * size==5, anything will do!  So assume we have a
-                 * prefix, a root letter, a suffix, and a postsuffix.
-                 * The "a" vowel comes after the root letter. */
-                sb.append(aVowelToUseAfter(lastWylie)
-                          + unambiguousPostAVowelWylie(wylie1,
-                                                       wylie2));
-            }
-            return sb.toString();
-		}
-	}
-
-/**
-* Gets the Extended Wylie for a list of glyphs.  Passed a list of
-* TibetanMachineWeb glyphs that constitute a partial or complete
-* syllable, this method scans the list, and then returns a string of
-* Wylie corresponding to this sequence. No 'a' vowel is inserted
-* because it is assumed that the glyph list already contains some
-* other vowel. If the glyph list does not already contain a vowel,
-* then this method should not be called.
-*
-* @param glyphList a list of TibetanMachineWeb glyphs, i.e. {@link
-* org.thdl.tib.text.DuffCode DuffCodes}
-* @param isBeforeVowel true if these glyphs occur before a vowel,
-* false if these glyphs occur after a vowel
-* @param noSuchWylie an array which will not be touched if this is
-* successful; however, if there is no THDL Extended Wylie
-* corresponding to these glyphs, then noSuchWylie[0] will be set to
-* true
-* @return the Wylie string corresponding to this glyph list */
-	public static String withoutA(java.util.ArrayList glyphList, boolean isBeforeVowel, boolean noSuchWylie[]) {
-		StringBuffer sb = new StringBuffer();
-		Iterator iter = glyphList.iterator();
-		DuffCode dc;
-		String currWylie;
-		String lastWylie = new String();
-
-		while (iter.hasNext()) {
-			dc = (DuffCode)iter.next();
-			currWylie = TibetanMachineWeb.getWylieForGlyph(dc, noSuchWylie);
-
-			if (TibetanMachineWeb.isAmbiguousWylie(lastWylie, currWylie)
-				|| (!lastWylie.equals("")
-                    && currWylie.equals(ACHEN)))
-                sb.append(WYLIE_DISAMBIGUATING_KEY);
-
-            /* le'ang, not le'ng, to be consistent w.r.t. pa'am
-             * vs. pa'm: */
-            if (lastWylie.equals(ACHUNG) && !isBeforeVowel)
-                sb.append(WYLIE_aVOWEL);
-
-			sb.append(currWylie);
-
-			lastWylie = currWylie;
-		}
-
-        // DLC FIXME: type jeskada, convert Tibetan->Wylie.  You get
-        // the wrong thing in makeIllegalTibetanGoEndToEnd mode.  Fix
-        // it here.
-		return sb.toString();
-	}
 
 /**
 * Gets the Extended Wylie for a sequence of glyphs.
@@ -1100,173 +810,654 @@ public class TibTextUtils implements THDLWylieConstants {
 * successful; however, if there is no THDL Extended Wylie
 * corresponding to these glyphs, then noSuchWylie[0] will be set to
 * true
-* @return the Extended Wylie corresponding to these glyphs */
-	public static String getWylie(DuffCode[] dcs, boolean noSuchWylie[]) {
-		if (dcs.length == 0)
-			return null;
+* @return the Extended Wylie corresponding to these glyphs, or null */
+    public static String getWylie(DuffCode[] dcs, boolean noSuchWylie[]) {
+        StringBuffer warnings = (debug ? new StringBuffer() : null);
+        String ans = getWylieImplementation(dcs, noSuchWylie, warnings);
+        if (debug && warnings.length() > 0)
+            System.out.println("DEBUG: warnings in TMW->Wylie: " + warnings);
+        return ans;
+    }
 
-		char ch;
-		String wylie;
+    /** True for and only for ma and nga because 'am and 'ang are
+        appendages. */
+    private static final boolean isAppendageNonVowelWylie(String wylie) {
+        return (MA.equals(wylie) || NGA.equals(wylie));
+    }
 
-		ArrayList glyphList = new ArrayList();
-		boolean needsVowel = true;
-		boolean isLastVowel = false;
-		int start = 0;
-		StringBuffer wylieBuffer = new StringBuffer();
+    /** Scans the glyphs in glyphList and creates the returned list of
+        grapheme clusters based on them.  A grapheme cluster is a
+        consonant or consonant stack with optional adornment or a
+        number (possibly super- or subscribed) or some other glyph
+        alone. */
+    private static ArrayList breakTshegBarIntoGraphemeClusters(java.util.List glyphList,
+                                                               boolean noSuchWylie[]) {
 
-        for (int i=start; i<dcs.length; i++) {
-            ch = dcs[i].getCharacter();
+        // Definition: adornment means vowels and achungs and bindus.
+
+        int sz = glyphList.size();
+        ThdlDebug.verify(sz > 0);
+
+        // A list of grapheme clusters (see UnicodeGraphemeCluster).
+        // sz is an overestimate (speeds us up, wastes some memory).
+        ArrayList gcs = new ArrayList(sz);
+
+        StringBuffer buildingUpGc = new StringBuffer();
+
+        boolean consonantal_with_vowel = false;
+        boolean buildingUpSanskrit = false;
+        for (int i = 0; i < sz; i++) {
+            DuffCode dc = (DuffCode)glyphList.get(i);
+            String wylie = TibetanMachineWeb.getWylieForGlyph(dc, noSuchWylie);
+            boolean containsWylieVowel = false;
+            boolean buildingUpSanskritNext = false;
+            if ((buildingUpSanskritNext
+                 = TibetanMachineWeb.isWylieSanskritConsonantStack(wylie))
+                || TibetanMachineWeb.isWylieTibetanConsonantOrConsonantStack(wylie)) {
+                if (buildingUpGc.length() > 0) {
+                    gcs.add(new TGCPair(buildingUpGc.toString(),
+                                        consonantal_with_vowel
+                                        ? (buildingUpSanskrit
+                                           ? TGCPair.SANSKRIT_WITH_VOWEL
+                                           : TGCPair.CONSONANTAL_WITH_VOWEL)
+                                        : (buildingUpSanskrit
+                                           ? TGCPair.SANSKRIT_WITHOUT_VOWEL
+                                           : TGCPair.CONSONANTAL_WITHOUT_VOWEL)));
+                    buildingUpGc.delete(0, buildingUpGc.length());
+                }
+                buildingUpGc.append(wylie);
+                consonantal_with_vowel = false;
+                buildingUpSanskrit = buildingUpSanskritNext;
+            } else if ((containsWylieVowel
+                        = TibetanMachineWeb.isWylieAdornmentAndContainsVowel(wylie))
+                       || TibetanMachineWeb.isWylieAdornment(wylie)) {
+
+                if (buildingUpGc.length() > 0) {
+                    buildingUpGc.append(wylie);
+                    if (containsWylieVowel) {
+                        if (debug)
+                            System.out.println("DEBUG: with_vowel is true thanks to " + wylie);
+                        consonantal_with_vowel = true;
+                    }
+                    // do not clear; we might have {cui} or {hUM}, e.g.
+                } else {
+                    gcs.add(new TGCPair(wylie,
+                                        TGCPair.LONE_VOWEL));
+                    consonantal_with_vowel = false;
+                }
+            } else {
+                // number or weird thing:
+
+                if (buildingUpGc.length() > 0) {
+                    gcs.add(new TGCPair(buildingUpGc.toString(),
+                                        consonantal_with_vowel
+                                        ? (buildingUpSanskrit
+                                           ? TGCPair.SANSKRIT_WITH_VOWEL
+                                           : TGCPair.CONSONANTAL_WITH_VOWEL)
+                                        : (buildingUpSanskrit
+                                           ? TGCPair.SANSKRIT_WITHOUT_VOWEL
+                                           : TGCPair.CONSONANTAL_WITHOUT_VOWEL)));
+                    buildingUpGc.delete(0, buildingUpGc.length());
+                }
+                gcs.add(new TGCPair(wylie, TGCPair.OTHER));
+                consonantal_with_vowel = false;
+                buildingUpSanskrit = false;
+            }
+        }
+        if (buildingUpGc.length() > 0) {
+            gcs.add(new TGCPair(buildingUpGc.toString(),
+                                consonantal_with_vowel
+                                ? (buildingUpSanskrit
+                                   ? TGCPair.SANSKRIT_WITH_VOWEL
+                                   : TGCPair.CONSONANTAL_WITH_VOWEL)
+                                : (buildingUpSanskrit
+                                   ? TGCPair.SANSKRIT_WITHOUT_VOWEL
+                                   : TGCPair.CONSONANTAL_WITHOUT_VOWEL)));
+        }
+        buildingUpGc = null;
+        return gcs;
+    }
+
+
+    private static String getClassificationOfTshegBar(ArrayList gcs,
+                                                      StringBuffer warnings) {
+        String candidateType = null;
+        // Now that we have grapheme clusters, see if they match any
+        // of the "legal tsheg bars":
+        int sz = gcs.size();
+        for (int i = 0; i < sz; i++) {
+            TGCPair tp = (TGCPair)gcs.get(i);
+            int cls = tp.classification;
+            String wylie = tp.wylie;
+            if (TGCPair.OTHER == cls) {
+                if (TibetanMachineWeb.isWylieNumber(wylie)) {
+                    if (null == candidateType) {
+                        candidateType = "number";
+                    } else {
+                        if ("number" != candidateType) {
+                            if (null != warnings)
+                                warnings.append("Found something odd; the wylie is " + wylie + "\n");
+                            candidateType = "invalid";
+                            break;
+                        }
+                    }
+                } else {
+                    if (null != warnings)
+                        warnings.append("Found something odd; the wylie is " + wylie + "\n");
+                    candidateType = "invalid";
+                    break;
+                }
+            } else if (TGCPair.SANSKRIT_WITHOUT_VOWEL == cls
+                       || TGCPair.SANSKRIT_WITH_VOWEL == cls) {
+                candidateType = "invalid";
+            } else if (TGCPair.CONSONANTAL_WITHOUT_VOWEL == cls
+                       || TGCPair.CONSONANTAL_WITH_VOWEL == cls) {
+                if (null == candidateType) {
+                    if (TibetanMachineWeb.isWylieLeft(wylie)) {
+                        candidateType = "prefix/root";
+                    } else {
+                        candidateType = "root";
+                    }
+                } else {
+                    if ("prefix/root" == candidateType) {
+                        if (ACHUNG.equals(wylie)) {
+                            // peek ahead to distinguish between ba's,
+                            // ba'ala and ba'am:
+                            TGCPair nexttp = (i+1 < sz) ? (TGCPair)gcs.get(i+1) : null;
+                            String nextwylie = (nexttp == null) ? "" : nexttp.wylie;
+                            if (isAppendageNonVowelWylie(nextwylie)) {
+                                candidateType = "maybe-appendaged-prefix/root";
+                            } else {
+                                candidateType = "prefix/root-root/suffix";
+                            }
+                        } else if (TibetanMachineWeb.isWylieRight(wylie)) {
+                            candidateType = "prefix/root-root/suffix";
+                        } else if (TibetanMachineWeb.isWylieAchungAppendage(wylie)) {
+                            candidateType = "appendaged-prefix/root";
+                        } else {
+                            candidateType = "prefix-root";
+                        }
+                    } else if ("root" == candidateType) {
+                        if (ACHUNG.equals(wylie)) {
+                            // peek ahead to distinguish between pa's,
+                            // pa'ala and pa'am:
+                            TGCPair nexttp = (i+1 < sz) ? (TGCPair)gcs.get(i+1) : null;
+                            String nextwylie = (nexttp == null) ? "" : nexttp.wylie;
+                            if (isAppendageNonVowelWylie(nextwylie)) {
+                                candidateType = "maybe-appendaged-root";
+                            } else {
+                                candidateType = "root-suffix";
+                            }
+                        } else if (TibetanMachineWeb.isWylieRight(wylie)) {
+                            candidateType = "root-suffix";
+                        } else if (TibetanMachineWeb.isWylieAchungAppendage(wylie)) {
+                            candidateType = "appendaged-root";
+                        } else {
+                            if (null != warnings)
+                                warnings.append("Found a non-prefix consonant or consonant stack followed by a consonant or consonant stack that is not simply a suffix; that thing's wylie is " + wylie + "\n");
+                            candidateType = "invalid";
+                            break;
+                        }
+                    } else if ("prefix-root" == candidateType) {
+                        if (ACHUNG.equals(wylie)) {
+                            // peek ahead to distinguish between bpa's,
+                            // bpa'ala and bpa'am:
+                            TGCPair nexttp = (i+1 < sz) ? (TGCPair)gcs.get(i+1) : null;
+                            String nextwylie = (nexttp == null) ? "" : nexttp.wylie;
+                            if (isAppendageNonVowelWylie(nextwylie)) {
+                                candidateType = "maybe-appendaged-prefix-root";
+                            } else {
+                                candidateType = "prefix-root-suffix";
+                            }
+                        } else if (TibetanMachineWeb.isWylieRight(wylie)) {
+                            candidateType = "prefix-root-suffix";
+                        } else if (TibetanMachineWeb.isWylieAchungAppendage(wylie)) {
+                            candidateType = "appendaged-prefix-root";
+                        } else {
+                            if (null != warnings)
+                                warnings.append("Found a prefix plus a root stack plus a non-suffix consonant or consonant stack whose wylie is " + wylie + "\n");
+                            candidateType = "invalid";
+                            break;
+                        }
+                    } else if ("prefix/root-root/suffix" == candidateType) {
+                        // this has no peekahead, gag'am works.
+                        if (ACHUNG.equals(wylie)) {
+                            // peek ahead to distinguish between
+                            // gga'am and gaga'ala:
+                            TGCPair nexttp = (i+1 < sz) ? (TGCPair)gcs.get(i+1) : null;
+                            String nextwylie = (nexttp == null) ? "" : nexttp.wylie;
+                            if (isAppendageNonVowelWylie(nextwylie)) {
+                                candidateType = "maybe-appendaged-prefix/root-root/suffix";
+                            } else {
+                                candidateType = "prefix-root-suffix";
+                            }
+                        } else if (TibetanMachineWeb.isWylieFarRight(wylie)) {
+                            candidateType = "prefix/root-root/suffix-suffix/postsuffix";
+                        } else if (TibetanMachineWeb.isWylieRight(wylie)) {
+                            candidateType = "prefix-root-suffix";
+                        } else if (TibetanMachineWeb.isWylieAchungAppendage(wylie)) {
+                            candidateType = "appendaged-prefix/root-root/suffix";
+                        } else {
+                            if (null != warnings)
+                                warnings.append("Found a prefix/root stack plus a suffix/root stack plus a non-suffix, non-postsuffix consonant or consonant stack whose wylie is " + wylie + "\n");
+                            candidateType = "invalid";
+                            break;
+                        }
+                    } else if ("root-suffix" == candidateType) {
+                        // This has no peekahead w.r.t. 'am and 'ang,
+                        // but it needs none because we peeked to be
+                        // sure that this was root-suffix and not
+                        // maybe-appendaged-root.
+                        if (TibetanMachineWeb.isWylieFarRight(wylie)) {
+                            candidateType = "root-suffix-postsuffix";
+                        } else if (TibetanMachineWeb.isWylieAchungAppendage(wylie)) {
+                            candidateType = "appendaged-root-suffix";
+                        } else if (ACHUNG.equals(wylie)) {
+                            candidateType = "maybe-appendaged-root-suffix";
+                        } else {
+                            if (null != warnings)
+                                warnings.append("Found a root stack plus a suffix plus a non-postsuffix consonant or consonant stack whose wylie is " + wylie + "\n");
+                            candidateType = "invalid";
+                            break;
+                        }
+                    } else if ("prefix/root-root/suffix-suffix/postsuffix" == candidateType
+                               || "prefix-root-suffix" == candidateType) {
+                        // this has no peekahead and needs none.
+                        if (TibetanMachineWeb.isWylieFarRight(wylie)) {
+                            candidateType = "prefix-root-suffix-postsuffix";
+                        } else if (TibetanMachineWeb.isWylieAchungAppendage(wylie)) {
+                            // if we simply prepended to
+                            // candidateType, we wouldn't get interned
+                            // strings.
+                            candidateType = ("appendaged-" + candidateType).intern();
+                        } else if (ACHUNG.equals(wylie)) {
+                            candidateType = ("maybe-appendaged-" + candidateType).intern();
+                        } else {
+                            if (null != warnings)
+                                warnings.append("Found a prefix/root stack plus a suffix/root stack plus a suffix/postsuffix plus a non-postsuffix consonant or consonant stack whose wylie is " + wylie + "\n");
+                            candidateType = "invalid";
+                            break;
+                        }
+                    } else if ("prefix-root-suffix-postsuffix" == candidateType) {
+                        // this has no peekahead and needs none.
+                        if (TibetanMachineWeb.isWylieAchungAppendage(wylie)) {
+                            candidateType = "appendaged-prefix-root-suffix-postsuffix";
+                        } else if (ACHUNG.equals(wylie)) {
+                            candidateType = "maybe-appendaged-prefix-root-suffix-postsuffix";
+                        } else {
+                            if (null != warnings)
+                                warnings.append("Found a prefix plus root stack plus suffix plus postsuffix; then found yet another consonant or consonant stack whose wylie is " + wylie + "\n");
+                            candidateType = "invalid";
+                            break;
+                        }
+                    } else if ("root-suffix-postsuffix" == candidateType) {
+                        // this has no peekahead and needs none.
+                        if (TibetanMachineWeb.isWylieAchungAppendage(wylie)) {
+                            candidateType = "appendaged-root-suffix-postsuffix";
+                        } else if (ACHUNG.equals(wylie)) {
+                            candidateType = "maybe-appendaged-root-suffix-postsuffix";
+                        } else {
+                            if (null != warnings)
+                                warnings.append("Found a root stack plus suffix plus postsuffix; then found yet another consonant or consonant stack whose wylie is " + wylie + "\n");
+                            candidateType = "invalid";
+                            break;
+                        }
+                    } else if (candidateType.startsWith("maybe-appendaged-")) {
+                        if (isAppendageNonVowelWylie(wylie)) {
+                            candidateType
+                                = candidateType.substring("maybe-".length()).intern();
+                            // So that we get 'am, not 'm; 'ang, not 'ng:
+                            tp.wylie = WYLIE_aVOWEL + tp.wylie;
+                        } else {
+                            if (null != warnings)
+                                warnings.append("Found a tsheg bar that has an achung (" + ACHUNG + ") tacked on, followed by some other thing whose wylie is " + wylie + "\n");
+                            candidateType = "invalid";
+                            break;
+                        }
+                    } else if (candidateType.startsWith("appendaged-")) {
+                        if (TibetanMachineWeb.isWylieAchungAppendage(wylie)) {
+                            // candidateType stays what it is.
+                        } else if (ACHUNG.equals(wylie)) {
+                            candidateType = ("maybe-" + candidateType).intern();
+                        } else {
+                            if (null != warnings)
+                                warnings.append("Found a tsheg bar that has a 'i, 'e, 'o, 'u, or 'ang 'am appendage already and then found yet another consonant or consonant stack whose wylie is " + wylie + "\n");
+                            candidateType = "invalid";
+                            break;
+                        }
+                    } else {
+                        if ("number" != candidateType)
+                            throw new Error("missed a case");
+                        if (null != warnings)
+                            warnings.append("Found a consonant or consonant stack after something odd; the consonantish thing has wylie " + wylie + "\n");
+                        candidateType = "invalid";
+                        break;
+                    }
+                }
+            } else if (TGCPair.LONE_VOWEL == cls) {
+                if (null != warnings)
+                    warnings.append("Found a vowel that did not follow either a Tibetan consonant or consonant stack or another vowel.");
+                candidateType = "invalid";
+                break;
+            } else {
+                throw new Error("bad cls");
+            }
+        }
+        if (candidateType.startsWith("maybe-appendaged-")) {
+            if (null != warnings)
+                warnings.append("Found a tsheg bar that has an extra achung (" + ACHUNG + ") tacked on\n");
+            candidateType = "invalid";
+        }
+        return candidateType;
+    }
+
+    /** Appends to wylieBuffer the wylie for the glyph list glyphList
+        (which should be an ArrayList for speed).  This will be very
+        user-friendly for "legal tsheg bars" and will be valid, but
+        possibly ugly (interspersed with disambiguators or extra
+        vowels, etc.) Wylie for other things, such as Sanskrit
+        transliteration.  Updates warnings and noSuchWylie like the
+        caller does.
+
+        <p>What constitutes a legal, non-punctuation, non-whitespace
+        tsheg bar?  The following are the only such:</p>
+        <ul>
+          <li>one or more numbers</li>
+
+          <li>a single, possibly adorned consonant stack</li>
+
+          <li>a legal "tyllable" appended with zero or more particles
+              from the set { 'i, 'o, 'u, 'e, 'ang, 'am }</li>
+        </ul>
+
+        <p>A "tyllable" is, by definition, one of the following:</p>
+
+        <ul>
+          <li>a single, possibly adorned consonant stack</li>
+
+          <li>two consonant stacks where one is a single,
+              unadorned consonant (and is a prefix it it is first and
+              a suffix if it is last) and the other is possibly
+              adorned</li>
+
+          <li>three consonant stacks where at most one has adornment.
+              If the second has adornment, then the first must be an
+              unadorned prefix consonant and the last must be an
+              unadorned suffix consonant.  If the first has adornment,
+              then the second must be an unadorned suffix consonant
+              and the third must be an unadorned secondary suffix
+              consonant.</li>
+
+          <li>four consonant stacks where either none is adorned or
+              only the second consonant stack is adorned, the first is
+              an unadorned prefix consonant, the third is an unadorned
+              suffix consonant, and the fourth is an unadorned
+              secondary suffix consonant.</li>
+
+        </ul>
+        
+        <p>When there are three unadorned consonant stacks in a
+           tyllable, a hard-coded list of valid Tibetan tsheg bars is
+           relied upon to determine if the 'a' vowel comes after the
+           first or the second consonant.</p> */
+    private static void getTshegBarWylie(java.util.List glyphList,
+                                         boolean noSuchWylie[],
+                                         StringBuffer warnings,
+                                         StringBuffer wylieBuffer) {
+        ArrayList gcs
+            = breakTshegBarIntoGraphemeClusters(glyphList, noSuchWylie);
+        String candidateType = getClassificationOfTshegBar(gcs, warnings);
+        int sz = gcs.size();
+        if (candidateType == "invalid") {
+            // Forget beauty and succintness -- just be sure to
+            // generate Wylie that can be converted unambiguously into
+            // Tibetan.  Use a disambiguator or vowel after each
+            // grapheme cluster.
+            //
+            // If we truly didn't care about beauty, we'd just lump
+            // SANSKRIT_WITHOUT_VOWEL and SANSKRIT_WITH_VOWEL into
+            // OTHER.
+
+            for (int i = 0; i < sz; i++) {
+                TGCPair tp = (TGCPair)gcs.get(i);
+                int cls = tp.classification;
+                String wylie = tp.wylie;
+                wylieBuffer.append(wylie);
+                if (TibetanMachineWeb.isWylieTibetanConsonantOrConsonantStack(wylie)
+                    || TibetanMachineWeb.isWylieSanskritConsonantStack(wylie)) {
+                    wylieBuffer.append(aVowelToUseAfter(wylie));
+                } else {
+                    if (TGCPair.CONSONANTAL_WITH_VOWEL != cls
+                        && TGCPair.SANSKRIT_WITH_VOWEL != cls)
+                        wylieBuffer.append(WYLIE_DISAMBIGUATING_KEY);
+                }
+            }
+        } else {
+            // Generate perfect, beautiful, Wylie, using the minimum
+            // number of vowels and disambiguators.
+
+            int leftover = sz + 1;
+
+            // Appendaged vs. not appendaged?  it affects nothing at
+            // this stage.
+            if (candidateType.startsWith("appendaged-")) {
+                candidateType
+                    = candidateType.substring("appendaged-".length()).intern();
+            }
+
+            if ("prefix/root-root/suffix-suffix/postsuffix" == candidateType) {
+                /* Yes, this is ambiguous. How do we handle it?  See
+                 * this from Andres:
+                 *
+                 * I'm posting this upon David Chandler's
+                 * request. According to Lobsang Thonden in Modern
+                 * Tibetan Grammar Language (page 42), with regards to
+                 * identifying the root letter in 3 lettered words
+                 * there are only 23 ambiguous cases. He writes:
+                 *
+                 * If the last letter is 'sa' and the first two
+                 * letters are affixes, then the SECOND ONE is the
+                 * root letter in the following 9 WORDS ONLY:
+                 *
+                 * gdas gnas gsas dgas dmas bdas mdas 'gas 'das
+                 *
+                 * And the FIRST is the root letter in the following
+                 * 14 WORDS ONLY:
+                 *
+                 * rags lags nags bags bangs gangs rangs langs nangs
+                 * sangs babs rabs rams nams
+                 *
+                 * As I mentioned before, I think that the best
+                 * solution for now is to hard-wire these cases. Even
+                 * if the list is not exhaustive, at least we'll have
+                 * most cases covered.  */
+
+                leftover = 3;
+                /* FIXME: these constants are hard-wired here, rather
+                 * than in TibetanMachineWeb, because I'm lazy. */
+                String wylie1 = ((TGCPair)gcs.get(0)).wylie;
+                String wylie2 = ((TGCPair)gcs.get(1)).wylie;
+                String wylie3 = ((TGCPair)gcs.get(2)).wylie;
+                if ((wylie1.equals("g") && (wylie2.equals("d") || wylie2.equals("n") || wylie2.equals("s")))
+                    || (wylie1.equals("d") && (wylie2.equals("g") || wylie2.equals("m")))
+                    || (wylie1.equals("b") && wylie2.equals("d"))
+                    || (wylie1.equals("m") && wylie2.equals("d"))
+                    || (wylie1.equals("'") && (wylie2.equals("g") || wylie2.equals("d")))) {
+                    if (TibetanMachineWeb.isAmbiguousWylie(wylie1, wylie2))
+                        wylieBuffer.append(wylie1 + WYLIE_DISAMBIGUATING_KEY + wylie2);
+                    else
+                        wylieBuffer.append(wylie1 + wylie2);
+
+                    wylieBuffer.append(aVowelToUseAfter(wylie2)
+                                       + wylie3);
+                } else {
+                    wylieBuffer.append(wylie1
+                                       + aVowelToUseAfter(wylie1)
+                                       + unambiguousPostAVowelWylie(wylie2,
+                                                                    wylie3));
+                }
+            } else if ("root" == candidateType
+                       || "prefix/root-root/suffix" == candidateType
+                       || "prefix/root" == candidateType
+                       || "root-suffix-postsuffix" == candidateType
+                       || "root-suffix" == candidateType) {
+                String wylie1 = ((TGCPair)gcs.get(0)).wylie;
+                leftover = 1;
+                wylieBuffer.append(wylie1);
+                if (((TGCPair)gcs.get(0)).classification
+                    != TGCPair.CONSONANTAL_WITH_VOWEL) {
+                    ThdlDebug.verify(TGCPair.CONSONANTAL_WITHOUT_VOWEL
+                                     == ((TGCPair)gcs.get(0)).classification);
+                    wylieBuffer.append(aVowelToUseAfter(wylie1));
+                    if (debug) System.out.println("DEBUG: appending vowel");
+                } else {
+                    if (debug) System.out.println("DEBUG: already has vowel 2");
+                }
+                if ("root-suffix-postsuffix" == candidateType) {
+                    leftover = 3;
+                    String wylie2 = ((TGCPair)gcs.get(1)).wylie;
+                    String wylie3 = ((TGCPair)gcs.get(2)).wylie;
+                    wylieBuffer.append(unambiguousPostAVowelWylie(wylie2,
+                                                                  wylie3));
+                }
+            } else if ("prefix-root-suffix" == candidateType
+                       || "prefix-root" == candidateType
+                       || "prefix-root-suffix-postsuffix" == candidateType) {
+                String wylie1 = ((TGCPair)gcs.get(0)).wylie;
+                String wylie2 = ((TGCPair)gcs.get(1)).wylie;
+                leftover = 2;
+                if (TibetanMachineWeb.isAmbiguousWylie(wylie1, wylie2))
+                    wylieBuffer.append(wylie1 + WYLIE_DISAMBIGUATING_KEY + wylie2);
+                else
+                    wylieBuffer.append(wylie1 + wylie2);
+
+                if (((TGCPair)gcs.get(1)).classification
+                    != TGCPair.CONSONANTAL_WITH_VOWEL) {
+                    ThdlDebug.verify(TGCPair.CONSONANTAL_WITHOUT_VOWEL
+                                     == ((TGCPair)gcs.get(1)).classification);
+                    if (debug) System.out.println("DEBUG: appending vowel");
+                    wylieBuffer.append(aVowelToUseAfter(wylie2));
+                } else {
+                    if (debug) System.out.println("DEBUG: already has vowel 1");
+                }
+                if ("prefix-root-suffix-postsuffix" == candidateType) {
+                    leftover = 4;
+                    String wylie3 = ((TGCPair)gcs.get(2)).wylie;
+                    String wylie4 = ((TGCPair)gcs.get(3)).wylie;
+                    wylieBuffer.append(unambiguousPostAVowelWylie(wylie3,
+                                                                  wylie4));
+                }
+            } else if ("number" == candidateType) {
+                leftover = 0;
+            } else {
+                throw new Error("missed a case down here");
+            }
+
+            // append the wylie left over:
+            for (int i = leftover; i < sz; i++) {
+                TGCPair tp = (TGCPair)gcs.get(i);
+                String wylie = tp.wylie;
+                wylieBuffer.append(wylie);
+            }
+        }
+    }
+
+/**
+* Gets the Extended Wylie for a sequence of glyphs using Chandler's
+* experimental method.  This works as follows:
+*
+* <p>We run along until we hit whitespace or punctuation.  We take
+* everything before that and we see if it's a legal Tibetan tsheg bar,
+* either a number or a word fragment.  If it is, we insert only one
+* vowel in the correct place.  If not, then we throw a disambiguating
+* key or a vowel after each stack.
+*
+* @param dcs an array of glyphs
+* @param noSuchWylie an array which will not be touched if this is
+* successful; however, if there is no THDL Extended Wylie
+* corresponding to these glyphs, then noSuchWylie[0] will be set to
+* true
+* @param warnings either null or a buffer to which will be appended
+* warnings about illegal tsheg bars
+* @return the Extended Wylie corresponding to these glyphs, or null */
+    public static String getWylieImplementation(DuffCode[] dcs,
+                                                boolean noSuchWylie[],
+                                                StringBuffer warnings) {
+        if (dcs.length == 0)
+            return null;
+
+        ArrayList glyphList = new ArrayList();
+        StringBuffer wylieBuffer = new StringBuffer();
+
+        for (int i=0; i<dcs.length; i++) {
+            char ch = dcs[i].getCharacter();
             int k = dcs[i].getCharNum();
             // int fontNum = dcs[i].getFontNum();
 
             if (k < 32) {
-                if (wylieBuffer.length() > 0 || !glyphList.isEmpty()) {
-                    String thisPart;
-                    if (needsVowel)
-                        thisPart = withA(glyphList, noSuchWylie);
-                    else
-                        thisPart = withoutA(glyphList, false, noSuchWylie);
-                    wylieBuffer.append(thisPart);
-
+                if (!glyphList.isEmpty()) {
+                    getTshegBarWylie(glyphList, noSuchWylie,
+                                     warnings, wylieBuffer);
                     glyphList.clear();
-                    needsVowel = true;
-                    isLastVowel = false;
+                    if (null != warnings)
+                        warnings.append("Some glyphs came right before a newline; they did not have a tsheg or shad come first.");
                 }
 
                 wylieBuffer.append(ch);
             } else {
-                wylie = TibetanMachineWeb.getWylieForGlyph(dcs[i], noSuchWylie);
-
-                boolean containsBindu = false;
-                if (wylie.length() > 1 && wylie.charAt(wylie.length()-1) == BINDU) {
-                    char[] cArray = wylie.toCharArray();
-                    wylie = new String(cArray, 0, wylie.length()-1);
-                    containsBindu = true;
-                }
-
-                process_block: {
-                    if (TibetanMachineWeb.isWyliePunc(wylie)) {
-                        isLastVowel = false;
-
-                        if (glyphList.isEmpty()) {
-                            wylieBuffer.append(wylie);
-                        } else {
-                            String thisPart;
-                            if (needsVowel)
-                                thisPart = withA(glyphList, noSuchWylie);
-                            else
-                                thisPart = withoutA(glyphList, false, noSuchWylie);
-                            wylieBuffer.append(thisPart);
-
-                            wylieBuffer.append(wylie); //append the punctuation
-
-                            glyphList.clear();
-                        }
-                        needsVowel = true; //next consonants are syllable onset, so we are awaiting vowel
-                    } else if (TibetanMachineWeb.isWylieChar(wylie)) {
-						//isChar must come before isVowel because ACHEN has priority over WYLIE_aVOWEL
-                        isLastVowel = false;
-                        glyphList.add(dcs[i]);
-                    } else if (TibetanMachineWeb.isWylieVowel(wylie)) {
-                        if (isLastVowel) {
-                            int len = wylieBuffer.length();
-                            int A_len = A_VOWEL.length();
-
-                            if (wylieBuffer.substring(len-A_len).equals(A_VOWEL)) {
-                                try {
-                                    if (wylie.equals(i_VOWEL)) {
-                                        wylieBuffer.delete(len-A_len, len);
-                                        wylieBuffer.append(I_VOWEL);
-                                        isLastVowel = false;
-                                        break process_block;
-                                    } else if (wylie.equals(reverse_i_VOWEL)) {
-                                        wylieBuffer.delete(len-A_len, len);
-                                        wylieBuffer.append(reverse_I_VOWEL);
-                                        isLastVowel = false;
-                                        break process_block;
-                                    }
-                                }
-                                catch (StringIndexOutOfBoundsException se) {
-                                    ThdlDebug.noteIffyCode();
-                                }
-
-                                wylieBuffer.append(wylie); //append current vowel
-                                isLastVowel = false;
-                            } else
-                                wylieBuffer.append(wylie); //append current vowel
-                        } else {
-                            int glyphCount = glyphList.size();
-                            boolean insertDisAmbig = false;
-
-                            if (0 != glyphCount) {
-                                DuffCode top_dc = (DuffCode)glyphList.get(glyphCount-1);
-                                String top_wylie = TibetanMachineWeb.getWylieForGlyph(top_dc, noSuchWylie);
-
-                                if (top_wylie.equals(ACHEN)) {
-                                    glyphList.remove(glyphCount-1);
-										
-                                    if (glyphCount-1 == 0) {
-                                        top_dc = null;
-                                    } else {
-                                        insertDisAmbig = true;
-                                        top_dc = (DuffCode)glyphList.get(glyphCount-2);
-                                    }
-                                }
-
-                                if (top_dc == null || !TibetanMachineWeb.getWylieForGlyph(top_dc, noSuchWylie).equals(ACHUNG)) {
-                                    String thisPart = withoutA(glyphList, true, noSuchWylie);
-                                    wylieBuffer.append(thisPart); //append consonants in glyphList
-                                } else {
-                                    glyphCount = glyphList.size();
-                                    glyphList.remove(glyphCount-1);
-										
-                                    if (glyphCount-1 != 0) {
-                                        String thisPart = withA(glyphList, noSuchWylie);
-                                        wylieBuffer.append(thisPart);
-                                    }
-
-                                    wylieBuffer.append(ACHUNG);
-                                }
-                            }
-
-                            if (insertDisAmbig)
-                                wylieBuffer.append(WYLIE_DISAMBIGUATING_KEY);
-
-                            wylieBuffer.append(wylie); //append vowel
-
-                            glyphList.clear();
-                            isLastVowel = true;
-                            needsVowel = false;
-                        }
-                    } else { //must be a stack
-                        isLastVowel = false;
-                        glyphList.add(dcs[i]);
+                String wylie = TibetanMachineWeb.getWylieForGlyph(dcs[i], noSuchWylie);
+                if (TibetanMachineWeb.isWyliePunc(wylie)
+                    && !TibetanMachineWeb.isWylieAdornment(wylie)) {
+                    if (!glyphList.isEmpty()) {
+                        getTshegBarWylie(glyphList, noSuchWylie,
+                                         warnings, wylieBuffer);
+                        glyphList.clear();
                     }
-                }
-
-                if (containsBindu) {
-                    isLastVowel = false;
-                    wylieBuffer.append(withoutA(glyphList, false, noSuchWylie));
-                    wylieBuffer.append(BINDU); //append the bindu
-                    glyphList.clear();
+                    wylieBuffer.append(wylie); //append the punctuation
+                } else {
+                    glyphList.add(dcs[i]);
                 }
             }
         }
 
-        //replace TMW with Wylie
+        // replace remaining TMW with Wylie
 
         if (!glyphList.isEmpty()) {
-            String thisPart;
-            if (needsVowel)
-                thisPart = withA(glyphList, noSuchWylie);
-            else
-                thisPart = withoutA(glyphList, false, noSuchWylie);
-            wylieBuffer.append(thisPart);
+            getTshegBarWylie(glyphList, noSuchWylie, warnings, wylieBuffer);
+            // glyphList.clear() if we weren't about to exit...
+            if (null != warnings)
+                warnings.append("The stretch of Tibetan ended without final punctuation.");
         }
 
         if (wylieBuffer.length() > 0)
             return wylieBuffer.toString();
         else
             return null;
-	}
+    }
+}
+
+/** An ordered pair consisting of a Tibetan grapheme cluster's {@link
+    org.thdl.tib.text.tshegbar#UnicodeGraphemeCluster see
+    UnicodeGraphemeCluster for a definition of the term}
+    classification and its context-insensitive THDL Extended Wylie
+    representation. */
+class TGCPair {
+    static final int OTHER = 1;
+    // a standalone achen would fall into this category:
+    static final int CONSONANTAL_WITHOUT_VOWEL = 2;
+    static final int CONSONANTAL_WITH_VOWEL = 3;
+    static final int LONE_VOWEL = 4;
+    static final int SANSKRIT_WITHOUT_VOWEL = 5;
+    static final int SANSKRIT_WITH_VOWEL = 6;
+
+    String wylie;
+    int classification;
+    TGCPair(String wylie, int classification) {
+        this.wylie = wylie;
+        this.classification = classification;
+    }
+    public String toString() {
+        return "<TGCPair wylie=" + wylie + " classification="
+            + classification + "/>";
+    }
 }

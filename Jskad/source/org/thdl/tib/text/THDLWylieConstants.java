@@ -41,6 +41,12 @@ public interface THDLWylieConstants {
 * the Wylie disambiguating key, as a char
 */
 	public static final char WYLIE_DISAMBIGUATING_KEY = '.';
+
+/**
+* the Wylie disambiguating key, as a String
+*/
+	public static final String WYLIE_DISAMBIGUATING_KEY_STRING
+        = new String(new char[] { WYLIE_DISAMBIGUATING_KEY });
 /**
 * the Wylie for the invisible 'a' vowel
 */

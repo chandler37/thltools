@@ -42,7 +42,7 @@ public class DuffPaneTest extends TestCase {
 
         // We don't want to load the TM or TMW font files ourselves:
         ThdlOptions.setUserPreference("thdl.rely.on.system.tmw.fonts", true);
-        ThdlOptions.setUserPreference("thdl.do.not.rely.on.system.tm.fonts", false);
+        ThdlOptions.setUserPreference("thdl.rely.on.system.tm.fonts", true);
         ThdlOptions.setUserPreference("thdl.debug", true);
 
         dp = new DuffPane();
@@ -102,11 +102,23 @@ public class DuffPaneTest extends TestCase {
      *  and then converting the result to Extended Wylie. */
     public void testWylieToIRToWylie() {
         ensureKeysGiveCorrectWylie("kue ");
+        ensureKeysGiveCorrectWylie("<8<7<0 ");
+        ensureKeysGiveCorrectWylie("012345678901234 ");
+        ensureKeysGiveCorrectWylie("ka<7 ",
+                                   "ka<7. ");
+        ensureKeysGiveCorrectWylie("ka <7 ");
+        ensureKeysGiveCorrectWylie("ka>7 ",
+                                   "ka>7. ");
+        ensureKeysGiveCorrectWylie("ka >7 ");
+// DLC FIXME : M^ doesn't work.  nga, na do, k,kh do, why not M, M^?
         ensureKeysGiveCorrectWylie("kuau ");
         ensureKeysGiveCorrectWylie("ku-i ");
         ensureKeysGiveCorrectWylie("kuai ");
         ensureKeysGiveCorrectWylie("cuig ");
-        ensureKeysGiveCorrectWylie("kcuig ");
+        ensureKeysGiveCorrectWylie("kcuig ",
+                                   "kacuiga ");
+        ensureKeysGiveCorrectWylie("gcuig ");
+        ensureKeysGiveCorrectWylie("gcuigs'e'i'i'o'am'ang'e'o'u'am'am ");
         ensureKeysGiveCorrectWylie("nga ");
         ensureKeysGiveCorrectWylie("nga /");
 
@@ -144,17 +156,20 @@ public class DuffPaneTest extends TestCase {
         ensureKeysGiveCorrectWylie("blar.d");
         ensureKeysGiveCorrectWylie("blarad",
                                    "blar.d");
-        ensureKeysGiveCorrectWylie("b.lard");
+        ensureKeysGiveCorrectWylie("b.lard",
+                                   "balarda");
 
         ensureKeysGiveCorrectWylie("b.lal.d");
         ensureKeysGiveCorrectWylie("blald",
                                    "blalda");
-        ensureKeysGiveCorrectWylie("b.lald");
+        ensureKeysGiveCorrectWylie("b.lald",
+                                   "balalda");
 
         ensureKeysGiveCorrectWylie("b.las.d");
         ensureKeysGiveCorrectWylie("blasd",
                                    "blasda");
-        ensureKeysGiveCorrectWylie("b.lasd");
+        ensureKeysGiveCorrectWylie("b.lasd",
+                                   "balasda");
 
         ensureKeysGiveCorrectWylie("b.lag");
         ensureKeysGiveCorrectWylie("blg",
@@ -233,7 +248,7 @@ public class DuffPaneTest extends TestCase {
         ensureKeysGiveCorrectWylie("b.lags");
         ensureKeysGiveCorrectWylie("blags");
 
-        // DLC add b-r-g-s, b-l-g-s,
+        // DLC FIXME: add b-r-g-s, b-l-g-s, etc.
 
 
         ensureKeysGiveCorrectWylie("mngas",
@@ -268,15 +283,43 @@ public class DuffPaneTest extends TestCase {
             ensureKeysGiveCorrectWylie("skalazasa");
             ensureKeysGiveCorrectWylie("jskad",
                                        "jaskada");
-        }
-        {
-            // These are incorrectly handled in terms of
-            // makeIllegalTibetanGoEndToEnd.  DLC FIXME.
             ensureKeysGiveCorrectWylie("jeskad",
-                                       "jeskd");
-            ensureKeysGiveCorrectWylie("jeskd");
+                                       "jeskada");
+            ensureKeysGiveCorrectWylie("jeskd",
+                                       "jesakada");
             ensureKeysGiveCorrectWylie("jesakada",
-                                       "jeskd");
+                                       "jesakada");
         }
+
+        {
+            // DLC FIXME: ai gives a.ai, a.i is required to get ai.
+
+            // DLC FIXME: haaa doesn't get you h.a., neither does
+            // ha.a; achen is tough to get.
+        }
+
+        ensureKeysGiveCorrectWylie("heM hiM h-iM heM haiM hoM hauM hUM ");
+        ensureKeysGiveCorrectWylie("hi.M ho.M he.M hu.M",
+                                   "hiM hoM heM huM");
+
+        ensureKeysGiveCorrectWylie("brgwU-imd");
+
+        ensureKeysGiveCorrectWylie("pad+me");
+        ensureKeysGiveCorrectWylie("pad+men+b+h+yuM");
+
+        ensureKeysGiveCorrectWylie("bskyUMbs");
+        ensureKeysGiveCorrectWylie("bskyUMbsHgro ");
+
+        ensureKeysGiveCorrectWylie("favakakhagangacachajanyatathadanapaphabamatsatshadzawazhaza'ayaralashasahaTaThaDaNaSha");
+        ensureKeysGiveCorrectWylie("fevekekhegengecechejenyetethedenepephebemetsetshedzewezheze'eyerelesheseheTeTheDeNeShe");
+        ensureKeysGiveCorrectWylie("fuvukukhugungucuchujunyututhudunupuphubumutsutshudzuwuzhuzu'uyurulushusuhuTuThuDuNuShu");
+        ensureKeysGiveCorrectWylie("fovokokhogongocochojonyotothodonopophobomotsotshodzowozhozo'oyoroloshosohoToThoDoNoSho");
+        ensureKeysGiveCorrectWylie("faivaikaikhaigaingaicaichaijainyaitaithaidainaipaiphaibaimaitsaitshaidzaiwaizhaizai'aiyairailaishaisaihaiTaiThaiDaiNaiShai");
+        ensureKeysGiveCorrectWylie("fauvaukaukhaugaungaucauchaujaunyautauthaudaunaupauphaubaumautsautshaudzauwauzhauzau'auyauraulaushausauhauTauThauDauNauShau");
+        ensureKeysGiveCorrectWylie("fivikikhigingicichijinyitithidinipiphibimitsitshidziwizhizi'iyirilishisihiTiThiDiNiShi");
+
+        ensureKeysGiveCorrectWylie("don't touch my coffee/that makes me very angry/supersize my drink",
+                                   "dona'ata tocha mya cofafe/thata mkes me veraya angaraya/superasize mya drinaka");
+
     }
 }
