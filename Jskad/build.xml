@@ -5,6 +5,10 @@
      describes how to use this file to build Savant, Jskad,
      QuillDriver, and the translation tool.
 
+     This build file is the main one, and it uses jwsbuild.xml for
+     building Java Web Start (JWS) releases.  See the comments in that
+     file to learn why.
+
      Quick start for the impatient: This buildfile looks for the
      following, which are not in the CVS repository:
 
@@ -30,19 +34,7 @@
     see http://thdltools.sourceforge.net/BuildSystems.html.
   </description>
 
-  <!--                        -->
-  <!-- Ant extensions we use: -->
-  <!--                        -->
-  <!-- See http://www.vamphq.com/ant.html for vamp*: -->
-  <taskdef name="vampwar"       classname="venus.ant.taskdefs.VampWar" />
-  <taskdef name="vampinstaller" classname="venus.ant.taskdefs.VampInstaller" />
-
-
-
-
   <!-- set global properties for this build -->
-  <property name="key.alias" value="David Germano"/>
-  <property name="keystore" value="file:///f:/thdl/Jskad/thawte/keystore"/>
   <property name="my.jar.suffix" value="vanilla"/>
   <property name="link.offline" value="false"/>
   <property name="javacdashg" value="yes"/>
@@ -61,6 +53,9 @@
   <property name="ext"  location="extensions"/>
   <property name="publicjavadocs"  location="${docs}/public-javadocs"/>
   <property name="privatejavadocs"  location="${docs}/private-javadocs"/>
+
+  <property name="key.alias" value="David Germano"/>
+  <property name="keystore" value="file:///f:/thdl/Jskad/thawte/keystore"/>
 
   <!-- If you have installed the J2EE SDK, then you can compile servlets.
        Set this property to the directory containing j2ee.jar: 
@@ -354,6 +349,55 @@
   </target>
 
 
+  <target name="web-start-releases"
+          depends="jskad-jws,savant-jws,qd-jws,tt-jws"
+          description="Builds the Java Web Start versions of all applications"/>
+
+
+  <target name="jskad-jws"
+          depends="init"
+          description="Builds the Java Web Start version of Jskad">
+    <antcall target="compile-from-scratch-and-call-jws-subbuild">
+      <param name="my.app" value="Jskad"/>
+      <param name="my.prereq" value="jskad-dist"/>
+    </antcall>
+  </target>
+
+
+  <!-- DLC FIXME: package up all the XML jars and the JMF jars and libraries that Savant uses.
+   -->
+  <target name="savant-jws"
+          depends="init"
+          description="Builds the Java Web Start version of Savant">
+    <antcall target="compile-from-scratch-and-call-jws-subbuild">
+      <param name="my.app" value="Savant"/>
+      <param name="my.prereq" value="savant-dist"/>
+    </antcall>
+  </target>
+
+
+  <!-- DLC FIXME: package up all the XML jars and the JMF jars and libraries that QuillDriver uses.
+   -->
+  <target name="qd-jws"
+          depends="init"
+          description="Builds the Java Web Start version of QuillDriver">
+    <antcall target="compile-from-scratch-and-call-jws-subbuild">
+      <param name="my.app" value="QuillDriver"/>
+      <param name="my.prereq" value="qd-dist"/>
+    </antcall>
+  </target>
+
+
+  <target name="tt-jws"
+          depends="init"
+          description="Builds the Java Web Start version of the translation tool">
+    <antcall target="compile-from-scratch-and-call-jws-subbuild">
+      <param name="my.app" value="DictionarySearchAppletAndJavaWebStart"/>
+      <param name="my.prereq" value="tt-applet-plus-jws-dist"/>
+    </antcall>
+  </target>
+
+
   <target name="src-dist" depends="init"
           description="generates the full Jskad+Savant+QuillDriver+Translation Tool source distribution" >
     <!-- Put everything necessary into the zip file -->
@@ -629,55 +673,6 @@
   </target>
 
 
-  <target name="web-start-releases"
-          depends="jskad-jws,savant-jws,qd-jws,tt-jws"
-          description="Builds the Java Web Start versions of all applications"/>
-
-
-  <target name="jskad-jws"
-          depends="init"
-          description="Builds the Java Web Start version of Jskad">
-    <antcall target="package-for-java-web-start">
-      <param name="my.app" value="Jskad"/>
-      <param name="my.prereq" value="jskad-dist"/>
-    </antcall>
-  </target>
-
-
-  <!-- DLC FIXME: package up all the XML jars and the JMF jars and libraries that Savant uses.
-   -->
-  <target name="savant-jws"
-          depends="init"
-          description="Builds the Java Web Start version of Savant">
-    <antcall target="package-for-java-web-start">
-      <param name="my.app" value="Savant"/>
-      <param name="my.prereq" value="savant-dist"/>
-    </antcall>
-  </target>
-
-
-  <!-- DLC FIXME: package up all the XML jars and the JMF jars and libraries that QuillDriver uses.
-   -->
-  <target name="qd-jws"
-          depends="init"
-          description="Builds the Java Web Start version of QuillDriver">
-    <antcall target="package-for-java-web-start">
-      <param name="my.app" value="QuillDriver"/>
-      <param name="my.prereq" value="qd-dist"/>
-    </antcall>
-  </target>
-
-
-  <target name="tt-jws"
-          depends="init"
-          description="Builds the Java Web Start version of the translation tool">
-    <antcall target="package-for-java-web-start">
-      <param name="my.app" value="DictionarySearchAppletAndJavaWebStart"/>
-      <param name="my.prereq" value="tt-applet-plus-jws-dist"/>
-    </antcall>
-  </target>
-
-
   <target name="ttsc-init" depends="init"
           description="used internally to set a property when the J2EE SDK or Tomcat's servlet.jar is installed in a place where we can find it.  In that case, we can build servlets.">
     <condition property="found.servlet.classes">
@@ -797,6 +792,7 @@
            explicit is a Good Thing: -->
       <exclude name="**/*.properties" />
       <exclude name="**/*.rtf" />
+      <exclude name="**/*.xsl" />
       <exclude name="**/*.txt" />
       <exclude name="**/*.ini" />
       <exclude name="**/*.html" />
@@ -806,93 +802,46 @@
   </target>
 
 
-  <target name="package-for-java-web-start"
-          depends="clean"
-          description="Builds the Java Web Start version of ${my.app}">
+  <target name="compile-from-scratch-and-call-jws-subbuild"
+          depends="init"
+          description="Cleans, compiles, and packages the Java Web Start version of ${my.app}">
 
     <!-- First, you must give the passwords so that we can sign the JARs. -->
     <fail message="Use 'ant -Dkeystore.password=psst' to sign a Java Web Start WAR file."
           unless="keystore.password"/>
     <fail message="Use 'ant -Ddgkey.password=psst' to sign a Java Web Start WAR file."
           unless="dgkey.password"/>
+
+    <!-- Clean:  (FIXME: clean only what you must clean, the appropriate bin dir.) -->
+    <antcall target="clean"/>
+
     <!-- Now, having cleaned, we create ${my.app}-JWS.jar: -->
     <antcall target="${my.prereq}">
       <param name="my.jar.suffix" value="JWS"/>
       <param name="javacdashg" value="no"/>
     </antcall>
 
-    <!-- Now use the Venus Application Publisher's (Vamp's) Ant task
-         to create a .war file.  We don't use Tomcat or the like to
-         distribute our apps at this point, so we don't need the full
-         WAR file.  We in fact need only the JAR file inside it.
-         There is a ${my.app}.jnlp file inside it, too, but that file
-         uses macros like $$name and $$codebase, which are only
-         appropriate to Tomcat-type environments.
+    <!-- Finally, call jwsbuild.xml appropriately: -->
+    <ant antfile="jwsbuild.xml" target="package-for-java-web-start"
+         inheritAll="false" inheritRefs="false">
+      <property name="dist" value="${dist}"/>
 
-         Thus, we'll run 'jar xf ${my.app}-web-start.war
-         ${my.app}-JWS.jar' to extract the signed JAR file and copy
-         the .jar and the ${dist}/${my.app}.jnlp file (NOT the one in
-         the WAR) to the web server.  (Be sure that the web server has
-         its MIME types configured correctly so that the .jnlp file is
-         served as an application/jnlp or the like, not text/xml.)
-
-         YES, THIS MEANS WE'RE NOT MAKING FULL USE OF THE VAMP
-         PACKAGE.  Yes, it means that we're requiring anyone who
-         wishes to cut a JWS release to install vamp.jar, when we
-         could use the built-in SignJar task instead.  BUT, this
-         method means that we're ready for a J2EE application server
-         framework.
-
-         If you change web servers or the location on the web server
-         where the JAR and jnlp file are located, you have to edit
-         ${my.app}.jnlp.  Note that doing so will mean that users who've
-         installed ${my.app} from the old location will NOT be able to
-         seamlessly upgrade, so don't do this often.
-
-         To install the Vamp Ant task, visit
-         'http://www.vamphq.com/ant.html' and follow the instructions.
-         Note that you *CAN* just vamp.jar into Ant's 'lib' directory
-         with Ant 1.5.1.
-    -->
-
-    <vampwar dest="${dist}/java-web-start/${my.app}-web-start.war">
-      <jnlp src="${dist}/${my.app}.jnlp">
-        <resources>
-          <fileset dir="${dist}/lib">
-            <include name="${my.app}-JWS.jar" />
-          </fileset>
-        </resources>
-      </jnlp>
-
-      <!-- David Chandler signs our JARs for now, and he uses this info: -->
-      <jarsigner
-          keystore  = "${keystore}"
-          storepass = "${keystore.password}"
-          keypass = "${dgkey.password}"
-          alias     = "${key.alias}"/>
-    </vampwar>
-
-    <!-- Extract the JAR file and delete the WAR file: -->
-    <unwar src="${dist}/java-web-start/${my.app}-web-start.war"
-           dest="${dist}/java-web-start/">
-      <patternset>
-        <include name="${my.app}-JWS.jar"/>
-        <exclude name="**/*"/>
-      </patternset>
-    </unwar>
-    <antcall target="maybe-delete-the-war"/>
+      <property name="dgkey.password" value="${dgkey.password}"/>
+      <property name="keystore.password" value="${keystore.password}"/>
+      <property name="keystore" value="${keystore}"/>
+      <property name="key.alias" value="${key.alias}"/>
+    </ant>
   </target>
 
-  <target name="maybe-delete-the-war" if="delete.the.war" depends="init">
-<!--      <echo message="deleting the war"/> -->
-    <delete file="${dist}/java-web-start/${my.app}-web-start.war"/>
-  </target>
+
 
 </project>
 
 <!-- My TO-DO list: -->
 
-<!-- DLC FIXME: we need a compile-all that uses if="" and <available>. -->
-
-<!-- DLC FIXME: Now that we use javac -target 1.1, do we need a
+<!-- DLC FIXME: If we use bootclasspath and -target 1.1, do we need a
      separate tt-handheld and tt-standalone? -->
+
+<!-- DLC FIXME: create the .jnlp files based on a template and Ant
+     properties.  Edward e-mailed thdltools-devel requesting something
+     like this. -->

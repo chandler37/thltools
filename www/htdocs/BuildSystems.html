@@ -181,13 +181,13 @@
 </p>
 
 <p>
-  Now that you have a good installation of Ant itself, you will want
+  Now that you have a good installation of Ant itself, you may want
   to install the <a href="http://www.vamphq.com/ant.html"> Vamp Ant
   task</a> provided by the <a href="http://www.vamphq.com/"> Venus
   Application Publisher</a>.  You need this to cut <a
   href="http://java.sun.com/products/javawebstart/"> Java Web
   Start</a> releases of Jskad, Savant, QuillDriver, and the
-  translation tool.
+  translation tool.  You <b>do not</b> need it otherwise.
 </p>
 
 <p>
@@ -197,13 +197,6 @@
   <code>vamp.jar</code> into Ant's <code>lib</code> directory and
   forget about changing your classpath.
 </p>
-
-<p>
-  If for some reason you don't want to use Vamp, you'll need to edit
-  <code>Jskad/build.xml</code> and delete the two associated
-  <code>taskdef</code>s so that Ant doesn't complain.
-</p>
-
 
 
 <h3>Setting things up to use CVS <a
