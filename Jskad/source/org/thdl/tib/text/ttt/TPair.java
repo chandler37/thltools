@@ -184,7 +184,11 @@ class TPair {
 
     /** Returns the EWTS Wylie that corresponds to this pair if
      *  justLeft is false, or the EWTS Wylie that corresponds to just
-     *  {@link #getLeft()} if justLeft is true. */
+     *  {@link #getLeft()} if justLeft is true.
+     *
+     *  <p>Returns "W" for ACIP "W", "r" for ACIP "R", y for ACIP "Y",
+     *  even though sometimes the EWTS for those is "w", "R", or "Y".
+     *  Handle that in the caller. */
     String getWylie(boolean justLeft) {
         String leftWylie = null;
         if (getLeft() != null) {

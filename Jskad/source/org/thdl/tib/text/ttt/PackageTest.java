@@ -7449,13 +7449,13 @@ M+NA
         uhelp("NA+YA", "\u0f53\u0fb1"); // FIXME: warn about the extra A
         uhelp("NE+YA", "[#ERROR CONVERTING ACIP DOCUMENT: The tsheg bar (\"syllable\") NE+YA has these errors: Cannot convert ACIP NE+-YA because + is not an ACIP consonant]");
         uhelp("tRAStA", "\u0f4a\u0fb2\u0f66\u0f9a");
-        uhelp("DZHDZHA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP DZHDZHA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f5c\u0fac"); // tricky because DZHDZA is not in TMW but DZHDZHA is
-        uhelp("DZHDZA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP DZHDZA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f5c\u0fab");
+        uhelp("DZHDZHA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP DZHDZHA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f5b\u0fb7\u0fab\u0fb7"); // tricky because DZHDZA is not in TMW but DZHDZHA is
+        uhelp("DZHDZA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP DZHDZA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f5b\u0fb7\u0fab");
         uhelp("P+S+N+YA", "\u0f54\u0fb6\u0fa3\u0fb1");
         uhelp("P+S+NYA", "\u0f54\u0fb6\u0f99");
         uhelp("PSNYA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP PSNYA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f54\u0fb6\u0f99"); // Is this P+S+N+YA?  No, it's P+S+NYA.  But warn!
         uhelp("NNYA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP NNYA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f53\u0f99");
-        uhelp("GHNYA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP GHNYA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f43\u0f99");
+        uhelp("GHNYA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP GHNYA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f42\u0fb7\u0f99");
 
         // TS+NYA and T+S+N+YA are both legal, so what is TSNYA?
         // Private correspondence with Robert Chilton says that it is
@@ -7471,7 +7471,7 @@ M+NA
         uhelp("KAo KHA", "\u0f40\u0f37\u0f0b\u0f41");
         uhelp("KA KAo KHA", "\u0f40\u0f0b\u0f40\u0f37\u0f0b\u0f41");
         uhelp("KAx", "\u0f40[#ERROR CONVERTING ACIP DOCUMENT: This converter cannot convert the ACIP {x} to Tibetan because it is unclear what the result should be.]");
-        uhelp("G+DHA", "\u0f42\u0fa2");
+        uhelp("G+DHA", "\u0f42\u0fa1\u0fb7");
         uhelp("P'EE", "\u0f54\u0f71\u0f7b");
 
         uhelp("KA", "\u0f40");
@@ -7523,9 +7523,9 @@ M+NA
 
         uhelp("/NY'EE/", "\u0f3C\u0f49\u0F71\u0F7B\u0f3D");
         uhelp("*#HUm: G+DHOO GRO`;.,",
-              "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b\u0f42\u0fa2\u0f7d\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
+              "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b\u0f42\u0fa1\u0fb7\u0f7d\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
         uhelp("*#HUm: K+DHA GRO`;.,",
-              "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b\u0f40\u0fa2\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
+              "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b\u0f40\u0fa1\u0fb7\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
         uhelp("HA,\nHA\n\nHA", "\u0f67\u0f0d \u0f67\u0f0b\n\n\u0f67");
         uhelp("NGA,", "\u0f44\u0f0c\u0f0d");
         uhelp("NGA,\nHA\n\nHA", "\u0f44\u0f0c\u0f0d \u0f67\u0f0b\n\n\u0f67");
@@ -7538,6 +7538,36 @@ M+NA
         uhelp("GU, ,KHO", "\u0f42\u0f74\u0f0d \u0f0d\u0f41\u0f7c");
         uhelp("GU  ,KHO", "\u0f42\u0f74\u0f0b \u0f0d\u0f41\u0f7c"); // FIXME: missing a shad after GU, warn about that.
         uhelp("GA  HA", "\u0f42\u0f0b \u0f67");
+        uhelp("WA", "\u0f5d");
+        uhelp("W", "\u0f5d");
+        uhelp("WO", "\u0f5d\u0f7c");
+        uhelp("WWA", "\u0f5d\u0fba");
+        uhelp("W+WA", "\u0f5d\u0fba");
+        uhelp("WNA", "\u0f5d\u0fa3");
+        uhelp("WN", "\u0f5d\u0fa3");
+        uhelp("W+NA", "\u0f5d\u0fa3");
+        uhelp("W+N", "\u0f5d\u0fa3");
+        uhelp("W+YA", "\u0f5d\u0fb1");
+        uhelp("W+Y", "\u0f5d\u0fb1");
+        uhelp("WYA", "\u0f5d\u0fb1");
+        uhelp("WY", "\u0f5d\u0fb1");
+        uhelp("WR", "\u0f5d\u0fb2");
+        uhelp("WRA", "\u0f5d\u0fb2");
+        uhelp("W+RA", "\u0f5d\u0fb2");
+        uhelp("W+R", "\u0f5d\u0fb2");
+        uhelp("BCWA", "\u0f56\u0f95\u0fba");
+        uhelp("BCW", "\u0f56\u0f95\u0fba");
+        uhelp("BCWO", "\u0f56\u0f95\u0fba\u0f7c");
+        uhelp("BCVA", "\u0f56\u0f45\u0fad");
+        uhelp("BCV", "\u0f56\u0f45\u0fad");
+        uhelp("BCV'O", "\u0f56\u0f45\u0fad\u0f71\u0f7c");
+        uhelp("BCV'A", "\u0f56\u0f45\u0fad\u0f71");
+        uhelp("BCV'", "\u0f56\u0f95\u0fad\u0fb0");
+        uhelp("GYA", "\u0f42\u0fb1");
+        uhelp("GY", "\u0f42\u0fb1");
+        uhelp("G-YA", "\u0f42\u0f61");
+        uhelp("GA-YA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a useless disambiguator in GA-YA.]\u0f42\u0f61");
+        uhelp("GA-YO", "[#WARNING CONVERTING ACIP DOCUMENT: There is a useless disambiguator in GA-YO.]\u0f42\u0f61\u0F7c");
     }
     public void testFixedFormSubjoinedConsonants() {
         // Usual subjoined RA:
@@ -7563,7 +7593,7 @@ M+NA
               + "\u0f61\u0fbb\u0f7b\u0f0b" // Y+YEE
               + "\u0f4e\u0f9c\u0fbc\u0fb1\u0f0b" // ndRYA
               + "\u0f4e\u0f9c\u0fbc\u0fb1\u0f7b\u0f0b" // n+d+R+YEE
-              + "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP KshR was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f69\u0fbc\u0f0b" // KshR
+              + "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP KshR was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f40\u0fb5\u0fbc\u0f0b" // KshR
               + "\u0f40\u0fb5\u0fbc\u0f7b\u0f0b" // K+sh+REE
               + "\u0f4e\u0f9c\u0fbb\u0f0b" // ndY
               + "\u0f4e\u0f9c\u0fbb\u0f7b\u0f0d" // n+d+YEE

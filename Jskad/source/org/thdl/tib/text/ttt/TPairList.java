@@ -660,38 +660,37 @@ class TPairList {
         TPair lastPair = get(size() - 1);
         wylieForConsonant.append(lastPair.getWylie(true));
         String hashKey = wylieForConsonant.toString();
-        // r-w and r+w are both known hash keys.  Sort 'em out.  They
-        // are the only things like this according to bug report
-        // #800166.
-        if ("r+w".equals(hashKey)) {
-            boolean sawWazur = false;
-            for (int x = 0; x < size(); x++) {
-                TPair p = get(x);
-                if ("V".equals(get(x).getLeft())) {
-                    sawWazur = true;
-                    break;
-                }
-            }
-            if (sawWazur)
-                hashKey = "r-w";
-            else
-                hashKey = "r+W"; // because EWTS has special handling
-                                 // for full-formed subjoined
-                                 // consonants
-        } else {
-            // Because EWTS has special handling for full-formed
-            // subjoined consonants, we have special handling here.
-            if ("r+y".equals(hashKey))
-                hashKey = "r+Y";
-            else if ("y+y".equals(hashKey))
-                hashKey = "y+Y";
-            else if ("N+D+y".equals(hashKey))
-                hashKey = "N+D+Y";
-            else if ("N+D+r+y".equals(hashKey))
-                hashKey = "N+D+R+y";
-            else if ("k+Sh+r".equals(hashKey))
-                hashKey = "k+Sh+R";
-        }
+
+        // Because EWTS has special handling for full-formed
+        // subjoined consonants, we have special handling here.
+        if ("r+y".equals(hashKey))
+            hashKey = "r+Y";
+        else if ("y+y".equals(hashKey))
+            hashKey = "y+Y";
+        else if ("N+D+y".equals(hashKey))
+            hashKey = "N+D+Y";
+        else if ("N+D+r+y".equals(hashKey))
+            hashKey = "N+D+R+y";
+        else if ("k+Sh+r".equals(hashKey))
+            hashKey = "k+Sh+R";
+        
+        // TPair.getWylie(..) returns "W" sometimes when "w" is what
+        // really should be returned.  ("V" always causes "w" to be
+        // returned, which is fine.)  We'll change "W" to "w" here if
+        // we need to.  We do it only for a few known stacks (the ones
+        // in TMW).
+        if ("W".equals(hashKey))
+            hashKey = "w";
+        else if ("W+y".equals(hashKey))
+            hashKey = "w+y";
+        else if ("W+r".equals(hashKey))
+            hashKey = "w+r";
+        else if ("W+n".equals(hashKey))
+            hashKey = "w+n";
+        else if ("W+W".equals(hashKey))
+            hashKey = "w+W";
+        // We're NOT doing it for r+W etc., on purpose.
+
         if (!TibetanMachineWeb.isKnownHashKey(hashKey)) {
             hashKey = hashKey.replace('+', '-');
             if (!TibetanMachineWeb.isKnownHashKey(hashKey)) {

@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.List;
 
+import org.thdl.util.ThdlOptions;
 import org.thdl.tib.text.DuffCode;
 import org.thdl.tib.text.THDLWylieConstants;
 import org.thdl.tib.text.TibetanMachineWeb;
@@ -206,7 +207,11 @@ public class ACIPRules {
     private static HashMap acipConsonant2wylie = null;
     /** Returns the EWTS corresponding to the given ACIP consonant
      *  (without the "A" vowel).  Returns null if there is no such
-     *  EWTS. */
+     *  EWTS.
+     *
+     *  <p>Returns "W" for ACIP "W", "r" for ACIP "R", y for ACIP "Y",
+     *  even though sometimes the EWTS for those is "w", "R", or "Y".
+     *  Handle that in the caller. */
     static final String getWylieForACIPConsonant(String acip) {
         if (acipConsonant2wylie == null) {
             acipConsonant2wylie = new HashMap(37);
@@ -242,7 +247,15 @@ public class ACIPRules {
             putMapping(acipConsonant2wylie, "TZ", "ts");
             putMapping(acipConsonant2wylie, "TS", "tsh");
             putMapping(acipConsonant2wylie, "DZ", "dz");
-            putMapping(acipConsonant2wylie, "W", "w");
+            putMapping(acipConsonant2wylie, "W", "W"
+                       /* NOTE WELL: sometimes "w", sometimes "W".
+                          Handle this in the caller.
+                          
+                          Reasoning for "W" instead of "w": r-w and
+                          r+w are both known hash keys.  We sort 'em
+                          out this way.  (They are the only things
+                          like this according to bug report #800166.)  */
+                       );
             putMapping(acipConsonant2wylie, "ZH", "zh");
             putMapping(acipConsonant2wylie, "Z", "z");
             putMapping(acipConsonant2wylie, "'", "'");
@@ -329,24 +342,26 @@ public class ACIPRules {
      *  true.  Returns null if acip is unknown. */
     static String getUnicodeFor(String acip, boolean subscribed) {
         if (superACIP2unicode == null) {
+            final boolean compactUnicode
+                = ThdlOptions.getBooleanOption("thdl.acip.to.unicode.conversions.use.0F52.et.cetera");
             superACIP2unicode = new HashMap(144);
             subACIP2unicode = new HashMap(42);
 
             // oddball:
             subACIP2unicode.put("V", "\u0FAD");
 
-            superACIP2unicode.put("DH", "\u0F52");
-            subACIP2unicode.put("DH", "\u0FA2");
-            superACIP2unicode.put("BH", "\u0F57");
-            subACIP2unicode.put("BH", "\u0FA7");
-            superACIP2unicode.put("dH", "\u0F4D");
-            subACIP2unicode.put("dH", "\u0F9D");
-            superACIP2unicode.put("DZH", "\u0F5C");
-            subACIP2unicode.put("DZH", "\u0FAC");
-            superACIP2unicode.put("Ksh", "\u0F69");
-            subACIP2unicode.put("Ksh", "\u0FB9");
-            superACIP2unicode.put("GH", "\u0F43");
-            subACIP2unicode.put("GH", "\u0F93");
+            superACIP2unicode.put("DH", (compactUnicode ? "\u0F52" : "\u0F51\u0FB7"));
+            subACIP2unicode.put("DH", (compactUnicode ? "\u0FA2" : "\u0FA1\u0FB7"));
+            superACIP2unicode.put("BH", (compactUnicode ? "\u0F57" : "\u0F56\u0FB7"));
+            subACIP2unicode.put("BH", (compactUnicode ? "\u0FA7" : "\u0FA6\u0FB7"));
+            superACIP2unicode.put("dH", (compactUnicode ? "\u0F4D" : "\u0F4C\u0FB7"));
+            subACIP2unicode.put("dH", (compactUnicode ? "\u0F9D" : "\u0F9C\u0FB7"));
+            superACIP2unicode.put("DZH", (compactUnicode ? "\u0F5C" : "\u0F5B\u0FB7"));
+            subACIP2unicode.put("DZH", (compactUnicode ? "\u0FAC" : "\u0FAB\u0FB7"));
+            superACIP2unicode.put("Ksh", (compactUnicode ? "\u0F69" : "\u0F40\u0FB5"));
+            subACIP2unicode.put("Ksh", (compactUnicode ? "\u0FB9" : "\u0F90\u0FB5"));
+            superACIP2unicode.put("GH", (compactUnicode ? "\u0F43" : "\u0F42\u0FB7"));
+            subACIP2unicode.put("GH", (compactUnicode ? "\u0F93" : "\u0F92\u0FB7"));
             superACIP2unicode.put("K", "\u0F40");
             subACIP2unicode.put("K", "\u0F90");
             superACIP2unicode.put("KH", "\u0F41");
