@@ -2,19 +2,19 @@
 
 
   <description>
-    This Jakarta Ant buildfile is used to build Jskad, Savant, and
-    QuillDriver.  The docs at http://thdltools.sf.net/api are created
-    using this buildfile, for example.  Read the comments of this
-    buildfile to learn more.
+    This Jakarta Ant buildfile is used to build Jskad, Savant,
+    QuillDriver, and the Translation Tool.  The docs at
+    http://thdltools.sf.net/api are created using this buildfile, for
+    example.  Read the comments of this buildfile to learn more.
   </description>
 
 
   <!-- set global properties for this build -->
-  <!-- FIXME: don't do javac -g for releases -->
   <property name="javacdashg" value="yes"/>
   <property name="source" location="source"/>
   <property name="bin" location="bin"/>
   <property name="jskadbin" location="bin/jskad"/>
+  <property name="qdbin" location="bin/qd"/>
   <property name="ttbin" location="bin/tt"/>
   <property name="savantbin" location="bin/savant"/>
   <property name="docs" location="docs"/>
@@ -24,11 +24,30 @@
   <property name="privatejavadocs"  location="${docs}/private-javadocs"/>
   <property name="j2ee.sdk.home" location="F:\Program Files\j2sdkee1.3.1\lib"/>
 
+  <!-- Set to false for less output when running the tools: -->
+  <property name="thdl.debug" value="true"/>
+
+  <!-- Set to true if you want the code to abort when it reaches
+       poorly thought-out control flow paths (i.e., iffy code). -->
+  <property name="thdl.die.on.iffy" value="true"/>
+
+  <!-- Set to the name of the dictionary used by the Translation Tool: -->
+  <property name="arch.dict" value="architecture_dictionary"/>
+
+
+  <!-- To easily add a jar to the CLASSPATH, just drop it into
+       'extensions/drop-ins/'. -->
   <path id="entire.class.path">
     <pathelement location="${ext}/"/> <!-- for netscape.javascript -->
-    <fileset dir="${ext}">
-      <include name="*.jar"/>
-    </fileset>
+
+    <!-- Developers: although these JARs are not yet in CVS, you're
+         responsible for finding them and putting them into
+         'extensions/': -->
+    <pathelement location="${ext}/jdom.jar"/>
+    <pathelement location="${ext}/xalan.jar"/>
+    <pathelement location="${ext}/xercesImpl.jar"/>
+    <pathelement location="${ext}/xml-apis.jar"/>
+    <pathelement location="${ext}/jmf.jar"/>
 
     <fileset dir="${j2ee.sdk.home}">
       <include name="j2ee.jar"/>
@@ -37,15 +56,27 @@
 	<!-- this gets Ant's jars, so leave it out:
 		<pathelement path="${java.class.path}/"/> -->
 
+    <fileset dir="${ext}/drop-ins">
+      <include name="*.jar"/>
+      <include name="*.JAR"/>
+    </fileset>
+
+    <!-- Developers: set this on the ant command line if you need to
+	     with 'ant -Dadditional.class.path="c:\foo"': -->
     <pathelement path="${additional.class.path}"/>
+
   </path>
 
   <target name="init">
     <!-- Create the time stamp -->
     <tstamp/>
     <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${dist}"/>
+    <mkdir dir="${dist}/lib"/>
+    <mkdir dir="${dist}/source"/>
     <mkdir dir="${bin}"/>
     <mkdir dir="${jskadbin}"/>
+    <mkdir dir="${qdbin}"/>
     <mkdir dir="${ttbin}"/>
     <mkdir dir="${savantbin}"/>
     <mkdir dir="${publicjavadocs}"/>
@@ -53,8 +84,6 @@
   </target>
 
 
-  <!-- DLC FIXME: generate as-nearly-self-contained-as-possible Savant
-       and QuillDriver -->
   <target name="test-all"
           depends="clean,distclean,compile,dist,src-dist,all-src-dist,jskad-src-dist,self-contained-dist,public-javadocs-dist,private-javadocs-dist"
           description="runs every target in this buildfile in a smart order; useful for testing the buildfile and your build environment" />
@@ -66,18 +95,16 @@
           depends="jskad-all-in-one-dist"
           description="JARs up everything into self-contained JARs for double-click, classpath-worry-free joy" />
 
-  <!-- DLC FIXME: do likewise for Savant and QuillDriver -->
   <target name="dist"
-          depends="jskad-dist"
+          depends="jskad-dist,savant-dist,qd-dist,tt-dist"
           description="JARs up everything" />
 
-  <!-- DLC FIXME: do likewise for Savant and QuillDriver -->
   <target name="src-dist"
-          depends="all-src-dist,jskad-src-dist"
-          description="JARs up source distributions" />
+          depends="all-src-dist"
+          description="JARs up the source distribution" />
 
   <target name="compile"
-          depends="jskad-compile,savant-compile,qd-compile"
+          depends="jskad-compile,savant-compile,qd-compile,tt-compile"
           description="compiles all source" />
 
 
@@ -87,9 +114,7 @@
     <javac destdir="${jskadbin}"  debug="${javacdashg}">
       <classpath refid="entire.class.path"/>
       <src path="${source}"/>
-      <include name="org/thdl/tib/text/**" />
-      <include name="org/thdl/tib/input/**" />
-      <include name="org/thdl/util/**" />
+      <include name="org/thdl/tib/input/Jskad.java" />
       <exclude name="**/*.ini" />
 	  <exclude name="**/*.html" />
       <!-- Exclude JUnit tests: -->
@@ -103,17 +128,13 @@
     </copy>
   </target>
 
-  <!-- FIXME: create targets for the Translation tool. -->
-
   <target name="savant-compile" depends="init"
           description="compiles Savant" >
     <!-- Compile the java code from ${source} into ${savantbin} -->
     <javac destdir="${savantbin}" debug="${javacdashg}">
       <classpath refid="entire.class.path"/>
       <src path="${source}"/>
-      <include name="org/thdl/savant/**" />
-      <include name="org/thdl/util/**" />
-      <include name="org/thdl/tib/text/**" />
+      <include name="org/thdl/savant/SavantShell.java" />
       <exclude name="**/*.ini" />
 	  <exclude name="**/*.html" />
       <!-- Exclude JUnit tests: -->
@@ -177,28 +198,38 @@
 
   <target name="qd-compile" depends="init"
           description="compiles QuillDriver" >
-    <!-- Compile the java code from ${source} into ${bin} -->
-    <javac destdir="${bin}" debug="${javacdashg}">
+    <!-- Compile the java code from ${source} into ${qdbin} -->
+    <javac destdir="${qdbin}" debug="${javacdashg}">
       <classpath refid="entire.class.path"/>
       <src path="${source}"/>
-      <include name="org/thdl/quilldriver/**" />
-      <include name="org/thdl/util/**" />
+      <include name="org/thdl/quilldriver/QDShell.java" />
       <exclude name="**/*.ini" />
 	  <exclude name="**/*.html" />
       <exclude name="**/*.gif" />
-      <exclude name="**/*.jpeg" />
+      <exclude name="**/*.jpg" />
       <!-- Exclude JUnit tests: -->
 	  <exclude name="**/*Test.java" />
       <exclude name="**/*AllTests.java" />
     </javac>
+    <copy todir="${qdbin}">
+      <fileset dir="${source}">
+        <include name="org/thdl/tib/**/*.ini"/>
+      </fileset>
+    </copy>
+    <copy todir="${qdbin}">
+      <fileset dir="${source}">
+        <include name="MessageBundle*"/>
+        <include name="**/*.gif"/>
+        <include name="**/*.jpg"/>
+      </fileset>
+    </copy>
   </target>
 
 
+  <!-- FIXME: do we really need many source distributions?  I think
+       all-src-dist will do just fine. -->
   <target name="jskad-src-dist" depends="init"
           description="generates the Jskad source distribution" >
-    <!-- Create the distribution directory -->
-    <mkdir dir="${dist}/source"/>
-
     <!-- Put everything necessary into the zip file -->
     <zip destfile="${dist}/source/Jskad-src-${DSTAMP}.zip">
       <zipfileset dir="${source}"
@@ -214,23 +245,8 @@
   </target>
 
 
-  <target name="savant-src-dist" depends="init"
-          description="generates the Savant source distribution" >
-    <!-- Create the distribution directory -->
-    <mkdir dir="${dist}/source"/>
-
-    <!-- Put everything necessary into the zip file -->
-    <zip destfile="${dist}/source/Savant-src-${DSTAMP}.zip"
-         basedir="${source}"
-         includes="org/thdl/savant/**,org/thdl/tib/**,org/thdl/util/**"/>
-  </target>
-
-
   <target name="all-src-dist" depends="init"
-          description="generates the Jskad+Savant+QuillDriver source distribution" >
-    <!-- Create the distribution directory -->
-    <mkdir dir="${dist}/source"/>
-
+          description="generates the full Jskad+Savant+QuillDriver+Translation Tool source distribution" >
     <!-- Put everything necessary into the zip file -->
     <zip destfile="${dist}/source/THDL-Tools-src-${DSTAMP}.zip">
       <zipfileset dir="${source}"
@@ -248,50 +264,55 @@
 
   <target name="jskad-dist" depends="jskad-compile"
           description="generates the bare Jskad binary distribution" >
-    <!-- bare as in NOT double-clickable. -->
-
-    <!-- Create the distribution directory -->
-    <mkdir dir="${dist}/lib"/>
-
     <!-- Put everything in ${jskadbin} into the JAR file -->
     <jar jarfile="${dist}/lib/Jskad-${DSTAMP}.jar"
-         basedir="${jskadbin}"
-         manifest="manifests/jskad_manifest.txt"/>
+         basedir="${jskadbin}">
+      <manifest>
+        <attribute name="Main-Class" value="org.thdl.tib.input.Jskad"/>
+      </manifest>
+    </jar>
   </target>
 
 
   <target name="tt-dist" depends="tt-compile"
-          description="generates the bare TranslationDesktop binary distribution.  Call tt-serv-compile first if you want servlets in this dist." >
-    <!-- bare as in NOT double-clickable. -->
-
-    <!-- Create the distribution directory -->
-    <mkdir dir="${dist}/lib"/>
-
+          description="generates the TranslationDesktop binary distribution.  Call tt-serv-compile first if you want servlets in this dist." >
     <!-- Put everything in ${ttbin} into the JAR file -->
     <jar jarfile="${dist}/lib/TranslationDesktop-${DSTAMP}.jar"
-         basedir="${ttbin}"
-         manifest="manifests/translationDesktop_manifest.txt"/>
+         basedir="${ttbin}">
+      <manifest>
+        <attribute name="Main-Class" value="org.thdl.tib.scanner.WindowScannerFilter"/>
+      </manifest>
+    </jar>
   </target>
 
 
   <target name="savant-dist" depends="savant-compile"
           description="generates the bare Savant binary distribution" >
-    <!-- Create the distribution directory -->
-    <mkdir dir="${dist}/lib"/>
-
     <!-- Put everything in ${savantbin} into the JAR file -->
     <jar jarfile="${dist}/lib/Savant-${DSTAMP}.jar"
-         basedir="${savantbin}"
-		 manifest="manifests/savant_manifest.txt"/>
+         basedir="${savantbin}">
+      <manifest>
+        <attribute name="Main-Class" value="org.thdl.savant.SavantShell"/>
+      </manifest>
+    </jar>
+  </target>
+
+
+  <target name="qd-dist" depends="qd-compile"
+          description="generates the bare QuillDriver binary distribution" >
+    <!-- Put everything in ${qdbin} into the JAR file -->
+    <jar jarfile="${dist}/lib/QuillDriver-${DSTAMP}.jar"
+         basedir="${qdbin}">
+      <manifest>
+        <attribute name="Main-Class" value="org.thdl.quilldriver.QDShell"/>
+      </manifest>
+    </jar>
   </target>
 
 
 
   <target name="jskad-all-in-one-dist" depends="jskad-compile"
           description="generates the self-contained binary distribution for Jskad" >
-    <!-- Create the distribution directory -->
-    <mkdir dir="${dist}/lib"/>
-
     <!-- Now put everything in ${bin} and ${ext}/netscape, plus
 	     the .ini files, into the JAR file
      -->
@@ -307,8 +328,11 @@
          basedir="${jskadbin}"
          includes="org/thdl/tib/**,org/thdl/util/**,netscape/**"
          index="true"
-         update="no"
-         manifest="manifests/jskad_manifest.txt"/>
+         update="no">
+      <manifest>
+        <attribute name="Main-Class" value="org.thdl.tib.input.Jskad"/>
+      </manifest>
+    </jar>
   </target>
 
 
@@ -317,6 +341,8 @@
     <!-- Delete the ${bin} and ${dist} directory trees -->
     <delete dir="${bin}"/>
     <delete dir="${jskadbin}"/>
+    <delete dir="${qdbin}"/>
+    <delete dir="${ttbin}"/>
     <delete dir="${savantbin}"/>
     <delete dir="${dist}"/>
   </target>
@@ -428,7 +454,8 @@
              version="false" 
              use="true"
              classpathref="entire.class.path"
-             windowtitle="THDL Tools APIs">
+             windowtitle="THDL Tools APIs"
+             Overview="${source}/overview.html">
 
       <fileset dir="${source}" defaultexcludes="yes">
         <include name="org/thdl/**" />
@@ -460,5 +487,71 @@
     </javadoc>
   </target>
 
+
+  <target name="qd-run" depends="qd-dist" description="runs QuillDriver">
+    <java classname="org.thdl.quilldriver.QDShell" fork="yes">
+      <classpath>
+        <pathelement location="${dist}/lib/QuillDriver-${DSTAMP}.jar"/>
+        <path refid="entire.class.path"/>
+      </classpath>
+      <jvmarg value="-DTHDL_DEBUG=${thdl.debug}"/>
+      <jvmarg value="-DTHDL_DIE_ON_IFFY_CODE=${thdl.die.on.iffy}"/>
+    </java>
+  </target>
+
+  <target name="savant-run" depends="savant-dist" description="runs Savant">
+    <java classname="org.thdl.savant.SavantShell" fork="yes">
+      <classpath>
+        <pathelement location="${dist}/lib/Savant-${DSTAMP}.jar"/>
+        <path refid="entire.class.path"/>
+      </classpath>
+      <jvmarg value="-DTHDL_DEBUG=${thdl.debug}"/>
+      <jvmarg value="-DTHDL_DIE_ON_IFFY_CODE=${thdl.die.on.iffy}"/>
+    </java>
+  </target>
+
+  <target name="jskad-run" depends="jskad-dist" description="runs Jskad">
+    <java classname="org.thdl.tib.input.Jskad" fork="yes">
+      <classpath>
+        <pathelement location="${dist}/lib/Jskad-${DSTAMP}.jar"/>
+        <path refid="entire.class.path"/>
+      </classpath>
+      <jvmarg value="-DTHDL_DEBUG=${thdl.debug}"/>
+      <jvmarg value="-DTHDL_DIE_ON_IFFY_CODE=${thdl.die.on.iffy}"/>
+    </java>
+  </target>
+
+  <target name="tt-run" depends="tt-dist" description="runs TranslationDesktop">
+    <java classname="org.thdl.tib.scanner.WindowScannerFilter" fork="yes">
+      <classpath>
+        <pathelement location="${dist}/lib/TranslationDesktop-${DSTAMP}.jar"/>
+        <path refid="entire.class.path"/>
+      </classpath>
+      <jvmarg value="-DTHDL_DEBUG=${thdl.debug}"/>
+      <jvmarg value="-DTHDL_DIE_ON_IFFY_CODE=${thdl.die.on.iffy}"/>
+      <!-- For non-swing version: <arg value="-simple"/> -->
+      <arg value="${arch.dict}"/>
+    </java>
+  </target>
+
+
+  <target name="releases" description="builds the releases under 'dist/releases/'">
+    <mkdir dir="${dist}/releases"/>
+    <antcall target="dist">
+      <param name="javacdashg" value="no"/>
+      <param name="dist" value="${dist}/releases"/>
+    </antcall>
+    <antcall target="src-dist">
+      <param name="dist" value="${dist}/releases"/>
+    </antcall>
+    <antcall target="public-javadocs-dist">
+      <param name="dist" value="${dist}/releases"/>
+    </antcall>
+    <antcall target="private-javadocs-dist">
+      <param name="dist" value="${dist}/releases"/>
+    </antcall>
+  </target>
+
+      <!-- DLC FIXME: we need a compile-all that uses if="" and <available> . -->
 
 </project>
