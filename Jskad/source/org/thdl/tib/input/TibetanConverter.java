@@ -57,6 +57,8 @@ public class TibetanConverter {
             boolean convertToWylieMode = false;
             boolean findSomeNonTMWMode = false;
             boolean findAllNonTMWMode = false;
+            boolean findSomeNonTMMode = false;
+            boolean findAllNonTMMode = false;
             // Process arguments:
             if ((args.length != 1 && args.length != 2)
                 || (args.length == 1
@@ -74,7 +76,12 @@ public class TibetanConverter {
                          || (convertToWylieMode
                              = args[0].equals("--to-wylie"))
                          || (findSomeNonTMWMode
-                             = args[0].equals("--find-some-non-tmw"))))) {
+                             = args[0].equals("--find-some-non-tmw"))
+                         || (findSomeNonTMMode
+                             = args[0].equals("--find-some-non-tm"))
+                         || (findAllNonTMMode
+                             = args[0].equals("--find-all-non-tm"))
+                ))) {
                 out.println("TibetanConverter [--find-all-non-tmw | --find-some-non-tmw");
                 out.println("                  | --to-tibetan-machine | --to-tibetan-machine-web");
                 out.println("                  | --to-unicode | --to-wylie] RTF_file");
@@ -86,13 +93,18 @@ public class TibetanConverter {
                 out.println(" -v | --version for version info");
                 out.println(" -h | --help for this message");
                 out.println(" --find-all-non-tmw to locate all characters in the input document that are");
-                out.println("   not in Tibetan Machine Web fonts, exit zero iff none found");
+                out.println("   not in Tibetan Machine Web fonts, exit zero if and only if none found");
                 out.println(" --find-some-non-tmw to locate all distinct characters in the input document");
-                out.println("   not in Tibetan Machine Web fonts, exit zero iff none found");
+                out.println("   not in Tibetan Machine Web fonts, exit zero if and only if none found");
+                out.println(" --find-all-non-tm to locate all characters in the input document that are");
+                out.println("   not in Tibetan Machine fonts, exit zero if and only if none found");
+                out.println(" --find-some-non-tm to locate all distinct characters in the input document");
+                out.println("   not in Tibetan Machine fonts, exit zero if and only if none found");
                 out.println(" --to-tibetan-machine to convert TibetanMachineWeb to TibetanMachine");
                 out.println(" --to-unicode to convert TibetanMachineWeb to Unicode");
                 out.println(" --to-tibetan-machine-web to convert TibetanMachine to TibetanMachineWeb");
                 out.println(" --to-wylie to convert TibetanMachineWeb to THDL Extended Wylie");
+                out.println("");
                 out.println(" In --to... modes, needs one argument, the name of the TibetanMachineWeb RTF");
                 out.println(" file (for --to-wylie, --to-unicode, and --to-tibetan-machine) or the name of");
                 out.println(" the TibetanMachine RTF file (for --to-tibetan-machine-web).  Writes the");
@@ -101,9 +113,9 @@ public class TibetanConverter {
                 out.println(" glyphs couldn't be converted (in which case the output is just those glyphs),");
                 out.println(" nonzero otherwise.");
                 out.println("");
-                out.println(" You may find it helpful to use `--find-some-non-tmw' mode before doing a");
+                out.println(" You may find it helpful to use `--find-some-non-tmw' mode (or");
+                out.println(" `--find-some-non-tm' mode for Tibetan Machine input) before doing a");
                 out.println(" conversion so that you have confidence in the conversion's correctness.");
-                // DLC add find-some/all-non-tm
                 // DLC add Wylie->TMW mode.
                 // DLC give error if you have a TM file and try TMW->Unicode.
                 return 77;
@@ -136,6 +148,12 @@ public class TibetanConverter {
             } else if (findSomeNonTMWMode) {
                 // 0, -1 is the entire document.
                 return ((TibetanDocument)dp.getDocument()).findSomeNonTMWCharacters(0, -1, out);
+            } else if (findSomeNonTMMode) {
+                // 0, -1 is the entire document.
+                return ((TibetanDocument)dp.getDocument()).findSomeNonTMCharacters(0, -1, out);
+            } else if (findAllNonTMMode) {
+                // 0, -1 is the entire document.
+                return ((TibetanDocument)dp.getDocument()).findAllNonTMCharacters(0, -1, out);
             } else { // conversion {to Wylie or TM} mode
                 // Fix curly braces in the entire document if the input is TMW:
                 if (!convertToTMWMode) {

@@ -54,11 +54,16 @@ class CharacterInAGivenFont {
     }
     public String toString() {
         String characterRepresentation
-            = "'" + new Character(character).toString() + "'";
+            = "'" + (('\'' == character)
+                     ? "\\'"
+                     : new Character(character).toString())
+            + "' [decimal " + (int)character + "]";
         if ('\n' == character)
-            characterRepresentation = "newline";
+            characterRepresentation
+                = "newline [decimal " + (int)character + "]";
         if ('\r' == character)
-            characterRepresentation = "carriage return";
+            characterRepresentation
+                = "carriage return" + (int)character + "]";
         return characterRepresentation + " in the font "
             + ((null == fontName)
                ? "_ERROR_FINDING_FONT_"
@@ -301,37 +306,29 @@ public class TibetanDocument extends DefaultStyledDocument {
 
     /** Configurable so that System.out isn't necessarily used. */
     public int findAllNonTMWCharacters(int begin, int end, PrintStream out) {
-        if (end < 0)
-            end = getLength();
-        if (begin >= end)
-            return 0;
-        int i = begin;
-        int returnValue = 0;
-        try {
-            while (i < end) {
-                AttributeSet attr = getCharacterElement(i).getAttributes();
-                String fontName = StyleConstants.getFontFamily(attr);
-                if ((0 == TibetanMachineWeb.getTMWFontNumber(fontName))) {
-                    returnValue = 1;
-                    CharacterInAGivenFont cgf
-                        = new CharacterInAGivenFont(getText(i, 1), fontName);
-                    out.println("non-TMW character "
-                                       + cgf + " at location " + i);
-                }
-                i++;
-            }
-        } catch (BadLocationException ble) {
-            ble.printStackTrace(out);
-            ThdlDebug.noteIffyCode();
-            returnValue = -1;
-        }
-        return returnValue;
+        return findCharacters(begin, end, out, "Non-TMW", true);
+    }
+
+    /** Prints to standard output a list of all the indices of
+        characters that are not in a TM font within the range [start,
+        end).  Using a negative number for end means that this will
+        run to the end of the document.  SPEED_FIXME: might be faster
+        to run over the elements, if they are one per font.
+        @return 1 if at least one non-TM character was found in
+        the specified range, zero if none were, -1 on error. */
+    public int findAllNonTMCharacters(int begin, int end) {
+        return findAllNonTMCharacters(begin, end, System.out);
+    }
+
+    /** Configurable so that System.out isn't necessarily used. */
+    public int findAllNonTMCharacters(int begin, int end, PrintStream out) {
+        return findCharacters(begin, end, out, "Non-TM", true);
     }
 
     /** Finds the first occurrence of a non-TMW character in a given
         font and prints it to System.out.  If you have a Tahoma
-        newline and an Arial newline, the first occurrence of each
-        will be reported.
+        newline and an Arial newline, e.g., the first occurrence of
+        each will be reported.
         
         <p>Works within the range [start, end).  Using a negative
         number for end means that this will run to the end of the
@@ -343,8 +340,39 @@ public class TibetanDocument extends DefaultStyledDocument {
         return findSomeNonTMWCharacters(begin, end, System.out);
     }
 
+    /** Finds the first occurrence of a non-TM character in a given
+        font and prints it to System.out.  If you have a Tahoma
+        newline and an Arial newline, e.g., the first occurrence of
+        each will be reported.
+        
+        <p>Works within the range [start, end).  Using a negative
+        number for end means that this will run to the end of the
+        document.  SPEED_FIXME: might be faster to run over the
+        elements, if they are one per font.
+        @return 1 if at least one non-TMW character was found in
+        the specified range, zero if none were, -1 on error. */
+    public int findSomeNonTMCharacters(int begin, int end) {
+        return findSomeNonTMCharacters(begin, end, System.out);
+    }
+
     /** Configurable so that System.out isn't necessarily used. */
     public int findSomeNonTMWCharacters(int begin, int end, PrintStream out) {
+        return findCharacters(begin, end, out, "Non-TMW", false);
+    }
+
+    /** Configurable so that System.out isn't necessarily used. */
+    public int findSomeNonTMCharacters(int begin, int end, PrintStream out) {
+        return findCharacters(begin, end, out, "Non-TM", false);
+    }
+
+    /** Pass in whatKind=="Non-TMW" or whatKind=="Non-TM" for now; see
+        callers and the code to understand the semantics.  Pass in all
+        == true to find all characters or all == false to report each
+        character just once. */
+    private int findCharacters(int begin, int end, PrintStream out,
+                               String whatKind, boolean all) {
+        if (whatKind != "Non-TMW" && whatKind != "Non-TM")
+            throw new IllegalArgumentException("You didn't use an interned string.");
         if (end < 0)
             end = getLength();
         if (begin >= end)
@@ -352,19 +380,28 @@ public class TibetanDocument extends DefaultStyledDocument {
         int i = begin;
         int returnValue = 0;
         try {
-            HashMap cgfTable = new HashMap();
+            HashMap cgfTable = null;
+            if (!all) cgfTable = new HashMap();
             while (i < end) {
                 AttributeSet attr = getCharacterElement(i).getAttributes();
                 String fontName = StyleConstants.getFontFamily(attr);
-                if ((0 == TibetanMachineWeb.getTMWFontNumber(fontName))) {
+                if ((whatKind == "Non-TMW"
+                     && (0 == TibetanMachineWeb.getTMWFontNumber(fontName)))
+                    || (whatKind == "Non-TM"
+                        && (0 == TibetanMachineWeb.getTMFontNumber(fontName)))) {
                     returnValue = 1;
                     CharacterInAGivenFont cgf
                         = new CharacterInAGivenFont(getText(i, 1), fontName);
-                    if (!cgfTable.containsKey(cgf)) {
+                    boolean doOutput = all;
+                    if (!all && !cgfTable.containsKey(cgf)) {
                         cgfTable.put(cgf, "yes this character appears once");
-                        out.println("non-TMW character "
-                                    + cgf + " appears first at location " + i);
+                        doOutput = true;
                     }
+                    if (true == doOutput)
+                        out.println(whatKind + " character "
+                                    + cgf + " appears "
+                                    + ((all) ? "" : "first ")
+                                    + "at location " + i);
                 }
                 i++;
             }
