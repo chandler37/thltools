@@ -111,14 +111,16 @@ public class TString {
         text = t;
     }
 
-    /** Don't instantiate me. */
+    /** Don't instantiate using this constructor. */
     private TString() { }
 
     /** Creates a new TString with source text <i>text</i> and type
      *  <i>type</i> being a characterization like {@link #DD}. */
     public TString(String text, int type) {
         setType(type);
-        setText(text);
+        setText((TIBETAN_NON_PUNCTUATION == type)
+                ? MidLexSubstitution.getFinalValueForTibetanNonPunctuationToken(text)
+                : text);
     }
     public String toString() {
         String typeString = "HUH?????";

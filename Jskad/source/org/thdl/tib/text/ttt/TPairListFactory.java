@@ -242,6 +242,6 @@ class TPairListFactory {
 }
 
 
-// DLC strip out [#...] comments; test for nested comments
+// DLC test for nested comments
 
 // DLC see Translit directory on ACIP v4 CD-ROM
