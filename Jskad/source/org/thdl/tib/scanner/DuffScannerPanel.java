@@ -69,6 +69,7 @@ public class DuffScannerPanel extends ScannerPanel implements ItemListener
 		super(file, true);
 		Panel panel1, panel2, toolBar;
 		int i;
+        Font f;
 		
 		prefWindow = null;
 		
@@ -81,6 +82,7 @@ public class DuffScannerPanel extends ScannerPanel implements ItemListener
 		with tibcodes.ini in a jar file. */
 		duffInput = new DuffPane();
 		duffInput.disableRoman();
+        f = new Font(duffInput.getRomanFontFamily(), Font.PLAIN, duffInput.getRomanFontSize());
 		
 		JPanel jpanel = new JPanel(new GridLayout(1,1));
 		JScrollPane jsp = new JScrollPane(duffInput, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -89,14 +91,17 @@ public class DuffScannerPanel extends ScannerPanel implements ItemListener
 		inputPanel.add(jpanel, "1");
 
 		txtInput = new TextArea("",0,0,TextArea.SCROLLBARS_VERTICAL_ONLY);		
+        txtInput.setFont(f);
 		inputPanel.add(txtInput, "2");
 		panel1.add(inputPanel);
 
 		fullDef = new TextArea("",0,0,TextArea.SCROLLBARS_VERTICAL_ONLY);
 		fullDef.setEditable(false);
+        fullDef.setFont(f);
 		model = new DictionaryTableModel(null);
 		table = new DictionaryTable(model, fullDef);
 		table.activateTibetan(true);
+        table.setRomanFont(f);
 		listDef = new JScrollPane(table);
 
 		panel1.add(listDef);
