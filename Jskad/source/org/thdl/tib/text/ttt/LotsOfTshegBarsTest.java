@@ -43,10 +43,16 @@ import junit.framework.TestCase;
  *  S0291M.ACT, S0319M.ACT, S0986I2.INC, S0986I3.INC, SL6850I2.ACT,
  *  TD4105E.ACT.
  *
- *  <p>I had the converter output all tsheg bars.  I then ran 'sort
+ *  <p>I had the converter output all tsheg bars using the
+ *  org.thdl.tib.text.ttt.OutputAllTshegBars option.  I then ran 'sort
  *  -d' on that, piped it to 'uniq -c', and ran <code>awk -- '{y =
  *  sprintf("\"%s", $2); x = sprintf(" th(%10s\");\t// %d", y, $1);
  *  print x;}'</code> on that.  And you get the following.
+ *
+ *  <p>There were approximately 35,253,990 tsheg bars counted.  Note
+ *  that I use the term <i>tsheg bar</i> to refer even to
+ *  polysyllablic, non-native patches that literally occur between
+ *  tsheg-like things.
  *
  *  @author David Chandler */
 public class LotsOfTshegBarsTest extends TestCase {
