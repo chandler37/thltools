@@ -7240,7 +7240,7 @@ tstHelper("ZUR");
               "Offset 0: Found an illegal open bracket (in context, this is {).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset END: Truly unmatched open bracket found.\n");
         shelp("DD", "");
         shelp("DD]",
-              "Offset 2: Found a truly unmatched close bracket, ] or }.\nOffset 2: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
+              "Offset 2: Found a truly unmatched close bracket, ']'.\nOffset 2: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
 
         shelp("///NYA", "Offset 1: Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\nOffset END: Slashes are supposed to occur in pairs, but the input had an unmatched '/' character.\n");
         shelp("/NYA/", "");
@@ -7269,7 +7269,9 @@ tstHelper("ZUR");
         shelp("[*RVA?]", "", "[CORRECTION_START:{[*}, TIBETAN_NON_PUNCTUATION:{RVA}, POSSIBLE_CORRECTION:{?]}]");
         shelp("[* RVA ]", "", "[CORRECTION_START:{[*}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{RVA}, TIBETAN_PUNCTUATION:{ }, PROBABLE_CORRECTION:{]}]");
         shelp("[*RVA ?]", "", "[CORRECTION_START:{[*}, TIBETAN_NON_PUNCTUATION:{RVA}, TIBETAN_PUNCTUATION:{ }, POSSIBLE_CORRECTION:{?]}]");
-        shelp("[*RVA? ]", "", "[CORRECTION_START:{[*}, TIBETAN_NON_PUNCTUATION:{RVA}, QUESTION:{?}, TIBETAN_PUNCTUATION:{ }, PROBABLE_CORRECTION:{]}]");
+        shelp("[*RVA? ]",
+              "Offset 5: The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.\n",
+              "[CORRECTION_START:{[*}, TIBETAN_NON_PUNCTUATION:{RVA}, ERROR:{The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.}, TIBETAN_PUNCTUATION:{ }, PROBABLE_CORRECTION:{]}]");
         shelp("[*LINE BREAK]", "", "[CORRECTION_START:{[*}, LATIN:{LINE BREAK}, PROBABLE_CORRECTION:{]}]");
         shelp("[*LINE BREAK?]", "", "[CORRECTION_START:{[*}, LATIN:{LINE BREAK}, POSSIBLE_CORRECTION:{?]}]");
         shelp("[*\n\t\r  LINEYO ?]", "", "[CORRECTION_START:{[*}, LATIN:{\n\t\r  LINEYO }, POSSIBLE_CORRECTION:{?]}]");
@@ -7283,12 +7285,17 @@ tstHelper("ZUR");
         shelp("/NYA ", "Offset END: Slashes are supposed to occur in pairs, but the input had an unmatched '/' character.\n");
         shelp("(NYA ", "Offset END: Unmatched open parenthesis, (, found.\n");
         shelp("[*NYA ", "Offset END: Unmatched open bracket found.  A correction does not terminate.\n");
-        shelp("?", "", "[QUESTION:{?}]");
+        shelp("[?]", "", "[QUESTION:{[?]}]");
+        shelp("?",
+              "Offset 0: The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.\n",
+              "[ERROR:{The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.}]");
         shelp("KHAN~ BAR ", "Offset 4: Found an illegal character, ~, with ordinal 126.\n");
         shelp("[* Correction with []]",
               "Offset 5: Found an illegal character, r, with ordinal 114.\nOffset 6: Found an illegal character, r, with ordinal 114.\nOffset 7: Found an illegal character, e, with ordinal 101.\nOffset 8: Found an illegal character, c, with ordinal 99.\nOffset 14: Found an illegal character, w, with ordinal 119.\nOffset 19: Found an illegal open bracket (in context, this is []]).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset 21: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
 
-        shelp(",NGES ? PA", "", "[TIBETAN_PUNCTUATION:{,}, TIBETAN_NON_PUNCTUATION:{NGES}, TIBETAN_PUNCTUATION:{ }, QUESTION:{?}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{PA}]");
+        shelp(",NGES ? PA",
+              "Offset 6: The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.\n",
+              "[TIBETAN_PUNCTUATION:{,}, TIBETAN_NON_PUNCTUATION:{NGES}, TIBETAN_PUNCTUATION:{ }, ERROR:{The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{PA}]");
 
 
 
@@ -7369,8 +7376,8 @@ tstHelper("ZUR");
         shelp("{ BP }", "", "[BP:{{ BP }}]"); // TD3790E2.ACT
         // LOW-PRIORITY FIXME: support nested comments.
         shelp("[# This is a [# nested comment] don't you know?]KA KHA GA NGA",
-              "Offset 13: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\nOffset 38: Found an illegal character, y, with ordinal 121.\nOffset 40: Found an illegal character, u, with ordinal 117.\nOffset 42: Found an illegal character, k, with ordinal 107.\nOffset 45: Found an illegal character, w, with ordinal 119.\nOffset 47: Found a truly unmatched close bracket, ] or }.\nOffset 47: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n",
-              "[ERROR:{Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n}, COMMENT:{[# This is a [# nested comment]}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{d}, TSHEG_BAR_ADORNMENT:{o}, TIBETAN_NON_PUNCTUATION:{n't}, TIBETAN_PUNCTUATION:{ }, ERROR:{Found an illegal character, y, with ordinal 121.}, ERROR:{The ACIP o must be glued to the end of a tsheg bar, but this one was not}, ERROR:{Found an illegal character, u, with ordinal 117.}, TIBETAN_PUNCTUATION:{ }, ERROR:{Found an illegal character, k, with ordinal 107.}, TIBETAN_NON_PUNCTUATION:{n}, TSHEG_BAR_ADORNMENT:{o}, ERROR:{Found an illegal character, w, with ordinal 119.}, QUESTION:{?}, ERROR:{Found a truly unmatched close bracket, ]}, ERROR:{Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.}, TIBETAN_NON_PUNCTUATION:{KA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{KHA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{GA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{NGA}]");
+              "Offset 13: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\nOffset 38: Found an illegal character, y, with ordinal 121.\nOffset 40: Found an illegal character, u, with ordinal 117.\nOffset 42: Found an illegal character, k, with ordinal 107.\nOffset 45: Found an illegal character, w, with ordinal 119.\nOffset 46: The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.\nOffset 47: Found a truly unmatched close bracket, ']'.\nOffset 47: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n",
+              "[ERROR:{Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.}, COMMENT:{[# This is a [# nested comment]}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{d}, TSHEG_BAR_ADORNMENT:{o}, TIBETAN_NON_PUNCTUATION:{n't}, TIBETAN_PUNCTUATION:{ }, ERROR:{Found an illegal character, y, with ordinal 121.}, ERROR:{The ACIP o must be glued to the end of a tsheg bar, but this one was not}, ERROR:{Found an illegal character, u, with ordinal 117.}, TIBETAN_PUNCTUATION:{ }, ERROR:{Found an illegal character, k, with ordinal 107.}, TIBETAN_NON_PUNCTUATION:{n}, TSHEG_BAR_ADORNMENT:{o}, ERROR:{Found an illegal character, w, with ordinal 119.}, ERROR:{The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.}, ERROR:{Found a truly unmatched close bracket, ']'.}, ERROR:{Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.}, TIBETAN_NON_PUNCTUATION:{KA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{KHA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{GA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{NGA}]");
         shelp("//NYA\\\\",
               "Offset 1: Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\nOffset 5: Found a backslash, \\, which the ACIP Tibetan Input Code standard says represents a Sanskrit virama.  In practice, though, this is so often misused (to represent U+0F3D) that {\\} always generates this error.  If you want a Sanskrit virama, change the input document to use {\\u0F84} instead of {\\}.  If you want U+0F3D, use {/NYA/} or {/NYA\\u0F3D}.\nOffset 6: Found a backslash, \\, which the ACIP Tibetan Input Code standard says represents a Sanskrit virama.  In practice, though, this is so often misused (to represent U+0F3D) that {\\} always generates this error.  If you want a Sanskrit virama, change the input document to use {\\u0F84} instead of {\\}.  If you want U+0F3D, use {/NYA/} or {/NYA\\u0F3D}.\n",
               "[START_SLASH:{/}, ERROR:{Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.}, END_SLASH:{/}, TIBETAN_NON_PUNCTUATION:{NYA}, ERROR:{Found a backslash, \\, which the ACIP Tibetan Input Code standard says represents a Sanskrit virama.  In practice, though, this is so often misused (to represent U+0F3D) that {\\} always generates this error.  If you want a Sanskrit virama, change the input document to use {\\u0F84} instead of {\\}.  If you want U+0F3D, use {/NYA/} or {/NYA\\u0F3D}.}, ERROR:{Found a backslash, \\, which the ACIP Tibetan Input Code standard says represents a Sanskrit virama.  In practice, though, this is so often misused (to represent U+0F3D) that {\\} always generates this error.  If you want a Sanskrit virama, change the input document to use {\\u0F84} instead of {\\}.  If you want U+0F3D, use {/NYA/} or {/NYA\\u0F3D}.}]");
@@ -7390,7 +7397,7 @@ tstHelper("ZUR");
             System.out.println("Unicode for " + acip + " can't be had; errors are " + errors);
         } else {
             if (null != expectedUnicode && !expectedUnicode.equals(unicode)) {
-                System.out.println("The unicode for " + acip + " is " + org.thdl.tib.text.tshegbar.UnicodeUtils.unicodeStringToPrettyString(unicode) + ", but you expected " + org.thdl.tib.text.tshegbar.UnicodeUtils.unicodeStringToPrettyString(expectedUnicode));
+                System.out.println("The unicode for\n  '" + acip + "'\nis\n  '" + org.thdl.tib.text.tshegbar.UnicodeUtils.unicodeStringToPrettyString(unicode) + "',\nbut you expected\n  '" + org.thdl.tib.text.tshegbar.UnicodeUtils.unicodeStringToPrettyString(expectedUnicode) + "'");
                 assertTrue(false);
             }
         }
@@ -7473,6 +7480,8 @@ M+NA
         uhelp("KAx", "\u0f40[#ERROR CONVERTING ACIP DOCUMENT: This converter cannot convert the ACIP {x} to Tibetan because it is unclear what the result should be.]");
         uhelp("G+DHA", "\u0f42\u0fa1\u0fb7");
         uhelp("P'EE", "\u0f54\u0f71\u0f7b");
+
+        uhelp("BA ? HA", "\u0f56\u0f0b[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.] \u0f67");
 
         uhelp("KA", "\u0f40");
         uhelp("\\u0F35", "\u0F35");

@@ -171,11 +171,12 @@ public class ACIPTshegBarScanner {
             if (ch == '\n') ++numNewlines;
             if (TString.COMMENT == currentType && ch != ']') {
                 if ('[' == ch) {
-                    al.add(new TString("ACIP", "Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n",
+                    String errMsg;
+                    al.add(new TString("ACIP", errMsg = "Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.",
                                        TString.ERROR));
                     if (null != errors)
                         errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
-                                      + "Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n");
+                                      + errMsg + "\n");
                     if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                 }
                 continue;
@@ -190,11 +191,12 @@ public class ACIPTshegBarScanner {
                                            currentType));
                     }
                     if (!waitingForMatchingIllegalClose) {
-                        al.add(new TString("ACIP", "Found a truly unmatched close bracket, " + s.substring(i, i+1),
+                        String errMsg;
+                        al.add(new TString("ACIP", errMsg = ("Found a truly unmatched close bracket, '" + s.substring(i, i+1)) + "'.",
                                            TString.ERROR));
                         if (null != errors) {
                             errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
-                                          + "Found a truly unmatched close bracket, ] or }.\n");
+                                          + errMsg + "\n");
                         }
                         if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     }
@@ -747,8 +749,13 @@ public class ACIPTshegBarScanner {
                         al.add(new TString("ACIP", s.substring(startOfString, i),
                                            currentType));
                     }
-                    al.add(new TString("ACIP", s.substring(i, i+1),
-                                       TString.QUESTION));
+                    String errMsg = "The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.";
+                    al.add(new TString("ACIP", errMsg,
+                                       TString.ERROR));
+                    if (null != errors)
+                        errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
+                                      + errMsg + "\n");
+                    if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     startOfString = i+1;
                     currentType = TString.ERROR;
                 } // else this is [*TR'A ?] or the like.
