@@ -319,7 +319,6 @@ public class UnicodeUtils implements UnicodeConstants {
                 || cp == '^'
                 || cp == '&'
                 || cp == '*'
-                || cp == '\t'
                 || cp == ':'
                 || cp == '['
                 || cp == ']'
@@ -329,6 +328,13 @@ public class UnicodeUtils implements UnicodeConstants {
                 || cp == '}')
                 return new String(new char[] { cp });
         }
+        if ('\t' == cp)
+            return "\\t";
+        if ('\n' == cp)
+            return "\\n";
+        if ('\r' == cp)
+            return "\\r";
+
         if (cp < '\u0010')
             return "\\u000" + Integer.toHexString((int)cp);
         else if (cp < '\u0100')
