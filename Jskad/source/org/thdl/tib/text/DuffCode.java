@@ -10,7 +10,7 @@ License for the specific terms governing rights and limitations under the
 License. 
 
 The Initial Developer of this software is the Tibetan and Himalayan Digital
-Library (THDL). Portions created by the THDL are Copyright 2001 THDL.
+Library (THDL). Portions created by the THDL are Copyright 2001-2003 THDL.
 All Rights Reserved. 
 
 Contributor(s): ______________________________________.
@@ -31,24 +31,23 @@ import org.thdl.util.ThdlDebug;
 * a character number. A font identification and a character 
 * (or character number) are sufficient to uniquely identify
 * any TibetanMachineWeb glyph.
+*
+* Note that DuffCodes are sometimes used, internally, to represent
+* glyphs in other fonts, e.g. the TibetanMachine font.  But mainly
+* they represent TibetanMachineWeb glyphs.
 * @author Edward Garrett, Tibetan and Himalayan Digital Library
-* @version 1.0
-*/
+* @version 1.0 */
 
-public class DuffCode {
+public final class DuffCode {
 /**
 * the font number in which this glyph can be found,
 * from 1 (TibetanMachineWeb) to 10 (TibetanMachineWeb9).
 */
-	public int fontNum;
+	private int fontNum;
 /**
-* the character value of this glyph
+* the character value of this glyph, as an integer (that is, ordinal)
 */
-	public char character;
-/**
-* the character value of this glyph, as an integer
-*/
-	public int charNum;
+	private int charNum;
 
 /**
 * Called by {@link TibetanMachineWeb} to generate
@@ -75,12 +74,10 @@ public class DuffCode {
 			if (leftToRight) {
                 setFontNum(num1.intValue());
 				charNum = num2.intValue();
-				character = (char)charNum;
 			}
 			else {
                 setFontNum(num2.intValue());
 				charNum = num1.intValue();
-				character = (char)charNum;
 			}						
 		}
 		catch (NumberFormatException e) {
@@ -97,7 +94,6 @@ public class DuffCode {
 */
 	public DuffCode(int font, char ch) {
 		setFontNum(font);
-		character = ch;
 		charNum = (int)ch;
 	}
 
@@ -128,23 +124,16 @@ public class DuffCode {
 * @return the identifying character for this DuffCode
 */
 	public char getCharacter() {
-		return character;
+		return (char)charNum;
 	}
 
 /**
-* Assigns a hashcode based on the font number and character for this glyph.
-* The hashcode for a DuffCode with font=1 and character='c'
-* is defined as the hash code of the string '1-c'.
+* Assigns a hashcode based on the font number and character for this
+* glyph.
 *
-* @return the hash code for this object
-*/
+* @return the hash code for this object */
 	public int hashCode() {
-		StringBuffer sb = new StringBuffer();
-		sb.append(new Integer(fontNum).toString());
-		sb.append('-');
-		sb.append(character);
-		String s = sb.toString();
-		return s.hashCode();
+        return fontNum*256 + charNum;
 	}
 
 /**
@@ -170,6 +159,6 @@ public class DuffCode {
 	public String toString() {
 		return "<duffcode font=" + TibetanMachineWeb.tmwFontNames[fontNum]
             + " charNum=" + charNum + " character="
-            + new Character(character).toString() + "/>";
+            + new Character(getCharacter()).toString() + "/>";
 	}
 }

@@ -390,7 +390,7 @@ public class TibetanMachineWeb implements THDLWylieConstants {
                                     // TM(dos) equivalent), so we must
                                     // test for null here:
                                     if (null != duffCodes[TM]) {
-                                        TMtoTMW[duffCodes[TM].fontNum-1][duffCodes[TM].charNum-32]
+                                        TMtoTMW[duffCodes[TM].getFontNum()-1][duffCodes[TM].getCharNum()-32]
                                             = duffCodes[TMW];
                                     }
 									break;
@@ -421,8 +421,8 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 					if (hashOn)
 						tibHash.put(wylie,duffCodes);
 
-					int font = duffCodes[2].fontNum;
-					int code = duffCodes[2].charNum-32;
+					int font = duffCodes[2].getFontNum();
+					int code = duffCodes[2].getCharNum()-32;
 					toHashKey[font][code] = wylie;
 				}
 			}
@@ -790,6 +790,9 @@ public static boolean hasGlyph(String hashKey) {
 */
 public static DuffCode getGlyph(String hashKey) {
 	DuffCode[] dc = (DuffCode[])tibHash.get(hashKey);
+    // If dc is null, then likely you misconfigured tibwn.ini such
+    // that, say, M is expected (i.e., it is listed as,
+    // e.g. punctuation), but no 'M~...' line appears.
 	return dc[TMW];
 }
 
@@ -871,7 +874,7 @@ public static int getTMWFontNumber(String name) {
 /**
 * Gets the hash key associated with this glyph.
 * @param font a TibetanMachineWeb font number
-* @param code an ASCII character code
+* @param code an ASCII character code minus 32
 * @return the hashKey corresponding to the character
 * at font, code
 */
@@ -886,8 +889,8 @@ public static String getHashKeyForGlyph(int font, int code) {
 * @return the hashKey corresponding to the character at dc
 */
 public static String getHashKeyForGlyph(DuffCode dc) {
-	int font = dc.fontNum;
-	int code = dc.charNum-32;
+	int font = dc.getFontNum();
+	int code = dc.getCharNum()-32;
 	return toHashKey[font][code];
 }
 
@@ -921,7 +924,7 @@ public static String wylieForGlyph(String hashKey) {
 * Gets the Extended Wylie value for this glyph.
 * @param font the font of the TibetanMachineWeb
 * glyph you want the Wylie of
-* @param code the TibetanMachineWeb glyph
+* @param code the ordinal, minus 32, of the TibetanMachineWeb glyph
 * you want the Wylie of
 * @return the Wylie value corresponding to the
 * glyph denoted by font, code
@@ -968,7 +971,7 @@ public static String getWylieForGlyph(DuffCode dc) {
 /**
 * Says whether or not this glyph involves a Sanskrit stack.
 * @param font the font of a TibetanMachineWeb glyph
-* @param code the ASCII value of a TibetanMachineWeb glyph
+* @param code the ASCII value of a TibetanMachineWeb glyph minus 32
 * @return true if this glyph is a Sanskrit stack,
 * false if not
 */
@@ -987,8 +990,8 @@ public static boolean isSanskritStack(int font, int code) {
 * false if not
 */
 public static boolean isSanskritStack(DuffCode dc) {
-	int font = dc.fontNum;
-	int code = dc.charNum-32;
+	int font = dc.getFontNum();
+	int code = dc.getCharNum()-32;
 
 	if (isSanskritStack(font, code))
 		return true;
@@ -999,7 +1002,7 @@ public static boolean isSanskritStack(DuffCode dc) {
 /**
 * Says whether or not this glyph involves a Tibetan stack.
 * @param font the font of a TibetanMachineWeb glyph
-* @param code the ASCII value of a TibetanMachineWeb glyph
+* @param code the ASCII value of a TibetanMachineWeb glyph minus 32
 * @return true if this glyph is a Tibetan stack,
 * false if not
 */
@@ -1018,13 +1021,10 @@ public static boolean isStack(int font, int code) {
 * false if not
 */
 public static boolean isStack(DuffCode dc) {
-	int font = dc.fontNum;
-	int code = dc.charNum-32;
+	int font = dc.getFontNum();
+	int code = dc.getCharNum()-32;
 
-	if (isStack(font, code))
-		return true;
-	else
-		return false;
+	return isStack(font, code);
 }
 
 /**

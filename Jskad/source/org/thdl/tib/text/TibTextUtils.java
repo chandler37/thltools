@@ -62,18 +62,18 @@ public class TibTextUtils implements THDLWylieConstants {
 		StringBuffer sb = new StringBuffer();
 		Iterator iter = glyphs.iterator();
 		DuffCode dc = (DuffCode)iter.next();
-		int lastfont = dc.fontNum;
-		sb.append(dc.character);
+		int lastfont = dc.getFontNum();
+		sb.append(dc.getCharacter());
 
 		while (iter.hasNext()) {
 			dc = (DuffCode)iter.next();
-			if (dc.fontNum == lastfont)
-				sb.append(dc.character);
+			if (dc.getFontNum() == lastfont)
+				sb.append(dc.getCharacter());
 			else {
 				data.add(new DuffData(sb.toString(), lastfont));
-				lastfont = dc.fontNum;
+				lastfont = dc.getFontNum();
 				sb = new StringBuffer();
-				sb.append(dc.character);
+				sb.append(dc.getCharacter());
 			}
 		}
 
@@ -1096,9 +1096,9 @@ public class TibTextUtils implements THDLWylieConstants {
 		StringBuffer wylieBuffer = new StringBuffer();
 
         for (int i=start; i<dcs.length; i++) {
-            ch = dcs[i].character;
-            int k = dcs[i].charNum;
-            // int fontNum = dcs[i].fontNum;
+            ch = dcs[i].getCharacter();
+            int k = dcs[i].getCharNum();
+            // int fontNum = dcs[i].getFontNum();
 
             if (k < 32) {
                 if (wylieBuffer.length() > 0 || !glyphList.isEmpty()) {
