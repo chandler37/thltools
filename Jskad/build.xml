@@ -128,7 +128,7 @@ Contributor(s): ______________________________________.
   
 <!-- Attributes used for debugging the servlet version of the translation tool within Netbeans IDE. Probably can be generalized -->
   <property name="tt.debug.path"
-            location="C:\Documents and Settings\Andres Montano\My Documents\docs-misc\java\DictionarySearch\tibetan\WEB-INF\lib"/>    
+            location="webroot\WEB-INF\lib"/>    
   <property name="tt.debug.url"
             value="http://localhost:8080/tibetan/"/>            
   <property name="tt.debug.jpda.host"
@@ -605,7 +605,8 @@ the jvm starting tomcat:
     <mkdir dir="${tthandheldbin}"/>
     <antcall target="create-timestamp-source-code"/>
     <antcall target="our-internal-javac-task">
-      <param name="target.jvm" value="1.1"/>
+      <param name="target.jvm" value="1.4"/>
+      <param name="source.jvm" value="1.4"/>
       <param name="mybin" value="${tthandheldbin}"/>
       <param name="my.included.source.file"
              value="org/thdl/tib/scanner/PocketWindowScannerFilter.java"/>
@@ -669,13 +670,8 @@ the jvm starting tomcat:
     </path>
     <antcall target="our-internal-javac-task">
       <reference torefid="ttsc.class.path" refid="ttsc.class.path"/>
-      <param name="our.javac.classpathref" value="ttsc.class.path"/>
-      <param name="mybin" value="${ttservletbin}"/>
-      <param name="my.included.source.file"
-             value="org/thdl/tib/scanner/ConsoleScannerFilter.java"/>
-    </antcall>
-    <antcall target="our-internal-javac-task">
-      <reference torefid="ttsc.class.path" refid="ttsc.class.path"/>
+      <param name="target.jvm" value="1.3"/>
+      <param name="source.jvm" value="1.3"/>
       <param name="our.javac.classpathref" value="ttsc.class.path"/>
       <param name="mybin" value="${ttservletbin}"/>
       <param name="my.included.source.file"
@@ -683,6 +679,8 @@ the jvm starting tomcat:
     </antcall>
     <antcall target="our-internal-javac-task">
       <reference torefid="ttsc.class.path" refid="ttsc.class.path"/>
+      <param name="target.jvm" value="1.3"/>
+      <param name="source.jvm" value="1.3"/>
       <param name="our.javac.classpathref" value="ttsc.class.path"/>
       <param name="mybin" value="${ttservletbin}"/>
       <param name="my.included.source.file"
