@@ -1262,7 +1262,9 @@ public class TibTextUtils implements THDLWylieConstants {
                  * letters are affixes, then the SECOND ONE is the
                  * root letter in the following 9 WORDS ONLY:
                  *
-                 * gdas gnas gsas dgas dmas bdas mdas 'gas 'das
+                 * gdas gnas gsas dgas dmas bdas mdas 'gas 'das [NOTE:
+                 * Andres later came across 'bad, so we handle it this
+                 * way also]
                  *
                  * And the FIRST is the root letter in the following
                  * 14 WORDS ONLY:
@@ -1285,7 +1287,7 @@ public class TibTextUtils implements THDLWylieConstants {
                     || (wylie1.equals("d") && (wylie2.equals("g") || wylie2.equals("m")))
                     || (wylie1.equals("b") && wylie2.equals("d"))
                     || (wylie1.equals("m") && wylie2.equals("d"))
-                    || (wylie1.equals("'") && (wylie2.equals("g") || wylie2.equals("d")))) {
+                    || (wylie1.equals("'") && (wylie2.equals("g") || wylie2.equals("d") || wylie2.equals("b")))) {
                     if (TibetanMachineWeb.isAmbiguousWylie(wylie1, wylie2))
                         wylieBuffer.append(wylie1 + WYLIE_DISAMBIGUATING_KEY + wylie2);
                     else
