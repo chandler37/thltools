@@ -238,7 +238,7 @@ public class TibetanMachineWeb {
 			setKeyboard(keyboard);
 	}
 
-/*
+/**
 * This method reads the data file ("tibwn.ini"), constructs
 * the character, punctuation, and vowel lists, as well as
 * performing other acts of initialization.
