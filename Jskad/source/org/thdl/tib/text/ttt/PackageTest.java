@@ -429,6 +429,14 @@ tstHelper("KA'", "[(K . A), (' . )]",
         tstHelper("LE'UM", null, null, null, "{LE}{'U}{M}", -1);
         tstHelper("LE'U'IS", null, null, null, "{LE}{'U}{'I}{S}", -1);
 
+        tstHelper("LAM'OS", null, null, null, "{LA}{M}{'O}{S}", 2);
+        tstHelper("NAM'OS", null, null, null, "{NA}{M}{'O}{S}", 2);
+        tstHelper("NAM'IS", null, null, null, "{NA}{M}{'I}{S}", 2);
+        tstHelper("LEM'UNG", null, null, null, "{LE}{M}{'U}{NG}", 2);
+        tstHelper("LEM'U'ANG", null, null, null, "{LE}{M}{'U}{'A}{NG}", 2);
+        tstHelper("LEM'UM", null, null, null, "{LE}{M}{'U}{M}", 2);
+        tstHelper("LEM'U'IS", null, null, null, "{LE}{M}{'U}{'I}{S}", 2);
+
         tstHelper("MA'ONGS", null, null, null, "{MA}{'O}{NG}{S}", -1);
 
         tstHelper("SAM'AM", null, null, null, "{SA}{M}{'A}{M}", 2);
@@ -440,13 +448,20 @@ tstHelper("KA'", "[(K . A), (' . )]",
         tstHelper("SNYAM+S+'O", null, null, null, "{S+NYA}{M+S+'O}", -1);
         tstHelper("SNYAMS+'O", null, null, null, "{S+NYA}{M+S+'O}", -1);
 
-        tstHelper("GDAMS", null, null, null, "{G}{DA}{M}{S}", -1);
+        {
+            // Tests this rule: if a stack X takes a prefix Y, then X with
+            // wa-zur takes the prefix Y also.
+            tstHelper("GDAMS", null, null, null, "{G}{DA}{M}{S}", -1);
+            tstHelper("GDVAMS", null, null, null, "{G}{D+VA}{M}{S}", -1);
+        }
+
         tstHelper("GDAM-S'O", null, null, null, "{G}{DA}{M}{S}{'O}", 2);
         tstHelper("GDAM-C'O", null, null, null, "{G+DA}{M}{C'O}", 0);
         tstHelper("GDAM-C'O", null, null, null, "{G+DA}{M}{C}{'O}", 3);
-        // DLC NOW: FIXME: tstHelper("DKHY", null, null, null, "{D}{KH+YA}", 0);
-    // DLC DKHY'O should give parse tree {{D-KH+Y'O}, {D+KH+Y'O}}
-    // DLC DKHYA'O should give parse tree {{D-KH+YA'O}, {D+KH+YA'O}}
+        tstHelper("BRLA", null, null, null, "{B}{R+LA}", -1);
+        tstHelper("DKY", null, null, null, "{D}{K+Y}", -1);
+        // DLC FIXME NOW this should work, but doesn't: tstHelper("DKY'O", null, null, null, "{D}{K+Y'O}", 3);
+        tstHelper("DKYA'O", null, null, null, "{D}{K+YA}{'O}", -1);
 
         tstHelper("SHR'I", "{SH}{R'I}",
                   null,

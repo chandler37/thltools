@@ -1270,16 +1270,16 @@ public final class LegalTshegBar
         if (EW_ABSENT == head) {
             if (EW_ABSENT == sub) {
                 return (EWC_ca == root
-                        || EWC_ta == root
                         || EWC_da == root
-                        || EWC_tsa == root
-                        || EWC_zha == root
-                        || EWC_za == root
-                        || EWC_ya == root
-                        || EWC_sha == root
-                        || EWC_sa == root
+                        || EWC_na == root
                         || EWC_nya == root
-                        || EWC_na == root);
+                        || EWC_sa == root
+                        || EWC_sha == root
+                        || EWC_ta == root
+                        || EWC_tsa == root
+                        || EWC_ya == root
+                        || EWC_za == root
+                        || EWC_zha == root);
             }
         }
         return false;
@@ -1301,23 +1301,26 @@ public final class LegalTshegBar
     public static boolean takesDao(char head, char root, char sub) {
         if (EW_ABSENT == head) {
             if (EW_ABSENT == sub) {
-                return (EWC_ka == root
+                return (
+                        EWC_ba == root
                         || EWC_ga == root
+                        || EWC_ka == root
+                        || EWC_ma == root
                         || EWC_nga == root
                         || EWC_pa == root
-                        || EWC_ba == root
-                        || EWC_ma == root);
+                        );
             } else {
-                return ((EWC_ga == root && EWC_ya == sub)
-                        || (EWC_pa == root && EWC_ya == sub)
+                return (
+                        (EWC_ba == root && EWC_ra == sub)
                         || (EWC_ba == root && EWC_ya == sub)
-                        || (EWC_ma == root && EWC_ya == sub)
-                        || (EWC_ka == root && EWC_ya == sub) // dkyil, for example
-
-                        || (EWC_ka == root && EWC_ra == sub)
                         || (EWC_ga == root && EWC_ra == sub)
-                        || (EWC_ba == root && EWC_ra == sub)
-                        || (EWC_pa == root && EWC_ra == sub));
+                        || (EWC_ga == root && EWC_ya == sub)
+                        || (EWC_ka == root && EWC_ra == sub)
+                        || (EWC_ka == root && EWC_ya == sub) // dkyil, for example
+                        || (EWC_ma == root && EWC_ya == sub)
+                        || (EWC_pa == root && EWC_ra == sub)
+                        || (EWC_pa == root && EWC_ya == sub)
+                        );
             }
         } else {
             return false;
@@ -1420,7 +1423,18 @@ public final class LegalTshegBar
      *  nominal representation} of the subjoined letter, or EW_ABSENT
      *  if not present */
     public static boolean takesBao(char head, char root, char sub) {
-        // DLC ask Ten-lo la about Wazur.
+
+        // Special cases: there are four rare, maybe archaic
+        // constructs for which I don't let the sub or lack of sub
+        // matter.  Info is not complete here.  I learned of these
+        // through personal correspondence with Robert Chilton.
+        if (EWC_la == head
+            && (EWC_ka == root
+                || EWC_ga == root
+                || EWC_nga == root
+                || EWC_ja == root))
+            return true;
+
         if (EW_ABSENT == head) {
             if (EW_ABSENT == sub) {
                 return (EWC_ka == root
@@ -1429,17 +1443,20 @@ public final class LegalTshegBar
                         || EWC_ta == root
                         || EWC_tsa == root
                         || EWC_ga == root
-                        || EWC_nga == root
-                        || EWC_ja == root
-                        || EWC_nya == root
                         || EWC_da == root
-                        || EWC_na == root
-                        || EWC_dza == root
                         || EWC_zha == root
                         || EWC_za == root
-                        || EWC_ra == root
-                        || EWC_la == root
-                        || EWC_sha == root);
+                        || EWC_sha == root
+
+                        || (true && // DLC NOW: these are not in RC's non-definitive list.  Thus, BNGA is B+NGA in ACIP transliteration.  But that seems odd to me, so I'm seeing what RC thinks about these.
+                         (
+                          EWC_nga == root
+                          || EWC_ja == root
+                          || EWC_nya == root
+                          || EWC_na == root
+                          || EWC_dza == root
+                          )
+                        ));
             } else {
                 // kra, e.g.
                 return ((EWC_ka == root && EWC_ya == sub)
