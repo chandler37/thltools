@@ -160,9 +160,30 @@
 
 
   <target name="test-all"
-          depends="clean,distclean,compile,dist,src-dist,self-contained-dist,public-javadocs-dist,private-javadocs-dist,releases,web-start-releases"
+          depends="clean,distclean,compile,dist,src-dist,self-contained-dist,public-javadocs-dist,private-javadocs-dist,releases,web-start-releases,nightly-build"
           description="runs every target in this buildfile in a smart order; useful for testing the buildfile and your build environment" />
 
+
+  <target name="nightly-build"
+          depends="distclean"
+          description="Creates ${dist}/nightlyBuild.zip" >
+
+    <!-- I believe that this order might actually matter, because some
+         targets execute 'ant clean' (though they only do so because I
+         am lazy).  -->
+
+    <antcall target="web-start-releases"/>
+    <antcall target="self-contained-dist"/>
+    <antcall target="dist"/>
+    <antcall target="public-javadocs-dist"/>
+    <antcall target="private-javadocs-dist"/>
+    <antcall target="src-dist"/>
+    <zip destfile="${dist}/nightlyBuild.zip">
+      <zipfileset dir="${dist}"
+                  excludes="nightlyBuild.zip,lib-jws/**,*.jnlp,README.txt"
+                  prefix="."/>
+    </zip>
+  </target>
 
   <target name="self-contained-dist"
           depends="jskad-all-in-one-dist,savant-all-in-one-dist,qd-all-in-one-dist"
@@ -662,6 +683,10 @@
     <delete dir="${privatejavadocs}"/>
 
     <delete dir="${dist}/java-web-start"/>
+
+    <!-- 'ant clean' may be run during the nightly-build target, so
+         'ant clean' cannot delete the following: -->
+    <delete file="${dist}/nightlyBuild.zip"/>
   </target>
 
 
