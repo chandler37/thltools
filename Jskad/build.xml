@@ -19,10 +19,11 @@
      following, which are not in the CVS repository:
 
      extensions/jdom.jar
-     extensions/xalan.jar
-     extensions/xercesImpl.jar
-     extensions/xml-apis.jar
-     extensions/jmf.jar
+     $ANT_HOME/lib/xalan.jar
+     $ANT_HOME/lib/xercesImpl.jar
+     $ANT_HOME/lib/xml-apis.jar
+     Optionally:
+       extensions/drop-ins/(jmf.jar|qt4j.jar)
 
      See the developers site, linked to from http://thdltools.sf.net/,
      for info on where to find these.  (You may be able to use Ant's
@@ -70,6 +71,11 @@
   <property name="publicjavadocs"  location="${docs}/public-javadocs"/>
   <property name="privatejavadocs"  location="${docs}/private-javadocs"/>
 
+  <!-- Getting your nightly builds set up can take a long time.
+       Changing this to "jskad-jws" tests that you've got Vamp and your
+       keystore set up correctly if you use the dc-nightly-build
+       target. -->
+  <property name="dcnbt" value="nightly-build"/>
 
   <!-- If you wish to have your Javadocs link to someplace other than
        Sun's web site, maybe just changing these two, link.offline and
@@ -98,6 +104,9 @@
     -->
   <property name="thdl.debug" value="true"/>
 
+  <!-- Compress nightlyBuild.zip? -->
+  <property name="compress.nightly.build" value="false"/>
+
   <!-- Set to the name of the dictionary used by the Translation Tool: -->
   <property name="arch.dict" value="architecture_dictionary"/>
 
@@ -122,10 +131,6 @@
          responsible for finding them and putting them into
          'extensions/': -->
     <pathelement location="${ext}/jdom.jar"/>
-    <pathelement location="${ext}/xalan.jar"/>
-    <pathelement location="${ext}/xercesImpl.jar"/>
-    <pathelement location="${ext}/xml-apis.jar"/>
-    <pathelement location="${ext}/jmf.jar"/>
 
     <!-- this gets Ant's jars, so leave it out:
         <pathelement path="${java.class.path}/"/> -->
@@ -193,26 +198,61 @@
           depends="clean,distclean,compile,dist,src-dist,self-contained-dist,public-javadocs-dist,private-javadocs-dist,releases,web-start-releases,check,nightly-build"
           description="runs every target in this buildfile in a smart order; useful for testing the buildfile and your build environment" />
 
-
   <target name="nightly-build"
           depends="distclean"
           description="Creates ${dist}/nightlyBuild.zip" >
 
     <!-- I believe that this order might actually matter, because some
          targets execute 'ant clean' (though they only do so because I
-         am lazy).  -->
+         am lazy).  I stopped a couple from so doing, but I'm not sure
+         if I got them all. -->
 
+    <antcall target="cvs-update"/>
     <antcall target="web-start-releases"/>
     <antcall target="self-contained-dist"/>
     <antcall target="dist"/>
-    <antcall target="public-javadocs-dist"/>
-    <antcall target="private-javadocs-dist"/>
-    <antcall target="src-dist"/>
-    <zip destfile="${dist}/nightlyBuild.zip">
+    <antcall target="public-javadocs-dist">
+      <param name="DSTAMP" value="today"/>
+    </antcall>
+    <unzip src="${dist}/docs/public-javadocs-today.zip" dest="${dist}/docs/public"/>
+    <antcall target="private-javadocs-dist">
+      <param name="DSTAMP" value="today"/>
+    </antcall>
+    <unzip src="${dist}/docs/private-javadocs-today.zip" dest="${dist}/docs/private"/>
+    <antcall target="src-dist">
+      <param name="DSTAMP" value="today"/>
+    </antcall>
+    <echo file="${dist}/DateStampForNightlyBuilds.html"
+          append="false"><![CDATA[<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Nightly Build Timestamp</title>
+  </head>
+
+  <body>
+    <h1>THDL Tools Nightly Build Timestamp</h1>
+
+<p>
+  These nightly builds were made at ]]></echo>
+
+    <tstamp>
+      <format property="nb.creation.time" pattern="MM/dd/yyyy hh:mm aa"/>
+    </tstamp>
+
+    <echo file="${dist}/DateStampForNightlyBuilds.html" append="true">${nb.creation.time}</echo>
+    <echo file="${dist}/DateStampForNightlyBuilds.html" append="true"><![CDATA[.
+</p>
+</body>
+</html>
+]]></echo>
+
+    <zip destfile="${dist}/nightlyBuild.zip"
+         compress="${compress.nightly.builds}">
       <zipfileset dir="${dist}"
                   excludes="nightlyBuild.zip,lib-jws/**,*.jnlp,README.TXT,releases"
                   prefix="."/>
     </zip>
+    <delete file="${dist}/DateStampForNightlyBuilds.html"/>
   </target>
 
   <!-- DLC FIXME: add tibbibl-all-in-one-dist -->
@@ -774,6 +814,8 @@
     <delete dir="${vanillalib}"/>
     <delete dir="${jwslib}"/>
     <delete dir="${lib}"/>
+    <delete dir="${dist}/junit-noframes.html"/>
+    <delete dir="${dist}/TESTS-TestSuites.xml"/>
     <delete dir="${dist}/releases"/>
     <delete dir="${dist}/source"/>
     <delete file="${dist}/DictionarySearchAppletAndJavaWebStart.jnlp"/>
@@ -950,23 +992,35 @@
           description="Uses scp to copy zip files of two flavors of Javadocs to thdltools.sf.net.  After that, ssh in and follow the instructions given in http://thdltools.sourceforge.net/BuildSystems.html.">
     <apply executable="scp" parallel="true">
       <srcfile/>
-      <fileset dir="dist/docs"/>
+      <fileset dir="${dist}/docs"/>
       <arg value="dchandler@thdltools.sourceforge.net:/home/groups/t/th/thdltools/htdocs"/>
     </apply>
   </target>
 
+  <target name="check-report" depends="check"
+          description="Generates an HTML report regarding the status of the JUnit test cases.">
+    <ant antfile="junitbuild.xml" target="make-nightly-report"
+         inheritAll="false" inheritRefs="false">
+       <property name="dist" value="${dist}"/>
+    </ant>
+  </target>
+  
   <!-- DC uses this to do nightly builds. The passwords are included
        in this publically-available file because the keystore is basically
        a dummy keystore. -->
   <target name="dc-nightly-build"
           description="How Chandler r0x0rs the nightly build's b0x0rs">
-    <antcall target="nightly-build">
+    <antcall target="${dcnbt}">
       <param name="keystore" value="file:///home/chandler/thdl/sandboxes/Jskad/NightlyBuildStore"/>
       <param name="key.alias" value="me"/>
       <param name="dgkey.password" value="nightly"/>
       <param name="keystore.password" value="nightly"/>
       <param name="jnlp.codebase" value="http://he.is-a-geek.org/thdl/nightly/builds/java-web-start"/>
     </antcall>
+  </target>
+
+  <target name="cvs-update" description="Performs a CVS update.">
+    <cvs command="-f -z3 -q update -d -P" failonerror="true"/>
   </target>
 
 
@@ -1402,23 +1456,23 @@ public class ThdlVersion {
           description="Unpacks the JARs/WARs/ZIP files that Savant and QuillDriver use to the chosen bin/ directory">
     <unjar src="${ext}/jdom.jar" dest="${unjardest}"/>
 
-    <available file="${ext}/xml-apis.jar"
+    <available file="${ant.home}/lib/xml-apis.jar"
                property="found.xml-apis.jar"/>
     <fail message="Can't find extensions/xml-apis.jar; please download it."
           unless="found.xml-apis.jar"/>
-    <unjar src="${ext}/xml-apis.jar" dest="${unjardest}"/>
+    <unjar src="${ant.home}/lib/xml-apis.jar" dest="${unjardest}"/>
 
-    <available file="${ext}/xalan.jar"
+    <available file="${ant.home}/lib/xalan.jar"
                property="found.xalan.jar"/>
     <fail message="Can't find extensions/xalan.jar; please download it."
           unless="found.xalan.jar"/>
-    <unjar src="${ext}/xalan.jar" dest="${unjardest}"/> <!-- Note: this isn't actually needed for Savant. -->
+    <unjar src="${ant.home}/lib/xalan.jar" dest="${unjardest}"/> <!-- Note: this isn't actually needed for Savant. -->
 
-    <available file="${ext}/xercesImpl.jar"
+    <available file="${ant.home}/lib/xercesImpl.jar"
                property="found.xercesImpl.jar"/>
     <fail message="Can't find extensions/xercesImpl.jar; please download it."
           unless="found.xercesImpl.jar"/>
-    <unjar src="${ext}/xercesImpl.jar" dest="${unjardest}"/>
+    <unjar src="${ant.home}/lib/xercesImpl.jar" dest="${unjardest}"/>
 
     <!-- One or more of the above may have a META-INF directory.  We don't
          want theirs to overwrite our own, so we delete it. -->
