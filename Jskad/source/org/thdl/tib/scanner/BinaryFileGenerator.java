@@ -86,7 +86,7 @@ instance no shad after a &quot;ga&quot; suffix without a secondary suffix). Each
 time a new letter starts, it should be clearly marked in brackets ('[', ']'), 
 parenthesis ('(', ')') or llaves ('{','}'). A sample entry for the dictionary is:
 <hr>
-<pre>@1
+<pre>&#64;1
 
 (ka)
 
@@ -94,7 +94,7 @@ ka ba/ gdung 'degs don byed nus pa/
 
 rkyen/ grogs byed
 
-@2
+&#64;2
 
 (kha)
 
@@ -107,7 +107,7 @@ stops kyis khyod ldog pa/
 
 khyod dngos po dang 'brel pa/ khyod dngos po dang tha dad gang
 
-@3
+&#64;3
 
 zhig/ ngos po ldog stobs kyis khyod ldog pa/
 
