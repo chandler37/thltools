@@ -11,12 +11,12 @@
 </c:if>
 
 
-<!--<span class="label">Spelling:</span> --> 
-<c:out value="${ spelling.spelling }" escapeXml="false" />  
+
 <!--<span class="label">Spelling Type:</span> --> 
-<c:out value="${ applicationScope.flatData.spellingTypes[ spelling.spellingType ] }" escapeXml="false" />   
+<em><c:out value="${ applicationScope.flatData.spellingTypes[ spelling.spellingType ] }" escapeXml="false" /></em>   
 
-
+<!--<span class="label">Spelling:</span> --> 
+<strong><c:out value="${ spelling.spelling }" escapeXml="false" /></strong> 
 
 <jsp:include page="displayMeta.jsf" />
 
