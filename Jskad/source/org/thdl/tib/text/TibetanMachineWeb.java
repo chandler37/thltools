@@ -28,6 +28,7 @@ import javax.swing.text.*;
 import java.awt.font.*;
 
 import org.thdl.util.ThdlDebug;
+import org.thdl.util.ThdlLazyException;
 import org.thdl.util.Trie;
 import org.thdl.util.ThdlOptions;
 
@@ -537,17 +538,10 @@ public static boolean isFormatting(char c) {
 * false if not
 */
 public static boolean isChar(String s) {
-	if (currentKeyboardIsExtendedWylie()) {
-		if (charSet.contains(s))
-			return true;
-		else
-			return false;	
-	}
+	if (currentKeyboardIsExtendedWylie())
+		return charSet.contains(s);
 	else
-		if (keyboard.isChar(s))
-			return true;
-		else
-			return false;
+		return keyboard.isChar(s);
 }
 
 /**
@@ -934,6 +928,9 @@ public static String getWylieForGlyph(int font, int code) {
 */
 public static String getWylieForGlyph(DuffCode dc) {
 	String hashKey = getHashKeyForGlyph(dc);
+    if (hashKey == null) {
+        return "<<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert DuffCode " + dc + " to THDL Extended Wylie.  Please see the documentation for the TMW font and transcribe this yourself.]]>>";
+    }
 	return wylieForGlyph(hashKey);
 }
 

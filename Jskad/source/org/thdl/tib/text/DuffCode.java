@@ -20,6 +20,8 @@ package org.thdl.tib.text;
 
 import java.util.StringTokenizer;
 
+import org.thdl.util.ThdlDebug;
+
 /**
 * A wrapper for the primitive data types
 * that combine to represent a Tibetan glyph in the
@@ -71,17 +73,18 @@ public class DuffCode {
 			Integer num2 = new Integer(val2);
 
 			if (leftToRight) {
-				fontNum = num1.intValue();
+                setFontNum(num1.intValue());
 				charNum = num2.intValue();
 				character = (char)charNum;
 			}
 			else {
-				fontNum = num2.intValue();
+                setFontNum(num2.intValue());
 				charNum = num1.intValue();
 				character = (char)charNum;
 			}						
 		}
 		catch (NumberFormatException e) {
+            ThdlDebug.noteIffyCode();
 		}
 	}
 
@@ -93,10 +96,15 @@ public class DuffCode {
 * @param ch a character
 */
 	public DuffCode(int font, char ch) {
-		fontNum = font;
+		setFontNum(font);
 		character = ch;
 		charNum = (int)ch;
 	}
+
+    private void setFontNum(int font) {
+        ThdlDebug.verify(font >= 1 && font <= 10);
+        fontNum = font;
+    }
 
 /**
 * Gets the font number of this glyph.
@@ -160,6 +168,8 @@ public class DuffCode {
 * @return a string representation of this object
 */
 	public String toString() {
-		return "fontNum="+fontNum+";charNum="+charNum+";character="+new Character(character).toString();
+		return "<duffcode font=" + TibetanMachineWeb.tmwFontNames[fontNum]
+            + " charNum=" + charNum + " character="
+            + new Character(character).toString() + "/>";
 	}
 }
