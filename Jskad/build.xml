@@ -1,3 +1,22 @@
+<!--
+
+The contents of this file are subject to the THDL Open Community License
+Version 1.0 (the "License"); you may not use this file except in compliance
+with the License. You may obtain a copy of the License on the THDL web site 
+(http://www.thdl.org/).
+
+Software distributed under the License is distributed on an "AS IS" basis, 
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the 
+License for the specific terms governing rights and limitations under the 
+License. 
+
+The Initial Developer of this software is the Tibetan and Himalayan Digital
+Library (THDL). Portions created by the THDL are Copyright 2002-2003 THDL.
+All Rights Reserved. 
+
+Contributor(s): ______________________________________.
+-->
+
 <!-- @author David Chandler, dchandler@users.sourceforge.net
 
      FIXME
@@ -13,12 +32,11 @@
 
      This build file is the main one, and it uses jwsbuild.xml for
      building Java Web Start (JWS) releases.  See the comments in that
-     file to learn why.
+     file to learn why.  Likewise with junitbuild.xml.
 
      Quick start for the impatient: This buildfile looks for the
      following, which are not in the CVS repository:
 
-     extensions/jdom.jar
      $ANT_HOME/lib/xalan.jar
      $ANT_HOME/lib/xercesImpl.jar
      $ANT_HOME/lib/xml-apis.jar
@@ -394,6 +412,19 @@
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${junitbin}"/>
       <param name="my.included.source.file"
+             value="org/thdl/tib/text/ttt/PackageTest.java"/>
+    </antcall>
+    <antcall target="copy-ini-files-to-bin-dir-for-jarring">
+      <param name="mybin" value="${junitbin}"/>
+    </antcall>
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${junitbin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/tib/input/TMW_RTF_TO_THDL_WYLIETest.java"/>
+    </antcall>
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${junitbin}"/>
+      <param name="my.included.source.file"
              value="org/thdl/util/ThdlLazyExceptionTest.java"/>
     </antcall>
     <antcall target="our-internal-javac-task">
@@ -411,13 +442,6 @@
       <param name="my.included.source.file"
              value="org/thdl/tib/text/tshegbar/LegalTshegBarTest.java"/>
     </antcall>
-
-    <antcall target="our-internal-javac-task">
-      <param name="mybin" value="${junitbin}"/>
-      <param name="my.included.source.file"
-             value="org/thdl/tib/input/TMW_RTF_TO_THDL_WYLIETest.java"/>
-    </antcall>
-
     <antcall target="create-timestamp-source-code">
       <param name="mybin" value="${junitbin}"/>
     </antcall>
@@ -426,10 +450,6 @@
       <param name="my.included.source.file"
              value="org/thdl/tib/input/DuffPaneTest.java"/>
     </antcall>
-    <antcall target="copy-ini-files-to-bin-dir-for-jarring">
-      <param name="mybin" value="${junitbin}"/>
-    </antcall>
-
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${junitbin}"/>
       <param name="my.included.source.file"
