@@ -180,6 +180,7 @@ public class LexActionServlet extends HttpServlet
 		HashMap commands = new HashMap();
 
 		commands.put( "menu", new NullCommand( "menu.jsp" ) );
+		commands.put( "search", new NullCommand( "search.jsp" ) );
 		commands.put( "logout", new NullCommand( "logout.jsp" ) );
 		commands.put( "getMetaPrefsForm", new NullCommand( "metaPrefsForm.jsp" ) );
 		commands.put( "getMetaDefaultsForm", new NullCommand( "metaDefaultsForm.jsp" ) );

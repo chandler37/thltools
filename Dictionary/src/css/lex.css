@@ -87,30 +87,60 @@ margin-left: 0 !important;
 padding-left: 0 !important;
 } 
 
-div.tmw-block
+div.tmw-block, h1.tmw-block, p.tmw-block
 {
 	margin-top: 1ex !important;
+	text-align: left !important;
+	/* border: solid 2px red; */
 } 
 
-span
+.tmw-block span
 {
-	 /* border: solid 1px red;   */
+/* vertical-align: middle; */
 }
+
+span.tmw-roman 
+{ 
+
+/* margin-top: 1ex; 
+padding-top: 1ex;  */
+} 
+span.tmw {font: 24pt TibetanMachineWeb !important; text-transform: none; }
+span.tmw1 {font: 24pt TibetanMachineWeb1 !important; text-transform: none;  }
+span.tmw2 {font: 24pt TibetanMachineWeb2 !important; text-transform: none;  }
+span.tmw3 {font: 24pt TibetanMachineWeb3 !important; text-transform: none;  }
+span.tmw4 {font: 24pt TibetanMachineWeb4 !important; text-transform: none;  }
+span.tmw5 {font: 24pt TibetanMachineWeb5 !important; text-transform: none;  }
+span.tmw6 {font: 24pt TibetanMachineWeb6 !important; text-transform: none;  }
+span.tmw7 {font: 24pt TibetanMachineWeb7 !important; text-transform: none;  }
+span.tmw8 {font: 24pt TibetanMachineWeb8 !important; text-transform: none;  }
+span.tmw9 {font: 24pt TibetanMachineWeb9 !important; text-transform: none;  }
+
+/* The following child selectors hide this css from IE 6 and lower which can't re-position without screwing up the drawing of the fonts*/
+.tmw-block>span.tmw-roman
+{
+	vertical-align: sub;
+	color: green;
+}
+
 a.tmw-link:hover
 {
 	background-color: inherit;
 }
+
+
+/* 
 span.tmw-roman {position: relative;	top: 0pt; padding-left: .25em;}
-span.tmw {font: 20pt TibetanMachineWeb !important; text-transform: none; position: relative; top: -5pt;}
-span.tmw1 {font: 20pt TibetanMachineWeb1 !important; text-transform: none;  position: relative; top: -5pt;}
-span.tmw2 {font: 20pt TibetanMachineWeb2 !important; text-transform: none;  position: relative; top: -5pt;}
-span.tmw3 {font: 20pt TibetanMachineWeb3 !important; text-transform: none;  position: relative; top: -5pt;}
-span.tmw4 {font: 20pt TibetanMachineWeb4 !important; text-transform: none;  position: relative; top: -5pt;}
-span.tmw5 {font: 20pt TibetanMachineWeb5 !important; text-transform: none;  position: relative; top: -5pt;}
-span.tmw6 {font: 20pt TibetanMachineWeb6 !important; text-transform: none;  position: relative; top: -5pt;}
-span.tmw7 {font: 20pt TibetanMachineWeb7 !important; text-transform: none;  position: relative; top: -5pt;}
-span.tmw8 {font: 20pt TibetanMachineWeb8 !important; text-transform: none;  position: relative; top: -5pt;}
-span.tmw9 {font: 20pt TibetanMachineWeb9 !important; text-transform: none;  position: relative; top: -5pt;}
+span.tmw {font: 24pt TibetanMachineWeb !important; text-transform: none; }
+span.tmw1 {font: 24pt TibetanMachineWeb1 !important; text-transform: none;  }
+span.tmw2 {font: 24pt TibetanMachineWeb2 !important; text-transform: none;  }
+span.tmw3 {font: 24pt TibetanMachineWeb3 !important; text-transform: none;  }
+span.tmw4 {font: 24pt TibetanMachineWeb4 !important; text-transform: none;  }
+span.tmw5 {font: 24pt TibetanMachineWeb5 !important; text-transform: none;  }
+span.tmw6 {font: 24pt TibetanMachineWeb6 !important; text-transform: none;  }
+span.tmw7 {font: 24pt TibetanMachineWeb7 !important; text-transform: none;  }
+span.tmw8 {font: 24pt TibetanMachineWeb8 !important; text-transform: none;  }
+span.tmw9 {font: 24pt TibetanMachineWeb9 !important; text-transform: none;  }
 
 h1 span.tmw-roman { top: 0pt; }
 h1 span.tmw {font-size: 32pt  !important; top: -8pt;}
@@ -145,4 +175,4 @@ li span.tmw5 {font-size: 20pt  !important; }
 li span.tmw6 {font-size: 20pt  !important; }
 li span.tmw7 {font-size: 20pt  !important; }
 li span.tmw8 {font-size: 20pt  !important; }
-li span.tmw9 {font-size: 20pt  !important; }
+li span.tmw9 {font-size: 20pt  !important; } */

@@ -10,13 +10,6 @@
 
 <ol>			
 
-<!--TRANSITIONAL DATA-->
-<c:set value="${sessionScope.visit.query.entry.transitionalData}" target="${sessionScope.visit.helper}" property="collection"/>
-<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
-<c:out value='<li><a href="#${sessionScope.visit.query.entry.transitionalData}">Special Guests</a></li>' escapeXml='false' />
-<c:forEach var="transitionalData" items="${ sessionScope.visit.query.entry.transitionalData }"></c:forEach>
-</c:if>
-
 <!--PRONUNCIATION-->
 <c:set value="${sessionScope.visit.query.entry.pronunciations}" target="${sessionScope.visit.helper}" property="collection"/>
 <c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
@@ -123,6 +116,14 @@
 
 </c:forEach><!--END DEFINITIONS-->
 </c:if>
+
+<!--TRANSITIONAL DATA-->
+<c:set value="${sessionScope.visit.query.entry.transitionalData}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
+<c:out value='<li><a href="#${sessionScope.visit.query.entry.transitionalData}">Other Dictionaries</a></li>' escapeXml='false' />
+<c:forEach var="transitionalData" items="${ sessionScope.visit.query.entry.transitionalData }"></c:forEach>
+</c:if>
+
 
 <%-- </ol>
 </li> --%>

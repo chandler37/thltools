@@ -269,7 +269,7 @@ public class DisplayHelper
 	 */
 	public String getTibetan()
 	{
-		return TibetanHTML.getHTMLX( getWylie() );
+		return TibetanHTML.getHTML( getWylie() );
 	}
 
 

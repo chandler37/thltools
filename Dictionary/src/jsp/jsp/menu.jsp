@@ -87,14 +87,16 @@
 	<h2>Recently Modified Terms</h2>
 	<div id="recentTerms">
 	<c:forEach var="term" items="${applicationScope.global.recentTerms }">
-		<p>
+		<p class="tmw-block">
 		<c:set target="${ sessionScope.visit.helper}" property="wylie" value="${ term.term }"/>
 		<c:set var="tib" value="${ sessionScope.visit.helper.tibetan } " />
 		<c:set var="wylie" value=" <span class='tmw-roman'>${ term.term }</span>" />
 		<c:out value='<a class="tmw-link" href="/lex/action?cmd=displayFull&comp=term&metaId=${term.metaId}">${ tib } ${ wylie }</a>' escapeXml='false' /> 
+		<span class="tmw-roman">
 		Modified by <c:out value="${ applicationScope.flatData.users[ term.meta.modifiedBy ] }" /> 
 		<c:set target="${ sessionScope.visit.helper }" property="date" value="${ term.meta.modifiedOn }"/>
 		<c:out value="${ sessionScope.visit.helper.formattedDate }"  />
+		</span>
 		</p>
 	</c:forEach>
 	</div><!--END RECENT TERMS-->

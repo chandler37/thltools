@@ -10,8 +10,8 @@ Element Selectors
 ---------------*/
 
 body {
-margin:0;
-padding:0;
+margin:0 0 0 0;
+padding:0 0 0 0;
 color: #000033;
 background-color: #FFFFFF;
 font-size: small;

@@ -33,11 +33,17 @@
 	</c:if>
 	
 	<!--<span class="label">Passage:</span>-->
-	<c:set target="${ sessionScope.visit.helper}" property="wylie" value="${ passage.passage }"/>
+<c:set target="${ sessionScope.visit.helper}" property="wylie" value="${ passage.passage }"/>
+<c:catch var="exception">
 	<c:set var="tib" value="${ sessionScope.visit.helper.tibetan } " />
 	<div class="tmw-block"><c:out value="${ tib }" escapeXml="false" /></div>
- 
-		
+</c:catch>
+<c:if test="${ ! empty exception }">
+	<span class="error-info">Wylie conversion error: <c:out value="${ exception }"/></span>
+</c:if>	
+	 
+		<div class="tmw-block"><c:out value="${ passage.passage }" /></div>
+	
 		<!--metadata--> 
 		
 		<jsp:include page="displayMeta.jsf" />
