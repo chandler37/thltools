@@ -203,8 +203,11 @@ class TStackList {
             if (null == lastPair.getRight()
                 && !((l = lastPair.getLeft()) != null && l.length() == 1
                      && l.charAt(0) >= '0' && l.charAt(0) <= '9')) {
-                if (null != isLastStack)
+                if (null != isLastStack) {
                     isLastStack[0] = (i + 1 == size());
+                    if (!isLastStack[0])
+                        throw new Error("But we now stack greedily!");
+                }
                 return true;
             }
         }
