@@ -58,7 +58,6 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 
 	private static boolean hasReadData = false;
 	private static TibetanKeyboard keyboard = null;
-	private static final String DEFAULT_KEYBOARD = "default_keyboard.ini";
 	private static Set charSet = null;
 	private static Set vowelSet = null;
 	private static Set puncSet = null;
@@ -179,27 +178,11 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 	private static final String farrights = "d,s"; 
 
 	static {
-
-        // FIXME: we have it so that you can select the default
-        // keyboard via the preferences mechanism.  We can remove this
-        // DEFAULT_KEYBOARD stuff, can't we?
-
 		readData();
 
-		URL keyboard_url = TibetanMachineWeb.class.getResource(DEFAULT_KEYBOARD);
-		if (null != keyboard_url) {
-			try {
-                TibetanKeyboard kb = new TibetanKeyboard(keyboard_url);
-                setKeyboard(kb); // this can't throw the InvalidKeyboardException
-			}
-			catch (TibetanKeyboard.InvalidKeyboardException ike) {
-				System.out.println("invalid keyboard file or file not found: " + keyboard_url.toString());
-                ThdlDebug.noteIffyCode();
-				setKeyboard(keyboard);
-			}
-		}
-		else
-			setKeyboard(keyboard);
+        /* Initialize to Extended Wylie keyboard.  The preferences
+         * mechanism will switch this to the preferred keyboard. */
+        setKeyboard(keyboard);
 	}
 
     /** Assumes that the TMW font files are resources associated with
