@@ -28,7 +28,7 @@ import java.awt.event.*;
 */
 public class AboutDialog extends Dialog implements ActionListener, WindowListener
 {
-    public AboutDialog(Frame parent)
+    public AboutDialog(Frame parent, boolean big)
     {
         super(parent, "About...", true);
         Button close = new Button("Close this window");
@@ -38,7 +38,12 @@ public class AboutDialog extends Dialog implements ActionListener, WindowListene
         ta.setEditable(false);
         addWindowListener(this);
         add(ta, BorderLayout.CENTER);
-        setSize(240,300); // the size ipaq's window.
+        if (big) setSize(480,400);
+        else
+        {
+            Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+            setSize(d); // the size ipaq's window.
+        }
     }
     
 	/* FIXME: what happens if this throws an exception?  We'll just
