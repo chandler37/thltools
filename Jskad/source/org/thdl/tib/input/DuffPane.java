@@ -931,12 +931,7 @@ public void paste(int offset) {
 	try {
 		Transferable contents = rtfBoard.getContents(this);
 
-		if (!isRomanEnabled || !contents.isDataFlavorSupported(rtfFlavor)) {
-			if (contents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-				String data = (String)contents.getTransferData(DataFlavor.stringFlavor);
-				doc.toTibetanMachineWeb(data, offset);
-			}
-		} else {
+		if (contents.isDataFlavorSupported(rtfFlavor)){
 			InputStream in = (InputStream)contents.getTransferData(rtfFlavor);
 			int p1 = offset;
 
@@ -959,9 +954,17 @@ public void paste(int offset) {
 					ThdlDebug.noteIffyCode();
 				}
 			}
-		} else if (contents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-			String s = (String)contents.getTransferData(DataFlavor.stringFlavor);
-			replaceSelection(s);		
+		} else if (contents.isDataFlavorSupported(DataFlavor.stringFlavor))
+		{
+		    if (!isRomanEnabled) {
+				String data = (String)contents.getTransferData(DataFlavor.stringFlavor);
+				toTibetanMachineWeb(data, offset);
+            }
+            else
+            {
+			    String s = (String)contents.getTransferData(DataFlavor.stringFlavor);
+			    replaceSelection(s);
+			}
 		}
 	} catch (UnsupportedFlavorException ufe) {
 		ufe.printStackTrace();
