@@ -23,6 +23,10 @@
 # system-specific.
 thdl.user.options.directory =
 
+# Set this to true if you want more messages (probably on the console)
+# about what's going on.
+thdl.verbose = false
+
 # Set this to the full path of Jskad's working directory.  When you go
 # to open a file or to save a file, this is the path you'll see first.
 thdl.Jskad.working.directory =

@@ -26,6 +26,45 @@ import java.io.*;
 
 import org.thdl.util.ThdlDebug;
 
+/** Represents a character meant to be rendered in a certain font.
+ *  @author David Chandler
+ */
+class CharacterInAGivenFont {
+    private char character;
+    private String fontName;
+    public CharacterInAGivenFont(char ch, String font) {
+        character = ch;
+        fontName = font;
+    }
+    public CharacterInAGivenFont(String s, String font) {
+        if (s.length() != 1)
+            throw new Error("character in a given font was given a string "
+                            + s + " in a given font");
+        character = s.charAt(0);
+        fontName = font;
+    }
+    public boolean equals(Object x) {
+        return ((x instanceof CharacterInAGivenFont)
+                && ((CharacterInAGivenFont)x).character == character
+                && ((CharacterInAGivenFont)x).fontName.equals(fontName));
+    }
+    public int hashCode() {
+        return (int)character + fontName.hashCode();
+    }
+    public String toString() {
+        String characterRepresentation
+            = "'" + new Character(character).toString() + "'";
+        if ('\n' == character)
+            characterRepresentation = "newline";
+        if ('\r' == character)
+            characterRepresentation = "carriage return";
+        return characterRepresentation + " in the font "
+            + ((null == fontName)
+               ? "_ERROR_FINDING_FONT_"
+               : fontName);
+    }
+}
+
 /**
 * A TibetanDocument is a styled document that knows about Tibetan and
 * will respect line breaks and the like.  It allows you to insert
@@ -202,4 +241,132 @@ public class TibetanDocument extends DefaultStyledDocument {
 
 		return "";
 	}
+
+    /** Prints to standard output a list of all the indices of
+        characters that are not in a TMW font within the range [start,
+        end).  Using a negative number for end means that this will
+        run to the end of the document.  SPEED_FIXME: might be faster
+        to run over the elements, if they are one per font.
+        @return 1 if at least one non-TMW character was found in
+        the specified range, zero if none were, -1 on error. */
+    public int findAllNonTMWCharacters(int begin, int end) {
+        if (end < 0)
+            end = getLength();
+        if (begin >= end)
+            return 0;
+        int i = begin;
+        int returnValue = 0;
+        try {
+            while (i < end) {
+                AttributeSet attr = getCharacterElement(i).getAttributes();
+                String fontName = StyleConstants.getFontFamily(attr);
+                if ((0 == TibetanMachineWeb.getTMWFontNumber(fontName))) {
+                    returnValue = 1;
+                    CharacterInAGivenFont cgf
+                        = new CharacterInAGivenFont(getText(i, 1), fontName);
+                    System.out.println("non-TMW character "
+                                       + cgf + " at location " + i);
+                }
+                i++;
+            }
+        } catch (BadLocationException ble) {
+            ble.printStackTrace();
+            ThdlDebug.noteIffyCode();
+            returnValue = -1;
+        }
+        return returnValue;
+    }
+
+    /** Finds the first occurrence of a non-TMW character in a given
+        font and prints it to System.out.  If you have a Tahoma
+        newline and an Arial newline, the first occurrence of each
+        will be reported.
+        
+        <p>Works within the range [start, end).  Using a negative
+        number for end means that this will run to the end of the
+        document.  SPEED_FIXME: might be faster to run over the
+        elements, if they are one per font.
+        @return 1 if at least one non-TMW character was found in
+        the specified range, zero if none were, -1 on error. */
+    public int findSomeNonTMWCharacters(int begin, int end) {
+        if (end < 0)
+            end = getLength();
+        if (begin >= end)
+            return 0;
+        int i = begin;
+        int returnValue = 0;
+        try {
+            HashMap cgfTable = new HashMap();
+            while (i < end) {
+                AttributeSet attr = getCharacterElement(i).getAttributes();
+                String fontName = StyleConstants.getFontFamily(attr);
+                if ((0 == TibetanMachineWeb.getTMWFontNumber(fontName))) {
+                    returnValue = 1;
+                    CharacterInAGivenFont cgf
+                        = new CharacterInAGivenFont(getText(i, 1), fontName);
+                    if (!cgfTable.containsKey(cgf)) {
+                        cgfTable.put(cgf, "yes this character appears once");
+                        System.out.println("non-TMW character "
+                                           + cgf + " appears first at location " + i);
+                    }
+                }
+                i++;
+            }
+        } catch (BadLocationException ble) {
+            ble.printStackTrace();
+            ThdlDebug.noteIffyCode();
+            returnValue = -1;
+        }
+        return returnValue;
+    }
+
+    private static final DuffData[] leftCurlyBraceTMW
+        = new DuffData[] { new DuffData("{", 1) };
+    private static final DuffData[] rightCurlyBraceTMW
+        = new DuffData[] { new DuffData("}", 1) };
+    private static final DuffData[] backslashTMW
+        = new DuffData[] { new DuffData("\\", 2) };
+    /** This is a band-aid used to help Jskad fix RTF files that are
+        mostly TMW but have some Tahoma characters that should be TMW.
+        Replaces '{', '}', and '\\' characters with the correct
+        TibetanMachineWeb.  Works within the range [start, end).
+        Using a negative number for end means that this will run to
+        the end of the document.  Be sure to set the size for Tibetan
+        as you like it before using this.  SPEED_FIXME: might be
+        faster to run over the elements, if they are one per font. */
+    public void replaceTahomaCurlyBracesAndBackslashes(int begin, int end) {
+        if (end < 0)
+            end = getLength();
+        if (begin >= end)
+            return;
+        int i = begin;
+        try {
+            while (i < end) {
+                AttributeSet attr = getCharacterElement(i).getAttributes();
+                String fontName = StyleConstants.getFontFamily(attr);
+                if (fontName.equals("Tahoma")) {
+                    DuffData[] toReplaceWith = null;
+                    switch (getText(i, 1).charAt(0)) {
+                    case '{':
+                        toReplaceWith = leftCurlyBraceTMW;
+                        break;
+                    case '}':
+                        toReplaceWith = rightCurlyBraceTMW;
+                        break;
+                    case '\\':
+                        toReplaceWith = backslashTMW;
+                        break;
+                    }
+                    if (null != toReplaceWith) {
+                        insertDuff(i, toReplaceWith);
+                        remove(i+1, 1);
+                    }
+                }
+                i++;
+            }
+        } catch (BadLocationException ble) {
+            ble.printStackTrace();
+            ThdlDebug.noteIffyCode();
+        }
+    }
 }

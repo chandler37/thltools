@@ -62,9 +62,6 @@ import org.thdl.util.ThdlLazyException;
 * @version 1.0
 */
 public class Jskad extends JPanel implements DocumentListener {
-
-    private static final String rtfErrorMessage = "The Rich Text Format (RTF) file selected contains constructs that\nJskad cannot handle.  If you got the RTF file from saving a Word\ndocument as RTF, try saving that same document as RTF in\nWord 2000 instead of Word XP or in Word 97 instead of\nWord 2000.  Older versions of Word produce RTF that Jskad\ncan more easily deal with.  OpenOffice and StarOffice also\nproduce better-behaved RTF.";
-
     /** the name of the property a developer should set to see
         low-level info on how keypresses in "Tibetan" input mode are
         being interpreted */
@@ -334,6 +331,28 @@ public class Jskad extends JPanel implements DocumentListener {
             DevelItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
                         dp.setEditable(!dp.isEditable());
+                    }
+                });
+            toolsMenu.add(DevelItem);
+        }
+
+        if (ThdlOptions.getBooleanOption("thdl.add.developer.options.to.menu")) {
+            toolsMenu.addSeparator();
+            JMenuItem DevelItem = new JMenuItem("Check for non-TMW characters"); // DLC NOW: do it just in the selection
+            DevelItem.addActionListener(new ThdlActionListener() {
+                    public void theRealActionPerformed(ActionEvent e) {
+                        ((TibetanDocument)dp.getDocument()).findSomeNonTMWCharacters(0, -1); // entire document.
+                    }
+                });
+            toolsMenu.add(DevelItem);
+        }
+
+        if (ThdlOptions.getBooleanOption("thdl.add.developer.options.to.menu")) {
+            toolsMenu.addSeparator();
+            JMenuItem DevelItem = new JMenuItem("Fix curly braces RTF problem"); // DLC NOW: do it just in the selection
+            DevelItem.addActionListener(new ThdlActionListener() {
+                    public void theRealActionPerformed(ActionEvent e) {
+                        ((TibetanDocument)dp.getDocument()).replaceTahomaCurlyBracesAndBackslashes(0, -1); // entire document
                     }
                 });
             toolsMenu.add(DevelItem);
@@ -668,7 +687,7 @@ public class Jskad extends JPanel implements DocumentListener {
                     newRTF.dp.rtfEd.read(in, newRTF.dp.getDocument(), 0);
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(newFrame,
-                                                  rtfErrorMessage);
+                                                  TMW_RTF_TO_THDL_WYLIE.rtfErrorMessage);
                     error = true;
                 }
                 in.close();
@@ -693,7 +712,7 @@ public class Jskad extends JPanel implements DocumentListener {
                     dp.rtfEd.read(in, dp.getDocument(), 0);
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(this,
-                                                  rtfErrorMessage);
+                                                  TMW_RTF_TO_THDL_WYLIE.rtfErrorMessage);
                     error = true;
                 }
 
