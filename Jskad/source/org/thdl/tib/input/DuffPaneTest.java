@@ -227,7 +227,7 @@ public class DuffPaneTest extends TestCase {
         ensureKeysGiveCorrectWylie("blA-iMg");
 
         ensureKeysGiveCorrectWylie("b.lag", "balaga");
-        ensureKeysGiveCorrectWylie("blga");
+        ensureKeysGiveCorrectWylie("blga", "balga");
 
         ensureKeysGiveCorrectWylie("b.las",
                                    "bals");

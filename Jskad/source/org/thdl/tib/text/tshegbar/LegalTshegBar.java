@@ -1424,17 +1424,6 @@ public final class LegalTshegBar
      *  if not present */
     public static boolean takesBao(char head, char root, char sub) {
 
-        // Special cases: there are four rare, maybe archaic
-        // constructs for which I don't let the sub or lack of sub
-        // matter.  Info is not complete here.  I learned of these
-        // through personal correspondence with Robert Chilton.
-        if (EWC_la == head
-            && (EWC_ka == root
-                || EWC_ga == root
-                || EWC_nga == root
-                || EWC_ja == root))
-            return true;
-
         if (EW_ABSENT == head) {
             if (EW_ABSENT == sub) {
                 return (EWC_ka == root
@@ -1447,16 +1436,7 @@ public final class LegalTshegBar
                         || EWC_zha == root
                         || EWC_za == root
                         || EWC_sha == root
-
-                        || (true && // DLC NOW: these are not in RC's non-definitive list.  Thus, BNGA is B+NGA in ACIP transliteration.  But that seems odd to me, so I'm seeing what RC thinks about these.
-                         (
-                          EWC_nga == root
-                          || EWC_ja == root
-                          || EWC_nya == root
-                          || EWC_na == root
-                          || EWC_dza == root
-                          )
-                        ));
+                        );
             } else {
                 // kra, e.g.
                 return ((EWC_ka == root && EWC_ya == sub)
@@ -1466,6 +1446,7 @@ public final class LegalTshegBar
                         || (EWC_ga == root && EWC_ra == sub)
                         || (EWC_sa == root && EWC_ra == sub)
 
+                        || (EWC_ga == root && EWC_la == sub) // BGLANG in TD4112, says RC, is native Tibetan
                         || (EWC_ka == root && EWC_la == sub)
                         || (EWC_za == root && EWC_la == sub)
                         || (EWC_ra == root && EWC_la == sub)
@@ -1494,6 +1475,7 @@ public final class LegalTshegBar
                         || (EWC_ra == head && EWC_tsa == root)
                         || (EWC_ra == head && EWC_dza == root)
 
+                        || (EWC_la == head && EWC_ca == root) // e.g., BLCAG and BLCAGS says RC
                         || (EWC_la == head && EWC_ta == root)
                         || (EWC_la == head && EWC_da == root));
             } else {
