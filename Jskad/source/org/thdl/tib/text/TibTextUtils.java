@@ -1428,7 +1428,9 @@ public class TibTextUtils implements THDLWylieConstants {
 
             if ("prefix/root-root/suffix-suffix/postsuffix" == candidateType) {
                 /* Yes, this is ambiguous. How do we handle it?  See
-                 * this from Andres:
+                 * this from Andres (but note that only 4 of the 14 in
+                 * the second list are ambiguous because ra na sa and
+                 * la are not prefixes):
                  *
                  * I'm posting this upon David Chandler's
                  * request. According to Lobsang Thonden in Modern
