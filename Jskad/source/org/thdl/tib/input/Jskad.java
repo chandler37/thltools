@@ -422,20 +422,12 @@ public class Jskad extends JPanel implements DocumentListener {
             JMenuItem converterItem = new JMenuItem("Launch Converter...");
             converterItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
-                        int rv = ConverterGUI.realMain(new String[] { },
-                                                       System.out,
-                                                       ((parentObject instanceof Frame)
-                                                        ? (Frame)parentObject
-                                                        : null));
-                        if (rv == 0) {
-                            JOptionPane.showMessageDialog(Jskad.this,
-                                                          "Converter closed normally.",
-                                                          "Converter Done", JOptionPane.PLAIN_MESSAGE);
-                        } else {
-                            JOptionPane.showMessageDialog(Jskad.this,
-                                                          "Converter closed abnormally.",
-                                                          "Converter Error", JOptionPane.ERROR_MESSAGE);
-                        }
+                        // ignore the return value:
+                        ConverterGUI.realMain(new String[] { },
+                                              System.out,
+                                              ((parentObject instanceof Frame)
+                                               ? (Frame)parentObject
+                                               : null));
                     }
                 });
             toolsMenu.addSeparator();

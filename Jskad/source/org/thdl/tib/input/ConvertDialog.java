@@ -48,17 +48,13 @@ class ConvertDialog extends JDialog
 
     JTextField oldTextField, newTextField;
 
-    JButton browseOld, browseNew, convert, cancel, openDoc, about;
+    JButton browseOld, browseNew, convert, cancel, openDocOld, openDocNew, about;
 
     JLabel type, oldLabel, newLabel;
 
     String[] choiceNames;
 
-    boolean oldFieldChanged, newFieldChanged;
-
     JFileChooser jfc;
-    File oldFile, newFile;
-    String default_directory;
 
     final String BROWSENEW     = "Browse...";
     final String BROWSEOLD     = BROWSENEW;
@@ -73,8 +69,7 @@ class ConvertDialog extends JDialog
             }};
     public void init()
     {
-        default_directory = controller.getDefaultDirectory();
-        jfc = new JFileChooser(default_directory);
+        jfc = new JFileChooser(controller.getDefaultDirectory());
         jfc.setFileFilter(new RTFFileFilter());
 
         content = new JPanel(new GridLayout(0,1));
@@ -89,12 +84,6 @@ class ConvertDialog extends JDialog
         temp.add(oldLabel);
 
         oldTextField = new JTextField(25);
-        oldFieldChanged = false;
-        oldTextField.addCaretListener(new CaretListener() {
-            public void caretUpdate(CaretEvent ce) {
-                oldFieldChanged = true;
-            }
-        });
         JPanel tfTemp = new JPanel();
         tfTemp.add(oldTextField);
         temp.add(tfTemp);
@@ -102,6 +91,9 @@ class ConvertDialog extends JDialog
         browseOld = new JButton(BROWSEOLD);
         browseOld.addActionListener(tal);
         temp.add(browseOld);
+        openDocOld = new JButton(OPEN_WITH);
+        openDocOld.addActionListener(tal);
+        temp.add(openDocOld);
         content.add(temp);
 
         temp = new JPanel(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -109,12 +101,6 @@ class ConvertDialog extends JDialog
         temp.add(newLabel);
 
         newTextField = new JTextField(25);
-        newFieldChanged = false;
-        newTextField.addCaretListener(new CaretListener() {
-            public void caretUpdate(CaretEvent ce) {
-                newFieldChanged = true;
-            }
-        });
         tfTemp = new JPanel();
         tfTemp.add(newTextField);
         temp.add(tfTemp);
@@ -124,10 +110,9 @@ class ConvertDialog extends JDialog
             browseNew.addActionListener(tal);
         }
         temp.add(browseNew);
-        openDoc = new JButton(OPEN_WITH);
-        openDoc.addActionListener(tal);
-        openDoc.setEnabled(false);
-        temp.add(openDoc);
+        openDocNew = new JButton(OPEN_WITH);
+        openDocNew.addActionListener(tal);
+        temp.add(openDocNew);
         content.add(temp);
 
         buttonBox = Box.createHorizontalBox();
@@ -181,28 +166,6 @@ class ConvertDialog extends JDialog
         jfc.setCurrentDirectory(new File(dir));
     }
 
-    public void setOldFile(File f)
-    {
-        oldFile = f;
-    }
-
-    public void setNewFile(File f)
-    {
-        newFile = f;
-    }
-
-    public File getOldFile()
-    {
-        if(debug && oldFile == null) {System.out.println("Old file is null!");}
-        return oldFile;
-    }
-
-    public File getNewFile()
-    {
-        if(debug && newFile == null) {System.out.println("New file is null!");}
-        return newFile;
-    }
-
     public ConvertDialog(Frame owner,
                          FontConversion controller,
                          String[] choices,
@@ -238,43 +201,31 @@ class ConvertDialog extends JDialog
             || cmd.equals(BROWSENEW))
         {
             JButton src = (JButton)ae.getSource();
-            jfc.showOpenDialog(this);
+            if (jfc.showOpenDialog(this) != jfc.APPROVE_OPTION)
+                return;
             File chosenFile = jfc.getSelectedFile();
             if(chosenFile == null) { return; }
-            if(src.equals(browseOld)) {
+            if(src == browseOld) {
                 String fileName = chosenFile.getPath();
                 oldTextField.setText(fileName);
                 updateNewFileGuess();
-                oldFieldChanged = false;
-                oldFile = chosenFile;
                 ThdlOptions.setUserPreference("thdl.Jskad.working.directory",
                                               chosenFile.getParentFile().getAbsolutePath());
-            } else if(src.equals(browseNew)) {
+            } else if(src == browseNew) {
                 newTextField.setText(chosenFile.getPath());
-                newFieldChanged = false;
-                newFile = chosenFile;
-                openDoc.setEnabled(true);
-            }
+            } else
+                throw new Error("New button?");
         } else if(cmd.equals(CONVERT)) {
-            if(oldFieldChanged || getOldFile() == null) {
-                if (debug)
-                    System.out.println("old field changed");
-                setOldFile(updateFile(oldFile,oldTextField));
-            }
-            if(newFieldChanged || getNewFile() == null) {
-                if (debug)
-                    System.out.println("new field changed");
-                setNewFile(updateFile(newFile,newTextField));
-            }
-
-            if(null == oldFile || !oldFile.exists()) {
+            File origFile = new File(oldTextField.getText());
+            if (!origFile.exists()) {
                 JOptionPane.showMessageDialog(this,
                                               "The original file does not exist.  Choose again.",
                                               "No such file",
                                               JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            if(null == newFile) {
+            File convertedFile = new File(newTextField.getText());
+            if(null == convertedFile) {
                 JOptionPane.showMessageDialog(this,
                                               "Please name the new file before proceeding.",
                                               "No output file named",
@@ -282,7 +233,7 @@ class ConvertDialog extends JDialog
                 return;
             }
             try {
-                if(getNewFile().getCanonicalPath().equals(getOldFile().getCanonicalPath())) {
+                if(convertedFile.getCanonicalPath().equals(origFile.getCanonicalPath())) {
                     JOptionPane.showMessageDialog(this,
                                                   "Please name the new file something different from the old file.",
                                                   "Input and output are the same",
@@ -293,11 +244,18 @@ class ConvertDialog extends JDialog
                 // allow it.
             }
 
-            if (newFile.exists()) {
+            if (convertedFile.isDirectory()) {
+                JOptionPane.showMessageDialog(this,
+                                              "The target file you've chosen is a directory.  Choose a file.",
+                                              "Cannot write to directory",
+                                              JOptionPane.ERROR_MESSAGE);
+                return;
+            } else if (convertedFile.exists()) {
                 int overwriteExisingFile
                     = JOptionPane.showConfirmDialog(this,
                                                     "Do you want to overwrite "
-                                                    + newFile.getName() + "?",
+                                                    + convertedFile.getName()
+                                                    + "?",
                                                     "Please select",
                                                     JOptionPane.YES_NO_OPTION);
 
@@ -310,22 +268,48 @@ class ConvertDialog extends JDialog
             }
 
             controller.doConversion(this,
-                                    getOldFile(),
-                                    getNewFile(),
+                                    origFile,
+                                    convertedFile,
                                     (String)choices.getSelectedItem());
-            oldFieldChanged = false;
-            newFieldChanged = false;
-            // Success or failure is immaterial; we still want to
-            // enable the OPEN_WITH button.  If the conversion failed,
-            // the document contains the weird glyphs.
-            openDoc.setEnabled(true);
         } else if(cmd.equals(OPEN_WITH)) {
             try {
-                if(newFile == null) {return;}
+                JButton src = (JButton)ae.getSource();
+                String fileToOpen;
+                if (src == openDocNew) {
+                    fileToOpen = newTextField.getText();
+                } else {
+                    ThdlDebug.verify(src == openDocOld);
+                    fileToOpen = oldTextField.getText();
+                }
+                if ("".equals(fileToOpen)) {
+                    JOptionPane.showMessageDialog(this,
+                                                  "Please choose a file to open with the external viewer.",
+                                                  "No file named",
+                                                  JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                File namedFile = new File(fileToOpen);
+                if (!namedFile.exists()) {
+                    JOptionPane.showMessageDialog(this,
+                                                  "No such file exists, so it cannot be opened with the external viewer.",
+                                                  "No such file",
+                                                  JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                if (!namedFile.isFile()) {
+                    JOptionPane.showMessageDialog(this,
+                                                  "You've chosen a directory, not a file.  Only files\ncan be opened with the external viewer.",
+                                                  "Not a regular file",
+                                                  JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 boolean done = false;
-                File prog = new File(ThdlOptions.getStringOption("thdl.external.rtf.reader", "C:\\Program Files\\Microsoft Office\\Office\\WINWORD.EXE"));
+                File prog
+                    = new File(ThdlOptions.getStringOption("thdl.external.rtf.reader",
+                                                           "C:\\Program Files\\Microsoft Office\\Office\\WINWORD.EXE"));
                 while (!done) {
-                    String[] cmdArray = {prog.getPath(),newFile.getPath()};
+                    String[] cmdArray = {prog.getPath(),fileToOpen};
                     Runtime rtime = Runtime.getRuntime();
                     try {
                         Process proc = rtime.exec(cmdArray);
@@ -334,8 +318,7 @@ class ConvertDialog extends JDialog
                     } catch (IOException ioe) {
                         JFileChooser jfc = new JFileChooser("C:\\Program Files\\");
                         jfc.setDialogTitle("Locate Program to Read RTF");
-                        int returnValue = jfc.showOpenDialog(this);
-                        if(returnValue != jfc.CANCEL_OPTION) {
+                        if(jfc.showOpenDialog(this) == jfc.APPROVE_OPTION) {
                             prog = jfc.getSelectedFile();
                             ThdlOptions.setUserPreference("thdl.external.rtf.reader",
                                                           prog.getAbsolutePath());
@@ -354,7 +337,8 @@ class ConvertDialog extends JDialog
             this.dispose();
         } else if(cmd.equals(ABOUT)) {
             JOptionPane.showMessageDialog(this,
-                                          "This Tibetan Converter is Copyright 2003\nTibetan and Himalayan Digital Library and\nis protected by the THDL Open Community\nLicense Version 1.0.\n\nCompiled " + ThdlVersion.getTimeOfCompilation(),
+                                          "This Tibetan Converter is Copyright 2003\nTibetan and Himalayan Digital Library and\nis protected by the THDL Open Community\nLicense Version 1.0.\n\nCompiled "
+                                          + ThdlVersion.getTimeOfCompilation(),
                                           "About",
                                           JOptionPane.PLAIN_MESSAGE);
         } else if (cmd.equals("comboBoxChanged")) {
@@ -418,21 +402,6 @@ class ConvertDialog extends JDialog
         newTextField.setText(oldFileDirName
                              + newFileNamePrefix
                              + oldFileNameSansThingy);
-    }
-
-    public File updateFile(File setFile, JTextField textField)
-    {
-        if(textField.equals(newTextField)) {openDoc.setEnabled(false);}
-        String txt = textField.getText();
-        if (txt.equals(""))
-            return null;
-        if(txt.indexOf(".rtf")==-1) { txt += ".rtf"; }
-        if(setFile == null) {return new File(txt); }
-        String fileName = setFile.getPath();
-        String filePath = setFile.getPath();
-        if(txt.equals(fileName) || txt.equals(filePath)) { return setFile; }
-        if(txt.indexOf("\\")>-1) { return new File(txt); }
-        return new File(setFile.getParent() + "\\" + txt);
     }
 
     public class RTFFileFilter extends javax.swing.filechooser.FileFilter
