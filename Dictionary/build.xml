@@ -21,7 +21,8 @@
 	<property name="username" value=""/>
 	<property name="password" value=""/>
 
-  <!-- Configure the custom Ant tasks for the Manager application -->
+  <!-- Configure the custom Ant tasks for the Manager application 
+  			These tasks require catalina-ant.jar in $ANT_HOME/lib-->
 	<taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask"/>
 	<taskdef name="install" classname="org.apache.catalina.ant.InstallTask"/>
 	<taskdef name="list" classname="org.apache.catalina.ant.ListTask"/>
@@ -37,7 +38,7 @@
 	<path id="lex-classpath">
 		<fileset dir="${basedir}/lib">
 			<include name="**/*.jar"/>
-			<exclude name="compiletime/**/*.jar"/>
+			<include name="compiletime/lib/javax.servlet.jar"/>
 		</fileset>
 		<pathelement location="${build}/WEB-INF/classes"/>
 	</path>
@@ -52,14 +53,14 @@
 			</fileset>
 		</copy>
 		
-		<copy todir="${build}/style">
-			<fileset dir="${source}/style">
+		<copy todir="${build}/css">
+			<fileset dir="${source}/css">
 				<include name="*.css"/>
 			</fileset>
 		</copy>
 		
-		<copy todir="${build}/scripts">
-			<fileset dir="${source}/scripts">
+		<copy todir="${build}/js">
+			<fileset dir="${source}/js">
 				<include name="*.js"/>
 			</fileset>
 		</copy>
