@@ -24,7 +24,7 @@
 
   <target name="fail-nicely"
           description="Tells the user to use build.xml, not this subbuildfile.">
-    <fail message="Do not use this file directly; use build.xml file instead, which then uses this file."/>
+    <fail message="Do not use this file directly; use build.xml instead, which then uses this file."/>
   </target>
 
 

@@ -47,6 +47,9 @@
   <property name="javacdashg" value="yes"/>
   <property name="source" location="source"/>
   <property name="license" location="license"/>
+
+  <!-- 'ant clean' won't work well if ${jskadbin} and the other *bin aren't
+       subdirectories of ${bin}. -->
   <property name="bin" location="bin"/>
   <property name="jskadbin" location="bin/jskad"/>
   <property name="tibbiblbin" location="bin/tibbibl"/>
@@ -57,6 +60,7 @@
   <property name="tthandheldbin" location="bin/tt-handheld"/>
   <property name="ttservletbin" location="bin/tt-servlet"/>
   <property name="savantbin" location="bin/savant"/>
+
   <property name="docs" location="docs"/>
   <property name="dist"  location="dist"/>
   <property name="vanillalib"  location="${dist}/lib-vanilla"/>
@@ -158,16 +162,6 @@
     <mkdir dir="${lib}"/>
     <mkdir dir="${dist}/java-web-start"/>
     <mkdir dir="${dist}/source"/>
-    <mkdir dir="${bin}"/>
-    <mkdir dir="${jskadbin}"/>
-    <mkdir dir="${tibbiblbin}"/>
-    <mkdir dir="${junitbin}"/>
-    <mkdir dir="${qdbin}"/>
-    <mkdir dir="${ttstandalonebin}"/>
-    <mkdir dir="${tthandheldbin}"/>
-    <mkdir dir="${ttservletbin}"/>
-    <mkdir dir="${ttappletjwsbin}"/>
-    <mkdir dir="${savantbin}"/>
     <mkdir dir="${publicjavadocs}"/>
     <mkdir dir="${privatejavadocs}"/>
   </target>
@@ -237,6 +231,7 @@
 
   <target name="jskad-compile" depends="init"
           description="compiles Jskad" >
+    <mkdir dir="${jskadbin}"/>
     <antcall target="copy-tmw-fonts-to-bin-dir">
       <param name="my.bin" value="${jskadbin}"/>
     </antcall>
@@ -286,6 +281,7 @@
 
   <target name="tibbibl-compile" depends="init"
           description="compiles Tibbibl" >
+    <mkdir dir="${tibbiblbin}"/>
     <antcall target="copy-tmw-fonts-to-bin-dir">
       <param name="my.bin" value="${tibbiblbin}"/>
     </antcall>
@@ -305,6 +301,7 @@
 
   <target name="compile-junit-tests" depends="init"
           description="compiles all JUnit test cases that can be compiled in the present CLASSPATH (NB that this distinction is just wishful thinking for now becuase we have such weak test coverage at this point)" >
+    <mkdir dir="${junitbin}"/>
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${junitbin}"/>
       <param name="my.included.source.file"
@@ -319,6 +316,7 @@
 
   <target name="savant-compile" depends="init"
           description="compiles Savant" >
+    <mkdir dir="${savantbin}"/>
     <antcall target="copy-tmw-fonts-to-bin-dir">
       <param name="my.bin" value="${savantbin}"/>
     </antcall>
@@ -359,6 +357,7 @@
   <!-- Builds the standalone translation tool: -->
   <target name="tt-standalone-compile" depends="init"
           description="compiles the standalone Translation Tool" >
+    <mkdir dir="${ttstandalonebin}"/>
     <antcall target="copy-tmw-fonts-to-bin-dir">
       <param name="my.bin" value="${ttstandalonebin}"/>
     </antcall>
@@ -397,6 +396,7 @@
        Compiling with J2SDK 1.3 does so by default, by the way. -->
   <target name="tt-handheld-compile" depends="init"
           description="compiles the handheld Translation Tool" >
+    <mkdir dir="${tthandheldbin}"/>
     <antcall target="copy-tmw-fonts-to-bin-dir">
       <param name="my.bin" value="${tthandheldbin}"/>
     </antcall>
@@ -422,6 +422,7 @@
   <!-- Builds the applet + the Java Web Start translation tool: -->
   <target name="tt-applet-plus-jws-compile" depends="init"
           description="compiles the applet + Java Web Start forms of the Translation Tool" >
+    <mkdir dir="${ttappletjwsbin}"/>
     <antcall target="copy-tmw-fonts-to-bin-dir">
       <param name="my.bin" value="${ttappletjwsbin}"/>
     </antcall>
@@ -449,6 +450,7 @@
           depends="ttsc-init"
           if="found.servlet.classes"
           description="compiles the servlet form of the Translation Tool if you've set the j2ee.sdk.home property correctly" >
+    <mkdir dir="${ttservletbin}"/>
     <antcall target="copy-tmw-fonts-to-bin-dir">
       <param name="my.bin" value="${ttservletbin}"/>
     </antcall>
@@ -490,6 +492,7 @@
   <target name="qd-compile" depends="init"
           description="compiles QuillDriver" >
     <!-- Compile the java code from ${source} into ${qdbin} -->
+    <mkdir dir="${qdbin}"/>
     <antcall target="copy-tmw-fonts-to-bin-dir">
       <param name="my.bin" value="${qdbin}"/>
     </antcall>
@@ -714,17 +717,14 @@
 <!-- DLC FIXME: This used to include Jskad2Javascript.class, etc.  But it no longer does.  Compile those extra files if Edward hasn't removed them! -->
   <target name="jskad-all-in-one-dist" depends="jskad-compile"
           description="generates the self-contained binary distribution for Jskad" >
-    <!-- Now put everything in ${bin} and ${ext}/netscape, plus
+    <!-- Now put everything in ${jskadbin} and ${ext}/netscape, plus
          the .ini files, into the JAR file
      -->
     <copy todir="${jskadbin}/netscape">
       <fileset dir="${ext}/netscape"/>
     </copy>
     <jar jarfile="${lib}/Jskad-self-contained${my.jar.suffix}.jar"
-         basedir="${jskadbin}"
-         includes="org/thdl/tib/**,org/thdl/util/**,netscape/**"
-         index="true"
-         update="no">
+         basedir="${jskadbin}">
       <manifest>
         <attribute name="Main-Class" value="org.thdl.tib.input.Jskad"/>
       </manifest>
@@ -965,6 +965,7 @@
       <param name="key.alias" value="me"/>
       <param name="dgkey.password" value="nightly"/>
       <param name="keystore.password" value="nightly"/>
+      <param name="jnlp.codebase" value="http://he.is-a-geek.org/thdl/nightly/builds/java-web-start"/>
     </antcall>
   </target>
 
@@ -1103,8 +1104,8 @@
     <fail message="Use 'ant -Ddgkey.password=psst' to sign a Java Web Start WAR file."
           unless="dgkey.password"/>
 
-    <!-- Clean:  (FIXME: clean only what you must clean, the appropriate bin dir.) -->
-    <antcall target="clean"/>
+    <!-- Clean:  (FIXME: clean only what you must clean, the appropriate bin dir, not the whole bin tree.) -->
+    <delete dir="${bin}"/>
 
     <!-- Now, having cleaned, we create ${my.app}.jar: -->
     <antcall target="${my.prereq}">

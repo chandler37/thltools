@@ -27,7 +27,7 @@
 
 
   <target name="fail-nicely" description="Tells the user to use build.xml, not this subbuildfile.">
-    <fail message="Do not use this file directly; use build.xml file instead, which then uses this file."/>
+    <fail message="Do not use this file directly; use build.xml instead, which then uses this file."/>
   </target>
 
 
@@ -103,7 +103,7 @@
     <unwar src="${dist}/java-web-start/${my.app}-web-start.war"
            dest="${dist}/java-web-start/">
       <patternset>
-        <include name="${my.app}.jar"/>
+        <include name="${my.app}*.jar"/>
         <exclude name="**/*"/>
       </patternset>
     </unwar>
