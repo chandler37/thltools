@@ -914,13 +914,14 @@ public static boolean isVowel(String s) {
 /**
 * Checks to see if the concatenation of x and y is ambiguous in
 * Extended Wylie.  gya and g.ya, bla and b.la, and bra and b.ra are
-* the only syntactically legal ambigous fellows, as stacks like blha,
-* blda, brla, brkya, brgya, brka, etc. are unambiguous.
+* the only syntactically legal ambiguous fellows, as stacks like blha,
+* blda, brla, brkya, brgya, brka, etc. are unambiguous.  However, we
+* generate b.lha instead of blha because it's easier
+* implementation-wise.
 * @param x the prefix
 * @param y the root stack
 * @return true if x + y is ambiguous in the Extended Wylie
-* transliteration, false if not
-*/
+* transliteration, false if not */
 public static boolean isAmbiguousWylie(String x, String y) {
     // What about ambiguity between wa-zur and wa? dwa vs. d.wa, e.g.?
     // Some would say it doesn't matter, because that's illegal.  wa
@@ -929,11 +930,11 @@ public static boolean isAmbiguousWylie(String x, String y) {
     // tibetan Z should get you X==Z in a perfect world), and it
     // doesn't confuse the legal stuff.
 
-	return (("g".equals(x) && "y".equals(y))
-            || ("g".equals(x) && "w".equals(y))
-            || ("d".equals(x) && "w".equals(y))
-            || ("b".equals(x) && "l".equals(y))
-            || ("b".equals(x) && "r".equals(y)));
+	return (("g".equals(x) && y.startsWith("y"))
+            || ("g".equals(x) && y.startsWith("w"))
+            || ("d".equals(x) && y.startsWith("w"))
+            || ("b".equals(x) && y.startsWith("l"))
+            || ("b".equals(x) && y.startsWith("r")));
 }
 
 /**
