@@ -37,28 +37,6 @@ public class test implements UnicodeConstants {
         super();
 
         testTopToBottomForLegalGraphemeClusters();
-
-
-        String ew
-            = new LegalTshegBar(EWC_ba, EWC_sa, EWC_ga,
-                                EWSUB_ra_btags, false, true,
-                                EWC_la, EWC_sa, EWV_o).getThdlWylie().toString();
-        System.out.println("DLC: t-b 1: " + ew);
-        ThdlDebug.verify(ew.equals("bsgrAols"));
-        ThdlDebug.verify(ew.equals("bsgrAols"));
-        ThdlDebug.verify(new LegalTshegBar(EWC_ba, EWC_sa, EWC_ga,
-                                           EWSUB_ra_btags, true, true,
-                                           EWC_la, EWC_sa, EWV_o).getThdlWylie().toString().equals("bsgrwAols"));
-        ThdlDebug.verify(new LegalTshegBar(EWC_ba, EWC_sa, EWC_ga,
-                                           EWSUB_ra_btags, false, false,
-                                           EWC_la, EWC_sa, EWV_o).getThdlWylie().toString().equals("bsgrols"));
-
-        // Ensure that EWTS's jskad is not legal:
-        ThdlDebug.verify(!LegalTshegBar.formsLegalTshegBar(EWC_ja, EWC_sa,
-                                                           EWC_ka, EW_ABSENT,
-                                                           false, false,
-                                                           EW_ABSENT, EWC_da,
-                                                           EW_ABSENT));
     }
 
     /** Unit tests this package. */

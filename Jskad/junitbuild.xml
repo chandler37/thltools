@@ -44,6 +44,7 @@
       <test name="org.thdl.util.ThdlLazyExceptionTest"/>
       <test name="org.thdl.util.TrieTest"/>
       <test name="org.thdl.tib.text.tshegbar.UnicodeUtilsTest"/>
+      <test name="org.thdl.tib.text.tshegbar.LegalTshegBarTest"/>
     </junit>
   </target>
 
