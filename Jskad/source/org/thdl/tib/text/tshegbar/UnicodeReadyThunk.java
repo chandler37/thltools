@@ -18,14 +18,14 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.tshegbar;
 
-/** A UnicodeReadyThunk represents a string of characters.  While
- *  there are ways to turn a string of Unicode characters into a list
+/** A UnicodeReadyThunk represents a string of codepoints.  While
+ *  there are ways to turn a string of Unicode codepoints into a list
  *  of UnicodeReadyThunks (DLC reference it), you cannot
- *  necessarily recover the exact sequence of Unicode characters from
- *  a UnicodeReadyThunk.  For characters that are not Tibetan
- *  Unicode and are not one of a handful of other known characters,
+ *  necessarily recover the exact sequence of Unicode codepoints from
+ *  a UnicodeReadyThunk.  For codepoints that are not Tibetan
+ *  Unicode and are not one of a handful of other known codepoints,
  *  only the most primitive operations are available.  Generally in
- *  this case you can recover the exact string of Unicode characters,
+ *  this case you can recover the exact string of Unicode codepoints,
  *  but don't bank on it.
  *
  *  @author David Chandler
@@ -33,23 +33,25 @@ package org.thdl.tib.text.tshegbar;
 public interface UnicodeReadyThunk {
 
     /** Returns true iff this thunk is entirely Tibetan (regardless of
-        whether or not all characters come from the Tibetan range of
-        Unicode 3, i.e. <code>0x0F00</code>-<code>0x0FFF</code>). */
+        whether or not all codepoints come from the Tibetan range of
+        Unicode 3, i.e. <code>U+0F00</code>-<code>U+0FFF</code>, and
+        regardless of whether or not this thunk is syntactically legal
+        Tibetan). */
     public boolean isTibetan();
     
-    /** Returns a sequence of Unicode characters that is equivalent to
+    /** Returns a sequence of Unicode codepoints that is equivalent to
      *  this thunk if possible.  It is only possible if {@link
-     *  #hasEquivalentUnicode()} is true.  Unicode has more than one
+     *  #hasUnicodeRepresentation()} is true.  Unicode has more than one
      *  way to refer to the same language element, so this is just one
      *  method.  When more than one Unicode sequence exists, and when
      *  the thunk {@link #isTibetan() is Tibetan}, this method returns
      *  sequences that the Unicode 3.2 standard does not discourage.
      *  @exception UnsupportedOperationException if {@link
-     *  #hasEquivalentUnicode()} is false
-     *  @return a String of Unicode characters */
-    public String getEquivalentUnicode() throws UnsupportedOperationException;
+     *  #hasUnicodeRepresentation()} is false
+     *  @return a String of Unicode codepoints */
+    public String getUnicodeRepresentation() throws UnsupportedOperationException;
     
-    /** Returns true iff there exists a sequence of Unicode characters
+    /** Returns true iff there exists a sequence of Unicode codepoints
      *  that correctly represents this thunk.  This will not be the
      *  case if the thunk contains Tibetan characters for which the
      *  Unicode standard does not provide.  See the Extended Wylie
@@ -58,6 +60,6 @@ public interface UnicodeReadyThunk {
      *  standard section 9.13.  The presence of head marks or multiple
      *  vowels in the thunk would cause this to return false, for
      *  example.  */
-    public boolean hasEquivalentUnicode();
+    public boolean hasUnicodeRepresentation();
 }
 

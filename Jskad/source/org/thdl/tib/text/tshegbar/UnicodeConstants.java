@@ -19,7 +19,7 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.text.tshegbar;
 
 /** Provides handy Extended Wylie-inspired names for Unicode
- *  characters commonly used to represent Tibetan.  The consonant that
+ *  codepoints commonly used to represent Tibetan.  The consonant that
  *  the Extended Wylie text "ka" refers to is named EWC_ka as in "The
  *  Extended Wylie Consonant ka", the vowel represented in Extended
  *  Wylie by "i" is EWV_i, and so on.  There is at least one exception
@@ -30,10 +30,26 @@ package org.thdl.tib.text.tshegbar;
  *  @author David Chandler */
 public interface UnicodeConstants {
 
-    /** for those times when you need a char to represent a non-existent character */
+    /** Refers to unnormalized Unicode: */
+    static final byte NORM_UNNORMALIZED = 0;
+    /** Refers to Normalization Form C: */
+    static final byte NORM_NFC = 1;
+    /** Refers to Normalization Form KC: */
+    static final byte NORM_NFKC = 2;
+    /** Refers to Normalization Form D: */
+    static final byte NORM_NFD = 3;
+    /** Refers to Normalization Form KD: */
+    static final byte NORM_NFKD = 4;
+
+
+    /** for those times when you need a char to represent a
+        non-existent codepoint */
     static final char EW_ABSENT = '\u0000';
 
+
+    //
     // the thirty consonants, in alphabetical order:
+    //
 
     /** first letter of the alphabet: */
     static final char EWC_ka = '\u0F40';
@@ -70,10 +86,12 @@ public interface UnicodeConstants {
     static final char EWC_ha = '\u0F67';
     static final char EWC_a = '\u0F68';
 
+
     /** In the word for father, "pA lags", there is an a-chung (i.e.,
         <code>\u0F71</code>).  This is the constant for that little
         guy. */
     static final char EW_achung = '\u0F71';
+
 
     /* Four of the five vowels, some say, or, others say, "the four
        vowels": */
@@ -86,7 +104,7 @@ public interface UnicodeConstants {
     /** "na ro", the 'o' sound in the English word bone: */
     static final char EWV_o = '\u0F7C';
 
-    
+
     /** subscribed form of EWC_wa, also known as wa-btags */
     static final char EWSUB_wa_zur = '\u0FAD';
     /** subscribed form of EWC_ya */

@@ -103,7 +103,7 @@ And also there are cases where they combine. For ex you can have
  *  consonants and vowels.  In some situations, you should use {@link
  *  #EWSUB_wa_zur} to represent the consonant wa, while in others you
  *  should use {@link #EWC_wa}, even though you mean to subscribe a
- *  fixed-form wa.  Basically, stick to the characters for which
+ *  fixed-form wa.  Basically, stick to the codepoints for which
  *  enumerations exist in {@link
  *  org.thdl.tib.text.tshegbar.UnicodeConstants} and use your common
  *  sense.</p>
@@ -131,7 +131,7 @@ public class LegalTshegBar
     private boolean hasWaZur;
     /** true iff EW_wa_zur is under the root syllable. */
     private boolean hasAChung;
-    /** If this is a string, it is of a single character or is equal
+    /** If this is a string, it is of a single codepoint or is equal
      *  to {@link #getConnectiveCaseSuffix()} */
     private String suffix;
     /** EW_da, EW_sa, or EW_ABSENT */
@@ -237,7 +237,7 @@ public class LegalTshegBar
 
     /** Returns null if there is no suffix, or a string containing the
      *  one consonant or a string <code>"&#92;u0F60&#92;u0F72"</code>
-     *  containing two characters in the special case that the suffix
+     *  containing two codepoints in the special case that the suffix
      *  is that connective case marker {@link
      *  #getConnectiveCaseSuffix()}. */
     public String getSuffix() {
@@ -317,7 +317,7 @@ public class LegalTshegBar
     }
 
 
-    /** Returns a string of two characters, da and sa. */
+    /** Returns a string of two codepoints, da and sa. */
     public static String getPossiblePostsuffixes() {
         return new String(new char[] { EWC_da, EWC_sa });
     }
@@ -328,7 +328,7 @@ public class LegalTshegBar
             EWC_ra, EWC_la, EWC_sa
         });
 
-    /** Returns a string of ten characters, each of which can be a
+    /** Returns a string of ten codepoints, each of which can be a
      *  suffix in Tibetan. */
     public static String getPossibleSuffixes() {
         return possibleSuffixes;
@@ -345,7 +345,7 @@ public class LegalTshegBar
             EWC_achen, EWV_i
         });
 
-    /** Returns a two-character string consisting of the Unicode
+    /** Returns a two-codepoint string consisting of the Unicode
      *  representation of what Extended Wylie calls
      *  <code>'i</code>. */
     public static String getConnectiveCaseSuffix() {
@@ -594,9 +594,9 @@ public class LegalTshegBar
      *  @param rootLetter the mandatory root consonant
      *  @param subjoinedLetter the optional, subscribed consonant
      *  @param suffix the optional suffix, which is null, a String
-     *  consisting of a single consonant (i.e. a single character)
-     *  except in the special case that this is {@link
-     *  #getConnectiveCaseSuffix()}
+     *  consisting of a single consonant (i.e. a single,
+     *  nondecomposable codepoint) except in the special case that
+     *  this is {@link #getConnectiveCaseSuffix()}
      *  @param postsuffix the optional postsuffix, which should be
      *  EWC_sa or EWC_da
      *  @param vowel the optional vowel */
@@ -748,7 +748,7 @@ public class LegalTshegBar
                 if (!isNominalRepresentationOfSimpleSuffix(suffix.charAt(0))) {
                     return internalThrowThing(throwIfIllegal,
                                               "Illegal suffix -- not one of the ten legal suffixes: "
-                                              + UnicodeUtils.unicodeCharToString(suffix.charAt(0)));
+                                              + UnicodeUtils.unicodeCPToString(suffix.charAt(0)));
                 }
             }
         }
@@ -971,10 +971,11 @@ public class LegalTshegBar
 
 
     /** Overrides {@link org.thdl.tib.text.tshegbar.UnicodeReadyThunk}
-        method to return {@link UnicodeUtils#toCanonicalForm(String)
-        canonically-formed Unicode}.
+        method to return {@link
+        UnicodeUtils#toMostlyDecomposedUnicode(String, byte)
+        NFKD-normalized Unicode}.
         @exception UnsupportedOperationException is never thrown */
-    public String getEquivalentUnicode() {
+    public String getUnicodeRepresentation() {
         StringBuffer sb = new StringBuffer();
         if (hasPrefix()) {
             ThdlDebug.verify(UnicodeUtils.isNonSubjoinedConsonant(getPrefix()));
@@ -1017,7 +1018,7 @@ public class LegalTshegBar
 
     /** Overrides {@link org.thdl.tib.text.tshegbar.UnicodeReadyThunk}
         method to return true. */
-    public boolean hasEquivalentUnicode() {
+    public boolean hasUnicodeRepresentation() {
         return true;
     }
 

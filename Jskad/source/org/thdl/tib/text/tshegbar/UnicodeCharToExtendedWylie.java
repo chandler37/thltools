@@ -21,10 +21,10 @@ package org.thdl.tib.text.tshegbar;
 import org.thdl.tib.text.TibetanMachineWeb;
 
 /** This noninstantiable class allows for converting from Unicode
- *  characters (i.e., code points) to Extended Wylie.  It cannot be
- *  used for long stretches of text, though, as it is unaware of
- *  context, which is essential to understanding a non-trivial string
- *  of Tibetan Unicode.
+ *  codepoints to Extended Wylie.  It cannot be used for long
+ *  stretches of text, though, as it is unaware of context, which is
+ *  essential to understanding a non-trivial string of Tibetan
+ *  Unicode.
  *
  *  <p>See the document by Nathaniel Garson and David Germano entitled
  *  <i>Extended Wylie Transliteration Scheme</i>.  Note that there are
@@ -307,7 +307,7 @@ public class UnicodeCharToExtendedWylie {
         default: {
             // DLC handle space (EW's "_")
 
-            // This character is in the range 0FD0-0FFF or is not in
+            // This codepoint is in the range 0FD0-0FFF or is not in
             // the Tibetan range at all.  In either case, there is no
             // corresponding Extended Wylie.
             return null;
