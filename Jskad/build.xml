@@ -1048,29 +1048,49 @@
 
   </target>
 
+  <target name="compile-QT4J-classes-accessed-by-reflection"
+          if="found.QT4J"
+          description="If QT4J is available, this compiles QT4J integration.">
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${qdbin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/media/SmartQT4JPlayer.java"/>
+    </antcall>
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${savantbin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/media/SmartQT4JPlayer.java"/>
+    </antcall>
+  </target>
 
+  <target name="compile-JMF-classes-accessed-by-reflection"
+          if="found.JMF"
+          description="If JMF is available, this compiles JMF integration.">
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${qdbin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/media/SmartJMFPlayer.java"/>
+    </antcall>
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${savantbin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/media/SmartJMFPlayer.java"/>
+    </antcall>
+  </target>
+
+
+  <!-- If JMF is not available, we don't compile SmartJMFPlayer.
+       Similarly for QT4J. -->
   <target name="compile-classes-accessed-by-reflection"
           description="Compiles classes that we access these via reflection (thus, compiling SavantShell and QDShell will not include them)">
-    <antcall target="our-internal-javac-task">
-      <param name="mybin" value="${qdbin}"/>
-      <param name="my.included.source.file"
-             value="org/thdl/media/SmartJMFPlayer.java"/>
-    </antcall>
-    <antcall target="our-internal-javac-task">
-      <param name="mybin" value="${qdbin}"/>
-      <param name="my.included.source.file"
-             value="org/thdl/media/SmartQT4JPlayer.java"/>
-    </antcall>
-    <antcall target="our-internal-javac-task">
-      <param name="mybin" value="${savantbin}"/>
-      <param name="my.included.source.file"
-             value="org/thdl/media/SmartJMFPlayer.java"/>
-    </antcall>
-    <antcall target="our-internal-javac-task">
-      <param name="mybin" value="${savantbin}"/>
-      <param name="my.included.source.file"
-             value="org/thdl/media/SmartQT4JPlayer.java"/>
-    </antcall>
+    <available classname="javax.media.NoPlayerException"
+               classpathref="${our.javac.classpathref}"
+               property="found.JMF"/>
+    <available classname="quicktime.std.clocks.TimeCallBack"
+               classpathref="${our.javac.classpathref}"
+               property="found.QT4J"/>
+    <antcall target="compile-JMF-classes-accessed-by-reflection"/>
+    <antcall target="compile-QT4J-classes-accessed-by-reflection"/>
   </target>
 
 
@@ -1080,7 +1100,3 @@
 
 <!-- DLC FIXME: If we use bootclasspath and -target 1.1, do we need a
      separate tt-handheld and tt-standalone? -->
-
-<!-- DLC FIXME: create the .jnlp files based on a template and Ant
-     properties.  Edward e-mailed thdltools-devel requesting something
-     like this. -->
