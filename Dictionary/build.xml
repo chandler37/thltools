@@ -1,0 +1,227 @@
+
+<project name="Lex" default="compile" basedir="/Users/travis/webapps/lex">
+
+  <!-- Configure the directory into which the web application is built -->
+	<property name="build" value="${basedir}/build"/>
+
+   <!-- Configure the directory containing the source files -->
+	<property name="source" value="${basedir}/src"/>
+
+  <!-- Configure the context path for this application -->
+	<property name="path" value="/lex"/>
+
+  <!-- Configure properties to access the Manager application -->
+	<property name="url" value="http://localhost:2020/manager"/>
+	<property name="username" value=""/>
+	<property name="password" value=""/>
+
+  <!-- Configure the custom Ant tasks for the Manager application -->
+	<taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask"/>
+	<taskdef name="install" classname="org.apache.catalina.ant.InstallTask"/>
+	<taskdef name="list" classname="org.apache.catalina.ant.ListTask"/>
+	<taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask"/>
+	<taskdef name="remove" classname="org.apache.catalina.ant.RemoveTask"/>
+	<taskdef name="resources" classname="org.apache.catalina.ant.ResourcesTask"/>
+	<taskdef name="roles" classname="org.apache.catalina.ant.RolesTask"/>
+	<taskdef name="start" classname="org.apache.catalina.ant.StartTask"/>
+	<taskdef name="stop" classname="org.apache.catalina.ant.StopTask"/>
+	<taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask"/>
+
+  <!-- Configure up the classpath -->
+	<path id="lex-classpath">
+		<fileset dir="${basedir}/lib/compiletime">
+			<include name="**/*.jar"/>
+		</fileset>
+		<pathelement location="${build}/WEB-INF/classes"/>
+	</path>
+  
+   <!-- Executable Targets -->
+	<target name="copy" description="copy jsp, html, css, js, and other files into the build directory">
+		
+		<copy todir="${build}">
+			<fileset dir="${source}/jsp">
+				<include name="**/*.jsp"/>
+				<include name="**/*.jsf"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${build}/style">
+			<fileset dir="${source}/style">
+				<include name="*.css"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${build}/scripts">
+			<fileset dir="${source}/scripts">
+				<include name="*.js"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${build}/images">
+			<fileset dir="${basedir}/images"></fileset>
+		</copy>
+		
+		<copy todir="${build}/WEB-INF">
+			<fileset dir="${basedir}/config">
+				<filename name="web.xml"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${build}/WEB-INF/classes">
+			<fileset dir="${source}/java">
+				<include name="**/*.xml"/>
+				<include name="**/*.properties"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${build}/WEB-INF/tld">
+			<fileset dir="${basedir}/lib/runtime/tld">
+				<include name="*.tld"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${build}/WEB-INF/lib">
+			<fileset dir="${basedir}/lib/runtime/jstl">
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir="${basedir}/lib/runtime/hibernate">
+				<include name="*.jar"/>
+			</fileset>
+		</copy>
+	
+	</target>
+	
+	<target name="compile" description="Compile web application" depends="copy">
+		<mkdir dir="${build}/WEB-INF/classes"/>
+		<javac srcdir="${source}/java" destdir="${build}/WEB-INF/classes" classpathref="lex-classpath" debug="on" listfiles="no"/>
+	</target>
+	
+	<target name="test" description="Testing" depends="compile">
+		<java classname="org.thdl.lex.LexMod" classpath="${build}/WEB-INF/classes/" classpathref="lex-classpath"/>
+	</target>
+	
+	<target name="javadoc" description="Create Javadocs">
+		<mkdir dir="${build}/docs/api"/>
+		<delete>
+			<fileset dir="${build}/docs/api/" includes="**/*"/>
+		</delete>
+		<javadoc destdir="${build}/docs/api/" classpathref="lex-classpath" author="true" version="true" use="true" windowtitle="THDL Tibetan Collaborative Dictionary API">
+			
+			<fileset dir="${source}/java" defaultexcludes="yes">
+				<include name="org/thdl/**/*.java"/>
+			</fileset>
+			
+			<doctitle><![CDATA[<h1>THDL Tibetan Collaborative Dictionary Javadocs</h1>]]></doctitle>
+			<bottom><![CDATA[<i>Copyright &#169; 2003 THDL. All Rights Reserved.</i>]]></bottom>
+			<tag name="todo" scope="all" description="To do:"/>
+			<group title="Lex Basics" packages="org.thdl.lex"/>
+			<group title="Lex Commands" packages="org.thdl.lex.commands"/>
+			<group title="Lex Components" packages="org.thdl.lex.component"/>
+			<group title="Lex Sub-components" packages="org.thdl.lex.component.child"/>
+			<link href="http://developer.java.sun.com/developer/products/xml/docs/api/"/>
+		</javadoc>
+	</target>
+	
+	<target name="install" description="Install web application" depends="compile, move-log">
+		<install url="${url}" username="${username}" password="${password}" path="${path}" config="file://${basedir}/config/lex-context-config.xml" war="file://${build}"/>
+	</target>
+	
+	<target name="move-log" description="move old log file">
+		<tstamp prefix="now"/>
+		<touch file="${basedir}/logs/hibernate.log"/>
+		<move file="${basedir}/logs/hibernate.log" tofile="${basedir}/logs/hibernate_${now.DSTAMP}_${now.TSTAMP}.log" overwrite="true"/>
+	</target>
+	
+	<target name="reinstall" description="Remove and Re-install web application" depends="remove">
+		<antcall target="install"/>
+	</target>
+	
+	<target name="reload" description="Reload web application" depends="compile">
+		<reload url="${url}" username="${username}" password="${password}" path="${path}"/>
+	</target>
+	
+	<target name="remove" description="Remove web application">
+		<remove url="${url}" username="${username}" password="${password}" path="${path}"/>
+	</target>
+	
+	<target name="hbm2java" description="generate source code">
+		<tstamp prefix="now"/>
+		<echo message="time is: ${now.DSTAMP}_${now.TSTAMP}"/>
+		<copy todir="${basedir}/backups/lex-src-bkp_${now.DSTAMP}_${now.TSTAMP}">
+			<fileset dir="${source}/java/org/thdl/lex/component">
+				<include name="**/*.java"/>
+			</fileset>
+		</copy>
+		<java classname="net.sf.hibernate.tool.hbm2java.CodeGenerator" classpathref="lex-classpath" fork="yes">
+			<arg value="--output=${source}/java"/>
+			<arg value="--config=${basedir}/config/lex-codegen-cfg.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/LexComponent.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/Author.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/Dialect.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/EtymologyType.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/Function.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/FunctionsGeneral.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/FunctionsSpecific.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/Language.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/LiteraryForm.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/LiteraryGenre.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/LiteraryPeriod.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/LiterarySource.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/MajorDialectFamily.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/PhoneticsType.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/ProjectSubject.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/Register.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/RelatedTermType.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/Script.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/Source.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/SpecificDialect.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/SpellingType.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/TransitionalDataLabel.hbm.xml"/>
+		</java>
+	</target>
+	
+	<target name="hbm2ddl" description="generate source code">
+		<java classname="net.sf.hibernate.tool.hbm2ddl.SchemaExport" classpathref="lex-classpath" fork="yes">
+			<classpath>
+				<pathelement location="${build}/WEB-INF/classes"/>
+			</classpath>
+			<arg value="--output=${source}/sql/lex-schema.sql"/>
+			<arg value="--text"/>
+			<arg value="--format"/>
+			<arg value="--quiet"/>
+			<arg value="--delimiter=;"/>
+			<arg value="--properties=${basedir}/config/hibernate.properties"/>
+			<arg value="${source}/java/org/thdl/lex/component/LexComponent.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/Author.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/Dialect.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/EtymologyType.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/Function.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/FunctionsGeneral.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/FunctionsSpecific.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/Language.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/LiteraryForm.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/LiteraryGenre.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/LiteraryPeriod.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/LiterarySource.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/MajorDialectFamily.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/PhoneticsType.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/ProjectSubject.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/Register.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/RelatedTermType.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/Script.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/Source.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/SpecificDialect.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/SpellingType.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/TransitionalDataLabel.hbm.xml"/>
+		</java>
+	</target>
+	
+	<target name="schema-update">
+		<taskdef name="schemaupdate" classname="net.sf.hibernate.tool.hbm2ddl.SchemaUpdateTask" classpathref="class.path"/>
+		<schemaupdate>
+			<fileset dir="src">
+				<include name="**/*.hbm.xml"/>
+			</fileset>
+		</schemaupdate>
+	</target>
+</project>
