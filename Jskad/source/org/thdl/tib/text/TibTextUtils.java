@@ -1031,18 +1031,21 @@ public class TibTextUtils implements THDLWylieConstants {
 	}
 
 /**
-* Gets the Extended Wylie for a list of glyphs.
-* Passed a list of TibetanMachineWeb glyphs that constitute a partial
-* or complete syllable, this method scans the list, and then returns a
-* string of Wylie corresponding to this sequence. No 'a' vowel is
-* inserted because it is assumed that the glyph list already contains
-* some other vowel. If the glyph list does not already contain a vowel,
+* Gets the Extended Wylie for a list of glyphs.  Passed a list of
+* TibetanMachineWeb glyphs that constitute a partial or complete
+* syllable, this method scans the list, and then returns a string of
+* Wylie corresponding to this sequence. No 'a' vowel is inserted
+* because it is assumed that the glyph list already contains some
+* other vowel. If the glyph list does not already contain a vowel,
 * then this method should not be called.
 *
-* @param glyphList a list of TibetanMachineWeb glyphs, i.e. {@link org.thdl.tib.text.DuffCode DuffCodes}
+* @param glyphList a list of TibetanMachineWeb glyphs, i.e. {@link
+* org.thdl.tib.text.DuffCode DuffCodes}
+* @param isBeforeVowel true if these glyphs occur before a vowel,
+* false if these glyphs occur after a vowel
 * @return the Wylie string corresponding to this glyph list
 */
-	public static String withoutA(java.util.ArrayList glyphList) {
+	public static String withoutA(java.util.ArrayList glyphList, boolean isBeforeVowel) {
 		StringBuffer sb = new StringBuffer();
 		Iterator iter = glyphList.iterator();
 		DuffCode dc;
@@ -1060,7 +1063,7 @@ public class TibTextUtils implements THDLWylieConstants {
 
             /* le'ang, not le'ng, to be consistent w.r.t. pa'am
              * vs. pa'm: */
-            if (lastWylie.equals(ACHUNG))
+            if (lastWylie.equals(ACHUNG) && !isBeforeVowel)
                 sb.append(WYLIE_aVOWEL);
 
 			sb.append(currWylie);
@@ -1103,7 +1106,7 @@ public class TibTextUtils implements THDLWylieConstants {
                     if (needsVowel)
                         thisPart = withA(glyphList);
                     else
-                        thisPart = withoutA(glyphList);
+                        thisPart = withoutA(glyphList, false);
                     wylieBuffer.append(thisPart);
 
                     glyphList.clear();
@@ -1133,7 +1136,7 @@ public class TibTextUtils implements THDLWylieConstants {
                             if (needsVowel)
                                 thisPart = withA(glyphList);
                             else
-                                thisPart = withoutA(glyphList);
+                                thisPart = withoutA(glyphList, false);
                             wylieBuffer.append(thisPart);
 
                             wylieBuffer.append(wylie); //append the punctuation
@@ -1192,7 +1195,7 @@ public class TibTextUtils implements THDLWylieConstants {
                                 }
 
                                 if (top_dc == null || !TibetanMachineWeb.getWylieForGlyph(top_dc).equals(ACHUNG)) {
-                                    String thisPart = withoutA(glyphList);
+                                    String thisPart = withoutA(glyphList, true);
                                     wylieBuffer.append(thisPart); //append consonants in glyphList
                                 } else {
                                     glyphCount = glyphList.size();
@@ -1224,7 +1227,7 @@ public class TibTextUtils implements THDLWylieConstants {
 
                 if (containsBindu) {
                     isLastVowel = false;
-                    wylieBuffer.append(withoutA(glyphList));
+                    wylieBuffer.append(withoutA(glyphList, false));
                     wylieBuffer.append(BINDU); //append the bindu
                     glyphList.clear();
                 }
@@ -1238,7 +1241,7 @@ public class TibTextUtils implements THDLWylieConstants {
             if (needsVowel)
                 thisPart = withA(glyphList);
             else
-                thisPart = withoutA(glyphList);
+                thisPart = withoutA(glyphList, false);
             wylieBuffer.append(thisPart);
         }
 
