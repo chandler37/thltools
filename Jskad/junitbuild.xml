@@ -5,7 +5,7 @@
      probably should read.
 -->
 
-<project name="THDLTools" default="fail-nicely" basedir=".">
+<project name="THDLTools-junit" default="fail-nicely" basedir=".">
 
   <description>
     This Jakarta Ant buildfile is used to do the low-level work of
