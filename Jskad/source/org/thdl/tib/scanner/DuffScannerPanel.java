@@ -147,7 +147,7 @@ public class DuffScannerPanel extends ScannerPanel
 
 		in = "";
 		if (showingTibetan)
-		    in = duffInput.getWylie();
+		    in = duffInput.getWylie(new boolean[] { false });
 		else
     		in = txtInput.getText();
 
@@ -197,7 +197,7 @@ public class DuffScannerPanel extends ScannerPanel
 	    }
 	    if (enabled && showingTibetan)
 	    {
-			txtInput.setText(duffInput.getWylie());
+			txtInput.setText(duffInput.getWylie(new boolean[] { false }));
 			table.activateTibetan(false);
 			cl.last(inputPanel);
 			showingTibetan = false;
