@@ -284,216 +284,216 @@ class TPairList {
      *  syntax) to do so.  If this list of pairs has something clearly
      *  illegal in it, or is empty, or is merely a list of
      *  disambiguators etc., then this returns null.  Never returns an
-     *  empty parse tree. */
+     *  empty parse tree.
+     */
     public TParseTree getParseTree() {
-        TParseTree pt = new TParseTree();
+        // We treat [(B . ), (G . +), (K . ), (T . A)] as if it could
+        // be {B+G+K+T} or {B}{G+K+T}; we handle prefixes specially
+        // this way.  [(T . ), (G . +), (K . ), (T . A)] is clearly
+        // {T+G+K+TA} (and, DLC FIXME, we should warn that there are
+        // some pluses but not all)
+        //
+        // We don't care if T+G+K+T is in TMW or not -- there is no
+        // master list of stacks.
+
         int sz = size();
-        int firstPair = 0;
         for (int i = 0; i < sz; i++) {
+            TPair p = get(i);
+            if (p.getLeft() == null && !"-".equals(p.getRight()))
+                return null; // clearly illegal.
+            if ("+".equals(p.getLeft()))
+                return null; // clearly illegal.
+            if (":".equals(p.getLeft()))
+                return null; // clearly illegal.
+            if ("m".equals(p.getLeft()))
+                return null; // clearly illegal.
+            if ("m:".equals(p.getLeft()))
+                return null; // clearly illegal.
+        }
 
-            // We treat [(B . ), (G . +), (K . ), (T . A)] as if it
-            // could be {B+G+K+T} or {B}{G+K}{T} or {B+G+K}{T} or
-            // {B}{G+K+T} (modulo stack legality); we're conservative.
-            // (Though some stacks won't be legal.)
 
+        TParseTree pt = new TParseTree();
+        if (sz < 1) return null;
 
+        // When we see a stretch of ACIP without a disambiguator or a
+        // vowel, that stretch is taken to be one stack unless it may
+        // be prefix-root or suffix-postsuffix or suffix/postsuffix-'
+        // -- the latter necessary because GAMS'I is GAM-S-'I, not
+        // GAM-S+'I.  'UR, 'US, 'ANG, 'AM, 'I, 'O, 'U -- all begin
+        // with '.  So we can have zero, one, two, or three special
+        // break locations.  (The kind that aren't special are the
+        // break after G in G-DAMS, or the break after G in GADAMS or
+        // GEDAMS.)
+        //
+        // If a nonnegative number appears in breakLocations[i], it
+        // means that pair i may or may not be stacked with pair i+1.
+        int nextBreakLoc = 0;
+        int breakLocations[] = { -1, -1, -1 };
+
+        boolean mayHavePrefix;
+
+        // Handle the first pair specially -- it could be a prefix.
+        if (ddebug) System.out.println("i is " + 0);
+        if ((mayHavePrefix = get(0).isPrefix()) && null == get(0).getRight()) {
+            // special case: we must have a branch in the parse tree
+            // for the initial part of this pair list.  For example,
+            // is DKHYA D+KH+YA or D-KH+YA?  It depends on prefix
+            // rules (can KH+YA take a DA prefix?), so the parse tree
+            // includes both.
+            breakLocations[nextBreakLoc++] = 0;
+        }
+
+        // stack numbers start at 1.
+        int stackNumber = (get(0).endsACIPStack()) ? 2 : 1;
+        // this starts at 0.
+        int stackStart = (get(0).endsACIPStack()) ? 1 : 0;
+
+        int numeric = 0; // 1 means surely, 0 means we don't know yet, -1 means surely not
+
+        for (int i = 1; i < sz; i++) {
             if (ddebug) System.out.println("i is " + i);
             TPair p = get(i);
-            if (p.getRight() == null && firstPair + 1 < sz) {
-                // Here's the ambiguity.  Let's fill up sl. (B . ) (G
-                // . +) (K . A) could be {B+G+KA} or {BA}{G+KA}, so we
-                // go until we hit a vowel and then break into
-                // TPairLists.
-                int start = firstPair;
-                int blanks[] = new int[sz - start]; // we may not use all of this.
-                int j;
-                for (j = start; j < sz; j++) {
-                    TPair pj = get(j);
-                    boolean isBlank;
-                    if (ddebug) System.out.println("right guy is " + pj.getRight());
-                    if (pj.isDisambiguator())
-                        blanks[j-start] = ALWAYS_STOP_STACKING;
-                    else {
-                        if (!(isBlank = (pj.getRight() == null)) && !"+".equals(pj.getRight())) {
-                            if (ddebug) System.out.println("breaker breaker at j=" + j);
-                            break;
-                        }
-                        blanks[j-start] = isBlank ? STOP_STACK : ALWAYS_KEEP_STACKING;
-                    }
-                }
-                if (j >= sz) j = sz - 1;
 
-                blanks[j-start] = ALWAYS_STOP_STACKING;
-
-                // get(j) [corresponding to blanks[j-i]] is
-                // the last pair in the ambiguous stretch; get(i)
-                // [corresponding to blanks[0]] is the first.
-
-                // We'll end up doing 2**(j-i+1) (i.e., (1 <<
-                // (j-i+1))) iterations.  If that's going to be too
-                // many, let's just say there's no legal parse. FIXME:
-                // give a nice error message in this case.
-                if (ddebug) System.out.println("ddebug: we're going to do 2^" + (j-i+1) + " [or " + (1 << (j-i+1)) + "] wacky iterations!");
-                if ((j-i+1) > 13) // if you don't use 13, then change PackageTest.testSlowestTshegBar().
-                    return null;
-
-                boolean keepGoing = true;
-                TStackListList sll = new TStackListList();
-                do {
-                    // Add the stack list currently specified by
-                    // blanks if all the stacks in it are legal.
-// DLC DELETE                    {
-//                         ArrayList x = new ArrayList((j-start+1));
-//                         for (int ii = 0; ii < (j-start+1); ii++)
-//                             x.add(new Integer(blanks[ii]));
-//                     }
-                    TStackList sl = new TStackList(sz - start);
-                    boolean illegal = false;
-                    TPairList currentStack = new TPairList();
-                    for (int k = 0; k < j-start+1; k++) {
-                        TPair pk = get(start + k);
-                        if (!pk.isDisambiguator()) {
-                            currentStack.add(pk.insideStack());
-                            if (blanks[k] == STOP_STACK) {
-                                if (currentStack.isLegalTibetanOrSanskritStack())
-                                    sl.add(currentStack.asStack());
-                                else {
-                                    illegal = true;
-                                    break;
-                                }
-                                currentStack = new TPairList();
-                            }
-                        }
-                    }
-                    if (!illegal && !currentStack.isEmpty()) {
-                        if (currentStack.isLegalTibetanOrSanskritStack()) {
-                            TPairList stack = currentStack.asStack();
-                            if (ddebug) System.out.println("adding currentStack " + stack + " to sl " + sl);
-                            sl.add(stack);
-                        } else {
-                            illegal = true;
-                        }
-                    }
-                    if (!illegal) {
-                        if (ddebug) System.out.println("adding sl " + sl + " to sll " + sll);
-                        sll.add(sl);
-                    }
-
-                    // Update blanks.  Think of this as doing base 2
-                    // arithmetic where STOP_STACK is zero,
-                    // KEEP_STACKING is one, and ALWAYS_KEEP_STACKING
-                    // and ALWAYS_STOP_STACKING are digits we cannot
-                    // modify.  We'll end up doing 2^M iterations,
-                    // where M is the number of fields in blanks that
-                    // are not equal to ALWAYS_KEEP_STACKING or
-                    // ALWAYS_STOP_STACKING.
-                    keepGoing = false;
-                    for (int k = j-start; k >= 0; k--) {
-                        if (blanks[k] == STOP_STACK) {
-                            keepGoing = true;
-                            blanks[k] = KEEP_STACKING;
-                            // reset all digits to the right of k to
-                            // "zero":
-                            for (int m = k + 1; m < j-start+1; m++) {
-                                if (blanks[m] == KEEP_STACKING)
-                                    blanks[m] = STOP_STACK;
-                            }
-                            break;
-                        }
-                    }
-                } while (keepGoing);
-                if (sll.isEmpty())
-                    return null; // STXAL or shT+ZNAGN, e.g.
-                else {
-                    if (ddebug) System.out.println("adding sll " + sll + " to parse tree " + pt);
-                    pt.add(sll);
-                }
-                
-                if (ddebug) System.out.println("i is " + i + " and j is " + j + " and we are resetting so that i==j+1 next time.");
-                i = j;
-                firstPair = j + 1;
-            } else if ("+".equals(p.getRight())) {
-                // Keep firstPair where it is.
+            boolean nn;
+            if ((nn = p.isNumeric()) && ("+".equals(get(i-1).getRight())
+                                         || "+".equals(p.getRight())))
+                return null; // clearly illegal.  You can't stack numbers.
+            if (nn) {
+                if (-1 == numeric)
+                    return null; // you can't mix numbers and letters.
+                else if (0 == numeric)
+                    numeric = 1;
             } else {
-                // Add all pairs in the range [firstPair, i].  Some
-                // pairs are stacks all by themselves, some pairs have
-                // '+' on the right and are thus just part of a stack.
-                // We'll add a whole number of stacks, though.
-                
-                // this is initialized to hold the max we might use:
-                TStackListList sll
-                    = new TStackListList(i - firstPair + 1);
+                if (numeric == 1)
+                    return null; // you can't mix numbers and letters.
+                else if (0 == numeric && !p.isDisambiguator())
+                    numeric = -1;
+            }
 
-                TPairList currentStack = new TPairList();
-                for (int j = firstPair; j <= i; j++) {
-                    TPair pj = get(j);
-                    if (!pj.isDisambiguator()) {
-                        currentStack.add(pj.insideStack());
-                        if (!"+".equals(pj.getRight())) {
-                            if (currentStack.isLegalTibetanOrSanskritStack())
-                                sll.add(new TStackList(currentStack.asStack()));
-                            else {
-                                return null;
-                            }
-                            currentStack = new TPairList();
+            if (i+1==sz || p.endsACIPStack()) {
+                if (/* the stack ending here might really be
+                       suffix-postsuffix or
+                       suffix-appendage or
+                       suffix-postsuffix-appendage */
+                    (mayHavePrefix && (stackNumber == 2 || stackNumber == 3))
+                    || (!mayHavePrefix && (stackNumber == 2))) {
+                    if (i > stackStart) {
+                        if (get(stackStart).isSuffix()
+                            && (get(stackStart+1).isPostSuffix() // suffix-postsuffix
+                                || "'".equals(get(stackStart+1).getLeft()))) // suffix-appendage
+                            breakLocations[nextBreakLoc++] = stackStart;
+                        if (i > stackStart + 1) {
+                            // three to play with, maybe it's
+                            // suffix-postsuffix-appendage.
+                            if (get(stackStart).isSuffix()
+                                && get(stackStart+1).isPostSuffix()
+                                && "'".equals(get(stackStart+2).getLeft()))
+                                breakLocations[nextBreakLoc++] = stackStart+1;
                         }
                     }
+                    // else no need to insert a breakLocation, we're
+                    // breaking hard.
                 }
-                if (!currentStack.isEmpty())
-                    throw new Error("how can this happen? currentStack is " + currentStack);
-
-                if (!sll.isEmpty()) {
-                    if (ddebug) System.out.println("adding sll " + sll + " to parse tree " + pt);
-                    pt.add(sll);
-                    firstPair = i + 1;
-                } // else you probably have {G--YA} or something as
-                  // your tsheg bar.
+                if (/* the stack ending here might really be
+                       postsuffix-appendage (e.g., GDAM-S'O) */
+                    (mayHavePrefix && (stackNumber == 3 || stackNumber == 4))
+                    || (!mayHavePrefix && (stackNumber == 3))) {
+                    if (i == stackStart+1) { // because GDAM--S'O is illegal, and because it's 'ANG, not 'NG, 'AM, not 'M -- ' always ends the stack
+                        if (get(stackStart).isPostSuffix()
+                            && "'".equals(get(stackStart+1).getLeft()))
+                            breakLocations[nextBreakLoc++] = stackStart;
+                    }
+                }
+                ++stackNumber;
+                stackStart = i+1;
             }
         }
+        // DLC FIXME: we no longer need all these breakLocations -- we can handle SAM'AM'ANG
+
+        // Now go from hard break (i.e., (* . VOWEL or -)) to hard
+        // break (and there's a hard break after the last pair, of
+        // course, even if it is (G . ) or (G . +) [the latter being
+        // hideously illegal]).  Between the hard breaks, there will
+        // be 1, 2, or 4 (can you see why 8 isn't possible, though
+        // numBreaks can be 3?) possible parses.  There are two of DGA
+        // in DGAMS'O -- D-GA and D+GA.  There are 4 of MS'O in
+        // DGAMS'O -- M-S-'O, M-S+'O, M+S-'O, and M+S+'O.  Add one
+        // TStackListList per hard break to pt, the parse tree.
+        int startLoc = 0; // which pair starts this hard break?
+
+        // DLC FIXME: assert this
+        if ((breakLocations[1] >= 0 && breakLocations[1] <= breakLocations[0])
+            || (breakLocations[2] >= 0 && breakLocations[2] <= breakLocations[1]))
+            throw new Error("breakLocations is monotonically increasing, ain't it?");
+
+        for (int i = 0; i < sz; i++) {
+            if (i+1 == sz || get(i).endsACIPStack()) {
+                TStackListList sll = new TStackListList(4); // maximum is 4.
+
+                int numBreaks = 0;
+                int breakStart = -1;
+                for (int jj = 0; jj < breakLocations.length; jj++) {
+                    if (breakLocations[jj] >= startLoc
+                        && breakLocations[jj] <= i) {
+                        if (breakStart < 0)
+                            breakStart = jj;
+                        ++numBreaks;
+                    }
+                }
+
+                // Count from [0, 1<<numBreaks).  At each point,
+                // counter equals b2b1b0 in binary.  1<<numBreaks is
+                // the number of stack lists there are in this stack
+                // list list of the parse tree.  Break at location
+                // breakLocations[breakStart+0] if and only if b0 is
+                // one, at location breakLocations[breakStart+1] if
+                // and only if b1 is one, etc.
+                for (int counter = 0; counter < (1<<numBreaks); counter++) {
+                    TStackList sl = new TStackList();
+                    TPairList currentStack = new TPairList();
+                    for (int k = startLoc; k <= i; k++) {
+                        if (!get(k).isDisambiguator()) {
+                            if (get(k).isNumeric()
+                                || (get(k).getLeft() != null
+                                    && ACIPRules.isConsonant(get(k).getLeft())))
+                                currentStack.add(get(k).insideStack());
+                            else
+                                return null; // sA, for example, is illegal.
+                        }
+                        if (k == i || get(k).endsACIPStack()) {
+                            if (!currentStack.isEmpty())
+                                sl.add(currentStack.asStack());
+                            currentStack = new TPairList();
+                        } else {
+                            if (numBreaks > 0) {
+                                for (int j = 0; breakStart+j < 3; j++) {
+                                    if (k == breakLocations[breakStart+j]
+                                        && 1 == ((counter >> j) & 1)) {
+                                        if (!currentStack.isEmpty())
+                                            sl.add(currentStack.asStack());
+                                        currentStack = new TPairList();
+                                        break; // shouldn't matter, but you never know
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (!sl.isEmpty()) {
+                        sll.add(sl);
+                    }
+                }
+
+                if (!sll.isEmpty())
+                    pt.add(sll);
+                startLoc = i+1;
+            }
+        }
+
+
         if (pt.isEmpty()) return null;
         return pt;
     }
 
-    /** Returns true if and only if this list of TPairs can be
-     *  interpreted as a legal Tibetan stack or a legal Tibetanized
-     *  Sanskrit stack.  This is private because a precondition is
-     *  that no vowels or disambiguators appear except possibly in the
-     *  final pair. */
-    private boolean isLegalTibetanOrSanskritStack() {
-        StringBuffer tibetan = new StringBuffer();
-        StringBuffer sanskrit = new StringBuffer();
-        int sz = size();
-
-        // Special case because otherwise wa-zur alone would be seen
-        // as legal.
-        if (sz == 1 && "V".equals(get(0).getLeft()))
-            return false;
-
-        for (int i = 0; i < sz; i++) {
-            TPair p = get(i);
-            String ewts_form
-                = ACIPRules.getWylieForACIPConsonant(p.getLeft());
-            if (null == ewts_form) {
-                if (p.isNumeric())
-                    ewts_form = p.getLeft();
-            }
-            if (null == ewts_form) {
-                if (ddebug) System.out.println("testing " + toString2() + " for legality said false. numeric?" + p.isNumeric() + "[1]");
-                return false;
-            }
-            tibetan.append(ewts_form);
-            sanskrit.append(ewts_form);
-            if (i + 1 < sz) {
-                tibetan.append('-');
-                sanskrit.append('+');
-            }
-        }
-        boolean ans = 
-            (TibetanMachineWeb.hasGlyph(tibetan.toString())
-                || TibetanMachineWeb.hasGlyph(sanskrit.toString()));
-        if (ddebug) System.out.println("testing " + toString2() + " for legality said " + ans + " [2]; san is " + sanskrit + " tib is " + tibetan + ".");
-        return ans;
-    }
     private static final boolean ddebug = false;
 
     /** Mutates this TPairList object such that the last pair is
@@ -611,9 +611,11 @@ class TPairList {
     }
 
     /** Appends the DuffCodes that correspond to this grapheme cluster
-     *  to duff.  Assumes this is one grapheme cluster. */
-    void getDuff(ArrayList duff) {
-        int previousSize = duff.size();
+     *  to duffsAndErrors, or appends a String that is an error
+     *  message saying that TMW cannot represent this grapheme
+     *  cluster. */
+    void getDuff(ArrayList duffsAndErrors) {
+        int previousSize = duffsAndErrors.size();
         StringBuffer wylieForConsonant = new StringBuffer();
         for (int x = 0; x + 1 < size(); x++) {
             wylieForConsonant.append(get(x).getWylie(false));
@@ -624,17 +626,18 @@ class TPairList {
         if (!TibetanMachineWeb.isKnownHashKey(hashKey)) {
             hashKey = hashKey.replace('+', '-');
             if (!TibetanMachineWeb.isKnownHashKey(hashKey)) {
-                throw new Error("How did this happen?");
+                duffsAndErrors.add("[#ERROR The ACIP {" + recoverACIP() + "} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]");
+                return;
             }
         }
         if (lastPair.getRight() == null || lastPair.equals("-")) {
-            duff.add(TibetanMachineWeb.getGlyph(hashKey));
+            duffsAndErrors.add(TibetanMachineWeb.getGlyph(hashKey));
         } else {
-            ACIPRules.getDuffForACIPVowel(duff,
+            ACIPRules.getDuffForACIPVowel(duffsAndErrors,
                                           TibetanMachineWeb.getGlyph(hashKey),
                                           lastPair.getRight());
         }
-        if (previousSize == duff.size())
+        if (previousSize == duffsAndErrors.size())
             throw new Error("TPairList with no duffs? " + toString()); // DLC FIXME: change to assertion.
     }
 }

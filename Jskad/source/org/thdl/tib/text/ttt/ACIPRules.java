@@ -179,6 +179,11 @@ public class ACIPRules {
         wylieToACIP.put(EWTS, ACIP);
     }
 
+    /** Returns true if and only if s is an ACIP consonant. */
+    static final boolean isACIPConsonant(String s) {
+        return (null != ACIPRules.getWylieForACIPConsonant(s));
+    }
+
     private static HashMap acipConsonant2wylie = null;
     /** Returns the EWTS corresponding to the given ACIP consonant
      *  (without the "A" vowel).  Returns null if there is no such

@@ -232,16 +232,28 @@ public class TibetanDocument extends DefaultStyledDocument {
 * @param color the color in which to insert, which is used if and only
 * if {@link #colorsEnabled() colors are enabled}
 */
-	public void appendDuffCodes(DuffCode[] glyphs, Color color) {
+    public void appendDuffCodes(DuffCode[] glyphs, Color color) {
         // PERFORMANCE FIXME: this isn't so speedy, but it reuses
         // existing code.
         for (int i = 0; i < glyphs.length; i++) {
-            insertDuff(getLength(),
-                       new DuffData[] { new DuffData(new String(new char[] { glyphs[i].getCharacter() }),
-                                                     glyphs[i].getFontNum()) },
-                       color);
+            appendDuffCode(glyphs[i], color);
         }
-	}
+    }
+
+/**
+* Appends glyph to the end of this document.
+* @param glyph the Tibetan glyph you want to insert
+* @param color the color in which to insert, which is used if and only
+* if {@link #colorsEnabled() colors are enabled}
+*/
+    public void appendDuffCode(DuffCode glyph, Color color) {
+        // PERFORMANCE FIXME: this isn't so speedy, but it reuses
+        // existing code.
+        insertDuff(getLength(),
+                   new DuffData[] { new DuffData(new String(new char[] { glyph.getCharacter() }),
+                                                 glyph.getFontNum()) },
+                   color);
+    }
 
 
 	/** Replacing can be more efficient than inserting and then

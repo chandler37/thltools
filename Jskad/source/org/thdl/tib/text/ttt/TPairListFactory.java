@@ -38,9 +38,42 @@ class TPairListFactory {
      *  rest would be suboptimal, so we backtrack to [(T . )] and then
      *  finally become [(T . ), (A . A)].  We look for (A . ) and (
      *  . <vowel>) in the rest in order to say "the rest would be
-     *  suboptimal", i.e. we use TPairList.hasSimpleError()
-     *  @param acip a string of ACIP with no punctuation in it */
-    static TPairList breakACIPIntoChunks(String acip) {
+     *  suboptimal", i.e. we use TPairList.hasSimpleError().</p>
+     *
+     *  <p>There is one case where we break things up into two pair
+     *  lists -- I found out about this case too late to do anything
+     *  clean about it.  SNYAM'AM, e.g., breaks up into [(S . ), (NY
+     *  . A), (M . 'A), (M . )], which is incorrect -- [(S . ), (NY
+     *  . A), (M . ), (' . A), (M . )] is correct.  But we don't know
+     *  which is correct without parsing, so both are returned.  The
+     *  clean treatment (low-priority FIXME) would be to lex into a
+     *  form that didn't insist 'A was either a vowel or a consonant.
+     *  Then the parser would figure it out.</p>
+     *
+     *  @param acip a string of ACIP with no punctuation in it
+     *  @return an array of one or two pair lists, if the former, then
+     *  the second element will be null, if the latter, the second
+     *  element will have (* . ), (' . *) instead of (* . '*) which
+     *  the former has @throws IllegalArgumentException if acip is too
+     *  large for us to break into chunks (we're recursive, not
+     *  iterative, so the boundary can be increased a lot if you care,
+     *  but you don't) */
+    static TPairList[] breakACIPIntoChunks(String acip) throws IllegalArgumentException {
+        try {
+            TPairList a = breakHelper(acip, true);
+            TPairList b = breakHelper(acip, false);
+            if (a.equals(b))
+                return new TPairList[] { a, null };
+            else
+                return new TPairList[] { a, b };
+        } catch (StackOverflowError e) {
+            throw new IllegalArgumentException("Input too large[1]: " + acip);
+        } catch (OutOfMemoryError e) {
+            throw new IllegalArgumentException("Input too large[2]: " + acip);
+        }
+    }
+    /** Helps {@link breakACIPIntoChunks(String)}. */
+    private static TPairList breakHelper(String acip, boolean tickIsVowel) {
 
         // base case for our recursion:
         if ("".equals(acip))
@@ -50,9 +83,21 @@ class TPairListFactory {
         int howMuchBuf[] = new int[1];
         TPair head = getFirstConsonantAndVowel(acipBuf, howMuchBuf);
         int howMuch = howMuchBuf[0];
+        if (!tickIsVowel
+            && null != head.getLeft()
+            && null != head.getRight()
+            && head.getRight().startsWith("'")) {
+            head = new TPair(head.getLeft(),
+                             // Without this disambiguator, we are
+                             // less efficient (8 parses, not 4) and
+                             // we can't handle PA'AM'ANG etc.
+                             "-");
+            howMuch = head.getLeft().length();
+        }
+
         TPairList tail;
         if ((tail
-             = breakACIPIntoChunks(acipBuf.substring(howMuch))).hasSimpleError()) {
+             = breakHelper(acipBuf.substring(howMuch), tickIsVowel)).hasSimpleError()) {
             for (int i = 1; i < howMuch; i++) {
                 // try giving i characters back if that leaves us with
                 // a legal head and makes the rest free of simple
@@ -61,7 +106,7 @@ class TPairListFactory {
                 TPair newHead;
                 if ((newHead = head.minusNRightmostACIPCharacters(i)).isLegal()
                     && !(newTail
-                         = breakACIPIntoChunks(acipBuf.substring(howMuch - i))).hasSimpleError()) {
+                         = breakHelper(acipBuf.substring(howMuch - i), tickIsVowel)).hasSimpleError()) {
                     newTail.prepend(newHead);
                     return newTail;
                 }

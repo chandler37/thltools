@@ -131,7 +131,7 @@ class TStackList {
      *  stack can take every prefix, which is not the case in
      *  reality */
     public BoolTriple isLegalTshegBar(boolean noPrefixTests) {
-        // DLC handle PADMA and other Tibetanized Sanskrit fellows consistently.  Right now we only treat single-stack Sanskrit guys as legal.
+        // DLC Should we handle PADMA and other Tibetanized Sanskrit fellows consistently?  Right now we only treat single-stack Sanskrit guys as legal.
 
         TTGCList tgcList = new TTGCList(this);
         StringBuffer warnings = new StringBuffer();
@@ -191,8 +191,10 @@ class TStackList {
      *  @param isLastStack if non-null, then isLastStack[0] will be
      *  set to true if and only if the very last stack is the only
      *  stack not to have a vowel or disambiguator on it */
+    // DLC FIXME: DELETE THIS WARNING and this code unless EWTS will need it...
     boolean hasStackWithoutVowel(TPairList opl, boolean[] isLastStack) {
         int runningSize = 0;
+        // DLC FIXME: MARDA is MARD==MAR-D to us, but is probably MAR+DA, warn
         for (int i = 0; i < size(); i++) {
             TPairList pl = get(i);
             String l;
@@ -207,7 +209,7 @@ class TStackList {
             }
         }
         if (runningSize != opl.sizeMinusDisambiguators())
-            throw new IllegalArgumentException("opl (" + opl + ") is bad for this stack list (" + toString() + ")");
+            throw new IllegalArgumentException("runningSize = " + runningSize + "; opl.sizeMinusDisambiguators = " + opl.sizeMinusDisambiguators() + "; opl (" + opl + ") is bad for this stack list (" + toString() + ")");
         return false;
     }
 
@@ -219,8 +221,11 @@ class TStackList {
         }
         return u.toString();
     }
-    /** Returns the DuffCodes corresponding to this stack list. */
-    DuffCode[] getDuff() {
+    /** Returns the DuffCodes and errors corresponding to this stack
+        list. Each element of the array is a DuffCode or a String, the
+        latter if and only if the TMW font cannot represent the
+        corresponding stack in this list. */
+    Object[] getDuff() {
         ArrayList al = new ArrayList(size()*2); // rough estimate
         int count = 0;
         for (int i = 0; i < size(); i++) {
@@ -229,20 +234,40 @@ class TStackList {
         if (size() > 0 && al.size() == 0) {
             throw new Error("But this stack list, " + this + ", contains " + size() + " stacks!  How can it not have DuffCodes associated with it?");
         }
-        return (DuffCode[])al.toArray(new DuffCode[] { });
+        return al.toArray();
     }
 }
 
 /** Too simple to comment. */
-class BoolTriple {
+class BoolTriple implements Comparable {
     boolean isLegal;
     boolean isLegalButSanskrit; // some subset are legal but legal Sanskrit -- the single sanskrit stacks are this way, such as B+DE.
     boolean isLegalAndHasAVowelOnRoot;
     BoolTriple(boolean isLegal,
                boolean isLegalButSanskrit,
                boolean isLegalAndHasAVowelOnRoot) {
+        if (!isLegal && (isLegalButSanskrit || isLegalAndHasAVowelOnRoot))
+            throw new IllegalArgumentException();
         this.isLegal = isLegal;
         this.isLegalButSanskrit = isLegalButSanskrit;
         this.isLegalAndHasAVowelOnRoot = isLegalAndHasAVowelOnRoot;
+    }
+    private int score() {
+        int score = 0;
+        if (isLegalAndHasAVowelOnRoot) {
+            score += 5;
+        }
+        if (isLegal) {
+            score += 5;
+        }
+        if (isLegalButSanskrit) {
+            score -= 3;
+        }
+        return score;
+    }
+    /** The most legal BoolTriple compares higher. */
+    public int compareTo(Object o) {
+        BoolTriple b = (BoolTriple)o;
+        return score() - b.score();
     }
 }

@@ -184,10 +184,7 @@ class TParseTree {
     }
 
     /** Returns a list containing the unique legal parse of this parse
-     *  tree if there is a unique legal parse.  Note that {SRAS} has a
-     *  unique legal parse, though {SRS} has two equally good parses;
-     *  i.e., note that the {A} vowel is treated specially here
-     *  (unlike in {@link #getLegalParses()}). Returns an empty list
+     *  tree if there is a unique legal parse.  Returns an empty list
      *  if there are no legal parses.  Returns a list containing all
      *  legal parses if there two or more equally good parses.  By
      *  &quot;legal&quot;, we mean a sequence of stacks that is legal
@@ -223,13 +220,21 @@ class TParseTree {
             if (allStrictlyLegalParses.size() > 2)
                 throw new Error("can this happen?");
             if (legalParsesWithVowelOnRoot.size() == 2) {
-                if (legalParsesWithVowelOnRoot.get(0).size() != 1 + legalParsesWithVowelOnRoot.get(1).size())
-                    throw new Error("Something other than the G-YA vs. GYA case appeared.  Sorry for your trouble! " + legalParsesWithVowelOnRoot.get(0) + " ;; " + legalParsesWithVowelOnRoot.get(1));
-                return new TStackListList(legalParsesWithVowelOnRoot.get(1));
+                if (legalParsesWithVowelOnRoot.get(0).size()
+                    != 1 + legalParsesWithVowelOnRoot.get(1).size()) {
+                    // MARDA is MAR+DA or MA-R-DA -- both are legal if
+                    // noPrefixTests.
+                    return new TStackListList();
+                } else {
+                    // G-YA vs. GYA.
+                    return new TStackListList(legalParsesWithVowelOnRoot.get(1));
+                }
             }
             if (allNonillegalParses.size() == 2) {
-                if (allNonillegalParses.get(0).size() != 1 + allNonillegalParses.get(1).size())
-                    throw new Error("Something other than the G-YA vs. GYA case appeared.  Sorry for your trouble! " + allNonillegalParses.get(0) + " ;; " + allNonillegalParses.get(1));
+                if (allNonillegalParses.get(0).size() != 1 + allNonillegalParses.get(1).size()) {
+                    // BDREN, e.g., if noPrefixTests:
+                    return new TStackListList();
+                }
                 return new TStackListList(allNonillegalParses.get(1));
             }
             return allNonillegalParses;

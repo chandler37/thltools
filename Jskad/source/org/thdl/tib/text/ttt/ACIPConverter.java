@@ -1,3 +1,6 @@
+// DLC NOW: 'US etc. -- do we handle them all?
+// DLC NOW WARN ON NNYA and DBA
+// DLC NOW: implement Robert Chilton-supplied prefix rules
 /*
 The contents of this file are subject to the THDL Open Community License
 Version 1.0 (the "License"); you may not use this file except in compliance
@@ -348,13 +351,14 @@ public class ACIPConverter {
                     if (null != tdoc) tdoc.appendRoman(text, Color.BLACK);
                 } else {
                     String unicode = null;
-                    DuffCode[] duff = null;
+                    Object[] duff = null;
                     if (stype == TString.TIBETAN_NON_PUNCTUATION) {
                         lastGuyWasNonPunct = true;
-                        TPairList pl = TPairListFactory.breakACIPIntoChunks(s.getText());
+                        TPairList pls[] = TPairListFactory.breakACIPIntoChunks(s.getText());
                         String acipError;
 
-                        if ((acipError = pl.getACIPError()) != null) {
+                        if ((acipError = pls[0].getACIPError()) != null
+                            && (null == pls[1] || pls[1].getACIPError() != null)) {
                             hasErrors = true;
                             String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") " + s.getText() + " HAS THESE ERRORS: " + acipError + "]";
                             if (null != writer) writer.write(errorMessage);
@@ -362,8 +366,10 @@ public class ACIPConverter {
                             if (null != errors)
                                 errors.append(errorMessage + "\n");
                         } else {
-                            TParseTree pt = pl.getParseTree();
-                            if (null == pt) {
+                            TParseTree pt0 = pls[0].getParseTree();
+                            TParseTree pt1 = ((null == pls[1])
+                                              ? null : pls[1].getParseTree());
+                            if (null == pt0 && null == pt1) {
                                 hasErrors = true;
                                 String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") " + s.getText() + " IS ESSENTIALLY NOTHING.]";
                                 if (null != writer) writer.write(errorMessage);
@@ -371,8 +377,10 @@ public class ACIPConverter {
                                 if (null != errors)
                                     errors.append(errorMessage + "\n");
                             } else {
-                                TStackList sl = pt.getBestParse();
-                                if (null == sl) {
+                                TStackList sl0 = pt0.getBestParse();
+                                TStackList sl1 = ((null == pt1)
+                                                  ? null : pt1.getBestParse());
+                                if (null == sl0 && null == sl1) {
                                     hasErrors = true;
                                     String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") " + s.getText() + " HAS NO LEGAL PARSES.]";
                                     if (null != writer) writer.write(errorMessage);
@@ -380,6 +388,25 @@ public class ACIPConverter {
                                     if (null != errors)
                                         errors.append(errorMessage + "\n");
                                 } else {
+                                    TStackList sl = sl0;
+                                    TPairList pl = pls[0];
+                                    TParseTree pt = pt0;
+                                    // set sl equal to the best choice of sl0 and sl1.
+                                    if (null != sl1) {
+                                        BoolTriple sl0bt = sl0.isLegalTshegBar(false);
+                                        BoolTriple sl1bt = sl1.isLegalTshegBar(false);
+                                        int ct;
+                                        if ((ct = sl0bt.compareTo(sl1bt)) < 0) {
+                                            sl = sl1;
+                                            pl = pls[1];
+                                            pt = pt1;
+                                        } else if (0 == ct) {
+                                            // sl remains sl0 -- '* is
+                                            // a vowel unless it's
+                                            // clearly part of an
+                                            // appendage like 'AM.
+                                        }
+                                    }
                                     lastGuy = sl;
                                     String warning = null;
                                     if ("None" != warningLevel) {
@@ -428,10 +455,10 @@ public class ACIPConverter {
                         color = Color.BLACK;
                         if (stype == TString.START_SLASH) {
                             if (null != writer) unicode = "\u0F3C";
-                            if (null != tdoc) duff = new DuffCode[] { TibetanMachineWeb.getGlyph("(") };
+                            if (null != tdoc) duff = new Object[] { TibetanMachineWeb.getGlyph("(") };
                         } else if (stype == TString.END_SLASH) {
                             if (null != writer) unicode = "\u0F3D";
-                            if (null != tdoc) duff = new DuffCode[] { TibetanMachineWeb.getGlyph(")") };
+                            if (null != tdoc) duff = new Object[] { TibetanMachineWeb.getGlyph(")") };
                         } else if (stype == TString.TIBETAN_PUNCTUATION) {
                             // For ACIP, tshegs are used as both
                             // tshegs and whitespace.  We treat a
@@ -499,7 +526,7 @@ public class ACIPConverter {
                                     } else {
                                         String wy = ACIPRules.getWylieForACIPOther(s.getText());
                                         if (null == wy) throw new Error("No wylie for ACIP " + s.getText());
-                                        duff = new DuffCode[] { TibetanMachineWeb.getGlyph(wy) };
+                                        duff = new Object[] { TibetanMachineWeb.getGlyph(wy) };
                                     }
                                 }
                             }
@@ -526,7 +553,18 @@ public class ACIPConverter {
                     if (null != writer && null != unicode) writer.write(unicode);
                     if (null != tdoc) {
                         if (null != duff && 0 != duff.length) {
-                            tdoc.appendDuffCodes(duff, color);
+                            for (int j = 0; j < duff.length; j++) {
+                                if (duff[j] instanceof DuffCode)
+                                    tdoc.appendDuffCode((DuffCode)duff[j],
+                                                        color);
+                                else {
+                                    hasErrors = true;
+                                    if (null != errors)
+                                        errors.append((String)duff[j] + "\n");
+                                    tdoc.appendRoman((String)duff[j],
+                                                     Color.RED);
+                                }
+                            }
                         } else {
                             // this happens when you have an
                             // [#ERROR]-producing tsheg bar.

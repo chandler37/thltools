@@ -118,7 +118,7 @@ class TPair {
         return (null != l
                 && ((null == r || "".equals(r))
                     || "-".equals(r)
-                    || "A".equals(r)) // DLC though check for BASKYABS and warn because BSKYABS is more common
+                    || "A".equals(r)) // DLC FIXME: though check for BASKYABS and warn because BSKYABS is more common
                 && ("'".equals(l)
                     || "M".equals(l)
                     || "B".equals(l)
@@ -126,10 +126,50 @@ class TPair {
                     || "G".equals(l)));
     }
 
+    /** Returns true if and only if this pair could be a Tibetan
+     *  secondary sufffix. */
+    boolean isPostSuffix() {
+        return (null != l
+                && ((null == r || "".equals(r))
+                    || "-".equals(r)
+                    || "A".equals(r)) // DLC FIXME: though warn about GAMASA vs. GAMS
+                && ("S".equals(l)
+                    || "D".equals(l)));
+    }
+
+    /** Returns true if and only if this pair could be a Tibetan
+     *  sufffix. DLC FIXME: ACIP specific, just like isPostSuffix() and isPrefix() */
+    boolean isSuffix() {
+        return (null != l
+                && ((null == r || "".equals(r))
+                    || "-".equals(r)
+                    || "A".equals(r))
+                && ("S".equals(l)
+                    || "G".equals(l)
+                    || "D".equals(l)
+                    || "M".equals(l)
+                    || "'".equals(l)
+                    || "B".equals(l)
+                    || "NG".equals(l)
+                    || "N".equals(l)
+                    || "L".equals(l)
+                    || "R".equals(l)));
+    }
+
     /** Returns true if and only if this pair is merely a
      *  disambiguator. */
     boolean isDisambiguator() {
         return ("-".equals(r) && getLeft() == null);
+    }
+
+    /** Yep, this works for TPairs. */
+    public boolean equals(Object x) {
+        if (x instanceof TPair) {
+            TPair p = (TPair)x;
+            return ((getLeft() == p.getLeft() || (getLeft() != null && getLeft().equals(p.getLeft())))
+                    || (getRight() == p.getRight() || (getRight() != null && getRight().equals(p.getRight()))));
+        }
+        return false;
     }
 
     /** Returns an TPair that is like this pair except that it has
@@ -194,5 +234,12 @@ class TPair {
             String x = ACIPRules.getUnicodeFor(getRight(), subscribed);
             if (null != x) sb.append(x);
         }
+    }
+
+    /** Returns true if this pair is surely the last pair in an ACIP
+     *  stack. Stacking continues through (* . ) and (* . +), but
+     *  stops anywhere else. */
+    boolean endsACIPStack() {
+        return (getRight() != null && !"+".equals(getRight()));
     }
 }
