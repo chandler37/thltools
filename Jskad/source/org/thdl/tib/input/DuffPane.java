@@ -191,7 +191,7 @@ public class DuffPane extends TibetanPane implements FocusListener {
     private String romanFontFamily;
     private int romanFontSize;
 
-    private Clipboard rtfBoard;
+    protected Clipboard rtfBoard;
     
     private Hashtable actions;
 
@@ -1029,32 +1029,27 @@ public void paste() {
 
 /**
 * Pastes the contents of the system clipboard into this object's
-* document, at the specified position. The only kind of
-* text accepted from the clipboard is Wylie text.
+* document, at the specified position. If the text was copied from an
+* RTF compliant application, it will be pasted using with the original
+* fonts and font sizes. Else it will be assumed that it is Wylie text.
 * This Wylie is converted and pasted into the document as
 * TibetanMachineWeb. If the text to paste is invalid Wylie,
 * then it will not be pasted, and instead an error message will
 * appear.
 * @param offset the position in the document you want to paste to
 */
-public void paste(int offset) {
+public void paste(int offset)
+{
     // Respect setEditable(boolean):
     if (!this.isEditable())
         return;
                 
-    try {
+    try 
+    {
         Transferable contents = rtfBoard.getContents(this);
 
-/*
-        if (!isRomanEnabled) {
-            if (contents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-                String data = (String)contents.getTransferData(DataFlavor.stringFlavor);
-                toTibetanMachineWeb(data, offset);
-            }
-        } else if (contents.isDataFlavorSupported(rtfFlavor)) {
-*/
-
-        if (contents.isDataFlavorSupported(rtfFlavor)){
+        if (contents.isDataFlavorSupported(rtfFlavor))
+        {
 
             InputStream in = (InputStream)contents.getTransferData(rtfFlavor);
             int p1 = offset;
@@ -1068,54 +1063,45 @@ public void paste(int offset) {
 
             boolean errorReading = false;
 
-            try {
+            try 
+            {
                 if (!ThdlOptions.getBooleanOption("thdl.do.not.fix.rtf.hex.escapes"))
                     in = new RTFFixerInputStream(in);
                 rtfEd.read(in, sd, 0);
-            } catch (Exception e) {
+            } 
+            catch (Exception e)
+            {
+                
                 errorReading = true;
                 JOptionPane.showMessageDialog(this,
                                               "You cannot paste from the application from which you copied.\nIt uses an RTF format that is too advanced for the version\nof Java Jskad is running atop.");
             }
 
-            if (!errorReading) {
-                /** Added by AM, to fix copy-paste issues for
-                    Translation Tool.  Assumes that if roman is
-                    disabled and you are pasting something in RTF but
-                    it is not TibetanMachineWeb then it must be wylie.  */
-                if (!sd.getFont((sd.getCharacterElement(0).getAttributes())).getFamily().startsWith("TibetanMachineWeb")
-                    && !isRomanEnabled
-                    && contents.isDataFlavorSupported(DataFlavor.stringFlavor))
-                    {
-                        String data = (String)contents.getTransferData(DataFlavor.stringFlavor);
-                        toTibetanMachineWeb(data, offset);                
+            if (!errorReading) 
+            {                    
+                for (int i=0; i<sd.getLength()-1; i++) { //getLength()-1 so that final newline is not included in paste
+                    try {
+                        String s = sd.getText(i,1);
+                        AttributeSet as
+                            = sd.getCharacterElement(i).getAttributes();
+                        getTibDoc().insertString(p1+i, s, as);
+                    } catch (BadLocationException ble) {
+                        ble.printStackTrace();
+                        ThdlDebug.noteIffyCode();
                     }
-                else
-                    {
-                        for (int i=0; i<sd.getLength()-1; i++) { //getLength()-1 so that final newline is not included in paste
-                            try {
-                                String s = sd.getText(i,1);
-                                AttributeSet as
-                                    = sd.getCharacterElement(i).getAttributes();
-                                getTibDoc().insertString(p1+i, s, as);
-                            } catch (BadLocationException ble) {
-                                ble.printStackTrace();
-                                ThdlDebug.noteIffyCode();
-                            }
-                        }
-                    }
+                }
             }
         } else if (contents.isDataFlavorSupported(DataFlavor.stringFlavor))
         {
-            if (!isRomanEnabled) {
+            // if (!isRomanEnabled) {
                 String data = (String)contents.getTransferData(DataFlavor.stringFlavor);
                 toTibetanMachineWeb(data, offset);
-            }
+            /*}
             else
             {
                 String s = (String)contents.getTransferData(DataFlavor.stringFlavor);
                 replaceSelection(s);
-            }
+            }*/
         }
     } catch (UnsupportedFlavorException ufe) {
         ufe.printStackTrace();
