@@ -61,8 +61,7 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		String response, dictType;
 		this.pocketpc = pocketpc;
 		
-		if (!pocketpc) response = ThdlOptions.getStringOption(defOpenOption);
-		else response=null;
+		response = ThdlOptions.getStringOption(defOpenOption);
 		
 		if (response==null || response.equals(""))
 		{
@@ -78,7 +77,7 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		    {
 		        dictType = wdf.getDictionaryType();
 		        mainWindow.setTitle("Tibetan Translation Tool: Connected to " + dictType + " database");
-		        if (!pocketpc && wdf.getDefaultOption())
+		        if (wdf.getDefaultOption())
 		        {
 		            ThdlOptions.setUserPreference(defOpenOption, response);
 		            ThdlOptions.setUserPreference(dictOpenType, dictType);		            
@@ -119,7 +118,7 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 	    if (mainWindow==null)
 	    {
 	        String dictType=null;
-	        if (!pocketpc) dictType = ThdlOptions.getStringOption(dictOpenType);
+	        dictType = ThdlOptions.getStringOption(dictOpenType);
 	        if (dictType!=null && !dictType.equals(""))
 	            mainWindow = new Frame("Tibetan Translation Tool: Connected to " + dictType + " database");
 	        else
@@ -238,12 +237,12 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		mainWindow.show();
 		mainWindow.toFront();
 
-	    if (pocketpc || !ThdlOptions.getBooleanOption(AboutDialog.windowAboutOption))
+	    if (!ThdlOptions.getBooleanOption(AboutDialog.windowAboutOption))
 	    {
    	        diagAbout = new AboutDialog(mainWindow, pocketpc);
 	        diagAbout.show();
 	        
-	        if (!pocketpc && diagAbout.omitNextTime())
+	        if (diagAbout.omitNextTime())
 	        {
 	            ThdlOptions.setUserPreference(AboutDialog.windowAboutOption, true);
 	            try
@@ -262,7 +261,9 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		switch(args.length)
 		{
 		    case 0:
-		    new WindowScannerFilter();
+		    if (System.getProperty("os.name").toLowerCase().equals("windows ce"))
+		        new WindowScannerFilter(true);
+		    else new WindowScannerFilter();
 		    break;
 		    case 1:
 		    if (args[0].length()>0 && args[0].charAt(0)=='-') new WindowScannerFilter(true);
@@ -415,17 +416,14 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		{
 		    if (diagAbout==null) diagAbout = new AboutDialog(mainWindow, pocketpc);
 		    diagAbout.show();
-		    if (!pocketpc)
-		    {
-		        ThdlOptions.setUserPreference(AboutDialog.windowAboutOption, diagAbout.omitNextTime());
-		        try
-	            { 
-	                ThdlOptions.saveUserPreferences();
-	            }
-    	        catch(Exception e)
-	            {
-	            }
-	        }
+	        ThdlOptions.setUserPreference(AboutDialog.windowAboutOption, diagAbout.omitNextTime());
+	        try
+            { 
+                ThdlOptions.saveUserPreferences();
+            }
+   	        catch(Exception e)
+            {
+            }
 		}
 		else if (clicked == mnuClear)
 		{
@@ -435,7 +433,7 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
         {
             mainWindow.setVisible(false);
             mainWindow.dispose();
-            if (!pocketpc) ThdlOptions.setUserPreference(defOpenOption, "");
+            ThdlOptions.setUserPreference(defOpenOption, "");
             new WindowScannerFilter(pocketpc);
         }
         else if (clicked == mnuExit)
