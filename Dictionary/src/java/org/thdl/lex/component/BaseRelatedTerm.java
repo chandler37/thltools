@@ -8,25 +8,21 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 abstract public class BaseRelatedTerm extends LexComponent implements Serializable,org.thdl.lex.component.IRelatedTerm {
 
     /** nullable persistent field */
-    private java.lang.Integer parentId;
+    private Integer parentId;
 
     /** nullable persistent field */
-    private java.lang.Integer precedence;
-
-    /** nullable persistent field */
-    private java.lang.String relatedTerm;
+    private String relatedTerm;
 
     /** persistent field */
-    private java.lang.Integer relatedTermType;
+    private Integer relatedTermType;
 
     /** nullable persistent field */
     private org.thdl.lex.component.ILexComponent parent;
 
     /** full constructor */
-    public BaseRelatedTerm(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.String relatedTerm, java.lang.Integer relatedTermType, org.thdl.lex.component.ILexComponent parent) {
+    public BaseRelatedTerm(Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, Integer parentId, String relatedTerm, Integer relatedTermType, org.thdl.lex.component.ILexComponent parent) {
         super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
-        this.precedence = precedence;
         this.relatedTerm = relatedTerm;
         this.relatedTermType = relatedTermType;
         this.parent = parent;
@@ -37,40 +33,32 @@ abstract public class BaseRelatedTerm extends LexComponent implements Serializab
     }
 
     /** minimal constructor */
-    public BaseRelatedTerm(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer relatedTermType) {
+    public BaseRelatedTerm(Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, Integer relatedTermType) {
       super(deleted, analyticalNotes, meta);
         this.relatedTermType = relatedTermType;
     }
 
-    public java.lang.Integer getParentId() {
+    public Integer getParentId() {
         return this.parentId;
     }
 
-    public void setParentId(java.lang.Integer parentId) {
+    public void setParentId(Integer parentId) {
         this.parentId = parentId;
     }
 
-    public java.lang.Integer getPrecedence() {
-        return this.precedence;
-    }
-
-    public void setPrecedence(java.lang.Integer precedence) {
-        this.precedence = precedence;
-    }
-
-    public java.lang.String getRelatedTerm() {
+    public String getRelatedTerm() {
         return this.relatedTerm;
     }
 
-    public void setRelatedTerm(java.lang.String relatedTerm) {
+    public void setRelatedTerm(String relatedTerm) {
         this.relatedTerm = relatedTerm;
     }
 
-    public java.lang.Integer getRelatedTermType() {
+    public Integer getRelatedTermType() {
         return this.relatedTermType;
     }
 
-    public void setRelatedTermType(java.lang.Integer relatedTermType) {
+    public void setRelatedTermType(Integer relatedTermType) {
         this.relatedTermType = relatedTermType;
     }
 

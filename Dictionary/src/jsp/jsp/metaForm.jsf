@@ -12,7 +12,7 @@
 		<c:set var="source" value="${ sessionScope.visit.preferences.source }" />
 		<c:set var="projectSubject" value="${ sessionScope.visit.preferences.projectSubject }" />
 		<c:set var="script" value="${ sessionScope.visit.preferences.script }" />
-		<c:set var="precedence" value="0" />
+		<%-- <c:set var="precedence" value="0" /> --%>
 		<c:set var="note" value="${ sessionScope.visit.preferences.note }" />
 	</c:when>
 	<c:when test="${ ! empty param.formMode && param.formMode == 'update'}">
@@ -22,7 +22,7 @@
 		<c:set var="source" value="${ component.meta.source }" />
 		<c:set var="projectSubject" value="${ component.meta.modifiedByProjSub }" />
 		<c:set var="script" value="${ component.meta.script }" />
-		<c:set var="precedence" value="${ component.precedence }" /> 
+		<%-- <c:set var="precedence" value="${ component.precedence }" />  --%>
 		<c:set var="note" value="${ component.meta.note }" />
 	</c:when>
 	<c:otherwise>
@@ -41,7 +41,7 @@
 	<c:set var="parentId" value="${ param.parentId }" />
 </c:if> --%>
 <c:out value=' <input type="hidden" name="parentId" value="${parentId}" /> ' escapeXml='false' />
-<c:out value='<input type="hidden" name="precedence" value="${ precedence }" />'escapeXml="false" />
+<%-- <c:out value='<input type="hidden" name="precedence" value="${ precedence }" />'escapeXml="false" /> --%>
 
 
 

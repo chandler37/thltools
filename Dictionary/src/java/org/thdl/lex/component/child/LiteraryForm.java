@@ -9,13 +9,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class LiteraryForm implements Serializable {
 
     /** identifier field */
-    private java.lang.Integer id;
+    private Integer id;
 
     /** persistent field */
-    private java.lang.String literaryForm;
+    private String literaryForm;
 
     /** full constructor */
-    public LiteraryForm(java.lang.String literaryForm) {
+    public LiteraryForm(String literaryForm) {
         this.literaryForm = literaryForm;
     }
 
@@ -23,19 +23,19 @@ public class LiteraryForm implements Serializable {
     public LiteraryForm() {
     }
 
-    public java.lang.Integer getId() {
+    public Integer getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Integer id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public java.lang.String getLiteraryForm() {
+    public String getLiteraryForm() {
         return this.literaryForm;
     }
 
-    public void setLiteraryForm(java.lang.String literaryForm) {
+    public void setLiteraryForm(String literaryForm) {
         this.literaryForm = literaryForm;
     }
 

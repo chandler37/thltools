@@ -9,7 +9,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class Function implements Serializable {
 
     /** identifier field */
-    private java.lang.Short id;
+    private Short id;
 
     /** persistent field */
     private short functionGeneral;
@@ -27,11 +27,11 @@ public class Function implements Serializable {
     public Function() {
     }
 
-    public java.lang.Short getId() {
+    public Short getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Short id) {
+    public void setId(Short id) {
         this.id = id;
     }
 

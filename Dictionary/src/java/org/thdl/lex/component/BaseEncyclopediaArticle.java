@@ -8,25 +8,21 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 abstract public class BaseEncyclopediaArticle extends LexComponent implements org.thdl.lex.component.IEncyclopediaArticle,Serializable {
 
     /** nullable persistent field */
-    private java.lang.Integer parentId;
-
-    /** nullable persistent field */
-    private java.lang.Integer precedence;
+    private Integer parentId;
 
     /** persistent field */
-    private java.lang.String article;
+    private String article;
 
     /** persistent field */
-    private java.lang.String articleTitle;
+    private String articleTitle;
 
     /** nullable persistent field */
     private org.thdl.lex.component.ILexComponent parent;
 
     /** full constructor */
-    public BaseEncyclopediaArticle(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.String article, java.lang.String articleTitle, org.thdl.lex.component.ILexComponent parent) {
+    public BaseEncyclopediaArticle(Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, Integer parentId, String article, String articleTitle, org.thdl.lex.component.ILexComponent parent) {
         super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
-        this.precedence = precedence;
         this.article = article;
         this.articleTitle = articleTitle;
         this.parent = parent;
@@ -37,41 +33,33 @@ abstract public class BaseEncyclopediaArticle extends LexComponent implements or
     }
 
     /** minimal constructor */
-    public BaseEncyclopediaArticle(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.String article, java.lang.String articleTitle) {
+    public BaseEncyclopediaArticle(Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, String article, String articleTitle) {
       super(deleted, analyticalNotes, meta);
         this.article = article;
         this.articleTitle = articleTitle;
     }
 
-    public java.lang.Integer getParentId() {
+    public Integer getParentId() {
         return this.parentId;
     }
 
-    public void setParentId(java.lang.Integer parentId) {
+    public void setParentId(Integer parentId) {
         this.parentId = parentId;
     }
 
-    public java.lang.Integer getPrecedence() {
-        return this.precedence;
-    }
-
-    public void setPrecedence(java.lang.Integer precedence) {
-        this.precedence = precedence;
-    }
-
-    public java.lang.String getArticle() {
+    public String getArticle() {
         return this.article;
     }
 
-    public void setArticle(java.lang.String article) {
+    public void setArticle(String article) {
         this.article = article;
     }
 
-    public java.lang.String getArticleTitle() {
+    public String getArticleTitle() {
         return this.articleTitle;
     }
 
-    public void setArticleTitle(java.lang.String articleTitle) {
+    public void setArticleTitle(String articleTitle) {
         this.articleTitle = articleTitle;
     }
 

@@ -9,13 +9,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class PhoneticsType implements Serializable {
 
     /** identifier field */
-    private java.lang.Short id;
+    private Short id;
 
     /** persistent field */
-    private java.lang.String phoneticsType;
+    private String phoneticsType;
 
     /** full constructor */
-    public PhoneticsType(java.lang.String phoneticsType) {
+    public PhoneticsType(String phoneticsType) {
         this.phoneticsType = phoneticsType;
     }
 
@@ -23,19 +23,19 @@ public class PhoneticsType implements Serializable {
     public PhoneticsType() {
     }
 
-    public java.lang.Short getId() {
+    public Short getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Short id) {
+    public void setId(Short id) {
         this.id = id;
     }
 
-    public java.lang.String getPhoneticsType() {
+    public String getPhoneticsType() {
         return this.phoneticsType;
     }
 
-    public void setPhoneticsType(java.lang.String phoneticsType) {
+    public void setPhoneticsType(String phoneticsType) {
         this.phoneticsType = phoneticsType;
     }
 

@@ -9,19 +9,19 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class ProjectSubject implements Serializable {
 
     /** identifier field */
-    private java.lang.Integer id;
+    private Integer id;
 
     /** nullable persistent field */
-    private java.lang.String projectSubject;
+    private String projectSubject;
 
     /** persistent field */
-    private java.lang.Integer leader;
+    private Integer leader;
 
     /** nullable persistent field */
-    private java.lang.String participantList;
+    private String participantList;
 
     /** full constructor */
-    public ProjectSubject(java.lang.String projectSubject, java.lang.Integer leader, java.lang.String participantList) {
+    public ProjectSubject(String projectSubject, Integer leader, String participantList) {
         this.projectSubject = projectSubject;
         this.leader = leader;
         this.participantList = participantList;
@@ -32,39 +32,39 @@ public class ProjectSubject implements Serializable {
     }
 
     /** minimal constructor */
-    public ProjectSubject(java.lang.Integer leader) {
+    public ProjectSubject(Integer leader) {
         this.leader = leader;
     }
 
-    public java.lang.Integer getId() {
+    public Integer getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Integer id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public java.lang.String getProjectSubject() {
+    public String getProjectSubject() {
         return this.projectSubject;
     }
 
-    public void setProjectSubject(java.lang.String projectSubject) {
+    public void setProjectSubject(String projectSubject) {
         this.projectSubject = projectSubject;
     }
 
-    public java.lang.Integer getLeader() {
+    public Integer getLeader() {
         return this.leader;
     }
 
-    public void setLeader(java.lang.Integer leader) {
+    public void setLeader(Integer leader) {
         this.leader = leader;
     }
 
-    public java.lang.String getParticipantList() {
+    public String getParticipantList() {
         return this.participantList;
     }
 
-    public void setParticipantList(java.lang.String participantList) {
+    public void setParticipantList(String participantList) {
         this.participantList = participantList;
     }
 

@@ -9,13 +9,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class LiteraryPeriod implements Serializable {
 
     /** identifier field */
-    private java.lang.Integer id;
+    private Integer id;
 
     /** persistent field */
-    private java.lang.String literaryPeriod;
+    private String literaryPeriod;
 
     /** full constructor */
-    public LiteraryPeriod(java.lang.String literaryPeriod) {
+    public LiteraryPeriod(String literaryPeriod) {
         this.literaryPeriod = literaryPeriod;
     }
 
@@ -23,19 +23,19 @@ public class LiteraryPeriod implements Serializable {
     public LiteraryPeriod() {
     }
 
-    public java.lang.Integer getId() {
+    public Integer getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Integer id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public java.lang.String getLiteraryPeriod() {
+    public String getLiteraryPeriod() {
         return this.literaryPeriod;
     }
 
-    public void setLiteraryPeriod(java.lang.String literaryPeriod) {
+    public void setLiteraryPeriod(String literaryPeriod) {
         this.literaryPeriod = literaryPeriod;
     }
 

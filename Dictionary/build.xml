@@ -226,13 +226,13 @@ jmeter.save.saveservice.output_format=xml
 </target>	
 
 	<target name="hbm2java" description="generate source code">
-		<tstamp prefix="now"/>
+		<!-- <tstamp prefix="now"/>
 		<echo message="time is: ${now.DSTAMP}_${now.TSTAMP}"/>
 		<copy todir="${basedir}/backups/lex-src-bkp_${now.DSTAMP}_${now.TSTAMP}">
 			<fileset dir="${source}/java/org/thdl/lex/component">
 				<include name="**/*.java"/>
 			</fileset>
-		</copy>
+		</copy> -->
 		<java classname="net.sf.hibernate.tool.hbm2java.CodeGenerator" classpathref="classpath" fork="yes">
 			<arg value="--output=${source}/java"/>
 			<arg value="--config=${basedir}/config/lex-codegen-cfg.xml"/>

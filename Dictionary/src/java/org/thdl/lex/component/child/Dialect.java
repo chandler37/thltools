@@ -9,7 +9,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class Dialect implements Serializable {
 
     /** identifier field */
-    private java.lang.Integer id;
+    private Integer id;
 
     /** persistent field */
     private short majorDialectFamily;
@@ -27,11 +27,11 @@ public class Dialect implements Serializable {
     public Dialect() {
     }
 
-    public java.lang.Integer getId() {
+    public Integer getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Integer id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

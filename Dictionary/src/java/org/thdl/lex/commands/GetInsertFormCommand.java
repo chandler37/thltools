@@ -89,7 +89,7 @@ public class GetInsertFormCommand extends LexCommand implements Command
 				AnalyticalNote note = new AnalyticalNote();
 				note.setParentId( component.getMetaId() );
 				//note.setAnalyticalNote( req.getParameter( "analyticalNote" ) );
-				note.setPrecedence( new Integer( 0 ) );
+				//note.setPrecedence( new Integer( 0 ) );
 				component.setAnalyticalNotes( new LinkedList() );
 				component.getAnalyticalNotes().add( note );
 				meta = new Meta( user, prefs );

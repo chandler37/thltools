@@ -9,13 +9,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class SpecificDialect implements Serializable {
 
     /** identifier field */
-    private java.lang.Short id;
+    private Short id;
 
     /** nullable persistent field */
-    private java.lang.String specificDialect;
+    private String specificDialect;
 
     /** full constructor */
-    public SpecificDialect(java.lang.String specificDialect) {
+    public SpecificDialect(String specificDialect) {
         this.specificDialect = specificDialect;
     }
 
@@ -23,19 +23,19 @@ public class SpecificDialect implements Serializable {
     public SpecificDialect() {
     }
 
-    public java.lang.Short getId() {
+    public Short getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Short id) {
+    public void setId(Short id) {
         this.id = id;
     }
 
-    public java.lang.String getSpecificDialect() {
+    public String getSpecificDialect() {
         return this.specificDialect;
     }
 
-    public void setSpecificDialect(java.lang.String specificDialect) {
+    public void setSpecificDialect(String specificDialect) {
         this.specificDialect = specificDialect;
     }
 

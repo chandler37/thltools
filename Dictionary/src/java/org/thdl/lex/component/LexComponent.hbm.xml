@@ -45,7 +45,7 @@
 				<!--<meta attribute="gen-property">false</meta>-->
 			</property>			
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
-			<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>
+			<!--<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>-->
 			<property name="analyticalNote" type="java.lang.String" column="analyticalNote" length="65535"/>
 		</joined-subclass>
 		
@@ -58,7 +58,7 @@
 			<property name="term" type="java.lang.String" column="term" not-null="true" length="255">
 				<!-- <meta attribute="finder-method">findByTerm</meta> -->
 			</property>
-			<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>
+			<!--<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>-->
 			<list name="pronunciations" table="Pronunciations" lazy="true">
 				<key column="parentId"/>
 				<index column="precedence"/>
@@ -141,7 +141,7 @@
 				<!--<meta attribute="gen-property">false</meta>-->
 			</property>	
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
-			<property name="precedence" type="java.lang.Integer" column="precedence" not-null="true" length="6"/>
+			<!--<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>-->
 			<property name="definition" type="java.lang.String" column="definition" length="65535"/>
 			<property name="translationOf" type="java.lang.Integer" column="translationOf" length="11"/>
 			<list name="translations" table="Definitions" lazy="true" where="translationOf IS NOT NULL">
@@ -201,7 +201,7 @@
 				<!--<meta attribute="gen-property">false</meta>-->
 			</property>	
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
-			<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>
+			<!--<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>-->
 			<property name="subdefinition" type="java.lang.String" column="subdefinition" length="65535"/>
 			<property name="translationOf" type="java.lang.Integer" column="translationOf" length="11"/>
 			<list name="translations" table="Subdefinitions" lazy="true" where="translationOf IS NOT NULL">
@@ -255,7 +255,7 @@
 				<!--<meta attribute="gen-property">false</meta>-->
 			</property>	
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
-			<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>
+			<!--<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>-->
 			<property name="phonetics" type="java.lang.String" column="phonetics" not-null="true" length="65535"/>
 			<property name="phoneticsType" type="java.lang.Integer" column="phoneticsType" not-null="true" length="6"/>
 		</joined-subclass>
@@ -270,7 +270,7 @@
 				<!--<meta attribute="gen-property">false</meta>-->
 			</property>	
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
-			<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>
+			<!--<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>-->
 			<property name="loanLanguage" type="java.lang.Integer" column="loanLanguage" length="6"/>
 			<property name="etymologyType" type="java.lang.Integer" column="etymologyType" not-null="true" length="6"/>
 			<property name="derivation" type="java.lang.String" column="derivation" not-null="true" length="255"/>
@@ -292,7 +292,7 @@
 				<!--<meta attribute="gen-property">false</meta>-->
 			</property>	
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
-			<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>
+			<!--<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>-->
 			<property name="spelling" type="java.lang.String" column="spelling" not-null="true" length="255"/>
 			<property name="spellingType" type="java.lang.Integer" column="spellingType" not-null="true" length="6"/>
 		</joined-subclass>
@@ -306,7 +306,7 @@
 				<!--<meta attribute="gen-property">false</meta>-->
 			</property>	
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
-			<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>
+			<!--<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>-->
 			<property name="function" type="java.lang.Integer" column="function" not-null="true" length="6"/>
 		</joined-subclass>
 		
@@ -319,7 +319,7 @@
 				<!--<meta attribute="gen-property">false</meta>-->
 			</property>	
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
-			<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>
+			<!--<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>-->
 			<property name="article" type="java.lang.String" column="article" not-null="true" length="65535"/>
 			<property name="articleTitle" type="java.lang.String" column="articleTitle" not-null="true" length="65535"/>
 		</joined-subclass>
@@ -333,7 +333,7 @@
 				<!--<meta attribute="gen-property">false</meta>-->
 			</property>	
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
-			<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>
+			<!--<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>-->
 			<property name="gloss" type="java.lang.String" column="gloss" length="65535"/>
 			<property name="translation" type="java.lang.String" column="translation" length="65535"/>
 		</joined-subclass>
@@ -347,7 +347,7 @@
 				<!--<meta attribute="gen-property">false</meta>-->
 			</property>	
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
-			<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>
+			<!--<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>-->
 			<property name="keyword" type="java.lang.String" column="keyword" length="65535"/>
 		</joined-subclass>
 		
@@ -361,7 +361,7 @@
 				<!--<meta attribute="gen-property">false</meta>-->
 			</property>	
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
-			<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>
+			<!--<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>-->
 			<property name="modelSentence" type="java.lang.String" column="modelSentence" length="65535"/>
 			<property name="translationOf" type="java.lang.Integer" column="translationOf" length="11"/>
 			<list name="translations" table="ModelSentences" lazy="true" where="translationOf IS NOT NULL">
@@ -380,7 +380,7 @@
 				<!--<meta attribute="gen-property">false</meta>-->
 			</property>	
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
-			<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>
+			<!--<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>-->
 			<property name="translationEquivalent" type="java.lang.String" column="translationEquivalent" length="65535"/>
 		</joined-subclass>
 		
@@ -393,7 +393,7 @@
 				<!--<meta attribute="gen-property">false</meta>-->
 			</property>	
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
-			<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>
+			<!--<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>-->
 			<property name="relatedTerm" type="java.lang.String" column="relatedTerm" length="65535"/>
 			<property name="relatedTermType" type="java.lang.Integer" column="relatedTermType" not-null="true" length="6"/>
 		</joined-subclass>
@@ -408,7 +408,7 @@
 				<!--<meta attribute="gen-property">false</meta>-->
 			</property>	
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
-			<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>
+			<!--<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>-->
 			<property name="literarySource" type="java.lang.String" column="literarySource" length="65535"/>
 			<property name="spelling" type="java.lang.String" column="spelling" length="65535"/>
 			<property name="pagination" type="java.lang.String" column="pagination" length="65535"/>
@@ -430,7 +430,7 @@
 				<!--<meta attribute="gen-property">false</meta>-->
 			</property>	
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
-			<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>
+			<!--<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>-->
 			<property name="register" type="java.lang.Integer" column="register" not-null="true" length="6"/>
 		</joined-subclass>
 		
@@ -443,7 +443,7 @@
 				<!--<meta attribute="gen-property">false</meta>-->
 			</property>	
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
-			<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>
+			<!--<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>-->
 			<property name="transitionalDataLabel" type="java.lang.Integer" column="transitionalDataLabel" length="6"/>
 			<property name="forPublicConsumption" type="java.lang.String" column="forPublicConsumption" not-null="true" length="5"/>
 			<property name="transitionalDataText" type="java.lang.String" column="transitionalDataText" length="65535"/>

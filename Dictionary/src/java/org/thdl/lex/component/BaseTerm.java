@@ -8,10 +8,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 abstract public class BaseTerm extends LexComponent implements org.thdl.lex.component.ITerm,Serializable,org.thdl.lex.component.LexComponentNode {
 
     /** persistent field */
-    private java.lang.String term;
-
-    /** nullable persistent field */
-    private java.lang.Integer precedence;
+    private String term;
 
     /** persistent field */
     private List pronunciations;
@@ -56,10 +53,9 @@ abstract public class BaseTerm extends LexComponent implements org.thdl.lex.comp
     private List registers;
 
     /** full constructor */
-    public BaseTerm(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.String term, java.lang.Integer precedence, List pronunciations, List etymologies, List spellings, List functions, List encyclopediaArticles, List transitionalData, List definitions, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers) {
+    public BaseTerm(Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, String term, List pronunciations, List etymologies, List spellings, List functions, List encyclopediaArticles, List transitionalData, List definitions, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers) {
         super(deleted, analyticalNotes, meta);
         this.term = term;
-        this.precedence = precedence;
         this.pronunciations = pronunciations;
         this.etymologies = etymologies;
         this.spellings = spellings;
@@ -80,151 +76,123 @@ abstract public class BaseTerm extends LexComponent implements org.thdl.lex.comp
     public BaseTerm() {
     }
 
-    /** minimal constructor */
-    public BaseTerm(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.String term, List pronunciations, List etymologies, List spellings, List functions, List encyclopediaArticles, List transitionalData, List definitions, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers) {
-      super(deleted, analyticalNotes, meta);
-        this.term = term;
-        this.pronunciations = pronunciations;
-        this.etymologies = etymologies;
-        this.spellings = spellings;
-        this.functions = functions;
-        this.encyclopediaArticles = encyclopediaArticles;
-        this.transitionalData = transitionalData;
-        this.definitions = definitions;
-        this.glosses = glosses;
-        this.keywords = keywords;
-        this.modelSentences = modelSentences;
-        this.translationEquivalents = translationEquivalents;
-        this.relatedTerms = relatedTerms;
-        this.passages = passages;
-        this.registers = registers;
-    }
-
-    public java.lang.String getTerm() {
+    public String getTerm() {
         return this.term;
     }
 
-    public void setTerm(java.lang.String term) {
+    public void setTerm(String term) {
         this.term = term;
     }
 
-    public java.lang.Integer getPrecedence() {
-        return this.precedence;
-    }
-
-    public void setPrecedence(java.lang.Integer precedence) {
-        this.precedence = precedence;
-    }
-
-    public java.util.List getPronunciations() {
+    public List getPronunciations() {
         return this.pronunciations;
     }
 
-    public void setPronunciations(java.util.List pronunciations) {
+    public void setPronunciations(List pronunciations) {
         this.pronunciations = pronunciations;
     }
 
-    public java.util.List getEtymologies() {
+    public List getEtymologies() {
         return this.etymologies;
     }
 
-    public void setEtymologies(java.util.List etymologies) {
+    public void setEtymologies(List etymologies) {
         this.etymologies = etymologies;
     }
 
-    public java.util.List getSpellings() {
+    public List getSpellings() {
         return this.spellings;
     }
 
-    public void setSpellings(java.util.List spellings) {
+    public void setSpellings(List spellings) {
         this.spellings = spellings;
     }
 
-    public java.util.List getFunctions() {
+    public List getFunctions() {
         return this.functions;
     }
 
-    public void setFunctions(java.util.List functions) {
+    public void setFunctions(List functions) {
         this.functions = functions;
     }
 
-    public java.util.List getEncyclopediaArticles() {
+    public List getEncyclopediaArticles() {
         return this.encyclopediaArticles;
     }
 
-    public void setEncyclopediaArticles(java.util.List encyclopediaArticles) {
+    public void setEncyclopediaArticles(List encyclopediaArticles) {
         this.encyclopediaArticles = encyclopediaArticles;
     }
 
-    public java.util.List getTransitionalData() {
+    public List getTransitionalData() {
         return this.transitionalData;
     }
 
-    public void setTransitionalData(java.util.List transitionalData) {
+    public void setTransitionalData(List transitionalData) {
         this.transitionalData = transitionalData;
     }
 
-    public java.util.List getDefinitions() {
+    public List getDefinitions() {
         return this.definitions;
     }
 
-    public void setDefinitions(java.util.List definitions) {
+    public void setDefinitions(List definitions) {
         this.definitions = definitions;
     }
 
-    public java.util.List getGlosses() {
+    public List getGlosses() {
         return this.glosses;
     }
 
-    public void setGlosses(java.util.List glosses) {
+    public void setGlosses(List glosses) {
         this.glosses = glosses;
     }
 
-    public java.util.List getKeywords() {
+    public List getKeywords() {
         return this.keywords;
     }
 
-    public void setKeywords(java.util.List keywords) {
+    public void setKeywords(List keywords) {
         this.keywords = keywords;
     }
 
-    public java.util.List getModelSentences() {
+    public List getModelSentences() {
         return this.modelSentences;
     }
 
-    public void setModelSentences(java.util.List modelSentences) {
+    public void setModelSentences(List modelSentences) {
         this.modelSentences = modelSentences;
     }
 
-    public java.util.List getTranslationEquivalents() {
+    public List getTranslationEquivalents() {
         return this.translationEquivalents;
     }
 
-    public void setTranslationEquivalents(java.util.List translationEquivalents) {
+    public void setTranslationEquivalents(List translationEquivalents) {
         this.translationEquivalents = translationEquivalents;
     }
 
-    public java.util.List getRelatedTerms() {
+    public List getRelatedTerms() {
         return this.relatedTerms;
     }
 
-    public void setRelatedTerms(java.util.List relatedTerms) {
+    public void setRelatedTerms(List relatedTerms) {
         this.relatedTerms = relatedTerms;
     }
 
-    public java.util.List getPassages() {
+    public List getPassages() {
         return this.passages;
     }
 
-    public void setPassages(java.util.List passages) {
+    public void setPassages(List passages) {
         this.passages = passages;
     }
 
-    public java.util.List getRegisters() {
+    public List getRegisters() {
         return this.registers;
     }
 
-    public void setRegisters(java.util.List registers) {
+    public void setRegisters(List registers) {
         this.registers = registers;
     }
 

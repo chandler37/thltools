@@ -9,13 +9,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class RelatedTermType implements Serializable {
 
     /** identifier field */
-    private java.lang.Short id;
+    private Short id;
 
     /** persistent field */
-    private java.lang.String relatedTermType;
+    private String relatedTermType;
 
     /** full constructor */
-    public RelatedTermType(java.lang.String relatedTermType) {
+    public RelatedTermType(String relatedTermType) {
         this.relatedTermType = relatedTermType;
     }
 
@@ -23,19 +23,19 @@ public class RelatedTermType implements Serializable {
     public RelatedTermType() {
     }
 
-    public java.lang.Short getId() {
+    public Short getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Short id) {
+    public void setId(Short id) {
         this.id = id;
     }
 
-    public java.lang.String getRelatedTermType() {
+    public String getRelatedTermType() {
         return this.relatedTermType;
     }
 
-    public void setRelatedTermType(java.lang.String relatedTermType) {
+    public void setRelatedTermType(String relatedTermType) {
         this.relatedTermType = relatedTermType;
     }
 

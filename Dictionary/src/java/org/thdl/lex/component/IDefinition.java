@@ -55,24 +55,7 @@ public interface IDefinition extends LexComponentNode
 	public void setDefinition( java.lang.String definition );
 
 
-	/**
-	 *  Gets the precedence attribute of the IDefinition object
-	 *
-	 * @return    The precedence value
-	 * @since
-	 */
-	public java.lang.Integer getPrecedence();
-
-
-	/**
-	 *  Sets the precedence attribute of the IDefinition object
-	 *
-	 * @param  precedence  The new precedence value
-	 * @since
-	 */
-	public void setPrecedence( java.lang.Integer precedence );
-
-
+	
 	/**
 	 *  Gets the subdefinitions attribute of the IDefinition object
 	 *

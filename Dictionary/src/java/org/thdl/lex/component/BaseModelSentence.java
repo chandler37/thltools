@@ -8,16 +8,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 abstract public class BaseModelSentence extends LexComponent implements org.thdl.lex.component.IModelSentence,Serializable,org.thdl.lex.component.Translatable {
 
     /** nullable persistent field */
-    private java.lang.Integer parentId;
+    private Integer parentId;
 
     /** nullable persistent field */
-    private java.lang.Integer precedence;
+    private String modelSentence;
 
     /** nullable persistent field */
-    private java.lang.String modelSentence;
-
-    /** nullable persistent field */
-    private java.lang.Integer translationOf;
+    private Integer translationOf;
 
     /** nullable persistent field */
     private org.thdl.lex.component.ILexComponent parent;
@@ -26,10 +23,9 @@ abstract public class BaseModelSentence extends LexComponent implements org.thdl
     private List translations;
 
     /** full constructor */
-    public BaseModelSentence(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.String modelSentence, java.lang.Integer translationOf, org.thdl.lex.component.ILexComponent parent, List translations) {
+    public BaseModelSentence(Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, Integer parentId, String modelSentence, Integer translationOf, org.thdl.lex.component.ILexComponent parent, List translations) {
         super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
-        this.precedence = precedence;
         this.modelSentence = modelSentence;
         this.translationOf = translationOf;
         this.parent = parent;
@@ -41,40 +37,32 @@ abstract public class BaseModelSentence extends LexComponent implements org.thdl
     }
 
     /** minimal constructor */
-    public BaseModelSentence(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, List translations) {
+    public BaseModelSentence(Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, List translations) {
       super(deleted, analyticalNotes, meta);
         this.translations = translations;
     }
 
-    public java.lang.Integer getParentId() {
+    public Integer getParentId() {
         return this.parentId;
     }
 
-    public void setParentId(java.lang.Integer parentId) {
+    public void setParentId(Integer parentId) {
         this.parentId = parentId;
     }
 
-    public java.lang.Integer getPrecedence() {
-        return this.precedence;
-    }
-
-    public void setPrecedence(java.lang.Integer precedence) {
-        this.precedence = precedence;
-    }
-
-    public java.lang.String getModelSentence() {
+    public String getModelSentence() {
         return this.modelSentence;
     }
 
-    public void setModelSentence(java.lang.String modelSentence) {
+    public void setModelSentence(String modelSentence) {
         this.modelSentence = modelSentence;
     }
 
-    public java.lang.Integer getTranslationOf() {
+    public Integer getTranslationOf() {
         return this.translationOf;
     }
 
-    public void setTranslationOf(java.lang.Integer translationOf) {
+    public void setTranslationOf(Integer translationOf) {
         this.translationOf = translationOf;
     }
 
@@ -86,11 +74,11 @@ abstract public class BaseModelSentence extends LexComponent implements org.thdl
         this.parent = parent;
     }
 
-    public java.util.List getTranslations() {
+    public List getTranslations() {
         return this.translations;
     }
 
-    public void setTranslations(java.util.List translations) {
+    public void setTranslations(List translations) {
         this.translations = translations;
     }
 

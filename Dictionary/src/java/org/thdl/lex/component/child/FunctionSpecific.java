@@ -9,13 +9,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class FunctionSpecific implements Serializable {
 
     /** identifier field */
-    private java.lang.Short id;
+    private Short id;
 
     /** persistent field */
-    private java.lang.String functionSpecific;
+    private String functionSpecific;
 
     /** full constructor */
-    public FunctionSpecific(java.lang.String functionSpecific) {
+    public FunctionSpecific(String functionSpecific) {
         this.functionSpecific = functionSpecific;
     }
 
@@ -23,19 +23,19 @@ public class FunctionSpecific implements Serializable {
     public FunctionSpecific() {
     }
 
-    public java.lang.Short getId() {
+    public Short getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Short id) {
+    public void setId(Short id) {
         this.id = id;
     }
 
-    public java.lang.String getFunctionSpecific() {
+    public String getFunctionSpecific() {
         return this.functionSpecific;
     }
 
-    public void setFunctionSpecific(java.lang.String functionSpecific) {
+    public void setFunctionSpecific(String functionSpecific) {
         this.functionSpecific = functionSpecific;
     }
 

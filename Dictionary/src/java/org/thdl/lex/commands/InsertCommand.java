@@ -151,7 +151,7 @@ public class InsertCommand extends LexCommand implements Command
 					AnalyticalNote note = new AnalyticalNote();
 					note.setAnalyticalNote( req.getParameter( "analyticalNote" ) );
 					note.setParentId( component.getMetaId() );
-					note.setPrecedence( new Integer( 0 ) );
+					//note.setPrecedence( new Integer( 0 ) );
 					component.setAnalyticalNotes( new LinkedList() );
 					component.getAnalyticalNotes().add( note );
 					meta = new Meta( user, prefs );

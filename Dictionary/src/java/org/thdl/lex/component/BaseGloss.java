@@ -8,25 +8,21 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 abstract public class BaseGloss extends LexComponent implements org.thdl.lex.component.IGloss,Serializable {
 
     /** nullable persistent field */
-    private java.lang.Integer parentId;
+    private Integer parentId;
 
     /** nullable persistent field */
-    private java.lang.Integer precedence;
+    private String gloss;
 
     /** nullable persistent field */
-    private java.lang.String gloss;
-
-    /** nullable persistent field */
-    private java.lang.String translation;
+    private String translation;
 
     /** nullable persistent field */
     private org.thdl.lex.component.ILexComponent parent;
 
     /** full constructor */
-    public BaseGloss(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.String gloss, java.lang.String translation, org.thdl.lex.component.ILexComponent parent) {
+    public BaseGloss(Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, Integer parentId, String gloss, String translation, org.thdl.lex.component.ILexComponent parent) {
         super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
-        this.precedence = precedence;
         this.gloss = gloss;
         this.translation = translation;
         this.parent = parent;
@@ -37,39 +33,31 @@ abstract public class BaseGloss extends LexComponent implements org.thdl.lex.com
     }
 
     /** minimal constructor */
-    public BaseGloss(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta) {
+    public BaseGloss(Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta) {
       super(deleted, analyticalNotes, meta);
     }
 
-    public java.lang.Integer getParentId() {
+    public Integer getParentId() {
         return this.parentId;
     }
 
-    public void setParentId(java.lang.Integer parentId) {
+    public void setParentId(Integer parentId) {
         this.parentId = parentId;
     }
 
-    public java.lang.Integer getPrecedence() {
-        return this.precedence;
-    }
-
-    public void setPrecedence(java.lang.Integer precedence) {
-        this.precedence = precedence;
-    }
-
-    public java.lang.String getGloss() {
+    public String getGloss() {
         return this.gloss;
     }
 
-    public void setGloss(java.lang.String gloss) {
+    public void setGloss(String gloss) {
         this.gloss = gloss;
     }
 
-    public java.lang.String getTranslation() {
+    public String getTranslation() {
         return this.translation;
     }
 
-    public void setTranslation(java.lang.String translation) {
+    public void setTranslation(String translation) {
         this.translation = translation;
     }
 

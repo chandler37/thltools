@@ -26,25 +26,6 @@ public interface ITerm extends LexComponentNode
 	 */
 	public void setTerm( java.lang.String term );
 
-
-	/**
-	 *  Gets the precedence attribute of the ITerm object
-	 *
-	 * @return    The precedence value
-	 * @since
-	 */
-	public java.lang.Integer getPrecedence();
-
-
-	/**
-	 *  Sets the precedence attribute of the ITerm object
-	 *
-	 * @param  precedence  The new precedence value
-	 * @since
-	 */
-	public void setPrecedence( java.lang.Integer precedence );
-
-
 	/**
 	 *  Gets the pronunciations attribute of the ITerm object
 	 *

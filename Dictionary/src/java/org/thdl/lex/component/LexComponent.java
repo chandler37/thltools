@@ -79,21 +79,6 @@ public abstract class LexComponent extends BaseLexComponent implements Serializa
 	}
 
 
-	/**
-	 *  Gets the precedence attribute of the LexComponent object
-	 *
-	 * @return    The precedence value
-	 */
-	public abstract java.lang.Integer getPrecedence();
-
-
-	/**
-	 *  Sets the precedence attribute of the LexComponent object
-	 *
-	 * @param  precedence  The new precedence value
-	 */
-	public abstract void setPrecedence( java.lang.Integer precedence );
-
 
 	/**
 	 *  Sets the parent attribute of the LexComponent object

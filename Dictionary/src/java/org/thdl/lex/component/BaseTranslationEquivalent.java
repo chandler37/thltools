@@ -8,22 +8,18 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 abstract public class BaseTranslationEquivalent extends LexComponent implements org.thdl.lex.component.ITranslationEquivalent,Serializable {
 
     /** nullable persistent field */
-    private java.lang.Integer parentId;
+    private Integer parentId;
 
     /** nullable persistent field */
-    private java.lang.Integer precedence;
-
-    /** nullable persistent field */
-    private java.lang.String translationEquivalent;
+    private String translationEquivalent;
 
     /** nullable persistent field */
     private org.thdl.lex.component.ILexComponent parent;
 
     /** full constructor */
-    public BaseTranslationEquivalent(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.String translationEquivalent, org.thdl.lex.component.ILexComponent parent) {
+    public BaseTranslationEquivalent(Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, Integer parentId, String translationEquivalent, org.thdl.lex.component.ILexComponent parent) {
         super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
-        this.precedence = precedence;
         this.translationEquivalent = translationEquivalent;
         this.parent = parent;
     }
@@ -33,31 +29,23 @@ abstract public class BaseTranslationEquivalent extends LexComponent implements 
     }
 
     /** minimal constructor */
-    public BaseTranslationEquivalent(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta) {
+    public BaseTranslationEquivalent(Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta) {
       super(deleted, analyticalNotes, meta);
     }
 
-    public java.lang.Integer getParentId() {
+    public Integer getParentId() {
         return this.parentId;
     }
 
-    public void setParentId(java.lang.Integer parentId) {
+    public void setParentId(Integer parentId) {
         this.parentId = parentId;
     }
 
-    public java.lang.Integer getPrecedence() {
-        return this.precedence;
-    }
-
-    public void setPrecedence(java.lang.Integer precedence) {
-        this.precedence = precedence;
-    }
-
-    public java.lang.String getTranslationEquivalent() {
+    public String getTranslationEquivalent() {
         return this.translationEquivalent;
     }
 
-    public void setTranslationEquivalent(java.lang.String translationEquivalent) {
+    public void setTranslationEquivalent(String translationEquivalent) {
         this.translationEquivalent = translationEquivalent;
     }
 

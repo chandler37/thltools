@@ -9,13 +9,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class Author implements Serializable {
 
     /** identifier field */
-    private java.lang.Integer id;
+    private Integer id;
 
     /** persistent field */
-    private java.lang.String author;
+    private String author;
 
     /** full constructor */
-    public Author(java.lang.String author) {
+    public Author(String author) {
         this.author = author;
     }
 
@@ -23,19 +23,19 @@ public class Author implements Serializable {
     public Author() {
     }
 
-    public java.lang.Integer getId() {
+    public Integer getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Integer id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public java.lang.String getAuthor() {
+    public String getAuthor() {
         return this.author;
     }
 
-    public void setAuthor(java.lang.String author) {
+    public void setAuthor(String author) {
         this.author = author;
     }
 

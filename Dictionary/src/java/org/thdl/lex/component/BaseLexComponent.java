@@ -10,10 +10,10 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 abstract public class BaseLexComponent implements org.thdl.lex.component.ILexComponent,Serializable {
 
     /** identifier field */
-    private java.lang.Integer metaId;
+    private Integer metaId;
 
     /** persistent field */
-    private java.lang.Boolean deleted;
+    private Boolean deleted;
 
     /** persistent field */
     private List analyticalNotes;
@@ -22,7 +22,7 @@ abstract public class BaseLexComponent implements org.thdl.lex.component.ILexCom
     private org.thdl.lex.component.Meta meta;
 
     /** full constructor */
-    public BaseLexComponent(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta) {
+    public BaseLexComponent(Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta) {
         this.deleted = deleted;
         this.analyticalNotes = analyticalNotes;
         this.meta = meta;
@@ -32,27 +32,27 @@ abstract public class BaseLexComponent implements org.thdl.lex.component.ILexCom
     public BaseLexComponent() {
     }
 
-    public java.lang.Integer getMetaId() {
+    public Integer getMetaId() {
         return this.metaId;
     }
 
-    public void setMetaId(java.lang.Integer metaId) {
+    public void setMetaId(Integer metaId) {
         this.metaId = metaId;
     }
 
-    public java.lang.Boolean getDeleted() {
+    public Boolean getDeleted() {
         return this.deleted;
     }
 
-    public void setDeleted(java.lang.Boolean deleted) {
+    public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
     }
 
-    public java.util.List getAnalyticalNotes() {
+    public List getAnalyticalNotes() {
         return this.analyticalNotes;
     }
 
-    public void setAnalyticalNotes(java.util.List analyticalNotes) {
+    public void setAnalyticalNotes(List analyticalNotes) {
         this.analyticalNotes = analyticalNotes;
     }
 

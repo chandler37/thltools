@@ -1,6 +1,7 @@
 package org.thdl.lex.component.child;
 
 import java.io.Serializable;
+import java.util.Date;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -9,49 +10,49 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class LiterarySource implements Serializable {
 
     /** identifier field */
-    private java.lang.Integer id;
+    private Integer id;
 
     /** nullable persistent field */
-    private java.lang.Integer literaryPeriod;
+    private Integer literaryPeriod;
 
     /** nullable persistent field */
-    private java.lang.Integer literaryGenre;
+    private Integer literaryGenre;
 
     /** nullable persistent field */
-    private java.lang.Integer literaryForm;
+    private Integer literaryForm;
 
     /** nullable persistent field */
-    private java.lang.Integer author;
+    private Integer author;
 
     /** nullable persistent field */
-    private java.lang.String sourceNormalizedTitle;
+    private String sourceNormalizedTitle;
 
     /** nullable persistent field */
-    private java.lang.String tibetanDate;
+    private String tibetanDate;
 
     /** nullable persistent field */
-    private java.lang.String internationalDate;
+    private String internationalDate;
 
     /** nullable persistent field */
-    private java.lang.String edition;
+    private String edition;
 
     /** nullable persistent field */
-    private java.lang.String publisher;
+    private String publisher;
 
     /** nullable persistent field */
-    private java.lang.String isbn;
+    private String isbn;
 
     /** nullable persistent field */
-    private java.util.Date yearPublished;
+    private Date yearPublished;
 
     /** persistent field */
-    private java.lang.Integer volumeNumber;
+    private Integer volumeNumber;
 
     /** nullable persistent field */
-    private java.lang.String pagination;
+    private String pagination;
 
     /** full constructor */
-    public LiterarySource(java.lang.Integer literaryPeriod, java.lang.Integer literaryGenre, java.lang.Integer literaryForm, java.lang.Integer author, java.lang.String sourceNormalizedTitle, java.lang.String tibetanDate, java.lang.String internationalDate, java.lang.String edition, java.lang.String publisher, java.lang.String isbn, java.util.Date yearPublished, java.lang.Integer volumeNumber, java.lang.String pagination) {
+    public LiterarySource(Integer literaryPeriod, Integer literaryGenre, Integer literaryForm, Integer author, String sourceNormalizedTitle, String tibetanDate, String internationalDate, String edition, String publisher, String isbn, Date yearPublished, Integer volumeNumber, String pagination) {
         this.literaryPeriod = literaryPeriod;
         this.literaryGenre = literaryGenre;
         this.literaryForm = literaryForm;
@@ -72,119 +73,119 @@ public class LiterarySource implements Serializable {
     }
 
     /** minimal constructor */
-    public LiterarySource(java.lang.Integer volumeNumber) {
+    public LiterarySource(Integer volumeNumber) {
         this.volumeNumber = volumeNumber;
     }
 
-    public java.lang.Integer getId() {
+    public Integer getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Integer id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public java.lang.Integer getLiteraryPeriod() {
+    public Integer getLiteraryPeriod() {
         return this.literaryPeriod;
     }
 
-    public void setLiteraryPeriod(java.lang.Integer literaryPeriod) {
+    public void setLiteraryPeriod(Integer literaryPeriod) {
         this.literaryPeriod = literaryPeriod;
     }
 
-    public java.lang.Integer getLiteraryGenre() {
+    public Integer getLiteraryGenre() {
         return this.literaryGenre;
     }
 
-    public void setLiteraryGenre(java.lang.Integer literaryGenre) {
+    public void setLiteraryGenre(Integer literaryGenre) {
         this.literaryGenre = literaryGenre;
     }
 
-    public java.lang.Integer getLiteraryForm() {
+    public Integer getLiteraryForm() {
         return this.literaryForm;
     }
 
-    public void setLiteraryForm(java.lang.Integer literaryForm) {
+    public void setLiteraryForm(Integer literaryForm) {
         this.literaryForm = literaryForm;
     }
 
-    public java.lang.Integer getAuthor() {
+    public Integer getAuthor() {
         return this.author;
     }
 
-    public void setAuthor(java.lang.Integer author) {
+    public void setAuthor(Integer author) {
         this.author = author;
     }
 
-    public java.lang.String getSourceNormalizedTitle() {
+    public String getSourceNormalizedTitle() {
         return this.sourceNormalizedTitle;
     }
 
-    public void setSourceNormalizedTitle(java.lang.String sourceNormalizedTitle) {
+    public void setSourceNormalizedTitle(String sourceNormalizedTitle) {
         this.sourceNormalizedTitle = sourceNormalizedTitle;
     }
 
-    public java.lang.String getTibetanDate() {
+    public String getTibetanDate() {
         return this.tibetanDate;
     }
 
-    public void setTibetanDate(java.lang.String tibetanDate) {
+    public void setTibetanDate(String tibetanDate) {
         this.tibetanDate = tibetanDate;
     }
 
-    public java.lang.String getInternationalDate() {
+    public String getInternationalDate() {
         return this.internationalDate;
     }
 
-    public void setInternationalDate(java.lang.String internationalDate) {
+    public void setInternationalDate(String internationalDate) {
         this.internationalDate = internationalDate;
     }
 
-    public java.lang.String getEdition() {
+    public String getEdition() {
         return this.edition;
     }
 
-    public void setEdition(java.lang.String edition) {
+    public void setEdition(String edition) {
         this.edition = edition;
     }
 
-    public java.lang.String getPublisher() {
+    public String getPublisher() {
         return this.publisher;
     }
 
-    public void setPublisher(java.lang.String publisher) {
+    public void setPublisher(String publisher) {
         this.publisher = publisher;
     }
 
-    public java.lang.String getIsbn() {
+    public String getIsbn() {
         return this.isbn;
     }
 
-    public void setIsbn(java.lang.String isbn) {
+    public void setIsbn(String isbn) {
         this.isbn = isbn;
     }
 
-    public java.util.Date getYearPublished() {
+    public Date getYearPublished() {
         return this.yearPublished;
     }
 
-    public void setYearPublished(java.util.Date yearPublished) {
+    public void setYearPublished(Date yearPublished) {
         this.yearPublished = yearPublished;
     }
 
-    public java.lang.Integer getVolumeNumber() {
+    public Integer getVolumeNumber() {
         return this.volumeNumber;
     }
 
-    public void setVolumeNumber(java.lang.Integer volumeNumber) {
+    public void setVolumeNumber(Integer volumeNumber) {
         this.volumeNumber = volumeNumber;
     }
 
-    public java.lang.String getPagination() {
+    public String getPagination() {
         return this.pagination;
     }
 
-    public void setPagination(java.lang.String pagination) {
+    public void setPagination(String pagination) {
         this.pagination = pagination;
     }
 

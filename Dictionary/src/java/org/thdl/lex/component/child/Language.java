@@ -9,13 +9,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class Language implements Serializable {
 
     /** identifier field */
-    private java.lang.Short id;
+    private Short id;
 
     /** persistent field */
-    private java.lang.String language;
+    private String language;
 
     /** full constructor */
-    public Language(java.lang.String language) {
+    public Language(String language) {
         this.language = language;
     }
 
@@ -23,19 +23,19 @@ public class Language implements Serializable {
     public Language() {
     }
 
-    public java.lang.Short getId() {
+    public Short getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Short id) {
+    public void setId(Short id) {
         this.id = id;
     }
 
-    public java.lang.String getLanguage() {
+    public String getLanguage() {
         return this.language;
     }
 
-    public void setLanguage(java.lang.String language) {
+    public void setLanguage(String language) {
         this.language = language;
     }
 

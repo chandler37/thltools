@@ -9,20 +9,20 @@
 		<c:set var="newCmd" value="insertTerm" />
 		<c:set var="term" value="${ component.term }" />
 		<c:set var="metaId" value="" />
-		<c:set var="precedence" value="1" />
+		<%-- <c:set var="precedence" value="1" /> --%>
 	</c:when>
 	<c:when test="${ ! empty param.formMode && param.formMode == 'update'}">
 		<c:set var="updateMode" value="${ true }" />		
 		<c:set var="newCmd" value="updateTerm" />
 		<c:set var="term" value="${ component.term }" />
 		<c:set var="metaId" value="${ component.metaId }" />
-		<c:set var="precedence" value="${ component.precedence }" />
+		<%-- <c:set var="precedence" value="${ component.precedence }" /> --%>
 	</c:when>
 	<c:otherwise>
 		<c:set var="updateMode" value="${ false }" />		
 		<c:set var="newCmd" value="" />
 		<c:set var="term" value="ERROR" />
-		<c:set var="precedence" value="ERROR" />
+		<%-- <c:set var="precedence" value="ERROR" /> --%>
 	</c:otherwise>
 </c:choose>
 
@@ -38,8 +38,7 @@ Term: <c:out value='<strong>${ term }</strong> Edit Term: <input type="text" val
 
 <br />
 
-<c:out value='<input type="hidden" value="${ precedence }" name="precedence" size="3"/>' escapeXml='false' /> 
-
+<%-- <c:out value='<input type="hidden" value="${ precedence }" name="precedence" size="3"/>' escapeXml='false' /> --%>
 
 <jsp:include page="metaForm.jsf" />
 

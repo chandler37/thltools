@@ -9,13 +9,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class SpellingType implements Serializable {
 
     /** identifier field */
-    private java.lang.Short id;
+    private Short id;
 
     /** persistent field */
-    private java.lang.String spellingType;
+    private String spellingType;
 
     /** full constructor */
-    public SpellingType(java.lang.String spellingType) {
+    public SpellingType(String spellingType) {
         this.spellingType = spellingType;
     }
 
@@ -23,19 +23,19 @@ public class SpellingType implements Serializable {
     public SpellingType() {
     }
 
-    public java.lang.Short getId() {
+    public Short getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Short id) {
+    public void setId(Short id) {
         this.id = id;
     }
 
-    public java.lang.String getSpellingType() {
+    public String getSpellingType() {
         return this.spellingType;
     }
 
-    public void setSpellingType(java.lang.String spellingType) {
+    public void setSpellingType(String spellingType) {
         this.spellingType = spellingType;
     }
 

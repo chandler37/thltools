@@ -9,16 +9,16 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class Source implements Serializable {
 
     /** identifier field */
-    private java.lang.Integer id;
+    private Integer id;
 
     /** persistent field */
-    private java.lang.String sourceTitle;
+    private String sourceTitle;
 
     /** nullable persistent field */
-    private java.lang.String sourceDescription;
+    private String sourceDescription;
 
     /** full constructor */
-    public Source(java.lang.String sourceTitle, java.lang.String sourceDescription) {
+    public Source(String sourceTitle, String sourceDescription) {
         this.sourceTitle = sourceTitle;
         this.sourceDescription = sourceDescription;
     }
@@ -28,31 +28,31 @@ public class Source implements Serializable {
     }
 
     /** minimal constructor */
-    public Source(java.lang.String sourceTitle) {
+    public Source(String sourceTitle) {
         this.sourceTitle = sourceTitle;
     }
 
-    public java.lang.Integer getId() {
+    public Integer getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Integer id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public java.lang.String getSourceTitle() {
+    public String getSourceTitle() {
         return this.sourceTitle;
     }
 
-    public void setSourceTitle(java.lang.String sourceTitle) {
+    public void setSourceTitle(String sourceTitle) {
         this.sourceTitle = sourceTitle;
     }
 
-    public java.lang.String getSourceDescription() {
+    public String getSourceDescription() {
         return this.sourceDescription;
     }
 
-    public void setSourceDescription(java.lang.String sourceDescription) {
+    public void setSourceDescription(String sourceDescription) {
         this.sourceDescription = sourceDescription;
     }
 

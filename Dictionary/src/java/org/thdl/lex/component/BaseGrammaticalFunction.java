@@ -8,22 +8,18 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 abstract public class BaseGrammaticalFunction extends LexComponent implements org.thdl.lex.component.IFunction,Serializable {
 
     /** nullable persistent field */
-    private java.lang.Integer parentId;
-
-    /** nullable persistent field */
-    private java.lang.Integer precedence;
+    private Integer parentId;
 
     /** persistent field */
-    private java.lang.Integer function;
+    private Integer function;
 
     /** nullable persistent field */
     private org.thdl.lex.component.ILexComponent parent;
 
     /** full constructor */
-    public BaseGrammaticalFunction(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.Integer function, org.thdl.lex.component.ILexComponent parent) {
+    public BaseGrammaticalFunction(Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, Integer parentId, Integer function, org.thdl.lex.component.ILexComponent parent) {
         super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
-        this.precedence = precedence;
         this.function = function;
         this.parent = parent;
     }
@@ -33,32 +29,24 @@ abstract public class BaseGrammaticalFunction extends LexComponent implements or
     }
 
     /** minimal constructor */
-    public BaseGrammaticalFunction(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer function) {
+    public BaseGrammaticalFunction(Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, Integer function) {
       super(deleted, analyticalNotes, meta);
         this.function = function;
     }
 
-    public java.lang.Integer getParentId() {
+    public Integer getParentId() {
         return this.parentId;
     }
 
-    public void setParentId(java.lang.Integer parentId) {
+    public void setParentId(Integer parentId) {
         this.parentId = parentId;
     }
 
-    public java.lang.Integer getPrecedence() {
-        return this.precedence;
-    }
-
-    public void setPrecedence(java.lang.Integer precedence) {
-        this.precedence = precedence;
-    }
-
-    public java.lang.Integer getFunction() {
+    public Integer getFunction() {
         return this.function;
     }
 
-    public void setFunction(java.lang.Integer function) {
+    public void setFunction(Integer function) {
         this.function = function;
     }
 

@@ -9,13 +9,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class TransitionalDataLabel implements Serializable {
 
     /** identifier field */
-    private java.lang.Short id;
+    private Short id;
 
     /** nullable persistent field */
-    private java.lang.String transitionalDataLabel;
+    private String transitionalDataLabel;
 
     /** full constructor */
-    public TransitionalDataLabel(java.lang.String transitionalDataLabel) {
+    public TransitionalDataLabel(String transitionalDataLabel) {
         this.transitionalDataLabel = transitionalDataLabel;
     }
 
@@ -23,19 +23,19 @@ public class TransitionalDataLabel implements Serializable {
     public TransitionalDataLabel() {
     }
 
-    public java.lang.Short getId() {
+    public Short getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Short id) {
+    public void setId(Short id) {
         this.id = id;
     }
 
-    public java.lang.String getTransitionalDataLabel() {
+    public String getTransitionalDataLabel() {
         return this.transitionalDataLabel;
     }
 
-    public void setTransitionalDataLabel(java.lang.String transitionalDataLabel) {
+    public void setTransitionalDataLabel(String transitionalDataLabel) {
         this.transitionalDataLabel = transitionalDataLabel;
     }
 

@@ -9,13 +9,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class MajorDialectFamily implements Serializable {
 
     /** identifier field */
-    private java.lang.Short id;
+    private Short id;
 
     /** nullable persistent field */
-    private java.lang.String majorDialectFamily;
+    private String majorDialectFamily;
 
     /** full constructor */
-    public MajorDialectFamily(java.lang.String majorDialectFamily) {
+    public MajorDialectFamily(String majorDialectFamily) {
         this.majorDialectFamily = majorDialectFamily;
     }
 
@@ -23,19 +23,19 @@ public class MajorDialectFamily implements Serializable {
     public MajorDialectFamily() {
     }
 
-    public java.lang.Short getId() {
+    public Short getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Short id) {
+    public void setId(Short id) {
         this.id = id;
     }
 
-    public java.lang.String getMajorDialectFamily() {
+    public String getMajorDialectFamily() {
         return this.majorDialectFamily;
     }
 
-    public void setMajorDialectFamily(java.lang.String majorDialectFamily) {
+    public void setMajorDialectFamily(String majorDialectFamily) {
         this.majorDialectFamily = majorDialectFamily;
     }
 

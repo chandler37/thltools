@@ -9,13 +9,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class FunctionGeneral implements Serializable {
 
     /** identifier field */
-    private java.lang.Short id;
+    private Short id;
 
     /** persistent field */
-    private java.lang.String functionGeneral;
+    private String functionGeneral;
 
     /** full constructor */
-    public FunctionGeneral(java.lang.String functionGeneral) {
+    public FunctionGeneral(String functionGeneral) {
         this.functionGeneral = functionGeneral;
     }
 
@@ -23,19 +23,19 @@ public class FunctionGeneral implements Serializable {
     public FunctionGeneral() {
     }
 
-    public java.lang.Short getId() {
+    public Short getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Short id) {
+    public void setId(Short id) {
         this.id = id;
     }
 
-    public java.lang.String getFunctionGeneral() {
+    public String getFunctionGeneral() {
         return this.functionGeneral;
     }
 
-    public void setFunctionGeneral(java.lang.String functionGeneral) {
+    public void setFunctionGeneral(String functionGeneral) {
         this.functionGeneral = functionGeneral;
     }
 

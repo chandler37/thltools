@@ -8,25 +8,22 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 abstract public class BaseEtymology extends LexComponent implements org.thdl.lex.component.Translatable,Serializable,org.thdl.lex.component.IEtymology {
 
     /** nullable persistent field */
-    private java.lang.Integer parentId;
+    private Integer parentId;
 
     /** nullable persistent field */
-    private java.lang.Integer precedence;
+    private Integer loanLanguage;
+
+    /** persistent field */
+    private Integer etymologyType;
+
+    /** persistent field */
+    private String derivation;
+
+    /** persistent field */
+    private String etymologyDescription;
 
     /** nullable persistent field */
-    private java.lang.Integer loanLanguage;
-
-    /** persistent field */
-    private java.lang.Integer etymologyType;
-
-    /** persistent field */
-    private java.lang.String derivation;
-
-    /** persistent field */
-    private java.lang.String etymologyDescription;
-
-    /** nullable persistent field */
-    private java.lang.Integer translationOf;
+    private Integer translationOf;
 
     /** nullable persistent field */
     private org.thdl.lex.component.ILexComponent parent;
@@ -35,10 +32,9 @@ abstract public class BaseEtymology extends LexComponent implements org.thdl.lex
     private List translations;
 
     /** full constructor */
-    public BaseEtymology(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.Integer loanLanguage, java.lang.Integer etymologyType, java.lang.String derivation, java.lang.String etymologyDescription, java.lang.Integer translationOf, org.thdl.lex.component.ILexComponent parent, List translations) {
+    public BaseEtymology(Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, Integer parentId, Integer loanLanguage, Integer etymologyType, String derivation, String etymologyDescription, Integer translationOf, org.thdl.lex.component.ILexComponent parent, List translations) {
         super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
-        this.precedence = precedence;
         this.loanLanguage = loanLanguage;
         this.etymologyType = etymologyType;
         this.derivation = derivation;
@@ -53,7 +49,7 @@ abstract public class BaseEtymology extends LexComponent implements org.thdl.lex
     }
 
     /** minimal constructor */
-    public BaseEtymology(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer etymologyType, java.lang.String derivation, java.lang.String etymologyDescription, List translations) {
+    public BaseEtymology(Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, Integer etymologyType, String derivation, String etymologyDescription, List translations) {
       super(deleted, analyticalNotes, meta);
         this.etymologyType = etymologyType;
         this.derivation = derivation;
@@ -61,59 +57,51 @@ abstract public class BaseEtymology extends LexComponent implements org.thdl.lex
         this.translations = translations;
     }
 
-    public java.lang.Integer getParentId() {
+    public Integer getParentId() {
         return this.parentId;
     }
 
-    public void setParentId(java.lang.Integer parentId) {
+    public void setParentId(Integer parentId) {
         this.parentId = parentId;
     }
 
-    public java.lang.Integer getPrecedence() {
-        return this.precedence;
-    }
-
-    public void setPrecedence(java.lang.Integer precedence) {
-        this.precedence = precedence;
-    }
-
-    public java.lang.Integer getLoanLanguage() {
+    public Integer getLoanLanguage() {
         return this.loanLanguage;
     }
 
-    public void setLoanLanguage(java.lang.Integer loanLanguage) {
+    public void setLoanLanguage(Integer loanLanguage) {
         this.loanLanguage = loanLanguage;
     }
 
-    public java.lang.Integer getEtymologyType() {
+    public Integer getEtymologyType() {
         return this.etymologyType;
     }
 
-    public void setEtymologyType(java.lang.Integer etymologyType) {
+    public void setEtymologyType(Integer etymologyType) {
         this.etymologyType = etymologyType;
     }
 
-    public java.lang.String getDerivation() {
+    public String getDerivation() {
         return this.derivation;
     }
 
-    public void setDerivation(java.lang.String derivation) {
+    public void setDerivation(String derivation) {
         this.derivation = derivation;
     }
 
-    public java.lang.String getEtymologyDescription() {
+    public String getEtymologyDescription() {
         return this.etymologyDescription;
     }
 
-    public void setEtymologyDescription(java.lang.String etymologyDescription) {
+    public void setEtymologyDescription(String etymologyDescription) {
         this.etymologyDescription = etymologyDescription;
     }
 
-    public java.lang.Integer getTranslationOf() {
+    public Integer getTranslationOf() {
         return this.translationOf;
     }
 
-    public void setTranslationOf(java.lang.Integer translationOf) {
+    public void setTranslationOf(Integer translationOf) {
         this.translationOf = translationOf;
     }
 
@@ -125,11 +113,11 @@ abstract public class BaseEtymology extends LexComponent implements org.thdl.lex
         this.parent = parent;
     }
 
-    public java.util.List getTranslations() {
+    public List getTranslations() {
         return this.translations;
     }
 
-    public void setTranslations(java.util.List translations) {
+    public void setTranslations(List translations) {
         this.translations = translations;
     }
 

@@ -9,13 +9,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class LiteraryGenre implements Serializable {
 
     /** identifier field */
-    private java.lang.Integer id;
+    private Integer id;
 
     /** persistent field */
-    private java.lang.String literaryGenre;
+    private String literaryGenre;
 
     /** full constructor */
-    public LiteraryGenre(java.lang.String literaryGenre) {
+    public LiteraryGenre(String literaryGenre) {
         this.literaryGenre = literaryGenre;
     }
 
@@ -23,19 +23,19 @@ public class LiteraryGenre implements Serializable {
     public LiteraryGenre() {
     }
 
-    public java.lang.Integer getId() {
+    public Integer getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Integer id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public java.lang.String getLiteraryGenre() {
+    public String getLiteraryGenre() {
         return this.literaryGenre;
     }
 
-    public void setLiteraryGenre(java.lang.String literaryGenre) {
+    public void setLiteraryGenre(String literaryGenre) {
         this.literaryGenre = literaryGenre;
     }
 

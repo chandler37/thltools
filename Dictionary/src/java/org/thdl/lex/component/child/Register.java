@@ -9,13 +9,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class Register implements Serializable {
 
     /** identifier field */
-    private java.lang.Short id;
+    private Short id;
 
     /** persistent field */
-    private java.lang.String register;
+    private String register;
 
     /** full constructor */
-    public Register(java.lang.String register) {
+    public Register(String register) {
         this.register = register;
     }
 
@@ -23,19 +23,19 @@ public class Register implements Serializable {
     public Register() {
     }
 
-    public java.lang.Short getId() {
+    public Short getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Short id) {
+    public void setId(Short id) {
         this.id = id;
     }
 
-    public java.lang.String getRegister() {
+    public String getRegister() {
         return this.register;
     }
 
-    public void setRegister(java.lang.String register) {
+    public void setRegister(String register) {
         this.register = register;
     }
 

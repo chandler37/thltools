@@ -50,20 +50,6 @@ public interface ILexComponent
 	public java.lang.Integer getParentId();
 
 
-	/**
-	 *  Gets the precedence attribute of the ILexComponent object
-	 *
-	 * @return    The precedence value
-	 */
-	public java.lang.Integer getPrecedence();
-
-
-	/**
-	 *  Sets the precedence attribute of the LexComponent object
-	 *
-	 * @param  precedence  The new precedence value
-	 */
-	public void setPrecedence( java.lang.Integer precedence );
 
 
 	/**

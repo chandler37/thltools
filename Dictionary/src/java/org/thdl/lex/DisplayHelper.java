@@ -335,10 +335,15 @@ public class DisplayHelper
 		return getCollection().hashCode();
 	}
 
-
+	public String getIndexOfComponent()
+	{
+		int i = ((List)getCollection()).indexOf( getComponent() ) + 1;
+		return "" + i;
+	}
+	
 	/**
 	 *Constructor for the DisplayHelper object
 	 */
-	public DisplayHelper() { }
+	public DisplayHelper() {  }
 }
 

@@ -9,13 +9,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class Script implements Serializable {
 
     /** identifier field */
-    private java.lang.Short id;
+    private Short id;
 
     /** persistent field */
-    private java.lang.String script;
+    private String script;
 
     /** full constructor */
-    public Script(java.lang.String script) {
+    public Script(String script) {
         this.script = script;
     }
 
@@ -23,19 +23,19 @@ public class Script implements Serializable {
     public Script() {
     }
 
-    public java.lang.Short getId() {
+    public Short getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Short id) {
+    public void setId(Short id) {
         this.id = id;
     }
 
-    public java.lang.String getScript() {
+    public String getScript() {
         return this.script;
     }
 
-    public void setScript(java.lang.String script) {
+    public void setScript(String script) {
         this.script = script;
     }
 

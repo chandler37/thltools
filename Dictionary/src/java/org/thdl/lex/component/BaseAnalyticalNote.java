@@ -8,22 +8,18 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 abstract public class BaseAnalyticalNote extends LexComponent implements Serializable,org.thdl.lex.component.IAnalyticalNote {
 
     /** nullable persistent field */
-    private java.lang.Integer parentId;
+    private Integer parentId;
 
     /** nullable persistent field */
-    private java.lang.Integer precedence;
-
-    /** nullable persistent field */
-    private java.lang.String analyticalNote;
+    private String analyticalNote;
 
     /** nullable persistent field */
     private org.thdl.lex.component.ILexComponent parent;
 
     /** full constructor */
-    public BaseAnalyticalNote(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.String analyticalNote, org.thdl.lex.component.ILexComponent parent) {
+    public BaseAnalyticalNote(Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, Integer parentId, String analyticalNote, org.thdl.lex.component.ILexComponent parent) {
         super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
-        this.precedence = precedence;
         this.analyticalNote = analyticalNote;
         this.parent = parent;
     }
@@ -33,31 +29,23 @@ abstract public class BaseAnalyticalNote extends LexComponent implements Seriali
     }
 
     /** minimal constructor */
-    public BaseAnalyticalNote(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta) {
+    public BaseAnalyticalNote(Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta) {
       super(deleted, analyticalNotes, meta);
     }
 
-    public java.lang.Integer getParentId() {
+    public Integer getParentId() {
         return this.parentId;
     }
 
-    public void setParentId(java.lang.Integer parentId) {
+    public void setParentId(Integer parentId) {
         this.parentId = parentId;
     }
 
-    public java.lang.Integer getPrecedence() {
-        return this.precedence;
-    }
-
-    public void setPrecedence(java.lang.Integer precedence) {
-        this.precedence = precedence;
-    }
-
-    public java.lang.String getAnalyticalNote() {
+    public String getAnalyticalNote() {
         return this.analyticalNote;
     }
 
-    public void setAnalyticalNote(java.lang.String analyticalNote) {
+    public void setAnalyticalNote(String analyticalNote) {
         this.analyticalNote = analyticalNote;
     }
 

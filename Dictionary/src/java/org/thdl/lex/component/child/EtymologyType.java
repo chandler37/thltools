@@ -9,13 +9,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class EtymologyType implements Serializable {
 
     /** identifier field */
-    private java.lang.Short id;
+    private Short id;
 
     /** persistent field */
-    private java.lang.String etymologyType;
+    private String etymologyType;
 
     /** full constructor */
-    public EtymologyType(java.lang.String etymologyType) {
+    public EtymologyType(String etymologyType) {
         this.etymologyType = etymologyType;
     }
 
@@ -23,19 +23,19 @@ public class EtymologyType implements Serializable {
     public EtymologyType() {
     }
 
-    public java.lang.Short getId() {
+    public Short getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Short id) {
+    public void setId(Short id) {
         this.id = id;
     }
 
-    public java.lang.String getEtymologyType() {
+    public String getEtymologyType() {
         return this.etymologyType;
     }
 
-    public void setEtymologyType(java.lang.String etymologyType) {
+    public void setEtymologyType(String etymologyType) {
         this.etymologyType = etymologyType;
     }
 
