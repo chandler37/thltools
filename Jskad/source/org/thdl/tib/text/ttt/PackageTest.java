@@ -7568,6 +7568,8 @@ M+NA
         uhelp("G-YA", "\u0f42\u0f61");
         uhelp("GA-YA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a useless disambiguator in GA-YA.]\u0f42\u0f61");
         uhelp("GA-YO", "[#WARNING CONVERTING ACIP DOCUMENT: There is a useless disambiguator in GA-YO.]\u0f42\u0f61\u0F7c");
+        uhelp("RTZVA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP RTZVA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f62\u0fa9\u0fad");
+        uhelp("RTZWA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP RTZWA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f62\u0fa9\u0fba");
     }
     public void testFixedFormSubjoinedConsonants() {
         // Usual subjoined RA:
