@@ -30,9 +30,13 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.dnd.*;
 import java.awt.datatransfer.*;
+import java.lang.reflect.*;
+
 import org.thdl.tib.input.*;
 import org.thdl.tib.text.*;
 import org.thdl.tib.text.TibetanDocument.*;
+import org.thdl.savant.JdkVersionHacks;
+import org.thdl.media.*;
 
 import org.jdom.*;
 import org.jdom.input.SAXBuilder;
@@ -45,8 +49,12 @@ import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlActionListener;
 import org.thdl.util.ThdlAbstractAction;
 import org.thdl.util.ThdlOptions;
+import org.thdl.util.SimpleSpinner;
 
 public class QD extends JDesktopPane {
+    private final static JskadKeyboardManager keybdMgr
+		= new JskadKeyboardManager(JskadKeyboardFactory.getAllAvailableJskadKeyboards());
+
 	//project related data
 	protected Project project;
 
@@ -89,8 +97,6 @@ public class QD extends JDesktopPane {
 
 	protected TibetanDocument findDoc = null;
 	protected TibetanDocument replaceDoc = null;
-
-	protected URL keyboard_url = null;
 
 	protected KeyStroke cutKey, copyKey, pasteKey, selectAllKey;
 	protected KeyStroke insert1TimeKey, insert2TimesKey, insertSpeakerKey;
@@ -286,8 +292,7 @@ class TimePoint extends JLabel implements DragGestureListener, DragSourceListene
 				if (e.getButton() == MouseEvent.BUTTON1)
 					playSegment();
 				else {
-					SpinnerNumberModel snm1 = new SpinnerNumberModel(0, 0, player.getEndTime(), 10);
-					JSpinner spinner = new JSpinner(snm1);
+					SimpleSpinner spinner = new SimpleSpinner();
 					spinner.setPreferredSize(new Dimension(100, 40));
 					spinner.setValue(getTime());
 					if (JOptionPane.showOptionDialog(tp, spinner, messages.getString("AdjustTimeCode"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null) == JOptionPane.OK_OPTION)
@@ -439,14 +444,13 @@ public class TimePointDropTarget implements DropTargetListener {
 }
 
 class TimeCodeManager extends JPanel {
-	JSpinner inSpinner, outSpinner;
+	SimpleSpinner inSpinner, outSpinner;
 
 	TimeCodeManager() {
 		setLayout(new BorderLayout());
 		JPanel inPanel = new JPanel();
 		JButton inButton = new JButton(messages.getString("In"));
-		SpinnerNumberModel snm1 = new SpinnerNumberModel(0, 0, player.getEndTime(), 10);
-		inSpinner = new JSpinner(snm1);
+		inSpinner = new SimpleSpinner();
 		inSpinner.setValue(new Integer(0));
 		inSpinner.setPreferredSize(new Dimension(100, inButton.getPreferredSize().height));
 		inPanel.add(inButton);
@@ -463,8 +467,7 @@ class TimeCodeManager extends JPanel {
 
 		JPanel outPanel = new JPanel();
 		JButton outButton = new JButton(messages.getString("Out"));
-		SpinnerNumberModel snm2 = new SpinnerNumberModel(0, 0, player.getEndTime(), 10);
-		outSpinner = new JSpinner(snm2);
+		outSpinner = new SimpleSpinner();
 		outSpinner.setValue(new Integer(player.getEndTime()));
 		outSpinner.setPreferredSize(new Dimension(100, inButton.getPreferredSize().height));
 		outPanel.add(outButton);
@@ -533,10 +536,10 @@ class TimeCodeManager extends JPanel {
 		add("North", box);
 	}
 	public Integer getInTime() {
-		return (Integer)inSpinner.getValue();
+		return inSpinner.getValue();
 	}
 	public Integer getOutTime() {
-		return (Integer)outSpinner.getValue();
+		return outSpinner.getValue();
 	}
 	public void setInTime(int k) {
 		inSpinner.setValue(new Integer(k));
@@ -568,14 +571,14 @@ class Work {
 }
 
 public void setMediaPlayerProperty(String property) {
-	if (property.equals("jmf") || property.equals("qt4j"))
-		if (!thdl_mediaplayer_property.equals(property)) {
+	if (property.equals("org.thdl.media.SmartJMFPlayer") || property.equals("org.thdl.media.SmartQT4JPlayer"))
+		if (thdl_mediaplayer_property == null || !thdl_mediaplayer_property.equals(property)) {
 			thdl_mediaplayer_property = new String(property);
 			if (project != null) {
-				File f = project.getMedia();
-				if (f != null) {
+				URL url = project.getMedia();
+				if (url != null) {
 					project.setMedia(null);
-					project.setMedia(f);
+					project.setMedia(url);
 				}
 			}		
 		}
@@ -590,12 +593,12 @@ public String getMediaPlayerProperty() {
         } catch (SecurityException e) {
             os = "unknown";
         }
-		if (os.indexOf("mac") != -1) //macs default to qt4j
-			thdl_mediaplayer_property = ThdlOptions.getStringOption("thdl.media.player", "qt4j");
+		if (os.indexOf("mac") != -1) //macs default to org.thdl.media.SmartQT4JPlayer
+			thdl_mediaplayer_property = ThdlOptions.getStringOption("thdl.media.player", "org.thdl.media.SmartQT4JPlayer");
 		else if (os.indexOf("windows") != -1)
-			thdl_mediaplayer_property = ThdlOptions.getStringOption("thdl.media.player", "jmf");
+			thdl_mediaplayer_property = ThdlOptions.getStringOption("thdl.media.player", "org.thdl.media.SmartJMFPlayer");
 		else //put linux etc. here
-			thdl_mediaplayer_property = ThdlOptions.getStringOption("thdl.media.player", "jmf");
+			thdl_mediaplayer_property = ThdlOptions.getStringOption("thdl.media.player", "org.thdl.media.SmartJMFPlayer");
 	}
 	return thdl_mediaplayer_property;
 }
@@ -603,7 +606,7 @@ public String getMediaPlayerProperty() {
 class Project extends JPanel {
 	JTextField titleField, mediaField, transcriptField, nameField, taskField;
 	File transcript = null;
-	File media = null;
+	URL media = null;
 
 public String getTitle() {
 	return titleField.getText();
@@ -633,12 +636,12 @@ public void setTranscript(File f) { //doesn't actually load or save transcript, 
 	else
 		transcriptField.setText(transcript.getPath());
 }
-public File getMedia() {
+public URL getMedia() {
 	return media;
 }
-public void setMedia(File f) {
-	if (f == null) {
-		media = f;
+public void setMedia(URL url) {
+	if (url == null) {
+		media = url;
 		mediaField.setText("");
 		if (player != null) {
 			try {
@@ -660,9 +663,6 @@ public void setMedia(File f) {
 			actionFrame.setSize(new Dimension(actionFrame.getSize().width, QD.this.getSize().height));
 		}
 	} else {
-		try {
-			URL url = f.toURL();
-
 			if (player != null) {
 				try {
 					player.cmd_stop();
@@ -677,25 +677,51 @@ public void setMedia(File f) {
 			try {
 				if (thdl_mediaplayer_property == null)
 					thdl_mediaplayer_property = getMediaPlayerProperty();
-				if (thdl_mediaplayer_property.equals("qt4j")) {
-					player = new SmartQT4JPlayer();
-					player.loadMovie(url);
-				} else if (thdl_mediaplayer_property.equals("jmf")) {
-					player = new SmartJMFPlayer(QD.this, url);
-				}
-				media = f;
+
+				Class mediaClass = Class.forName(thdl_mediaplayer_property);
+				Class[] mediaArgsClass = new Class[] {Container.class, URL.class};
+				Object[] mediaArgs = new Object[] {QD.this, url};
+				Constructor mediaConstructor = mediaClass.getConstructor(mediaArgsClass);
+				player = (SmartMoviePanel)createObject(mediaConstructor, mediaArgs);
+				media = url;
 				mediaField.setText(media.getPath());
 				startTimer();
-			} catch (SmartMoviePanelException smpe) {
-				smpe.printStackTrace();
+
+//FIXME if neither media player is supported then friendly error rather than just doing nothing
+
+
+			} catch (ClassNotFoundException cnfe) {
+				cnfe.printStackTrace();
+				ThdlDebug.noteIffyCode();
+			} catch (NoSuchMethodException nsme) {
+				nsme.printStackTrace();
 				ThdlDebug.noteIffyCode();
 			}
-		} catch (MalformedURLException murle) {
-			murle.printStackTrace();
-			ThdlDebug.noteIffyCode();
-		}
 	}
 }
+
+public Object createObject(Constructor constructor, 
+                                     Object[] arguments) {
+
+      System.out.println ("Constructor: " + constructor.toString());
+      Object object = null;
+
+      try {
+        object = constructor.newInstance(arguments);
+        System.out.println ("Object: " + object.toString());
+        return object;
+      } catch (InstantiationException e) {
+          System.out.println(e);
+      } catch (IllegalAccessException e) {
+          System.out.println(e);
+      } catch (IllegalArgumentException e) {
+          System.out.println(e);
+      } catch (InvocationTargetException e) {
+          System.out.println(e);
+      }
+      return object;
+   }
+
 
 public Project() {
 	JPanel p = new JPanel(new GridLayout(2,2));
@@ -763,43 +789,20 @@ public Project() {
 }
 }
 
-public void changeKeyboard(ActionEvent e) {
+public void changeKeyboard(JskadKeyboard kbd) {
 	DuffPane dp = (DuffPane)pane;
-	if (e.getActionCommand().equals("wylie")) {
-		dp.registerKeyboard();
-	//	project.tName.setupKeyboard();
-	//	project.tTask.setupKeyboard();
-		sharedDP.setupKeyboard();
-		sharedDP2.setupKeyboard();
-		return;
-	}
-	keyboard_url = null;
-	if (e.getActionCommand().equals("sambhota1"))
-		keyboard_url = TibetanMachineWeb.class.getResource("sambhota_keyboard_1.ini");
-	else if (e.getActionCommand().equals("tcc1"))
-		keyboard_url = TibetanMachineWeb.class.getResource("tcc_keyboard_1.ini");
-	else if (e.getActionCommand().equals("tcc2"))
-		keyboard_url = TibetanMachineWeb.class.getResource("tcc_keyboard_2.ini");
-	dp.registerKeyboard(keyboard_url);
-//	project.tName.setupKeyboard();
-//	project.tTask.setupKeyboard();
-	sharedDP.setupKeyboard();
-	sharedDP2.setupKeyboard();
+	kbd.activate(dp);
+	kbd.activate(sharedDP);
+	kbd.activate(sharedDP2);
 }
 
 public boolean saveTranscript() {
 	currentWork.stopWork();
 
+//URGENT!! fix saving problem
+
 //change keyboard back to wylie for a second
 		DuffPane dp = (DuffPane)pane;
-if (keyboard_url != null) {
-
-			dp.registerKeyboard();
-	//		project.tName.setupKeyboard();
-	//		project.tTask.setupKeyboard();
-			sharedDP.setupKeyboard();
-			sharedDP.setupKeyboard();
-}
 
 
 	org.jdom.Element title = new org.jdom.Element("title");
@@ -810,11 +813,15 @@ if (keyboard_url != null) {
 		media.setText("");
 	else {
 		String tPath = project.getTranscript().getPath();
-		String mPath = project.getMedia().getPath();
-		if (tPath.substring(0, tPath.lastIndexOf(File.separatorChar)).equals(mPath.substring(0, mPath.lastIndexOf(File.separatorChar))))
-			media.setText(mPath.substring(mPath.lastIndexOf(File.separatorChar)+1));
-		else
-			media.setText(mPath);
+		String mPath = project.getMedia().getFile();
+		if (mPath == null)
+			media.setText(project.getMedia().toString());
+		else {
+			if (tPath.substring(0, tPath.lastIndexOf(File.separatorChar)).equals(mPath.substring(0, mPath.lastIndexOf(File.separatorChar))))
+				media.setText("file:" + mPath.substring(mPath.lastIndexOf(File.separatorChar)+1));
+			else
+				media.setText(project.getMedia().toString());
+		}
 	}
 
 	org.jdom.Element speakers = new org.jdom.Element("speakers");
@@ -910,13 +917,7 @@ if (keyboard_url != null) {
 		File htmlOut = new File(f.substring(0, f.lastIndexOf('.')) + ".html");
 		transformer.transform(new JDOMSource(qdDoc), new StreamResult(new FileOutputStream(htmlOut)));	
 
-if (keyboard_url != null) {
-		dp.registerKeyboard(keyboard_url);
-	//	project.tName.setupKeyboard();
-	//	project.tTask.setupKeyboard();
-		sharedDP.setupKeyboard();
-		sharedDP2.setupKeyboard();
-}
+//URGENT FIX SAVING PROBLEM
 
 		return true;
 	} catch (FileNotFoundException fnfe) {
@@ -939,7 +940,6 @@ protected void clearProject() {
 		project.setMedia(null); //do this first to properly dispose of media player
 		jtp.remove(project);
 		project = null;
-
 	}
 
 	if (tcp != null) {
@@ -949,6 +949,9 @@ protected void clearProject() {
 
 	SpeakerData sd = (SpeakerData)speakerTable.getModel();
 	sd.removeAllSpeakers();
+	speakerTable.invalidate();
+	speakerTable.validate();
+	speakerTable.repaint();
 
 	jtp.invalidate();
 	jtp.validate();
@@ -957,11 +960,11 @@ protected void clearProject() {
 	pane.setText("");	
 }
 
-public void newProject(File mediaFile) {
+public void newProject(URL mediaUrl) {
 	clearProject();
 	project = new Project();
 	jtp.addTab(messages.getString("ProjectDetails"), project);
-	project.setMedia(mediaFile);
+	project.setMedia(mediaUrl);
 }
 
 public boolean loadTranscript(File t) {
@@ -976,6 +979,10 @@ public boolean loadTranscript(File t) {
 
 //change keyboard back to wylie for a second
 		DuffPane dp = (DuffPane)pane;
+
+//URGENT FIX LOADING PROBLEM
+
+/*
 if (keyboard_url != null) {
 
 			dp.registerKeyboard();
@@ -985,7 +992,7 @@ if (keyboard_url != null) {
 			sharedDP.setupKeyboard();
 			sharedDP2.setupKeyboard();
 }
-
+*/
 
 		org.jdom.Document doc = builder.build(t);
 		org.jdom.Element qd = doc.getRootElement();
@@ -995,13 +1002,21 @@ if (keyboard_url != null) {
 		String mediaString = meta.getChild("mediafile").getText().trim();
 
 		if (!mediaString.equals("")) {
-			String tPath = t.getPath().substring(0, t.getPath().lastIndexOf(File.separatorChar)+1);
-			if (new File(tPath + mediaString).exists())
-				project.setMedia(new File(tPath + mediaString));
-			else if (new File(mediaString).exists())
-				project.setMedia(new File(mediaString));
-			else
-				project.setMedia(null);
+			if (mediaString.startsWith("file:")) {
+				try {
+					String mPath = mediaString.substring(5);
+					String tPath = t.getPath().substring(0, t.getPath().lastIndexOf(File.separatorChar)+1);
+					if (new File(tPath + mPath).exists())
+						project.setMedia(new URL("file:" + tPath + mPath));
+					else if (new File(mPath).exists())
+						project.setMedia(new URL("file:" + mPath));
+					else
+						project.setMedia(null);
+				} catch (MalformedURLException murle) {
+					murle.printStackTrace();
+					ThdlDebug.noteIffyCode();
+				}
+			}
 		} else
 			project.setMedia(null);
 
@@ -1078,6 +1093,7 @@ if (keyboard_url != null) {
 		currentWork = new Work();
 		work.add(currentWork);
 
+/* URGENT FIX LOADING PROBLEM
 if (keyboard_url != null) {
 		dp.registerKeyboard(keyboard_url);
 	//	project.tName.setupKeyboard();
@@ -1085,6 +1101,7 @@ if (keyboard_url != null) {
 		sharedDP.setupKeyboard();
 		sharedDP2.setupKeyboard();
 }
+*/
 
 project.setTranscript(t);
 jtp.addTab(messages.getString("ProjectDetails"), project);

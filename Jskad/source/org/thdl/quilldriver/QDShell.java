@@ -98,41 +98,82 @@ public class QDShell extends JFrame {
 		qd = new QD(messages);
 		getContentPane().add(qd);
 		setJMenuBar(getQDShellMenu());
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter () {
 			public void windowClosing (WindowEvent e) {
-				if (getSave())
-					System.exit(0);
+				if (getWantSave())
+					getSave();
+				System.exit(0);
 			}
 		});
 	}
 
 	public JMenuBar getQDShellMenu() {
 		JMenu projectMenu = new JMenu(messages.getString("Project"));
+
 		JMenuItem newItem = new JMenuItem(messages.getString("New"));
 		newItem.addActionListener(new ThdlActionListener() {
 			public void theRealActionPerformed(ActionEvent e) {
-				if (getSave()) {
-					JFileChooser fc = new JFileChooser();
-					if (fc.showDialog(QDShell.this, messages.getString("SelectMedia")) == JFileChooser.APPROVE_OPTION) {
-						File mediaFile = fc.getSelectedFile();
-						qd.newProject(mediaFile);
-					}
-				}
+				if (getWantSave())
+					getSave();
+				qd.clearProject();
 			}
-		});		
-		JMenuItem openItem = new JMenuItem(messages.getString("Open"));
-		openItem.addActionListener(new ThdlActionListener() {
+		});
+
+		JMenuItem openVideoItem = new JMenuItem(messages.getString("OpenMediaFile"));
+		openVideoItem.addActionListener(new ThdlActionListener() {
 			public void theRealActionPerformed(ActionEvent e) {
-				if (getSave()) {
-					JFileChooser fc = new JFileChooser();
-					fc.addChoosableFileFilter(new QDFileFilter());
-					if (fc.showDialog(QDShell.this, messages.getString("OpenTranscript")) == JFileChooser.APPROVE_OPTION) {
-						File transcriptFile = fc.getSelectedFile();
-						qd.loadTranscript(transcriptFile);
+				if (getWantSave())
+					getSave();
+
+				JFileChooser fc = new JFileChooser();
+				if (fc.showDialog(QDShell.this, messages.getString("SelectMedia")) == JFileChooser.APPROVE_OPTION) {
+					File mediaFile = fc.getSelectedFile();
+					try {
+						qd.newProject(mediaFile.toURL());
+					} catch (MalformedURLException murle) {
+						murle.printStackTrace();
+						ThdlDebug.noteIffyCode();
 					}
 				}
 			}
 		});
+
+		JMenuItem openURLItem = new JMenuItem(messages.getString("OpenMediaURL"));
+		openURLItem.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e) {
+				String url = JOptionPane.showInputDialog(QDShell.this,
+					messages.getString("TypeMediaURL"));
+				if (url != null) {
+					if (getWantSave())
+						getSave();
+
+					try {
+						qd.newProject(new URL(url));
+					} catch (MalformedURLException murle) {
+						murle.printStackTrace();
+						ThdlDebug.noteIffyCode();
+					}
+				}
+			}
+		});
+
+		JMenuItem openItem = new JMenuItem(messages.getString("OpenTranscript"));
+		openItem.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e) {
+				if (getWantSave())
+					getSave();
+
+				JFileChooser fc = new JFileChooser();
+				fc.addChoosableFileFilter(new QDFileFilter());
+				if (fc.showDialog(QDShell.this, messages.getString("OpenTranscript")) == JFileChooser.APPROVE_OPTION) {
+					File transcriptFile = fc.getSelectedFile();
+					qd.loadTranscript(transcriptFile);
+				}
+			}
+		});
+
+/*
 		JMenuItem closeItem = new JMenuItem(messages.getString("Close"));
 		closeItem.addActionListener(new ThdlActionListener() {
 			public void theRealActionPerformed(ActionEvent e) {
@@ -140,6 +181,7 @@ public class QDShell extends JFrame {
 					qd.clearProject();
 			}
 		});
+*/
 
 		JMenuItem saveItem = new JMenuItem(messages.getString("Save"));
 		saveItem.addActionListener(new ThdlActionListener() {
@@ -150,20 +192,30 @@ public class QDShell extends JFrame {
 		JMenuItem quitItem = new JMenuItem(messages.getString("Quit"));
 		quitItem.addActionListener(new ThdlActionListener() {
 			public void theRealActionPerformed(ActionEvent e) {
-				if (getSave())
-					System.exit(0);
+				if (getWantSave())
+					getSave();
+				System.exit(0);
 			}
 		});
 		projectMenu.add(newItem);
-		projectMenu.add(openItem);
-		projectMenu.add(closeItem);
 		projectMenu.addSeparator();
+		projectMenu.add(openVideoItem);
+		projectMenu.add(openURLItem);
+		projectMenu.add(openItem);
+		projectMenu.addSeparator();
+//		projectMenu.add(closeItem);
+//		projectMenu.addSeparator();
 		projectMenu.add(saveItem);
 		projectMenu.addSeparator();
 		projectMenu.add(quitItem);
 
 	//Tibetan-specific value: remove in non-Tibetan version
 	//non-Tibetan specific version would have Transcription Language option here instead
+
+
+/* 	Note that on the Mac, you radio buttons don't appear possible as
+	submenus on menu bars. They just don't show up.
+
 		JRadioButton[] buttons = new JRadioButton[4];
 		buttons[0] = new JRadioButton("THDL Extended Wylie");
 		buttons[1] = new JRadioButton("TCC Keyboard 1");
@@ -199,38 +251,53 @@ public class QDShell extends JFrame {
 
 		buttons[initialKeyboard].setSelected(true);
 
+*/
+
 		JMenu keyboardMenu = new JMenu(messages.getString("Keyboard"));
-		keyboardMenu.add(b1);
 
+        for (int i = 0; i < keybdMgr.size(); i++) {
+            final JskadKeyboard kbd = keybdMgr.elementAt(i);
+            if (kbd.hasQuickRefFile()) {
+                JMenuItem keybdItem = new JMenuItem(kbd.getIdentifyingString());
+                keybdItem.addActionListener(new ThdlActionListener() {
+                        public void theRealActionPerformed(ActionEvent e) {
+					qd.changeKeyboard(kbd);
+                         }
+                    });
+                keyboardMenu.add(keybdItem);
+            }
+        }
 
-		JRadioButton[] buttons2 = new JRadioButton[2];
-		buttons2[0] = new JRadioButton("Java Media Framework");
-		buttons2[1] = new JRadioButton("Quicktime for Java");
-		buttons2[0].setActionCommand("jmf");
-		buttons2[1].setActionCommand("qt4j");
-		ThdlActionListener l2 = new ThdlActionListener() {
-			public void theRealActionPerformed(ActionEvent e) {
-				qd.setMediaPlayerProperty(e.getActionCommand());
-			}
-		};
-
-		buttons2[0].addActionListener(l2);
-		buttons2[1].addActionListener(l2);
-		ButtonGroup bg2 = new ButtonGroup();
-		bg2.add(buttons2[0]);
-		bg2.add(buttons2[1]);
-		JPanel b2 = new JPanel(new GridLayout(0,1));
-		b2.add(buttons2[0]);
-		b2.add(buttons2[1]);
-
-		String initialMediaPlayer = qd.getMediaPlayerProperty();
-		if (initialMediaPlayer.equals("jmf"))
-			buttons2[0].setSelected(true);
-		else if (initialMediaPlayer.equals("qt4j"))
-			buttons2[1].setSelected(true);
 
 		JMenu mediaPlayerMenu = new JMenu(messages.getString("MediaPlayer"));
-		mediaPlayerMenu.add(b2);
+
+        for (int i = 0; i < keybdMgr.size(); i++) {
+            final JskadKeyboard kbd = keybdMgr.elementAt(i);
+            if (kbd.hasQuickRefFile()) {
+                JMenuItem keybdItem = new JMenuItem(kbd.getIdentifyingString());
+                keybdItem.addActionListener(new ThdlActionListener() {
+                        public void theRealActionPerformed(ActionEvent e) {
+					qd.changeKeyboard(kbd);
+                         }
+                    });
+                keyboardMenu.add(keybdItem);
+            }
+        }
+
+
+		JMenuItem jmfItem = new JMenuItem("Java Media Framework");
+		jmfItem.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e) {
+				qd.setMediaPlayerProperty("org.thdl.media.SmartJMFPlayer");
+			}
+		});
+
+		JMenuItem qtItem = new JMenuItem("Quicktime for Java");
+		qtItem.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e) {
+				qd.setMediaPlayerProperty("org.thdl.media.SmartQT4JPlayer");
+			}
+		});
 
 		JMenu preferencesMenu = new JMenu(messages.getString("Preferences"));
 		preferencesMenu.add(keyboardMenu);
@@ -241,9 +308,18 @@ public class QDShell extends JFrame {
 		bar.add(preferencesMenu);
 		return bar;
 	}
-	private boolean getSave() {
+	private boolean getWantSave() {
 		if (qd.pane.getDocument().getLength() == 0 && qd.speakerTable.getRowCount() == 0)
-			return true; //nothing to save
+			return false; //nothing to save
+
+		if (JOptionPane.showConfirmDialog(QDShell.this, messages.getString("WantSave"), null, JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.YES_OPTION)
+			return true;
+		else
+			return false;
+	}
+	private void getSave() {
+		if (qd.pane.getDocument().getLength() == 0 && qd.speakerTable.getRowCount() == 0)
+			return; //nothing to save
 
 		JFileChooser fc = new JFileChooser();
 		if (qd.project.getTranscript() == null) {
@@ -254,13 +330,15 @@ public class QDShell extends JFrame {
 				path = path.substring(0, path.lastIndexOf('.')) + QDShell.dotQuillDriver;
 				fc.setSelectedFile(new File(path));
 			}
-			if (fc.showSaveDialog(QDShell.this) == JFileChooser.APPROVE_OPTION) {
-				File f = fc.getSelectedFile();
-				qd.project.setTranscript(f);
-			} else
-				return false;
+		} else
+			fc.setSelectedFile(qd.project.getTranscript());
+		
+		int op = fc.showSaveDialog(QDShell.this);
+		if (op == JFileChooser.APPROVE_OPTION) {
+			File f = fc.getSelectedFile();
+			qd.project.setTranscript(f);
+			qd.saveTranscript();
 		}
-		return qd.saveTranscript();
 	}
 	private class QDFileFilter extends javax.swing.filechooser.FileFilter {
 		// accepts all directories and all savant files
