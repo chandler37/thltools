@@ -6,6 +6,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8;" />
 
+<script type='text/javascript' src='http://iris.lib.virginia.edu/scripts/thdl_scripts.js'></script>
 <script type='text/javascript' src='/lex/js/lex.js'></script>
 
 <link rel="stylesheet" type="text/css" media="screen" href="/lex/css/lex.css" />

@@ -12,7 +12,7 @@
 <div id="columnLeft">
 	
 	<div class="highlightBox">
-	<form action="/lex/action" method="get" >
+	<form id="quickSearch" action="/lex/action" method="get" >
 	<h2>Dictionary Quick Search</h2>
 	<p>
 	<input type="hidden" name="cmd" value="find" />
@@ -36,7 +36,7 @@
 	<c:if test="${ editMode }">
 
 	<div class="highlightBox">
-	<form action="/lex/action" method="get" >
+	<form id="newTerm" action="/lex/action" method="get" >
 	<h2>Add a new term</h2>	
 	<p>
 	<input type="hidden" name="cmd" value="getInsertTermForm" />
@@ -54,14 +54,14 @@
 	
 	<div class="highlightBox">
 	<h2>Defaults &amp; Preferences</h2>
-	<form action="/lex/action" method="get" >
+	<form id="defaults" action="/lex/action" method="get" >
 	<p>
 	<input type="hidden" name="cmd" value="getMetaDefaultsForm" />
 	<input type="submit" value="Defaults"/> 
 	</p>
 	</form>
 	
-	<form action="/lex/action" method="get" >
+	<form id="preferences" action="/lex/action" method="get" >
 	<p>
 	<input type="hidden" name="cmd" value="getMetaPrefsForm" />
 	<input type="submit" value="Preferences" /> <br />
