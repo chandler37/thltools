@@ -36,15 +36,15 @@ class ACIPRules {
     private static HashSet acipVowels = null;
 
     private static String[][] baseVowels = new String[][] {
-        // { ACIP, EWTS }:
-        { "A", "a" },
-        { "I", "i" },
-        { "U", "u" },
-        { "E", "e" },
-        { "O", "o" },
-        { "EE", "ai" },
-        { "OO", "au" },
-        { "i", "-i" }
+        // { ACIP, EWTS, EWTS for '\'' + baseVowels[][0] }:
+        { "A", "a", "A" },
+        { "I", "i", "I" },
+        { "U", "u", "U" },
+        { "E", "e", "Ae" },
+        { "O", "o", "Ao" },
+        { "EE", "ai", "Aai" },
+        { "OO", "au", "Aau" },
+        { "i", "-i", "A-i" }
     };
 
     /** Returns true if and only if s is an ACIP "vowel".  You can't
@@ -68,6 +68,7 @@ class ACIPRules {
                 acipVowels.add(baseVowels[i][0] + "m:");
                 acipVowels.add('\'' + baseVowels[i][0] + "m:");
                 // DLC keep this code in sync with getUnicodeFor.
+                // DLC keep this code in sync with getWylieForACIPVowel
 
                 // DLC '\' for visarga? how shall we do \ the visarga? like a vowel or not?
             }
@@ -198,9 +199,13 @@ class ACIPRules {
 
             for (int i = 0; i < baseVowels.length; i++) {
                 acipVowel2wylie.put(baseVowels[i][0], baseVowels[i][1]);
+                acipVowel2wylie.put('\'' + baseVowels[i][0], baseVowels[i][2]);
                 acipVowel2wylie.put(baseVowels[i][0] + 'm', baseVowels[i][1] + 'M');
+                acipVowel2wylie.put('\'' + baseVowels[i][0] + 'm', baseVowels[i][2] + 'M');
                 acipVowel2wylie.put(baseVowels[i][0] + ':', baseVowels[i][1] + 'H');
+                acipVowel2wylie.put('\'' + baseVowels[i][0] + ':', baseVowels[i][2] + 'H');
                 acipVowel2wylie.put(baseVowels[i][0] + "m:", baseVowels[i][1] + "MH");
+                acipVowel2wylie.put('\'' + baseVowels[i][0] + "m:", baseVowels[i][2] + "MH");
             }
         }
         return (String)acipVowel2wylie.get(acip);
