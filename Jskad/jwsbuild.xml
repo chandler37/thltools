@@ -5,7 +5,7 @@
      probably should read.
 -->
 
-<project name="THDLTools" default="fail-nicely" basedir=".">
+<project name="THDLTools-JWS" default="fail-nicely" basedir=".">
 
 
   <description>
