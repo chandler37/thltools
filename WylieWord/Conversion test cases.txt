@@ -193,6 +193,11 @@ A I U -i -I
 // leading weird vowels
 aiga
 -Iba
+// two or more vowels in a row
+A.I.ai
+a.a
+ai.-i
+-I.e
 
 // M,H on bare vowel
 aiM
