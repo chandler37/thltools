@@ -316,8 +316,8 @@ public class ACIPConverter {
                             hasErrors = true;
                             tdoc.appendRoman(err, Color.RED);
                         } else {
-                            tdoc.appendDuffCodes(new DuffCode[] { TibetanMachineWeb.getGlyph(wylie) },
-                                                 Color.BLACK);
+                            tdoc.appendDuffCode(TibetanMachineWeb.getGlyph(wylie),
+                                                Color.BLACK);
                         }
                     }
                 } else {
@@ -511,7 +511,7 @@ public class ACIPConverter {
                                        && lpl.get(0).getLeft().equals("NG")) {
                                 DuffCode tshegDuff = TibetanMachineWeb.getGlyph(" ");
                                 if (null == tshegDuff) throw new Error("tsheg duff");
-                                tdoc.appendDuffCodes(new DuffCode[] { tshegDuff }, lastColor);
+                                tdoc.appendDuffCode(tshegDuff, lastColor);
                             }
 
                             if (!done) {
