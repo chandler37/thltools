@@ -111,7 +111,37 @@ Attribute convert.VB_ProcData.VB_Invoke_Func = "Project.NewMacros.Macro1"
     For n = 0 To c
         Selection.TypeText Text:=outDoc(n)
     Next n
-
+        Selection.Find.ClearFormatting
+    Selection.Find.Replacement.ClearFormatting
+    With Selection.Find
+        .Text = "&amp;"
+        .Replacement.Text = "&"
+        .Forward = True
+        .Wrap = wdFindContinue
+        .Format = False
+        .MatchCase = False
+        .MatchWholeWord = False
+        .MatchWildcards = False
+        .MatchSoundsLike = False
+        .MatchAllWordForms = False
+    End With
+    Selection.Find.Execute Replace:=wdReplaceAll
+    Selection.Find.ClearFormatting
+    Selection.Find.Replacement.ClearFormatting
+    With Selection.Find
+        .Text = "&"
+        .Replacement.Text = "&amp;"
+        .Forward = True
+        .Wrap = wdFindContinue
+        .Format = False
+        .MatchCase = False
+        .MatchWholeWord = False
+        .MatchWildcards = False
+        .MatchSoundsLike = False
+        .MatchAllWordForms = False
+    End With
+    Selection.Find.Execute Replace:=wdReplaceAll
+    MsgBox ("Conversion Done! Paste contents of new document into XML editor.")
     
 End Sub
 Sub doHeaders()
@@ -415,9 +445,10 @@ Function iterateRange(ByVal rng)
             
         ElseIf char1.Style = "Hyperlink,hl" Then
             textToDis = char1.Hyperlinks(1).TextToDisplay
-            outStr = Left(outStr, Len(outStr) - (14 + Len(textToDis)))
-            outStr = outStr & "<a href=""" & char1.Hyperlinks(1).Address & """>" _
-                & textToDis & "</a>"
+            leftPt = InStr(outStr, " HYPERLINK") - 1
+            outStr = Left(outStr, leftPt)
+            outStr = outStr & "<xref n=""" & char1.Hyperlinks(1).Address & """>" _
+                & textToDis & "</xref>"
             n = n + Len(textToDis)
             
         Else:
@@ -439,6 +470,13 @@ Function iterateRange(ByVal rng)
             Application.StatusBar = statusStr
         End If
     Next n
+    If InStr(outStr, "HYPERLINK") Then
+        sInd = InStr(outStr, " HYPERLINK")
+        hind = InStr(outStr, "http")
+        eInd = InStr(hind, outStr, """")
+        linkURL = Mid(outStr, hind, eInd - hind)
+        outStr = "<xref n=""" & linkURL & """>" & Mid(outStr, (eInd + 2)) & "</xref>"
+    End If
     iterateRange = outStr & closeTag
 End Function
 Function iterateNote(ByVal rng As Range)
@@ -463,9 +501,10 @@ Function iterateNote(ByVal rng As Range)
             
         ElseIf char1.Style = "Hyperlink,hl" Then
             textToDis = char1.Hyperlinks(1).TextToDisplay
-            outStr = Left(outStr, Len(outStr) - 1)
-            outStr = outStr & "<a href=""" & char1.Hyperlinks(1).Address & """>" _
-                & textToDis & "</a>"
+            leftPt = InStr(outStr, " HYPERLINK") - 1
+            outStr = Left(outStr, leftPt)
+            outStr = outStr & "<xref n=""" & char1.Hyperlinks(1).Address & """>" _
+                & textToDis & "</xref>"
             ct = ct + Len(textToDis) - 2
             
         Else:
