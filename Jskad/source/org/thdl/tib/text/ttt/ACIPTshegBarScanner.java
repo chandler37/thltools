@@ -767,13 +767,33 @@ public class ACIPTshegBarScanner {
             case ';':
             case '`':
             case '#':
+
                 // The tsheg bar ends here; new token.
                 if (startOfString < i) {
                     al.add(new ACIPString(s.substring(startOfString, i),
                                           currentType));
                 }
-                al.add(new ACIPString(s.substring(i, i+1),
-                                      ACIPString.TIBETAN_PUNCTUATION));
+
+                // Insert a tsheg if necessary.  ACIP files aren't
+                // careful, so "KA\r\n" and "GA\n" appear where "KA
+                // \r\n" and "GA \n" should appear.
+                if (('\r' == ch
+                     || '\n' == ch)
+                    && !al.isEmpty()
+                    && ((ACIPString)al.get(al.size() - 1)).getType() == ACIPString.TIBETAN_NON_PUNCTUATION) {
+                    al.add(new ACIPString(" ",
+                                          ACIPString.TIBETAN_PUNCTUATION));
+                }
+
+                // Don't add in a "\r\n" or "\n" unless there's a
+                // blank line.
+                boolean rn = false;
+                if (('\n' != ch && '\r' != ch)
+                    || ((rn = ('\n' == ch && i >= 3 && s.charAt(i-3) == '\r' && s.charAt(i-2) == '\n' && s.charAt(i-1) == '\r'))
+                        || ('\n' == ch && i >= 1 && s.charAt(i-1) == '\n'))) {
+                    al.add(new ACIPString(rn ? s.substring(i - 1, i+1) : s.substring(i, i+1),
+                                          ACIPString.TIBETAN_PUNCTUATION));
+                }
                 startOfString = i+1;
                 currentType = ACIPString.ERROR;
                 break; // end TIBETAN_PUNCTUATION case

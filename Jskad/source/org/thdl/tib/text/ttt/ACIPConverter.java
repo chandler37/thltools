@@ -35,13 +35,6 @@ import org.thdl.tib.text.DuffCode;
 * @author David Chandler
 */
 public class ACIPConverter {
-    static {
-        // We don't want to load the TM or TMW font files ourselves:
-        ThdlOptions.setUserPreference("thdl.rely.on.system.tmw.fonts", true);
-        ThdlOptions.setUserPreference("thdl.rely.on.system.tm.fonts", true);
-        ThdlOptions.setUserPreference("thdl.debug", true);
-    }
-
     // DLC NOW: (KA)'s info is lost when you convert to Unicode text instead of Unicode RTF.  Give an ERROR.
 
     /** Command-line converter.  Gives error messages on standard
@@ -52,6 +45,11 @@ public class ACIPConverter {
     public static void main(String[] args)
         throws IOException
     {
+        // We don't want to load the TM or TMW font files ourselves:
+        ThdlOptions.setUserPreference("thdl.rely.on.system.tmw.fonts", true);
+        ThdlOptions.setUserPreference("thdl.rely.on.system.tm.fonts", true);
+        ThdlOptions.setUserPreference("thdl.debug", true);
+
         boolean verbose = true;
         if (args.length != 1) {
             System.out.println("Bad args!  Need just the name of the ACIP text file.");
@@ -216,6 +214,24 @@ public class ACIPConverter {
                          writeWarningsToOut, warningLevel);
     }
 
+    private static boolean peekaheadFindsSpacesAndComma(ArrayList /* of ACIPString */ scan,
+                                                        int pos) {
+        int sz = scan.size();
+        while (pos < sz) {
+            ACIPString s = (ACIPString)scan.get(pos++);
+            if (s.getType() == ACIPString.TIBETAN_PUNCTUATION && s.getText().equals(" ")) {
+                // keep going
+            } else {
+                if (s.getType() == ACIPString.TIBETAN_PUNCTUATION && s.getText().equals(",")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
     private static boolean convertTo(boolean toUnicode, // else to TMW
                                      ArrayList scan,
                                      OutputStream out, // for toUnicode mode
@@ -232,15 +248,21 @@ public class ACIPConverter {
         if (toUnicode)
             writer
                 = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+        boolean lastGuyWasNonPunct = false;
+        TStackList lastGuy = null;
         for (int i = 0; i < sz; i++) {
             ACIPString s = (ACIPString)scan.get(i);
             int stype = s.getType();
             if (stype == ACIPString.ERROR) {
+                lastGuyWasNonPunct = false;
+                lastGuy = null;
                 hasErrors = true;
                 String text = "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: " + s.getText() + "]";
                 if (null != writer) writer.write(text);
                 if (null != tdoc) tdoc.appendRoman(text);
             } else if (stype == ACIPString.WARNING) {
+                lastGuyWasNonPunct = false;
+                lastGuy = null;
                 if (writeWarningsToOut) {
                     String text = "[#WARNING CONVERTING ACIP DOCUMENT: Lexical warning: " + s.getText() + "]";
                     if (null != writer) writer.write(text);
@@ -255,6 +277,8 @@ public class ACIPConverter {
                 }
             } else {
                 if (s.isLatin(stype)) {
+                    lastGuyWasNonPunct = false;
+                    lastGuy = null;
                     String text
                         = (((stype == ACIPString.FOLIO_MARKER) ? "{" : "")
                            + s.getText()
@@ -265,6 +289,7 @@ public class ACIPConverter {
                     String unicode = null;
                     DuffCode[] duff = null;
                     if (stype == ACIPString.TIBETAN_NON_PUNCTUATION) {
+                        lastGuyWasNonPunct = true;
                         TPairList pl = TPairListFactory.breakACIPIntoChunks(s.getText());
                         String acipError;
 
@@ -294,6 +319,7 @@ public class ACIPConverter {
                                     if (null != errors)
                                         errors.append(errorMessage + "\n");
                                 } else {
+                                    lastGuy = sl;
                                     String warning
                                         = pt.getWarning(warningLevel,
                                                         pl,
@@ -332,16 +358,50 @@ public class ACIPConverter {
                             if (null != writer) unicode = "\u0F3D";
                             if (null != tdoc) duff = new DuffCode[] { TibetanMachineWeb.getGlyph(")") };
                         } else {
-                            if (null != writer) unicode = ACIPRules.getUnicodeFor(s.getText(), false);
-                            if (null != tdoc) {
-                                if (s.getText().equals("\r") || s.getText().equals("\t") || s.getText().equals("\n")) {
-                                    tdoc.appendRoman(s.getText());
-                                    continue;
+                            // For ACIP, tshegs are used as both
+                            // tshegs and whitespace.  We treat a
+                            // space as a tsheg if and only if it
+                            // occurs after TIBETAN_NON_PUNCTUATION.
+                            // But "SHIG ,MDO" is an example of a
+                            // special case, needed because a tsheg is
+                            // not used after a GA in Tibetan
+                            // typesetting.
+                            boolean done = false;
+                            // DLC what about after numbers?  marks?
+                            if (s.getText().equals(" ")) {
+                                TPairList lpl = null;
+                                if (!lastGuyWasNonPunct
+                                    || (null != lastGuy
+                                        && (lpl = lastGuy.get(lastGuy.size() - 1)).size() == 1
+                                        && lpl.get(0).getLeft().equals("G")
+                                        && // it's (G . anything)
+                                           // followed by some number
+                                           // of spaces (at least one,
+                                           // this one) and then a
+                                           // comma:
+                                        peekaheadFindsSpacesAndComma(scan, i+1))) {
+                                    if (null != writer) {
+                                        unicode = "    ";
+                                        done = true;
+                                    }
+                                    if (null != tdoc) {
+                                        tdoc.appendRoman("    ");
+                                        continue;
+                                    }
                                 }
-                                else {
-                                    String wy = ACIPRules.getWylieForACIPOther(s.getText());
-                                    if (null == wy) throw new Error("No wylie for ACIP " + s.getText());
-                                    duff = new DuffCode[] { TibetanMachineWeb.getGlyph(wy) };
+                            }
+                            if (!done) {
+                                if (null != writer) unicode = ACIPRules.getUnicodeFor(s.getText(), false);
+                                if (null != tdoc) {
+                                    if (s.getText().equals("\r") || s.getText().equals("\t") || s.getText().equals("\n")) {
+                                        tdoc.appendRoman(s.getText());
+                                        continue;
+                                    }
+                                    else {
+                                        String wy = ACIPRules.getWylieForACIPOther(s.getText());
+                                        if (null == wy) throw new Error("No wylie for ACIP " + s.getText());
+                                        duff = new DuffCode[] { TibetanMachineWeb.getGlyph(wy) };
+                                    }
                                 }
                             }
                         }
@@ -349,6 +409,8 @@ public class ACIPConverter {
                             throw new Error("FIXME: make this an assertion 1");
                         if (null != tdoc && (null == duff || 0 == duff.length))
                             throw new Error("FIXME: make this an assertion 2");
+                        lastGuyWasNonPunct = false;
+                        lastGuy = null;
                     }
                     if (null != writer && null != unicode) writer.write(unicode);
                     if (null != tdoc) {
