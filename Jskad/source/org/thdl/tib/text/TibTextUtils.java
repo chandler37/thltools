@@ -950,6 +950,7 @@ public class TibTextUtils implements THDLWylieConstants {
             } else if (TGCPair.SANSKRIT_WITHOUT_VOWEL == cls
                        || TGCPair.SANSKRIT_WITH_VOWEL == cls) {
                 candidateType = "invalid";
+                break;
             } else if (TGCPair.CONSONANTAL_WITHOUT_VOWEL == cls
                        || TGCPair.CONSONANTAL_WITH_VOWEL == cls) {
                 if (null == candidateType) {
@@ -1126,8 +1127,10 @@ public class TibTextUtils implements THDLWylieConstants {
                             break;
                         }
                     } else {
+                        if ("invalid" == candidateType)
+                            throw new Error("forgot to break out of the for loop after diagnosing invalidity.");
                         if ("number" != candidateType)
-                            throw new Error("missed a case");
+                            throw new Error("missed a case; case is " + candidateType);
                         if (null != warnings)
                             warnings.append("Found a consonant or consonant stack after something odd; the consonantish thing has wylie " + wylie + "\n");
                         candidateType = "invalid";
