@@ -352,11 +352,12 @@ public class ACIPConverter {
                                     if (null != tdoc) {
                                         duff = sl.getDuff();
                                         if (sl.isLegalTshegBar(true).isLegal && !sl.isLegalTshegBar(false).isLegal) {
-                                            color = Color.GRAY;
+                                            color = Color.YELLOW;
                                         } else if (sl.isLegalTshegBar(false).isLegal) {
                                             color = Color.BLACK;
                                         } else {
-                                            color = Color.YELLOW;
+                                            // Sanskrit
+                                            color = Color.GREEN;
                                         }
 
                                         if (0 == duff.length) {
