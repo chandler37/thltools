@@ -434,18 +434,26 @@ public class Jskad extends JPanel implements DocumentListener {
         JMenuItem wylieTMWItem = new JMenuItem("Convert Wylie to Tibetan");
         wylieTMWItem.addActionListener(new ThdlActionListener() {
             public void theRealActionPerformed(ActionEvent e) {
-                toTibetan(false);
+                toTibetan(false, true);
             }
         });
         convertSelectionMenu.add(wylieTMWItem);
 
-        JMenuItem ACIPTMWItem = new JMenuItem("Convert ACIP to Tibetan");
+        JMenuItem ACIPTMWItem = new JMenuItem("Convert ACIP to Tibetan (no warnings)");
         ACIPTMWItem.addActionListener(new ThdlActionListener() {
             public void theRealActionPerformed(ActionEvent e) {
-                toTibetan(true);
+                toTibetan(true, false);
             }
         });
         convertSelectionMenu.add(ACIPTMWItem);
+
+        JMenuItem ACIPTMWWarnItem = new JMenuItem("Convert ACIP to Tibetan (with warnings)");
+        ACIPTMWWarnItem.addActionListener(new ThdlActionListener() {
+            public void theRealActionPerformed(ActionEvent e) {
+                toTibetan(true, true);
+            }
+        });
+        convertSelectionMenu.add(ACIPTMWWarnItem);
 
         JMenu convertAllMenu = new JMenu("Convert All");
 
@@ -1130,9 +1138,9 @@ public class Jskad extends JPanel implements DocumentListener {
         dp.paste(dp.getCaret().getDot());
     }
 
-    private void toTibetan(boolean fromACIP) {
+    private void toTibetan(boolean fromACIP, boolean withWarnings) {
         Jskad.this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        dp.toTibetanMachineWeb(fromACIP);
+        dp.toTibetanMachineWeb(fromACIP, withWarnings);
         Jskad.this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 

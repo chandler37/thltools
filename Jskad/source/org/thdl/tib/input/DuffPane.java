@@ -1566,21 +1566,25 @@ public void paste(int offset) {
 * Converts the currently selected text from Roman transliteration to
 * TibetanMachineWeb.
 * @param fromACIP true if the selection is ACIP, false if it is EWTS
+* @param withWarnings true if and only if you want warnings to appear
+* in the output, such as "this could be a mistranscription of blah..."
 * */
-    public void toTibetanMachineWeb(boolean fromACIP) {
+    public void toTibetanMachineWeb(boolean fromACIP, boolean withWarnings) {
         int start = getSelectionStart();
         int end = getSelectionEnd();
 
-        toTibetanMachineWeb(fromACIP, start, end);
+        toTibetanMachineWeb(fromACIP, withWarnings, start, end);
     }
 
 /**
 * Converts a stretch of text from Extended Wylie to TibetanMachineWeb.
 * @param fromACIP true if the selection is ACIP, false if it is EWTS
+* @param withWarnings true if and only if you want warnings to appear
+* in the output, such as "this could be a mistranscription of blah..."
 * @param start the begin point for the conversion
-* @param end the end point for the conversion
-*/
-    public void toTibetanMachineWeb(boolean fromACIP, int start, int end) {
+* @param end the end point for the conversion */
+    public void toTibetanMachineWeb(boolean fromACIP, boolean withWarnings,
+                                    int start, int end) {
         if (start == end)
             return;
 
@@ -1605,7 +1609,10 @@ public void paste(int offset) {
                             DuffData[] duffdata = null;
                             if (fromACIP) {
                                 getTibDoc().remove(start, i-start);
-                                TibTextUtils.insertTibetanMachineWebForACIP(sb.toString(), getTibDoc(), start);
+                                TibTextUtils.insertTibetanMachineWebForACIP(sb.toString(),
+                                                                            getTibDoc(),
+                                                                            start,
+                                                                            withWarnings);
                             }
                             else
                                 duffdata = TibTextUtils.getTibetanMachineWebForEWTS(sb.toString());
