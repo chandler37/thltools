@@ -40,26 +40,35 @@ public class OnLineScannerFilter extends HttpServlet
     private final static String propertyFile = "dictionary";
     private final static String dictNameProperty = "onlinescannerfilter.dict-file-name";
     private final static String otherLinksProperty = "onlinescannerfilter.links-to-other-stuff";
+    private final static String clearStr = "Clear"; 
+    private final static String buttonStr = "button";
+    private final static String scriptStr = "script";
+    private final static String tibetanStr = "tibetan";
+    
     ResourceBundle rb;
 	private TibetanScanner scanner;
+	private String dictionaries[];
 	
 	public OnLineScannerFilter() throws Exception
 	{
 		rb = ResourceBundle.getBundle(propertyFile);
 		scanner = new LocalTibetanScanner(rb.getString(dictNameProperty));
+		dictionaries = scanner.getDictionaryDescriptions();
 	}
 
-    public void doGet(HttpServletRequest request,
+    synchronized public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
         throws IOException, ServletException
     {
+		String answer, parrafo = null, checkboxName;
+        
         // if this line is included in the constructor, it works on the iris server but not on wyllie!
         ThdlOptions.setUserPreference("thdl.rely.on.system.tmw.fonts", true);	    
         ThdlOptions.setUserPreference("thdl.rely.on.system.tm.fonts", true);
         
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
-		String parrafo = request.getParameter("parrafo"), checkboxName, script;
+				
 		DictionarySource ds=null;
 		boolean checkedDicts[], allUnchecked, wantsTibetan, useTHDLBanner = (request.getParameter("thdlBanner")!=null);
 		// int percent=100;
@@ -85,12 +94,12 @@ public class OnLineScannerFilter extends HttpServlet
         out.println(" <meta name=\"Description\" content=\"This Java tool takes Tibetan language passages and divides the passages up into their component phrases and words, and displays corresponding dictionary definitions.\">");
         out.println(" <meta name=\"MSSmartTagsPreventParsing\" content=\"TRUE\">");
 		
-        script = request.getParameter("script");
+        answer = request.getParameter(scriptStr);
         
         /* script==null || makes default tibetan
            script!=null && makes default roman
         */
-        wantsTibetan = (script==null || script.equals("tibetan"));
+        wantsTibetan = (answer==null || answer.equals(tibetanStr));
         if (wantsTibetan)
         {
 	    	out.println("<style>.tmw {font: 28pt TibetanMachineWeb}");
@@ -165,16 +174,15 @@ public class OnLineScannerFilter extends HttpServlet
         out.println("    <td width=\"25%\">");
         out.println("      <p>Display results in:</td>");
         out.println("    <td width=\"75%\">");
-        out.println("      <p><input type=\"radio\" value=\"tibetan\" ");
+        out.println("      <p><input type=\"radio\" value=\"" + tibetanStr + "\" ");
         if (wantsTibetan) out.println("checked ");
-        out.println("name=\"script\">Tibetan script (using <a href=\"http://iris.lib.virginia.edu/tibet/tools/tmw.html\" target=\"_blank\">Tibetan Machine Web font</a>)<br/>");
+        out.println("name=\"" + scriptStr + "\">Tibetan script (using <a href=\"http://iris.lib.virginia.edu/tibet/tools/tmw.html\" target=\"_blank\">Tibetan Machine Web font</a>)<br/>");
         out.println("      <input type=\"radio\" value=\"roman\" ");
         if (!wantsTibetan) out.println("checked ");
-        out.println("name=\"script\">Roman script</td>");
+        out.println("name=\"" + scriptStr + "\">Roman script</td>");
         out.println("  </tr>");
         out.println("</table>");
 
-		String dictionaries[] = scanner.getDictionaryDescriptions();
 		if (dictionaries!=null)
 		{
 			int i;
@@ -233,13 +241,21 @@ public class OnLineScannerFilter extends HttpServlet
 		out.println("      <p><strong>Input text:</strong></p>");
         out.println("    </td>");
         out.println("    <td width=\"65%\">");
-        out.println("      <p> <input type=submit value=\"Translate\"> <input type=\"reset\" value=\"Clear\"></p>");
+        out.println("      <p> <input type=\"submit\" name=\"" + buttonStr + "\" value=\"Translate\"> <input type=\"submit\" name=\"" + buttonStr + "\" value=\"" + clearStr + "\"></p>");
         out.println("    </td>");
         out.println("  </tr>");
         out.println("</table>");
 		
         out.println("<textarea rows=\"12\" name=\"parrafo\" cols=\"60\">");
-		if (parrafo!=null) out.print(parrafo);
+
+        // Paragraph should be empty if the user just clicked the clear button
+		answer = request.getParameter(buttonStr);
+        if (answer == null || answer != null && !answer.equals(clearStr))
+        {
+		    parrafo = request.getParameter("parrafo");
+		    if (parrafo!=null) out.print(parrafo);            
+        }
+        
 		out.println("</textarea>");
         out.println("</form>");
 		

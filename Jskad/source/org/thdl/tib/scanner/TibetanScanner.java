@@ -25,15 +25,15 @@ import org.thdl.util.*;
 */
 public abstract class TibetanScanner
 {
-	public static final String copyrightUnicode="Copyright " + '\u00A9' + " 2000-2003 by Andr" + '\u00E9' + "s Montano Pellegrini, all rights reserved.";
-	public static final String copyrightASCII="Copyright 2000-2003 by Andres Montano Pellegrini, all rights reserved.";
-	public static final String copyrightHTML="<hr><small><strong>" + "The Tibetan to English Translation Tool: Version 2.1.0, compiled on " + ThdlVersion.getTimeOfCompilation() + ". Copyright &copy; 2000-2002 by <a href=\"http://www.people.virginia.edu/~am2zb/\" target=\"_blank\">Andr&eacute;s Montano Pellegrini</a><br/>All rights reserved</strong></small>";
+	public static final String copyrightUnicode="Copyright " + '\u00A9' + " 2000-2004 by Andr" + '\u00E9' + "s Montano Pellegrini, all rights reserved.";
+	public static final String copyrightASCII="Copyright 2000-2004 by Andres Montano Pellegrini, all rights reserved.";
+	public static final String copyrightHTML="<hr><small><strong>" + "The Tibetan to English Translation Tool: Version 2.2.0, compiled on " + ThdlVersion.getTimeOfCompilation() + ". Copyright &copy; 2000-2004 by <a href=\"http://www.people.virginia.edu/~am2zb/\" target=\"_blank\">Andr&eacute;s Montano Pellegrini.</a><br/>All rights reserved.</strong></small>";
 	public static final String aboutUnicode=
 	"Warning: Since version 1.3.0. the dictionary database format changed and " +
 	"is incompatible with previous versions. In order to use the newest version " +
 	"you have to re-build the dictionary database.\n\n" +
-	"The Tibetan to English Translation Tool, version 2.1.0, compiled on " + ThdlVersion.getTimeOfCompilation() + ". " +
-	"Copyright " + '\u00A9' + " 2000-2003 Andr" + '\u00E9' + "s Montano Pellegrini, all rights reserved.\n\n" + 
+	"The Tibetan to English Translation Tool, version 2.2.0, compiled on " + ThdlVersion.getTimeOfCompilation() + ". " +
+	"Copyright " + '\u00A9' + " 2000-2004 Andr" + '\u00E9' + "s Montano Pellegrini, all rights reserved.\n\n" + 
 	"This software is protected by the terms of the AMP Open Community License, " +
 	"Version 1.0 (available at www.tibet.iteso.mx/Guatemala/). The Tibetan script " +
 	"input facility was built by THDL's Edward Garrett (http://www.thdl.org/).\n" +
