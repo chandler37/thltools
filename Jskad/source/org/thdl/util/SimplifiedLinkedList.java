@@ -121,5 +121,5 @@ public class SimplifiedLinkedList
 			else array[n] = o.toString();
 		}
 		return array;		
-	}
+	}	
 }
