@@ -10,7 +10,7 @@ License for the specific terms governing rights and limitations under the
 License. 
 
 The Initial Developer of this software is the Tibetan and Himalayan Digital
-Library (THDL). Portions created by the THDL are Copyright 2001 THDL.
+Library (THDL). Portions created by the THDL are Copyright 2001-2003 THDL.
 All Rights Reserved. 
 
 Contributor(s): ______________________________________.
@@ -39,7 +39,7 @@ import org.thdl.util.ThdlOptions;
 import org.thdl.util.ThdlVersion;
 import org.thdl.util.StatusBar;
 import org.thdl.util.ThdlActionListener;
-import org.thdl.util.RTFPane;
+import org.thdl.util.HTMLPane;
 import org.thdl.util.SimpleFrame;
 import org.thdl.util.ThdlLazyException;
 
@@ -124,6 +124,8 @@ public class Jskad extends JPanel implements DocumentListener {
         }
     }
 
+    /** pane displaying Jskad's single HTML help file */
+    private static HTMLPane helpPane;
 
 /**
 * @param parent the object that embeds this instance of Jskad.
@@ -327,23 +329,35 @@ public class Jskad extends JPanel implements DocumentListener {
 
 		JMenu infoMenu = new JMenu("Info");
 
-		JMenuItem aboutItem = new JMenuItem("About");
-		aboutItem.addActionListener(new ThdlActionListener() {
-			public void theRealActionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(Jskad.this,
-					"Copyright 2001-2002 Tibetan and Himalayan Digital Library\n\n"+
-					"Jskad is protected by the THDL Open Community License.\n\n"+ /* FIXME HARD-CODED VERSION NUMBER */
-			
-					"For more information, or to download the source code\n"+
-					"for Jskad, visit our web site:\n"+
-					"     http://www.thdl.org/\n" +
-                    "\n" +
-                    "When submitting bug reports, please indicate that the\n" +
-                    "time of compilation is "
-                        + ThdlVersion.getTimeOfCompilation() + "\n",
-                    "About Jskad", JOptionPane.PLAIN_MESSAGE);
-			}
-		});
+        {
+            JMenuItem helpItem = new JMenuItem("Help");
+            helpItem.addActionListener(new ThdlActionListener() {
+                    public void theRealActionPerformed(ActionEvent e) {
+                        if (helpPane == null) {
+                            try {
+                                helpPane
+                                    = new HTMLPane(Jskad.class,
+                                                   "/org/thdl/tib/input/jskad_doc.html");
+                            } catch (Exception ex) {
+                                ex.printStackTrace(System.err);
+                                throw new ThdlLazyException(ex);
+                                /* DLC FIXME--handle this better.
+                                   show a dialog saying "help can't be
+                                   loaded, surf to thdl's web site and
+                                   also submit a bug report." */
+                            }
+                        }
+                        new SimpleFrame("Help for Jskad", helpPane);
+                        /* DLC FIXME -- pressing the "Help" menu item
+                           twice causes the first pane to become dead.
+                           We should check to see if the first pane
+                           exists and raise it rather than creating a
+                           second pane. */
+                    }
+                });
+            infoMenu.add(helpItem);
+            infoMenu.addSeparator();
+        }
 
         for (int i = 0; i < keybdMgr.size(); i++) {
             final JskadKeyboard kbd = keybdMgr.elementAt(i);
@@ -353,6 +367,12 @@ public class Jskad extends JPanel implements DocumentListener {
                         public void theRealActionPerformed(ActionEvent e) {
                             new SimpleFrame(kbd.getIdentifyingString(),
                                             kbd.getQuickRefPane());
+                            /* DLC FIXME -- pressing the "Extended
+                               Wylie" menu item twice causes the first
+                               pane to become dead.  We should check
+                               to see if the first pane exists and
+                               raise it rather than creating a second
+                               pane. */
                         }
                     });
                 infoMenu.add(keybdItem);
@@ -361,7 +381,26 @@ public class Jskad extends JPanel implements DocumentListener {
 
 		infoMenu.addSeparator();
 
-		infoMenu.add(aboutItem);
+        {
+            JMenuItem aboutItem = new JMenuItem("About");
+            aboutItem.addActionListener(new ThdlActionListener() {
+                    public void theRealActionPerformed(ActionEvent e) {
+                        JOptionPane.showMessageDialog(Jskad.this,
+                                                      "Copyright 2001-2003 Tibetan and Himalayan Digital Library\n\n"+
+                                                      "Jskad is protected by the THDL Open Community License.\n\n"+ /* FIXME HARD-CODED VERSION NUMBER */
+			
+                                                      "For more information, or to download the source code\n"+
+                                                      "for Jskad, visit our web site:\n"+
+                                                      "     http://www.thdl.org/\n" +
+                                                      "\n" +
+                                                      "When submitting bug reports, please indicate that the\n" +
+                                                      "time of compilation is "
+                                                      + ThdlVersion.getTimeOfCompilation() + "\n",
+                                                      "About Jskad", JOptionPane.PLAIN_MESSAGE);
+                    }
+                });
+            infoMenu.add(aboutItem);
+        }
 
 		menuBar.add(infoMenu);
 
