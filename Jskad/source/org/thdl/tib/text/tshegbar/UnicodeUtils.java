@@ -403,5 +403,108 @@ public class UnicodeUtils implements UnicodeConstants {
                 || (cp >= '\u0FCD' && cp <= '\u0FCE')
                 || (cp >= '\u0FD0' && cp <= '\u0FFF'));
     }
+
+    /** This array has a number of pairs. The first element in a pair
+     *  is the one that should come first if the two characters are
+     *  direct neighbors in a sequence.  (Note that this is not the
+     *  most compact form for this information: we've done a cross
+     *  product already instead of letting the code do the cross
+     *  product.)
+     */
+    private static char unicode_pairs[][]
+        = { { '\u0f71', '\u0f74' },
+
+            { '\u0f71', '\u0f72' },
+            { '\u0f71', '\u0f7a' },
+            { '\u0f71', '\u0f7b' },
+            { '\u0f71', '\u0f7c' },
+            { '\u0f71', '\u0f7d' },
+            { '\u0f71', '\u0f80' },
+
+            { '\u0f71', '\u0f7e' },
+            { '\u0f71', '\u0f82' },
+            { '\u0f71', '\u0f83' },
+
+            { '\u0f74', '\u0f72' },
+            { '\u0f74', '\u0f7a' },
+            { '\u0f74', '\u0f7b' },
+            { '\u0f74', '\u0f7c' },
+            { '\u0f74', '\u0f7d' },
+            { '\u0f74', '\u0f80' },
+
+            { '\u0f74', '\u0f7e' },
+            { '\u0f74', '\u0f82' },
+            { '\u0f74', '\u0f83' },
+
+            { '\u0f72', '\u0f7e' },
+            { '\u0f72', '\u0f82' },
+            { '\u0f72', '\u0f83' },
+
+            { '\u0f7a', '\u0f7e' },
+            { '\u0f7a', '\u0f82' },
+            { '\u0f7a', '\u0f83' },
+
+            { '\u0f7b', '\u0f7e' },
+            { '\u0f7b', '\u0f82' },
+            { '\u0f7b', '\u0f83' },
+
+            { '\u0f7c', '\u0f7e' },
+            { '\u0f7c', '\u0f82' },
+            { '\u0f7c', '\u0f83' },
+
+            { '\u0f7d', '\u0f7e' },
+            { '\u0f7d', '\u0f82' },
+            { '\u0f7d', '\u0f83' },
+
+            { '\u0f80', '\u0f7e' },
+            { '\u0f80', '\u0f82' },
+            { '\u0f80', '\u0f83' },
+        };
+
+    /** Mutates sb if sb contains an error like having U+0f72 directly
+     *  before U+0f71.  Let's say more:
+     *
+     *  <p>Chris Fynn wrote:</p>
+     *
+     *  <blockquote>By normal Tibetan & Dzongkha spelling, writing,
+     *  and input rules Tibetan script stacks should be entered and
+     *  written: 1 headline consonant (0F40-&gt;0F6A), any subjoined
+     *  consonant(s) (0F90-&gt; 0F9C), achung (0F71), shabkyu (0F74),
+     *  any above headline vowel(s) (0F72 0F7A 0F7B 0F7C 0F7D and
+     *  0F80); any ngaro (0F7E, 0F82 and 0F83)</blockquote>
+     *
+     *  <p>FIXME DLC: We still miss some Unicode well-formedness
+     *  problems here, but the problems that this function does catch
+     *  may not be solved during e.g. a TMW-to-Unicode conversion
+     *  because we don't call this function for the entire output,
+     *  just pieces of it.  Depending on how you break up those pieces
+     *  we could miss problems that this function can fix.  TODO(DLC):
+     *  A separate tool that passes over a unicode file and outputs
+     *  the same file modulo Unicode booboos would be better.  </p>
+     *
+     *  @param sb the buffer to be mutated
+     *  @return true if sb was mutated */
+    public static boolean fixSomeOrderingErrorsInTibetanUnicode(StringBuffer sb) {
+        boolean mutated = false;
+        int len = sb.length();
+        boolean mutated_this_time_through;
+        // the do-while loop helps us be correct for \u0f7a\u0f72\u0f71.
+
+        // PERFORMANCE FIXME: try using a map instead of iterating
+        // over all of unicode_pairs and see if it isn't faster.
+        do {
+            mutated_this_time_through = false;
+            for (int i = 0; i < len - 1; i++)
+                for (int j = 0; j < unicode_pairs.length; j++)
+                    if (unicode_pairs[j][1] == sb.charAt(i)
+                        && unicode_pairs[j][0] == sb.charAt(i + 1)) {
+                        sb.setCharAt(i, unicode_pairs[j][0]);
+                        sb.setCharAt(i + 1, unicode_pairs[j][1]);
+                        mutated = true;
+                        mutated_this_time_through = true;
+                    }
+        } while (mutated_this_time_through);
+        return mutated;
+    }
 }
 

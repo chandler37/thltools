@@ -379,4 +379,32 @@ public class UnicodeUtilsTest extends TestCase implements UnicodeConstants {
         assertTrue(UnicodeUtils.isInTibetanRange('\u0FF0'));
         assertTrue(UnicodeUtils.isInTibetanRange('\u0FFF'));
     }
+
+    /**
+     * Tests the {@link UnicodeUtils#fixSomeOrderingErrorsInTibetanUnicode(StringBuffer)}
+     * method. */
+    public void testFixSomeOrderingErrorsInTibetanUnicode() {
+        // Test that "\u0f67\u0f72\u0f71" becomes "\u0f67\u0f71\u0f72", e.g:
+        String tt[][] = {
+            { "\u0f67\u0f72\u0f71", "\u0f67\u0f71\u0f72" },
+            { "\u0f7a\u0f72\u0f71", "\u0f71\u0f7a\u0f72" },
+            { "\u0f67\u0f7e\u0f71", "\u0f67\u0f71\u0f7e" },
+            { "\u0f67\u0f74\u0f71", "\u0f67\u0f71\u0f74" },
+            { "\u0f67\u0f7e\u0f72", "\u0f67\u0f72\u0f7e" },
+            { "\u0f67\u0f7e\u0f74", "\u0f67\u0f74\u0f7e" },
+        };
+        for (int i = 0; i < tt.length; i++) {
+            StringBuffer sb = new StringBuffer(tt[i][0]);
+            assertTrue(true == UnicodeUtils.fixSomeOrderingErrorsInTibetanUnicode(sb));
+            assertTrue(sb.toString().equals(tt[i][1]));
+        }
+
+        // Test that "\u0f67\u0f71\u0f72" stays the same, e.g.:
+        String uu[] = { "\u0f67\u0f71\u0f72" };
+        for (int i = 0; i < uu.length; i++) {
+            StringBuffer sb = new StringBuffer(uu[i]);
+            assertTrue(false == UnicodeUtils.fixSomeOrderingErrorsInTibetanUnicode(sb));
+            assertTrue(sb.toString().equals(uu[i]));
+        }
+    }
 }

@@ -28,6 +28,7 @@ import java.awt.Color;
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlOptions;
 import org.thdl.util.ThdlLazyException;
+import org.thdl.tib.text.tshegbar.UnicodeUtils;
 
 /** Represents a character meant to be rendered in a certain font.
  *  @author David Chandler
@@ -295,16 +296,6 @@ public class TibetanDocument extends DefaultStyledDocument {
             throw new Error("TMW->Unicode failed because the following constitute a bad position: startOffset " + startOffset + ", endOffset " + endOffset);
 		}
     }
-    // DLC NOW do I stick to these rules in TMW->Unicode mappings?
-//  Chris Fynn wrote:
-//
-//  By normal Tibetan & Dzongkha spelling, writing, and input rules
-//  Tibetan script stacks should be entered and written: 1 headline
-//  consonant (0F40->0F6A), any  subjoined consonant(s) (0F90->
-//  0F9C),  achung (0F71), shabkyu (0F74), any above headline
-//  vowel(s) (0F72 0F7A 0F7B 0F7C 0F7D and 0F80) ; any ngaro (0F7E,
-//  0F82 and 0F83)
-
 
 	private int insertDuff(int fontSize, int pos, DuffData[] glyphs, boolean asTMW) {
         return insertDuff(fontSize, pos, glyphs, asTMW, Color.black);
@@ -978,6 +969,7 @@ public class TibetanDocument extends DefaultStyledDocument {
                         // this if-else statement is duplicated below; beware!
                         int endIndex = mustReplace ? mustReplaceUntil : i;
                         if (toUnicode) {
+                            UnicodeUtils.fixSomeOrderingErrorsInTibetanUnicode(replacementQueue);
                             replaceDuffsWithUnicode(replacementFontSize,
                                                     replacementStartIndex,
                                                     endIndex,
@@ -1013,6 +1005,8 @@ public class TibetanDocument extends DefaultStyledDocument {
                         }
                         if (toUnicode) {
                             replacementQueue.append(unicode);
+                            if (debug)
+                                System.out.println("unicode rq.append: " + org.thdl.tib.text.tshegbar.UnicodeUtils.unicodeStringToString(unicode));
                         } else {
                             replacementQueue.append(dc.getCharacter());
                         }
@@ -1089,11 +1083,14 @@ public class TibetanDocument extends DefaultStyledDocument {
                 // this if-else statement is duplicated above; beware!
                 int endIndex = mustReplace ? mustReplaceUntil : i;
                 if (toUnicode) {
+                    UnicodeUtils.fixSomeOrderingErrorsInTibetanUnicode(replacementQueue);
                     replaceDuffsWithUnicode(replacementFontSize,
                                             replacementStartIndex,
                                             endIndex,
                                             replacementQueue.toString(),
                                             unicodeFont);
+                    if (debug)
+                        System.out.println("unicode rq: " + org.thdl.tib.text.tshegbar.UnicodeUtils.unicodeStringToString(replacementQueue.toString()));
                 } else {
                     replaceDuffs(replacementFontSize,
                                  replacementStartIndex,
