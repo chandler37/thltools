@@ -45,7 +45,6 @@ public class ConverterGUI implements FontConversion {
     // DLC FIXMEDOC returns true on success
     public boolean doConversion(ConvertDialog cd, File oldFile, File newFile,
                              String whichConversion) {
-        System.err.println("DLC NOW " + oldFile + " " + newFile + " " + whichConversion);
         PrintStream ps;
         try {
             returnCode
