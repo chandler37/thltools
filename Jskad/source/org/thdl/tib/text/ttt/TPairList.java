@@ -694,7 +694,7 @@ class TPairList {
         if (!TibetanMachineWeb.isKnownHashKey(hashKey)) {
             hashKey = hashKey.replace('+', '-');
             if (!TibetanMachineWeb.isKnownHashKey(hashKey)) {
-                duffsAndErrors.add("[#ERROR The ACIP {" + recoverACIP() + "} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]");
+                duffsAndErrors.add("The ACIP {" + recoverACIP() + "} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.");
                 return;
             }
         }

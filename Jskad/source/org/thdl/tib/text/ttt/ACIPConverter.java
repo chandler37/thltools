@@ -436,10 +436,7 @@ public class ACIPConverter {
                                     // converter's life, parsing of
                                     // tsheg bars was handled
                                     // differently, but now, I think
-                                    // this is impossible.  DLC FIXME:
-                                    // run with -Dthdl.debug=true on
-                                    // all ACIP Release V texts you
-                                    // can find.
+                                    // this is impossible.
                                     ThdlDebug.noteIffyCode();
                                     hasErrors = true;
                                     String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: The tsheg bar (\"syllable\") " + s.getText() + " has no legal parses.]";
@@ -501,6 +498,28 @@ public class ACIPConverter {
                                     if (null != writer) {
                                         unicode = sl.getUnicode();
                                         if (null == unicode) throw new Error("FIXME: make this an assertion 4");
+                                        // Warn if any of the stacks
+                                        // in this tsheg bar do not
+                                        // have corresponding glyphs
+                                        // in TMW.  That means there
+                                        // was probably a typo in the
+                                        // input.
+                                        if ("None" != warningLevel) {
+                                            Object[] trialDuff = sl.getDuff();
+                                            for (int ii = 0; ii < trialDuff.length; ii++) {
+                                                if (trialDuff[ii] instanceof String) {
+                                                    String bwarning
+                                                        = "[#WARNING CONVERTING ACIP DOCUMENT: "
+                                                        + (String)trialDuff[ii] + "]";
+                                                    unicode = bwarning + unicode;
+                                                    if (null != hasWarnings) hasWarnings[0] = true;
+                                                    if (null != warnings) {
+                                                        warnings.append(bwarning);
+                                                        warnings.append('\n');
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                     if (null != tdoc) {
                                         duff = sl.getDuff();
@@ -673,12 +692,14 @@ public class ACIPConverter {
                                                         color);
                                 else {
                                     hasErrors = true;
+                                    String emsg
+                                        = "[ERROR: " + (String)duff[j] + "]";
                                     if (null != errors)
-                                        errors.append((String)duff[j] + "\n");
+                                        errors.append(emsg + "\n");
                                     tdoc.appendRoman(tdocLocation[0],
-                                                     (String)duff[j],
+                                                     emsg,
                                                      Color.RED);
-                                    tdocLocation[0] += ((String)duff[j]).length();
+                                    tdocLocation[0] += emsg.length();
                                 }
                             }
                         } else {

@@ -7448,13 +7448,13 @@ M+NA
         uhelp("N+YA", "\u0f53\u0fb1");
         uhelp("NA+YA", "\u0f53\u0fb1"); // FIXME: warn about the extra A
         uhelp("NE+YA", "[#ERROR CONVERTING ACIP DOCUMENT: The tsheg bar (\"syllable\") NE+YA has these errors: Cannot convert ACIP NE+-YA because + is not an ACIP consonant]");
-        uhelp("tRAStA", "\u0f4a\u0fb2\u0f66\u0f9a");
+        uhelp("tRAStA", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP {t+RA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f4a\u0fb2\u0f66\u0f9a");
         uhelp("DZHDZHA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP DZHDZHA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f5b\u0fb7\u0fab\u0fb7"); // tricky because DZHDZA is not in TMW but DZHDZHA is
-        uhelp("DZHDZA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP DZHDZA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f5b\u0fb7\u0fab");
+        uhelp("DZHDZA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP DZHDZA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.][#WARNING CONVERTING ACIP DOCUMENT: The ACIP {DZH+DZA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f5b\u0fb7\u0fab");
         uhelp("P+S+N+YA", "\u0f54\u0fb6\u0fa3\u0fb1");
-        uhelp("P+S+NYA", "\u0f54\u0fb6\u0f99");
-        uhelp("PSNYA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP PSNYA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f54\u0fb6\u0f99"); // Is this P+S+N+YA?  No, it's P+S+NYA.  But warn!
-        uhelp("NNYA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP NNYA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f53\u0f99");
+        uhelp("P+S+NYA", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP {P+S+NYA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f54\u0fb6\u0f99");
+        uhelp("PSNYA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP PSNYA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.][#WARNING CONVERTING ACIP DOCUMENT: The ACIP {P+S+NYA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f54\u0fb6\u0f99"); // Is this P+S+N+YA?  No, it's P+S+NYA.  But warn!
+        uhelp("NNYA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP NNYA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.][#WARNING CONVERTING ACIP DOCUMENT: The ACIP {N+NYA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f53\u0f99");
         uhelp("GHNYA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP GHNYA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f42\u0fb7\u0f99");
 
         // TS+NYA and T+S+N+YA are both legal, so what is TSNYA?
@@ -7525,7 +7525,7 @@ M+NA
         uhelp("*#HUm: G+DHOO GRO`;.,",
               "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b\u0f42\u0fa1\u0fb7\u0f7d\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
         uhelp("*#HUm: K+DHA GRO`;.,",
-              "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b\u0f40\u0fa1\u0fb7\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
+              "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b[#WARNING CONVERTING ACIP DOCUMENT: The ACIP {K+DHA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f40\u0fa1\u0fb7\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
         uhelp("HA,\nHA\n\nHA", "\u0f67\u0f0d \u0f67\u0f0b\n\n\u0f67");
         uhelp("NGA,", "\u0f44\u0f0c\u0f0d");
         uhelp("NGA,\nHA\n\nHA", "\u0f44\u0f0c\u0f0d \u0f67\u0f0b\n\n\u0f67");
@@ -7538,6 +7538,8 @@ M+NA
         uhelp("GU, ,KHO", "\u0f42\u0f74\u0f0d \u0f0d\u0f41\u0f7c");
         uhelp("GU  ,KHO", "\u0f42\u0f74\u0f0b \u0f0d\u0f41\u0f7c"); // FIXME: missing a shad after GU, warn about that.
         uhelp("GA  HA", "\u0f42\u0f0b \u0f67");
+        uhelp("BCWA", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP {B+C+WA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f56\u0f95\u0fba");
+        uhelp("'KYO", "[#WARNING CONVERTING ACIP DOCUMENT: Warning: We're going with {'+K+YO}, but only because our knowledge of prefix rules says that {'}{K+YO} is not a legal Tibetan tsheg bar (\"syllable\")][#WARNING CONVERTING ACIP DOCUMENT: The ACIP {'+K+YO} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f60\u0f90\u0fb1\u0f7c");
         uhelp("WA", "\u0f5d");
         uhelp("W", "\u0f5d");
         uhelp("WO", "\u0f5d\u0f7c");
@@ -7555,21 +7557,21 @@ M+NA
         uhelp("WRA", "\u0f5d\u0fb2");
         uhelp("W+RA", "\u0f5d\u0fb2");
         uhelp("W+R", "\u0f5d\u0fb2");
-        uhelp("BCWA", "\u0f56\u0f95\u0fba");
-        uhelp("BCW", "\u0f56\u0f95\u0fba");
-        uhelp("BCWO", "\u0f56\u0f95\u0fba\u0f7c");
+        uhelp("BCWA", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP {B+C+WA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f56\u0f95\u0fba");
+        uhelp("BCW", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP {B+C+W} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f56\u0f95\u0fba");
+        uhelp("BCWO", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP {B+C+WO} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f56\u0f95\u0fba\u0f7c");
         uhelp("BCVA", "\u0f56\u0f45\u0fad");
         uhelp("BCV", "\u0f56\u0f45\u0fad");
         uhelp("BCV'O", "\u0f56\u0f45\u0fad\u0f71\u0f7c");
         uhelp("BCV'A", "\u0f56\u0f45\u0fad\u0f71");
-        uhelp("BCV'", "\u0f56\u0f95\u0fad\u0fb0");
+        uhelp("BCV'", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP {B+C+V+'} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f56\u0f95\u0fad\u0fb0");
         uhelp("GYA", "\u0f42\u0fb1");
         uhelp("GY", "\u0f42\u0fb1");
         uhelp("G-YA", "\u0f42\u0f61");
         uhelp("GA-YA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a useless disambiguator in GA-YA.]\u0f42\u0f61");
         uhelp("GA-YO", "[#WARNING CONVERTING ACIP DOCUMENT: There is a useless disambiguator in GA-YO.]\u0f42\u0f61\u0F7c");
         uhelp("RTZVA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP RTZVA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f62\u0fa9\u0fad");
-        uhelp("RTZWA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP RTZWA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f62\u0fa9\u0fba");
+        uhelp("RTZWA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP RTZWA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.][#WARNING CONVERTING ACIP DOCUMENT: The ACIP {R+TZ+WA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f62\u0fa9\u0fba");
     }
     public void testFixedFormSubjoinedConsonants() {
         // Usual subjoined RA:
