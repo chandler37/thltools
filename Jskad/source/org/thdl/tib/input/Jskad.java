@@ -126,19 +126,25 @@ public class Jskad extends JPanel implements DocumentListener {
     /** Do not use this JPanel constructor. */
     private Jskad(LayoutManager lm, boolean isDB) { super(lm, isDB); }
 
+    /** Tells ThdlOptions about the recently opened files. */
+    // DLC FIXME: this doesn't keep the second-most recently opened item second if you have just three items.
+    private static void storeRecentlyOpenedFilePreferences() {
+        int N = ThdlOptions.getIntegerOption("thdl.number.of.recently.opened.files.to.show", 4);
+        int n = 0;
+        // We store 2*N files in the preferences in case some are deleted.
+        for (int k = recentlyOpenedFiles.size(); k > 0 && n < 2*N; k--) {
+            File f = (File)recentlyOpenedFiles.elementAt(k - 1);
+            if (f.isFile()) {
+                ThdlOptions.setUserPreference("thdl.recently.opened.file." + n++,
+                                              f.getAbsolutePath());
+            }
+        }
+    }
+
     /** Saves user preferences to disk if possible. */
     private void savePreferencesAction() {
         try {
-            
-            int N = ThdlOptions.getIntegerOption("thdl.number.of.recently.opened.files.to.show", 4);
-            int n = 0;
-            // We store 2*N files in the preferences in case some are deleted.
-            for (int k = recentlyOpenedFiles.size(); k > 0 && n < 2*N; k--) {
-                File f = (File)recentlyOpenedFiles.elementAt(k - 1);
-                if (f.isFile())
-                    ThdlOptions.setUserPreference("thdl.recently.opened.file." + n++,
-                                                  f.getAbsolutePath());
-            }
+            storeRecentlyOpenedFilePreferences();
 
             if (!ThdlOptions.saveUserPreferences()) {
                 JOptionPane.showMessageDialog(Jskad.this,
@@ -189,21 +195,59 @@ public class Jskad extends JPanel implements DocumentListener {
         return null;
     }
 
+    /** a vector with the most recently opened file at its end. */
     private static Vector recentlyOpenedFiles = new Vector();
+    /** the File menu */
     private JMenu fileMenu = null;
-    /** Updates state information now that we know that fileChosen is
-        the most recently opened file. */
-    private void noteMostRecentlyOpenedFile(File fileChosen) {
+
+    private static void addMostRecentlyOpenedFile(File fileChosen) {
         // the last element is the most recently opened.
         int index = recentlyOpenedFiles.indexOf(fileChosen);
-        if (index > -1)
+        if (index > -1) {
             recentlyOpenedFiles.remove(index);
+        }
         recentlyOpenedFiles.add(fileChosen);
+    }
 
+    /** Updates state information now that we know that fileChosen is
+        the most recently opened file. */
+    private static void noteMostRecentlyOpenedFile(File fileChosen) {
+        addMostRecentlyOpenedFile(fileChosen);
+        storeRecentlyOpenedFilePreferences();
+        
+        int i, sz = jskads.size();
+        for (i = 0; i < sz; i++) {
+            ((Jskad)jskads.elementAt(i)).updateRecentlyOpenedFilesMenuItems();
+        }
+    }
+
+    private void updateRecentlyOpenedFilesMenuItems() {
         int ic = fileMenu.getItemCount();
-        //        System.err.println("DLC ic is " + ic);
+        while (fileMenu.getItemCount() > 8)
+            fileMenu.remove(7);
+        int N = ThdlOptions.getIntegerOption("thdl.number.of.recently.opened.files.to.show", 4);
+        // Avoid adding duplicate entries:
+        int maximum = recentlyOpenedFiles.size();
+        if (N > maximum) N = maximum;
 
-        // DLC update the menus.
+        boolean addedSeparator = false;
+        for (int i = 0; i < N; i++) {
+            final File recentlyOpenedFile
+                = getNthRecentlyOpenedFile(N-i-1, N);
+            if (null != recentlyOpenedFile) {
+                if (!addedSeparator) {
+                    fileMenu.insertSeparator(6);
+                    addedSeparator = true;
+                }
+                JMenuItem item = new JMenuItem((N-i) + " " + recentlyOpenedFile.getAbsolutePath());
+                item.addActionListener(new ThdlActionListener() {
+                        public void theRealActionPerformed(ActionEvent e) {
+                            openFile(recentlyOpenedFile);
+                        }
+                    });
+                fileMenu.add(item, 7);
+            }
+        }
     }
 
 /**
@@ -299,26 +343,8 @@ public class Jskad extends JPanel implements DocumentListener {
             int N = ThdlOptions.getIntegerOption("thdl.number.of.recently.opened.files.to.show", 4);
             int maxCharsToShow
                 = ThdlOptions.getIntegerOption("thdl.max.chars.in.recently.opened.file.name", 35);
-            if (N > 0) {
-                boolean addedSeparator = false;
-                for (int i = 0; i < N; i++) {
-                    final File recentlyOpenedFile
-                        = getNthRecentlyOpenedFile(i, N);
-                    if (null != recentlyOpenedFile) {
-                        if (!addedSeparator) {
-                            fileMenu.addSeparator();
-                            addedSeparator = true;
-                        }
-                        recentlyOpenedFiles.add(recentlyOpenedFile);
-                        JMenuItem item = new JMenuItem((i+1) + " " + recentlyOpenedFile.getAbsolutePath());
-                        item.addActionListener(new ThdlActionListener() {
-                                public void theRealActionPerformed(ActionEvent e) {
-                                    openFile(recentlyOpenedFile);
-                                }
-                            });
-                        fileMenu.add(item);
-                    }
-                }
+            for (int i = 0; i < 2*N; i++) {
+                addMostRecentlyOpenedFile(getNthRecentlyOpenedFile(i, N));
             }
 
 			if (parentObject instanceof JFrame) {
@@ -331,6 +357,8 @@ public class Jskad extends JPanel implements DocumentListener {
 				fileMenu.addSeparator();
 				fileMenu.add(exitItem);
 			}
+
+            updateRecentlyOpenedFilesMenuItems();
 
 			menuBar.add(fileMenu);
 		}
