@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0+"
+      codebase="http://iris.lib.virginia.edu/tibet/tools"
+      href="Jskad.jnlp">
+<information>
+  <title>Jskad</title>
+  <vendor>THDL</vendor>
+  <homepage href="http://iris.lib.virginia.edu/tibet/tools/jskad.html" />
+
+  <description>
+    Jskad is a simple text editor for the Tibetan language, using the
+    Wylie transliteration and supporting several virtual keyboards.
+    You must install the Tibetan Machine Web fonts before using
+    Jskad.
+  </description>
+
+  <offline-allowed/>
+</information>
+<security>
+  <all-permissions/>
+</security>
+<resources>
+  <j2se version="1.2+"/>
+  <jar href="Jskad-JWS.jar" />
+</resources>
+<application-desc />
+</jnlp>
