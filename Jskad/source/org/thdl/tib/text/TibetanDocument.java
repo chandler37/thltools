@@ -680,7 +680,7 @@ public class TibetanDocument extends DefaultStyledDocument {
         @param errors if non-null, then notes about all exceptional
         cases will be appended to this StringBuffer
         @param unicodeFont the name of the Unicode font to use;
-        defaults to Ximalaya if null
+        defaults to Tibetan Machine Uni if null
         @param numAttemptedReplacements an array that contains one
         element; this first element will be, upon exit, incremented by
         the number of TMW glyphs that we encountered and attempted to
@@ -1269,7 +1269,7 @@ public class TibetanDocument extends DefaultStyledDocument {
     /** Returns all the paragraph elements in this document that
      *  contain glyphs with offsets in the range [start, end) where
      *  end < 0 is treated as the document's length.  Note that roman,
-     *  TM, Ximalaya, and TMW text can all be intermingled
+     *  TM, Tibetan Machine Uni, and TMW text can all be intermingled
      *  within a paragraph.  It's the correct level of abstraction to
      *  use, however, because the next finer grain is roughly one
      *  Element per glyph. */
