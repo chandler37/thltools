@@ -33,12 +33,21 @@ public abstract class TibetanScanner
 	"is incompatible with previous versions. In order to use the newest version " +
 	"you have to re-build the dictionary database.\n\n" +
 	"The Tibetan to English Translation Tool, version 2.1.0\n" +
-	"Copyright " + '\u00A9' + " 2000-2002 by Andr" + '\u00E9' + "s Montano Pellegrini, all rights reserved.\n\n" + 
+	"Copyright " + '\u00A9' + " 2000-2002 Andr" + '\u00E9' + "s Montano Pellegrini, all rights reserved.\n\n" + 
 	"This software is protected by the terms of the AMP Open Community License, " +
 	"Version 1.0 (available at www.tibet.iteso.mx/Guatemala/). The Tibetan script " +
 	"input facility was built by THDL's Edward Garrett (http://www.thdl.org/).\n" +
 	"It uses Tibetan Computer Company (http://www.tibet.dk/tcc/)fonts created by " +
 	"Tony Duff and made available by the Trace Foundation (http://trace.org/).\n\n" +
+	"About Rangjung Yeshe Tibetan-English Dharma Dictionary 3.0:\n\n" +
+	"Copyright "  + '\u00A9' + " Rangjung Yeshe Publications and the individual contributors.\n\n" + 
+	"The Rangjung Yeshe Tibetan-English Dharma Dictionary is specifically licensed to " + 
+	"Andres Montano by Rangjung Yeshe Publications. Permission must be obtained " +
+	"directly from Rangjung Yeshe Publications for any other public display of the " +
+	"dictionary.\n\n" + 
+	"Users desiring off-line access to the dictionary through The Tibetan to " +
+	"English Translation Tool must purchase the dictionary directly with Rangjung " +
+	"Yeshe Publications. See http://www.rangjung.com/ry-dic.htm for details.\n\n" + 
 	"About Jeffrey Hopkins' Tibetan-Sanskrit-English Dictionary Version 2.0.0:\n\n" + 
 	"Formulator and Editor: Jeffrey Hopkins\n" + 
 	"Contributors: Joe Wilson, Craig Preston, John Powers, Nathanial Garson, " + 
