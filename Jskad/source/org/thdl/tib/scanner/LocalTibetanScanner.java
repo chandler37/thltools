@@ -96,7 +96,7 @@ public class LocalTibetanScanner extends TibetanScanner
 				while (resultado == null && silSinDec!=null)
 				{
 					resultado = silAnterior.lookUp(silSinDec);
-					if (resultado == null)
+					if (resultado == null || !resultado.hasDef())
 					{
 						silSinDec += "\'";
 						resultado = silAnterior.lookUp(silSinDec);
@@ -133,7 +133,11 @@ public class LocalTibetanScanner extends TibetanScanner
 			while (resultado==null && silSinDec!=null)
 			{
 				resultado = silAnterior.lookUp(silSinDec);
-				if (resultado == null)
+				/*  here we don't have to worry about being in the middle of a
+				    word since the declension marks that it is the end of a
+				    word.
+				*/
+				if (resultado == null || !resultado.hasDef())
 				{
 					silSinDec += "\'";
 					resultado = silAnterior.lookUp(silSinDec);
