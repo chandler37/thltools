@@ -403,28 +403,30 @@ public class ThdlOptions {
      *  @throws IOException if an IO exception occurs while writing to
      *  the disk. */
     public static boolean saveUserPreferences() throws IOException {
+        String lineSep = System.getProperty("line.separator");
+        if (null == lineSep || "".equals(lineSep)) lineSep = "\n";
         if (null != userProperties) {
             userProperties.store(new FileOutputStream(getUserPreferencesPath()),
-                                 " This file was automatically created by a THDL tool.\n"
-                                 + "# You may edit this file, but it will be recreated,\n"
-                                 + "# so your comments will be lost.  Moreover, you must\n"
-                                 + "# edit this file only after exiting all THDL tools.\n"
-                                 + "# \n"
-                                 + "# To understand this file's contents, please see\n"
-                                 + "# options.txt in the JAR file.\n"
-                                 + "# \n"
-                                 + "# Note that this is the user-specific preferences file.\n"
-                                 + "# This tool also supports a system-specific preferences\n"
-                                 + "# file, which the user-specific preferences override.\n"
-                                 + "# \n"
-                                 + "# Note also that you can set a JVM preference at run-time.\n"
-                                 + "# Doing so will override both system- and user-specific\n"
-                                 + "# preferences.  On many systems, you do this like so:\n"
-                                 + "# 'java -Dthdl.default.tibetan.font.size=36 -jar Jskad.jar'\n"
-                                 + "# \n"
-                                 + "# There is, unfortunately, no further documentation on the\n"
-                                 + "# preferences mechanism at this time.  Yell for it!\n"
-                                 + "# \n"
+                                 " This file was automatically created by a THDL tool." + lineSep
+                                 + "# You may edit this file, but it will be recreated," + lineSep
+                                 + "# so your comments will be lost.  Moreover, you must" + lineSep
+                                 + "# edit this file only after exiting all THDL tools." + lineSep
+                                 + "# " + lineSep
+                                 + "# To understand this file's contents, please see" + lineSep
+                                 + "# options.txt in the JAR file." + lineSep
+                                 + "# " + lineSep
+                                 + "# Note that this is the user-specific preferences file." + lineSep
+                                 + "# This tool also supports a system-specific preferences" + lineSep
+                                 + "# file, which the user-specific preferences override." + lineSep
+                                 + "# " + lineSep
+                                 + "# Note also that you can set a JVM preference at run-time." + lineSep
+                                 + "# Doing so will override both system- and user-specific" + lineSep
+                                 + "# preferences.  On many systems, you do this like so:" + lineSep
+                                 + "# 'java -Dthdl.default.tibetan.font.size=36 -jar Jskad.jar'" + lineSep
+                                 + "# " + lineSep
+                                 + "# There is, unfortunately, no further documentation on the" + lineSep
+                                 + "# preferences mechanism at this time.  Yell for it!" + lineSep
+                                 + "# " + lineSep
                                  + "# Created at:"); // DLC FIXME: document the preferences mechanism.
             return true;
         }
