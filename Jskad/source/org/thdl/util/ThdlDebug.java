@@ -198,7 +198,8 @@ public class ThdlDebug {
 				= new PrintStream(new FileOutputStream(logFile));
             System.out.println("Logging to "
                                + logFile.getAbsolutePath().toString()
-                               + "; please include the contents of this file in any bug reports.");
+                               + ".");
+            System.out.println("Please include the contents of the log file in any bug reports.");
 			PrintStream psOut = new TeeStream(System.out, logFilePrintStream);
 			PrintStream psErr = new TeeStream(System.err, logFilePrintStream);
 			System.setErr(psErr);
