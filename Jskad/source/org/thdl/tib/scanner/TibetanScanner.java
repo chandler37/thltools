@@ -36,7 +36,7 @@ public interface TibetanScanner
 	"This software is protected by the terms of the AMP Open Community\n" + 
 	"License 1.0 (available at www.tibet.iteso.mx/Guatemala/). The Tibetan\n" + 
 	"script input facility was built by THDL's Edward Garrett (http://www.thdl.org/).\n" +
-	"It uses Tibetan Computer Company (http://www.tibet.dk/tcc/)fonts created\n" +
+	"It uses Tibetan Computer Company (http://www.tibet.dk/tcc/) fonts created\n" +
 	"by Tony Duff and made available by the Trace Foundation (http://trace.org/).";
 	public void scanLine(String linea);
 	public void scanBody(String linea);
