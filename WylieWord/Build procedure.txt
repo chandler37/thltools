@@ -14,7 +14,10 @@ Search for "!!!" and make sure anything left in that state is
 acceptable in the release.
 
 Re-test everything that has changed since the last release, and
-anything that might be affected by those changes.
+anything that might be affected by those changes.  Do the testing with
+the template loaded from the Word Startup folder.  For some reason,
+Word runs VBA differently when loaded from there; specifically, missing
+type declarations are more likely to result in run-time errors.
 
 Increment the version number in AboutWylieWord.
 
