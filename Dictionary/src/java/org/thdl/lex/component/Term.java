@@ -5,6 +5,7 @@ import java.util.*;
 import org.thdl.lex.*;
 
 
+
 /**
  *  Description of the Class
  *
@@ -102,18 +103,21 @@ public class Term extends BaseTerm implements Serializable, LexComponentNode
 		}
 		LexComponentNode node = (LexComponentNode) component.getParent();
 		list = (List) node.getChildMap().get( component.getLabel() );
-		LexLogger.debug( "List derived from " + node + ": " + list );
+		LexLogger.debug( "[Term] List derived from " + node + ": " + list );
 
 		if ( null == list )
 		{
 			LexLogger.debug( "findSiblings returned a null list" );
 			LexLogger.debugComponent( component );
 
-			Iterator it = getDefinitions().iterator();
-			while ( it.hasNext() )
+			if ( null != getDefinitions() )
 			{
-				IDefinition def = (IDefinition) it.next();
-				list = def.findSiblings( component );
+				Iterator it = getDefinitions().iterator();
+				while ( it.hasNext() )
+				{
+					IDefinition def = (IDefinition) it.next();
+					list = def.findSiblings( component );
+				}
 			}
 
 		}
@@ -163,20 +167,6 @@ public class Term extends BaseTerm implements Serializable, LexComponentNode
 	/**
 	 *  Description of the Method
 	 *
-	 * @param  child                      Description of the Parameter
-	 * @exception  LexComponentException  Description of the Exception
-	 */
-	public void removeChild( ILexComponent child ) throws LexComponentException
-	{
-		List list = findSiblings( child );
-		child = findChild( list, child.getMetaId() );
-		list.remove( child );
-	}
-
-
-	/**
-	 *  Description of the Method
-	 *
 	 * @param  pk                         Description of the Parameter
 	 * @return                            Description of the Return Value
 	 * @exception  LexComponentException  Description of the Exception
@@ -184,21 +174,21 @@ public class Term extends BaseTerm implements Serializable, LexComponentNode
 	public ILexComponent findChild( Integer pk ) throws LexComponentException
 	{
 		ILexComponent child = null;
-
 		Iterator childMapValues = getChildMap().values().iterator();
 		while ( childMapValues.hasNext() && null == child )
 		{
 			List list = (List) childMapValues.next();
 			child = findChild( list, pk );
 		}
-
-		Iterator definitions = getDefinitions().iterator();
-		while ( definitions.hasNext() && null == child )
+		if ( null != getDefinitions() )
 		{
-			IDefinition def = (IDefinition) definitions.next();
-			child = def.findChild( pk );
+			Iterator definitions = getDefinitions().iterator();
+			while ( definitions.hasNext() && null == child )
+			{
+				IDefinition def = (IDefinition) definitions.next();
+				child = def.findChild( pk );
+			}
 		}
-
 		return child;
 	}
 
@@ -210,16 +200,20 @@ public class Term extends BaseTerm implements Serializable, LexComponentNode
 	 * @param  pk    Description of the Parameter
 	 * @return       Description of the Return Value
 	 */
+
 	public ILexComponent findChild( List list, Integer pk )
 	{
 		ILexComponent child = null;
-		for ( Iterator it = list.iterator(); it.hasNext();  )
+		if ( list != null )
 		{
-			ILexComponent lc = (LexComponent) it.next();
-			if ( lc.getMetaId().equals( pk ) )
+			for ( Iterator it = list.iterator(); it.hasNext();  )
 			{
-				child = lc;
-				break;
+				ILexComponent lc = (LexComponent) it.next();
+				if ( lc.getMetaId().equals( pk ) )
+				{
+					child = lc;
+					break;
+				}
 			}
 		}
 		return child;
@@ -235,9 +229,29 @@ public class Term extends BaseTerm implements Serializable, LexComponentNode
 	public void addChild( ILexComponent component ) throws LexComponentException
 	{
 		List list = findSiblings( component );
+		if ( list == null )
+		{
+			list = new LinkedList();
+			LexComponentNode parent = (LexComponentNode) component.getParent();
+			parent.addSiblingList( parent, component, list );
+			parent.getChildMap().put( component.getLabel(), list );
+		}
 		list.add( component );
-		int precedence = list.indexOf( component );
-		component.setPrecedence( new Integer( precedence ) );
+	}
+
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  child                      Description of the Parameter
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public void removeChild( ILexComponent child ) throws LexComponentException
+	{
+		List list = findSiblings( child );
+		int index = list.indexOf( child );
+		list.remove( index );
 	}
 
 

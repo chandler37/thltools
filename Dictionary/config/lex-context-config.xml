@@ -39,6 +39,10 @@
 			<name>maxActive</name>
 			<value>15</value>
 		</parameter>
+		<parameter>
+			<name>removeAbandoned</name>
+			<value>true</value>
+		 </parameter> 
 	</ResourceParams>
 
 	<Resource name="jdbc/thdl-users-datasource" scope="Shareable" type="javax.sql.DataSource"/>
@@ -87,6 +91,10 @@
 			<name>maxActive</name>
 			<value>15</value>
 		</parameter>
+		<parameter>
+			<name>removeAbandoned</name>
+			<value>true</value>
+		 </parameter> 
 	</ResourceParams>
 	
 	<Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs/access" prefix="lex_access_log." suffix=".txt" pattern="combined" resolveHosts="true"/>

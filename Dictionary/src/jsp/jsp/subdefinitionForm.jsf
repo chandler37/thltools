@@ -48,7 +48,7 @@
 
 <c:out value="${ originalSubdefinition }" escapeXml='false'/>
 Subdefinition: <br />
-<textarea name="subdefinition" rows="8" cols="90"><c:out value='${ subdefinition }' escapeXml='false' /> </textarea>
+<textarea name="subdefinition" rows="8" cols="90"><c:out value='${ component.subdefinition }' escapeXml='false' /> </textarea>
 <br />
 
 <%-- Precedence: <c:out value='<input type="text" value="${ precedence }" name="precedence" size="3"/>' escapeXml='false' /> <br />

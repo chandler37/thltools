@@ -26,29 +26,38 @@
 		
 		
 		<jsp:include page="displayMeta.jsf" />
+</p>
 		
 
 		<c:if test="${sessionScope.visit.helper.showTranslations }">
-		<!--translation-->
+		<c:set value="${definition.translations}" target="${sessionScope.visit.helper}" property="collection"/>
+		<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
+		<h3>Translations</h3>
+		<ul>
 		<c:forEach var="translation" items="${ definition.translations }" >
-		<c:set var='href' value='#'/>
+		<li>
+		<p class="data">
+		
 		<c:if test="${ editMode }">
-			<c:set var='href' value='/lex/action?cmd=getUpdateForm&amp;comp=definition&amp;metaId=${ translation.metaId }'  />
+			<span class="compEditOptions">			
+			<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=definition&amp;metaId=${ translation.metaId }&amp;translationOf=${ translation.translationOf }&amp;parentId=${ translation.parentId }" title="Edit this definition"><img alt="Edit this definition" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=definition&amp;metaId=${ translation.metaId }&amp;translationOf=${ translation.translationOf }&amp;parentId=${ translation.parentId }" title="Remove this definition"><img alt="Remove this definition" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+			</span>
 		</c:if>
-		<c:out value='<a class="meta" href="${href} ">'escapeXml="false" /><img src="/lex/images/trans.gif" alt="view/edit translation" />
-		<span class="translation">
-		<!--<span class="label">Definition ${translation.precedence}:</span>--> 
+				
 		<c:out value="${ translation.definition }" escapeXml="false"  /> 
-		</span></a>
 		
 		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ translation }" />
 		<jsp:include page="displayMeta.jsf" />
+		</p>
+		</li>
 		</c:forEach> 
+		</ul>
+		</c:if>
 		</c:if>
 
 		
 		<jsp:include page="displayNotes.jsf" />
 
 
-</p>
 

@@ -74,6 +74,13 @@ public class GetRemoveFormCommand extends LexCommand implements Command
 				{
 					component = query.getEntry();
 				}
+				else if ( component instanceof IAnalyticalNote )
+				{
+					ILexComponent parent = term.findParent( component.getParentId() );
+					List notes = parent.getAnalyticalNotes();
+					int index = notes.indexOf( component );
+					component = (ILexComponent) notes.get( index );
+				}
 				else if ( component instanceof Translatable && null != ( (Translatable) component ).getTranslationOf() )
 				{
 					LexComponentRepository.update( term );

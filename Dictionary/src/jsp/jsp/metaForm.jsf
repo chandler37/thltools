@@ -12,7 +12,7 @@
 		<c:set var="source" value="${ sessionScope.visit.preferences.source }" />
 		<c:set var="projectSubject" value="${ sessionScope.visit.preferences.projectSubject }" />
 		<c:set var="script" value="${ sessionScope.visit.preferences.script }" />
-		<%-- <c:set var="precedence" value="1" /> --%>
+		<c:set var="precedence" value="0" />
 		<c:set var="note" value="${ sessionScope.visit.preferences.note }" />
 	</c:when>
 	<c:when test="${ ! empty param.formMode && param.formMode == 'update'}">
@@ -22,7 +22,7 @@
 		<c:set var="source" value="${ component.meta.source }" />
 		<c:set var="projectSubject" value="${ component.meta.modifiedByProjSub }" />
 		<c:set var="script" value="${ component.meta.script }" />
-		<%-- <c:set var="precedence" value="${ component.meta.precedence }" /> --%>
+		<c:set var="precedence" value="${ component.precedence }" /> 
 		<c:set var="note" value="${ component.meta.note }" />
 	</c:when>
 	<c:otherwise>
@@ -32,17 +32,18 @@
 		<c:set var="source" value="ERROR" />
 		<c:set var="projectSubject" value="ERROR" />
 		<c:set var="script" value="ERROR" />
-		<%-- <c:set var="precedence" value="ERROR" /> --%>
 		<c:set var="note" value="ERROR" />
 	</c:otherwise>
 </c:choose>
 
-<c:out value='<input type="hidden" name="precedence" value="${ component.precedence }" />'escapeXml="false" />
-<c:out value='<input type="hidden" name="parentId" value="${ component.parentId }" />' escapeXml='false' />
-
-<%-- <c:if test="${ translateMode && ! empty component.translationOf}">
-<c:out value='<input type="hidden" name="translationOf" value="${ component.translationOf }" />'escapeXml="false" />
+<c:set var="parentId" value="${ component.parentId }" />
+<%-- <c:if test="${ parentId == null || component.parentId < 1 }">
+	<c:set var="parentId" value="${ param.parentId }" />
 </c:if> --%>
+<c:out value=' <input type="hidden" name="parentId" value="${parentId}" /> ' escapeXml='false' />
+<c:out value='<input type="hidden" name="precedence" value="${ precedence }" />'escapeXml="false" />
+
+
 
 <c:if test="${ ! updateMode && param.cmd != 'getAnnotationForm' && param.cmd != 'getTranslationForm' }">
 <p>
@@ -71,7 +72,6 @@ Language:
 		</c:if>
 		<c:out value='<option value="${ prefLangs }" ${ sel }>${ applicationScope.flatData.languages[ prefLangs ] }</option>' escapeXml="false" />
 	</c:forEach>
-	<%-- <option disabled="disabled" value="">----------------</option> --%>
 	<c:forEach var="langs" items="${ applicationScope.flatData.languages }">
 		<c:set var="printOption" value="${ true }" />
 		<c:forEach var="prefLangs" items="${ sessionScope.visit.preferences.languageSet }">

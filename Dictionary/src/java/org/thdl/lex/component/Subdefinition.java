@@ -3,6 +3,7 @@ package org.thdl.lex.component;
 import java.io.Serializable;
 import java.util.*;
 import org.thdl.lex.*;
+import org.apache.commons.beanutils.MethodUtils;
 
 
 
@@ -87,6 +88,8 @@ public class Subdefinition extends BaseSubdefinition implements Serializable, Tr
 	}
 
 
+
+
 	/**
 	 *  Gets the persistentChild attribute of the Term object
 	 *
@@ -133,13 +136,16 @@ public class Subdefinition extends BaseSubdefinition implements Serializable, Tr
 	public ILexComponent findChild( List list, Integer pk )
 	{
 		ILexComponent child = null;
-		for ( Iterator it = list.iterator(); it.hasNext();  )
+		if ( list != null )
 		{
-			ILexComponent lc = (LexComponent) it.next();
-			if ( lc.getMetaId().equals( pk ) )
+			for ( Iterator it = list.iterator(); it.hasNext();  )
 			{
-				child = lc;
-				break;
+				ILexComponent lc = (LexComponent) it.next();
+				if ( lc.getMetaId().equals( pk ) )
+				{
+					child = lc;
+					break;
+				}
 			}
 		}
 		return child;

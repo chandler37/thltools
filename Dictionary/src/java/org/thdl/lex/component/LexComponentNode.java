@@ -1,5 +1,7 @@
 package org.thdl.lex.component;
 
+import java.util.List;
+
 
 /**
  *  Description of the Interface
@@ -29,5 +31,6 @@ public interface LexComponentNode extends ILexComponent
 	 * @exception  LexComponentException  Description of the Exception
 	 */
 	public java.util.List findSiblings( ILexComponent component ) throws LexComponentException;
+
 }
 

@@ -56,9 +56,9 @@
 		
 		<jsp:include page="displayMeta.jsf" />
 		
+	</p>
 
 		<c:if test="${sessionScope.visit.helper.showTranslations }">
- 		<!--translation-->
 		<c:set value="${passage.translations}" target="${sessionScope.visit.helper}" property="collection"/>
 		<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 		<h3>Translations</h3>
@@ -72,15 +72,9 @@
 		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=passage&amp;metaId=${ translation.metaId }&amp;translationOf=${ translation.translationOf }&amp;parentId=${ translation.parentId }" title="Remove this passage"><img alt="Remove this passage" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
 		</span>
 	</c:if>  
-		<%-- <c:set var='href' value='#'/>
-		<c:if test="${ editMode }">
-			<c:set var='href' value='/lex/action?cmd=getUpdateForm&amp;comp=passage&amp;metaId=${ translation.metaId }'  />
-		</c:if> --%>
-	<%-- <span class="translation"> --%>
 		<c:set var="source" value="${  LexFlatDataRepository.literarySources[ translation.literarySource ]   }"/> 
 	
 	<c:if test="${ ! empty  source }">
-	<!--<span class="label">Literary Source:</span>-->
 	  	<c:out value="${ source }" />   <br />
 	</c:if>
 	
@@ -95,7 +89,6 @@
 	</c:if>
 
 		<c:out value="${ translation.passage }" />   
-		 <%-- </span> --%>
 		
 		<c:set var="originalComponent" value="${ passage }" />
 		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ translation }" />
@@ -113,5 +106,4 @@
 		<jsp:include page="displayNotes.jsf" />
 
 
-	</p>
 

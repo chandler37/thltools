@@ -74,7 +74,7 @@ public class DisplayCommand extends LexCommand implements Command
 				}
 				else
 				{
-					LexComponentRepository.loadTermByPk( term );
+					LexComponentRepository.loadTerm( term );
 					query.setEntry( term );
 					if ( query.getResults().keySet().size() < 1 )
 					{

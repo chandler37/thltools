@@ -68,11 +68,18 @@ public class GetUpdateFormCommand extends LexCommand implements Command
 			try
 			{
 
-				LexLogger.debug( "Checking component state from getUpdateFormCommand BEFORE component assignment" );
-				LexLogger.debugComponent( component );
 				if ( isTermMode() )
 				{
 					component = query.getEntry();
+				}
+				else if ( component instanceof IAnalyticalNote )
+				{
+					ILexComponent parent = term.findParent( component.getParentId() );
+					List notes = parent.getAnalyticalNotes();
+					int index = notes.indexOf( component );
+					component = (ILexComponent) notes.get( index );
+					LexLogger.debug( "Checking component state from getUpdateFormCommand AFTER assignment to analytical Note" );
+					LexLogger.debugComponent( component );
 				}
 				else if ( component instanceof Translatable && null != ( (Translatable) component ).getTranslationOf() )
 				{

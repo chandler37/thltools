@@ -83,13 +83,22 @@ public class InsertCommand extends LexCommand implements Command
 
 				if ( isTermMode() )
 				{
-					term = (ITerm) component;
-					//term.populate( req.getParameterMap() );
+					query.setEntry( (ITerm) component );
+					term = query.getEntry();
 				}
 				else if ( component instanceof AnalyticalNote )
 				{
+					LexLogger.debug( "Debugging Component before inserting analytical note" );
+					LexLogger.debugComponent( component );
 					ILexComponent parent = term.findParent( component.getParentId() );
-					parent.getAnalyticalNotes().add( component );
+					List list = parent.getAnalyticalNotes();
+					if ( null == list )
+					{
+						list = new LinkedList();
+					}
+					list.add( component );
+					parent.setAnalyticalNotes( list );
+					//term.addSiblingList( parent, component, list );
 				}
 				else if ( component instanceof Translatable && null != ( (Translatable) component ).getTranslationOf() )
 				{
@@ -106,8 +115,13 @@ public class InsertCommand extends LexCommand implements Command
 					source.setMetaId( translation.getTranslationOf() );
 					source.setParentId( translation.getParentId() );
 					source = (Translatable) term.findChild( source );
-					List l = source.getTranslations();
-					l.add( translation );
+					List list = source.getTranslations();
+					if ( null == list )
+					{
+						list = new LinkedList();
+					}
+					list.add( translation );
+					source.setTranslations( list );
 				}
 				else
 				{
@@ -124,6 +138,8 @@ public class InsertCommand extends LexCommand implements Command
 				component.getMeta().setCreatedBy( user.getId() );
 				component.getMeta().setModifiedBy( user.getId() );
 
+				LexComponentRepository.save( term );
+
 				if ( !isTermMode() )
 				{
 					term.getMeta().setModifiedOn( now );
@@ -134,6 +150,7 @@ public class InsertCommand extends LexCommand implements Command
 				{
 					AnalyticalNote note = new AnalyticalNote();
 					note.setAnalyticalNote( req.getParameter( "analyticalNote" ) );
+					note.setParentId( component.getMetaId() );
 					note.setPrecedence( new Integer( 0 ) );
 					component.setAnalyticalNotes( new LinkedList() );
 					component.getAnalyticalNotes().add( note );
@@ -146,9 +163,10 @@ public class InsertCommand extends LexCommand implements Command
 				LexLogger.debugComponent( component );
 				LexLogger.debugComponent( term );
 
-				LexComponentRepository.save( term );
+				LexComponentRepository.update( term );
 				msg = "Successful Update";
 				visit.setDisplayMode( "edit" );
+
 			}
 			else
 			{
@@ -167,6 +185,8 @@ public class InsertCommand extends LexCommand implements Command
 		finally
 		{
 			req.setAttribute( LexConstants.MESSAGE_REQ_ATTR, msg );
+			LexLogger.debug( "Showing Term Map at end of InsertCommand.execute()" );
+			LexLogger.debugTerm( ( (Visit) req.getSession( false ).getAttribute( "visit" ) ).getQuery().getEntry() );
 		}
 	}
 

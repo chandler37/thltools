@@ -5,9 +5,10 @@
 <c:choose>
 	<c:when test="${ ! empty param.formMode && param.formMode == 'insert'}">
 		<c:set var="updateMode" value="${ false }" />		
-		<c:set var="newCmd" value="addAnnotation" />
+		<c:set var="newCmd" value="insert" />
 		<c:set var="analyticalNote" value="" />
 		<c:set var="metaId" value="" />
+
 	</c:when>
 	<c:when test="${ ! empty param.formMode && param.formMode == 'update'}">
 		<c:set var="updateMode" value="${ true }" />		

@@ -61,11 +61,12 @@ Back to:
 <c:choose>
 
 <c:when test="${ param.cmd == 'getRemoveForm' && param.comp == 'analyticalNote' }">
-	<p><jsp:include page="displayAnalyticalNote.jsf" /></p>
+	<h2>Note</h2>
+	<p><c:out value="${ component.analyticalNote }" escapeXml="false" /></p>
 </c:when>
 
 <c:when test="${  param.cmd == 'getRemoveTermForm' && param.comp == 'term' }">
-	<p><p><jsp:include page="displayTerm.jsf" /></p></p>
+	<p><jsp:include page="displayTerm.jsf" /></p>
 </c:when>
 
 <c:when test="${ param.cmd == 'getRemoveForm' && param.comp == 'pronunciation'}">
@@ -126,7 +127,7 @@ Back to:
 
 <%--Insert Form--%>
 
-<c:when test="${ param.cmd == 'getAnnotationForm' }">
+<c:when test="${ param.cmd == 'getAnnotationForm' || param.comp == 'analyticalNote' }">
 	<jsp:include page="analyticalNoteForm.jsf" />
 </c:when>
 

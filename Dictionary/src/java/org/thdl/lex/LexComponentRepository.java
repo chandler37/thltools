@@ -270,11 +270,38 @@ public class LexComponentRepository
 	/**
 	 *  Description of the Method
 	 *
+	 * @param  pk                          Description of the Parameter
+	 * @return                             Description of the Return Value
+	 * @exception  LexRepositoryException  Description of the Exception
+	 */
+	public static ITerm findTermByPk( Integer pk ) throws LexRepositoryException
+	{
+		ITerm term = null;
+
+		beginTransaction();
+		String queryString = " FROM org.thdl.lex.component.ITerm as term WHERE term.metaId = " + pk.toString();
+		try
+		{
+			Query query = getSession().createQuery( queryString );
+			term = (ITerm) query.uniqueResult();
+		}
+		catch ( HibernateException he )
+		{
+			throw new LexRepositoryException( he );
+		}
+		endTransaction( false );
+		return term;
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
 	 * @param  term                        Description of the Parameter
 	 * @exception  LexRepositoryException  Description of Exception
 	 * @since
 	 */
-	public static void loadTermByPk( ITerm term ) throws LexRepositoryException
+	public static void loadTerm( ITerm term ) throws LexRepositoryException
 	{
 		try
 		{
@@ -299,7 +326,7 @@ public class LexComponentRepository
 	{
 		beginTransaction();
 		ITerm term = assertTerm( lexQuery.getQueryComponent() );
-		loadTermByPk( term );
+		loadTerm( term );
 		lexQuery.setEntry( term );
 		if ( !lexQuery.getResults().containsKey( term.getMetaId() ) )
 		{

@@ -82,6 +82,14 @@ public class RemoveCommand extends LexCommand implements Command
 					LexComponentRepository.update( term );
 					query.setEntry( null );
 				}
+				else if ( component instanceof AnalyticalNote )
+				{
+					LexLogger.debug( "Debugging Component before inserting analytical note" );
+					LexLogger.debugComponent( component );
+					ILexComponent parent = term.findParent( component.getParentId() );
+					List notes = parent.getAnalyticalNotes();
+					notes.remove( component );
+				}
 				else if ( component instanceof Translatable && null != ( (Translatable) component ).getTranslationOf() )
 				{
 					Translatable translation = (Translatable) component;

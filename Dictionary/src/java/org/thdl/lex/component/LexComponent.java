@@ -3,6 +3,7 @@ import java.io.Serializable;
 import java.util.*;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.MethodUtils;
 
 
 /**
@@ -207,6 +208,44 @@ public abstract class LexComponent extends BaseLexComponent implements Serializa
 
 
 	/**
+	 *  Uses component.label to find  the correct sibling list in 'parent' and set it to 'list'
+	 *
+	 * @param  component                  The feature to be added to the SiblingList attribute
+	 * @param  list                       The feature to be added to the SiblingList attribute
+	 * @param  parent                     The feature to be added to the SiblingList attribute
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public void addSiblingList( ILexComponent parent, ILexComponent component, List list ) throws LexComponentException
+	{
+		String label = component.getLabel();
+
+		if ( label.equals( "etymology" ) )
+		{
+			label = "etymologies";
+		}
+		else if ( label.equals( "transitionalData" ) )
+		{
+			label = "transitionalData";
+		}
+		else
+		{
+			label = label + "s";
+		}
+		char[] chars = label.toCharArray();
+		chars[0] = Character.toUpperCase( chars[0] );
+		label = "set" + new String( chars );
+		try
+		{
+			Object iAmVoid = MethodUtils.invokeMethod( parent, label, list );
+		}
+		catch ( Exception e )
+		{
+			throw new LexComponentException( e );
+		}
+	}
+
+
+	/**
 	 *  Description of the Method
 	 *
 	 * @param  o  Description of the Parameter
@@ -214,12 +253,17 @@ public abstract class LexComponent extends BaseLexComponent implements Serializa
 	 */
 	public boolean equals( Object o )
 	{
-		boolean b = false;
+		boolean rVal = false;
 		if ( o instanceof ILexComponent )
 		{
-			b = this.metaId.equals( ( (ILexComponent) o ).getMetaId() );
+			Integer a = ( (ILexComponent) o ).getMetaId();
+			Integer b = this.getMetaId();
+			if ( null != a && null != b )
+			{
+				rVal = a.equals( b );
+			}
 		}
-		return b;
+		return rVal;
 	}
 //constructors
 

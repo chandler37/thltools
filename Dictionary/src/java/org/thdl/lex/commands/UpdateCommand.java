@@ -86,6 +86,15 @@ public class UpdateCommand extends LexCommand implements Command
 					term.getMeta().populate( req.getParameterMap() );
 					component = term;
 				}
+				else if ( component instanceof AnalyticalNote )
+				{
+					LexLogger.debug( "Debugging Component before updating analytical note" );
+					LexLogger.debugComponent( component );
+					ILexComponent parent = term.findParent( component.getParentId() );
+					List notes = parent.getAnalyticalNotes();
+					ILexComponent ilc = (ILexComponent) notes.get( notes.indexOf( component ) );
+					ilc.populate( component );
+				}
 				else if ( component instanceof Translatable && null != ( (Translatable) component ).getTranslationOf() )
 				{
 					Translatable translation = (Translatable) component;
@@ -125,7 +134,7 @@ public class UpdateCommand extends LexCommand implements Command
 				LexLogger.debugComponent( component );
 				LexLogger.debugComponent( term );
 
-				LexComponentRepository.save( term );
+				LexComponentRepository.update( term );
 				msg = "Successful Update";
 				visit.setDisplayMode( "edit" );
 			}

@@ -137,9 +137,10 @@ public class LexActionServlet extends HttpServlet
 		rd.forward( req, res );
 		LexLogger.debug( "Checking Request state at end of LexActionServlet.service()" );
 		LexLogger.logRequestState( req );
+		LexLogger.debug( "Checking Session state at end of LexActionServlet.service()" );
 		LexLogger.logSessionState( req );
+		LexLogger.debug( "Checking Context state at end of LexActionServlet.service()" );
 		LexLogger.logContextState( getServletContext() );
-
 	}
 
 
@@ -199,7 +200,6 @@ public class LexActionServlet extends HttpServlet
 		    commands.put( "addAnnotation", new AddAnnotationCommand( "displayEntry.jsp", Boolean.TRUE ) );
 		  */
 		commands.put( "insert", new InsertCommand( "displayEntry.jsp", Boolean.FALSE ) );
-		commands.put( "addAnnotation", new InsertCommand( "displayEntry.jsp", Boolean.FALSE ) );
 		commands.put( "insertTerm", new InsertCommand( "displayEntry.jsp", Boolean.TRUE ) );
 
 		commands.put( "update", new UpdateCommand( "displayEntry.jsp", Boolean.FALSE ) );

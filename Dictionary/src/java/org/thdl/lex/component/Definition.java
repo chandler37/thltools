@@ -3,6 +3,7 @@ package org.thdl.lex.component;
 import java.io.Serializable;
 import java.util.*;
 import org.thdl.lex.*;
+import org.apache.commons.beanutils.MethodUtils;
 
 
 /**
@@ -58,14 +59,18 @@ public class Definition extends BaseDefinition implements Serializable, Translat
 		}
 		LexComponentNode node = (LexComponentNode) component.getParent();
 		list = (List) node.getChildMap().get( component.getLabel() );
+		LexLogger.debug( "[Definition] List derived from " + node + ": " + list );
 
 		if ( null == list )
 		{
-			Iterator it = getSubdefinitions().iterator();
-			while ( it.hasNext() )
+			if ( null != getSubdefinitions() )
 			{
-				ISubdefinition subdef = (ISubdefinition) it.next();
-				list = subdef.findSiblings( component );
+				Iterator it = getSubdefinitions().iterator();
+				while ( it.hasNext() )
+				{
+					ISubdefinition subdef = (ISubdefinition) it.next();
+					list = subdef.findSiblings( component );
+				}
 			}
 		}
 
@@ -129,13 +134,15 @@ public class Definition extends BaseDefinition implements Serializable, Translat
 			child = findChild( list, pk );
 		}
 
-		Iterator subdefinitions = getSubdefinitions().iterator();
-		while ( subdefinitions.hasNext() && null == child )
+		if ( null != getSubdefinitions() )
 		{
-			ISubdefinition def = (ISubdefinition) subdefinitions.next();
-			child = def.findChild( pk );
+			Iterator subdefinitions = getSubdefinitions().iterator();
+			while ( subdefinitions.hasNext() && null == child )
+			{
+				ISubdefinition def = (ISubdefinition) subdefinitions.next();
+				child = def.findChild( pk );
+			}
 		}
-
 		return child;
 	}
 
@@ -150,13 +157,16 @@ public class Definition extends BaseDefinition implements Serializable, Translat
 	public ILexComponent findChild( List list, Integer pk )
 	{
 		ILexComponent child = null;
-		for ( Iterator it = list.iterator(); it.hasNext();  )
+		if ( null != list )
 		{
-			ILexComponent lc = (LexComponent) it.next();
-			if ( lc.getMetaId().equals( pk ) )
+			for ( Iterator it = list.iterator(); it.hasNext();  )
 			{
-				child = lc;
-				break;
+				ILexComponent lc = (LexComponent) it.next();
+				if ( lc.getMetaId().equals( pk ) )
+				{
+					child = lc;
+					break;
+				}
 			}
 		}
 		return child;

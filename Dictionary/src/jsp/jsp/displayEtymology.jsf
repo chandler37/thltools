@@ -34,6 +34,7 @@
 		
 		<jsp:include page="displayMeta.jsf" />
 		
+		</p>
 		
 		<c:if test="${sessionScope.visit.helper.showTranslations }">
 		<!--translation-->		
@@ -44,20 +45,19 @@
 		
 		<c:forEach var="translation" items="${ etymology.translations }" >
 		<li>
-		
-		<%-- <c:set var='href' value='#'/>
+		<p class="data">
+
 		<c:if test="${ editMode }">
-			<c:set var='href' value='/lex/action?cmd=getUpdateForm&amp;comp=etymology&amp;metaId=${ translation.metaId }'  />
-		</c:if> 
-		<c:out value='<a class="meta" href="${href} ">'escapeXml="false" /><img src="/lex/images/trans.gif" alt="view/edit translation" />--%>
+			<span class="compEditOptions">			
+			<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=etymology&amp;metaId=${ translation.metaId }&amp;translationOf=${ translation.translationOf }&amp;parentId=${ translation.parentId }" title="Edit this etymology"><img alt="Edit this etymology" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=etymology&amp;metaId=${ translation.metaId }&amp;translationOf=${ translation.translationOf }&amp;parentId=${ translation.parentId }" title="Remove this etymology"><img alt="Remove this etymology" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+			</span>
+		</c:if>
+
 		<span class="translation">		
-		<!--<span class="label">Etymology:</span>-->
 	  <c:out value="${ translation.etymologyDescription }" escapeXml="false" />   <br />
-		<!--<span class="label">Etymology Type:</span>-->
 	  <c:out value="${ applicationScope.flatData.etymologyTypes[ translation.etymologyType ] }" escapeXml="false" />   <br />
-		<!--<span class="label">Loan Language:</span>-->
 	  <c:out value="${ applicationScope.flatData.languages[ translation.loanLanguage ] }" escapeXml="false" />   <br />
-		<!--<span class="label">Derivation:</span>-->
 		<c:out value="${ translation.derivation }" escapeXml="false" />   
 		
 		</span>
@@ -65,6 +65,7 @@
 		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ translation }" />
 		<jsp:include page="displayMeta.jsf" />	
 		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ originalComponent }" />
+		</p>
 		</li>
 		</c:forEach>
 		</ul>
@@ -74,5 +75,4 @@
 		
 		<jsp:include page="displayNotes.jsf" />
 
-		</p>
 

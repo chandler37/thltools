@@ -1,5 +1,7 @@
 package org.thdl.lex.component;
 
+import java.util.List;
+
 
 /**
  *  Description of the Interface
@@ -181,5 +183,16 @@ public interface ILexComponent
 	 * @exception  LexComponentException  Description of the Exception
 	 */
 	public void populate( ILexComponent component ) throws LexComponentException;
+
+
+	/**
+	 *  Adds a feature to the SiblingList attribute of the LexComponentNode object
+	 *
+	 * @param  component                  The feature to be added to the SiblingList attribute
+	 * @param  list                       The feature to be added to the SiblingList attribute
+	 * @param  parent                     The feature to be added to the SiblingList attribute
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public void addSiblingList( ILexComponent parent, ILexComponent component, List list ) throws LexComponentException;
 }
 

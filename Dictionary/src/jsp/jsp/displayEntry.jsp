@@ -37,6 +37,7 @@
 		</form>
 	</div>
 	
+<c:if test="${ ! empty sessionScope.visit.query.results}">
 	<div id="results" class="highlightBox">
 		<h2>	Search Results </h2>
 		<ol>
@@ -52,6 +53,7 @@
 			</c:forEach>
 		</ol>
 	</div><!--END MENU-->
+</c:if>
 
 </div>
 

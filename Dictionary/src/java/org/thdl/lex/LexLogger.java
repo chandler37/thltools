@@ -182,15 +182,20 @@ public class LexLogger
 	 */
 	public static void debugComponent( Object component )
 	{
+		if ( null == component )
+		{
+			debug( "debugComponent was just handed a null component" );
+			return;
+		}
 		try
 		{
-			LOGGER.debug( "Describing:: " + component );
+			LOGGER.debug( "Describing: " + component );
 			String label = component instanceof ILexComponent ? ( (ILexComponent) component ).getLabel() : component.toString();
 			Iterator it = BeanUtils.describe( component ).entrySet().iterator();
 			while ( it.hasNext() )
 			{
 				Map.Entry entry = (Map.Entry) it.next();
-				LOGGER.debug( label + " property:: " + entry.getKey() + " = '" + entry.getValue() + "'" );
+				LOGGER.debug( label + " property: " + entry.getKey() + " = '" + entry.getValue() + "'" );
 			}
 		}
 		catch ( Exception e )
@@ -198,8 +203,20 @@ public class LexLogger
 			StringWriter writer = new StringWriter();
 			e.printStackTrace( new PrintWriter( writer ) );
 			String stackTrace = writer.getBuffer().toString();
-			LOGGER.debug( "LexLogger caught an Exception:: " + stackTrace );
+			LOGGER.debug( "LexLogger caught an Exception: " + stackTrace );
 		}
 	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  term  Description of the Parameter
+	 */
+	public static void debugTerm( ITerm term )
+	{
+		debugComponent( term );
+	}
+
 }
 
