@@ -204,7 +204,7 @@
 \f1\fs144 >\'ed>\f2\fs28\i0\b0\ul0 au\i0\b0\ul0\cf0  font 1; ord 237\par
 \f1\fs144 >\'ee>\f2\fs28\i0\b0\ul0 M\i0\b0\ul0\cf0  font 1; ord 238\par
 \f1\fs144 >\'ef>\f2\fs28\i0\b0\ul0 H\i0\b0\ul0\cf0  font 1; ord 239\par
-\f1\fs144 >\'f1>\f2\fs28\i0\b0\ul0 ^M\i0\b0\ul0\cf0  font 1; ord 241\par
+\f1\fs144 >\'f1>\f2\fs28\i0\b0\ul0 ~M\i0\b0\ul0\cf0  font 1; ord 241\par
 \f1\fs144 >\'f2>\f2\fs28\i0\b0\ul0 <<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert <glyph font=TibetanMachineWeb7 charNum=95 character=_/> to THDL Extended Wylie.  Please see the documentation for the TM or TMW font and transcribe this yourself.]]>>\i0\b0\ul0\cf0  font 1; ord 242\par
 \f1\fs144 >\'f3>\f2\fs28\i0\b0\ul0 iM\i0\b0\ul0\cf0  font 1; ord 243\par
 \f1\fs144 >\'f4>\f2\fs28\i0\b0\ul0 iM\i0\b0\ul0\cf0  font 1; ord 244\par
@@ -806,7 +806,7 @@
 \f1\fs144 >\f6 S\f1 >\f2\fs28\i0\b0\ul0\\u0FC3\i0\b0\ul0\cf0  font 5; ord 83\par
 \f1\fs144 >\f6 T\f1 >\f2\fs28\i0\b0\ul0\\uF03B\i0\b0\ul0\cf0  font 5; ord 84\par
 \f1\fs144 >\f6 Z\f1 >\f2\fs28\i0\b0\ul0\\uF039\i0\b0\ul0\cf0  font 5; ord 90\par
-\f1\fs144 >\f6 [\f1 >\f2\fs28\i0\b0\ul0\\u0F82\i0\b0\ul0\cf0  font 5; ord 91\par
+\f1\fs144 >\f6 [\f1 >\f2\fs28\i0\b0\ul0 ~M`\i0\b0\ul0\cf0  font 5; ord 91\par
 \f1\fs144 >\f6\\\f1 >\f2\fs28\i0\b0\ul0\\uF035\i0\b0\ul0\cf0  font 5; ord 92\par
 \f1\fs144 >\f6 ]\f1 >\f2\fs28\i0\b0\ul0\\uF036\i0\b0\ul0\cf0  font 5; ord 93\par
 \f1\fs144 >\f6 ^\f1 >\f2\fs28\i0\b0\ul0\\u0F13\i0\b0\ul0\cf0  font 5; ord 94\par
