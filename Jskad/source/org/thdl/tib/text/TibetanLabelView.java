@@ -101,9 +101,8 @@ class TibetanLabelView extends LabelView {
         }
     }
 
-    /** Returns an offset >= 0 if we find a character (FIXME: before
-     *  or after?) where breaking would be good.  Returns negative
-     *  otherwise. */
+    /** Returns a nonnegative offset if we find a character after
+     *  which breaking would be good.  Returns negative otherwise. */
     private int getGoodBreakingLocation(int startOffset, int endOffset) {
 
         // Grab the underlying characters:

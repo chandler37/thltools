@@ -56,8 +56,7 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 * added to charList if they constitute a valid Wylie character. charList
 * is added to in this manner until the user types punctuation, a vowel,
 * or some action or function key. Later, when glyphs are printed to the
-* screen, the {@link #newGlyphList glyphList}) is computed on the basis 
-* of charList.
+* screen, the {@link #newGlyphList} is computed on the basis of charList.
 */
 	private java.util.ArrayList charList;
 /**

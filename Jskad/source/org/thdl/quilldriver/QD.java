@@ -1764,7 +1764,7 @@ class RadioListener extends ThdlActionListener {
 
     /* FIXME: needs better error handling */
     /** Creates an object via reflection.
-     *  @returns nonnull on succes, null on error */
+     *  @return nonnull on success, null on error */
     public static Object createObject(Constructor constructor,
                                       Object[] arguments) {
 
