@@ -108,8 +108,10 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 			ThdlDebug.noteIffyCode();
 			return;
 		}
-		if (player != null)
-			player.realize();
+		if (player != null) {
+			//player.realize();
+			player.prefetch();
+		}
 	}
 /*-----------------------------------------------------------------------*/
 	public void displayBorders(boolean borders) throws SmartMoviePanelException
@@ -180,6 +182,7 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 							player.stop();
 				}}, 0, 15);
 		} else if (event instanceof StopEvent) {
+			System.out.println("received StopEvent");
 			pauseTime = player.getMediaTime();
 			cancelAnnotationTimer();
 
@@ -196,13 +199,13 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 				time.*/
 
 			if (!(event instanceof RestartingEvent)) {
+				System.out.println("received RestartingEvent");
 				player.setMediaTime(pauseTime);
 				player.prefetch();
 			}
 
 			stopTime = null;
 
-			System.out.println("received StopEvent");
 
 			if (timer != null)
 			{
@@ -262,7 +265,6 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 		if (from == null || player == null)
 			throw new SmartMoviePanelException("no player or video still loading");
 
-
 		final Time startTime = new Time(from.longValue() * 1000000);
 		try {
 			if (player.getState() == Controller.Started)
@@ -276,9 +278,7 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 				stopTime = new Time(to.longValue() * 1000000);
 				player.setStopTime(stopTime);
 			}
-			System.out.println("AAAAA: "+from.toString());
-			//player.setMediaTime(startTime);
-			player.setMediaTime(new Time(0));
+			player.setMediaTime(startTime);
 			player.prefetch();
 			player.start();
 		} catch(NotRealizedError err) {
@@ -395,4 +395,7 @@ that should solve your pause play problems!
 >
 >
 
+*/
+/* comments from michel
+I change the player.realise() to a player.prefetch() call at the end of the start function.
 */

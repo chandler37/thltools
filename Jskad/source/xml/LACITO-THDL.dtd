@@ -1,0 +1,60 @@
+<!-- DTD for LACITO and THDL Language archive (14/11/2002)    -->
+
+<!ELEMENT ARCHIVE     (TEXT)+                       >
+
+<!--
+***
+***	The levels
+***
+-->
+<!ELEMENT TEXT		(HEADER,(FORM|TRANSL|AUDIO|PARA|S)*)    >
+<!ATTLIST TEXT        	xml:lang  NMTOKEN      #REQUIRED
+
+<!ELEMENT PARA		(FORM|TRANSL|AUDIO|S)*		        >
+<!ATTLIST PARA          xml:lang	 NMTOKEN	#IMPLIED>
+		      	id    ID                       #REQUIRED>
+
+<!ELEMENT S		(FORM|TRANSL|AUDIO|W)*		        >
+<!ATTLIST S           	id    ID         #REQUIRED
+			xml:lang	 NMTOKEN	#IMPLIED
+		      	who              IDREF          #IMPLIED>
+		      	
+<!ELEMENT W		(FORM|TRANSL|AUDIO|M)*			>
+<!ATTLIST W           	xml:lang	NMTOKEN	#IMPLIED        >
+			
+<!ELEMENT M	 	(FORM|TRANSL|AUDIO)*			>
+<!ATTLIST M		     class	CDATA	#IMPLIED
+			     sclass	CDATA	               #IMPLIED
+			     xml:lang	NMTOKEN	               #IMPLIED>
+
+
+<!--
+***
+***	The metadata
+***
+-->
+<!ELEMENT HEADER	(TITLE+,SOUNDFILE,SPEAKER*)      	>
+<!ELEMENT TITLE		(#PCDATA)				>
+<!ATTLIST TITLE		xml:lang	NMTOKEN	"en"		>
+<!ELEMENT SOUNDFILE	EMPTY					>
+<!ATTLIST SOUNDFILE	href	CDATA	#REQUIRED		>
+<!ELEMENT SPEAKER	(#PCDATA)				>
+<!ATTLIST SPEAKER	personId	ID	#REQUIRED	>
+
+
+<!--
+***
+***	The data
+***
+-->
+<!ELEMENT TRANSL	(#PCDATA)                     		>
+<!ATTLIST TRANSL	xml:lang	NMTOKEN	"en"
+			type 	(meta)	#IMPLIED   		>
+<!ELEMENT FORM		(#PCDATA|FOREIGN)*			>
+<!ATTLIST FORM		type 	(phonetic|phonemic|prosodic|orthographic|gestural|kinesic|musical)	"phonemic">
+
+<!ELEMENT FOREIGN	(#PCDATA)				>
+<!ATTLIST FOREIGN	xml:lang	NMTOKEN	 #REQUIRED	>
+<!ELEMENT AUDIO       	EMPTY                         		>
+<!ATTLIST AUDIO		start	CDATA	#REQUIRED
+			end	CDATA	#REQUIRED		>
