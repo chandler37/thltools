@@ -250,6 +250,11 @@ public class TibetanDocument extends DefaultStyledDocument {
         @return 1 if at least one non-TMW character was found in
         the specified range, zero if none were, -1 on error. */
     public int findAllNonTMWCharacters(int begin, int end) {
+        return findAllNonTMWCharacters(begin, end, System.out);
+    }
+
+    /** Configurable so that System.out isn't necessarily used. */
+    public int findAllNonTMWCharacters(int begin, int end, PrintStream out) {
         if (end < 0)
             end = getLength();
         if (begin >= end)
@@ -264,13 +269,13 @@ public class TibetanDocument extends DefaultStyledDocument {
                     returnValue = 1;
                     CharacterInAGivenFont cgf
                         = new CharacterInAGivenFont(getText(i, 1), fontName);
-                    System.out.println("non-TMW character "
+                    out.println("non-TMW character "
                                        + cgf + " at location " + i);
                 }
                 i++;
             }
         } catch (BadLocationException ble) {
-            ble.printStackTrace();
+            ble.printStackTrace(out);
             ThdlDebug.noteIffyCode();
             returnValue = -1;
         }
@@ -289,6 +294,11 @@ public class TibetanDocument extends DefaultStyledDocument {
         @return 1 if at least one non-TMW character was found in
         the specified range, zero if none were, -1 on error. */
     public int findSomeNonTMWCharacters(int begin, int end) {
+        return findSomeNonTMWCharacters(begin, end, System.out);
+    }
+
+    /** Configurable so that System.out isn't necessarily used. */
+    public int findSomeNonTMWCharacters(int begin, int end, PrintStream out) {
         if (end < 0)
             end = getLength();
         if (begin >= end)
@@ -306,14 +316,14 @@ public class TibetanDocument extends DefaultStyledDocument {
                         = new CharacterInAGivenFont(getText(i, 1), fontName);
                     if (!cgfTable.containsKey(cgf)) {
                         cgfTable.put(cgf, "yes this character appears once");
-                        System.out.println("non-TMW character "
-                                           + cgf + " appears first at location " + i);
+                        out.println("non-TMW character "
+                                    + cgf + " appears first at location " + i);
                     }
                 }
                 i++;
             }
         } catch (BadLocationException ble) {
-            ble.printStackTrace();
+            ble.printStackTrace(out);
             ThdlDebug.noteIffyCode();
             returnValue = -1;
         }

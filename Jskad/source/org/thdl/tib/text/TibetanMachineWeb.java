@@ -933,6 +933,9 @@ public static String getWylieForGlyph(int font, int code) {
 public static String getWylieForGlyph(DuffCode dc) {
 	String hashKey = getHashKeyForGlyph(dc);
     if (hashKey == null) {
+        // This error message is documented in
+        // www/htdocs/TMW_RTF_TO_THDL_WYLIE.html, so change them both
+        // when you change this.
         return "<<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert DuffCode " + dc + " to THDL Extended Wylie.  Please see the documentation for the TMW font and transcribe this yourself.]]>>";
     }
 	return wylieForGlyph(hashKey);

@@ -44,6 +44,7 @@
       <test name="org.thdl.tib.input.DuffPaneTest"/>
       <test name="org.thdl.util.ThdlLazyExceptionTest"/>
       <test name="org.thdl.util.TrieTest"/>
+      <test name="org.thdl.tib.input.TMW_RTF_TO_THDL_WYLIETest"/>
       <test name="org.thdl.tib.text.tshegbar.UnicodeUtilsTest"/>
       <test name="org.thdl.tib.text.tshegbar.LegalTshegBarTest"/>
       <test name="org.thdl.tib.text.tshegbar.UnicodeGraphemeClusterTest"/>
