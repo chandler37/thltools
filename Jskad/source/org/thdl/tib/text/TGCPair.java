@@ -105,7 +105,7 @@ public class TGCPair {
     public String getACIP() {
         return getACIP(null);
     }
-    /** Like {@link #getWylie(String)}. */
+    /** Like {@link #getWylie(String)} but for ACIP transliteration, not EWTS. */
     public String getACIP(String previousTranslitIfAppendaged) {
         // DLC FIXME: has the EWTS change affected Manipulate.acipToWylie?
         StringBuffer b = new StringBuffer();
