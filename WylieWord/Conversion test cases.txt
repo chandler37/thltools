@@ -80,6 +80,19 @@ ha_sa
 gangs
 mngas
 'gram
+la'i
+a'i
+od
+bem a ra
+lnga
+lang
+
+// A-chung as root
+'a
+'od
+'angs
+'ag
+'ad
 
 // The exceptions to the three-letter root rule
 rags lags nags bags bangs gangs rangs langs nangs sangs babs rabs rams nams
@@ -171,7 +184,6 @@ d+ga
 d+g+ra
 d+gara
 
-
 // Other Sanskrit
 rak+Shasa
 DAkinI
@@ -186,6 +198,11 @@ sarma
 hU~M`!
 wa~M`ba~MthangumaM
 
+// Sanskrit bug ticklers
+ragyada
+'agarma
+gayaradasa
+
 // R+, +W, +Y, +R
 paN+D+R+yau
 k+Sh+RUM
@@ -194,15 +211,6 @@ waw+Wa
 fuN+D+Yo
 yay+Yaya
 r+Yi
-
-// bug ticklers
-ragyada
-'agarma
-gayaradasa
-la'i
-a'i
-od
-bem a ra
 
 // Taken from THDL Sechen text collection
 dashadigAMsarbatimirabi ni saranan+nAmashrIguh+yagar+b+hatatwaMsh+ts+yayastanataras+yaTa'ikAbiharatisma
@@ -756,7 +764,7 @@ a_tsal852ja$)@#%(!Ta)0daM)%!@sa
 @# #@ @a#
 
 // English insert
-rta'i [(horse's)] mgrin
+rta'i [(of horse)] mgrin
 
 <?Reject?>
 
@@ -769,13 +777,9 @@ pe's
 p'is
 p'e
 
-'angs
-'ag
-
 bskyUMbs
 bskyUMbsHgro 
 b+g+ka
-'ad
 xan
 tax
 qan
@@ -809,3 +813,9 @@ ragyad
 
 // no vowel between ' and g
 'garma
+
+// stuff testing handling of ' as root
+b'o
+r'o
+'yo
+'wo
