@@ -1,11 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 
 <!-- @author David Chandler -->
-<!-- @date September 7, 2002 -->
+<!-- @date-created May 18, 2003 -->
 <!-- @editor Emacs, baby! -->
-
 
 <!--
 ==============
@@ -26,7 +24,7 @@ INSERT PAGE TITLE HERE
  Always incorporate Tibetan and Himalayan
 -->
 
-<title>THDL Tools Developers' Site</title>
+<title>TMW to THDL Extended Wylie Converter</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-utf-8">
 
 <!--
@@ -118,7 +116,7 @@ INSERT THE BREADCRUMBS
  A HREF tags should not be applied to current page, e.g. THDL and Collections get link, Literature and Home do not. If you were on a subpage of Literature, then Literature would link to the Literature home page.
  -->
 
-	<div align="right"><font color="#000000"><A HREF="http://iris.lib.virginia.edu/tibet/index.html">THDL</A> : <A HREF="http://iris.lib.virginia.edu/tibet/tools/index.html">Tools</A> : <a href="http://iris.lib.virginia.edu/tibet/tools/software.html">Software</a> : Developers Site</a></font>
+	<div align="right"><font color="#000000"><A HREF="http://iris.lib.virginia.edu/tibet/index.html">THDL</A> : <A HREF="http://iris.lib.virginia.edu/tibet/tools/index.html">Tools</A> : <a href="http://iris.lib.virginia.edu/tibet/tools/software.html">Software</a> : Build Systems</a></font>
 	</div>
 </div>
 
@@ -190,227 +188,74 @@ The first section of text is the short "introduction" about the Theme and the va
  Design principle: Bold the first few words of this text section.
 ==============
 -->
-<h2>THDL Tools Developers' Site</h2>
+<h2>TMW to THDL Extended Wylie Converter</h2>
 
 <p>
-  This page is a technical page for software developers,
-  which presents details concerning the internal mechanics
-  of the THDL tools. This page covers both low-level (e.g., which
-  API?) and high-level (e.g., which user interface?) issues.
-
-  <a href="#related">
-    Related projects</a>
-
-  are also discussed.
+  In the same JAR file as Jskad, power users will find a command-line
+  utility that converts Tibetan Machine Web-encoded (TMW-encoded) Rich
+  Text Format (RTF) files to RTF files with the appropriate THDL
+  Extended Wylie (Wylie) used instead of TMW.
 </p>
 
 <p>
-  The only thing we personally have got up on the web that's any use
-  thus far are
-</p>
-
-  <ul>
-    <li>
-      some <a href="April12Build/NightlyBuilds.html">builds of the
-      tools, etc.</a> from April 12, 2003.&nbsp; This is an example of
-      the nightly builds that we could easily have if programmers
-      weren't so lazy.
-    </li>
-    <li>
-      a <a href="TMW_RTF_TO_THDL_WYLIE.html"> document</a> describing
-      a Tibetan Machine Web to THDL Extended Wylie converter that
-      works for Rich Text Format files and solves the
-      &quot;curly-brace problem&quot;.
-    </li>
-    <li>
-      our Javadoc <a href="pubapi/">API docs</a> [grab the whole <a
-      href="public-javadocs.zip">zip file</a>] (see also these <a
-      href="privateapi/">API docs</a> [grab the whole <a
-      href="private-javadocs.zip">zip file</a>] that contain private
-      class members).
-    </li>
-    <li>
-      a description of our <a href="BuildSystems.html"> build
-      systems</a> that tells you how to compile, run, and cut releases
-      for our tools.
-    </li>
-    <li>
-      a <a href="TibetanFormatConverterDesign.html">design
-      document</a> concerning the Tibetan Format Converter.
-    </li>
-  </ul>
-
-<p>
-  Here are some links to tools of interest:
-</p>
-
-  <ul>
-    <li>
-      Jskad uses an Ant build system.&nbsp; See
-
-      <a href="http://jakarta.apache.org/ant/">
-        Apache Ant</a>
-
-      or jump right to the
-
-      <a href="http://jakarta.apache.org/ant/manual/coretasklist.html">
-        documentation</a>
-
-      for the tasks of which we make use.
-    </li>
-    <li>
-      Our unit tests use the
-
-      <a href="http://junit.org/">
-        JUnit</a>
-
-      framework.&nbsp; Javadocs are <a
-      href="http://www.junit.org/junit/javadoc/3.8.1/index.htm">here</a>
-      (or jump directly <a
-      href="http://www.junit.org/junit/javadoc/3.8.1/index.htm/allclasses-frame.html/junit/framework/TestCase.html">here</a>
-      for TestCase's docs).
-    </li>
-    <li>
-      In our Java(TM) code, we load some classes at run-time.&nbsp; To
-      understand the mechanisms behind
-      this--<code>Class.forName(String)</code> and thread context
-      class loaders, etc.--read
-
-      <a href="http://www.javageeks.com/Papers/ClassForName/">
-        this JavaGeeks white paper</a>.
-    </li>
-    <li>
-      Our Java code uses XML.  We use
-
-      <a href="http://jdom.org/">
-        JDOM</a>,
-
-      <a href="http://xml.apache.org/xalan-j/">
-        Xalan</a> (XSLT),
-
-      and
-
-      <a href="http://xml.apache.org/xerces2-j/index.html">
-        Xerces</a>.
-    </li>
-    <li>
-      We use the Ant Task Suite provided by Venus Application
-      Publisher (Vamp) to make putting releases up via Java Web Start
-      less painful.  See
-
-      <a href="http://www.vamphq.com/ant.html">
-        VampHQ</a>.
-    </li>
-  </ul>
-
-
-<h3>Related Projects<a name="related"></a></h3>
-<p>
-  Below are links to some Java text editors or word processors that we
-  might learn from or integrate with.  This list is by no means
-  comprehensive.  I started my search from
-
-  <a href="http://sourceforge.net/softwaremap/trove_list.php?form_cat=63&amp;discrim=198">
-    SF.net's software map</a>,
-
-  by the way (and see
-
-  <a href="http://sourceforge.net/softwaremap/trove_list.php?form_cat=70&amp;discrim=198">
-    this corner of the map</a>,
-
-  too), and haven't yet done anything more.
+  This converter is smart enough to solve the &quot;curly-brace
+  problem&quot;.&nbsp; This problem originates with certain versions
+  of Microsoft Word's Rich Text Format writing capabilities.
 </p>
 
 <p>
-  <ul>
-    <li>
-      The GPL'ed
-
-      <a href="http://vietpad.sourceforge.net/">
-        VietPad</a>,
-
-      written in Java, (for entering Vietnamese language in Unicode-8
-      or -16) may teach us something, though integration doesn't seem
-      useful (because it is primitive) and would require changing our
-      license to the GPL.
-    </li>
-    <li>
-      The GPL'ed
-
-      <a href="http://jedit.sourceforge.net/">
-        JEdit</a>
-
-      bills itself as a "programmer's text editor", but it supports
-      Unicode, is 100% Java, is very popular, and is extremely
-      extensible, making integration while keeping our
-      non-GPL-compatible license a possibility.  Definitely worth a
-      second look.
-    </li>
-    <li>
-      The GPL'ed
-
-      <a href="http://yudit.org/">
-        Yudit</a>
-
-      is an X11 application that supports Unicode in a big way.  Their
-
-      <a href="http://yudit.org/">
-        website</a>
-
-      has many links of interest to us as we ponder Unicode
-      compatibility.
-    </li>
-    <li>
-      The GPL'ed/LGPL'ed
-
-      <a href="http://www.prometheas.com/projects/_syggrafeus/index.html">
-        Syggrafeus/Rosetta Stone Library</a>
-
-      is a Java library for Unicode multi-lingual something-or-other.
-    </li>
-    <li>
-      The GPL'ed
-
-      <a href="http://sted.sourceforge.net/">
-        STED</a>
-
-      is a Java transliterator for many languages.
-    </li>
-    <li>
-      The GPL'ed
-
-      <a href="http://sourceforge.net/projects/words-of-magic/">
-        Words of Magic</a>
-      
-      is a very simple word processor for English and Dutch.
-    </li>
-    <li>
-      The GPL'ed
-
-      <a href="http://sourceforge.net/projects/jgloss/">
-        JGloss</a>
-      
-      says this about itself: "JGloss lets you import Japanese text
-      documents and add reading and translation annotations for words,
-      both automatically during import, and manually. It is written in
-      Java."
-    </li>
-  </ul>
+  Further, this converter gives a polite error message when a given
+  .rtf file simply cannot be read by the version of Java used.
 </p>
 
 <p>
-  Finally, the
+  Perhaps most importantly, the converter has a
+  <tt>--find-some-non-tmw</tt> mode of operation that gives you, the
+  user, confidence that RTF reading and writing idiosyncrasies are not
+  going to interfere with a flawless conversion.&nbsp; It does so by
+  printing out the first occurrence of a given character in a non-TMW
+  font.&nbsp; Here is some example output:
+</p>
+<pre>
+java -cp Jskad.jar \
+     org.thdl.tib.input.TMW_RTF_TO_THDL_WYLIE \
+        --find-some-non-tmw \
+        "Dalai Lama Fifth History 01.rtf"
+non-TMW character newline in the font Tahoma appears first at location 39
+non-TMW character ' ' in the font TimesNewRoman appears first at location 45
+non-TMW character '}' in the font Tahoma appears first at location 66
+non-TMW character '{' in the font Tahoma appears first at location 219
+non-TMW character '\' in the font Tahoma appears first at location 1237
+non-TMW character newline in the font Times New Roman appears first at location 9754
+</pre>
 
-  <a href="http://epidoc.sourceforge.net/">
-    EpiDoc</a>
+<p>
+  Given the above output, you can be sure that a flawless conversion
+  (barring the appearance of <a href="#knownbugs">known bugs</a>) will
+  result when you run <tt>java -cp Jskad.jar
+  org.thdl.tib.input.TMW_RTF_TO_THDL_WYLIE "Dalai Lama Fifth History
+  01.rtf" > "Dalai Lama Fifth History 01 in THDL Extended
+  Wylie.rtf"</tt>.&nbsp; This is because the only text in the input
+  file besides Tibetan is whitespace and the Tahoma characters
+  <tt>'{'</tt>, <tt>'}'</tt>, and <tt>'\'</tt>.  These Tahoma
+  characters are understood by the tool; they are symptoms of the
+  &quot;curly-brace problem&quot;.
+</p>
 
-  project (hosted by SourceForge) does not yet have any tools up, but
-  the project's goals are similar in many ways to the THDL's, and they
-  list their programming language as Java.  The blurb of interest:
-  "The EpiDoc Collaborative is developing a software and
-  hardware-independent digital publication and interchange
-  specification for scholarly and educational editions of inscribed
-  and incised texts in Greek, Latin and other ancient languages".
+<h3>Invoking the Converter</h3>
+
+<p>
+  First add Jskad.jar to your CLASSPATH.&nbsp; Now run the command
+  <tt>java org.thdl.tib.input.TMW_RTF_TO_THDL_WYLIE</tt> from a
+  command prompt.&nbsp; You will see usage information appear.
+</p>
+
+<h3><a name="knownbugs"></a>Known Bugs</h3>
+
+<p>
+  If the TMW given is not syntactically legal, then the Wylie that
+  results will not necessarily yield, if imported into Jskad, the same
+  Tibetan with which the converter started.
 </p>
 
 <p>
@@ -451,6 +296,7 @@ project web pages unless we put this link in.  To track hits, see
     </tr>
   </table>
 </div>
+
 
 </body>
 </html>
