@@ -237,6 +237,11 @@
       <param name="my.included.source.file"
              value="org/thdl/tib/scanner/WindowScannerFilter.java"/>
     </antcall>
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${ttstandalonebin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/tib/scanner/AcipToWylie.java"/>
+    </antcall>
     <antcall target="copy-ini-files-to-bin-dir-for-jarring">
       <param name="mybin" value="${ttstandalonebin}"/>
     </antcall>
