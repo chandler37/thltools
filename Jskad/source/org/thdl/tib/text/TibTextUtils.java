@@ -317,13 +317,18 @@ public class TibTextUtils implements THDLWylieConstants {
 * into tdoc at offset loc.
 * @param acip the ACIP you want to convert
 * @param tdoc the document in which to insert the TMW
-* @param lco the offset inside the document at which to insert the TMW
+* @param loc the offset inside the document at which to insert the TMW
+* @param withWarnings true if and only if you want warnings to appear
+* in the output, such as "this could be a mistranscription of blah..."
 * @throws InvalidACIPException if the ACIP is deemed invalid, i.e. if
 * it does not conform to the ACIP transcription rules (those in the
 * official document and the subtler rules pieced together by David
 * Chandler through study and private correspondence with Robert
 * Chilton) */
-    public static void insertTibetanMachineWebForACIP(String acip, TibetanDocument tdoc, int loc)
+    public static void insertTibetanMachineWebForACIP(String acip,
+                                                      TibetanDocument tdoc,
+                                                      int loc,
+                                                      boolean withWarnings)
         throws InvalidACIPException
     {
         StringBuffer errors = new StringBuffer();
@@ -334,16 +339,14 @@ public class TibTextUtils implements THDLWylieConstants {
             else
                 throw new InvalidACIPException("Fatal error converting ACIP to TMW.");
         }
-        String warningLevel = "Most";
+        String warningLevel = withWarnings ? "All" : "None";
         boolean colors = false;
-        StringBuffer warnings = null;
         boolean putWarningsInOutput = false;
         if ("None" != warningLevel) {
-            warnings = new StringBuffer();
             putWarningsInOutput = true;
         }
         try {
-            ACIPConverter.convertToTMW(al, tdoc, errors, warnings,
+            ACIPConverter.convertToTMW(al, tdoc, null, null,
                                        putWarningsInOutput, warningLevel, colors, loc);
         } catch (IOException e) {
             throw new Error("Can't happen: " + e);

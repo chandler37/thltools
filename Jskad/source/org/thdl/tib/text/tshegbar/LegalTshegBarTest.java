@@ -306,6 +306,7 @@ public class LegalTshegBarTest extends TestCase implements UnicodeConstants {
             assertTrue(!LegalTshegBar.takesBao(EWC_la, EWC_nga, EW_ABSENT));
             assertTrue(!LegalTshegBar.takesBao(EWC_ra, EWC_da, EWC_ya));
             assertTrue(!LegalTshegBar.takesBao(EW_ABSENT, EWC_ba, EW_ABSENT));
+            assertTrue(!LegalTshegBar.takesBao(EW_ABSENT, EWC_na, EW_ABSENT));
             assertTrue(!LegalTshegBar.takesBao(EW_ABSENT, EWC_nga, EWC_ra));
         }
 
