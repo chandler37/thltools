@@ -213,7 +213,7 @@ public class UnicodeCodepointToThdlWylie {
         case '\u0F80': return "-i";
         case '\u0F81': return "-I";
         case '\u0F82': return "~^";// DLC unsupported in Jskad
-        case '\u0F83': return "~"; // DLC unsupported in Jskad
+        case '\u0F83': return "M^"; // DLC unsupported in Jskad
         case '\u0F84': return "?";
         case '\u0F85': return "&";
         case '\u0F86': return null;
@@ -231,7 +231,7 @@ public class UnicodeCodepointToThdlWylie {
         case '\u0F91': return "kh";
         case '\u0F92': return "g";
         case '\u0F93': return (getThdlWylieForUnicodeCodepoint('\u0F92')
-                               + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY // DLC FIXME: is this right?
+                               + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY
                                + getThdlWylieForUnicodeCodepoint('\u0FB7'));
         case '\u0F94': return "ng";
         case '\u0F95': return "c";
@@ -242,8 +242,8 @@ public class UnicodeCodepointToThdlWylie {
         case '\u0F9A': return "T";
         case '\u0F9B': return "Th";
         case '\u0F9C': return "D";
-        case '\u0F9D': return (getThdlWylieForUnicodeCodepoint('\u0F92')
-                               + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY // DLC FIXME: is this right?
+        case '\u0F9D': return (getThdlWylieForUnicodeCodepoint('\u0F9C')
+                               + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY
                                + getThdlWylieForUnicodeCodepoint('\u0FB7'));
         case '\u0F9E': return "N";
         case '\u0F9F': return "t";
@@ -251,21 +251,21 @@ public class UnicodeCodepointToThdlWylie {
         case '\u0FA0': return "th";
         case '\u0FA1': return "d";
         case '\u0FA2': return (getThdlWylieForUnicodeCodepoint('\u0FA1')
-                               + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY // DLC FIXME: is this right?
+                               + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY
                                + getThdlWylieForUnicodeCodepoint('\u0FB7'));
         case '\u0FA3': return "n";
         case '\u0FA4': return "p";
         case '\u0FA5': return "ph";
         case '\u0FA6': return "b";
         case '\u0FA7': return (getThdlWylieForUnicodeCodepoint('\u0FA6')
-                               + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY // DLC FIXME: is this right?
+                               + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY
                                + getThdlWylieForUnicodeCodepoint('\u0FB7'));
         case '\u0FA8': return "m";
         case '\u0FA9': return "ts";
         case '\u0FAA': return "tsh";
         case '\u0FAB': return "dz";
         case '\u0FAC': return (getThdlWylieForUnicodeCodepoint('\u0FAB')
-                               + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY // DLC FIXME: is this right?
+                               + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY
                                + getThdlWylieForUnicodeCodepoint('\u0FB7'));
         case '\u0FAD': return "w";
         case '\u0FAE': return "zh";
@@ -281,7 +281,7 @@ public class UnicodeCodepointToThdlWylie {
         case '\u0FB7': return "h";
         case '\u0FB8': return "a"; // DLC see note on \u0F68 ...
         case '\u0FB9': return (getThdlWylieForUnicodeCodepoint('\u0F90')
-                               + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY // DLC FIXME: is this right?
+                               + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY
                                + getThdlWylieForUnicodeCodepoint('\u0FB5'));
         case '\u0FBA': return "w";
         case '\u0FBB': return "y";
@@ -305,7 +305,7 @@ public class UnicodeCodepointToThdlWylie {
         case '\u0FCC': return null;
         case '\u0FCD': return null;
         case '\u0FCE': return null;
-        case '\u0FCF': return ""; // DLC i added this to the 'EWTS document misspeaks' bug report... null I think...
+        case '\u0FCF': return null; // DLC i added this to the 'EWTS document misspeaks' bug report... null I think...
 
         default: {
             // DLC handle space (EW's "_")
