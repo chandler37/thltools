@@ -128,8 +128,8 @@ public class TibetanConverter implements FontConverterConstants {
                 out.println("                 --find-all-non-tmw | --find-some-non-tmw");
                 out.println("                   | --to-tibetan-machine | --to-tibetan-machine-web");
                 out.println("                   | --to-unicode | --to-wylie | --to-acip");
-                out.println("                   | --to-wylie-text | --to-acip-text  RTF_file");
-                out.println(" | TibetanConverter --acip-to-unicode | --acip-to-tmw TXT_file");
+                out.println("                   | --to-wylie-text | --to-acip-text");
+                out.println("                   | --acip-to-unicode | --acip-to-tmw RTF_file|TXT_file");
                 out.println(" | TibetanConverter [--version | -v | --help | -h]");
                 out.println("");
                 out.println("Distributed under the terms of the THDL Open Community License Version 1.0.");
