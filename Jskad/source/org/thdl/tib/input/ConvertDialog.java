@@ -76,12 +76,15 @@ class ConvertDialog extends JDialog
         this.warningLevels.setEnabled(choices.getSelectedItem() == ACIP_TO_UNI_TEXT
         || choices.getSelectedItem() == ACIP_TO_TMW);
     }
+
+    private javax.swing.filechooser.FileFilter acipff, rtfff;
+
     private void init()
     {
         jfc = new JFileChooser(controller.getDefaultDirectory());
         jfc.setDialogTitle(LOCATE_FILE);
-        jfc.addChoosableFileFilter(new ACIPFileFilter());
-        jfc.addChoosableFileFilter(new RTFFileFilter());
+        jfc.addChoosableFileFilter(acipff = new ACIPFileFilter());
+        jfc.addChoosableFileFilter(rtfff = new RTFFileFilter());
 
         content = new JPanel(new GridLayout(0,1));
         JPanel temp = new JPanel(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -209,6 +212,16 @@ class ConvertDialog extends JDialog
             || cmd.equals(BROWSENEW))
         {
             JButton src = (JButton)ae.getSource();
+            if (src == browseOld) {
+                jfc.setFileFilter((ACIP_TO_UNI_TEXT.equals((String)choices.getSelectedItem())
+                                   || ACIP_TO_TMW.equals((String)choices.getSelectedItem()))
+                                  ? acipff : rtfff);
+            } else {
+                jfc.setFileFilter((ACIP_TO_UNI_TEXT.equals((String)choices.getSelectedItem())
+                                   || TMW_TO_ACIP_TEXT.equals((String)choices.getSelectedItem())
+                                   || TMW_TO_WYLIE_TEXT.equals((String)choices.getSelectedItem()))
+                                  ? acipff : rtfff);
+            }
             if (jfc.showOpenDialog(this) != jfc.APPROVE_OPTION)
                 return;
             File chosenFile = jfc.getSelectedFile();
@@ -504,7 +517,7 @@ class ConvertDialog extends JDialog
 
         public String getDescription()
         {
-            return "ACIP text files only";
+            return "Text files only (including ACIP files)";
         }
     }
 }
