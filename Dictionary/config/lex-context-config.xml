@@ -1,54 +1,102 @@
+
 <Context path="/lex" docBase="/Users/travis/webapps/lex/build" debug="0" reloadable="true" crossContext="true">
-    <Resource name="jdbc/lex-datasource" scope="Shareable" type="javax.sql.DataSource"/>
-    <ResourceParams name="jdbc/lex-datasource">
-        <parameter>
-            <name>factory</name>
-            <value>org.apache.commons.dbcp.BasicDataSourceFactory</value>
-        </parameter>
+
+	<Resource name="jdbc/lex-datasource" scope="Shareable" type="javax.sql.DataSource"/>
+	<ResourceParams name="jdbc/lex-datasource">
+		<parameter>
+			<name>factory</name>
+			<value>org.apache.commons.dbcp.BasicDataSourceFactory</value>
+		</parameter>
 
         <!-- DBCP database connection settings -->
-        <parameter>
-            <name>url</name>
-            <value>jdbc:mysql://localhost/Lex</value>
-        </parameter>
-        <parameter>
-            <name>driverClassName</name>
+		<parameter>
+			<name>url</name>
+			<value>jdbc:mysql://localhost/Lex</value>
+		</parameter>
+		<parameter>
+			<name>driverClassName</name>
 			<value>com.mysql.jdbc.Driver</value>
-        </parameter>
-        <parameter>
-            <name>username</name>
-            <value>java</value>
-        </parameter>
-        <parameter>
-            <name>password</name>
-            <value>rkgwvnvrt</value>
-        </parameter>
-        <parameter>
-            <name>useUnicode</name>
-            <value>true</value>
-        </parameter>
-        <parameter>
-            <name>characterEncoding</name>
-            <value>utf-8</value>
-        </parameter>
+		</parameter>
+		<parameter>
+			<name>username</name>
+			<value>username</value>
+		</parameter>
+		<parameter>
+			<name>password</name>
+			<value>password</value>
+		</parameter>
+		<parameter>
+			<name>useUnicode</name>
+			<value>true</value>
+		</parameter>
+		<parameter>
+			<name>characterEncoding</name>
+			<value>utf-8</value>
+		</parameter>
 
         <!-- DBCP connection pooling options -->
-        <parameter>
-            <name>maxWait</name>
-            <value>5000</value>
-        </parameter>
-        <parameter>
-            <name>maxIdle</name>
-            <value>2</value>
-        </parameter>
-        <parameter>
-            <name>maxActive</name>
-            <value>4</value>
-        </parameter>
-    </ResourceParams>	
+		<parameter>
+			<name>maxWait</name>
+			<value>5000</value>
+		</parameter>
+		<parameter>
+			<name>maxIdle</name>
+			<value>2</value>
+		</parameter>
+		<parameter>
+			<name>maxActive</name>
+			<value>4</value>
+		</parameter>
+	</ResourceParams>
+
+	<Resource name="jdbc/thdl-users-datasource" scope="Shareable" type="javax.sql.DataSource"/>
+	<ResourceParams name="jdbc/thdl-users-datasource">
+		<parameter>
+			<name>factory</name>
+			<value>org.apache.commons.dbcp.BasicDataSourceFactory</value>
+		</parameter>
+
+        <!-- DBCP database connection settings -->
+		<parameter>
+			<name>url</name>
+			<value>jdbc:mysql://localhost/ThdlUsers</value>
+		</parameter>
+		<parameter>
+			<name>driverClassName</name>
+			<value>com.mysql.jdbc.Driver</value>
+		</parameter>
+		<parameter>
+			<name>username</name>
+			<value>username</value>
+		</parameter>
+		<parameter>
+			<name>password</name>
+			<value>password</value>
+		</parameter>
+		<parameter>
+			<name>useUnicode</name>
+			<value>true</value>
+		</parameter>
+		<parameter>
+			<name>characterEncoding</name>
+			<value>utf-8</value>
+		</parameter>
+
+        <!-- DBCP connection pooling options -->
+		<parameter>
+			<name>maxWait</name>
+			<value>5000</value>
+		</parameter>
+		<parameter>
+			<name>maxIdle</name>
+			<value>2</value>
+		</parameter>
+		<parameter>
+			<name>maxActive</name>
+			<value>4</value>
+		</parameter>
+	</ResourceParams>
 	
-	<Valve className="org.apache.catalina.valves.AccessLogValve"
-		directory="logs/access"  prefix="lex_access_log." suffix=".txt"
-		pattern="combined" resolveHosts="true"/>
+	<Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs/access" prefix="lex_access_log." suffix=".txt" pattern="combined" resolveHosts="true"/>
 </Context>
 
