@@ -310,6 +310,53 @@ public class ThdlUserRepository
 		}
 		return tag.toString();
 	}
+
+
+	/**
+	 *  Gets the usernameMap attribute of the ThdlUserRepository object
+	 *
+	 * @return                                  The usernameMap value
+	 * @exception  ThdlUserRepositoryException  Description of the Exception
+	 */
+	public HashMap getUsernameMap() throws ThdlUserRepositoryException
+	{
+		ResultSet rs = null;
+		HashMap map = new HashMap();
+		try
+		{
+			Statement stmt = getConnection().createStatement();
+			String sql = "SELECT id, firstname, lastname FROM ThdlUsers";
+			rs = stmt.executeQuery( sql );
+			if ( null != rs )
+			{
+				int i = 0;
+				Integer key = null;
+				String value = "";
+				while ( rs.next() )
+				{
+					i = rs.getInt( 1 );
+					key = new Integer( i );
+					value = rs.getString( 2 );
+					ResultSetMetaData rsmd = rs.getMetaData();
+					int columnCount = rsmd.getColumnCount();
+					for ( int x = 3; x <= columnCount; x++ )
+					{
+						value = value + " " + rs.getString( x );
+					}
+					map.put( key, value );
+				}
+			}
+		}
+		catch ( SQLException sqle )
+		{
+			throw new ThdlUserRepositoryException( sqle );
+		}
+		catch ( Exception e )
+		{
+			throw new ThdlUserRepositoryException( e );
+		}
+		return map;
+	}
 //main
 
 	/**
