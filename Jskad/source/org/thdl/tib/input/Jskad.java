@@ -317,7 +317,6 @@ public class Jskad extends JPanel implements DocumentListener {
                                 }
                             });
                         fileMenu.add(item);
-                        recentlyOpenedFilesMenuItems.add(item);
                     }
                 }
             }
