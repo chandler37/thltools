@@ -69,15 +69,25 @@ class TStackList {
     /** Returns true if and only if this list is empty. */
     public boolean isEmpty() { return al.isEmpty(); }
 
+    /** Returns the ACIP input (okay, maybe 1-2-3-4 instead of 1234)
+     *  corresponding to this stack list. */
+    public String recoverACIP() {
+        return toStringHelper(false);
+    }
+
     /** Returns a human-readable representation like {G}{YA} or
      *  {GYA}. */
     public String toString() {
+        return toStringHelper(true);
+    }
+
+    private String toStringHelper(boolean brackets) {
         int sz = size();
         StringBuffer b = new StringBuffer();
         for (int i = 0; i < sz; i++) {
-            b.append('{');
+            if (brackets) b.append('{');
             b.append(get(i).recoverACIP());
-            b.append('}');
+            if (brackets) b.append('}');
         }
         return b.toString();
     }
@@ -152,16 +162,47 @@ class TStackList {
         return new BoolPair(isLegal, isLegalAndHasAVowelOnRoot);
     }
 
+    private static final boolean ddebug = false;
+
     /** Returns true if and only if this stack list contains a clearly
      *  illegal construct, such as an TPair (V . something). */
     boolean isClearlyIllegal() {
         // check for {D}{VA} sorts of things:
         for (int i = 0; i < size(); i++) {
             if (get(i).getACIPError() != null) {
-                System.out.println("DLC: error is " + get(i).getACIPError());
+                if (ddebug) System.out.println("ddebug: error is " + get(i).getACIPError());
                 return true;
             }
         }
+        return false;
+    }
+
+    /** Returns true if and only if this stack list contains a stack
+     *  that does not end in a vowel or disambiguator.  Note that this
+     *  is not erroneous for legal Tibetan like {BRTAN}, where {B} has
+     *  no vowel, but it is a warning sign for Sanskrit stacks.
+     *  @param opl the pair list from which this stack list
+     *  originated
+     *  @param isLastStack if non-null, then isLastStack[0] will be
+     *  set to true if and only if the very last stack is the only
+     *  stack not to have a vowel or disambiguator on it */
+    boolean hasStackWithoutVowel(TPairList opl, boolean[] isLastStack) {
+        int runningSize = 0;
+        for (int i = 0; i < size(); i++) {
+            TPairList pl = get(i);
+            String l;
+            TPair lastPair = opl.getNthNonDisambiguatorPair(runningSize + pl.size() - 1);
+            runningSize += pl.size();
+            if (null == lastPair.getRight()
+                && !((l = lastPair.getLeft()) != null && l.length() == 1
+                     && l.charAt(0) >= '0' && l.charAt(0) <= '9')) {
+                if (null != isLastStack)
+                    isLastStack[0] = (i + 1 == size());
+                return true;
+            }
+        }
+        if (runningSize != opl.sizeMinusDisambiguators())
+            throw new IllegalArgumentException("opl (" + opl + ") is bad for this stack list (" + toString() + ")");
         return false;
     }
 }

@@ -54,6 +54,31 @@ class TPairList {
     /** Returns the ith pair in this list. */
     public TPair get(int i) { return (TPair)al.get(i); }
 
+    /** Returns the ith non-disambiguator pair in this list. This is
+     *  O(size()). */
+    public TPair getNthNonDisambiguatorPair(int n) {
+        TPair p;
+        int count = 0;
+        for (int i = 0; i < size(); i++) {
+            p = get(i);
+            if (!p.isDisambiguator())
+                if (count++ == n)
+                    return p;
+        }
+        throw new IllegalArgumentException("n, " + n + " is too big for this list of pairs, " + toString());
+    }
+
+    /** Returns the number of pairs in this list that are not entirely
+     *  disambiguators. */
+    public int sizeMinusDisambiguators() {
+        int count = 0;
+        for (int i = 0; i < size(); i++) {
+            if (!get(i).isDisambiguator())
+                ++count;
+        }
+        return count;
+    }
+
     /** Adds p to the end of this list. */
     public void add(TPair p) {
         if (p == null || (p.getLeft() == null && p.getRight() == null))
@@ -253,11 +278,12 @@ class TPairList {
 
     // DLC TEST: BA'I has exactly two syntactically legal parses but just one TStackList.
 
-    /** Returns a set (as as ArrayList) of all possible
-     *  TStackLists.  Uses knowledge of Tibetan spelling rules
-     *  (i.e., tsheg bar syntax) to do so.  If this list of pairs has
-     *  something clearly illegal in it, or is empty, or is merely a
-     *  list of disambiguators etc., then this returns null. */
+    /** Returns a set (as as ArrayList) of all possible TStackLists.
+     *  Uses knowledge of Tibetan spelling rules (i.e., tsheg bar
+     *  syntax) to do so.  If this list of pairs has something clearly
+     *  illegal in it, or is empty, or is merely a list of
+     *  disambiguators etc., then this returns null.  Never returns an
+     *  empty parse tree. */
     public TParseTree getParseTree() {
         TParseTree pt = new TParseTree();
         int sz = size();
@@ -308,7 +334,7 @@ class TPairList {
                 // give a nice error message in this case.
                 if (ddebug) System.out.println("ddebug: we're going to do 2^" + (j-i+1) + " [or " + (1 << (j-i+1)) + "] wacky iterations!");
                 if ((j-i+1) > 13) // if you don't use 13, then change PackageTest.testSlowestTshegBar().
-                    return new TParseTree();
+                    return null;
 
                 boolean keepGoing = true;
                 TStackListList sll = new TStackListList();
@@ -423,6 +449,7 @@ class TPairList {
                   // your tsheg bar.
             }
         }
+        if (pt.isEmpty()) return null;
         return pt;
     }
 
@@ -533,7 +560,8 @@ class TPairList {
                 }
             }
 
-            if (null == thislWylie) throw new Error("BADNESS AT MAXIMUM: p is " + p + " and thislWylie is " + thislWylie);
+            if (null == thislWylie)
+                throw new Error("BADNESS AT MAXIMUM: p is " + p + " and thislWylie is " + thislWylie);
             lWylie.append(thislWylie);
             StringBuffer ll = new StringBuffer(lWylie.toString());
             int ww;
@@ -542,11 +570,11 @@ class TPairList {
                 ll.deleteCharAt(ww);
             boolean isTibetan = TibetanMachineWeb.isWylieTibetanConsonantOrConsonantStack(ll.toString());
             boolean isSanskrit = TibetanMachineWeb.isWylieSanskritConsonantStack(lWylie.toString());
-            if (!isTibetan && !isSanskrit && !isNumeric && true) {
+            if (ddebug && !isTibetan && !isSanskrit && !isNumeric) {
                 System.out.println("DLC: OTHER for " + lWylie + " with vowel " + ACIPRules.getWylieForACIPVowel(p.getRight()) + " and p.getRight()=" + p.getRight());
             }
             if (isTibetan && isSanskrit) isSanskrit = false; // RVA, e.g.
-            if (true && hasNonAVowel && ACIPRules.getWylieForACIPVowel(p.getRight()) == null) {
+            if (ddebug && hasNonAVowel && ACIPRules.getWylieForACIPVowel(p.getRight()) == null) {
                 System.out.println("DLC: vowel " + ACIPRules.getWylieForACIPVowel(p.getRight()) + " and p.getRight()=" + p.getRight());
             }
             TGCPair tp;

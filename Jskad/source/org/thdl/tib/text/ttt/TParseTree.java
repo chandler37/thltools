@@ -32,7 +32,7 @@ class TParseTree {
     /** Creates an empty list. */
     public TParseTree() { }
 
-    /** Returns the ith pair in this list. */
+    /** Returns the ith list of stack lists in this parse tree. */
     public TStackListList get(int i) { return (TStackListList)al.get(i); }
 
     /** Adds p to the end of this list. */
@@ -98,8 +98,8 @@ class TParseTree {
         return sll;
     }
 
-    /** Returns a list containing the parses of this parse tree that
-     *  are not clearly illegal. */
+    /** Returns a list (never null) containing the parses of this
+     *  parse tree that are not clearly illegal. */
     public TStackListList getNonIllegalParses() {
         TStackListList sll = new TStackListList(2); // save memory
         ParseIterator pi = getParseIterator();
@@ -124,12 +124,61 @@ class TParseTree {
         TStackListList up = getUniqueParse();
         if (up.size() == 1)
             return up.get(0);
-        else if (up.size() == 2) {
-        }
         up = getNonIllegalParses();
         int sz = up.size();
-        if (up.size() == 1) {
+        if (sz == 1) {
             return up.get(0);
+        } else if (sz > 1) {
+            // {PADMA}, for example.  Our technique is to go from the
+            // left and stack as much as we can.  So {PA}{D}{MA} is
+            // inferior to {PA}{D+MA}, and {PA}{D+MA}{D}{MA} is
+            // inferior to {PA}{D+MA}{D+MA}.  We do not look for the
+            // minimum number of glyphs, though -- {PA}{N+D}{B+H+R}
+            // and {PA}{N}{D+B+H+R} tie by that score, but the former
+            // is the clear winner.
+
+            // We give a warning about these, optionally, so that
+            // users can produce output that even a dumb ACIP reader
+            // can understand.  See getWarning(true, ..).
+
+            // if j is in this list, then up.get(j) is still a
+            // potential winner.
+            ArrayList candidates = new ArrayList(sz);
+            for (int i = 0; i < sz; i++)
+                candidates.add(new Integer(i));
+            boolean keepGoing = true;
+            int stackNumber = 0;
+            boolean someoneHasThisStack = true;
+            while (someoneHasThisStack && candidates.size() > 1) {
+                // maybe none of the candidates have stackNumber+1
+                // stacks.  If none do, we'll quit.
+                someoneHasThisStack = false;
+                int maxGlyphsInThisStack = 0;
+                for (int k = 0; k < candidates.size(); k++) {
+                    TStackList sl = up.get(((Integer)candidates.get(k)).intValue());
+                    if (sl.size() > stackNumber) {
+                        int ng;
+                        if ((ng = sl.get(stackNumber).size()) > maxGlyphsInThisStack)
+                            maxGlyphsInThisStack = ng;
+                        someoneHasThisStack = true;
+                    }
+                }
+                // Remove all candidates that aren't keeping up.
+                if (someoneHasThisStack) {
+                    for (int k = 0; k < candidates.size(); k++) {
+                        TStackList sl = up.get(((Integer)candidates.get(k)).intValue());
+                        if (sl.size() > stackNumber) {
+                            if (sl.get(stackNumber).size() != maxGlyphsInThisStack)
+                                candidates.remove(k--);
+                        } else throw new Error("impossible!");
+                    }
+                }
+                ++stackNumber;
+            }
+            if (candidates.size() == 1)
+                return up.get(((Integer)candidates.get(0)).intValue());
+            else
+                return null;
         }
         return null;
     }
@@ -161,13 +210,11 @@ class TParseTree {
             return legalParsesWithVowelOnRoot;
         else {
             if (legalParsesWithVowelOnRoot.size() == 2) {
-                // DLC is this even valid?
                 if (legalParsesWithVowelOnRoot.get(0).size() != 1 + legalParsesWithVowelOnRoot.get(1).size())
                     throw new Error("Something other than the G-YA vs. GYA case appeared.  Sorry for your trouble! " + legalParsesWithVowelOnRoot.get(0) + " ;; " + legalParsesWithVowelOnRoot.get(1));
                 return new TStackListList(legalParsesWithVowelOnRoot.get(1));
             }
             if (allLegalParses.size() == 2) {
-                // DLC is this even valid?
                 if (allLegalParses.get(0).size() != 1 + allLegalParses.get(1).size())
                     throw new Error("Something other than the G-YA vs. GYA case appeared.  Sorry for your trouble! " + allLegalParses.get(0) + " ;; " + allLegalParses.get(1));
                 return new TStackListList(allLegalParses.get(1));
@@ -194,7 +241,65 @@ class TParseTree {
         return false;
     }
 
+    /** Returns null if this parse tree is perfectly legal and valid.
+     *  Returns a warning for users otherwise.  If and only if
+     *  paranoid is true, then even unambiguous ACIP like PADMA, which
+     *  could be improved by being written as PAD+MA, will cause a
+     *  warning.
+     *  @param paranoid true if you do not mind a lot of warnings
+     *  @param pl the pair list from which this parse tree originated
+     *  @param originalACIP the original ACIP, or null if you want
+     *  this parse tree to make a best guess. */
+    public String getWarning(boolean paranoid,
+                             TPairList pl,
+                             String originalACIP) {
+        TStackListList up = getUniqueParse();
+        if (null == up || up.size() != 1) {
+            boolean isLastStack[] = new boolean[1];
+            TStackListList nip = getNonIllegalParses();
+            if (nip.size() != 1) {
+                if (null == getBestParse()) {
+                    return "There's not even a unique, non-illegal parse for ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}";
+                } else {
+                    if (getBestParse().hasStackWithoutVowel(pl, isLastStack)) {
+                        if (isLastStack[0]) {
+                            return "Warning: The last stack does not have a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}";
+                        } else {
+                            return "Warning: There is a stack, before the last stack, without a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}";
+                        }
+                    }
+                    if (paranoid) {
+                        return "Though the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "} is unambiguous, it would be more computer-friendly if + signs were used to stack things because there are two (or more) ways to interpret this ACIP if you're not careful.";
+                    }
+                }
+            } else {
+                if (nip.get(0).hasStackWithoutVowel(pl, isLastStack)) {
+                    if (isLastStack[0]) {
+                        return "Warning: The last stack does not have a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}";
+                    } else {
+                        return "Warning: There is a stack, before the last stack, without a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}";
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    /** Returns something akin to the ACIP input (okay, maybe 1-2-3-4
+     *  instead of 1234, and maybe AUTPA instead of AUT-PA)
+     *  corresponding to this parse tree. */
+    public String recoverACIP() {
+        ParseIterator pi = getParseIterator();
+        if (pi.hasNext()) {
+            return pi.next().recoverACIP();
+        }
+        return null;
+    }
+
     /** Returns a hashCode appropriate for use with our {@link
      *  #equals(Object)} method. */
     public int hashCode() { return al.hashCode(); }
+
+    /** Returns true if and only if this parse tree is empty. */
+    public boolean isEmpty() { return al.isEmpty(); }
 }

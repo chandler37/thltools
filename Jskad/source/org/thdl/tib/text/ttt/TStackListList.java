@@ -83,4 +83,11 @@ class TStackListList {
      *  iterating and you'll have to read the code to know what will
      *  happen. */
     public ListIterator listIterator() { return al.listIterator(); }
+
+    /** Returns the ACIP input (okay, maybe 1-2-3-4 instead of 1234)
+     *  corresponding to this stack list list. */
+    public String recoverACIP() {
+        if (isEmpty()) return null;
+        return get(0).recoverACIP();
+    }
 }
