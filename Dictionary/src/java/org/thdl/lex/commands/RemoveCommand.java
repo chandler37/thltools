@@ -1,56 +1,72 @@
 package org.thdl.lex.commands;
-
-import org.thdl.lex.*;
-import org.thdl.lex.component.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.thdl.lex.*;
+import org.thdl.lex.component.*;
+
+
+/**
+ *  Description of the Class
+ *
+ * @author     travis
+ * @created    October 14, 2003
+ */
 public class RemoveCommand extends LexCommand implements Command
 {
-//helper methods	
-	public String execute(HttpServletRequest req, ILexComponent component) throws CommandException
+//helper methods
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  req                   Description of the Parameter
+	 * @param  component             Description of the Parameter
+	 * @return                       Description of the Return Value
+	 * @exception  CommandException  Description of the Exception
+	 */
+	public String execute( HttpServletRequest req, ILexComponent component ) throws CommandException
 	{
-	/* 	try
-		{	
-			setComponent( (LexComponent)component );
-			getComponent().query( Integer.parseInt( req.getParameter("id") ) );
-			String msg=null;
-			String forward = (String)getForwards().get( req.getParameter( LexConstants.LABEL_REQ_PARAM ) );
-			setNext( forward );
-			int successCode = getComponent().remove();
-			msg=null;
-			String label = req.getParameter( LexConstants.LABEL_REQ_PARAM );
-			if (successCode > 0)
-			{ msg = "The " + label +" was successfully removed."; }
-			else
-			{ msg = "Failure: The " + getComponent().getLabel() +" was not removed."; }
+		DisplayHelper displayHelper = getSessionManager().getDisplayHelper( req.getSession( true ) );
 
-			req.setAttribute(LexConstants.MESSAGE_REQ_ATTR, msg);
- */			return getNext();
-	/* 	}
-		catch (LexComponentException e)
-		{
-			throw new CommandException("Lex Action  Exception: " + e.getMessage());
-		}
- */	}
- 	public HashMap initForwards()
-	{
-		HashMap map = new HashMap();
-		map.put( LexConstants.TERMLABEL_VALUE, "menu.jsp" );
-		// map.put( LexConstants.DEFINITIONLABEL_VALUE, "displayEntry.jsp" );
-		// map.put( LexConstants.PASSAGELABEL_VALUE, "displayEntry.jsp" );
-		return map;
+		/*
+		    try
+		    {
+		    setComponent( (LexComponent)component );
+		    getComponent().query( Integer.parseInt( req.getParameter("id") ) );
+		    String msg=null;
+		    int successCode = getComponent().remove();
+		    msg=null;
+		    String label = req.getParameter( LexConstants.LABEL_REQ_PARAM );
+		    if (successCode > 0)
+		    { msg = "The " + label +" was successfully removed."; }
+		    else
+		    { msg = "Failure: The " + getComponent().getLabel() +" was not removed."; }
+		    req.setAttribute(LexConstants.MESSAGE_REQ_ATTR, msg);
+		  */
+		return getNext();
+		/*
+		    }
+		    catch (LexComponentException e)
+		    {
+		    throw new CommandException("Lex Action  Exception: " + e.getMessage());
+		    }
+		  */
 	}
 
+
+
 //constructors
-	public RemoveCommand()
+	/**
+	 *Constructor for the RemoveCommand object
+	 *
+	 * @param  next  Description of the Parameter
+	 */
+	public RemoveCommand( String next )
 	{
-		super();
-		setForwards( initForwards() );
+		super( next );
 	}
 }
 

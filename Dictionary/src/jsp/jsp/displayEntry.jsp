@@ -1,54 +1,103 @@
-<%-- <%@ page buffer="512kb" autoFlush="false" import="org.thdl.lex.*,org.thdl.lex.component.*" errorPage="/jsp/error.jsp" %>--%>
 <%@ page  buffer="512kb" autoFlush="false" import="org.thdl.lex.*,org.thdl.lex.component.*" errorPage="/jsp/error.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 
 <jsp:include page="header.jsf" flush="false" />
 
 <!--displayEntry.jsp-->
-<c:set var="editMode" value="${ false }" />
-<c:if test="${ ! sessionScope.user.guest }">
-	<c:set var="editMode" value="${ true }" />
+<c:set var="editMode" value="${ false }" scope="request" />
+<c:if test="${ ! sessionScope.user.guest && sessionScope.helper.showEditOptions }">
+	<c:set var="editMode" value="${ true }" scope="request"/>
 </c:if>
 
-<div id="label"><p>Search Results Page</p></div><!--END label-->
-<div id="message">
-<p>
+<c:set var="showNotes" value="${ false }" scope="request" />
+<c:if test="${ sessionScope.helper.showNotes }">
+	<c:set var="showNotes" value="${ true }" scope="request"/>
+</c:if>
+
+<c:set var="showMeta" value="${ false }" scope="request" />
+<c:if test="${ sessionScope.helper.showMeta }">
+	<c:set var="showMeta" value="${ true }" scope="request"/>
+</c:if>
+
+<c:set var="showTranslations" value="${ false }" scope="request" />
+<c:if test="${ sessionScope.helper.showTranslations }">
+	<c:set var="showTranslations" value="${ true }" scope="request"/>
+</c:if>
+
+<div id="columnLeft">
+	<div id="results" class="highlightBox">
+	<h2>	Search Results </h2>	
+		<ol>
+		<c:forEach var="resultsMapItem" items="${query.results}">
+					<c:set var="cls" value="" />
+					<c:if test="${ resultsMapItem.key == query.entry.metaId }">
+						<c:set var="cls" value="class='selected'" />
+					</c:if>
+			<li>
+			<c:out value='<a ${cls} href="/lex/action?cmd=displayFull&comp=term&metaId=${resultsMapItem.key}">${ resultsMapItem.value}</a>' escapeXml='false' /><br />
+			</li>		
+		</c:forEach>
+		</ol>
+	</div><!--END MENU-->
+
+	<div id="toc" class="highlightBox">
+	<jsp:include page="displayTreeToc.jsf"/>
+	</div><!--END TOC-->
+	
+</div><!--END COLUMN LEFT-->
+
+<div id="columnMain">
+<p id="navLinks"><jsp:include page="navLinks.jsf" /></p>
+
+<p id="message">
 <c:choose>
 	<c:when test="${ ! empty message }">
 		<c:out value="${ message }"/>. <br/>
 	</c:when>
 	<c:when test="${ empty message }">
-		<%-- <c:out value="Search returned zero results"/> --%>
 	</c:when>
 </c:choose>
 </p>
-</div><!--END message-->
 
-<div id="columnSingle">
-<c:if test="${ ! empty query.results }"> 
-<div id="menu">
-<form method="get" action="/lex/action">
-<p>
-	Search Results: <br />
-	<input type="hidden" name="cmd" value="" />
-	<input type="hidden" name="comp" value="term" />
-	<c:set var="multiple" value="multiple='multiple'" />
+<form action="/lex/action">
+<p id="helper">
 
-	
-	<c:forEach var="resultsMapItem" items="${query.results}">
-				<c:set var="cls" value="" />
-				<c:if test="${ resultsMapItem.key == query.entry.metaId }">
-					<c:set var="cls" value="class='selected'" />
-				</c:if>
-		<c:out value='<a ${cls} href="/lex/action?cmd=displayFull&comp=term&metaId=${resultsMapItem.key}">${ resultsMapItem.value}</a>' escapeXml='false' /><br />		
-	</c:forEach>
+<span class="label">Display</span>:
 
+<c:set var="ckd" value=""/>
+<c:if test="${ sessionScope.helper.showMeta }">
+<c:set var="ckd" value='checked="checked"'/>
+</c:if>
+<c:out value='<input name="showMeta" type="checkbox" value="true" ${ckd}/>' escapeXml='false'/>
+credits | 
 
-	Query took: <c:out value="${ session.query.duration }"/> seconds.
+<c:set var="ckd" value=""/>
+<c:if test="${ sessionScope.helper.showNotes }">
+<c:set var="ckd" value='checked="checked"'/>
+</c:if>
+<c:out value='<input name="showNotes" type="checkbox" value="true" ${ckd}/>' escapeXml='false'/>
+analysis | 
+
+<c:set var="ckd" value=""/>
+<c:if test="${ sessionScope.helper.showTranslations }">
+<c:set var="ckd" value='checked="checked"'/>
+</c:if>
+<c:out value='<input name="showTranslations" type="checkbox" value="true" ${ckd}/>' escapeXml='false'/>
+translations
+
+<c:set var="ckd" value=""/>
+<c:if test="${ sessionScope.helper.showEditOptions }">
+<c:set var="ckd" value='checked="checked"'/>
+</c:if>
+<c:out value='<input name="showEditOptions" type="checkbox" value="true" ${ckd}/>' escapeXml='false'/>
+edit options
+
+<input type="hidden" name="cmd" value="displayFull"/>
+<input type="submit" value="Redisplay"/>
 </p>
 </form>
-</div><!--END MENU-->
-</c:if>
+
+<div id="entry">
 <c:choose>
 	<c:when test="${ param.comp == 'encyclopediaArticle' && param.cmd == 'display' }">
 	<jsp:include page="encyclopedia.jsf" flush="false"/>
@@ -57,7 +106,8 @@
 	<jsp:include page="displayTree.jsf" flush="false"/>
 	</c:otherwise>
 </c:choose>
-</div><!--END columnSingle-->
+</div><!--END ENTRY-->
+</div><!--END columnMain-->
 
 <jsp:include page="footer.jsf" flush="false" />
 

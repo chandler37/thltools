@@ -11,7 +11,7 @@ abstract public class BaseEncyclopediaArticle extends LexComponent implements or
     private java.lang.Integer parentId;
 
     /** nullable persistent field */
-    private java.lang.Short precedence;
+    private java.lang.Integer precedence;
 
     /** persistent field */
     private java.lang.String article;
@@ -23,7 +23,7 @@ abstract public class BaseEncyclopediaArticle extends LexComponent implements or
     private org.thdl.lex.component.ILexComponent parent;
 
     /** full constructor */
-    public BaseEncyclopediaArticle(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.String article, java.lang.String articleTitle, org.thdl.lex.component.ILexComponent parent) {
+    public BaseEncyclopediaArticle(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.String article, java.lang.String articleTitle, org.thdl.lex.component.ILexComponent parent) {
         super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
         this.precedence = precedence;
@@ -51,11 +51,11 @@ abstract public class BaseEncyclopediaArticle extends LexComponent implements or
         this.parentId = parentId;
     }
 
-    public java.lang.Short getPrecedence() {
+    public java.lang.Integer getPrecedence() {
         return this.precedence;
     }
 
-    public void setPrecedence(java.lang.Short precedence) {
+    public void setPrecedence(java.lang.Integer precedence) {
         this.precedence = precedence;
     }
 

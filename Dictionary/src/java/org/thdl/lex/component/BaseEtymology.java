@@ -6,19 +6,19 @@ import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /** @author Hibernate CodeGenerator */
-abstract public class BaseEtymology extends LexComponent implements Serializable,org.thdl.lex.component.IEtymology,org.thdl.lex.component.Translatable {
+abstract public class BaseEtymology extends LexComponent implements org.thdl.lex.component.Translatable,Serializable,org.thdl.lex.component.IEtymology {
 
     /** nullable persistent field */
     private java.lang.Integer parentId;
 
     /** nullable persistent field */
-    private java.lang.Short precedence;
+    private java.lang.Integer precedence;
 
     /** nullable persistent field */
-    private java.lang.Short loanLanguage;
+    private java.lang.Integer loanLanguage;
 
     /** persistent field */
-    private java.lang.Short etymologyType;
+    private java.lang.Integer etymologyType;
 
     /** persistent field */
     private java.lang.String derivation;
@@ -36,7 +36,7 @@ abstract public class BaseEtymology extends LexComponent implements Serializable
     private Set translations;
 
     /** full constructor */
-    public BaseEtymology(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.Short loanLanguage, java.lang.Short etymologyType, java.lang.String derivation, java.lang.String etymologyDescription, java.lang.Integer translationOf, org.thdl.lex.component.ILexComponent parent, Set translations) {
+    public BaseEtymology(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.Integer loanLanguage, java.lang.Integer etymologyType, java.lang.String derivation, java.lang.String etymologyDescription, java.lang.Integer translationOf, org.thdl.lex.component.ILexComponent parent, Set translations) {
         super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
         this.precedence = precedence;
@@ -54,7 +54,7 @@ abstract public class BaseEtymology extends LexComponent implements Serializable
     }
 
     /** minimal constructor */
-    public BaseEtymology(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Short etymologyType, java.lang.String derivation, java.lang.String etymologyDescription, Set translations) {
+    public BaseEtymology(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer etymologyType, java.lang.String derivation, java.lang.String etymologyDescription, Set translations) {
       super(deleted, analyticalNotes, meta);
         this.etymologyType = etymologyType;
         this.derivation = derivation;
@@ -70,27 +70,27 @@ abstract public class BaseEtymology extends LexComponent implements Serializable
         this.parentId = parentId;
     }
 
-    public java.lang.Short getPrecedence() {
+    public java.lang.Integer getPrecedence() {
         return this.precedence;
     }
 
-    public void setPrecedence(java.lang.Short precedence) {
+    public void setPrecedence(java.lang.Integer precedence) {
         this.precedence = precedence;
     }
 
-    public java.lang.Short getLoanLanguage() {
+    public java.lang.Integer getLoanLanguage() {
         return this.loanLanguage;
     }
 
-    public void setLoanLanguage(java.lang.Short loanLanguage) {
+    public void setLoanLanguage(java.lang.Integer loanLanguage) {
         this.loanLanguage = loanLanguage;
     }
 
-    public java.lang.Short getEtymologyType() {
+    public java.lang.Integer getEtymologyType() {
         return this.etymologyType;
     }
 
-    public void setEtymologyType(java.lang.Short etymologyType) {
+    public void setEtymologyType(java.lang.Integer etymologyType) {
         this.etymologyType = etymologyType;
     }
 

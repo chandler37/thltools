@@ -11,16 +11,16 @@ abstract public class BaseGrammaticalFunction extends LexComponent implements or
     private java.lang.Integer parentId;
 
     /** nullable persistent field */
-    private java.lang.Short precedence;
+    private java.lang.Integer precedence;
 
     /** persistent field */
-    private java.lang.Short function;
+    private java.lang.Integer function;
 
     /** nullable persistent field */
     private org.thdl.lex.component.ILexComponent parent;
 
     /** full constructor */
-    public BaseGrammaticalFunction(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.Short function, org.thdl.lex.component.ILexComponent parent) {
+    public BaseGrammaticalFunction(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.Integer function, org.thdl.lex.component.ILexComponent parent) {
         super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
         this.precedence = precedence;
@@ -33,7 +33,7 @@ abstract public class BaseGrammaticalFunction extends LexComponent implements or
     }
 
     /** minimal constructor */
-    public BaseGrammaticalFunction(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Short function) {
+    public BaseGrammaticalFunction(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer function) {
       super(deleted, analyticalNotes, meta);
         this.function = function;
     }
@@ -46,19 +46,19 @@ abstract public class BaseGrammaticalFunction extends LexComponent implements or
         this.parentId = parentId;
     }
 
-    public java.lang.Short getPrecedence() {
+    public java.lang.Integer getPrecedence() {
         return this.precedence;
     }
 
-    public void setPrecedence(java.lang.Short precedence) {
+    public void setPrecedence(java.lang.Integer precedence) {
         this.precedence = precedence;
     }
 
-    public java.lang.Short getFunction() {
+    public java.lang.Integer getFunction() {
         return this.function;
     }
 
-    public void setFunction(java.lang.Short function) {
+    public void setFunction(java.lang.Integer function) {
         this.function = function;
     }
 

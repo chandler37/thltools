@@ -1,0 +1,22 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+
+<!--displayNotes.jsf-->
+<c:if test="${ sessionScope.helper.showNotes }">
+<c:forEach var="note" items="${ sessionScope.helper.component.analyticalNotes }">
+<a class="meta" href="#"><img src="/lex/images/note.gif" alt="analysis" />
+<span class="analysis">
+<c:out value="${ note.analyticalNote }" escapeXml="false" /><br />
+
+<!--metadata--> 
+<c:set var="parent" value="${ sessionScope.helper.component }" />
+
+<c:set target="${ sessionScope.helper }" property="component" value="${ note }" />
+
+<jsp:include page="displayMeta.jsf" />
+
+<c:set target="${ sessionScope.helper }" property="component" value="${ parent }" />
+</span>
+</a>
+</c:forEach>
+</c:if>

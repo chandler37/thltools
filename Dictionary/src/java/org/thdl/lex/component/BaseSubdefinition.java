@@ -6,13 +6,13 @@ import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /** @author Hibernate CodeGenerator */
-abstract public class BaseSubdefinition extends LexComponent implements org.thdl.lex.component.ISubdefinition,Serializable,org.thdl.lex.component.Translatable {
+abstract public class BaseSubdefinition extends LexComponent implements org.thdl.lex.component.ISubdefinition,org.thdl.lex.component.Translatable, org.thdl.lex.component.LexComponentNode,Serializable {
 
     /** nullable persistent field */
     private java.lang.Integer parentId;
 
     /** nullable persistent field */
-    private java.lang.Short precedence;
+    private java.lang.Integer precedence;
 
     /** nullable persistent field */
     private java.lang.String subdefinition;
@@ -48,7 +48,7 @@ abstract public class BaseSubdefinition extends LexComponent implements org.thdl
     private Set translations;
 
     /** full constructor */
-    public BaseSubdefinition(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.String subdefinition, java.lang.Integer translationOf, org.thdl.lex.component.ILexComponent parent, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers, Set translations) {
+    public BaseSubdefinition(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.String subdefinition, java.lang.Integer translationOf, org.thdl.lex.component.ILexComponent parent, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers, Set translations) {
         super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
         this.precedence = precedence;
@@ -90,11 +90,11 @@ abstract public class BaseSubdefinition extends LexComponent implements org.thdl
         this.parentId = parentId;
     }
 
-    public java.lang.Short getPrecedence() {
+    public java.lang.Integer getPrecedence() {
         return this.precedence;
     }
 
-    public void setPrecedence(java.lang.Short precedence) {
+    public void setPrecedence(java.lang.Integer precedence) {
         this.precedence = precedence;
     }
 

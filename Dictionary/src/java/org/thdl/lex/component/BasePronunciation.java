@@ -11,19 +11,19 @@ abstract public class BasePronunciation extends LexComponent implements org.thdl
     private java.lang.Integer parentId;
 
     /** nullable persistent field */
-    private java.lang.Short precedence;
+    private java.lang.Integer precedence;
 
     /** persistent field */
     private java.lang.String phonetics;
 
     /** persistent field */
-    private java.lang.Short phoneticsType;
+    private java.lang.Integer phoneticsType;
 
     /** nullable persistent field */
     private org.thdl.lex.component.ILexComponent parent;
 
     /** full constructor */
-    public BasePronunciation(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.String phonetics, java.lang.Short phoneticsType, org.thdl.lex.component.ILexComponent parent) {
+    public BasePronunciation(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.String phonetics, java.lang.Integer phoneticsType, org.thdl.lex.component.ILexComponent parent) {
         super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
         this.precedence = precedence;
@@ -37,7 +37,7 @@ abstract public class BasePronunciation extends LexComponent implements org.thdl
     }
 
     /** minimal constructor */
-    public BasePronunciation(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.String phonetics, java.lang.Short phoneticsType) {
+    public BasePronunciation(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.String phonetics, java.lang.Integer phoneticsType) {
       super(deleted, analyticalNotes, meta);
         this.phonetics = phonetics;
         this.phoneticsType = phoneticsType;
@@ -51,11 +51,11 @@ abstract public class BasePronunciation extends LexComponent implements org.thdl
         this.parentId = parentId;
     }
 
-    public java.lang.Short getPrecedence() {
+    public java.lang.Integer getPrecedence() {
         return this.precedence;
     }
 
-    public void setPrecedence(java.lang.Short precedence) {
+    public void setPrecedence(java.lang.Integer precedence) {
         this.precedence = precedence;
     }
 
@@ -67,11 +67,11 @@ abstract public class BasePronunciation extends LexComponent implements org.thdl
         this.phonetics = phonetics;
     }
 
-    public java.lang.Short getPhoneticsType() {
+    public java.lang.Integer getPhoneticsType() {
         return this.phoneticsType;
     }
 
-    public void setPhoneticsType(java.lang.Short phoneticsType) {
+    public void setPhoneticsType(java.lang.Integer phoneticsType) {
         this.phoneticsType = phoneticsType;
     }
 

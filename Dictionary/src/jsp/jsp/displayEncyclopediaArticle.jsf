@@ -1,0 +1,35 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<!--displayTree.jsf-->
+
+
+
+
+<!--ENCYCLOPEDIA ARTICLES-->
+<c:forEach var="encyclopediaArticle" items="${ query.entry.encyclopediaArticles }">
+<p class="data">
+<c:out value='<a name="${ encyclopediaArticle.label }" ></a>' escapeXml="false" />
+
+			<c:if test="${ editMode }">
+			<span class="compEditOptions">
+			<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=encyclopediaArticle&amp;metaId=${ encyclopediaArticle.metaId }" label="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=encyclopediaArticle&amp;metaId=${ encyclopediaArticle.metaId }" label="Edit this encyclopediaArticle"><img alt="Edit this encyclopediaArticle" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+			</span>
+			</c:if>
+	<!--<span class="label">Encyclopedia Article:</span>-->  
+	<c:out value="${ encyclopediaArticle.articleTitle }"  escapeXml="false"/>   <br />
+	
+		
+		<!--metadata--> 
+		<c:set target="${ sessionScope.helper }" property="component" value="${encyclopediaArticle}" />
+		<jsp:include page="displayMeta.jsf" />
+		
+
+		<!--notes-->
+		<jsp:include page="displayNotes.jsf" />
+
+
+</p>
+</c:forEach><!--END ENCYCLOPEDIA ARTICLES-->
+
+

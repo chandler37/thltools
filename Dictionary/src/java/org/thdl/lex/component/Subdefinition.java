@@ -1,8 +1,9 @@
 package org.thdl.lex.component;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import org.thdl.lex.LexConstants;
+import java.util.*;
+import org.thdl.lex.*;
+
 
 
 /**
@@ -39,6 +40,109 @@ public class Subdefinition extends BaseSubdefinition implements Serializable, Tr
 			initChildMap();
 		}
 		return childMap;
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  parentPk                   Description of the Parameter
+	 * @return                            Description of the Return Value
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public ILexComponent findParent( Integer parentPk ) throws LexComponentException
+	{
+		LexLogger.debug( "Finding Parent..." );
+		ILexComponent parent = null;
+		if ( parentPk.equals( this.getMetaId() ) )
+		{
+			parent = this;
+		}
+		else
+		{
+			parent = findChild( parentPk );
+		}
+		return parent;
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  component                  Description of the Parameter
+	 * @return                            Description of the Return Value
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public List findSiblings( ILexComponent component ) throws LexComponentException
+	{
+		List list = null;
+		if ( null == component.getParent() )
+		{
+			component.setParent( findParent( component.getParentId() ) );
+		}
+		LexComponentNode node = (LexComponentNode) component.getParent();
+		list = (List) node.getChildMap().get( component.getLabel() );
+
+		return list;
+	}
+
+
+	/**
+	 *  Gets the persistentChild attribute of the Term object
+	 *
+	 * @param  child                      Description of the Parameter
+	 * @return                            The persistentChild value
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public ILexComponent findChild( ILexComponent child ) throws LexComponentException
+	{
+		List list = findSiblings( child );
+		child = findChild( list, child.getMetaId() );
+		return child;
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  pk                         Description of the Parameter
+	 * @return                            Description of the Return Value
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public ILexComponent findChild( Integer pk ) throws LexComponentException
+	{
+		ILexComponent child = null;
+
+		Iterator childMapValues = getChildMap().values().iterator();
+		while ( childMapValues.hasNext() && null == child )
+		{
+			List list = (List) childMapValues.next();
+			child = findChild( list, pk );
+		}
+		return child;
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  list  Description of the Parameter
+	 * @param  pk    Description of the Parameter
+	 * @return       Description of the Return Value
+	 */
+	public ILexComponent findChild( List list, Integer pk )
+	{
+		ILexComponent child = null;
+		for ( Iterator it = list.iterator(); it.hasNext();  )
+		{
+			ILexComponent lc = (LexComponent) it.next();
+			if ( lc.getMetaId().equals( pk ) )
+			{
+				child = lc;
+				break;
+			}
+		}
+		return child;
 	}
 
 

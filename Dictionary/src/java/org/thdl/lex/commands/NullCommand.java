@@ -16,7 +16,6 @@ public class NullCommand extends LexCommand implements Command
 			setNext("menu.jsp");
 		return getNext();
 	}
-	public java.util.HashMap initForwards() { return null;}
 	public NullCommand(String next)
 	{
 		super(next);

@@ -106,10 +106,11 @@ public class LexActionServlet extends HttpServlet
 	 */
 	public void service( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException
 	{
-		LexLogger.debug( "Checking Request state at start of LexActionServlet.service()" );
-		LexLogger.logRequestState( req );
-		LexLogger.logSessionState( req );
-
+		/*
+		    LexLogger.debug( "Checking Request state at start of LexActionServlet.service()" );
+		    LexLogger.logRequestState( req );
+		    LexLogger.logSessionState( req );
+		  */
 		String next;
 		try
 		{
@@ -196,23 +197,38 @@ public class LexActionServlet extends HttpServlet
 		commands.put( "logout", new NullCommand( "logout.jsp" ) );
 		commands.put( "getMetaPrefsForm", new NullCommand( "metaPrefsForm.jsp" ) );
 		commands.put( "getMetaDefaultsForm", new NullCommand( "metaDefaultsForm.jsp" ) );
-		commands.put( "find", new FindCommand() );
-		commands.put( "getInsertForm", new GetFormCommand( "displayForm.jsp?formMode=insert", Boolean.TRUE ) );
-		commands.put( "getUpdateForm", new GetFormCommand( "displayForm.jsp?formMode=update", Boolean.FALSE ) );
-		commands.put( "getInsertTermForm", new GetFormCommand( "displayForm.jsp?formMode=insert", Boolean.TRUE, Boolean.TRUE ) );
-		commands.put( "getUpdateTermForm", new GetFormCommand( "displayForm.jsp?formMode=update", Boolean.FALSE, Boolean.TRUE ) );
-		commands.put( "getTranslationForm", new GetFormCommand( "displayForm.jsp?formMode=insert", Boolean.TRUE ) );
-		commands.put( "annotate", new GetFormCommand( "displayForm.jsp?formMode=insert", Boolean.FALSE ) );
-		commands.put( "insert", new UpdateCommand( "displayEntry.jsp", Boolean.TRUE ) );
+
+		commands.put( "find", new FindCommand( "displayEntry.jsp" ) );
+
+		commands.put( "getInsertForm", new GetInsertFormCommand( "displayForm.jsp?formMode=insert", Boolean.FALSE ) );
+		commands.put( "getInsertTermForm", new GetInsertFormCommand( "displayForm.jsp?formMode=insert", Boolean.TRUE ) );
+		commands.put( "getTranslationForm", new GetInsertFormCommand( "displayForm.jsp?formMode=insert", Boolean.FALSE ) );
+		commands.put( "getAnnotationForm", new GetInsertFormCommand( "displayForm.jsp?formMode=insert", Boolean.FALSE ) );
+
+		commands.put( "getUpdateForm", new GetUpdateFormCommand( "displayForm.jsp?formMode=update", Boolean.FALSE ) );
+		commands.put( "getUpdateTermForm", new GetUpdateFormCommand( "displayForm.jsp?formMode=update", Boolean.TRUE ) );
+
+		/*
+		    commands.put( "getAnnotationForm", new AnnotateCommand( "displayForm.jsp?formMode=insert" ) );
+		    commands.put( "addAnnotation", new AddAnnotationCommand( "displayEntry.jsp", Boolean.TRUE ) );
+		  */
+		commands.put( "insert", new InsertCommand( "displayEntry.jsp", Boolean.FALSE ) );
+		commands.put( "addAnnotation", new InsertCommand( "displayEntry.jsp", Boolean.FALSE ) );
+		commands.put( "insertTerm", new InsertCommand( "displayEntry.jsp", Boolean.TRUE ) );
+
 		commands.put( "update", new UpdateCommand( "displayEntry.jsp", Boolean.FALSE ) );
-		commands.put( "display", new DisplayCommand() );
-		commands.put( "displayFull", new DisplayCommand() );
-		commands.put( "editEntry", new DisplayCommand() );
-		commands.put( "remove", new RemoveCommand() );
+		commands.put( "updateTerm", new UpdateCommand( "displayEntry.jsp", Boolean.TRUE ) );
+
+		commands.put( "display", new DisplayCommand( "displayEntry.jsp" ) );
+		commands.put( "displayFull", new DisplayCommand( "displayEntry.jsp" ) );
+		commands.put( "editEntry", new DisplayCommand( "displayEntry.jsp" ) );
+
+		commands.put( "remove", new RemoveCommand( "displayEntry.jsp" ) );
+
 		commands.put( "setMetaPrefs", new PreferencesCommand( "menu.jsp" ) );
 		commands.put( "setMetaDefaults", new PreferencesCommand( "menu.jsp" ) );
+
 		commands.put( "abort", new AbortCommand( "menu.jsp" ) );
-		commands.put( "testing", new TestingCommand( "displayEntry.jsp" ) );
 
 		setCommands( commands );
 	}

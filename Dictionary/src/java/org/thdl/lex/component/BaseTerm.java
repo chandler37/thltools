@@ -5,13 +5,13 @@ import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /** @author Hibernate CodeGenerator */
-abstract public class BaseTerm extends LexComponent implements org.thdl.lex.component.ITerm,Serializable {
+abstract public class BaseTerm extends LexComponent implements org.thdl.lex.component.ITerm,Serializable,org.thdl.lex.component.LexComponentNode {
 
     /** persistent field */
     private java.lang.String term;
 
     /** nullable persistent field */
-    private java.lang.Short precedence;
+    private java.lang.Integer precedence;
 
     /** persistent field */
     private List pronunciations;
@@ -56,7 +56,7 @@ abstract public class BaseTerm extends LexComponent implements org.thdl.lex.comp
     private List registers;
 
     /** full constructor */
-    public BaseTerm(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.String term, java.lang.Short precedence, List pronunciations, List etymologies, List spellings, List functions, List encyclopediaArticles, List transitionalData, List definitions, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers) {
+    public BaseTerm(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.String term, java.lang.Integer precedence, List pronunciations, List etymologies, List spellings, List functions, List encyclopediaArticles, List transitionalData, List definitions, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers) {
         super(deleted, analyticalNotes, meta);
         this.term = term;
         this.precedence = precedence;
@@ -108,11 +108,11 @@ abstract public class BaseTerm extends LexComponent implements org.thdl.lex.comp
         this.term = term;
     }
 
-    public java.lang.Short getPrecedence() {
+    public java.lang.Integer getPrecedence() {
         return this.precedence;
     }
 
-    public void setPrecedence(java.lang.Short precedence) {
+    public void setPrecedence(java.lang.Integer precedence) {
         this.precedence = precedence;
     }
 

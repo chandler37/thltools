@@ -2,8 +2,7 @@ package org.thdl.lex.component;
 
 import java.io.Serializable;
 import java.util.*;
-import org.thdl.lex.LexConstants;
-import org.thdl.lex.LexLogger;
+import org.thdl.lex.*;
 
 
 /**
@@ -97,17 +96,52 @@ public class Term extends BaseTerm implements Serializable, LexComponentNode
 	public List findSiblings( ILexComponent component ) throws LexComponentException
 	{
 		List list = null;
-		if ( null != component.getParent() )
+		if ( null == component.getParent() )
 		{
-			LexComponentNode node = (LexComponentNode) component.getParent();
-			list = (List) node.getChildMap().get( component.getLabel() );
-			LexLogger.debug( "List derived from " + node + ": " + list );
+			component.setParent( findParent( component.getParentId() ) );
+		}
+		LexComponentNode node = (LexComponentNode) component.getParent();
+		list = (List) node.getChildMap().get( component.getLabel() );
+		LexLogger.debug( "List derived from " + node + ": " + list );
+
+		if ( null == list )
+		{
+			LexLogger.debug( "findSiblings returned a null list" );
+			LexLogger.debugComponent( component );
+			/*
+			    Iterator it = getDefinitions().iterator();
+			    while ( it.hasNext() )
+			    {
+			    IDefinition def = (IDefinition) it.next();
+			    list = def.findSiblings( component );
+			    }
+			  */
+		}
+
+		return list;
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  parentPk                   Description of the Parameter
+	 * @return                            Description of the Return Value
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public ILexComponent findParent( Integer parentPk ) throws LexComponentException
+	{
+		LexLogger.debug( "Finding Parent..." );
+		ILexComponent parent = null;
+		if ( parentPk.equals( this.getMetaId() ) )
+		{
+			parent = this;
 		}
 		else
 		{
-			throw new LexComponentException( "Failed to locate a set of siblings in the Term object graph for: " + component );
+			parent = findChild( parentPk );
 		}
-		return list;
+		return parent;
 	}
 
 
@@ -120,17 +154,61 @@ public class Term extends BaseTerm implements Serializable, LexComponentNode
 	 */
 	public ILexComponent findChild( ILexComponent child ) throws LexComponentException
 	{
-		ILexComponent persistentChild = null;
 		List list = findSiblings( child );
+		child = findChild( list, child.getMetaId() );
+		return child;
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  pk                         Description of the Parameter
+	 * @return                            Description of the Return Value
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public ILexComponent findChild( Integer pk ) throws LexComponentException
+	{
+		ILexComponent child = null;
+
+		Iterator childMapValues = getChildMap().values().iterator();
+		while ( childMapValues.hasNext() && null == child )
+		{
+			List list = (List) childMapValues.next();
+			child = findChild( list, pk );
+		}
+
+		Iterator definitions = getDefinitions().iterator();
+		while ( definitions.hasNext() && null == child )
+		{
+			IDefinition def = (IDefinition) definitions.next();
+			child = def.findChild( pk );
+		}
+
+		return child;
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  list  Description of the Parameter
+	 * @param  pk    Description of the Parameter
+	 * @return       Description of the Return Value
+	 */
+	public ILexComponent findChild( List list, Integer pk )
+	{
+		ILexComponent child = null;
 		for ( Iterator it = list.iterator(); it.hasNext();  )
 		{
-			ILexComponent lc = (ILexComponent) it.next();
-			if ( lc.getMetaId().equals( child.getMetaId() ) )
+			ILexComponent lc = (LexComponent) it.next();
+			if ( lc.getMetaId().equals( pk ) )
 			{
-				persistentChild = lc;
+				child = lc;
+				break;
 			}
 		}
-		return persistentChild;
+		return child;
 	}
 
 
@@ -144,38 +222,6 @@ public class Term extends BaseTerm implements Serializable, LexComponentNode
 	{
 		List list = findSiblings( component );
 		list.add( component );
-	}
-
-
-	/**
-	 *  The main program for the Term class
-	 *
-	 * @param  args  The command line arguments
-	 */
-	public static void main( String[] args )
-	{
-		String[] labels = new String[16];
-
-		labels[0] = new Etymology().getLabel();
-		labels[1] = new GrammaticalFunction().getLabel();
-		labels[2] = new Pronunciation().getLabel();
-		labels[3] = new Definition().getLabel();
-		labels[4] = new EncyclopediaArticle().getLabel();
-		labels[5] = new Spelling().getLabel();
-		labels[6] = new AnalyticalNote().getLabel();
-		labels[7] = new TransitionalData().getLabel();
-		labels[8] = new Subdefinition().getLabel();
-		labels[9] = new Gloss().getLabel();
-		labels[10] = new Keyword().getLabel();
-		labels[11] = new ModelSentence().getLabel();
-		labels[12] = new Passage().getLabel();
-		labels[13] = new SpeechRegister().getLabel();
-		labels[14] = new RelatedTerm().getLabel();
-		labels[15] = new TranslationEquivalent().getLabel();
-		for ( int i = 0; i < labels.length; i++ )
-		{
-			System.out.println( labels[i] );
-		}
 	}
 
 

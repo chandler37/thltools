@@ -1,0 +1,61 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<!--displayTree.jsf-->
+
+
+
+	<p class="data">
+<c:out value='<a name="${ passage.label }" ></a>' escapeXml="false" />
+		<c:if test="${ editMode }">
+	<span class="compEditOptions">
+		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=passage&amp;metaId=${ passage.metaId }" label="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=passage&amp;metaId=${ passage.metaId }" label="Edit this passage"><img alt="Edit this passage" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=passage&amp;parentId=${passage.parentId}&amp;translationOf=${passage.metaId}" label="Translate this passage"><img alt="Translate this passage" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
+		</span>
+	</c:if>
+
+	<!--<span class="label">Literary Source:</span>-->
+	<c:out value="${ passage.literarySource }" escapeXml="false" />   <br />
+	<!--<span class="label">Spelling:</span>-->
+	<c:out value="${ passage.spelling }" escapeXml="false" />   <br />
+	<!--<span class="label">Pagination:</span> -->
+	<c:out value="${ passage.pagination }" escapeXml="false" />   <br />
+	<!--<span class="label">Passage:</span>-->
+	<c:out value="${ passage.passage }" escapeXml="false" />   <br />
+ 
+		
+		<!--metadata--> 
+		<c:set target="${ sessionScope.helper }" property="component" value="${passage}" />
+		<jsp:include page="displayMeta.jsf" />
+		
+
+ 		<!--translation-->
+		<c:if test="${sessionScope.helper.showTranslations }">
+		<c:forEach var="translation" items="${ passage.translations }" >
+		<c:set var='href' value='#'/>
+		<c:if test="${ editMode }">
+			<c:set var='href' value='/lex/action?cmd=getUpdateForm&amp;comp=passage&amp;metaId=${ translation.metaId }'  />
+		</c:if>
+		<c:out value='<a class="meta" href="${href} ">'escapeXml="false" /><img src="/lex/images/trans.gif" alt="view/edit translation" />
+	<span class="translation">
+		<!--<span class="label">Literary Source:</span>-->
+		<c:out value="${ translation.literarySource }" escapeXml="false" />   <br />
+		<!--<span class="label">Spelling:</span>-->
+		<c:out value="${ translation.spelling }" escapeXml="false" />   <br />
+		<!--<span class="label">Pagination:</span>-->
+		<c:out value="${ translation.pagination }" escapeXml="false" />   <br />
+		<!--<span class="label">Passage:</span>-->
+		<c:out value="${ translation.passage }" escapeXml="false" />   <br />
+		 </span></a>
+		<!--metadata--> 
+		<c:set target="${ sessionScope.helper }" property="component" value="${ translation }" />
+		<jsp:include page="displayMeta.jsf" />		 
+		</c:forEach> 
+		</c:if>
+		
+		<!--notes-->
+		<jsp:include page="displayNotes.jsf" />
+
+
+	</p>
+

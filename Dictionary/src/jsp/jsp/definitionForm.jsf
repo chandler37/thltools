@@ -7,24 +7,21 @@
 		<c:set var="updateMode" value="${ false }" />		
 		<c:set var="newCmd" value="insert" />
 		<c:set var="definition" value="" />
-		<c:set var="precedence" value="1" />
 		<c:set var="metaId" value="" />
-		<c:set var="note" value="" />
+		
 	</c:when>
 	<c:when test="${ ! empty param.formMode && param.formMode == 'update'}">
 		<c:set var="updateMode" value="${ true }" />		
 		<c:set var="newCmd" value="update" />
 		<c:set var="definition" value="${ component.definition }" />
 		<c:set var="metaId" value="${ component.metaId }" />
-		<c:set var="precedence" value="${ component.precedence }" />
-		<c:set var="note" value="${ component.note }" />
+		
 	</c:when>
 	<c:otherwise>
 		<c:set var="updateMode" value="${ false }" />		
 		<c:set var="newCmd" value="" />
 		<c:set var="definition" value="ERROR" />
-		<c:set var="precedence" value="ERROR" />
-		<c:set var="note" value="ERROR" />
+		
 	</c:otherwise>
 </c:choose>
 <c:set var="translateMode" value="${ false }" />
@@ -45,7 +42,6 @@
 <c:out value='<input type="hidden" name="metaId" value="${metaId}" />' escapeXml="false" />
 </c:if>
 <c:out value='<input type="hidden" name="cmd" value="${newCmd}" />' escapeXml='false' />
-<c:out value='<input type="hidden" name="parentId" value="${ param.parentId }" />' escapeXml='false' />
 
 <c:out value="${ originalDefinition }" escapeXml='false' />
 
@@ -53,8 +49,6 @@ Definition: <br />
 
 <textarea name="definition" rows="8" cols="90"><c:if test="${ param.cmd != 'getTranslationForm'}"><c:out value='${ definition }' escapeXml='false' /></c:if></textarea>
 <br />
-
-Precedence: <c:out value='<input type="text" value="${ precedence }" name="precedence" size="3"/>' escapeXml='false' /> <br />
 
 <jsp:include page="metaForm.jsf" />
 

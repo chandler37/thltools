@@ -1,0 +1,32 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<!--displayTree.jsf-->
+
+
+
+<!--FUNCTIONS-->
+<c:forEach var="function" items="${ query.entry.functions }">
+	<p class="data">
+	<c:if test="${ editMode }">
+			<span class="compEditOptions">			
+			<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=grammaticalFunction&amp;metaId=${ function.metaId }" label="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=grammaticalFunction&amp;metaId=${ function.metaId }" label="Edit this component"><img alt="Edit this component" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+			</span>
+	</c:if>
+<c:out value='<a name="${ function.label }" ></a>' escapeXml="false" />
+		<!--<span class="label">Grammatical Function:</span>-->
+		<c:out value="${ applicationScope.flatData.functionsGeneral[function.function] }" escapeXml="false" />   <br />
+		
+		
+		<!--metadata--> 
+		<c:set target="${ sessionScope.helper }" property="component" value="${function}" />
+		<jsp:include page="displayMeta.jsf" />
+		
+
+			<!--notes-->
+		<jsp:include page="displayNotes.jsf" />
+
+	</p>
+</c:forEach><!--END FUNCTIONS-->
+
+

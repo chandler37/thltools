@@ -1,0 +1,65 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<!--displayTree.jsf-->
+
+
+
+<!--ETYMOLOGY-->
+<c:forEach var="etymology" items="${ query.entry.etymologies }">
+<p class="data">
+<c:out value='<a name="${ etymology.label }" ></a>' escapeXml="false" />
+		<c:if test="${ editMode }">
+			<span class="compEditOptions">			
+			<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=etymology&amp;metaId=${etymology.metaId}" label="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=etymology&amp;metaId=${ etymology.metaId }&amp;parentId=${etymology.parentId}" label="Edit this Etymology"><img alt="Edit this component" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=etymology&amp;parentId=${etymology.parentId}&amp;translationOf=${etymology.metaId}" label="Translate this Etymology"><img alt="Translate this Etymology" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
+			</span>
+		</c:if>
+
+		<!--<span class="label">Etymology:</span>-->
+		<c:out value="${ etymology.etymologyDescription }" escapeXml="false" />   <br />
+		<!--<span class="label">Etymology Type:</span>-->
+		<c:out value="${ applicationScope.flatData.etymologyTypes[ etymology.etymologyType ] }" escapeXml="false" />   <br />
+		<!--<span class="label">Loan Language:</span>-->
+		<c:out value="${ applicationScope.flatData.languages[ etymology.loanLanguage ] }" escapeXml="false" />   <br />
+		<!--<span class="label">Derivation:</span>-->
+		<c:out value="${ etymology.derivation }" escapeXml="false" />   <br />
+		</span>
+		 </a>
+		
+		<!--metadata--> 
+		<c:set target="${ sessionScope.helper }" property="component" value="${etymology}" />
+		<jsp:include page="displayMeta.jsf" />
+		
+		
+		<!--translation-->
+		<c:if test="${sessionScope.helper.showTranslations }">
+		<c:forEach var="translation" items="${ etymology.translations }" >
+		<c:set var='href' value='#'/>
+		<c:if test="${ editMode }">
+			<c:set var='href' value='/lex/action?cmd=getUpdateForm&amp;comp=etymology&amp;metaId=${ translation.metaId }'  />
+		</c:if>
+		<c:out value='<a class="meta" href="${href} ">'escapeXml="false" /><img src="/lex/images/trans.gif" alt="view/edit translation" />
+		<span class="translation">		
+		<!--<span class="label">Etymology:</span>-->
+	  <c:out value="${ translation.etymologyDescription }" escapeXml="false" />   <br />
+		<!--<span class="label">Etymology Type:</span>-->
+	  <c:out value="${ applicationScope.flatData.etymologyTypes[ translation.etymologyType ] }" escapeXml="false" />   <br />
+		<!--<span class="label">Loan Language:</span>-->
+	  <c:out value="${ applicationScope.flatData.languages[ translation.loanLanguage ] }" escapeXml="false" />   <br />
+		<!--<span class="label">Derivation:</span>-->
+		<c:out value="${ translation.derivation }" escapeXml="false" />   <br />		
+		<!--metadata--> 
+		</span></a>
+		<c:set target="${ sessionScope.helper }" property="component" value="${ translation }" />
+		<jsp:include page="displayMeta.jsf" />		 
+		</c:forEach> 
+		</c:if>
+		
+		<!--notes-->
+		<jsp:include page="displayNotes.jsf" />
+
+		</p>
+</c:forEach>
+<!--END ETYMOLOGY-->
+

@@ -7,7 +7,7 @@ package org.thdl.lex.component;
  * @author     travis
  * @created    October 1, 2003
  */
-public interface ITerm extends ILexComponent
+public interface ITerm extends LexComponentNode
 {
 	/**
 	 *  Gets the term attribute of the ITerm object
@@ -33,7 +33,7 @@ public interface ITerm extends ILexComponent
 	 * @return    The precedence value
 	 * @since
 	 */
-	public java.lang.Short getPrecedence();
+	public java.lang.Integer getPrecedence();
 
 
 	/**
@@ -42,7 +42,7 @@ public interface ITerm extends ILexComponent
 	 * @param  precedence  The new precedence value
 	 * @since
 	 */
-	public void setPrecedence( java.lang.Short precedence );
+	public void setPrecedence( java.lang.Integer precedence );
 
 
 	/**
@@ -296,5 +296,54 @@ public interface ITerm extends ILexComponent
 	 */
 	public void setRegisters( java.util.List registers );
 
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  component                  Description of the Parameter
+	 * @return                            Description of the Return Value
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public ILexComponent findChild( ILexComponent component ) throws LexComponentException;
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  list                       Description of the Parameter
+	 * @param  pk                         Description of the Parameter
+	 * @return                            Description of the Return Value
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public ILexComponent findChild( java.util.List list, Integer pk ) throws LexComponentException;
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  pk                         Description of the Parameter
+	 * @return                            Description of the Return Value
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public ILexComponent findChild( Integer pk ) throws LexComponentException;
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  parentPk                   Description of the Parameter
+	 * @return                            Description of the Return Value
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public ILexComponent findParent( Integer parentPk ) throws LexComponentException;
+
+
+	/**
+	 *  Adds a feature to the Child attribute of the ITerm object
+	 *
+	 * @param  component                  The feature to be added to the Child attribute
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public void addChild( ILexComponent component ) throws LexComponentException;
 }
 

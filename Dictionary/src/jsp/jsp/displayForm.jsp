@@ -26,19 +26,19 @@ Back to:
 <c:if test="${ param.cmd != 'getInsertForm' 
 					&& param.cmd != 'getUpdateForm' 
 					&& param.cmd != 'getTranslationForm'
-					&& param.cmd != 'annotate'}">
+					&& param.cmd != 'getAnnotationForm'}">
 	<c:set var="editMode" value="${ true }" />
 </c:if>
 <c:if test="${ displayMode == 'addEditForm' }">
 	<c:set var="updateForm" value="${ true }" />
 </c:if>
-<c:if test="${ displayMode == 'addNewComponent' && param.cmd != 'annotate' }">
+<c:if test="${ displayMode == 'addNewComponent' && param.cmd != 'getAnnotationForm' }">
 	<c:set var="newForm" value="${ true }" />
 </c:if>
 
 <c:choose>
 
-<c:when test="${ param.cmd == 'annotate' }">
+<c:when test="${ param.cmd == 'getAnnotationForm' }">
 	<jsp:include page="analyticalNoteForm.jsf" />
 </c:when>
 

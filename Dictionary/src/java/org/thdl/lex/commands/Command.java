@@ -22,6 +22,5 @@ public interface Command
 	 *@since
 	 */
 	public String execute( javax.servlet.http.HttpServletRequest req, ILexComponent component ) throws CommandException;
-	// public java.util.HashMap initForwards();
 }
 

@@ -11,7 +11,7 @@
 		<c:set var="phonetics" value="" />
 		<c:set var="phoneticsType" value="" />
 		<c:set var="metaId" value="" />
-		<c:set var="note" value="" />
+		
 	</c:when>
 	<c:when test="${ ! empty param.formMode && param.formMode == 'update'}">
 		<c:set var="updateMode" value="${ true }" />		
@@ -19,7 +19,7 @@
 		<c:set var="phonetics" value="${ component.phonetics }" />
 		<c:set var="phoneticsType" value="${ component.phoneticsType }" />
 		<c:set var="metaId" value="${ component.metaId }" />
-		<c:set var="note" value="${ component.note }" />
+		
 	</c:when>
 	<c:otherwise>
 		<c:set var="updateMode" value="${ false }" />		
@@ -27,7 +27,7 @@
 		<c:set var="phonetics" value="ERROR" />
 		<c:set var="phoneticsType" value="ERROR" />
 		<c:set var="metaId" value="ERROR" />
-		<c:set var="note" value="ERROR" />
+		
 	</c:otherwise>
 </c:choose>
 
@@ -38,7 +38,6 @@
 <c:out value='<input type="hidden" name="metaId" value="${metaId}" />' escapeXml="false" />
 </c:if>
 <c:out value='<input type="hidden" name="cmd" value="${newCmd}" />' escapeXml='false' />
-<c:out value='<input type="hidden" name="parentId" value="${ param.parentId }" />' escapeXml='false' />
 
 Phonetic Rendering: <br />
 <textarea name="phonetics" rows="8" cols="90"><c:out value='${ phonetics }' escapeXml='false' /></textarea>

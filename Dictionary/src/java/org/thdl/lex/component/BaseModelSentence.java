@@ -6,16 +6,13 @@ import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /** @author Hibernate CodeGenerator */
-abstract public class BaseModelSentence extends LexComponent implements org.thdl.lex.component.Translatable,org.thdl.lex.component.IModelSentence,Serializable {
+abstract public class BaseModelSentence extends LexComponent implements org.thdl.lex.component.IModelSentence,Serializable,org.thdl.lex.component.Translatable {
 
     /** nullable persistent field */
     private java.lang.Integer parentId;
 
     /** nullable persistent field */
-    private java.lang.Short precedence;
-
-    /** persistent field */
-    private java.lang.Integer subdefinitionId;
+    private java.lang.Integer precedence;
 
     /** nullable persistent field */
     private java.lang.String modelSentence;
@@ -30,11 +27,10 @@ abstract public class BaseModelSentence extends LexComponent implements org.thdl
     private Set translations;
 
     /** full constructor */
-    public BaseModelSentence(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.Integer subdefinitionId, java.lang.String modelSentence, java.lang.Integer translationOf, org.thdl.lex.component.ILexComponent parent, Set translations) {
+    public BaseModelSentence(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.String modelSentence, java.lang.Integer translationOf, org.thdl.lex.component.ILexComponent parent, Set translations) {
         super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
         this.precedence = precedence;
-        this.subdefinitionId = subdefinitionId;
         this.modelSentence = modelSentence;
         this.translationOf = translationOf;
         this.parent = parent;
@@ -46,9 +42,8 @@ abstract public class BaseModelSentence extends LexComponent implements org.thdl
     }
 
     /** minimal constructor */
-    public BaseModelSentence(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer subdefinitionId, Set translations) {
+    public BaseModelSentence(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, Set translations) {
       super(deleted, analyticalNotes, meta);
-        this.subdefinitionId = subdefinitionId;
         this.translations = translations;
     }
 
@@ -60,20 +55,12 @@ abstract public class BaseModelSentence extends LexComponent implements org.thdl
         this.parentId = parentId;
     }
 
-    public java.lang.Short getPrecedence() {
+    public java.lang.Integer getPrecedence() {
         return this.precedence;
     }
 
-    public void setPrecedence(java.lang.Short precedence) {
+    public void setPrecedence(java.lang.Integer precedence) {
         this.precedence = precedence;
-    }
-
-    public java.lang.Integer getSubdefinitionId() {
-        return this.subdefinitionId;
-    }
-
-    public void setSubdefinitionId(java.lang.Integer subdefinitionId) {
-        this.subdefinitionId = subdefinitionId;
     }
 
     public java.lang.String getModelSentence() {

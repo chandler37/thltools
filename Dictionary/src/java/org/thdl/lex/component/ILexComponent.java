@@ -13,9 +13,17 @@ public interface ILexComponent
 	/**
 	 *  Sets the parent attribute of the ILexComponent object
 	 *
-	 * @param  comp  The new parent value
+	 * @param  parent  The new parent value
 	 */
-	public void setParent( ILexComponent comp );
+	public void setParent( ILexComponent parent );
+
+
+	/**
+	 *  Gets the parent attribute of the ILexComponent object
+	 *
+	 * @return    The parent value
+	 */
+	public ILexComponent getParent();
 
 
 	/**
@@ -31,8 +39,6 @@ public interface ILexComponent
 	 *
 	 * @return    The parent value
 	 */
-	public ILexComponent getParent();
-
 
 	/**
 	 *  Gets the parentId attribute of the LexComponent object
@@ -47,7 +53,7 @@ public interface ILexComponent
 	 *
 	 * @return    The precedence value
 	 */
-	public java.lang.Short getPrecedence();
+	public java.lang.Integer getPrecedence();
 
 
 	/**
@@ -55,7 +61,7 @@ public interface ILexComponent
 	 *
 	 * @param  precedence  The new precedence value
 	 */
-	public void setPrecedence( java.lang.Short precedence );
+	public void setPrecedence( java.lang.Integer precedence );
 
 
 	/**
@@ -85,23 +91,6 @@ public interface ILexComponent
 	public void setMetaId( java.lang.Integer metaId );
 
 
-	/**
-	 *  Gets the translationOf attribute of the ILexComponent object
-	 *
-	 * @return    The translationOf value
-	 * @since
-	 */
-	public java.lang.Integer getTranslationOf();
-
-
-	/**
-	 *  Sets the translationOf attribute of the ILexComponent object
-	 *
-	 * @param  translationOf  The new translationOf value
-	 * @since
-	 */
-	public void setTranslationOf( java.lang.Integer translationOf );
-
 
 	/**
 	 *  Gets the translations attribute of the ILexComponent object
@@ -115,7 +104,7 @@ public interface ILexComponent
 	/**
 	 *  Sets the translations attribute of the ILexComponent object
 	 *
-	 * @return               The deleted value
+	 * @return    The deleted value
 	 * @since
 	 */
 	//public void setTranslations( java.util.Set translations );
@@ -183,5 +172,14 @@ public interface ILexComponent
 	 * @since
 	 */
 	public void populate( java.util.Map properties ) throws LexComponentException;
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  component                  Description of the Parameter
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public void populate( ILexComponent component ) throws LexComponentException;
 }
 

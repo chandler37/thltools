@@ -143,12 +143,12 @@ public class LexComponentFilter implements Filter
 				String labelValue = req.getParameter( LexConstants.LABEL_REQ_PARAM );
 				try
 				{
-// this if block is for TESTING ONLY
 					if ( getBlanks().get( labelValue ) != null )
 					{
 						Class glass = getBlanks().get( labelValue ).getClass();
 						LexComponent component = (LexComponent) glass.newInstance();
-//component.appendDebugMap( "LCFilterMadeNewInstance", component );
+						component.populate( req.getParameterMap() );
+						component.getMeta().populate( req.getParameterMap() );
 						req.setAttribute( LexConstants.COMPONENT_REQ_ATTR, component );
 					}
 					else
@@ -158,11 +158,15 @@ public class LexComponentFilter implements Filter
 				}
 				catch ( InstantiationException ie )
 				{
-					throw new ServletException( ie.getMessage() );
+					throw new ServletException( ie );
 				}
 				catch ( IllegalAccessException iae )
 				{
-					throw new ServletException( iae.getMessage() );
+					throw new ServletException( iae );
+				}
+				catch ( LexComponentException lce )
+				{
+					throw new ServletException( lce );
 				}
 			}
 			else
@@ -179,9 +183,11 @@ public class LexComponentFilter implements Filter
 			{
 				throw new ServletException( lre );
 			}
-			LexLogger.debug( "Checking Request state at end of LexComponentFilter.doFilter()" );
-			LexLogger.logRequestState( req );
-			LexLogger.logSessionState( req );
+			/*
+			    LexLogger.debug( "Checking Request state at end of LexComponentFilter.doFilter()" );
+			    LexLogger.logRequestState( req );
+			    LexLogger.logSessionState( req );
+			 */
 			long dur = System.currentTimeMillis() - start;
 			LexLogger.debug( "Total Request took: " + dur / 1000 + " seconds.\n\n" );
 		}

@@ -28,19 +28,19 @@ abstract public class BaseMeta implements Serializable {
     private java.lang.Integer source;
 
     /** persistent field */
-    private java.lang.Short language;
+    private java.lang.Integer language;
 
     /** persistent field */
-    private java.lang.Short script;
+    private java.lang.Integer script;
 
     /** persistent field */
-    private java.lang.Short dialect;
+    private java.lang.Integer dialect;
 
     /** nullable persistent field */
     private java.lang.String note;
 
     /** full constructor */
-    public BaseMeta(java.lang.Integer createdBy, java.lang.Integer modifiedBy, java.lang.Integer createdByProjSub, java.lang.Integer modifiedByProjSub, java.util.Date createdOn, java.util.Date modifiedOn, java.lang.Integer source, java.lang.Short language, java.lang.Short script, java.lang.Short dialect, java.lang.String note) {
+    public BaseMeta(java.lang.Integer createdBy, java.lang.Integer modifiedBy, java.lang.Integer createdByProjSub, java.lang.Integer modifiedByProjSub, java.util.Date createdOn, java.util.Date modifiedOn, java.lang.Integer source, java.lang.Integer language, java.lang.Integer script, java.lang.Integer dialect, java.lang.String note) {
         this.createdBy = createdBy;
         this.modifiedBy = modifiedBy;
         this.createdByProjSub = createdByProjSub;
@@ -59,7 +59,7 @@ abstract public class BaseMeta implements Serializable {
     }
 
     /** minimal constructor */
-    public BaseMeta(java.lang.Integer createdBy, java.lang.Integer modifiedBy, java.lang.Integer createdByProjSub, java.lang.Integer modifiedByProjSub, java.lang.Integer source, java.lang.Short language, java.lang.Short script, java.lang.Short dialect) {
+    public BaseMeta(java.lang.Integer createdBy, java.lang.Integer modifiedBy, java.lang.Integer createdByProjSub, java.lang.Integer modifiedByProjSub, java.lang.Integer source, java.lang.Integer language, java.lang.Integer script, java.lang.Integer dialect) {
         this.createdBy = createdBy;
         this.modifiedBy = modifiedBy;
         this.createdByProjSub = createdByProjSub;
@@ -126,27 +126,27 @@ abstract public class BaseMeta implements Serializable {
         this.source = source;
     }
 
-    public java.lang.Short getLanguage() {
+    public java.lang.Integer getLanguage() {
         return this.language;
     }
 
-    public void setLanguage(java.lang.Short language) {
+    public void setLanguage(java.lang.Integer language) {
         this.language = language;
     }
 
-    public java.lang.Short getScript() {
+    public java.lang.Integer getScript() {
         return this.script;
     }
 
-    public void setScript(java.lang.Short script) {
+    public void setScript(java.lang.Integer script) {
         this.script = script;
     }
 
-    public java.lang.Short getDialect() {
+    public java.lang.Integer getDialect() {
         return this.dialect;
     }
 
-    public void setDialect(java.lang.Short dialect) {
+    public void setDialect(java.lang.Integer dialect) {
         this.dialect = dialect;
     }
 

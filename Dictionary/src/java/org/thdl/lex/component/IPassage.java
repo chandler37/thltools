@@ -12,9 +12,8 @@ public interface IPassage extends Translatable
 	/**
 	 *  Gets the parent attribute of the IPassage object
 	 *
-	 * @return    The parent value
+	 * @param  comp  The new parent value
 	 */
-	public ILexComponent getParent();
 
 
 	/**
@@ -22,7 +21,7 @@ public interface IPassage extends Translatable
 	 *
 	 * @param  comp  The new parent value
 	 */
-	public void setParent( ILexComponent comp );
+	
 
 
 	/**

@@ -1,0 +1,31 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<!--displayTree.jsf-->
+
+
+
+	<p class="data">
+		<c:out value='<a name="${ register.label }" ></a>' escapeXml="false" />
+		<c:if test="${ editMode }">
+		<span class="compEditOptions">
+		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=speechRegister&amp;metaId=${ register.metaId }" label="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=speechRegister&amp;metaId=${ register.metaId }" label="Edit this speechRegister"><img alt="Edit this speechRegister" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+		</span>
+		</c:if>
+	<!--<span class="label">Speech Register:</span>-->
+	<c:out value="${ applicationScope.flatData.registers[register.register] }" escapeXml="false" />  
+	<br />
+	
+		
+		<!--metadata--> 
+		<c:set target="${ sessionScope.helper }" property="component" value="${register}" />
+		<jsp:include page="displayMeta.jsf" />
+		
+
+		<!--notes-->
+		<jsp:include page="displayNotes.jsf" />
+
+
+</p>
+
+

@@ -1,642 +1,152 @@
-<%-- <jsp:directive.page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false" />
-<jsp:directive.taglib prefix="c" uri="http://java.sun.com/jstl/core" /> --%>
-<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
-<!--displayTree.jsf-->
-<%-- This whole edit/update/display should be REWRITTEN! --%>
-<c:set var="editMode" value="${ false }" />
-<c:set var="updateForm" value="${ false }" />
-<c:set var="newForm" value="${ false }" />
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %> 
 
+<!--displayTreeToc.jsf-->
+
+<c:set var="editMode" value="${ false }" />
 <c:if test="${ ! sessionScope.user.guest }">
 	<c:set var="editMode" value="${ true }" />
 </c:if>
-<c:if test="${ displayMode == 'addEditForm' }">
-	<c:set var="updateForm" value="${ true }" />
-</c:if>
-<c:if test="${ displayMode == 'addNewComponent' && param.cmd != 'annotate' }">
-	<c:set var="newForm" value="${ true }" />
-</c:if>
 
-<c:if test="${  param.comp == 'term' && param.cmd == 'getInsertForm' }">
-	<p><jsp:include page="termForm.jsf" /></p>
-</c:if>
 <c:if test="${ ! empty query.entry }"> 
 
-<c:if test="${ editMode }">
-<div>
-
-<script type="text/javascript">
-function submitForm( cmd, component, metaId, parentId, componentHex, parentHex )
-{
-	document.forms[2].cmd.value = cmd;
-	document.forms[2].comp.value = component;
-	document.forms[2].metaId.value = metaId;
-	document.forms[2].parentId.value = parentId;
-	//assert( componentHex != null , "no componentHex");
-		//document.forms[2].componentHex.value = componentHex;
-	//assert( parentHex != null , "no parentHex") ;
-		//document.forms[2].parentHex.value = parentHex;
-	document.forms[2].submit();
-}
-</script>
-
-<form action="/lex/action" method="get" id="lexActions"> 
-<p>
-	<input type="hidden" name="cmd" value="" />
-	<input type="hidden" name="comp" value="" />
-	<input type="hidden" name="metaId" value="" />
-	<input type="hidden" name="parentId" value="" />
-	<%-- <input type="hidden" name="componentHex" value="" />
-	<input type="hidden" name="parentHex" value="" /> --%>
-</p>
-</c:if>
-
-<!--TERM-->
-<p class="data" >
-<c:out value='<a name="${ query.entry.label }" ></a>' escapeXml="false" />
-		<c:if test="${ editMode }">
-		<span class="compEditOptions">
-			<c:set var="jsParams" value="'getUpdateTermForm', 'term', '${ query.entry.metaId }', '', '${query.entry}', ''" />
-			<c:out value='<input value="edit" type="image" src="/lex/images/edit.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-			<c:set var="jsParams" value="'annotate', 'term', '${ query.entry.metaId }', '', '${query.entry}', ''" />
-			<c:out value='<input value="note" type="image" src="/lex/images/note.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-			<c:set var="jsParams" value="'getInsertForm', 'pronunciation', '${ query.entry.metaId }',  '${query.entry.metaId}' , '' , '${query.entry}' " />
-			<c:out value='<input value="note" type="image" src="/lex/images/pron.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-			<c:set var="jsParams" value="'getInsertForm', 'etymology', '${ query.entry.metaId }', '${query.entry.metaId}' , '' , '${query.entry}' " />
-			<c:out value='<input value="note" type="image" src="/lex/images/etym.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-			<c:set var="jsParams" value="'getInsertForm', 'spelling', '${ query.entry.metaId }', '${query.entry.metaId}' , '' , '${query.entry}' " />
-			<c:out value='<input value="note" type="image" src="/lex/images/spell.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-			<c:set var="jsParams" value="'getInsertForm', 'grammaticalFunction', '${ query.entry.metaId }', '${query.entry.metaId}' , '' , '${query.entry}' " />
-			<c:out value='<input value="note" type="image" src="/lex/images/gram.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-			<c:set var="jsParams" value="'getInsertForm', 'encyclopediaArticle', '${ query.entry.metaId }', '${query.entry.metaId}' , '' , '${query.entry}' " />
-			<c:out value='<input value="note" type="image" src="/lex/images/ency.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-			<c:set var="jsParams" value="'getInsertForm', 'definition', '${ query.entry.metaId }', '${query.entry.metaId}' , '' , '${query.entry}' " />
-			<c:out value='<input value="note" type="image" src="/lex/images/def.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-		</span>
-		</c:if>
-
-		<span class="label" style="font-size: 1.6em">Term: <c:out value="${ query.entry.term }" escapeXml="false"/></span> 		<br />
-   	<%-- <a class="meta" href=" "><img src="/lex/images/meta.gif" alt="metadata" /><span class="metadata">
-		<c:set var="component" value="${query.entry}" scope="request" />
-		<jsp:include page="displayMeta.jsf" />
-		</span></a> --%>
-		
-		<c:forEach var="aNote" items="${ query.entry.analyticalNotes }">
-			<a class="meta" href="javascript:smile()"><img src="/lex/images/note.gif" alt="analysis" /><span class="analysis">
-			<span class="label">Analysis: </span><c:out value="${ aNote.analyticalNote }" escapeXml="false" /><br />
-			<c:set var="component" value="${query.entry}" scope="request" />
-			<span class="metadata"><jsp:include page="displayMeta.jsf" /></span>
-			</span></a>  
-		</c:forEach>
-	</p>
-</c:if>
-<!--END TERM-->
-
-<div id="termChildren">
+<jsp:include page="displayTerm.jsf" flush="false"/>
 
 <!--TRANSITIONAL DATA-->
+<c:set value="${query.entry.transitionalData}" target="${sessionScope.helper}" property="collection"/>
+<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<h1>Special Guests</h1>
 <c:forEach var="transitionalData" items="${ query.entry.transitionalData }">
-<p class="data">
-<c:out value='<a name="${ transitionalData.label }" ></a>' escapeXml="false" />
-
-		<c:if test="${ editMode }">
-		<span class="compEditOptions">
-		<c:set var="jsParams" value="'annotate', 'transitionalData', '${ transitionalData.metaId }', '${ query.entry.metaId }', '${ transitionalData }' , '${ query.entry }'" />
-		<c:out value='<input value="note" type="image" src="/lex/images/note.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-		<c:set var="jsParams" value="'getUpdateForm', 'transitionalData', '${ transitionalData.metaId }', '${ query.entry.metaId }', '${ transitionalData }' , '${ query.entry }'" />
-		<c:out value='<input value="edit" type="image" src="/lex/images/edit.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-		</span>
-		</c:if>
-		
-		<span class="label"><c:out value="${ applicationScope.flatData.transitionalDataLabels[ transitionalData.transitionalDataLabel ] }" /></span>  <c:out value="${ pronunciation.phonetics }"  escapeXml="false"/>   <br />
-		<c:out value="${ transitionalData.transitionalDataText }"  escapeXml="false"/>   <br />
-		<a class="meta" href="javascript:smile()"><img src="/lex/images/meta.gif" alt=" view metadata" /><span class="metadata">
-		<c:set var="component" value="${transitionalData}" scope="request" />
-		<jsp:include page="displayMeta.jsf" />
-		</span></a>
-
-		<c:forEach var="aNote" items="${ transitionalData.analyticalNotes }">
-			<a class="meta" href="javascript:smile()"><img src="/lex/images/note.gif" alt="analysis" /><span class="analysis">
-			<span class="label">Analysis: </span><c:out value="${ aNote.analyticalNote }" escapeXml="false" /><br />
-			<c:set var="component" value="${query.entry}" scope="request" />
-			<span class="metadata"><jsp:include page="displayMeta.jsf" /></span>
-			</span></a>  
-		</c:forEach>
-	</p>
+	<jsp:include page="displayTransitionalData.jsf" flush="false"/>
 </c:forEach>
+</c:if>
 
 <!--PRONUNCIATION-->
+<c:set value="${query.entry.pronunciations}" target="${sessionScope.helper}" property="collection"/>
+<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<h1>Pronunciations</h1>					
 <c:forEach var="pronunciation" items="${ query.entry.pronunciations }">
-<p class="data">
-<c:out value='<a name="${ pronunciation.label }" ></a>' escapeXml="false" />
-		<c:if test="${ editMode }">
-		<span class="compEditOptions">
-		<c:set var="jsParams" value="'annotate', 'pronunciation', '${ pronunciation.metaId }', '${ query.entry.metaId }', '${ pronunciation }' , '${ query.entry }'" />
-		<c:out value='<input value="note" type="image" src="/lex/images/note.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-		<c:set var="jsParams" value="'getUpdateForm', 'pronunciation', '${ pronunciation.metaId }', '${ query.entry.metaId }', '${ pronunciation }' , '${ query.entry }'" />
-		<c:out value='<input value="edit" type="image" src="/lex/images/edit.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-		</span>
-		</c:if>
-		
-		<span class="label">Phonetic Rendering:</span>  <c:out value="${ pronunciation.phonetics }"  escapeXml="false"/>   <br />
-	<span class="label">Type of Phonetics:</span>  <c:out value="${ applicationScope.flatData.phoneticsTypes[ pronunciation.phoneticsType ] }"  escapeXml="false"/>   <br />
-		<a class="meta" href="javascript:smile()"><img src="/lex/images/meta.gif" alt=" view metadata" /><span class="metadata">
-		<c:set var="component" value="${pronunciation}" scope="request" />
-		<jsp:include page="displayMeta.jsf" />
-		</span></a>
-
-		<c:forEach var="aNote" items="${ pronunciation.analyticalNotes }">
-			<a class="meta" href="javascript:smile()"><img src="/lex/images/note.gif" alt="analysis" /><span class="analysis">
-			<span class="label">Analysis: </span><c:out value="${ aNote.analyticalNote }" escapeXml="false" /><br />
-			<c:set var="component" value="${query.entry}" scope="request" />
-			<span class="metadata"><jsp:include page="displayMeta.jsf" /></span>
-			</span></a>  
-		</c:forEach>
-	</p>
-</c:forEach><!--END PRONUNCIATION-->
+	<jsp:include page="displayPronunciation.jsf" flush="false"/>
+</c:forEach>
+</c:if>
 
 <!--ETYMOLOGY-->
+<c:set value="${query.entry.etymologies}" target="${sessionScope.helper}" property="collection"/>
+<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<h1>Etymologies</h1>					
 <c:forEach var="etymology" items="${ query.entry.etymologies }">
-<p class="data">
-<c:out value='<a name="${ etymology.label }" ></a>' escapeXml="false" />
-		<c:if test="${ editMode }">
-			<span class="compEditOptions">			
-			<c:set var="jsParams" value="'annotate', 'etymology', '${ etymology.metaId }', '${ query.entry.metaId }', '${ etymology }' , '${ query.entry }'" />
-			<c:out value='<input value="note" type="image" src="/lex/images/note.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-			<c:set var="jsParams" value="'getUpdateForm', 'etymology', '${ etymology.metaId }', '${ query.entry.metaId }', '${ etymology }' , '${ query.entry }'" />
-			<c:out value='<input value="edit" type="image" src="/lex/images/edit.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-			<c:set var="jsParams" value="'getTranslationForm', 'etymology', '${ etymology.metaId }', '${ query.entry.metaId }', '${etymology}', '${ query.entry }'" />
-			<c:out value='<input value="trans" type="image" src="/lex/images/trans.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />			
-			</span>
-		</c:if>
-
-		<span class="label">Etymology:</span>  <c:out value="${ etymology.etymologyDescription }" escapeXml="false" />   <br />
-		<span class="label">Etymology Type:</span>  <c:out value="${ applicationScope.flatData.etymologyTypes[ etymology.etymologyType ] }" escapeXml="false" />   <br />
-		<span class="label">Loan Language:</span>  <c:out value="${ applicationScope.flatData.languages[ etymology.loanLanguage ] }" escapeXml="false" />   <br />
-		<span class="label">Derivation:</span>  <c:out value="${ etymology.derivation }" escapeXml="false" />   <br />
-		<a class="meta" href="javascript:smile()"><img src="/lex/images/meta.gif" alt=" view metadata" /><span class="metadata">
-		<c:set var="component" value="${etymology}" scope="request" />
-		<jsp:include page="displayMeta.jsf" />
-		</span></a>
-		
-		<c:forEach var="translation" items="${ etymology.translations }" >
-				<c:set var="jsParams" value="" />
-				<c:if test="${ editMode }">
-				<c:set var="jsParams" value="'getUpdateForm', 'etymology', '${ translation.metaId }', '${ query.entry.metaId }', '${ etymology }' , '${ query.entry }'" />
-				</c:if>
-   	<c:out value='<a class="meta" href="javascript:submitForm( ${jsParams} )">'escapeXml="false" /><img src="/lex/images/trans.gif" alt="view/edit translation" />
-		<span class="translation">		
-		<span class="label">Etymology:</span>  <c:out value="${ translation.etymologyDescription }" escapeXml="false" />   <br />
-		<span class="label">Etymology Type:</span>  <c:out value="${ applicationScope.flatData.etymologyTypes[ translation.etymologyType ] }" escapeXml="false" />   <br />
-		<span class="label">Loan Language:</span>  <c:out value="${ applicationScope.flatData.languages[ translation.loanLanguage ] }" escapeXml="false" />   <br />
-		<span class="label">Derivation:</span>  <c:out value="${ translation.derivation }" escapeXml="false" />   <br />
-		<c:set var="component" value="${ translation }" scope="request" />
-		<span class="metadata"><jsp:include page="displayMeta.jsf" /></span>
-		</span></a> 
-		</c:forEach> 
-
-		<c:forEach var="aNote" items="${ etymology.analyticalNotes }">
-			<a class="meta" href="javascript:smile()"><img src="/lex/images/note.gif" alt="analysis" /><span class="analysis">
-			<span class="label">Analysis: </span><c:out value="${ aNote.analyticalNote }" escapeXml="false" /><br />
-			<c:set var="component" value="${query.entry}" scope="request" />
-			<span class="metadata"><jsp:include page="displayMeta.jsf" /></span>
-			</span></a>  
-		</c:forEach>
-		</p>
+	<jsp:include page="displayEtymology.jsf" flush="false"/>
 </c:forEach>
-<!--END ETYMOLOGY-->
+</c:if>
 
 <!--SPELLINGS-->
+<c:set value="${query.entry.spellings}" target="${sessionScope.helper}" property="collection"/>
+<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<h1>Spellings</h1>					
 <c:forEach var="spelling" items="${ query.entry.spellings }">
-	<p class="data">
-		<c:if test="${ editMode }">
-		<span class="compEditOptions">			
-			<c:set var="jsParams" value="'annotate', 'spelling', '${ spelling.metaId }', '${ query.entry.metaId }', '${ spelling }' , '${ query.entry }'" />
-			<c:out value='<input value="note" type="image" src="/lex/images/note.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-			<c:set var="jsParams" value="'getUpdateForm', 'spelling', '${ spelling.metaId }', '${ query.entry.metaId }', '${ spelling }' , '${ query.entry }'" />
-			<c:out value='<input value="edit" type="image" src="/lex/images/edit.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-			</span>
-		</c:if>
-
-	<c:out value='<a name="${ spelling.label }" ></a>' escapeXml="false" />
-	<span class="label">Spelling:</span>  <c:out value="${ spelling.spelling }" escapeXml="false" />   <br />
-		<span class="label">Spelling Type:</span>  <c:out value="${ applicationScope.flatData.spellingTypes[ spelling.spellingType ] }" escapeXml="false" />   <br />
-		<a class="meta" href="javascript:smile()"><img src="/lex/images/meta.gif" alt=" view metadata" /><span class="metadata">
-		<c:set var="component" value="${spelling}" scope="request" />
-		<jsp:include page="displayMeta.jsf" />
-		</span></a>
-
-		<c:forEach var="aNote" items="${ spelling.analyticalNotes }">
-			<a class="meta" href="javascript:smile()"><img src="/lex/images/note.gif" alt="analysis" /><span class="analysis">
-			<span class="label">Analysis: </span><c:out value="${ aNote.analyticalNote }" escapeXml="false" /><br />
-			<c:set var="component" value="${query.entry}" scope="request" />
-			<span class="metadata"><jsp:include page="displayMeta.jsf" /></span>
-			</span></a>  
-		</c:forEach>
-	</p>
+	<jsp:include page="displaySpelling.jsf" flush="false"/>
 </c:forEach>
-<!--END SPELLINGS-->
+</c:if>
 
 <!--FUNCTIONS-->
+<c:set value="${query.entry.functions}" target="${sessionScope.helper}" property="collection"/>
+<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<h1>Functions</h1>					
 <c:forEach var="function" items="${ query.entry.functions }">
-	<p class="data">
-	<c:if test="${ editMode }">
-			<span class="compEditOptions">			
-			<c:set var="jsParams" value="'annotate', 'grammaticalFunction', '${ function.metaId }', '${ query.entry.metaId }', '${ function }' , '${ query.entry }'" />
-			<c:out value='<input value="note" type="image" src="/lex/images/note.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-			<c:set var="jsParams" value="'getUpdateForm', 'grammaticalFunction', '${ function.metaId }', '${ query.entry.metaId }', '${ function }' , '${ query.entry }'" />
-			<c:out value='<input value="edit" type="image" src="/lex/images/edit.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-			</span>
-	</c:if>
-<c:out value='<a name="${ function.label }" ></a>' escapeXml="false" />
-		<span class="label">Grammatical Function:</span>  <c:out value="${ applicationScope.flatData.functionsGeneral[function.function] }" escapeXml="false" />   <br />
-		<a class="meta" href="javascript:smile()"><img src="/lex/images/meta.gif" alt=" view metadata" /><span class="metadata">
-		<c:set var="component" value="${function}" scope="request" />
-		<jsp:include page="displayMeta.jsf" />
-		</span></a>
-
-		<c:forEach var="aNote" items="${ function.analyticalNotes }">
-			<a class="meta" href="javascript:smile()"><img src="/lex/images/note.gif" alt="analysis" /><span class="analysis">
-			<span class="label">Analysis: </span><c:out value="${ aNote.analyticalNote }" escapeXml="false" /><br />
-			<c:set var="component" value="${query.entry}" scope="request" />
-			<span class="metadata"><jsp:include page="displayMeta.jsf" /></span>
-			</span></a>  
-		</c:forEach>
-	</p>
-</c:forEach><!--END FUNCTIONS-->
+	<jsp:include page="displayFunction.jsf" flush="false"/>
+</c:forEach>
+</c:if>
 
 <!--ENCYCLOPEDIA ARTICLES-->
+<c:set value="${query.entry.encyclopediaArticles}" target="${sessionScope.helper}" property="collection"/>
+<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<h1>Encyclopedia Articles</h1>					
 <c:forEach var="encyclopediaArticle" items="${ query.entry.encyclopediaArticles }">
-<p class="data">
-<c:out value='<a name="${ encyclopediaArticle.label }" ></a>' escapeXml="false" />
-
-			<c:if test="${ editMode }">
-			<span class="compEditOptions">
-			<c:set var="jsParams" value="'annotate', 'encyclopediaArticle', '${ encyclopediaArticle.metaId }', '${ query.entry.metaId }', '${ encyclopediaArticle }' , '${ query.entry }'" />
-			<c:out value='<input value="note" type="image" src="/lex/images/note.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-			<c:set var="jsParams" value="'getUpdateForm', 'encyclopediaArticle', '${ encyclopediaArticle.metaId }', '${ query.entry.metaId }', '${ encyclopediaArticle }' , '${ query.entry }'" />
-			<c:out value='<input value="edit" type="image" src="/lex/images/edit.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-			</span>
-			</c:if>
-
-	<%-- <span class="label">Encyclopedia Article:</span>  <c:out value="<a href='/lex/action?cmd=display&amp;comp=encyclopediaArticle&amp;id=${ encyclopediaArticle.metaId }'>${ encyclopediaArticle.articleTitle }</a>"  escapeXml="false"/>   <br /> --%>
-	<span class="label">Encyclopedia Article:</span>  <c:out value="${ encyclopediaArticle.articleTitle }"  escapeXml="false"/>   <br />
-	<a class="meta" href="javascript:smile()"><img src="/lex/images/meta.gif" alt=" view metadata" /><span class="metadata">
-		<c:set var="component" value="${encyclopediaArticle}" scope="request" />
-		<jsp:include page="displayMeta.jsf" />
-		</span></a>
-
-		<c:forEach var="aNote" items="${ encyclopediaArticle.analyticalNotes }">
-			<a class="meta" href="javascript:smile()"><img src="/lex/images/note.gif" alt="analysis" /><span class="analysis">
-			<span class="label">Analysis: </span><c:out value="${ aNote.analyticalNote }" escapeXml="false" /><br />
-			<c:set var="component" value="${query.entry}" scope="request" />
-			<span class="metadata"><jsp:include page="displayMeta.jsf" /></span>
-			</span></a>
-		</c:forEach>
-</p>
-</c:forEach><!--END ENCYCLOPEDIA ARTICLES-->
-
-</div> <!--END TERMCHILDREN -->
+	<jsp:include page="displayEncyclopediaArticle.jsf" flush="false"/>
+</c:forEach>
+</c:if>
 
 <!--DEFINITION LOOP-->
+<c:set value="${query.entry.definitions}" target="${sessionScope.helper}" property="collection"/>
+<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<h1>Definitions</h1>					
 <c:forEach var="definition" items="${query.entry.definitions}">
-<p class="data">
-<c:out value='<a name="${ definition.label }" ></a>' escapeXml="false" />
-		<c:if test="${ editMode }">
-		<span class="compEditOptions">
-			<c:set var="jsParams" value="'annotate', 'definition', '${ definition.metaId }', '${ query.entry.metaId }', '${ definition }' , '${ query.entry }'" />
-			<c:out value='<input value="note" type="image" src="/lex/images/note.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-			<c:set var="jsParams" value="'getUpdateForm', 'definition', '${ definition.metaId }', '${ query.entry.metaId }', '${ definition }' , '${ query.entry }'" />
-			<c:out value='<input value="edit" type="image" src="/lex/images/edit.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-			<c:set var="jsParams" value="'getTranslationForm', 'definition', '${ definition.metaId }', '${ query.entry.metaId }', '${definition}', '${ query.entry }'" />
-			<c:out value='<input value="trans" type="image" src="/lex/images/trans.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />			
-			<c:set var="jsParams" value="'getInsertForm', 'subdefinition', '',  '${ definition.metaId }', '' , '${ definition }' " />
-			<c:out value='<input value="subdef" type="image" src="/lex/images/subdef.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-		</span>
-</c:if>
+	<c:set var="definition" scope="request" value="${definition}"/>
+	<jsp:include page="displayDefinition.jsf" flush="false"/>
 
-	<span class="label">Definition <c:out value="${definition.precedence}:</span> ${ definition.definition }" escapeXml="false"  /> 
-	<br />
-	<a class="meta" href="javascript:smile()"><img src="/lex/images/meta.gif" alt=" view metadata" /><span class="metadata">
-		<c:set var="component" value="${definition}" scope="request" />
-		<jsp:include page="displayMeta.jsf" />
-		</span></a>
-
-		<c:forEach var="translation" items="${ definition.translations }" >
-			<c:set var="jsParams" value="" />
-			<c:if test="${ editMode }">
-			<c:set var="jsParams" value="'getUpdateForm', 'definition', '${ translation.metaId }', '${ query.entry.metaId }', '${ definition }' , '${ query.entry }'" />
-			 </c:if>
-   	<c:out value='<a class="meta" href="javascript:submitForm( ${jsParams} )">' escapeXml="false" /><img src="/lex/images/trans.gif" alt="view/edit translation" /><span class="translation">
-		<span class="label">Definition 
-		<c:out value="${translation.precedence}:</span> ${ translation.definition }" escapeXml="false"  /> <br />
-		<c:set var="component" value="${ translation }" scope="request" />
-		<span class="metadata"><jsp:include page="displayMeta.jsf" /></span>
-		</span></a> 
-		</c:forEach> 
-
-		<c:forEach var="aNote" items="${ definition.analyticalNotes }">
-			<a class="meta" href="javascript:smile()"><img src="/lex/images/note.gif" alt="analysis" /><span class="analysis">
-			<span class="label">Analysis: </span><c:out value="${ aNote.analyticalNote }" escapeXml="false" /><br />
-			<c:set var="component" value="${query.entry}" scope="request" />
-			<span class="metadata"><jsp:include page="displayMeta.jsf" /></span>
-			</span></a>  
-		</c:forEach>
-</p>
-
-<div id="defChildren">
 
 <!--SUBDEFINITION-->
-<c:forEach var="subdefinition" items="${ definition.subdefinitions }"> 
-	<p class="data">
-<c:out value='<a name="${ subdefinition.label }" ></a>' escapeXml="false" />
-					<c:if test="${ editMode }">
-	<span class="compEditOptions">
-			<c:set var="jsParams" value="'annotate', 'subdefinition', '${ subdefinition.metaId }', '${ definition.metaId }', '${ subdefinition }' , '${ definition }'" />
-			<c:out value='<input value="note" type="image" src="/lex/images/note.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-			<c:set var="jsParams" value="'getUpdateForm', 'subdefinition', '${ subdefinition.metaId }', '${ definition.metaId }', '${ subdefinition }' , '${ definition }'" />
-			<c:out value='<input value="edit" type="image" src="/lex/images/edit.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-			<c:set var="jsParams" value="'getTranslationForm', 'subdefinition', '${ subdefinition.metaId }', '${ definition.metaId }', '${subdefinition}', '${ definition }'" />
-			<c:out value='<input value="trans" type="image" src="/lex/images/trans.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />			
+<c:set value="${definition.subdefinitions}" target="${sessionScope.helper}" property="collection"/>
+<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<h1>Subdefinitions</h1>					
+<c:forEach var="subdefinition" items="${ definition.subdefinitions }">
+	<c:set var="subdefinition" scope="request" value="${subdefinition}"/>
+	<jsp:include page="displaySubdefinition.jsf" flush="false"/>
 
-			<c:set var="jsParams" value="'getInsertForm', 'keyword', '${ subdefinition.metaId }',  '${ subdefinition.metaId }', '' , '${ subdefinition }' " />
-			<c:out value='<input value="keyword" type="image" src="/lex/images/key.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />			
-			<c:set var="jsParams" value="'getInsertForm', 'modelSentence', '${ subdefinition.metaId }',  '${ subdefinition.metaId }', '' , '${ subdefinition }' " />
-			<c:out value='<input value="model sentence" type="image" src="/lex/images/sent.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />			
-			<c:set var="jsParams" value="'getInsertForm', 'translationEquivalent', '${ subdefinition.metaId }',  '${ subdefinition.metaId }', '' , '${ subdefinition }' " />
-			<c:out value='<input value="trans" type="image" src="/lex/images/trans-eqv.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />			
-			<c:set var="jsParams" value="'getInsertForm', 'relatedTerm', '${ subdefinition.metaId }',  '${ subdefinition.metaId }', '' , '${ subdefinition }' " />
-			<c:out value='<input value="related term" type="image" src="/lex/images/rel-term.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />			
-			<c:set var="jsParams" value="'getInsertForm', 'passage', '${ subdefinition.metaId }',  '${ subdefinition.metaId }', '' , '${ subdefinition }' " />
-			<c:out value='<input value="passage" type="image" src="/lex/images/pass.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />			
-			<c:set var="jsParams" value="'getInsertForm', 'register', '${ subdefinition.metaId }',  '${ subdefinition.metaId }', '' , '${ subdefinition }' " />
-			<c:out value='<input value="speech register" type="image" src="/lex/images/reg.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />			
-
-			</span>
-		</c:if>
-
-		<span class="label">Subdefinition:</span>  <c:out value="${ subdefinition.subdefinition }" escapeXml="false" />  
- <br />
- <a class="meta" href="javascript:smile()"><img src="/lex/images/meta.gif" alt=" view metadata" /><span class="metadata">
-		<c:set var="component" value="${subdefinition}" scope="request" />
-		<jsp:include page="displayMeta.jsf" />
-		</span></a>
-
- 		<c:forEach var="translation" items="${ subdefinition.translations }">
-				<c:set var="jsParams" value="" />
-				<c:if test="${ editMode }">
-				<c:set var="jsParams" value="'getUpdateForm', 'subdefinition', '${ translation.metaId }', '${ definition.metaId }', '${ subdefinition }' , '${ definition }'" />
-				 </c:if>
-   	<c:out value='<a class="meta" href="javascript:submitForm( ${jsParams} )">' escapeXml="false" /><img src="/lex/images/trans.gif" alt="view/edit translation" /><span class="translation">
-		<span class="label">Subdefinition:</span>
-		<c:out value="${ translation.subdefinition }" escapeXml="false" />  <br />
-		<c:set var="component" value="${ translation }" scope="request" />
-		<span class="metadata"><jsp:include page="displayMeta.jsf" /></span>
-		</span></a> 
-		</c:forEach>
-
-		<c:forEach var="aNote" items="${ subdefinition.analyticalNotes }">
-			<a class="meta" href="javascript:smile()"><img src="/lex/images/note.gif" alt="analysis" /><span class="analysis">
-			<span class="label">Analysis: </span><c:out value="${ aNote.analyticalNote }" escapeXml="false" /><br />
-			<c:set var="component" value="${query.entry}" scope="request" />
-			<span class="metadata"><jsp:include page="displayMeta.jsf" /></span>
-			</span></a>  
-		</c:forEach>
-
-</p>
-
-<div id="subdefChildren">
 
 <!--KEYWORD-->
-<c:forEach var="keyword" items="${ subdefinition.keywords }"> 
-	<p class="data">
-<c:out value='<a name="${ keyword.label }" ></a>' escapeXml="false" />
-		<c:if test="${ editMode }">
-			<span class="compEditOptions">
-		<c:set var="jsParams" value="'annotate', 'keyword', '${ keyword.metaId }', '${ subdefinition.metaId }', '${ keyword }' , '${ subdefinition }'" />
-		<c:out value='<input value="note" type="image" src="/lex/images/note.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-		<c:set var="jsParams" value="'getUpdateForm', 'keyword', '${ keyword.metaId }', '${ subdefinition.metaId }', '${ keyword }' , '${ subdefinition }'" />
-		<c:out value='<input value="edit" type="image" src="/lex/images/edit.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-		</span>
-	</c:if>
-
-	<span class="label">Keyword:</span>  <c:out value="${ keyword.keyword }" escapeXml="false" />  
- <br /> <a class="meta" href="javascript:smile()"><img src="/lex/images/meta.gif" alt=" view metadata" /><span class="metadata">
-		<c:set var="component" value="${keyword}" scope="request" />
-		<jsp:include page="displayMeta.jsf" />
-		</span></a>
-
-		<c:forEach var="aNote" items="${ keyword.analyticalNotes }">
-			<a class="meta" href="javascript:smile()"><img src="/lex/images/note.gif" alt="analysis" /><span class="analysis">
-			<span class="label">Analysis: </span><c:out value="${ aNote.analyticalNote }" escapeXml="false" /><br />
-			<c:set var="component" value="${query.entry}" scope="request" />
-			<span class="metadata"><jsp:include page="displayMeta.jsf" /></span>
-			</span></a>  
-		</c:forEach>
-</p>
-</c:forEach> 
-<!--END KEYWORD LOOP--> 
+<c:set value="${subdefinition.keywords}" target="${sessionScope.helper}" property="collection"/>
+<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<h1>Keywords</h1>					
+<c:forEach var="keyword" items="${ subdefinition.keywords }">
+	<c:set var="keyword" scope="request" value="${keyword}"/>
+	<jsp:include page="displayKeyword.jsf" flush="false"/>
+</c:forEach>
+</c:if> 
 
 <!--MODEL SENTENCE-->
-<c:forEach var="modelSentence" items="${ subdefinition.modelSentences }"> 
-	<p class="data">
-<c:out value='<a name="${ modelSentence.label }" ></a>' escapeXml="false" />
-		<c:if test="${ editMode }">
-	<span class="compEditOptions">
-		<c:set var="jsParams" value="'annotate', 'modelSentence', '${ modelSentence.metaId }', '${ subdefinition.metaId }', '${ modelSentence }' , '${ subdefinition }'" />
-		<c:out value='<input value="note" type="image" src="/lex/images/note.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-		<c:set var="jsParams" value="'getUpdateForm', 'modelSentence', '${ modelSentence.metaId }', '${ subdefinition.metaId }', '${ modelSentence }' , '${ subdefinition }'" />
-		<c:out value='<input value="edit" type="image" src="/lex/images/edit.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-		<c:set var="jsParams" value="'getTranslationForm', 'modelSentence', '${ modelSentence.metaId }', '${ subdefinition.metaId }', '${modelSentence}', '${ subdefinition }'" />
-		<c:out value='<input value="trans" type="image" src="/lex/images/trans.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />			
-		</span>
-	</c:if>
-
-	<span class="label">Model Sentence:</span>  <c:out value="${ modelSentence.modelSentence }" escapeXml="false" />  
-	<br />
-	<a class="meta" href="javascript:smile()"><img src="/lex/images/meta.gif" alt=" view metadata" /><span class="metadata">
-		<c:set var="component" value="${modelSentence}" scope="request" />
-		<jsp:include page="displayMeta.jsf" />
-		</span></a>
-
-		<c:forEach var="translation" items="${ modelSentence.translations }" >
-			<c:set var="jsParams" value="" />
-			<c:if test="${ editMode }">
-			<c:set var="jsParams" value="'getUpdateForm', 'modelSentence', '${ translation.metaId }', '${ subdefinition.metaId }', '${ modelSentence }' , '${ subdefinition }'" />
-			 </c:if>
-   	<c:out value='<a class="meta" href="javascript:submitForm( ${jsParams} )">' escapeXml="false" /><img src="/lex/images/trans.gif" alt="view/edit translation" /><span class="translation">
-		<span class="label">Model Sentence:</span>  <c:out value="${ translation.modelSentence }" escapeXml="false" /> <br />  
-		<c:set var="component" value="${ translation }" scope="request" />
-		<span class="metadata"><jsp:include page="displayMeta.jsf" /></span>
-		</span></a> 
-		</c:forEach>
-
-		<c:forEach var="aNote" items="${ modelSentence.analyticalNotes }">
-			<a class="meta" href="javascript:smile()"><img src="/lex/images/note.gif" alt="analysis" /><span class="analysis">
-			<span class="label">Analysis: </span><c:out value="${ aNote.analyticalNote }" escapeXml="false" /><br />
-			<c:set var="component" value="${query.entry}" scope="request" />
-			<span class="metadata"><jsp:include page="displayMeta.jsf" /></span>
-			</span></a>  
-		</c:forEach>
-</p>
-</c:forEach> <!--END MODEL SENTENCE LOOP--> 
+<c:set value="${subdefinition.modelSentences}" target="${sessionScope.helper}" property="collection"/>
+<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<h1>Model Sentences</h1>					
+<c:forEach var="modelSentence" items="${ subdefinition.modelSentences }">
+	<c:set var="modelSentence" scope="request" value="${modelSentence}"/>
+	<jsp:include page="displayModelSentence.jsf" flush="false"/>
+</c:forEach>
+</c:if> 
 
 <!--TRANSLATION EQUIVALENT-->
-<c:if test="${ newForm && param.parentHex == subdefinition && param.comp == 'translationEquivalent' }">
-	<jsp:include page="translationEquivalentForm.jsf" />
-</c:if>
-<c:forEach var="translationEquivalent" items="${ subdefinition.translationEquivalents }"> 
-<p class="data">
-<c:out value='<a name="${ translationEquivalent.label }" ></a>' escapeXml="false" />
-	 			<c:if test="${ editMode }">
-		<span class="compEditOptions">
-		<c:set var="jsParams" value="'annotate', 'translationEquivalent', '${ translationEquivalent.metaId }', '${ subdefinition.metaId }', '${ translationEquivalent }' , '${ subdefinition }'" />
-		<c:out value='<input value="note" type="image" src="/lex/images/note.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-		<c:set var="jsParams" value="'getUpdateForm', 'translationEquivalent', '${ translationEquivalent.metaId }', '${ subdefinition.metaId }', '${ translationEquivalent }' , '${ subdefinition }'" />
-		<c:out value='<input value="edit" type="image" src="/lex/images/edit.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-		</span>
-	</c:if>
-
-	<span class="label">Translation Equivalent: </span>  <c:out value="${ translationEquivalent.translationEquivalent }" escapeXml="false" />  
- <br />
- <a class="meta" href="javascript:smile()"><img src="/lex/images/meta.gif" alt=" view metadata" /><span class="metadata">
-		<c:set var="component" value="${translationEquivalent}" scope="request" />
-		<jsp:include page="displayMeta.jsf" />
-		</span></a>
-
-		<c:forEach var="aNote" items="${ translationEquivalent.analyticalNotes }">
-			<a class="meta" href="javascript:smile()"><img src="/lex/images/note.gif" alt="analysis" /><span class="analysis">
-			<span class="label">Analysis: </span><c:out value="${ aNote.analyticalNote }" escapeXml="false" /><br />
-			<c:set var="component" value="${query.entry}" scope="request" />
-			<span class="metadata"><jsp:include page="displayMeta.jsf" /></span>
-			</span></a>  
-		</c:forEach>
-	</p>
-</c:forEach> <!--END TRANSLATION EQUIVALENT LOOP--> 
+<c:set value="${subdefinition.translationEquivalents}" target="${sessionScope.helper}" property="collection"/>
+<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<h1>Translation Equivalents</h1>					
+<c:forEach var="translationEquivalent" items="${ subdefinition.translationEquivalents }">
+	<c:set var="translationEquivalent" scope="request" value="${translationEquivalent}"/>
+	<jsp:include page="displayTranslationEquivalent.jsf" flush="false"/>
+</c:forEach>
+</c:if> 
 
 <!--RELATED TERM-->
-<c:forEach var="relatedTerm" items="${ subdefinition.relatedTerms }"> 
-	<p class="data">
-<c:out value='<a name="${ relatedTerm.label }" ></a>' escapeXml="false" />
-		<c:if test="${ editMode }">
-		<span class="compEditOptions">
-		<c:set var="jsParams" value="'annotate', 'relatedTerm', '${ relatedTerm.metaId }', '${ subdefinition.metaId }', '${ relatedTerm }' , '${ subdefinition }'" />
-		<c:out value='<input value="note" type="image" src="/lex/images/note.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-		<c:set var="jsParams" value="'getUpdateForm', 'relatedTerm', '${ relatedTerm.metaId }', '${ subdefinition.metaId }', '${ relatedTerm }' , '${ subdefinition }'" />
-		<c:out value='<input value="edit" type="image" src="/lex/images/edit.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-		</span>
-	</c:if>
-
-	<span class="label">Related Term:</span>  <c:out value="${ relatedTerm.relatedTerm }" escapeXml="false" />  <br />
-	<span class="label">Related Term Type:</span>  <c:out value="${ applicationScope.flatData.relatedTermTypes[relatedTerm.relatedTermType] }" escapeXml="false" />  
- <br />
- <a class="meta" href="javascript:smile()"><img src="/lex/images/meta.gif" alt=" view metadata" /><span class="metadata">
-		<c:set var="component" value="${relatedTerm}" scope="request" />
-		<jsp:include page="displayMeta.jsf" />
-		</span></a>
-
-		<c:forEach var="aNote" items="${ relatedTerm.analyticalNotes }">
-			<a class="meta" href="javascript:smile()"><img src="/lex/images/note.gif" alt="analysis" /><span class="analysis">
-			<span class="label">Analysis: </span><c:out value="${ aNote.analyticalNote }" escapeXml="false" /><br />
-			<c:set var="component" value="${query.entry}" scope="request" />
-			<span class="metadata"><jsp:include page="displayMeta.jsf" /></span>
-			</span></a>  
-		</c:forEach>
-	</p>
-</c:forEach> <!--END RELATED TERM LOOP--> 
+<c:set value="${subdefinition.relatedTerms}" target="${sessionScope.helper}" property="collection"/>
+<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<h1>RelatedTerm</h1>					
+<c:forEach var="relatedTerm" items="${ subdefinition.relatedTerms }">
+	<c:set var="relatedTerm" scope="request" value="${relatedTerm}"/>
+	<jsp:include page="displayRelatedTerm.jsf" flush="false"/>
+</c:forEach>
+</c:if> 
 
 <!--PASSAGE-->
-<c:forEach var="passage" items="${ subdefinition.passages }"> 
-	<p class="data">
-<c:out value='<a name="${ passage.label }" ></a>' escapeXml="false" />
-		<c:if test="${ editMode }">
-	<span class="compEditOptions">
-		<c:set var="jsParams" value="'annotate', 'passage', '${ passage.metaId }', '${ subdefinition.metaId }', '${ passage }' , '${ subdefinition }'" />
-		<c:out value='<input value="note" type="image" src="/lex/images/note.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-		<c:set var="jsParams" value="'getUpdateForm', 'passage', '${ passage.metaId }', '${ subdefinition.metaId }', '${ passage }' , '${ subdefinition }'" />
-		<c:out value='<input value="edit" type="image" src="/lex/images/edit.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-		<c:set var="jsParams" value="'getTranslationForm', 'passage', '${ passage.metaId }', '${ subdefinition.metaId }', '${ passage }', '${ subdefinition }'" />
-		<c:out value='<input value="trans" type="image" src="/lex/images/trans.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />			
-		</span>
-	</c:if>
-
-	<span class="label">Literary Source:</span>  <c:out value="${ passage.literarySource }" escapeXml="false" />   <br />
-	<span class="label">Spelling:</span>  <c:out value="${ passage.spelling }" escapeXml="false" />   <br />
-	<span class="label">Pagination:</span>  <c:out value="${ passage.pagination }" escapeXml="false" />   <br />
-	<span class="label">Passage:</span>  <c:out value="${ passage.passage }" escapeXml="false" />   <br />
- <a class="meta" href="javascript:smile()"><img src="/lex/images/meta.gif" alt=" view metadata" /><span class="metadata">
-		<c:set var="component" value="${passage}" scope="request" />
-		<jsp:include page="displayMeta.jsf" />
-		</span></a>
-
- 		<c:forEach var="translation" items="${ passage.translations }" >
-			<c:set var="jsParams" value="" />
-			<c:if test="${ editMode }">
-			<c:set var="jsParams" value="'getUpdateForm', 'passage', '${ translation.metaId }', '${ subdefinition.metaId }', '${ passage }' , '${ subdefinition }'" />
-			 </c:if>
-   	<c:out value='<a class="meta" href="javascript:submitForm( ${jsParams} )">' escapeXml="false" /><img src="/lex/images/trans.gif" alt="view/edit translation" /><span class="translation">
-		<span class="label">Literary Source:</span>  <c:out value="${ translation.literarySource }" escapeXml="false" />   <br />
-		<span class="label">Spelling:</span>  <c:out value="${ translation.spelling }" escapeXml="false" />   <br />
-		<span class="label">Pagination:</span>  <c:out value="${ translation.pagination }" escapeXml="false" />   <br />
-		<span class="label">Passage:</span>  <c:out value="${ translation.passage }" escapeXml="false" />   <br />
-		<c:set var="component" value="${ translation }" scope="request" />
-		<span class="metadata"><jsp:include page="displayMeta.jsf" /></span>
-		</span></a> 
-		</c:forEach> 
-
-		<c:forEach var="aNote" items="${ passage.analyticalNotes }">
-			<a class="meta" href="javascript:smile()"><img src="/lex/images/note.gif" alt="analysis" /><span class="analysis">
-			<span class="label">Analysis: </span><c:out value="${ aNote.analyticalNote }" escapeXml="false" /><br />
-			<c:set var="component" value="${query.entry}" scope="request" />
-			<span class="metadata"><jsp:include page="displayMeta.jsf" /></span>
-			</span></a>  
-		</c:forEach>
-	</p>
-</c:forEach> <!--END PASSAGE LOOP-->
+<c:set value="${subdefinition.passages}" target="${sessionScope.helper}" property="collection"/>
+<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<h1>Passages</h1>					
+<c:forEach var="passage" items="${ subdefinition.passages }">
+	<c:set var="passage" scope="request" value="${passage}"/>
+	<jsp:include page="displayPassage.jsf" flush="false"/>
+</c:forEach>
+</c:if>
 
 <!--REGISTER-->
-<c:forEach var="register" items="${ subdefinition.registers }"> 
-	<p class="data">
-		<c:out value='<a name="${ register.label }" ></a>' escapeXml="false" />
-		<c:if test="${ editMode }">
-		<span class="compEditOptions">
-		<c:set var="jsParams" value="'annotate', 'speechRegister', '${ register.metaId }', '${ subdefinition.metaId }', '${ register }' , '${ subdefinition }'" />
-		<c:out value='<input value="note" type="image" src="/lex/images/note.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-		<c:set var="jsParams" value="'getUpdateForm', 'speechRegister', '${ register.metaId }', '${ subdefinition.metaId }', '${ register }' , '${ subdefinition }'" />
-		<c:out value='<input value="edit" type="image" src="/lex/images/edit.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
-		</span>
-		</c:if>
-	<span class="label">Speech Register:</span>  <c:out value="${ applicationScope.flatData.registers[register.register] }" escapeXml="false" />  
-	<br />
-	<a class="meta" href="javascript:smile()"><img src="/lex/images/meta.gif" alt=" view metadata" /><span class="metadata">
-		<c:set var="component" value="${register}" scope="request" />
-		<jsp:include page="displayMeta.jsf" />
-		</span></a>
+<c:set value="${subdefinition.registers}" target="${sessionScope.helper}" property="collection"/>
+<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<h1>Registers</h1>					
+<c:forEach var="register" items="${ subdefinition.registers }">
+	<jsp:include page="displayRegister.jsf" flush="false"/>
+</c:forEach>
+</c:if>
 
-		<c:forEach var="aNote" items="${ register.analyticalNotes }">
-			<a class="meta" href="javascript:smile()"><img src="/lex/images/note.gif" alt="analysis" /><span class="analysis">
-			<span class="label">Analysis: </span><c:out value="${ aNote.analyticalNote }" escapeXml="false" /><br />
-			<c:set var="component" value="${query.entry}" scope="request" />
-			<span class="metadata"><jsp:include page="displayMeta.jsf" /></span>
-			</span></a>  
-		</c:forEach>
-</p>
-</c:forEach> <!--END REGISTER LOOP--> 
-</div> <!-- END SUBDEFCHILDREN -->
-</c:forEach> <!--END SUBDEFINITION LOOP--> 
-</div> <!-- END DEFCHILDREN -->
-</c:forEach> <!--END DEFINITION LOOP-->
+</c:forEach>
+</c:if>
 
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-
-<c:if test="${ editMode }">
-</form>
-</div>
+</c:forEach>
 </c:if>
 
 </c:if>
-

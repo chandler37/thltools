@@ -1,0 +1,33 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<!--displayTree.jsf-->
+
+
+
+<!--PRONUNCIATION-->
+<c:forEach var="pronunciation" items="${ query.entry.pronunciations }">
+<p class="data">
+<c:out value='<a name="${ pronunciation.label }" ></a>' escapeXml="false" />
+		<c:if test="${ editMode }">
+		<span class="compEditOptions">
+		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=pronunciation&amp;metaId=${ pronunciation.metaId }" label="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=pronunciation&amp;metaId=${ pronunciation.metaId }" label="Edit this component"><img alt="Edit this component" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+		</span>
+		</c:if>
+		
+		<!--<span class="label">Phonetic Rendering:</span>-->
+		<c:out value="${ pronunciation.phonetics }"  escapeXml="false"/>   <br />
+	<!--<span class="label">Type of Phonetics:</span> -->
+	<c:out value="${ applicationScope.flatData.phoneticsTypes[ pronunciation.phoneticsType ] }"  escapeXml="false"/>   <br />
+		
+		
+		<!--metadata--> 
+		<c:set target="${ sessionScope.helper }" property="component" value="${pronunciation}" />
+		<jsp:include page="displayMeta.jsf" />
+		
+		<!--notes-->
+		<jsp:include page="displayNotes.jsf" />
+
+	</p>
+</c:forEach><!--END PRONUNCIATION-->
+

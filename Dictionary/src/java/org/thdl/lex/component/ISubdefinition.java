@@ -7,23 +7,19 @@ package org.thdl.lex.component;
  * @author     travis
  * @created    October 13, 2003
  */
-public interface ISubdefinition extends Translatable
+public interface ISubdefinition extends LexComponentNode
 {
 	/**
 	 *  Gets the parent attribute of the ISubdefinition object
 	 *
-	 * @return    The parent value
+	 * @return    The parentId value
 	 */
-	public ILexComponent getParent();
-
 
 	/**
 	 *  Sets the parent attribute of the ISubdefinition object
 	 *
-	 * @param  comp  The new parent value
+	 * @return    The parentId value
 	 */
-	public void setParent( ILexComponent comp );
-
 
 	/**
 	 *  Gets the parentId attribute of the ISubdefinition object
@@ -169,6 +165,46 @@ public interface ISubdefinition extends Translatable
 	 */
 	public void setRegisters( java.util.List registers );
 
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  component                  Description of the Parameter
+	 * @return                            Description of the Return Value
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public ILexComponent findChild( ILexComponent component ) throws LexComponentException;
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  list                       Description of the Parameter
+	 * @param  pk                         Description of the Parameter
+	 * @return                            Description of the Return Value
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public ILexComponent findChild( java.util.List list, Integer pk ) throws LexComponentException;
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  pk                         Description of the Parameter
+	 * @return                            Description of the Return Value
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public ILexComponent findChild( Integer pk ) throws LexComponentException;
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  parentPk                   Description of the Parameter
+	 * @return                            Description of the Return Value
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public ILexComponent findParent( Integer parentPk ) throws LexComponentException;
 
 }
 

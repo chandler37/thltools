@@ -4,34 +4,33 @@ package org.thdl.lex.component;
 /**
  *  Description of the Interface
  *
- *@author     travis
- *@created    October 3, 2003
+ * @author     travis
+ * @created    October 3, 2003
  */
 public interface IAnalyticalNote extends ILexComponent
 {
 	/**
 	 *  Gets the parent attribute of the IAnalyticalNote object
 	 *
-	 *@return    The parent value
-	 *@since
+	 * @param  comp  The new parent value
+	 * @since
 	 */
-	public ILexComponent getParent();
 
 
 	/**
 	 *  Sets the parent attribute of the IAnalyticalNote object
 	 *
-	 *@param  comp  The new parent value
-	 *@since
+	 * @param  comp  The new parent value
+	 * @since
 	 */
-	public void setParent( ILexComponent comp );
+	
 
 
 	/**
 	 *  Gets the parentId attribute of the IAnalyticalNote object
 	 *
-	 *@return    The parentId value
-	 *@since
+	 * @return    The parentId value
+	 * @since
 	 */
 	public java.lang.Integer getParentId();
 
@@ -39,8 +38,8 @@ public interface IAnalyticalNote extends ILexComponent
 	/**
 	 *  Sets the parentId attribute of the IAnalyticalNote object
 	 *
-	 *@param  parentId  The new parentId value
-	 *@since
+	 * @param  parentId  The new parentId value
+	 * @since
 	 */
 	public void setParentId( java.lang.Integer parentId );
 
@@ -48,8 +47,8 @@ public interface IAnalyticalNote extends ILexComponent
 	/**
 	 *  Gets the analyticalNote attribute of the IAnalyticalNote object
 	 *
-	 *@return    The analyticalNote value
-	 *@since
+	 * @return    The analyticalNote value
+	 * @since
 	 */
 	public java.lang.String getAnalyticalNote();
 
@@ -57,8 +56,8 @@ public interface IAnalyticalNote extends ILexComponent
 	/**
 	 *  Sets the analyticalNote attribute of the IAnalyticalNote object
 	 *
-	 *@param  analyticalNote  The new analyticalNote value
-	 *@since
+	 * @param  analyticalNote  The new analyticalNote value
+	 * @since
 	 */
 	public void setAnalyticalNote( java.lang.String analyticalNote );
 }

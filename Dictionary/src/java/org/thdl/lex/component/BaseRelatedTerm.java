@@ -11,19 +11,19 @@ abstract public class BaseRelatedTerm extends LexComponent implements Serializab
     private java.lang.Integer parentId;
 
     /** nullable persistent field */
-    private java.lang.Short precedence;
+    private java.lang.Integer precedence;
 
     /** nullable persistent field */
     private java.lang.String relatedTerm;
 
     /** persistent field */
-    private java.lang.Short relatedTermType;
+    private java.lang.Integer relatedTermType;
 
     /** nullable persistent field */
     private org.thdl.lex.component.ILexComponent parent;
 
     /** full constructor */
-    public BaseRelatedTerm(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.String relatedTerm, java.lang.Short relatedTermType, org.thdl.lex.component.ILexComponent parent) {
+    public BaseRelatedTerm(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.String relatedTerm, java.lang.Integer relatedTermType, org.thdl.lex.component.ILexComponent parent) {
         super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
         this.precedence = precedence;
@@ -37,7 +37,7 @@ abstract public class BaseRelatedTerm extends LexComponent implements Serializab
     }
 
     /** minimal constructor */
-    public BaseRelatedTerm(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Short relatedTermType) {
+    public BaseRelatedTerm(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer relatedTermType) {
       super(deleted, analyticalNotes, meta);
         this.relatedTermType = relatedTermType;
     }
@@ -50,11 +50,11 @@ abstract public class BaseRelatedTerm extends LexComponent implements Serializab
         this.parentId = parentId;
     }
 
-    public java.lang.Short getPrecedence() {
+    public java.lang.Integer getPrecedence() {
         return this.precedence;
     }
 
-    public void setPrecedence(java.lang.Short precedence) {
+    public void setPrecedence(java.lang.Integer precedence) {
         this.precedence = precedence;
     }
 
@@ -66,11 +66,11 @@ abstract public class BaseRelatedTerm extends LexComponent implements Serializab
         this.relatedTerm = relatedTerm;
     }
 
-    public java.lang.Short getRelatedTermType() {
+    public java.lang.Integer getRelatedTermType() {
         return this.relatedTermType;
     }
 
-    public void setRelatedTermType(java.lang.Short relatedTermType) {
+    public void setRelatedTermType(java.lang.Integer relatedTermType) {
         this.relatedTermType = relatedTermType;
     }
 

@@ -48,13 +48,16 @@ public class HibernateTransaction
 	{
 		Transaction t = (Transaction) transaction.get();
 		transaction.set( null );
-		if ( t != null && commit )
+		if ( t != null )
 		{
-			t.commit();
-		}
-		else if ( t != null )
-		{
-			t.rollback();
+			if ( commit )
+			{
+				t.commit();
+			}
+			else
+			{
+				t.rollback();
+			}
 		}
 	}
 

@@ -1,21 +1,15 @@
 <%@ page import="org.thdl.lex.*,org.thdl.lex.component.*"  %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
-<%-- <?xml version="1.0" encoding="utf-8" ?> --%>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<%-- <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"> --%>
+
 <script type='text/javascript' src='/lex/js/lex.js'></script>
 
-<c:choose>
-<c:when test="${ displayMode == 'full' }">
-	<link rel="stylesheet" type="text/css" media="screen" href="/lex/css/lex-full.css" />
-</c:when>
-<c:otherwise>
-	<link rel="stylesheet" type="text/css" media="screen" href="/lex/css/lex.css" />
-</c:otherwise>
-</c:choose>
+<link rel="stylesheet" type="text/css" media="screen" href="/lex/css/lex.css" />
+
 <title>THDL Tibetan Collaborative Dictionaries</title>
 </head>
 <body> 
@@ -25,12 +19,12 @@
 	<h1>The Tibetan &amp; Himalayan Digital Library</h1>
 
 	<div id="menubar">
-		<script type='text/javascript'>function Go() { return }</script>
+		<%-- <script type='text/javascript'>function Go() { return }</script>
 		<script type='text/javascript' src='http://iris.lib.virginia.edu/tibet/scripts/new/thdl_menu_config.js'></script>
 		<script type='text/javascript' src='http://iris.lib.virginia.edu/tibet/scripts/new/menu_new.js'></script>
 		<script type='text/javascript' src='http://iris.lib.virginia.edu/tibet/scripts/new/menu9_com.js'></script>
 		<noscript><p>Your browser does not support javascript.</p></noscript>
-		<div id='MenuPos' >Menu Loading...	</div>
+		<div id='MenuPos' >Menu Loading...	</div> --%>
 	</div><!--END menubar-->
 </div><!--END banner-->
 
@@ -54,7 +48,7 @@
 
 <div id="main">
 
-<!--header.jsf-->
+<%-- <!--header.jsf-->
 <div id="header">
 
 <jsp:include page="navLinks.jsf" />
@@ -74,9 +68,7 @@
 	</script>
 
 <c:set var="jsParams" value="javascript:scrollIt('${ jumpToLocation }')" />
-<%-- <c:out value='<a href="${jsParams}">' escapeXml="false" />
-jump script
-</a> --%>
+
 </c:if>
 
-</div><!--end header-->
+</div><!--end header--> --%>

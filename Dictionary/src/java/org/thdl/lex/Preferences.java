@@ -583,7 +583,7 @@ public class Preferences
 			sqlBuffer.append( ", dialect =  " );
 			sqlBuffer.append( getDialect() );
 			sqlBuffer.append( ", note =  '" );
-			sqlBuffer.append( getNote() );
+			sqlBuffer.append( LexUtilities.escape( getNote() ) );
 			sqlBuffer.append( "', useDefaultProjSub =  '" );
 			sqlBuffer.append( getUseDefaultProjSub() );
 			sqlBuffer.append( "', useDefaultSource =  '" );
@@ -645,11 +645,8 @@ public class Preferences
 //constructors
 	/**
 	 *Constructor for the Preferences object
-	 *
-	 * @exception  LexRepositoryException  Description of the Exception
-	 * @exception  LexComponentException   Description of the Exception
 	 */
-	public Preferences() throws LexRepositoryException, LexComponentException
+	public Preferences()
 	{
 		setId( new Integer( 0 ) );
 		setUserId( new Integer( 1 ) );

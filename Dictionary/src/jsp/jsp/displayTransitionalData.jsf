@@ -1,0 +1,34 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<!--displayTransitionalData.jsf-->
+
+
+
+<!--TRANSITIONAL DATA-->
+<c:forEach var="transitionalData" items="${ query.entry.transitionalData }">
+<p class="data">
+<c:out value='<a name="${ transitionalData.label }" ></a>' escapeXml="false" />
+
+		<c:if test="${ editMode }">
+		<span class="compEditOptions">
+		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=transitionalData&amp;metaId=${ transitionalData.metaId }" label="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=transitionalData&amp;metaId=${ transitionalData.metaId }" label="Edit this component"><img alt="Edit this component" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+		</span>
+		</c:if>
+
+		<span><c:out value="${ applicationScope.flatData.transitionalDataLabels[ transitionalData.transitionalDataLabel ] }" /></span>  <c:out value="${ pronunciation.phonetics }"  escapeXml="false"/>   <br />
+		<c:out value="${ transitionalData.transitionalDataText }"  escapeXml="false"/>   <br />
+
+		
+		
+		<!--metadata--> 
+		<c:set target="${ sessionScope.helper }" property="component" value="${transitionalData}" />
+		<jsp:include page="displayMeta.jsf" />
+		<!--notes--> 
+		<!--notes-->
+		<jsp:include page="displayNotes.jsf" />
+
+	</p>
+</c:forEach>
+
+

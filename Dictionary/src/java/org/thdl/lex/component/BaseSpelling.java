@@ -11,19 +11,19 @@ abstract public class BaseSpelling extends LexComponent implements Serializable,
     private java.lang.Integer parentId;
 
     /** nullable persistent field */
-    private java.lang.Short precedence;
+    private java.lang.Integer precedence;
 
     /** persistent field */
     private java.lang.String spelling;
 
     /** persistent field */
-    private java.lang.Short spellingType;
+    private java.lang.Integer spellingType;
 
     /** nullable persistent field */
     private org.thdl.lex.component.ILexComponent parent;
 
     /** full constructor */
-    public BaseSpelling(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.String spelling, java.lang.Short spellingType, org.thdl.lex.component.ILexComponent parent) {
+    public BaseSpelling(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.String spelling, java.lang.Integer spellingType, org.thdl.lex.component.ILexComponent parent) {
         super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
         this.precedence = precedence;
@@ -37,7 +37,7 @@ abstract public class BaseSpelling extends LexComponent implements Serializable,
     }
 
     /** minimal constructor */
-    public BaseSpelling(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.String spelling, java.lang.Short spellingType) {
+    public BaseSpelling(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.String spelling, java.lang.Integer spellingType) {
       super(deleted, analyticalNotes, meta);
         this.spelling = spelling;
         this.spellingType = spellingType;
@@ -51,11 +51,11 @@ abstract public class BaseSpelling extends LexComponent implements Serializable,
         this.parentId = parentId;
     }
 
-    public java.lang.Short getPrecedence() {
+    public java.lang.Integer getPrecedence() {
         return this.precedence;
     }
 
-    public void setPrecedence(java.lang.Short precedence) {
+    public void setPrecedence(java.lang.Integer precedence) {
         this.precedence = precedence;
     }
 
@@ -67,11 +67,11 @@ abstract public class BaseSpelling extends LexComponent implements Serializable,
         this.spelling = spelling;
     }
 
-    public java.lang.Short getSpellingType() {
+    public java.lang.Integer getSpellingType() {
         return this.spellingType;
     }
 
-    public void setSpellingType(java.lang.Short spellingType) {
+    public void setSpellingType(java.lang.Integer spellingType) {
         this.spellingType = spellingType;
     }
 

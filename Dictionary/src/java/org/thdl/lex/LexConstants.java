@@ -234,6 +234,11 @@ public class LexConstants
 	 */
 	public final static String HIBERNATE_SESSION_KEY = "hib";
 
+	/**
+	 *  Description of the Field
+	 */
+	public final static String DISPLAY_HELPER_SESSION_ATT = "helper";
+
 //public final static String URL = "jdbc:mysql://localhost/LexTorque";
 
 }

@@ -15,6 +15,8 @@ import org.apache.commons.beanutils.BeanUtils;
 public abstract class LexComponent extends BaseLexComponent implements Serializable
 {
 	private Meta meta;
+	private Integer metaId;
+	private Integer parentId;
 
 
 	/*
@@ -51,11 +53,37 @@ public abstract class LexComponent extends BaseLexComponent implements Serializa
 
 
 	/**
+	 *  Sets the metaId attribute of the LexComponent object
+	 *
+	 * @param  metaId  The new metaId value
+	 */
+	public void setMetaId( Integer metaId )
+	{
+		if ( metaId.intValue() == 0 )
+		{
+			this.metaId = null;
+		}
+		this.metaId = metaId;
+	}
+
+
+	/**
+	 *  Gets the metaId attribute of the LexComponent object
+	 *
+	 * @return    The metaId value
+	 */
+	public Integer getMetaId()
+	{
+		return metaId;
+	}
+
+
+	/**
 	 *  Gets the precedence attribute of the LexComponent object
 	 *
 	 * @return    The precedence value
 	 */
-	public abstract java.lang.Short getPrecedence();
+	public abstract java.lang.Integer getPrecedence();
 
 
 	/**
@@ -63,7 +91,7 @@ public abstract class LexComponent extends BaseLexComponent implements Serializa
 	 *
 	 * @param  precedence  The new precedence value
 	 */
-	public abstract void setPrecedence( java.lang.Short precedence );
+	public abstract void setPrecedence( java.lang.Integer precedence );
 
 
 	/**
@@ -79,7 +107,14 @@ public abstract class LexComponent extends BaseLexComponent implements Serializa
 	 *
 	 * @param  parentId  The new parentId value
 	 */
-	public abstract void setParentId( java.lang.Integer parentId );
+	public void setParentId( java.lang.Integer parentId )
+	{
+		if ( parentId.intValue() == 0 )
+		{
+			this.parentId = null;
+		}
+		this.parentId = parentId;
+	}
 
 
 	/**
@@ -95,7 +130,10 @@ public abstract class LexComponent extends BaseLexComponent implements Serializa
 	 *
 	 * @return    The parentId value
 	 */
-	public abstract java.lang.Integer getParentId();
+	public java.lang.Integer getParentId()
+	{
+		return this.parentId;
+	}
 
 
 	/**
@@ -188,6 +226,7 @@ public abstract class LexComponent extends BaseLexComponent implements Serializa
 	public LexComponent()
 	{
 		super();
+		setDeleted( Boolean.FALSE );
 	}
 }
 

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.thdl.lex.*;
 
 
 /**
@@ -54,6 +55,26 @@ public class Meta extends BaseMeta implements Serializable
 	 * default constructor
 	 */
 	public Meta() { }
+
+
+	/**
+	 *Constructor for the Meta object
+	 *
+	 * @param  user         Description of the Parameter
+	 * @param  preferences  Description of the Parameter
+	 */
+	public Meta( LexUser user, Preferences preferences )
+	{
+		setCreatedBy( user.getId() );
+		setModifiedBy( user.getId() );
+		setCreatedByProjSub( preferences.getProjectSubject() );
+		setModifiedByProjSub( preferences.getProjectSubject() );
+		setSource( preferences.getSource() );//default source is Self from Lex.Sources
+		setLanguage( preferences.getLanguage() );
+		setScript( preferences.getScript() );
+		setDialect( preferences.getDialect() );
+		setNote( preferences.getNote() );
+	}
 
 }
 

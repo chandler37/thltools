@@ -11,7 +11,7 @@ abstract public class BaseTranslationEquivalent extends LexComponent implements 
     private java.lang.Integer parentId;
 
     /** nullable persistent field */
-    private java.lang.Short precedence;
+    private java.lang.Integer precedence;
 
     /** nullable persistent field */
     private java.lang.String translationEquivalent;
@@ -20,7 +20,7 @@ abstract public class BaseTranslationEquivalent extends LexComponent implements 
     private org.thdl.lex.component.ILexComponent parent;
 
     /** full constructor */
-    public BaseTranslationEquivalent(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.String translationEquivalent, org.thdl.lex.component.ILexComponent parent) {
+    public BaseTranslationEquivalent(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.String translationEquivalent, org.thdl.lex.component.ILexComponent parent) {
         super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
         this.precedence = precedence;
@@ -45,11 +45,11 @@ abstract public class BaseTranslationEquivalent extends LexComponent implements 
         this.parentId = parentId;
     }
 
-    public java.lang.Short getPrecedence() {
+    public java.lang.Integer getPrecedence() {
         return this.precedence;
     }
 
-    public void setPrecedence(java.lang.Short precedence) {
+    public void setPrecedence(java.lang.Integer precedence) {
         this.precedence = precedence;
     }
 

@@ -226,6 +226,11 @@ public class LexComponentRepository
 			lexQuery.getResults().clear();
 			lexQuery.getResults().put( term.getMetaId(), term.getTerm() );
 		}
+		else
+		{
+			lexQuery.setEntry( null );
+			lexQuery.getResults().clear();
+		}
 		while ( it.hasNext() )
 		{
 			term = (ITerm) it.next();
@@ -304,6 +309,30 @@ public class LexComponentRepository
 	 *  Description of the Method
 	 *
 	 * @param  component                   Description of the Parameter
+	 * @param  pk                          Description of the Parameter
+	 * @exception  LexRepositoryException  Description of the Exception
+	 */
+	public static void loadByPk( ILexComponent component, Integer pk ) throws LexRepositoryException
+	{
+
+		try
+		{
+			beginTransaction();
+			getSession().load( component, pk );
+			endTransaction( false );
+		}
+		catch ( HibernateException he )
+		{
+			throw new LexRepositoryException( he );
+		}
+	}
+
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  component                   Description of the Parameter
 	 * @exception  LexRepositoryException  Description of the Exception
 	 */
 	public static void saveOrUpdate( ILexComponent component ) throws LexRepositoryException
@@ -325,6 +354,50 @@ public class LexComponentRepository
 	/**
 	 *  Description of the Method
 	 *
+	 * @param  component                   Description of the Parameter
+	 * @exception  LexRepositoryException  Description of the Exception
+	 */
+	public static void update( ILexComponent component ) throws LexRepositoryException
+	{
+
+		try
+		{
+			beginTransaction();
+			getSession().update( component );
+			endTransaction( true );
+		}
+		catch ( HibernateException he )
+		{
+			throw new LexRepositoryException( he );
+		}
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  component                   Description of the Parameter
+	 * @exception  LexRepositoryException  Description of the Exception
+	 */
+	public static void refresh( ILexComponent component ) throws LexRepositoryException
+	{
+
+		try
+		{
+			beginTransaction();
+			getSession().refresh( component );
+			endTransaction( true );
+		}
+		catch ( HibernateException he )
+		{
+			throw new LexRepositoryException( he );
+		}
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
 	 * @exception  LexRepositoryException  Description of Exception
 	 * @since
 	 */
@@ -332,6 +405,7 @@ public class LexComponentRepository
 	{
 		try
 		{
+			endTransaction( false );
 			HibernateSession.closeSession();
 		}
 		catch ( HibernateException he )

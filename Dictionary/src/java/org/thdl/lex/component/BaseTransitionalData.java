@@ -11,10 +11,10 @@ abstract public class BaseTransitionalData extends LexComponent implements org.t
     private java.lang.Integer parentId;
 
     /** nullable persistent field */
-    private java.lang.Short precedence;
+    private java.lang.Integer precedence;
 
     /** nullable persistent field */
-    private java.lang.Short transitionalDataLabel;
+    private java.lang.Integer transitionalDataLabel;
 
     /** persistent field */
     private java.lang.String forPublicConsumption;
@@ -26,7 +26,7 @@ abstract public class BaseTransitionalData extends LexComponent implements org.t
     private org.thdl.lex.component.ILexComponent parent;
 
     /** full constructor */
-    public BaseTransitionalData(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.Short transitionalDataLabel, java.lang.String forPublicConsumption, java.lang.String transitionalDataText, org.thdl.lex.component.ILexComponent parent) {
+    public BaseTransitionalData(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.Integer transitionalDataLabel, java.lang.String forPublicConsumption, java.lang.String transitionalDataText, org.thdl.lex.component.ILexComponent parent) {
         super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
         this.precedence = precedence;
@@ -54,19 +54,19 @@ abstract public class BaseTransitionalData extends LexComponent implements org.t
         this.parentId = parentId;
     }
 
-    public java.lang.Short getPrecedence() {
+    public java.lang.Integer getPrecedence() {
         return this.precedence;
     }
 
-    public void setPrecedence(java.lang.Short precedence) {
+    public void setPrecedence(java.lang.Integer precedence) {
         this.precedence = precedence;
     }
 
-    public java.lang.Short getTransitionalDataLabel() {
+    public java.lang.Integer getTransitionalDataLabel() {
         return this.transitionalDataLabel;
     }
 
-    public void setTransitionalDataLabel(java.lang.Short transitionalDataLabel) {
+    public void setTransitionalDataLabel(java.lang.Integer transitionalDataLabel) {
         this.transitionalDataLabel = transitionalDataLabel;
     }
 

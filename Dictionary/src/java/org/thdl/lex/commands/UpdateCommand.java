@@ -20,7 +20,6 @@ import org.thdl.users.*;
 public class UpdateCommand extends LexCommand implements Command
 {
 
-	private boolean insertMode;
 	private boolean termMode;
 
 
@@ -46,26 +45,6 @@ public class UpdateCommand extends LexCommand implements Command
 	}
 
 
-	/**
-	 *  Sets the insertMode attribute of the GetFormCommand object
-	 *
-	 * @param  insertMode  The new insertMode value
-	 */
-	public void setInsertMode( boolean insertMode )
-	{
-		this.insertMode = insertMode;
-	}
-
-
-	/**
-	 *  Gets the insertMode attribute of the GetFormCommand object
-	 *
-	 * @return    The insertMode value
-	 */
-	public boolean isInsertMode()
-	{
-		return insertMode;
-	}
 
 //helper methods
 	/**
@@ -79,39 +58,61 @@ public class UpdateCommand extends LexCommand implements Command
 	public String execute( HttpServletRequest req, ILexComponent component ) throws CommandException
 	{
 		String msg = null;
+		String next = getNext();
+		DisplayHelper displayHelper = getSessionManager().getDisplayHelper( req.getSession( true ) );
 		try
 		{
-			if ( CommandToken.isValid( req ) )
+			HttpSession ses = req.getSession( false );
+			if ( null == ses )
 			{
-				HttpSession ses = req.getSession( false );
-				if ( null == ses )
-				{
-					throw new CommandException( "Could not update component, uses session has expired" );
-				}
-				ThdlUser user = getSessionManager().getSessionUser( ses );
-				LexQuery query = getSessionManager().getQuery( ses );
+				throw new CommandException( "Could not update component, user's session has expired" );
+			}
 
-				Map params = req.getParameterMap();
-				query.getUpdateComponent().populate( params );
-				query.getUpdateComponent().getMeta().populate( params );
-				Date now = new Date( System.currentTimeMillis() );
-				query.getUpdateComponent().getMeta().setModifiedOn( now );
-				query.getUpdateComponent().getMeta().setModifiedBy( user.getId() );
-				if ( isInsertMode() )
+			ThdlUser user = getSessionManager().getSessionUser( ses );
+			LexQuery query = getSessionManager().getQuery( ses );
+			ITerm term = query.getEntry();
+
+			if ( CommandToken.isValid( req ) && validate( user, component ) )
+			{
+				LexComponentRepository.update( term );
+
+				LexLogger.debug( "Checking component state from updateCommand BEFORE component assignment" );
+				LexLogger.debugComponent( component );
+				if ( isTermMode() )
 				{
-					query.getUpdateComponent().getMeta().setCreatedOn( now );
-					query.getUpdateComponent().getMeta().setCreatedBy( user.getId() );
+					term.populate( req.getParameterMap() );
+					term.getMeta().populate( req.getParameterMap() );
+					component = term;
 				}
-				ITerm term = query.getEntry();
-				LexComponentRepository.saveOrUpdate( term );
+				else
+				{
+					ILexComponent ilc = term.findChild( component.getMetaId() );
+					ilc.populate( req.getParameterMap() );
+					ilc.getMeta().populate( req.getParameterMap() );
+					component = ilc;
+				}
+				LexLogger.debug( "Checking component state from updateCommand AFTER component assignment" );
+				LexLogger.debugComponent( component );
+
+				Date now = new Date( System.currentTimeMillis() );
+				component.getMeta().setModifiedOn( now );
+				component.getMeta().setModifiedBy( user.getId() );
+				term.getMeta().setModifiedOn( now );
+				term.getMeta().setModifiedBy( user.getId() );
+
+				LexLogger.debugComponent( component );
+				LexLogger.debugComponent( term );
+
+				LexComponentRepository.update( term );
+
 				msg = "Successful Update";
 				getSessionManager().setDisplayMode( req.getSession( true ), "edit" );
 			}
 			else
 			{
-				msg = "Invalid Reload Attempted.";
+				msg = CommandToken.isValid( req ) ? "Unauthorized update attempted" : "Invalid reload attempted.";
 			}
-			return getNext();
+			return next;
 		}
 		catch ( LexComponentException e )
 		{
@@ -127,48 +128,18 @@ public class UpdateCommand extends LexCommand implements Command
 		}
 	}
 
-
-	/**
-	 *  Description of the Method
-	 *
-	 * @return    Description of the Return Value
-	 */
-	public HashMap initForwards()
-	{
-		HashMap map = new HashMap();
-		// map.put( LexConstants.TERMLABEL_VALUE, "displayEntry.jsp" );
-		// map.put( LexConstants.SUBDEFINITIONLABEL_VALUE, "displayEntry.jsp" );
-		// map.put( LexConstants.TRANSLATIONLABEL_VALUE, "displayEntry.jsp" );
-		// map.put( LexConstants.DEFINITIONLABEL_VALUE, "displayEntry.jsp" );
-		// map.put( LexConstants.PASSAGELABEL_VALUE, "displayEntry.jsp" );
-		return map;
-	}
-
 //constructors
 	/**
 	 *Constructor for the GetFormCommand object
 	 *
-	 * @param  next        Description of the Parameter
-	 * @param  insertMode  Description of the Parameter
-	 * @param  termMode    Description of the Parameter
+	 * @param  next      Description of the Parameter
+	 * @param  termMode  Description of the Parameter
 	 */
-	public UpdateCommand( String next, Boolean insertMode, Boolean termMode )
+	public UpdateCommand( String next, Boolean termMode )
 	{
 		super( next );
-		setInsertMode( insertMode.booleanValue() );
 		setTermMode( termMode.booleanValue() );
 	}
 
-
-	/**
-	 *Constructor for the GetFormCommand object
-	 *
-	 * @param  next        Description of the Parameter
-	 * @param  insertMode  Description of the Parameter
-	 */
-	public UpdateCommand( String next, Boolean insertMode )
-	{
-		this( next, insertMode, Boolean.FALSE );
-	}
 }
 

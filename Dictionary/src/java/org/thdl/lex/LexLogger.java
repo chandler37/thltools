@@ -1,8 +1,11 @@
 package org.thdl.lex;
+import java.io.*;
 import java.util.*;
 import javax.servlet.http.*;
 
+import org.apache.commons.beanutils.*;
 import org.apache.log4j.*;
+import org.thdl.lex.component.*;
 
 
 /**
@@ -29,7 +32,7 @@ public class LexLogger
 		while ( enum.hasMoreElements() )
 		{
 			String parm = (String) enum.nextElement();
-			LOGGER.debug( "Request Parameter " + parm + " = " + req.getParameter( parm ) );
+			LOGGER.debug( "Request Parameter " + parm + " = '" + req.getParameter( parm ) + "'" );
 		}
 		enum = req.getAttributeNames();
 		while ( enum.hasMoreElements() )
@@ -67,7 +70,8 @@ public class LexLogger
 		LOGGER.debug( "Query Entry: " + query.getEntry() );
 		LOGGER.debug( "Query QueryComponent: " + query.getQueryComponent() );
 		LOGGER.debug( "Query UpdateComponent: " + query.getUpdateComponent() );
-		LOGGER.debug( "Query Results, " + query.getResults() + ", contain: " + query.getResults().values() + "\n" );
+
+		LOGGER.debug( "Query Results, " + query.getResults() + "\n" );
 	}
 
 
@@ -101,6 +105,34 @@ public class LexLogger
 	public static void warn( String msg )
 	{
 		LOGGER.warn( msg );
+	}
+
+
+	/**
+	 *Constructor for the debugComponent object
+	 *
+	 * @param  component  Description of the Parameter
+	 */
+	public static void debugComponent( ILexComponent component )
+	{
+		try
+		{
+			LOGGER.debug( "Describing: " + component );
+			Iterator it = BeanUtils.describe( component ).entrySet().iterator();
+			while ( it.hasNext() )
+			{
+				Map.Entry entry = (Map.Entry) it.next();
+				LOGGER.debug( component.getLabel() + " property: " + entry.getKey() + " = '" + entry.getValue() + "'" );
+			}
+		}
+		catch ( Exception e )
+		{
+			StringWriter writer = new StringWriter();
+			e.printStackTrace( new PrintWriter( writer ) );
+			String stackTrace = writer.getBuffer().toString();
+			LOGGER.debug( "LexLogger caught an Exception: " + stackTrace );
+		}
+
 	}
 
 }

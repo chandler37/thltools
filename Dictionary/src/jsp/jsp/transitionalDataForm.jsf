@@ -39,7 +39,6 @@
 <c:out value='<input type="hidden" name="metaId" value="${metaId}" />' escapeXml="false" />
 </c:if>
 <c:out value='<input type="hidden" name="cmd" value="${newCmd}" />' escapeXml='false' />
-<c:out value='<input type="hidden" name="parentId" value="${ param.parentId }" />' escapeXml='false' />
 
 <c:out value="${ originalEtymologyDescription } " escapeXml='false' />
 

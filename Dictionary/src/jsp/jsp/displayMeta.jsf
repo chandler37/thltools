@@ -1,9 +1,22 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 
+<c:set var="isNote" value='${ sessionScope.helper.component.label == "analyticalNote" }'/>
+<c:set var="isTranslation" value='${ sessionScope.helper.componentIsTranslation }'/>
+<c:set var="component" value='${ sessionScope.helper.component }'/>
+
+<c:if test='${ sessionScope.helper.showMeta }'>
+
+<c:if test='${ !( isNote || isTranslation ) }'>
+<a class="meta" href="#"><img src="/lex/images/meta.gif" alt=" view metadata" />
+</c:if>
+
+<span class="metadata">
+
 <c:if test="${ sessionScope.user.developer }">
 <span class="label"> Id: </span><c:out value="${ component.metaId }"  />	
 <br />
 </c:if>
+
 <span class="label">Created by </span><c:out value="${ applicationScope.flatData.users[ component.meta.createdBy ] }"   escapeXml="false"/>		
 <c:if test="${ ! sessionScope.user.guest }">
 <span class="label">on </span><c:out value="${  component.meta.createdOn }"  default="unknown"  escapeXml="false"/>		
@@ -34,3 +47,10 @@ No
 <span class="label">Note:	</span><c:out value="${ component.meta.note }"  default="unknown"  escapeXml="false"/>	<br />
 </c:if>
 
+</span>
+
+<c:if test='${ !( isNote || isTranslation ) }'>
+</a>
+</c:if>
+
+</c:if>

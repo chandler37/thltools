@@ -115,8 +115,13 @@
 	
 	<target name="compile" description="Compile web application" depends="copy">
 		<mkdir dir="${build}/WEB-INF/classes"/>
-		<javac srcdir="${source}/java" destdir="${build}/WEB-INF/classes" classpathref="classpath" debug="on" listfiles="no"/>
-	</target>
+		<javac  destdir="${build}/WEB-INF/classes" classpathref="classpath" debug="on" listfiles="no">
+
+    <src path="${source}/java"/>
+    <include name="org/thdl/lex/**"/>
+    <exclude name="**/old/**"/>
+  </javac> 	
+  </target>
 	
 	<target name="test" description="Testing" depends="compile">
 		<java classname="org.thdl.lex.${class}" classpath="${build}/WEB-INF/classes/" classpathref="classpath"/>

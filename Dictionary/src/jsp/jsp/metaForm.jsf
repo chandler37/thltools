@@ -36,17 +36,15 @@
 		<c:set var="note" value="ERROR" />
 	</c:otherwise>
 </c:choose>
-<%-- <c:if test="${ component.translationOf > 0 }">
-	<c:set var="translateMode" value="${ true }" />
-	<c:set var="originalNote" value="Original Metadata Note: ${ note } <br /> Translation " />
-	<c:set var="note" value="" />
+
+<c:out value='<input type="hidden" name="precedence" value="${ component.precedence }" />'escapeXml="false" />
+<c:out value='<input type="hidden" name="parentId" value="${ component.parentId }" />' escapeXml='false' />
+
+<%-- <c:if test="${ translateMode && ! empty component.translationOf}">
+<c:out value='<input type="hidden" name="translationOf" value="${ component.translationOf }" />'escapeXml="false" />
 </c:if> --%>
 
-<c:if test="${ translateMode }">
-<c:out value='<input type="hidden" name="translationOf" value="${ component.translationOf }" />'escapeXml="false" />
-</c:if>
-
-<c:if test="${ ! updateMode && param.cmd != 'annotate' && param.cmd != 'getTranslationForm' }">
+<c:if test="${ ! updateMode && param.cmd != 'getAnnotationForm' && param.cmd != 'getTranslationForm' }">
 <p>
 Analysis: <br />
 <textarea name="analyticalNote" rows="8" cols="90"></textarea>
