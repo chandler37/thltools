@@ -369,8 +369,10 @@ public class LexComponentRepository
 		String queryString = " FROM org.thdl.lex.component.ITerm ORDER BY modifiedOn DESC LIMIT " + limit;
 		try
 		{
+			beginTransaction();
 			query = getSession().createQuery( queryString );
 			results = query.list();
+			endTransaction( false );
 		}
 		catch ( HibernateException he )
 		{

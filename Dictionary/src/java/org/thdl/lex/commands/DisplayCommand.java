@@ -76,6 +76,10 @@ public class DisplayCommand extends LexCommand implements Command
 				{
 					LexComponentRepository.loadTermByPk( term );
 					query.setEntry( term );
+					if ( query.getResults().keySet().size() < 1 )
+					{
+						query.getResults().put( term.getMetaId(), term.getTerm() );
+					}
 				}
 
 				displayHelper.populate( req.getParameterMap() );

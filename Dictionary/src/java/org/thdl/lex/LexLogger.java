@@ -18,6 +18,7 @@ import org.thdl.lex.component.*;
 public class LexLogger
 {
 	private final static Logger LOGGER = Logger.getLogger( "org.thdl.lex" );
+	private final static List EXCLUDED_PARAMS = Arrays.asList( new String[]{"org.apache.catalina.jsp_classpath", "javax.servlet.context.tempdir", "org.apache.catalina.WELCOME_FILES"} );
 
 
 	/**
@@ -87,7 +88,10 @@ public class LexLogger
 		while ( enum.hasMoreElements() )
 		{
 			String att = (String) enum.nextElement();
-			LOGGER.debug( "Context Attribute " + att + " = " + context.getAttribute( att ) );
+			if ( !EXCLUDED_PARAMS.contains( att ) )
+			{
+				LOGGER.debug( "Context Attribute " + att + " = " + context.getAttribute( att ) );
+			}
 		}
 		debugComponent( context.getAttribute( LexConstants.GLOBAL_CONTEXT_ATTR ) );
 	}

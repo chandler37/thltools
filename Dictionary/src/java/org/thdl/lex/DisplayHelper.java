@@ -243,7 +243,12 @@ public class DisplayHelper
 	 */
 	public String getFormattedDate()
 	{
-		return DATE_FORMAT.format( getDate() );
+		String date = null;
+		if ( null != getDate() )
+		{
+			date = DATE_FORMAT.format( getDate() );
+		}
+		return date;
 	}
 
 // helpers
