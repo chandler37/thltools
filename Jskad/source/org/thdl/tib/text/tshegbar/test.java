@@ -26,17 +26,10 @@ import org.thdl.util.ThdlLazyException;
  *  @author David Chandler
  */
 public class test implements UnicodeConstants {
-    public void testTopToBottomForLegalGraphemeClusters() {
-        // DLC delete:  System.out.println("see this " + UnicodeUtils.unicodeStringToString(new UnicodeGraphemeCluster("\u0F00").getTopToBottomCodepoints()));
-        ThdlDebug.verify(new UnicodeGraphemeCluster("\u0F00").getTopToBottomCodepoints().equals("\u0F7E\u0F7C\u0F68"));
-        ThdlDebug.verify(new UnicodeGraphemeCluster("\u0F66\u0F93\u0F91\u0FA7\u0F92\u0FAD\u0F77\u0F83\u0F86\u0F84").getTopToBottomCodepoints().equals("\u0F86\u0F83\u0F80\u0F66\u0F92\u0FB7\u0F91\u0FA6\u0FB7\u0F92\u0FB2\u0FAD\u0F71\u0F84"));
-    }
-
     /** tests this package */
     public test() throws Throwable {
         super();
 
-        testTopToBottomForLegalGraphemeClusters();
     }
 
     /** Unit tests this package. */

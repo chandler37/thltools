@@ -45,6 +45,7 @@
       <test name="org.thdl.util.TrieTest"/>
       <test name="org.thdl.tib.text.tshegbar.UnicodeUtilsTest"/>
       <test name="org.thdl.tib.text.tshegbar.LegalTshegBarTest"/>
+      <test name="org.thdl.tib.text.tshegbar.UnicodeGraphemeClusterTest"/>
     </junit>
   </target>
 
