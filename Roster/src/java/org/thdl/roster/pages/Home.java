@@ -54,7 +54,7 @@ public class Home extends RosterPage
 		Visit visit = (Visit)getVisit();
 		if ( visit.isAuthenticated() )
 		{
-			Integer userId = new Integer( visit.getThdlUser().getId() );
+			Integer userId =  visit.getThdlUser().getId() ;
 			Global global = (Global) getGlobal();
 			Iterator iter = global.getAllPeople().iterator();
 			while( iter.hasNext() )

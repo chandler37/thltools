@@ -19,7 +19,7 @@ public class ContactInfoPage extends MemberFormSeries
     {
 		 Visit visit = (Visit) getVisit();
        Member member = (Member) visit.getMember();
-		 member.save( new Integer( visit.getThdlUser().getId() ) );
+		 member.save(  visit.getThdlUser().getId()  );
 		try
 		 {
 			 if ( member instanceof Person )

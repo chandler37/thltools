@@ -116,7 +116,7 @@ public abstract class MemberFormSeries extends SecureRosterPage
 		  if ( ! member.isNew() )
 		  {
 			  Integer owner = member.getCreatedBy();
-			  Integer user = new Integer( visit.getThdlUser().getId() );
+			  Integer user =  visit.getThdlUser().getId();
 			  if ( ! owner.equals( user ) )
 			  {
 				  RosterPage home = (RosterPage) cycle.getPage( "Home" );

@@ -60,10 +60,12 @@ public class Login extends RosterPage
 	public boolean validateUser()
 	{
 		boolean rVal = false;
-		ThdlUser thdlUser = null;
 		try
 		{
-			thdlUser = ThdlUserRepository.getInstance().validate( getLogin(), getPassword() );
+			ThdlUser thdlUser = new ThdlUser();
+			thdlUser.setUsername( getLogin() );
+			thdlUser.setPassword( getPassword() );
+			thdlUser = ThdlUserRepository.getInstance().validate( thdlUser, "roster" );
 			rVal = true;
 			Visit visit = (Visit) getVisit(); 
 			visit.setThdlUser( thdlUser );
@@ -72,6 +74,10 @@ public class Login extends RosterPage
 		catch (ThdlUserRepositoryException ture)
 		{
 			setMessage( ture.getMessage() );
+		}
+		catch ( java.sql.SQLException e )
+		{
+			throw new ApplicationRuntimeException( e );
 		}
 		
 		return rVal;

@@ -90,7 +90,7 @@ public class MemberData extends MemberFormSeries
 					//don't move this line!
 					List flatDataIds = person.getPersonData().getPersonTypeIdList();
 									
-					Integer userId = new Integer( visit.getThdlUser().getId() );
+					Integer userId =  visit.getThdlUser().getId() ;
 					person.getPersonData().setThdlUserId( userId );
 					person.getPersonData().save();
 					person.setPersonDataKey( member.getPersonData().getPrimaryKey() );

@@ -71,7 +71,7 @@ public class Person extends org.thdl.roster.om.Member implements RosterMember, j
 	 public Person( ThdlUser user ) throws TorqueException
 	 {
 		 this();
-		 getPersonData().setThdlUserId( new Integer( user.getId() ) );
+		 getPersonData().setThdlUserId(  user.getId() );
 		 getPersonData().setFirstname( user.getFirstname() );
 		 getPersonData().setMiddlename( user.getMiddlename() );
 		 getPersonData().setLastname( user.getLastname() );
