@@ -648,6 +648,7 @@ public class TibetanMachineWeb implements THDLWylieConstants {
                                                                  || x == 0x5350
                                                                  || x == 0x534D
                                                                  || x == 0x0020
+                                                                 || x == 0x00A0
                                                                  || x == 0x2003);
                                                 unicodeBuffer.append((char)x);
                                             } catch (NumberFormatException e) {
