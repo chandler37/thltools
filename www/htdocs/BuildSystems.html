@@ -386,9 +386,8 @@ module<a name="updateapidocs"></a></h4>
   Not all of the material up at our SF.net <a
   href="http://thdltools.sourceforge.net/"> website</a> is in the
   <code>www</code> CVS module, but most of it is.  Currently, the only
-  exception is the <a href="http://thdltools.sourceforge.net/api/">
-  Javadoc API documentation</a> for Jskad, Savant, QuillDriver, and
-  the translation tool.
+  exception is the Javadoc API documentation for Jskad, Savant,
+  QuillDriver, and the translation tool.
 </p>
 
 <p>
@@ -397,28 +396,36 @@ module<a name="updateapidocs"></a></h4>
 
   <ul>
     <li>
-      <code>http://thdltools.sourceforge.net/api</code> lives at
-      <code>/home/groups/t/th/thdltools/htdocs/api</code>.  To update
-      it, first commit any changes you've made to the repository.
+      The Javadocs that THDLTools_Developers.html links to,
+      e.g. <code>http://thdltools.sourceforge.net/pubapi</code>, live
+      at <code>/home/groups/t/th/thdltools/htdocs/</code>.  To update
+      them, first commit any changes you've made to the repository.
       (This, combined with the date stamp that Ant puts into our
       Javadoc docs, will give other developers enough information to
       recover the revision of the source files that you used.  But
       feel free to <code>'cvs tag'</code> the revision explicitly if
-      you think it's important.)
+      you think it's important.  I tagged one revision
+      <code>javadocs_october_27_2002</code>, for example.)
     </li>
 
     <li>
-      Now simply run <code>'ant private-javadocs-dist'</code> from the
-      <code>Jskad</code> directory, which creates
-      <code>Jskad/dist/docs/private-javadocs-DSTAMP.zip</code>.
+      Now simply run <code>'ant private-javadocs-dist
+      public-javadocs-dist'</code> from the <code>Jskad</code>
+      directory, which creates
+      <code>Jskad/dist/docs/private-javadocs-DSTAMP.zip</code> and
+      <code>Jskad/dist/docs/public-javadocs-DSTAMP.zip</code>.
       Examine the output for warnings; resolve them if necessary.
+      Note that the public-javadocs-dist causes warnings about links
+      not found that should be ignored; they aren't found because the
+      things linked to are private or package private.
     </li>
 
     <li>
-      Now <code>scp</code> that file over with the command
+      Now <code>scp</code> those two filse over with the command
       <blockquote>
         <code>scp dist/docs/private-javadocs-WHATEVER.zip
-        yourUserId@thdltools.sourceforge.net/home/groups/t/th/thdltools/</code>
+        dist/docs/public-javadocs-WHATEVER.zip
+        yourUserId@thdltools.sourceforge.net/home/groups/t/th/thdltools/htdocs/</code>
       </blockquote>
       or use PuTTY's <code>scp</code> to do something equivalent.
     </li>
@@ -443,21 +450,38 @@ module<a name="updateapidocs"></a></h4>
     </li>
 
     <li>
-      Anyway, now run <code>'rm -fr api'</code> (from the
+      Anyway, now run <code>'rm -fr pubapi privateapi public-javadocs* private-javadocs*'</code> (from the
       <code>htdocs/</code> directory).
     </li>
 
     <li>
-      Now run <code>'mkdir api'</code>.
+      Now run <code>'mkdir pubapi privateapi'</code>.
     </li>
 
     <li>
-      Now run <code>'cd api'</code>.
+      Now run <code>'cd privateapi'</code>.
     </li>
 
     <li>
       Now run <code>'unzip
-      ../../private-javadocs-WHATEVER.zip'</code>.
+      ../private-javadocs-WHATEVER.zip'</code>.
+    </li>
+
+    <li>
+      Run <code>'cd ../pubapi'</code>.
+    </li>
+
+    <li>
+      Run <code>'unzip
+      ../public-javadocs-WHATEVER.zip'</code>.
+    </li>
+
+    <li>
+      Update the symbolic links by executing, from the htdocs/
+      directory, <code>'rm -f public-javadocs.zip
+      private-javadocs.zip; ln -s public-javadocs-WHATEVER.zip
+      public-javadocs.zip; ln -s private-javadocs-WHATEVER.zip
+      private-javadocs.zip'</code>.
     </li>
 
     <li>
@@ -468,6 +492,11 @@ module<a name="updateapidocs"></a></h4>
       <code>java.lang.Object</code> and be sure that it works.  If
       everything is fine, delete
       <code>../../private-javadocs-WHATEVER.zip</code> and log out.
+    </li>
+
+    <li>
+      Visit <a href="THDLTools_Developers.html">the devevloper's
+      site</a> and ensure that the four links are all functional.
     </li>
 
     <li>
