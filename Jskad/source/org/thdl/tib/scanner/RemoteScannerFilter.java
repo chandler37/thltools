@@ -48,7 +48,7 @@ public class RemoteScannerFilter extends GenericServlet
   	{
   		BufferedReader br;
   		res.setContentType ("text/plain");
-  		SimplifiedLinkedList words;
+  		Token token[];  		
   		Word word;
 	    PrintWriter out = res.getWriter();
 	    int i;
@@ -84,16 +84,12 @@ public class RemoteScannerFilter extends GenericServlet
   		br.close();
   		
 		scanner.finishUp();
-		words = scanner.getTokenLinkedList();
-		Token token;
+		token = scanner.getTokenArray();
 		
-		SimplifiedListIterator li = words.listIterator();
-		
-		while (li.hasNext())
+		for (i=0; i<token.length; i++)
 		{
-			token = (Token)li.next();
-			if (!(token instanceof Word)) continue;
-			word = (Word) token;
+			if (!(token[i] instanceof Word)) continue;
+			word = (Word) token[i];
 			out.println(word.getWylie());
 			out.println(word.getDef());
 			out.println();
