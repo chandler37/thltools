@@ -772,7 +772,7 @@ public class DuffPane extends TibetanPane implements FocusListener {
 				DuffCode dc_1 = null;
 				DuffCode dc_2 = new DuffCode(fontNum, c2);
 
-				if (caret.getDot() > 2) {
+				if (caret.getDot() >= 2) {
 					attr = getTibDoc().getCharacterElement(caret.getDot()-2).getAttributes();
 					fontName = StyleConstants.getFontFamily(attr);
 					if (0 != (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName))) {
