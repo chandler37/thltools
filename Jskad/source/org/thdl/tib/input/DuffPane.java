@@ -45,7 +45,7 @@ import org.thdl.util.ThdlDebug;
 * @version 1.0
 */
 public class DuffPane extends JTextPane implements KeyListener, FocusListener {
-/*
+/**
 * A central part of the Tibetan keyboard. As keys are typed, they are
 * added to charList if they constitute a valid Wylie character. charList
 * is added to in this manner until the user types punctuation, a vowel,
@@ -54,7 +54,7 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 * of charList.
 */
 	private java.util.ArrayList charList;
-/* 
+/**
 * This field holds a copy of the last {@link #newGlyphList}.
 * Then, when a key is pressed, {@link #charList} is updated, a new
 * newGlyphList is computed, and the newGlyphList is compared against
@@ -62,7 +62,7 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 * the new newGlyphList.
 */
 	private java.util.List oldGlyphList;
-/*
+/**
 * A central component of the Tibetan input method. While {@link #charList charList}
 * keeps track of the characters that have been entered, it does not organize them
 * correctly into the proper glyphs. For example, charList might have four characters
@@ -73,7 +73,7 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 * which constructs an optimal arrangement of glyphs from the charList.
 */
 	private java.util.List newGlyphList;
-/* 
+/** 
 * This field keeps track of what is currently being typed, to account
 * for characters (such as Wylie 'tsh') which correspond to more than one
 * keystroke in the keyboard. It is cleared or readjusted when it is clear
@@ -82,31 +82,33 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 * a valid character.
 */
 	private StringBuffer holdCurrent;
-/*
-* This field says whether or not the character atop {@link #charList} has
-* been finalized, and therefore whether subsequent keystrokes are
-* allowed to displace this character. For example, if 'k' is at the top
-* of charList, and isTopHypothesis is true, then typing 'h' would replace
-* 'k' with 'kh'. On the other hand, were isTopHypothesis false, then typing
-* 'h' would add 'h' to the top of charList instead.
+/**
+* This field says whether or not the character atop {@link #charList}
+* has been finalized, and therefore whether subsequent keystrokes are
+* allowed to displace this character. For example, if 'k' is at the
+* top of charList, and isTopHypothesis is true, then typing 'h' would
+* replace 'k' with 'kh'. On the other hand, were isTopHypothesis
+* false, then typing 'h' would add 'h' to the top of charList instead.
+* In short, is the top character on {@link #charList} a fact or just a
+* hypothesis?
 */
 	private boolean isTopHypothesis;
-/*
+/**
 * Is the user in the process of typing a vowel?
 */
 	private boolean isTypingVowel;
-/*
+/**
 * Is it definitely the case that the user is typing Tibetan, rather than
 * Sanskrit?
 */
 	private boolean isDefinitelyTibetan;
-/*
+/**
 * According to the active keyboard, what value is
 * {@link #isDefinitelyTibetan} assigned by default when the 
 * keyboard is initialized by {@link #initKeyboard() initKeyboard}?
 */
 	private boolean isDefinitelyTibetan_default;
-/*
+/**
 * According to the active keyboard, what value should
 * be assigned to {@link #isDefinitelyTibetan} if the
 * user has initiated a stack by typing a stack key?
@@ -117,18 +119,18 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 * be Sanskrit, not Tibetan.
 */
 	private boolean isDefinitelyTibetan_withStackKey;
-/*
+/**
 * Is it definitely the case that the user is typing Sanskrit
 * (e.g. a Sanskrit stack), rather than Tibetan?
 */
 	private boolean isDefinitelySanskrit;
-/*
+/**
 * According to the active keyboard, what value is
 * {@link #isDefinitelySanskrit} assigned by default when the 
 * keyboard is initialized by {@link #initKeyboard() initKeyboard}?
 */
 	private boolean isDefinitelySanskrit_default;
-/*
+/**
 * According to the active keyboard, what value should
 * be assigned to {@link #isDefinitelySanskrit} if the
 * user has initiated a stack by typing a stack key?
@@ -139,7 +141,7 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 * be Sanskrit, not Tibetan.
 */
 	private boolean isDefinitelySanskrit_withStackKey;
-/*
+/**
 * Is consonant stacking allowed at the moment? In the Wylie
 * keyboard, consonant stacking is usually on, since stacking
 * is automatic. However, in the TCC and Sambhota keyboards,
@@ -147,12 +149,12 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 * you've pressed a stacking key.
 */
 	private boolean isStackingOn;
-/*
+/**
 * According to the active keyboard, is stacking on by
 * default or not, assuming no stack key has been pressed?
 */
 	private boolean isStackingOn_default;
-/*
+/**
 * Automatic stacking in Wylie is from right to left. For
 * example, if the user types 'brg', the resulting glyph
 * sequence is 'b' plus 'rg', not 'br' plus 'g'. If
@@ -160,32 +162,32 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 * it is from left to right.
 */
 	private boolean isStackingRightToLeft;
-/*
+/**
 * If the character last displayed was a vowel,
 * how many glyphs is the vowel composed of?
 * (Some vowels, such as Wylie 'I', consist of
 * two glyphs.)
 */
 	private int numberOfGlyphsForLastVowel;
-/*
+/**
 * used for tracking changes in Wylie to TMW conversion
 */
 	private int lastStart;
-/*
+/**
 * is the user in Tibetan typing mode? this is true
 * by default
 */
 	private boolean isTibetan = true;
-/*
+/**
 * is the user allowed to type non-Tibetan? this is true
 * by default
 */
 	private boolean isRomanEnabled = true;
-/*
+/**
 * The document displayed by this object.
 */
 	private TibetanDocument doc;
-/*
+/**
 * The caret of {@link #doc}, used to keep track of the
 * current entry/edit/deletion position.
 */
@@ -378,7 +380,7 @@ public RTFEditorKit rtfEd = null;
 * could be part of a stack, or require manipulation of glyphs - e.g.
 * backspacing, redrawing, etc.
 */
-	public void initKeyboard() {
+	private void initKeyboard() {
 		charList.clear();
 		oldGlyphList.clear();
 		holdCurrent = new StringBuffer();
@@ -1070,10 +1072,9 @@ public void paste(int offset) {
 				if (TibetanMachineWeb.isStackingMedial()) {
 					int size = charList.size();
 
-					if (size == 0)
+					if (size == 0) {
 						initKeyboard();
-
-					else if (size > 1 && isStackingRightToLeft) {
+					} else if (size > 1 && isStackingRightToLeft) {
 						String s = (String)charList.remove(charList.size() - 1);
 						newGlyphList = TibetanDocument.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
 						oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
@@ -1087,8 +1088,7 @@ public void paste(int offset) {
 						isStackingRightToLeft = false;
 						isDefinitelyTibetan = isDefinitelyTibetan_withStackKey;
 						isDefinitelySanskrit = isDefinitelySanskrit_withStackKey;
-					}
-					else {
+					} else {
 						holdCurrent = new StringBuffer();
 						isTopHypothesis = false;
 						isStackingOn = true;
@@ -1118,8 +1118,7 @@ public void paste(int offset) {
 							isStackingRightToLeft = false;
 							isDefinitelyTibetan = isDefinitelyTibetan_withStackKey;
 							isDefinitelySanskrit = isDefinitelySanskrit_withStackKey;
-						}
-						else {
+						} else {
 							initKeyboard();
 							DuffCode dc = new DuffCode(fontNum, ch);
 
@@ -1168,7 +1167,7 @@ public void paste(int offset) {
 					}
 
 					initKeyboard();
-					return;
+					break key_block; /* DLC is this right? */
 				}
 
 				if (charList.size()==0) { //add current character to charList if possible
@@ -1183,32 +1182,27 @@ public void paste(int offset) {
 
 						putVowel(s);
 						isTypingVowel = true;
-					}
-					else {
+					} else {
 						if (isTypingVowel) {
 							isTypingVowel = false;
 							s = String.valueOf(c);
 							holdCurrent = new StringBuffer(s);
-						}							
+						}
 
 						if (TibetanMachineWeb.isVowel(s)) {
 							s = TibetanMachineWeb.getWylieForVowel(s);
 							putVowel(s);
 							isTypingVowel = true;
-						}
-
-						else if (TibetanMachineWeb.isChar(s)) {
+						} else if (TibetanMachineWeb.isChar(s)) {
 							s = TibetanMachineWeb.getWylieForChar(s);
 							charList.add(s);
 							isTopHypothesis = true;
 							newGlyphList = TibetanDocument.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
 							oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
-						}
-						else
+						} else
 							isTopHypothesis = false;
 					}
-				}
-				else { //there is already a character in charList
+				} else { //there is already a character in charList
 					holdCurrent.append(c);
 					String s = holdCurrent.toString();
 
@@ -1217,8 +1211,7 @@ public void paste(int offset) {
 						initKeyboard();
 						isTypingVowel = true;
 						putVowel(s);
-					}
-					else if (TibetanMachineWeb.isChar(s)) { //the holding string is a character
+					} else if (TibetanMachineWeb.isChar(s)) { //the holding string is a character
 						String s2 = TibetanMachineWeb.getWylieForChar(s);
 
 						if (isTopHypothesis) {
@@ -1233,13 +1226,11 @@ public void paste(int offset) {
 							charList.set(charList.size()-1, s2);
 							newGlyphList = TibetanDocument.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
 							oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
-						}
-						else {
+						} else {
 							if (!isStackingOn) {
 								initKeyboard();
 								holdCurrent = new StringBuffer(s);
-							}
-							else if (TibetanMachineWeb.isAChungConsonant() && s2.equals(TibetanMachineWeb.ACHUNG)) {
+							} else if (TibetanMachineWeb.isAChungConsonant() && s2.equals(TibetanMachineWeb.ACHUNG)) {
 								putVowel(TibetanMachineWeb.A_VOWEL);
 								initKeyboard();
 								break key_block;
@@ -1250,8 +1241,7 @@ public void paste(int offset) {
 							newGlyphList = TibetanDocument.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
 							oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
 						}
-					}
-					else { //the holding string is not a character
+					} else { //the holding string is not a character
 						if (isTopHypothesis) { //finalize top character and add new hypothesis to top
 							holdCurrent = new StringBuffer();
 							holdCurrent.append(c);
@@ -1263,18 +1253,16 @@ public void paste(int offset) {
 								initKeyboard();
 								isTypingVowel = true;
 								holdCurrent = new StringBuffer(s);
-							}
-							else {
+							} else {
 								if (TibetanMachineWeb.isStackingMedial() && !isStackingRightToLeft)
 									initKeyboard();
 
 								if (TibetanMachineWeb.isChar(s)) {
 									String s2 = TibetanMachineWeb.getWylieForChar(s);
 
-									if (!isStackingOn)
+									if (!isStackingOn) {
 										initKeyboard();
-
-									else if (TibetanMachineWeb.isAChungConsonant() && s2.equals(TibetanMachineWeb.ACHUNG)) {
+									} else if (TibetanMachineWeb.isAChungConsonant() && s2.equals(TibetanMachineWeb.ACHUNG)) {
 										putVowel(TibetanMachineWeb.A_VOWEL);
 										initKeyboard();
 										break key_block;
@@ -1283,14 +1271,12 @@ public void paste(int offset) {
 									charList.add(s2);
 									newGlyphList = TibetanDocument.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
 									oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
-								}
-								else {
+								} else {
 									holdCurrent = new StringBuffer(s);
 									isTopHypothesis = false;
 								}
 							}
-						}
-						else { //top char is just a guess! just keep it in holdCurrent
+						} else { //top char is just a guess! just keep it in holdCurrent
 						}
 					}
 				}
