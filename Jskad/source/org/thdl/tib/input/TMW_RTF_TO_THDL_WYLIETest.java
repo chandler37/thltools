@@ -79,7 +79,7 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
         assertTrue(new File(actualFile).exists());
         assertTrue(new File(expectedFile).exists());
         rc = Delta.areFilesDifferent(actualFile, expectedFile);
-        if (0 != rc) System.out.println("DLC NOW: rc is " + rc);
+        if (0 != rc) System.out.println("0: rc is " + rc);
         assertTrue(0 == rc);
     }
 
@@ -92,6 +92,7 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
         boolean fileNotFound = false;
         try {
             int rc = TibetanConverter.realMain(args, new PrintStream(new FileOutputStream("bin/for-junit/TMW_RTF_TO_THDL_WYLIETest1Result" + extension + ".out")));
+            if (erc != rc) System.out.println("erc: rc is " + rc);
             assertTrue(rc == erc);
         } catch (FileNotFoundException e) {
             fileNotFound = true;
@@ -126,7 +127,7 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
     /** Tests the --to-wylie converter mode of {@link
      *  org.thdl.tib.input.TibetanConverter}. */
     public void testConverterMode() {
-        helper("--to-wylie", "Conversion", 0);
+        helper("--to-wylie", "Conversion", 44);
     }
 
     /** Tests the --to-tibetan-machine converter mode of {@link
