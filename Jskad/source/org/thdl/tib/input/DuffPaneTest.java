@@ -1321,6 +1321,36 @@ public class DuffPaneTest extends DuffPaneTestBase {
            keyboard really must use its technology.
         */
     }
+
+    /** Tests this part of bug 998476:
+
+<pre>
+TMW -> EWTS conversion errors
+The following incorrect conversion are happening:
+
+dga'o -> dag'o
+'da'i -> 'ad'i
+
+'da'i should produce 'da'i since the genitive particle 'i can
+only be appended to syllables that end with vowel or
+with a chung ('). For instance sgra + 'i = sgra'i, nam
+mkha' + 'i = nam mkha'i. The case here is 'da' + 'i = 'da'i.
+syllable 'ad can't take the genitive 'i, so 'ad'i is invalid.
+
+Of course this is a hypothetical syllable with no meaning,
+but following the rules 'ad would be correct. 'da would be
+mistaken. "In two-lettered words, the first is always the
+root letter." (losang thonden's modern tibetan language,
+pag 41).
+</pre>
+
+     */
+    public void testBug998476() {
+        enableEWTSKeyboard();
+        e("dga'o");
+        e("'da'i");
+    }
+
 }
 // FIXME: EWTS needs a list of "native" stacks in it.
 

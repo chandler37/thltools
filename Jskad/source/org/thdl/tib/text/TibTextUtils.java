@@ -945,7 +945,7 @@ public class TibTextUtils implements THDLWylieConstants {
         TranslitList ans
             = getTranslitImplementation(EWTSNotACIP, dcs, noSuch, warnings);
         if (debug && warnings.length() > 0)
-            System.out.println("DEBUG: warnings in TMW->Wylie: " + warnings);
+            System.out.println("DEBUG:     warnings in TMW->Wylie: " + warnings);
         return ans;
     }
 
@@ -1327,8 +1327,6 @@ public class TibTextUtils implements THDLWylieConstants {
         <ul>
           <li>one or more numbers</li>
 
-          <li>a single, possibly adorned consonant stack</li>
-
           <li>a legal "tyllable" appended with zero or more particles
               from the set { 'i, 'o, 'u, 'e, 'ang, 'am }</li>
         </ul>
@@ -1374,6 +1372,7 @@ public class TibTextUtils implements THDLWylieConstants {
         TGCList gcs
             = breakTshegBarIntoGraphemeClusters(glyphList, noSuch);
         String candidateType = getClassificationOfTshegBar(gcs, warnings, false);
+        if (debug) System.out.println("DEBUG: tsheg bar classification is " + candidateType);
         int sz = gcs.size();
         if (candidateType == "invalid"
             || candidateType == "single-sanskrit-gc") {
@@ -1422,7 +1421,9 @@ public class TibTextUtils implements THDLWylieConstants {
             int leftover = sz + 1;
 
             // Appendaged vs. not appendaged?  it affects nothing at
-            // this stage except for pa'm vs. pa'am.
+            // this stage except for pa'm vs. pa'am and
+            // appendaged-prefix/root-root/suffix (e.g., 'ad'i
+            // (incorrect) vs. 'da'i (correct)).
             boolean appendaged = (candidateType.startsWith("appendaged-"));
             candidateType = getCandidateTypeModuloAppendage(candidateType);
 
@@ -1512,7 +1513,8 @@ public class TibTextUtils implements THDLWylieConstants {
                                               fontSize);
                 }
             } else if ("root" == candidateType
-                       || "prefix/root-root/suffix" == candidateType
+                       || (!appendaged
+                           && "prefix/root-root/suffix" == candidateType)
                        || "prefix/root" == candidateType
                        || "root-suffix-postsuffix" == candidateType
                        || "root-suffix" == candidateType) {
@@ -1526,7 +1528,7 @@ public class TibTextUtils implements THDLWylieConstants {
                                      == ((TGCPair)gcs.get(0)).classification);
                     translitBuffer.append(aVowelToUseAfter(EWTSNotACIP, wylie1),
                                           fontSize);
-                    if (debug) System.out.println("DEBUG: appending vowel");
+                    if (debug) System.out.println("DEBUG: appending vowel 2");
                 } else {
                     if (debug) System.out.println("DEBUG: already has vowel 2");
                 }
@@ -1545,6 +1547,8 @@ public class TibTextUtils implements THDLWylieConstants {
                 }
             } else if ("prefix-root-suffix" == candidateType
                        || "prefix-root" == candidateType
+                       || (appendaged
+                           && "prefix/root-root/suffix" == candidateType)
                        || "prefix-root-suffix-postsuffix" == candidateType) {
                 String wylie1 = ((TGCPair)gcs.get(0)).getWylie();
                 String wylie2 = ((TGCPair)gcs.get(1)).getWylie();
@@ -1568,7 +1572,7 @@ public class TibTextUtils implements THDLWylieConstants {
                     != TGCPair.CONSONANTAL_WITH_VOWEL) {
                     ThdlDebug.verify(TGCPair.CONSONANTAL_WITHOUT_VOWEL
                                      == ((TGCPair)gcs.get(1)).classification);
-                    if (debug) System.out.println("DEBUG: appending vowel");
+                    if (debug) System.out.println("DEBUG: appending vowel 1");
                     translitBuffer.append(aVowelToUseAfter(EWTSNotACIP, wylie2),
                                           fontSize);
                 } else {
@@ -1648,22 +1652,16 @@ public class TibTextUtils implements THDLWylieConstants {
 * @return the Extended Wylie/ACIP corresponding to these glyphs (with
 * font size info), or null */
     private static TranslitList getTranslitImplementation(boolean EWTSNotACIP,
-                                                            SizedDuffCode[] dcs,
-                                                            boolean noSuch[],
-                                                            StringBuffer warnings) {
-        if (dcs.length == 0)
-            return null;
-
+                                                          SizedDuffCode[] dcs,
+                                                          boolean noSuch[],
+                                                          StringBuffer warnings) {
+        // DLC FIXME: "    " should become " " for ACIP
         ArrayList glyphList = new ArrayList();
         TranslitList translitBuffer = new TranslitList();
-
-        // DLC FIXME: "    " should become " " for ACIP
         for (int i = 0; i < dcs.length; i++) {
             char ch = dcs[i].getDuffCode().getCharacter();
-            int k = dcs[i].getDuffCode().getCharNum();
             int fsz = dcs[i].getFontSize();
-
-            if (k < 32) {
+            if ((int)ch < 32) { // 32 is space, ' '
                 if (!glyphList.isEmpty()) {
                     getTshegBarTranslit(EWTSNotACIP, glyphList, noSuch,
                                         warnings, translitBuffer);
@@ -1671,7 +1669,6 @@ public class TibTextUtils implements THDLWylieConstants {
                     if (null != warnings)
                         warnings.append("Some glyphs came right before a newline; they did not have a tsheg or shad come first.");
                 }
-
                 // In ACIP, \n\n (or \r\n\r\n with DOS line feeds)
                 // indicates a real line break.
                 if (!EWTSNotACIP && '\n' == ch) {
@@ -1682,7 +1679,7 @@ public class TibTextUtils implements THDLWylieConstants {
                         translitBuffer.append(ch, fsz);
                 }
                 translitBuffer.append(ch, fsz);
-            } else {
+            } else { // (int)ch >= 32
                 String wylie
                     = TibetanMachineWeb.getWylieForGlyph(dcs[i].getDuffCode(),
                                                          noSuch);
@@ -1691,9 +1688,7 @@ public class TibTextUtils implements THDLWylieConstants {
                     // U+0F04 and U+0F05 -- these require lookahead to
                     // see if the ACIP is # (two shishes) or * (one
                     // swish)
-                    
                     int howManyConsumed[] = new int[] { -1 /* invalid */ };
-
                     acip = TibetanMachineWeb.getACIPForGlyph(dcs[i].getDuffCode(),
                                                              ((i+1<dcs.length)
                                                               ? dcs[i+1].getDuffCode()
@@ -1703,14 +1698,9 @@ public class TibTextUtils implements THDLWylieConstants {
                                                               : null),
                                                              noSuch,
                                                              howManyConsumed);
-                    if (howManyConsumed[0] == 1) {
-                        // nothing to do
-                    } else if (howManyConsumed[0] == 2) {
-                        ++i;
-                    } else {
-                        ThdlDebug.verify(howManyConsumed[0] == 3);
-                        ++i; ++i;
-                    }
+                    ThdlDebug.verify(howManyConsumed[0] <= 3
+                                     && howManyConsumed[0] >= 1);
+                    i += howManyConsumed[0] - 1;
                 }
                 if (TibetanMachineWeb.isWyliePunc(wylie)
                     && !TibetanMachineWeb.isWylieAdornment(wylie)) {
@@ -1725,10 +1715,9 @@ public class TibTextUtils implements THDLWylieConstants {
                     glyphList.add(dcs[i]);
                 }
             }
-        }
+        } // for
 
         // replace remaining TMW with transliteration
-
         if (!glyphList.isEmpty()) {
             getTshegBarTranslit(EWTSNotACIP, glyphList, noSuch,
                                 warnings, translitBuffer);
@@ -1736,12 +1725,7 @@ public class TibTextUtils implements THDLWylieConstants {
             if (null != warnings)
                 warnings.append("The stretch of Tibetan ended without final punctuation.");
         }
-
-        if (translitBuffer.length() > 0) {
-            return translitBuffer;
-        } else {
-            return null;
-        }
+        return ((translitBuffer.length() > 0) ? translitBuffer : null);
     }
 
     /** Returns "root" instead of "appendaged-root", for example. */
