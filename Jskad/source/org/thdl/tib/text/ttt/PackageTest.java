@@ -380,7 +380,6 @@ tstHelper("KA'", "[(K . A), (' . )]",
                   new String[] { },
                   "{G+G+YE}{S}");
 
-        // DLC FIXME: warn about BDE vs. B+DE.  color such differently.  Maybe an inputter saw B+DE and typed in BDE, not thinking.
         tstHelper("BDE", "{B}{DE}",
                   new String[] { "{B+DE}", "{B}{DE}" },
                   new String[] { "{B}{DE}" },
@@ -391,7 +390,7 @@ tstHelper("KA'", "[(K . A), (' . )]",
                   new String[] { "{B}{DEm}" },
                   "{B}{DEm}");
 
-        /* DLC FIXME
+        /* DLC FIXME DOC TEST
         tstHelper("BDA:", "{B}{DA:}",
                   new String[] { "{B+DA:}", "{B}{DA:}" },
                   new String[] { "{B}{DA:}" },

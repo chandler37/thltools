@@ -482,14 +482,20 @@ public class ACIPConverter {
                                     }
                                     if (null != tdoc) {
                                         duff = sl.getDuff();
+                                        BoolTriple bt;
                                         if (colors && sl.isLegalTshegBar(true).isLegal && !sl.isLegalTshegBar(false).isLegal) {
                                             color = Color.YELLOW;
-                                        } else if (colors && sl.isLegalTshegBar(false).isLegal) {
+                                        } else if (colors && (bt = sl.isLegalTshegBar(false)).isLegal && !bt.isLegalButSanskrit()) {
                                             color = Color.BLACK;
                                         } else {
-                                            // Sanskrit
+                                            // Sanskrit.
 
-                                            // DLC FIXME: a funny vowel, the presence of a sanskrit-only stack, and a funny mark like ACIP ':' should cause green too.
+                                            // FIXME: should a funny
+                                            // vowel cause green to
+                                            // appear too?  G'EEm is
+                                            // black, not green, right
+                                            // now, though GA: is
+                                            // green.
                                             color = Color.GREEN;
                                         }
 
