@@ -410,6 +410,7 @@ public class OnLineScannerFilter extends HttpServlet
                         pw.println("  <tr>");
                         if (ds!=null && !ds.isEmpty()) tag = ds.getTag(0);
                         else tag = "&nbsp;";
+                        if (tag==null) tag = "&nbsp;";
                         
                         pw.println("    <td width=\"20%\" rowspan=\""+ defs.def.length +"\" valign=\"top\">"+ word.getBookmark(tibetan) +"</td>");
                         pw.println("    <td width=\"12%\">"+ tag +"</td>");
@@ -421,6 +422,7 @@ public class OnLineScannerFilter extends HttpServlet
                             pw.println("  <tr>");
                             if (ds!=null && !ds.isEmpty()) tag = ds.getTag(i);
                             else tag = "&nbsp;";
+                            if (tag==null) tag = "&nbsp;";
                             pw.println("    <td width=\"12%\">"+ tag +"</td>");
                             pw.println("    <td width=\"68%\">" + defs.def[i] + "</td>");
                             //else pw.println("    <td width=\"80%\" colspan=\"2\">" + defs.def[i] + "</td>");

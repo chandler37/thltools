@@ -305,14 +305,22 @@ public class ByteDictionarySource extends DictionarySource
 	    String tag;
 	    
 	    if (defTags==null) tag = Integer.toString(source[0]+1);
-	    else tag = defTags[source[0]];
+	    else
+	    {
+	    	if (source[0]<0 || source[0]>=defTags.length) return null;
+	    	tag = defTags[source[0]];	    
+	    }
 	    
 	    for (i=1; i<source.length; i++)
 	    {
 	        tag += ", ";
 	        
     	    if (defTags==null) tag += Integer.toString(source[i]+1);
-	        else tag += defTags[source[i]];    
+	        else
+	        {
+	        	if (source[i]<0 || source[i]>=defTags.length) return null;
+	        	tag += defTags[source[i]];
+	        }
 	    }
 
 		return tag;
