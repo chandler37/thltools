@@ -386,6 +386,14 @@ tstHelper("KA'", "[(K . A), (' . )]",
                   new String[] { "{B}{DE}" },
                   "{B}{DE}");
 
+        tstHelper("NA+YA", "{N+}{YA}",
+                  new String[] { "{N+YA}" },
+                  new String[] { "{N+YA}" },
+                  "{N+YA}");
+
+        tstHelper("NE+YA", "{NE}{+-}{YA}",
+                  null, null, "!null!");
+
         tstHelper("GDAMS'O", "{G}{DA}{M}{S'O}",
                   new String[] {
                                  "{G+DA}{M+S'O}",
@@ -7364,6 +7372,8 @@ tstHelper("ZUR");
     }
 
     public void testACIPConversion() {
+        uhelp("NA+YA", "\u0f53\u0fb1"); // DLC FIXME: warn about the extra A
+        uhelp("NE+YA", "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") NE+YA HAS THESE ERRORS: Cannot convert ACIP NE+-YA because + is not an ACIP consonant]");
         uhelp("tRAStA", "\u0f4a\u0fb2\u0f66\u0f9a");
         uhelp("DZHDZHA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP DZHDZHA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f5c\u0fac"); // tricky because DZHDZA is not in TMW but DZHDZHA is
         uhelp("DZHDZA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a chance that the ACIP DZHDZA was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f5c\u0fab");

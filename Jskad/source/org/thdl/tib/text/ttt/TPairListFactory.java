@@ -153,17 +153,17 @@ class TPairListFactory {
         return tail;
     }
 
-    /** Returns the largest TPair we can make from the acip
-     *  starting from the left. This will return a size zero pair if
-     *  and only if acip is the empty string; otherwise, it may return
-     *  a pair with either the left or right component empty.  This
-     *  mutates acip when we run into {NA+YA}; it mutates acip into
-     *  {N+YA}.  For {NE+YA}, it doesn not mutate acip or behave
-     *  intelligently.  A later phase will need to turn that into
-     *  {N+YE} (DLC).  howMuch[0] will be set to the number of
+    /** Returns the largest TPair we can make from the acip starting
+     *  from the left. This will return a size zero pair if and only
+     *  if acip is the empty string; otherwise, it may return a pair
+     *  with either the left or right component empty.  This mutates
+     *  acip when we run into {NA+YA}; it mutates acip into {N+YA}.
+     *  For {NE+YA}, it does not mutate acip or behave intelligently.
+     *  A later phase will need to turn that into {N+YE} or an error
+     *  or whatever you like.  howMuch[0] will be set to the number of
      *  characters of acip that this call has consumed. */
     private static TPair getFirstConsonantAndVowel(StringBuffer acip,
-                                                      int howMuch[]) {
+                                                   int howMuch[]) {
         // Note that it is *not* the case that if acip.substring(0, N)
         // is legal (according to TPair.isLegal()), then
         // acip.substring(0, N-1) is legal for all N.  For example,
