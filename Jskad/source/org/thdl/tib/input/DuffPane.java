@@ -600,6 +600,15 @@ public class DuffPane extends TibetanPane implements FocusListener {
 	}
 
 /**
+* Overrides JTextComponent.setFont(). This method 
+* calls setRomanAttributeSet(), otherwise DuffPane
+* would ignore calls to setFont().
+*/
+	public void setFont(Font font) {
+		setRomanAttributeSet(font.getName(), font.getSize());
+	}
+	
+/**
 * Changes the default font and font size for 
 * non-Tibetan (Roman) text entry mode.
 *
