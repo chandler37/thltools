@@ -21,6 +21,7 @@ package org.thdl.tib.text.ttt;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Stack;
+import java.awt.Color;
 
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlOptions;
@@ -49,6 +50,8 @@ public class ACIPConverter {
         ThdlOptions.setUserPreference("thdl.rely.on.system.tmw.fonts", true);
         ThdlOptions.setUserPreference("thdl.rely.on.system.tm.fonts", true);
         ThdlOptions.setUserPreference("thdl.debug", true);
+
+        TibetanDocument.enableColors();
 
         boolean verbose = true;
         if (args.length != 1) {
@@ -253,6 +256,8 @@ public class ACIPConverter {
                 = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
         boolean lastGuyWasNonPunct = false;
         TStackList lastGuy = null;
+        Color lastColor = Color.BLACK;
+        Color color = Color.BLACK;
         for (int i = 0; i < sz; i++) {
             ACIPString s = (ACIPString)scan.get(i);
             int stype = s.getType();
@@ -262,14 +267,14 @@ public class ACIPConverter {
                 hasErrors = true;
                 String text = "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: " + s.getText() + "]";
                 if (null != writer) writer.write(text);
-                if (null != tdoc) tdoc.appendRoman(text);
+                if (null != tdoc) tdoc.appendRoman(text, Color.RED);
             } else if (stype == ACIPString.WARNING) {
                 lastGuyWasNonPunct = false;
                 lastGuy = null;
                 if (writeWarningsToOut) {
                     String text = "[#WARNING CONVERTING ACIP DOCUMENT: Lexical warning: " + s.getText() + "]";
                     if (null != writer) writer.write(text);
-                    if (null != tdoc) tdoc.appendRoman(text);
+                    if (null != tdoc) tdoc.appendRoman(text, Color.RED);
                 }
                 // DLC NOW: Warning: We're going with {'}{R}{DA}, but only because our knowledge of prefix rules says that {'}{R+DA} is not a legal Tibetan tsheg bar ("syllable")
 
@@ -287,7 +292,7 @@ public class ACIPConverter {
                            + s.getText()
                            + ((stype == ACIPString.FOLIO_MARKER) ? "}" : ""));
                     if (null != writer) writer.write(text);
-                    if (null != tdoc) tdoc.appendRoman(text);
+                    if (null != tdoc) tdoc.appendRoman(text, Color.BLACK);
                 } else {
                     String unicode = null;
                     DuffCode[] duff = null;
@@ -300,7 +305,7 @@ public class ACIPConverter {
                             hasErrors = true;
                             String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") " + s.getText() + " HAS THESE ERRORS: " + acipError + "]";
                             if (null != writer) writer.write(errorMessage);
-                            if (null != tdoc) tdoc.appendRoman(errorMessage);
+                            if (null != tdoc) tdoc.appendRoman(errorMessage, Color.RED);
                             if (null != errors)
                                 errors.append(errorMessage + "\n");
                         } else {
@@ -309,7 +314,7 @@ public class ACIPConverter {
                                 hasErrors = true;
                                 String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") " + s.getText() + " IS ESSENTIALLY NOTHING.]";
                                 if (null != writer) writer.write(errorMessage);
-                                if (null != tdoc) tdoc.appendRoman(errorMessage);
+                                if (null != tdoc) tdoc.appendRoman(errorMessage, Color.RED);
                                 if (null != errors)
                                     errors.append(errorMessage + "\n");
                             } else {
@@ -318,7 +323,7 @@ public class ACIPConverter {
                                     hasErrors = true;
                                     String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") " + s.getText() + " HAS NO LEGAL PARSES.]";
                                     if (null != writer) writer.write(errorMessage);
-                                    if (null != tdoc) tdoc.appendRoman(errorMessage);
+                                    if (null != tdoc) tdoc.appendRoman(errorMessage, Color.RED);
                                     if (null != errors)
                                         errors.append(errorMessage + "\n");
                                 } else {
@@ -333,7 +338,7 @@ public class ACIPConverter {
                                                 = ("[#WARNING CONVERTING ACIP DOCUMENT: "
                                                    + warning + "]");
                                             if (null != writer) writer.write(text);
-                                            if (null != tdoc) tdoc.appendRoman(text);
+                                            if (null != tdoc) tdoc.appendRoman(text, Color.RED);
                                         }
                                         if (null != warnings) {
                                             warnings.append(warning);
@@ -346,6 +351,14 @@ public class ACIPConverter {
                                     }
                                     if (null != tdoc) {
                                         duff = sl.getDuff();
+                                        if (sl.isLegalTshegBar(true).isLegal && !sl.isLegalTshegBar(false).isLegal) {
+                                            color = Color.GRAY;
+                                        } else if (sl.isLegalTshegBar(false).isLegal) {
+                                            color = Color.BLACK;
+                                        } else {
+                                            color = Color.YELLOW;
+                                        }
+
                                         if (0 == duff.length) {
                                             throw new Error("No DuffCodes for stack list " + sl); // FIXME: make this an assertion
                                         }
@@ -354,6 +367,7 @@ public class ACIPConverter {
                             }
                         }
                     } else {
+                        color = Color.BLACK;
                         if (stype == ACIPString.START_SLASH) {
                             if (null != writer) unicode = "\u0F3C";
                             if (null != tdoc) duff = new DuffCode[] { TibetanMachineWeb.getGlyph("(") };
@@ -388,9 +402,15 @@ public class ACIPConverter {
                                         done = true;
                                     }
                                     if (null != tdoc) {
-                                        tdoc.appendRoman("    ");
+                                        tdoc.appendRoman("    ", Color.BLACK);
                                         continue;
                                     }
+//  DLC AM I DOING THIS? By normal Tibetan & Dzongkha spelling, writing, and input rules
+//  Tibetan script stacks should be entered and written: 1 headline
+//  consonant (0F40->0F6A), any  subjoined consonant(s) (0F90->
+//  0F9C),  achung (0F71), shabkyu (0F74), any above headline
+//  vowel(s) (0F72 0F7A 0F7B 0F7C 0F7D and 0F80) ; any ngaro (0F7E,
+//  0F82 and 0F83)
                                 }
                             } else if (s.getText().equals(",")
                                        && lastGuyWasNonPunct
@@ -399,7 +419,7 @@ public class ACIPConverter {
                                        && lpl.get(0).getLeft().equals("NG")) {
                                 DuffCode tshegDuff = TibetanMachineWeb.getGlyph(" ");
                                 if (null == tshegDuff) throw new Error("tsheg duff");
-                                tdoc.appendDuffCodes(new DuffCode[] { tshegDuff });
+                                tdoc.appendDuffCodes(new DuffCode[] { tshegDuff }, lastColor);
                             }
 
                             if (!done) {
@@ -409,7 +429,7 @@ public class ACIPConverter {
                                         || s.getText().equals("\t")
                                         || s.getText().equals("\n")
                                         || s.getText().equals("\r\n")) {
-                                        tdoc.appendRoman(s.getText());
+                                        tdoc.appendRoman(s.getText(), Color.BLACK);
                                         continue;
                                     } else {
                                         String wy = ACIPRules.getWylieForACIPOther(s.getText());
@@ -431,7 +451,7 @@ public class ACIPConverter {
                     if (null != writer && null != unicode) writer.write(unicode);
                     if (null != tdoc) {
                         if (null != duff && 0 != duff.length) {
-                            tdoc.appendDuffCodes(duff);
+                            tdoc.appendDuffCodes(duff, color);
                             // DLC NOW FIXME: use TibTextUtils.getVowel logic to make the output beautiful.
                         } else {
                             // this happens when you have an
@@ -442,6 +462,7 @@ public class ACIPConverter {
                     }
                 }
             }
+            lastColor = color;
         }
         if (null != writer) {
             writer.close();

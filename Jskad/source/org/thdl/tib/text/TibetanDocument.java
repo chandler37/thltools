@@ -23,6 +23,7 @@ import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.text.rtf.RTFEditorKit;
 import java.io.*;
+import java.awt.Color;
 
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlOptions;
@@ -144,6 +145,10 @@ public class TibetanDocument extends DefaultStyledDocument {
         }
     }
 
+    private static boolean allowColors = true; // DLC FIXME: make me configurable
+    public static void enableColors() { allowColors = true; }
+    public static void disableColors() { allowColors = false; }
+
 
 /**
 * Inserts Tibetan text into the document. The font size is applied automatically,
@@ -154,7 +159,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 * @see #setTibetanFontSize(int size)
 */
 	public void appendDuff(int offset, String s, MutableAttributeSet attr) {
-        appendDuff(tibetanFontSize, offset, s, attr);
+        appendDuff(tibetanFontSize, offset, s, attr, Color.BLACK);
     }
 
 /**
@@ -164,8 +169,10 @@ public class TibetanDocument extends DefaultStyledDocument {
 * @param s the string you want to insert
 * @see #setRomanAttributeSet(AttributeSet)
 */
-	public void appendRoman(int offset, String s) throws BadLocationException {
+	public void appendRoman(int offset, String s, Color color) throws BadLocationException {
         ThdlDebug.verify(getRomanAttributeSet() != null);
+        if (allowColors)
+            StyleConstants.setForeground(getRomanAttributeSet(), color);
         insertString(offset, s, getRomanAttributeSet());
     }
 
@@ -175,17 +182,18 @@ public class TibetanDocument extends DefaultStyledDocument {
 * @param s the string you want to insert
 * @see #setRomanAttributeSet(AttributeSet)
 */
-	public void appendRoman(String s) {
+	public void appendRoman(String s, Color color) {
         try {
-            appendRoman(getLength(), s);
+            appendRoman(getLength(), s, color);
         } catch (BadLocationException e) {
             throw new Error("can't happen");
         }
     }
 
-    private void appendDuff(int fontSize, int offset, String s, MutableAttributeSet attr) {
+    private void appendDuff(int fontSize, int offset, String s, MutableAttributeSet attr, Color color) {
 		try {
 			StyleConstants.setFontSize(attr, fontSize);
+            if (allowColors) StyleConstants.setForeground(attr, color);
 			insertString(offset, s, attr);
 		}
 		catch (BadLocationException ble) {
@@ -198,20 +206,25 @@ public class TibetanDocument extends DefaultStyledDocument {
 * @param glyphs the array of Tibetan data you want to insert
 * @param pos the position at which you want to insert text
 */
+	public int insertDuff(int pos, DuffData[] glyphs, Color color) {
+        return insertDuff(tibetanFontSize, pos, glyphs, true, color);
+	}
+
 	public int insertDuff(int pos, DuffData[] glyphs) {
-        return insertDuff(tibetanFontSize, pos, glyphs, true);
+        return insertDuff(tibetanFontSize, pos, glyphs, true, Color.BLACK);
 	}
 
 /**
 * Appends all DuffCodes in glyphs to the end of this document.
 */
-	public void appendDuffCodes(DuffCode[] glyphs) {
+	public void appendDuffCodes(DuffCode[] glyphs, Color color) {
         // PERFORMANCE FIXME: this isn't so speedy, but it reuses
         // existing code.
         for (int i = 0; i < glyphs.length; i++) {
             insertDuff(getLength(),
                        new DuffData[] { new DuffData(new String(new char[] { glyphs[i].getCharacter() }),
-                                                     glyphs[i].getFontNum()) });
+                                                     glyphs[i].getFontNum()) },
+                       color);
         }
 	}
 
@@ -280,6 +293,9 @@ public class TibetanDocument extends DefaultStyledDocument {
 
 
 	private int insertDuff(int fontSize, int pos, DuffData[] glyphs, boolean asTMW) {
+        return insertDuff(fontSize, pos, glyphs, asTMW, Color.BLACK);
+    }
+	private int insertDuff(int fontSize, int pos, DuffData[] glyphs, boolean asTMW, Color color) {
 		if (glyphs == null)
 			return pos;
 
@@ -290,7 +306,7 @@ public class TibetanDocument extends DefaultStyledDocument {
                    : TibetanMachineWeb.getAttributeSetTM(glyphs[i].font));
             if (null == mas)
                 throw new Error("Cannot insert that DuffData; the font number is too low or too high; perhaps the programmer has asTMW set incorrectly?");
-			appendDuff(fontSize, pos, glyphs[i].text, mas);
+			appendDuff(fontSize, pos, glyphs[i].text, mas, color);
 			pos += glyphs[i].text.length();
 		}
 		return pos;
@@ -1110,17 +1126,17 @@ public class TibetanDocument extends DefaultStyledDocument {
     
     /** the attribute set applied to Roman text in this
         document */
-    private AttributeSet romanAttributeSet = null;
+    private MutableAttributeSet romanAttributeSet = null;
     
     /** Gets the attribute set applied to Roman text in this
         document. */
-    public AttributeSet getRomanAttributeSet() {
+    public MutableAttributeSet getRomanAttributeSet() {
         return romanAttributeSet;
     }
 
     /** Sets the attribute set applied to Roman text in this
         document. */
-    public void setRomanAttributeSet(AttributeSet ras) {
+    public void setRomanAttributeSet(MutableAttributeSet ras) {
         romanAttributeSet = ras;
     }
 
