@@ -33,15 +33,15 @@ package org.thdl.tib.text.tshegbar;
  *  <i>consonant stack</i> is or one or more consonants stacked
  *  vertically, plus an optional vocalic modification such as an
  *  anusvara (DLC what do we call a bindu?) or visarga, plus zero or
- *  more signs like <code>\u0F35</code>, plus an optional a-chung
- *  (<code>\u0F71</code>), plus an optional simple vowel.</li> <li>By
- *  <i>simple vowel</i>, we mean any of <code>\u0F72</code>,
- *  <code>\u0F74</code>, <code>\u0F7A</code>, <code>\u0F7B</code>,
- *  <code>\u0F7C</code>, <code>\u0F7D</code>, or
- *  <code>\u0F80</code>.</li> </ul>
+ *  more signs like <code>&#92;u0F35</code>, plus an optional a-chung
+ *  (<code>&#92;u0F71</code>), plus an optional simple vowel.</li> <li>By
+ *  <i>simple vowel</i>, we mean any of <code>&#92;u0F72</code>,
+ *  <code>&#92;u0F74</code>, <code>&#92;u0F7A</code>, <code>&#92;u0F7B</code>,
+ *  <code>&#92;u0F7C</code>, <code>&#92;u0F7D</code>, or
+ *  <code>&#92;u0F80</code>.</li> </ul>
  *
- *  (Note: The string <code>"\u0F68\u0F7E\u0F7C"</code> seems to equal
- *  <code>"\u0F00"</code>, though the Unicode standard does not
+ *  (Note: The string <code>"&#92;u0F68&#92;u0F7E&#92;u0F7C"</code> seems to equal
+ *  <code>"&#92;u0F00"</code>, though the Unicode standard does not
  *  indicate that it is so.  This code treats it that way.)</p>
  *
  *  <p> This class allows for invalid tsheg bars, like those
