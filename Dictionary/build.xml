@@ -6,11 +6,17 @@
 
    <!-- Configure the directory containing the source files -->
 	<property name="source" value="${basedir}/src"/>
+	
+   <!-- Configure the directory containing the config files 
+   			This files from this directory should not go in the CVS hierarchy.
+			-->
+	<property name="config" value="${basedir}/local-config"/>
 
   <!-- Configure the context path for this application -->
 	<property name="path" value="/lex"/>
 
-  <!-- Configure properties to access the Manager application -->
+  <!-- Configure properties to access the Manager application 
+  			user /pass combo should be in $TOMCAT_HOME/conf/tomcat-users.xml with managaer role.-->
 	<property name="url" value="http://localhost:2020/manager"/>
 	<property name="username" value=""/>
 	<property name="password" value=""/>
@@ -63,7 +69,7 @@
 		</copy>
 		
 		<copy todir="${build}/WEB-INF">
-			<fileset dir="${basedir}/config">
+			<fileset dir="${config}">
 				<filename name="web.xml"/>
 			</fileset>
 		</copy>
@@ -82,10 +88,10 @@
 		</copy>
 		
 		<copy todir="${build}/WEB-INF/lib">
-			<fileset dir="${basedir}/lib/runtime/jstl">
+			<fileset dir="${basedir}/lib/jstl">
 				<include name="*.jar"/>
 			</fileset>
-			<fileset dir="${basedir}/lib/runtime/hibernate">
+			<fileset dir="${basedir}/lib/hibernate">
 				<include name="*.jar"/>
 			</fileset>
 		</copy>
@@ -124,7 +130,7 @@
 	</target>
 	
 	<target name="install" description="Install web application" depends="compile, move-log">
-		<install url="${url}" username="${username}" password="${password}" path="${path}" config="file://${basedir}/config/lex-context-config.xml" war="file://${build}"/>
+		<install url="${url}" username="${username}" password="${password}" path="${path}" config="file://${config}/lex-context-config.xml" war="file://${build}"/>
 	</target>
 	
 	<target name="move-log" description="move old log file">
@@ -191,7 +197,7 @@
 			<arg value="--format"/>
 			<arg value="--quiet"/>
 			<arg value="--delimiter=;"/>
-			<arg value="--properties=${basedir}/config/hibernate.properties"/>
+			<arg value="--properties=${config}/hibernate.properties"/>
 			<arg value="${source}/java/org/thdl/lex/component/LexComponent.hbm.xml"/>
 			<arg value="${source}/java/org/thdl/lex/component/child/Author.hbm.xml"/>
 			<arg value="${source}/java/org/thdl/lex/component/child/Dialect.hbm.xml"/>
@@ -218,7 +224,7 @@
 	</target>
 	
 	<target name="schema-update">
-		<taskdef name="schemaupdate" classname="net.sf.hibernate.tool.hbm2ddl.SchemaUpdateTask" classpathref="class.path"/>
+		<taskdef name="schemaupdate" classname="net.sf.hibernate.tool.hbm2ddl.SchemaUpdateTask" classpathref="lex-classpath"/>
 		<schemaupdate>
 			<fileset dir="src">
 				<include name="**/*.hbm.xml"/>
