@@ -20,11 +20,6 @@ package org.thdl.tib.input;
 
 import junit.framework.TestCase;
 
-import javax.swing.Action;
-import javax.swing.KeyStroke;
-
-import org.thdl.util.ThdlOptions;
-
 /**
  @author David Chandler
 
@@ -45,7 +40,25 @@ public class TinyTest extends DuffPaneTestBase {
      */
     public void testBug998476() {
         enableEWTSKeyboard();
-        e("lM");
+        e("M");
+        e("laM");
+        e("lM", "laM");
+        
+        e("kaH");
+        e("gam");
+        e("gam?");
+
+        e("?");
+        e("la?");
+
+        e("&");
+        e("la&");
+
+        e("H");
+        e("laH");
+
+        e("HM");
+        e("laHM");
     }
 }
 

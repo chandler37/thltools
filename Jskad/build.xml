@@ -447,6 +447,11 @@ Contributor(s): ______________________________________.
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${junitbin}"/>
       <param name="my.included.source.file"
+             value="org/thdl/tib/text/TibetanMachineWebTest.java"/>
+    </antcall>
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${junitbin}"/>
+      <param name="my.included.source.file"
              value="org/thdl/tib/text/ttt/PackageTest.java"/>
     </antcall>
     <antcall target="our-internal-javac-task">

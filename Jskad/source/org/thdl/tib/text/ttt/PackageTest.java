@@ -56,10 +56,152 @@ public class PackageTest extends TestCase {
 
     public PackageTest() { }
 
-    /** Converts ACIP to TMW with no warnings.  If errors occur there,
-        returns null.  Otherwise, returns the result of TMW->ACIP,
-        which may be an error message. */
     static String ACIP2TMW2ACIP(String ACIP) {
+        return ACIP2TMW2Translit(false, ACIP);
+    }
+
+    static String ACIP2TMW2EWTS(String ACIP) {
+        return ACIP2TMW2Translit(true, ACIP);
+    }
+
+    /** Tests TMW->EWTS conversion using ACIP to input those TMW
+        glyphs that are just hard to input (because of the currently
+        broken EWTS->TMW converter and keyboard) without getting ACIP
+        involved. */
+    public void testTmw2Ewts() {
+
+        assertEquals(ACIP2TMW2EWTS("\\u0F00"), "oM");
+        assertEquals(ACIP2TMW2EWTS("\\u0F01"), "\\u0F01");
+
+        // The EWTS spec would make you think that
+        // ACIP("\\u0f02")->TMW->EWTS would return "\\u0F02", but
+        // there is no single TMW glyph for U+0F02, so the round trip
+        // is impossible:
+        assertEquals(ACIP2TMW2EWTS("\\u0F02"), "'u~M`H");
+        // Similarly for U+0F03:
+        assertEquals(ACIP2TMW2EWTS("\\u0F03"), "'u~M`:");
+
+        assertEquals(ACIP2TMW2EWTS("\\u0F04"), "@");
+        assertEquals(ACIP2TMW2EWTS("\\u0F05"), "#");
+        assertEquals(ACIP2TMW2EWTS("\\u0F06"), "$");
+        assertEquals(ACIP2TMW2EWTS("\\u0F07"), "%");
+        assertEquals(ACIP2TMW2EWTS("\\u0F08"), "!");
+        assertEquals(ACIP2TMW2EWTS("\\u0F09"), "\\u0F09");
+        assertEquals(ACIP2TMW2EWTS("\\u0F0A"), "\\u0F0A");
+        assertEquals(ACIP2TMW2EWTS("\\u0F0B"), " ");
+        assertEquals(ACIP2TMW2EWTS("\\u0F0C"), "*");
+        assertEquals(ACIP2TMW2EWTS("\\u0F0D"), "/");
+        assertEquals(ACIP2TMW2EWTS("\\u0F0E"), "//");
+        assertEquals(ACIP2TMW2EWTS("\\u0F0F"), ";");
+        assertEquals(ACIP2TMW2EWTS("\\u0F10"), "\\u0F10");
+        assertEquals(ACIP2TMW2EWTS("\\u0F11"), "|");
+        assertEquals(ACIP2TMW2EWTS("\\u0F12"), "\\u0F12");
+        assertEquals(ACIP2TMW2EWTS("\\u0F13"), "\\u0F13");
+        assertEquals(ACIP2TMW2EWTS("\\u0F14"), ":");
+        assertEquals(ACIP2TMW2EWTS("\\u0F15"), "\\u0F15");
+        assertEquals(ACIP2TMW2EWTS("\\u0F16"), "\\u0F16");
+        assertEquals(ACIP2TMW2EWTS("\\u0F17"), "\\u0F17");
+        assertEquals(ACIP2TMW2EWTS("\\u0F18"), "\\u0F18");
+        assertEquals(ACIP2TMW2EWTS("\\u0F19"), "\\u0F19");
+        assertEquals(ACIP2TMW2EWTS("\\u0F1A"), "\\u0F1A");
+        assertEquals(ACIP2TMW2EWTS("\\u0F1B"), "\\u0F1B");
+        assertEquals(ACIP2TMW2EWTS("\\u0F1C"), "\\u0F1C");
+        assertEquals(ACIP2TMW2EWTS("\\u0F1D"), "\\u0F1D");
+        assertEquals(ACIP2TMW2EWTS("\\u0F1E"), "\\u0F1E");
+        assertEquals(ACIP2TMW2EWTS("\\u0F1F"), "\\u0F1F");
+        assertEquals(ACIP2TMW2EWTS("\\u0F20"), "0");
+        assertEquals(ACIP2TMW2EWTS("\\u0F21"), "1");
+        assertEquals(ACIP2TMW2EWTS("\\u0F22"), "2");
+        assertEquals(ACIP2TMW2EWTS("\\u0F23"), "3");
+        assertEquals(ACIP2TMW2EWTS("\\u0F24"), "4");
+        assertEquals(ACIP2TMW2EWTS("\\u0F25"), "5");
+        assertEquals(ACIP2TMW2EWTS("\\u0F26"), "6");
+        assertEquals(ACIP2TMW2EWTS("\\u0F27"), "7");
+        assertEquals(ACIP2TMW2EWTS("\\u0F28"), "8");
+        assertEquals(ACIP2TMW2EWTS("\\u0F29"), "9");
+        assertEquals(ACIP2TMW2EWTS("\\u0F2A"), "\\u0F2A");
+        assertEquals(ACIP2TMW2EWTS("\\u0F2B"), "\\u0F2B");
+        assertEquals(ACIP2TMW2EWTS("\\u0F2C"), "\\u0F2C");
+        assertEquals(ACIP2TMW2EWTS("\\u0F2D"), "\\u0F2D");
+        assertEquals(ACIP2TMW2EWTS("\\u0F2E"), "\\u0F2E");
+        assertEquals(ACIP2TMW2EWTS("\\u0F2F"), "\\u0F2F");
+        assertEquals(ACIP2TMW2EWTS("\\u0F30"), "\\u0F30");
+        assertEquals(ACIP2TMW2EWTS("\\u0F31"), "\\u0F31");
+        assertEquals(ACIP2TMW2EWTS("\\u0F32"), "\\u0F32");
+        assertEquals(ACIP2TMW2EWTS("\\u0F33"), "\\u0F33");
+        assertEquals(ACIP2TMW2EWTS("\\u0F34"), "=");
+        assertEquals(ACIP2TMW2EWTS("\\u0F35"), "~X");
+        assertEquals(ACIP2TMW2EWTS("\\u0F36"), "\\u0F36");
+        assertEquals(ACIP2TMW2EWTS("\\u0F37"), "X");
+        assertEquals(ACIP2TMW2EWTS("\\u0F38"), "\\u0F38");
+        assertEquals(ACIP2TMW2EWTS("\\u0F39"), "^");
+        assertEquals(ACIP2TMW2EWTS("\\u0F3A"), "<");
+        assertEquals(ACIP2TMW2EWTS("\\u0F3B"), ">");
+        assertEquals(ACIP2TMW2EWTS("\\u0F3C"), "(");
+        assertEquals(ACIP2TMW2EWTS("\\u0F3D"), ")");
+        assertEquals(ACIP2TMW2EWTS("\\u0F3E"), "}");
+        assertEquals(ACIP2TMW2EWTS("\\u0F3F"), "{");
+        assertEquals(ACIP2TMW2EWTS("\\u0F40"), "ka");
+        assertEquals(ACIP2TMW2EWTS("\\u0f63"), "la");
+        assertEquals(ACIP2TMW2EWTS("\\u0F48"), null);
+        assertEquals(ACIP2TMW2EWTS("\\u0f7e"), "M");
+        assertEquals(ACIP2TMW2EWTS("\\u0f7f"), "H");
+        assertEquals(ACIP2TMW2EWTS("\\u0f82"), "~M`");
+        assertEquals(ACIP2TMW2EWTS("\\u0f83"), "~M");
+        assertEquals(ACIP2TMW2EWTS("\\u0f84"), "?");
+        assertEquals(ACIP2TMW2EWTS("\\u0f85"), "&");
+        assertEquals(ACIP2TMW2EWTS("\\u0F86"), "\\u0F86");
+        assertEquals(ACIP2TMW2EWTS("\\u0F87"), "\\u0F87");
+        assertEquals(ACIP2TMW2EWTS("\\u0F88"), "\\u0F88");
+        assertEquals(ACIP2TMW2EWTS("\\u0F89"), "\\u0F89");
+        assertEquals(ACIP2TMW2EWTS("\\u0F8A"), "\\u0F8A");
+        assertEquals(ACIP2TMW2EWTS("\\u0F8B"), "\\u0F8B");
+        assertEquals(ACIP2TMW2EWTS("\\u0fb1"), "ya");
+        assertEquals(ACIP2TMW2EWTS("\\u0fbb"), "Ya");
+        assertEquals(ACIP2TMW2EWTS("\\u0FBE"), "\\u0FBE");
+        assertEquals(ACIP2TMW2EWTS("\\u0FBF"), "\\u0FBF");
+        assertEquals(ACIP2TMW2EWTS("\\u0FCF"), "\\u0FCF");
+        assertEquals(ACIP2TMW2EWTS("\\uF023"), "\\uF023"); // U+f023 is in the PUA of unicode.  See EWTS spec.
+        assertEquals(ACIP2TMW2EWTS("LA \\u0020LA "), "la la "); // DLC FIXME: no '_'?
+        assertEquals(ACIP2TMW2EWTS("LA \\u00A0LA "), "la la "); // DLC FIXME: no '_'?
+ 
+             // TODO(dchandler): 0f00 - 0fff: test 'em all
+
+
+
+
+
+        assertEquals(ACIP2TMW2EWTS("\\u0f63"), "la");
+        assertEquals(ACIP2TMW2EWTS("\\u0f63\\u0f7e"), "laM");
+        assertEquals(ACIP2TMW2EWTS("\\u0f63\\u0f7e\\u0f71"), "lAM");
+
+        assertEquals(ACIP2TMW2EWTS("LA\\u0f82"), "la~M`");
+        assertEquals(ACIP2TMW2EWTS("LA\\u0f83"), "la~M");
+        assertEquals(ACIP2TMW2EWTS("\\u0f7f\\u0f82"), "H~M`");
+        assertEquals(ACIP2TMW2EWTS("LA\\u0f7f\\u0f82"), "laH~M`");
+        assertEquals(ACIP2TMW2EWTS("\\u0f7f\\u0f82\\u0F84"), "H~M`?");
+        assertEquals(ACIP2TMW2EWTS("LA\\u0f7f\\u0f82\\u0F84"), "laH~M`?");
+
+        assertEquals(ACIP2TMW2EWTS("\\u0f63\\u0f71\\u0f7e"), "lAM");
+        uhelp("\\u0f63\\u0f7e\\u0f71", "\u0f63\u0f7e\u0f71");
+        uhelp("\\u0f63\\u0f71\\u0f7e", "\u0f63\u0f71\u0f7e");
+
+        assertEquals(ACIP2TMW2EWTS("\\u0f68"), "a");
+        assertEquals(ACIP2TMW2EWTS("\\u0f68\\u0f72"), "i");
+        assertEquals(ACIP2TMW2EWTS("\\u0f68\\u0f7e"), "M"); // DLC FIXME: should be "aM"
+        assertEquals(ACIP2TMW2ACIP("\\u0f68\\u0f7e"), "Am");
+        assertEquals(ACIP2TMW2ACIP("\\u0f7e"), "m");
+
+        assertEquals(ACIP2TMW2EWTS("A+YA"), "a+ya");
+        assertEquals(ACIP2TMW2EWTS("A+R+YU"), "a+r+yu");
+        assertEquals(ACIP2TMW2EWTS("A+R+Yi"), "a+r+y-i");
+    }
+
+    /** Converts ACIP to TMW with no warnings.  If errors occur there,
+        returns null.  Otherwise, returns the result of TMW->ACIP or
+        TMW->EWTS (depending on EWTSNotACIP), which may be an error
+        message. */
+    static String ACIP2TMW2Translit(boolean EWTSNotACIP, String ACIP) {
         StringBuffer errors = new StringBuffer();
         ArrayList al = ACIPTshegBarScanner.scan(ACIP, errors, -1, false, "None");
         if (null == al || errors.length() > 0)
@@ -82,8 +224,10 @@ public class PackageTest extends TestCase {
         } catch (java.io.IOException e) {
             assertTrue("I/O exception?", false);
         }
-        boolean noSuchACIP[] = new boolean[] { false };
-        return tdoc.getACIP(noSuchACIP);
+        if (EWTSNotACIP)
+            return tdoc.getWylie(new boolean[] { false });
+        else
+            return tdoc.getACIP(new boolean[] { false });
     }
 
 

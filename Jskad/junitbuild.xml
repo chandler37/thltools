@@ -73,6 +73,7 @@
       <formatter type="xml"/><!-- If not XML, then 'ant -buildfile
                                   build.xml check-report' will fail. -->
       <sysproperty key="java.awt.headless" value="true"/>
+      <test name="org.thdl.tib.text.TibetanMachineWebTest"/>
       <test name="org.thdl.tib.text.ttt.PackageTest"/>
       <test name="org.thdl.tib.text.ttt.LotsOfTshegBarsTest"/>
       <test name="org.thdl.tib.input.TMW_RTF_TO_THDL_WYLIETest"/>

@@ -1015,7 +1015,9 @@ public class TibTextUtils implements THDLWylieConstants {
                 // breaks TMW->ACIP and TMW->EWTS.  Test it.  When it
                 // does, revamp TGCPair to have a set of vowels.  The
                 // output order should be consistent with the
-                // Unicode-imposed order on vowels.
+                // Unicode-imposed order on vowels.  (Maybe modulo the
+                // CCV bug in Unicode w.r.t. above- and below-base
+                // vowels?)
             } else {
                 // number or weird thing:
 

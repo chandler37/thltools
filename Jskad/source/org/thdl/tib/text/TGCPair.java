@@ -18,6 +18,8 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text;
 
+import org.thdl.util.ThdlDebug;
+
 
 /** An ordered pair consisting of a Tibetan grapheme cluster's (see
     {@link org.thdl.tib.text.tshegbar.UnicodeGraphemeCluster} for a
@@ -105,8 +107,13 @@ public class TGCPair implements THDLWylieConstants {
                     b.append(ch);
             }
         }
-        if (vowelWylie != null)
+        if (vowelWylie != null) {
+            if (consonantWylie != null // we need a stack to put an 'a' onto
+                && !TibetanMachineWeb.startsWithWylieVowelSequence(vowelWylie)) {
+                b.append("a"); // we want laM, not lM -- see bug 998476
+            }
             b.append(vowelWylie);
+        }
         return b.toString();
     }
     public String getACIP() {
@@ -182,8 +189,9 @@ public class TGCPair implements THDLWylieConstants {
         int realClassification = -37;
         if (vowelWylie == null && classification == TYPE_TIBETAN)
             realClassification = CONSONANTAL_WITHOUT_VOWEL;
-        if (vowelWylie != null && classification == TYPE_TIBETAN)
+        if (vowelWylie != null && classification == TYPE_TIBETAN) {
             realClassification = CONSONANTAL_WITH_VOWEL;
+        }
         if (vowelWylie == null && classification == TYPE_SANSKRIT)
             realClassification = SANSKRIT_WITHOUT_VOWEL;
         if (vowelWylie != null && classification == TYPE_SANSKRIT)
@@ -204,8 +212,70 @@ public class TGCPair implements THDLWylieConstants {
             if (vowelWylie.equals("uA") || vowelWylie.equals("Au"))
                 vowelWylie = "U";
         }
-        this.vowelWylie = vowelWylie;
+        // Normalize vowelWylie such that any real vowel (i.e., a
+        // vowel for which TibetanMachineWeb.isWylieVowel(..) returns
+        // true) comes before any non-vowel but vowelish combining
+        // character like 'M', '?', '~M', '~M`', or 'H':
+        this.vowelWylie = normalizedVowel(vowelWylie);
         this.classification = realClassification;
+    }
+
+    private static final int MAX_CHARACTERS_IN_VOWELISH = 3; // ~M` has 3 characters
+
+
+    /** Returns v such that all the normal vowels in v come first and
+        the combining marks (Sanskrit-ish) come last.  Relative order
+        in each of the two groups is preserved. */
+    private static String normalizedVowel(String v) {
+        if (null == v || "".equals(v)) return null;
+        StringBuffer vowel_sb = new StringBuffer();
+        StringBuffer vowelish_sb = new StringBuffer();
+        int mark = 0;
+        int maxVowelishLength
+            = Math.max(TibetanMachineWeb.getMaxEwtsVowelLength(),
+                       TGCPair.MAX_CHARACTERS_IN_VOWELISH);
+        for (int i = 0; i < v.length(); i++) {
+            // Grab ~M` if it's there because you don't want to grab
+            // ~M and then have ` left over, which is not vowelish.
+            for (int j = maxVowelishLength; j > 0; j--) {
+                if (i + j <= v.length()) {
+                    String x = v.substring(mark, i + j);
+                    if (TibetanMachineWeb.isWylieVowel(x)) {
+                        mark = i + j;
+                        i += j - 1;
+                        vowel_sb.append(x);
+                    } else if (isWylieVowelishButNotVowel(x)) {
+                        mark = i + j;
+                        i += j - 1;
+                        vowelish_sb.append(x);
+                    }
+                }
+            }
+        }
+        if (mark < v.length()) {
+            vowelish_sb.append(v.substring(mark));
+            ThdlDebug.noteIffyCode();
+            // FIXME(dchandler): what should I do here?  I doubt v is
+            // valid.
+        }
+        if (vowelish_sb.length() > 0) { // just an optimization
+            vowel_sb.append(vowelish_sb);
+            return vowel_sb.toString();
+        } else {
+            ThdlDebug.verify(vowel_sb.toString().equals(v));
+            return v;
+        }
+    }
+
+    /** Returns true if v is in the set { "M", "H", "~M", "~M`", "?" }. */
+    private static boolean isWylieVowelishButNotVowel(String v) {
+        boolean ans = (v.equals("M")
+                       || v.equals("H")
+                       || v.equals("~M`")
+                       || v.equals("~M")
+                       || v.equals("?"));
+        ThdlDebug.verify(!ans || TGCPair.MAX_CHARACTERS_IN_VOWELISH >= v.length());
+        return ans;
     }
 
     public String toString() {

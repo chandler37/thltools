@@ -65,6 +65,7 @@ public class TibetanMachineWeb implements THDLWylieConstants {
     private static Set sanskritStackSet = null;
     private static Set numberSet = null;
     private static Set vowelSet = null;
+    private static int maxEwtsVowelLength = -1;
     private static Set puncSet = null;
     private static Set topSet = null;
     private static Set leftSet = null;
@@ -374,6 +375,8 @@ public class TibetanMachineWeb implements THDLWylieConstants {
         while (sTok.hasMoreTokens()) {
             String ntk;
             vowelSet.add(ntk = sTok.nextToken());
+            if (maxEwtsVowelLength < ntk.length())
+                maxEwtsVowelLength = ntk.length();
             validInputSequences.put(ntk, anyOldObjectWillDo);
         }
 
@@ -805,6 +808,11 @@ public static boolean setKeyboard(TibetanKeyboard kb) {
         hasAVowel = true;
         aVowel = WYLIE_aVOWEL;
         if (!vowelSet.contains(WYLIE_aVOWEL)) {
+            ThdlDebug.noteIffyCode();
+            // iffy because vowels contains 'a' and because
+            // maxEwtsVowelLength better be correct if this branch is
+            // ever taken
+
             vowelSet.add(WYLIE_aVOWEL);
             validInputSequences.put(WYLIE_aVOWEL, anyOldObjectWillDo);
         }
@@ -1111,6 +1119,12 @@ public static boolean isAmbiguousWylie(String x, String y) {
             );
 }
 
+/** Returns the length in characters of the longest EWTS vowel. */
+public static int getMaxEwtsVowelLength() {
+    ThdlDebug.verify(maxEwtsVowelLength > 0);
+    return maxEwtsVowelLength;
+}
+
 /**
 * Checks to see if the passed string
 * is a vowel in Extended Wylie.
@@ -1121,6 +1135,22 @@ public static boolean isAmbiguousWylie(String x, String y) {
 public static boolean isWylieVowel(String s) {
     return vowelSet.contains(s);
 }
+
+/**
+* Checks to see if the passed string begins with an EWTS vowel.
+* @param s the string to be checked
+* @return true if s is a vowel in
+* Extended Wylie transliteration, false if not */
+public static boolean startsWithWylieVowelSequence(String s) {
+    for (int i = 0; i < maxEwtsVowelLength; i++) {
+        if (i == s.length())
+            return false;
+        if (isWylieVowel(s.substring(0, i + 1)))
+            return true;
+    }
+    return false;
+}
+
 
 /** Returns true if and only if wylie is the THDL Extended Wylie for
     an adornment.  An adornment is something that is part of a stack
