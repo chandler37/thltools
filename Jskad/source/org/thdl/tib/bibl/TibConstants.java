@@ -33,12 +33,12 @@ public interface TibConstants
 
 	// File Constants
 	final String DEFAULT_DIRECTORY 	= System.getProperties().getProperty("user.dir");
-	final String BIN				= "\\bin\\";
-	final String DATA_DIRECTORY 	= "\\data\\";
-	final String OUT_DIRECTORY 		= "\\data\\";
-	final String BIN_LOGIN			= "\\bin\\logs\\";
-	final String DIA_DATA			= "\\bin\\dia.dat";
-	final String TEMP_DIR			= "\\bin\\temp\\";
+	final String BIN				= java.io.File.separatorChar + "bin" + java.io.File.separatorChar;
+	final String DATA_DIRECTORY 	= java.io.File.separatorChar + "data" + java.io.File.separatorChar;
+	final String OUT_DIRECTORY 		= java.io.File.separatorChar + "data" + java.io.File.separatorChar;
+	final String BIN_LOGIN			= java.io.File.separatorChar + "bin" + java.io.File.separatorChar + "logs" + java.io.File.separatorChar;
+	final String DIA_DATA			= java.io.File.separatorChar + "bin" + java.io.File.separatorChar + "dia.dat";
+	final String TEMP_DIR			= java.io.File.separatorChar + "bin" + java.io.File.separatorChar + "temp" + java.io.File.separatorChar;
 	final String PREFS				= "ttprefs.ini";
 
 	final String PREFS_DELIM			= "=";

@@ -861,7 +861,7 @@ System.out.println("TExt at title offset is: " + text);
 		super(rootElement);
 		setHead();
 		setFactories();
-		setDocType(new DocType(TIBL,"..\\bin\\xtibbibl2.dtd"));
+		setDocType(new DocType(TIBL,".." + java.io.File.separatorChar + "bin" + java.io.File.separatorChar + "xtibbibl2.dtd"));
 		org.jdom.Attribute idAt = getRootElement().getAttribute(ID);
 		if(idAt != null && (idAt.getValue() == null || idAt.getValue().equals(""))) {
 			idAt.detach();
