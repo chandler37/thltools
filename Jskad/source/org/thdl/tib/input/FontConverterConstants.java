@@ -27,6 +27,7 @@ import java.awt.*;
 interface FontConverterConstants
 {
     final String ACIP_TO_UNI = "ACIP to Unicode";
+    final String ACIP_TO_TMW = "ACIP to TMW";
     final String TM_TO_TMW = "TM to TMW";
     final String TMW_TO_UNI = "TMW to Unicode";
     final String TMW_TO_WYLIE = "TMW to Wylie";
@@ -36,7 +37,9 @@ interface FontConverterConstants
     final String FIND_ALL_NON_TMW = "Find all non-TMW";
     final String FIND_ALL_NON_TM = "Find all non-TM";
 
-    final String[] CHOICES = new String[]{
+    final String[] CHOICES = new String[] {
+        ACIP_TO_UNI,
+        ACIP_TO_TMW,
         TM_TO_TMW,
         TMW_TO_UNI,
         TMW_TO_WYLIE,

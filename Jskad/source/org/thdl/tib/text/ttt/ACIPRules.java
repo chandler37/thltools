@@ -19,7 +19,11 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.text.ttt;
 
 import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.HashMap;
+
+import org.thdl.tib.text.DuffCode;
+import org.thdl.tib.text.TibetanMachineWeb;
 
 /** Canonizes some facts regarding the ACIP transcription system.
  *  @author David Chandler */
@@ -36,7 +40,9 @@ class ACIPRules {
     private static HashSet acipVowels = null;
 
     private static String[][] baseVowels = new String[][] {
-        // { ACIP, EWTS, EWTS for '\'' + baseVowels[][0] }:
+        // { ACIP, EWTS, EWTS for ACIP {'\'' + baseVowels[][0]}, vowel
+        // numbers (see TibetanMachineWeb's VOWEL_A, VOWEL_o, etc.) 
+        // for ACIP, vowel numbers for ACIP {'\'' + baseVowels[][0]}
         { "A", "a", "A" },
         { "I", "i", "I" },
         { "U", "u", "U" },
@@ -70,7 +76,7 @@ class ACIPRules {
                 // DLC keep this code in sync with getUnicodeFor.
                 // DLC keep this code in sync with getWylieForACIPVowel
 
-                // DLC '\' for visarga? how shall we do \ the visarga? like a vowel or not?
+                // DLC '\' for virama? how shall we do \ the virama? like a vowel or not?
             }
         }
         return (acipVowels.contains(s));
@@ -209,6 +215,39 @@ class ACIPRules {
             }
         }
         return (String)acipVowel2wylie.get(acip);
+    }
+
+    private static HashMap acipOther2wylie = null;
+    /** Returns the EWTS corresponding to the given ACIP puncuation or
+     *  mark.  Returns null if there is no such EWTS. */
+    static final String getWylieForACIPOther(String acip) {
+        if (acipOther2wylie == null) {
+            acipOther2wylie = new HashMap(37);
+
+            // DLC FIXME: check all these again.
+            acipOther2wylie.put(",", "/");
+            acipOther2wylie.put(" ", " ");
+            acipOther2wylie.put(".", "*");
+            acipOther2wylie.put("|", "|");
+            acipOther2wylie.put("`", "!");
+            acipOther2wylie.put(";", ";");
+            acipOther2wylie.put("*", "@");
+            acipOther2wylie.put("#", "@#");
+            acipOther2wylie.put("%", "%");
+            acipOther2wylie.put("&", "&");
+
+            acipOther2wylie.put("0", "0");
+            acipOther2wylie.put("1", "1");
+            acipOther2wylie.put("2", "2");
+            acipOther2wylie.put("3", "3");
+            acipOther2wylie.put("4", "4");
+            acipOther2wylie.put("5", "5");
+            acipOther2wylie.put("6", "6");
+            acipOther2wylie.put("7", "7");
+            acipOther2wylie.put("8", "8");
+            acipOther2wylie.put("9", "9");
+        }
+        return (String)acipOther2wylie.get(acip);
     }
 
     private static HashMap superACIP2unicode = null;
@@ -416,6 +455,42 @@ class ACIPRules {
             if (null != u) return u;
         }
         return (String)superACIP2unicode.get(acip);
+    }
 
+
+
+    /** DLC DOC: Gets the duffcodes for vowel, such that they look good with hashKey, and appends them to r. */
+    static void getDuffForACIPVowel(ArrayList r, String hashKey, String vowel) {
+        if (null == vowel) return;
+        if (null == getWylieForACIPVowel(vowel)) // FIXME: expensive assertion!  Use assert.
+            throw new IllegalArgumentException("Vowel " + vowel + " isn't in the small set of vowels we handle correctly.");
+        if (!TibetanMachineWeb.isKnownHashKey(hashKey)) // FIXME: expensive assertion!  Use assert.
+            throw new IllegalArgumentException("bad hashKey");
+
+        // Order matters here.
+        if (vowel.indexOf("'U") >= 0)
+            r.add(TibetanMachineWeb.getVowel(hashKey, TibetanMachineWeb.VOWEL_U));
+        else {
+            if (vowel.indexOf('\'') >= 0)
+                r.add(TibetanMachineWeb.getVowel(hashKey, TibetanMachineWeb.VOWEL_A));
+            if (vowel.indexOf("EE") >= 0)
+                r.add(TibetanMachineWeb.getGlyph("ai"));
+            else if (vowel.indexOf('E') >= 0)
+                r.add(TibetanMachineWeb.getVowel(hashKey, TibetanMachineWeb.VOWEL_e));
+            if (vowel.indexOf("OO") >= 0)
+                r.add(TibetanMachineWeb.getGlyph("au"));
+            else if (vowel.indexOf('O') >= 0)
+                r.add(TibetanMachineWeb.getVowel(hashKey, TibetanMachineWeb.VOWEL_o));
+            if (vowel.indexOf('I') >= 0)
+                r.add(TibetanMachineWeb.getVowel(hashKey, TibetanMachineWeb.VOWEL_i));
+            if (vowel.indexOf('U') >= 0)
+                r.add(TibetanMachineWeb.getVowel(hashKey, TibetanMachineWeb.VOWEL_u));
+            if (vowel.indexOf('i') >= 0)
+                r.add(TibetanMachineWeb.getGlyph("-i"));
+        }
+        if (vowel.indexOf('m') >= 0)
+            r.add(TibetanMachineWeb.getGlyph("M"));
+        if (vowel.indexOf(':') >= 0)
+            r.add(TibetanMachineWeb.getGlyph("H"));
     }
 }

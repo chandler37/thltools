@@ -141,6 +141,32 @@ public class TibetanDocument extends DefaultStyledDocument {
         appendDuff(tibetanFontSize, offset, s, attr);
     }
 
+/**
+* Inserts Latin text into the document. The font size is applied
+* automatically, according to the current Roman font size.
+* @param offset the position at which you want to insert text
+* @param s the string you want to insert
+* @see #setRomanAttributeSet(AttributeSet)
+*/
+	public void appendRoman(int offset, String s) throws BadLocationException {
+        ThdlDebug.verify(getRomanAttributeSet() != null);
+        insertString(offset, s, getRomanAttributeSet());
+    }
+
+/**
+* Inserts Latin text at the end of the document. The font size is
+* applied automatically, according to the current Roman font size.
+* @param s the string you want to insert
+* @see #setRomanAttributeSet(AttributeSet)
+*/
+	public void appendRoman(String s) {
+        try {
+            appendRoman(getLength(), s);
+        } catch (BadLocationException e) {
+            throw new Error("can't happen");
+        }
+    }
+
     private void appendDuff(int fontSize, int offset, String s, MutableAttributeSet attr) {
 		try {
 			StyleConstants.setFontSize(attr, fontSize);
@@ -158,6 +184,19 @@ public class TibetanDocument extends DefaultStyledDocument {
 */
 	public int insertDuff(int pos, DuffData[] glyphs) {
         return insertDuff(tibetanFontSize, pos, glyphs, true);
+	}
+
+/**
+* Appends all DuffCodes in glyphs to the end of this document.
+*/
+	public void appendDuffCodes(DuffCode[] glyphs) {
+        // PERFORMANCE FIXME: this isn't so speedy, but it reuses
+        // existing code.
+        for (int i = 0; i < glyphs.length; i++) {
+            insertDuff(getLength(),
+                       new DuffData[] { new DuffData(new String(new char[] { glyphs[i].getCharacter() }),
+                                                     glyphs[i].getFontNum()) });
+        }
 	}
 
 
@@ -1037,6 +1076,15 @@ public class TibetanDocument extends DefaultStyledDocument {
         document. */
     public void setRomanAttributeSet(AttributeSet ras) {
         romanAttributeSet = ras;
+    }
+
+    /** Sets the attribute set applied to Roman text in this
+        document. */
+    public void setRomanAttributeSet(String font, int size) {
+        SimpleAttributeSet ras = new SimpleAttributeSet();
+        StyleConstants.setFontFamily(ras, font);
+        StyleConstants.setFontSize(ras, size);
+        setRomanAttributeSet(ras);
     }
 
 /**

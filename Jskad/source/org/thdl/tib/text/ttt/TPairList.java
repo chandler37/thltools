@@ -609,5 +609,24 @@ class TPairList {
         }
     }
 
+    /** Appends the DuffCodes that correspond to this grapheme cluster
+     *  to duff.  Assumes this is one grapheme cluster. */
+    void getDuff(ArrayList duff) {
+        StringBuffer wylieForConsonant = new StringBuffer();
+        for (int x = 0; x + 1 < size(); x++) {
+            wylieForConsonant.append(get(x).getWylie(false));
+        }
+        TPair lastPair = get(size() - 1);
+        wylieForConsonant.append(lastPair.getWylie(true));
+        String hashKey = wylieForConsonant.toString();
+        if (!TibetanMachineWeb.isKnownHashKey(hashKey)) {
+            hashKey = hashKey.replace('+', '-');
+            if (!TibetanMachineWeb.isKnownHashKey(hashKey)) {
+                throw new Error("How did this happen?");
+            }
+        }
+        duff.add(TibetanMachineWeb.getGlyph(hashKey));
+        ACIPRules.getDuffForACIPVowel(duff, hashKey, lastPair.getRight());
+    }
 }
 // DLC FIXME: handle 'o' and 'x', e.g. KAo and NYAx.

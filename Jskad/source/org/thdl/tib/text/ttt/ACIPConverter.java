@@ -24,10 +24,14 @@ import java.util.Stack;
 
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlOptions;
+import org.thdl.tib.text.TibetanDocument;
+import org.thdl.tib.text.TibetanMachineWeb;
+import org.thdl.tib.text.DuffCode;
 
 /**
-* This class is able to convert an ACIP file into Tibetan Machine Web.
-* From there, TMW->Unicode takes you to Unicode.
+* This class is able to convert an ACIP file into Tibetan Machine Web
+* and an ACIP file into TMW.  ACIP->Unicode should yield the same
+* results as ACIP->TMW followed by TMW->Unicode (FIXME: test it!)
 * @author David Chandler
 */
 public class ACIPConverter {
@@ -86,38 +90,70 @@ public class ACIPConverter {
             warnings = new StringBuffer();
             putWarningsInOutput = true;
         }
-        convertToUnicode(al, System.out, errors, warnings,
-                         putWarningsInOutput, warningLevel);
+        convertToTMW(al, System.out, errors, warnings,
+                     putWarningsInOutput, warningLevel);
+        int retCode = 0;
         if (errors.length() > 0) {
             System.err.println("Errors converting ACIP input file: ");
             System.err.println(errors);
             System.err.println("The output contains these errors.");
             System.err.println("Exiting; please fix input file and try again.");
-            System.exit(2);
+            retCode = 2;
         }
         if (null != warnings && warnings.length() > 0) {
             System.err.println("Warnings converting ACIP input file: ");
             System.err.println(warnings);
             if (putWarningsInOutput)
                 System.err.println("The output contains these warnings.");
-            System.exit(2);
+            retCode = 2;
         }
-        if (verbose) System.err.println("Converted " + args[0] + " perfectly.");
-        System.exit(0);
+        if (0 == retCode) {
+            if (verbose) System.err.println("Converted " + args[0] + " perfectly.");
+        }
+        System.exit(retCode);
+        // DLC NOW: tRAStA is not converter correctly to Unicode, and
+        // no warning is given when converting to TMW.
     }
 
     /** Writes TMW/Latin to out.  If errors occur in converting a
-     *  tsheg bar, then they are appended to errors if errors is
-     *  non-null.  Returns true upon perfect success, false if errors
+     *  tsheg bar, then they are written into the output, and also
+     *  appended to errors if errors is non-null.  If warnings occur
+     *  in converting a tsheg bar, then they are written into the
+     *  output if writeWarningsToResult is true, and also appended to
+     *  warnings if warnings is non-null.  Returns true upon perfect
+     *  success or if there were merely warnings, false if errors
      *  occurred.
      *  @throws IOException if we cannot write to out
      */
-    public static boolean convertToTMW(ArrayList scan, String latinFont,
-                                       OutputStream out, StringBuffer errors)
+    public static boolean convertToTMW(ArrayList scan,
+                                       OutputStream out,
+                                       StringBuffer errors,
+                                       StringBuffer warnings,
+                                       boolean writeWarningsToResult,
+                                       String warningLevel)
         throws IOException
     {
-        throw new Error("DLC UNIMPLEMENTED");
+        TibetanDocument tdoc = new TibetanDocument();
+		tdoc.setRomanAttributeSet("Courier", 14); // DLC make me configurable.
+        boolean rv
+            = convertToTMW(scan, tdoc, errors, warnings,
+                           writeWarningsToResult, warningLevel);
+        tdoc.writeRTFOutputStream(out);
+        return rv;
     }
+
+    private static boolean convertToTMW(ArrayList scan,
+                                        TibetanDocument tdoc,
+                                        StringBuffer errors,
+                                        StringBuffer warnings,
+                                        boolean writeWarningsToResult,
+                                        String warningLevel)
+        throws IOException
+    {
+        return convertTo(false, scan, null, tdoc, errors, warnings,
+                         writeWarningsToResult, warningLevel);
+    }
+
     // DLC FIXME: sometimes { } is \u0F0B, and sometimes it is a
     // space.  Treat it as a tsheg only when it appears after a
     // syllable or another tsheg.
@@ -130,7 +166,8 @@ public class ACIPConverter {
      *  or in converting a tsheg bar, then they are appended to
      *  warnings if warnings is non-null, and they are written to the
      *  result if writeWarningsToResult is true.  Returns the
-     *  conversion upon perfect success, null if errors occurred.
+     *  conversion upon perfect success or if there were merely
+     *  warnings, null if errors occurred.
      */
     public static String convertToUnicode(String acip,
                                           StringBuffer errors,
@@ -175,24 +212,42 @@ public class ACIPConverter {
                                            String warningLevel)
         throws IOException
     {
+        return convertTo(true, scan, out, null, errors, warnings,
+                         writeWarningsToOut, warningLevel);
+    }
+
+    private static boolean convertTo(boolean toUnicode, // else to TMW
+                                     ArrayList scan,
+                                     OutputStream out, // for toUnicode mode
+                                     TibetanDocument tdoc, // for !toUnicode mode
+                                     StringBuffer errors,
+                                     StringBuffer warnings,
+                                     boolean writeWarningsToOut,
+                                     String warningLevel)
+        throws IOException
+    {
         int sz = scan.size();
         boolean hasErrors = false;
-        BufferedWriter writer
-            = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+        BufferedWriter writer = null;
+        if (toUnicode)
+            writer
+                = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
         for (int i = 0; i < sz; i++) {
             ACIPString s = (ACIPString)scan.get(i);
             int stype = s.getType();
             if (stype == ACIPString.ERROR) {
                 hasErrors = true;
-                writer.write("[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: ");
-                writer.write(s.getText());
-                writer.write("]");
+                String text = "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: " + s.getText() + "]";
+                if (null != writer) writer.write(text);
+                if (null != tdoc) tdoc.appendRoman(text);
             } else if (stype == ACIPString.WARNING) {
                 if (writeWarningsToOut) {
-                    writer.write("[#WARNING CONVERTING ACIP DOCUMENT: Lexical warning: ");
-                    writer.write(s.getText());
-                    writer.write("]");
+                    String text = "[#WARNING CONVERTING ACIP DOCUMENT: Lexical warning: " + s.getText() + "]";
+                    if (null != writer) writer.write(text);
+                    if (null != tdoc) tdoc.appendRoman(text);
                 }
+                // DLC NOW: Warning: We're going with {'}{R}{DA}, but only because our knowledge of prefix rules says that {'}{R+DA} is not a legal Tibetan tsheg bar ("syllable")
+
                 if (null != warnings) {
                     warnings.append("Warning: Lexical warning: ");
                     warnings.append(s.getText());
@@ -200,13 +255,15 @@ public class ACIPConverter {
                 }
             } else {
                 if (s.isLatin(stype)) {
-                    if (stype == ACIPString.FOLIO_MARKER)
-                        writer.write("{");
-                    writer.write(s.getText());
-                    if (stype == ACIPString.FOLIO_MARKER)
-                        writer.write("}");
+                    String text
+                        = (((stype == ACIPString.FOLIO_MARKER) ? "{" : "")
+                           + s.getText()
+                           + ((stype == ACIPString.FOLIO_MARKER) ? "}" : ""));
+                    if (null != writer) writer.write(text);
+                    if (null != tdoc) tdoc.appendRoman(text);
                 } else {
                     String unicode = null;
+                    DuffCode[] duff = null;
                     if (stype == ACIPString.TIBETAN_NON_PUNCTUATION) {
                         TPairList pl = TPairListFactory.breakACIPIntoChunks(s.getText());
                         String acipError;
@@ -214,7 +271,8 @@ public class ACIPConverter {
                         if ((acipError = pl.getACIPError()) != null) {
                             hasErrors = true;
                             String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") " + s.getText() + " HAS THESE ERRORS: " + acipError + "]";
-                            writer.write(errorMessage);
+                            if (null != writer) writer.write(errorMessage);
+                            if (null != tdoc) tdoc.appendRoman(errorMessage);
                             if (null != errors)
                                 errors.append(errorMessage + "\n");
                         } else {
@@ -222,7 +280,8 @@ public class ACIPConverter {
                             if (null == pt) {
                                 hasErrors = true;
                                 String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") " + s.getText() + " IS ESSENTIALLY NOTHING.]";
-                                writer.write(errorMessage);
+                                if (null != writer) writer.write(errorMessage);
+                                if (null != tdoc) tdoc.appendRoman(errorMessage);
                                 if (null != errors)
                                     errors.append(errorMessage + "\n");
                             } else {
@@ -230,7 +289,8 @@ public class ACIPConverter {
                                 if (null == sl) {
                                     hasErrors = true;
                                     String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") " + s.getText() + " HAS NO LEGAL PARSES.]";
-                                    writer.write(errorMessage);
+                                    if (null != writer) writer.write(errorMessage);
+                                    if (null != tdoc) tdoc.appendRoman(errorMessage);
                                     if (null != errors)
                                         errors.append(errorMessage + "\n");
                                 } else {
@@ -240,36 +300,74 @@ public class ACIPConverter {
                                                         s.getText());
                                     if (null != warning) {
                                         if (writeWarningsToOut) {
-                                            writer.write("[#WARNING CONVERTING ACIP DOCUMENT: ");
-                                            writer.write(warning);
-                                            writer.write("]");
+                                            String text
+                                                = ("[#WARNING CONVERTING ACIP DOCUMENT: "
+                                                   + warning + "]");
+                                            if (null != writer) writer.write(text);
+                                            if (null != tdoc) tdoc.appendRoman(text);
                                         }
                                         if (null != warnings) {
                                             warnings.append(warning);
                                             warnings.append('\n');
                                         }
                                     }
-                                    unicode = sl.getUnicode();
-                                    if (null == unicode) throw new Error("FIXME: make this an assertion");
+                                    if (null != writer) {
+                                        unicode = sl.getUnicode();
+                                        if (null == unicode) throw new Error("FIXME: make this an assertion 4");
+                                    }
+                                    if (null != tdoc) {
+                                        duff = sl.getDuff();
+                                        if (0 == duff.length) {
+                                            throw new Error("No DuffCodes for stack list " + sl); // FIXME: make this an assertion
+                                        }
+                                    }
                                 }
                             }
                         }
                     } else {
-                        if (stype == ACIPString.START_SLASH)
-                            unicode = "\u0F3C";
-                        else if (stype == ACIPString.END_SLASH)
-                            unicode = "\u0F3D";
-                        else
-                            unicode = ACIPRules.getUnicodeFor(s.getText(), false);
-                        if (null == unicode) throw new Error("FIXME: make this an assertion");
+                        if (stype == ACIPString.START_SLASH) {
+                            if (null != writer) unicode = "\u0F3C";
+                            if (null != tdoc) duff = new DuffCode[] { TibetanMachineWeb.getGlyph("(") };
+                        } else if (stype == ACIPString.END_SLASH) {
+                            if (null != writer) unicode = "\u0F3D";
+                            if (null != tdoc) duff = new DuffCode[] { TibetanMachineWeb.getGlyph(")") };
+                        } else {
+                            if (null != writer) unicode = ACIPRules.getUnicodeFor(s.getText(), false);
+                            if (null != tdoc) {
+                                if (s.getText().equals("\r") || s.getText().equals("\t") || s.getText().equals("\n")) {
+                                    tdoc.appendRoman(s.getText());
+                                    continue;
+                                }
+                                else {
+                                    String wy = ACIPRules.getWylieForACIPOther(s.getText());
+                                    if (null == wy) throw new Error("No wylie for ACIP " + s.getText());
+                                    duff = new DuffCode[] { TibetanMachineWeb.getGlyph(wy) };
+                                }
+                            }
+                        }
+                        if (null != writer && null == unicode)
+                            throw new Error("FIXME: make this an assertion 1");
+                        if (null != tdoc && (null == duff || 0 == duff.length))
+                            throw new Error("FIXME: make this an assertion 2");
                     }
-                    if (null != unicode) {
-                        writer.write(unicode);
+                    if (null != writer && null != unicode) writer.write(unicode);
+                    if (null != tdoc) {
+                        if (null != duff && 0 != duff.length) {
+                            tdoc.appendDuffCodes(duff);
+                            // DLC NOW FIXME: use TibTextUtils.getVowel logic to make the output beautiful.
+                        } else {
+                            // this happens when you have an
+                            // [#ERROR]-producing tsheg bar.
+                            
+                            // System.err.println("Bad tsheg bar with ACIP {" + s.getText() + "}");
+                        }
                     }
                 }
             }
         }
-        writer.close();
+        if (null != writer) {
+            writer.close();
+        }
         return !hasErrors;
     }
 }

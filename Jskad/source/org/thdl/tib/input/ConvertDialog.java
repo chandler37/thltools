@@ -69,7 +69,8 @@ class ConvertDialog extends JDialog
                 ConvertDialog.this.theRealActionPerformed(e);
             }};
     private void updateWarningLevels() {
-        if (choices.getSelectedItem() == ACIP_TO_UNI)
+        if (choices.getSelectedItem() == ACIP_TO_UNI
+            || choices.getSelectedItem() == ACIP_TO_TMW)
             this.warningLevels.enable();
         else
             this.warningLevels.disable();
@@ -418,7 +419,7 @@ class ConvertDialog extends JDialog
                 newFileNamePrefix = suggested_WYLIE_prefix;
             } else if (TMW_TO_UNI == ct || ACIP_TO_UNI == ct) {
                 newFileNamePrefix = suggested_TO_UNI_prefix;
-            } else if (TM_TO_TMW == ct) {
+            } else if (TM_TO_TMW == ct || ACIP_TO_TMW == ct) {
                 newFileNamePrefix = suggested_TO_TMW_prefix;
             } else {
                 ThdlDebug.verify(TMW_TO_TM == ct);

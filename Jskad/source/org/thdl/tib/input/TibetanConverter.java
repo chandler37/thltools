@@ -71,6 +71,7 @@ public class TibetanConverter implements FontConverterConstants {
             boolean convertToUnicodeMode = false;
             boolean convertToTMMode = false;
             boolean convertACIPToUniMode = false;
+            boolean convertACIPToTMWMode = false;
             boolean convertToTMWMode = false;
             boolean convertToWylieMode = false;
             boolean findSomeNonTMWMode = false;
@@ -91,6 +92,8 @@ public class TibetanConverter implements FontConverterConstants {
                              = args[0].equals("--to-tibetan-machine-web"))
                          || (convertACIPToUniMode
                              = args[0].equals("--acip-to-unicode"))
+                         || (convertACIPToTMWMode
+                             = args[0].equals("--acip-to-tmw"))
                          || (convertToUnicodeMode
                              = args[0].equals("--to-unicode"))
                          || (convertToWylieMode
@@ -180,6 +183,8 @@ public class TibetanConverter implements FontConverterConstants {
                     conversionTag = TM_TO_TMW;
                 } else if (convertACIPToUniMode) {
                     conversionTag = ACIP_TO_UNI;
+                } else if (convertACIPToTMWMode) {
+                    conversionTag = ACIP_TO_TMW;
                 } else {
                     ThdlDebug.verify(convertToTMMode);
                     conversionTag = TMW_TO_TM;
@@ -205,7 +210,7 @@ public class TibetanConverter implements FontConverterConstants {
         honored. */
     static int reallyConvert(InputStream in, PrintStream out, String ct,
                              String warningLevel) {
-        if (ACIP_TO_UNI == ct) {
+        if (ACIP_TO_UNI == ct || ACIP_TO_TMW == ct) {
             try {
                 ArrayList al = ACIPTshegBarScanner.scanStream(in, null,
                                                               250 - 1 // DLC FIXME: make me configurable
@@ -214,10 +219,17 @@ public class TibetanConverter implements FontConverterConstants {
                     return 47;
                 StringBuffer warnings = new StringBuffer();
                 boolean embeddedWarnings = (warningLevel != "None");
-                if (!ACIPConverter.convertToUnicode(al, out, null, warnings,
+                if (ACIP_TO_UNI == ct) {
+                    if (!ACIPConverter.convertToUnicode(al, out, null, warnings,
+                                                        embeddedWarnings,
+                                                        warningLevel))
+                        return 46;
+                } else {
+                    if (!ACIPConverter.convertToTMW(al, out, null, warnings,
                                                     embeddedWarnings,
                                                     warningLevel))
-                    return 46;
+                        return 46;
+                }
                 if (embeddedWarnings && warnings.length() > 0)
                     return 45;
                 else

@@ -20,6 +20,7 @@ package org.thdl.tib.text.ttt;
 
 import org.thdl.tib.text.TibTextUtils;
 import org.thdl.tib.text.TGCList;
+import org.thdl.tib.text.DuffCode;
 
 import java.util.ArrayList;
 import java.util.ListIterator;
@@ -216,8 +217,21 @@ class TStackList {
         }
         return u.toString();
     }
+    /** DLC DOC */
+    DuffCode[] getDuff() {
+        ArrayList al = new ArrayList(size()*2); // rough estimate
+        int count = 0;
+        for (int i = 0; i < size(); i++) {
+            get(i).getDuff(al);
+        }
+        if (size() > 0 && al.size() == 0) {
+            throw new Error("But this stack list, " + this + ", contains " + size() + " stacks!  How can it not have DuffCodes associated with it?");
+        }
+        return (DuffCode[])al.toArray(new DuffCode[] { });
+    }
 }
 
+/** Too simple to comment. */
 class BoolPair {
     boolean isLegal;
     boolean isLegalAndHasAVowelOnRoot;

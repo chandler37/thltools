@@ -319,6 +319,16 @@ tstHelper("MSTAN"); // ambiguous with regard to prefix rules
 
 
 
+tstHelper("KA'", "[(K . A), (' . )]",
+          new String[] { "{KA}{'}" },
+          new String[] { "{KA}{'}" },
+          "{KA}{'}"); // DLC NOW
+
+         tstHelper("A'AAMA", "{A}{'}{AA}{MA}"); // FIXME: how should we parse this?
+
+         tstHelper("K+K+KA", "{K+}{K+}{KA}");
+
+
 
         // If you're not careful, you'll think GGYES is a legal
         // Tibetan tsheg bar and parse it as {G}{G+YE}{S}.  But it's

@@ -615,10 +615,8 @@ public class DuffPane extends TibetanPane implements FocusListener {
 */
 	public void setRomanAttributeSet(String font, int size) {
         if (getTibDoc() != null) {
-            SimpleAttributeSet ras = new SimpleAttributeSet();
-            StyleConstants.setFontFamily(ras, romanFontFamily = font);
-            StyleConstants.setFontSize(ras, romanFontSize = size);
-            getTibDoc().setRomanAttributeSet(ras);
+            getTibDoc().setRomanAttributeSet(romanFontFamily = font,
+                                             romanFontSize = size);
         }
 	}
 

@@ -19,6 +19,10 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.text.ttt;
 
 import org.thdl.util.ThdlDebug;
+import org.thdl.tib.text.TibetanMachineWeb;
+import org.thdl.tib.text.DuffCode;
+
+import java.util.ArrayList;
 
 /** An ordered pair used in ACIP-to-TMW conversion.  The left side is
  *  the consonant or empty; the right side is the vowel, '+', or '-'.
@@ -70,7 +74,9 @@ class TPair {
 
     /** Returns an TPair that is like this one except that it is
      *  missing N characters.  The characters are taken from r, the
-     *  right side, first and from l, the left side, second.
+     *  right side, first and from l, the left side, second.  The pair
+     *  returned may be illegal, such as the (A . ') you can get from
+     *  ACIP {A'AAMA}.
      *  @throw IllegalArgumentException if N is out of range */
     TPair minusNRightmostACIPCharacters(int N)
         throws IllegalArgumentException
@@ -80,7 +86,7 @@ class TPair {
         if (N > size())
             throw new IllegalArgumentException("Don't have that many to remove.");
         if (N < 1)
-            throw new IllegalArgumentException("You should't call this if you don't want to remove any.");
+            throw new IllegalArgumentException("You shouldn't call this if you don't want to remove any.");
         if (null != r && (sz = r.length()) > 0) {
             int min = Math.min(sz, N);
             newR = r.substring(0, sz - min);
@@ -101,7 +107,7 @@ class TPair {
             return false;
         if (null != l && !ACIPRules.isConsonant(l))
             return false;
-        if (null != r && !ACIPRules.isVowel(l))
+        if (null != r && !ACIPRules.isVowel(r))
             return false;
         return true;
     }
@@ -146,8 +152,14 @@ class TPair {
         return (l != null && l.length() == 1 && (ch = l.charAt(0)) >= '0' && ch <= '9');
     }
 
-    /** Returns the EWTS Wylie that corresponds to this pair.  Untested. */
     String getWylie() {
+        return getWylie(false);
+    }
+
+    /** Returns the EWTS Wylie that corresponds to this pair if
+     *  justLeft is false, or the EWTS Wylie that corresponds to just
+     *  {@link #getLeft()} if justLeft is true. */
+    String getWylie(boolean justLeft) {
         String leftWylie = null;
         if (getLeft() != null) {
             leftWylie = ACIPRules.getWylieForACIPConsonant(getLeft());
@@ -156,6 +168,8 @@ class TPair {
                     leftWylie = getLeft();
             }
         }
+        if (null == leftWylie) leftWylie = "";
+        if (justLeft) return leftWylie;
         String rightWylie = null;
         if ("-".equals(getRight()))
             rightWylie = ".";
@@ -163,7 +177,6 @@ class TPair {
             rightWylie = "+";
         else if (getRight() != null)
             rightWylie = ACIPRules.getWylieForACIPVowel(getRight());
-        if (null == leftWylie) leftWylie = "";
         if (null == rightWylie) rightWylie = "";
         return leftWylie + rightWylie;
     }
