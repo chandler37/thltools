@@ -8,8 +8,8 @@
 
      We have a document,
      http://thdltools.sourceforge.net/BuildSystems.html, that
-     describes how to use this file to build Savant, Jskad,
-     QuillDriver, and the translation tool.
+     describes how to use this file to build Jskad, Tibbibl, and the
+     translation tool.
 
      This build file is the main one, and it uses jwsbuild.xml for
      building Java Web Start (JWS) releases.  See the comments in that
@@ -22,8 +22,6 @@
      $ANT_HOME/lib/xalan.jar
      $ANT_HOME/lib/xercesImpl.jar
      $ANT_HOME/lib/xml-apis.jar
-     Optionally:
-       extensions/drop-ins/(jmf.jar|qt4j.jar)
 
      See the developers site, linked to from http://thdltools.sf.net/,
      for info on where to find these.  (You may be able to use Ant's
@@ -36,11 +34,11 @@
 
 
   <description>
-    This Jakarta Ant buildfile is used to build Jskad, Savant,
-    QuillDriver, Tibbibl, and the Translation Tool.  The docs at
-    http://thdltools.sf.net/api are created using this buildfile, for
-    example.  Read the comments of this buildfile to learn more, or
-    see http://thdltools.sourceforge.net/BuildSystems.html.
+    This Jakarta Ant buildfile is used to build Jskad, Tibbibl, and
+    the Translation Tool.  The docs at http://thdltools.sf.net/api are
+    created using this buildfile, for example.  Read the comments of
+    this buildfile to learn more, or see
+    http://thdltools.sourceforge.net/BuildSystems.html.
   </description>
 
   <!-- set global properties for this build -->
@@ -501,6 +499,11 @@
   </target>
 
   <!-- DLC FIXME: add tibbibl-jws -->
+  <!--
+       Note that jardiffs for the JWS stuff are done by the JWS system
+       itself when appropriate and when the server is configured
+       correctly.  We have no work to do on that front.
+  -->
   <target name="web-start-releases"
           depends="jskad-jws,tt-jws"
           description="Builds the Java Web Start versions of all applications"/>
@@ -530,7 +533,7 @@
 
 
   <target name="src-dist" depends="init"
-          description="generates the full Jskad+Savant+QuillDriver+Translation Tool source distribution" >
+          description="generates the full Jskad+Tibbibl+Translation Tool source distribution" >
     <!-- Put everything necessary into the zip file -->
     <zip destfile="${dist}/source/THDL-Tools-src-${DSTAMP}.zip">
       <zipfileset dir="${source}"
@@ -663,7 +666,6 @@
     <delete dir="${dist}/releases"/>
     <delete dir="${dist}/source"/>
     <delete file="${dist}/DictionarySearchAppletAndJavaWebStart.jnlp"/>
-    <delete file="${dist}/Savant.jnlp"/>
     <delete file="${dist}/Jskad.jnlp"/>
     <delete file="${source}/org/thdl/util/ThdlVersion.java"/>
     <delete>
@@ -1135,40 +1137,8 @@ public class ThdlVersion {
 ]]></echo>
   </target>
 
-  <!--
-       Note that jardiffs for the JWS stuff are done by the JWS system
-       itself when appropriate and when the server is configured
-       correctly.  We have no work to do on that front.
-  -->
-  <target name="copy-SQD-jars"
-          description="Unpacks the JARs/WARs/ZIP files that Savant and QuillDriver use to the chosen bin/ directory">
-    <unjar src="${ext}/jdom.jar" dest="${unjardest}"/>
-
-    <available file="${ant.home}/lib/xml-apis.jar"
-               property="found.xml-apis.jar"/>
-    <fail message="Can't find extensions/xml-apis.jar; please download it."
-          unless="found.xml-apis.jar"/>
-    <unjar src="${ant.home}/lib/xml-apis.jar" dest="${unjardest}"/>
-
-    <available file="${ant.home}/lib/xalan.jar"
-               property="found.xalan.jar"/>
-    <fail message="Can't find extensions/xalan.jar; please download it."
-          unless="found.xalan.jar"/>
-    <unjar src="${ant.home}/lib/xalan.jar" dest="${unjardest}"/> <!-- Note: this isn't actually needed for Savant. -->
-
-    <available file="${ant.home}/lib/xercesImpl.jar"
-               property="found.xercesImpl.jar"/>
-    <fail message="Can't find extensions/xercesImpl.jar; please download it."
-          unless="found.xercesImpl.jar"/>
-    <unjar src="${ant.home}/lib/xercesImpl.jar" dest="${unjardest}"/>
-
-    <!-- One or more of the above may have a META-INF directory.  We don't
-         want theirs to overwrite our own, so we delete it. -->
-    <delete dir="${unjardest}/META-INF"/>
-  </target>
-  
   <target name="copy-tmw-fonts-to-bin-dir"
-          description="Unpacks the JARs/WARs/ZIP files that Savant and QuillDriver use to the chosen bin/ directory">
+          description="Copies the TMW font files to the current build's bin/ directory.">
     <available file="Fonts/TibetanMachineWeb"
                property="found.the.fonts"/>
     <fail message="Can't find the Fonts module at Jskad/Fonts/TibetanMachineWeb.  Did you do 'cvs -f checkout -P Fonts' from inside the Jskad directory?"
