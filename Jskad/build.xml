@@ -1,18 +1,21 @@
-<!-- @author David Chandler -->
+<!-- @author David Chandler
 
-<!--
+     We have a document,
+     http://thdltools.sourceforge.net/BuildSystems.html, that
+     describes how to use this file to build Savant, Jskad,
+     QuillDriver, and the translation tool.
 
-Quick start: This buildfile looks for the following, which are not in
-the CVS repository:
+     Quick start for the impatient: This buildfile looks for the
+     following, which are not in the CVS repository:
 
-extensions/jdom.jar
-extensions/xalan.jar
-extensions/xercesImpl.jar
-extensions/xml-apis.jar
-extensions/jmf.jar
+     extensions/jdom.jar
+     extensions/xalan.jar
+     extensions/xercesImpl.jar
+     extensions/xml-apis.jar
+     extensions/jmf.jar
 
-See the developers site, linked to from http://thdltools.sf.net/, for
-info on where to find these.
+     See the developers site, linked to from http://thdltools.sf.net/,
+     for info on where to find these.
 
 -->
 
@@ -23,7 +26,8 @@ info on where to find these.
     This Jakarta Ant buildfile is used to build Jskad, Savant,
     QuillDriver, and the Translation Tool.  The docs at
     http://thdltools.sf.net/api are created using this buildfile, for
-    example.  Read the comments of this buildfile to learn more.
+    example.  Read the comments of this buildfile to learn more, or
+    see http://thdltools.sourceforge.net/BuildSystems.html.
   </description>
 
   <!--                        -->
@@ -477,36 +481,8 @@ info on where to find these.
     HEY PROJECT MANAGER:
 
     http://thdltools.sf.net/api lives at
-    /home/groups/t/th/thdltools/htdocs/api.  To update it, simply run
-    'ant private-javadocs-dist', which creates
-    dist/docs/private-javadocs-DSTAMP.zip.  Then scp that file over
-    with the command
-
-    scp dist/docs/private-javadocs-WHATEVER.zip \
-        yourUserId@thdltools.sf.net/home/groups/t/th/thdltools/
-
-    or use PuTTY's scp to do something equivalent.
-
-    Now, shell in to thdltools.sf.net with 'ssh -l yourUserId
-    thdltools.sf.net' or with PuTTY.
-
-    Change directory (cd) to /home/groups/t/th/thdltools/htdocs/.
-
-    While you're here, do a 'cvs update' - just in case some developer
-    made changes to the web pages but forgot to update.
-
-    Anyway, now run 'rm -fr api' (from the htdocs/ directory).
-
-    Now run 'mkdir api'.
-
-    Now 'cd api'.
-
-    Now run 'unzip ../../private-javadocs-WHATEVER.zip'.
-
-    See if http://thdltools.sf.net/api/ looks up to date.  If so,
-    delete ../../private-javadocs-WHATEVER.zip and log out.
-
-    UPDATE THESE INSTRUCTIONS if something above is wrong or unclear.
+    /home/groups/t/th/thdltools/htdocs/api.  To update it, follow the instructions
+    at 'http://thdltools.sf.net/BuildSystems.html#wwwmodule'.
   -->
 
 
@@ -592,7 +568,7 @@ info on where to find these.
 
   <!-- DLC FIXME: build the tt-servlet release if the J2EE SDK is present. -->
   <!-- DLC FIXME build web start WARs -->
-  <!-- See http://thdltools.sf.net/CuttingReleases.html for info on
+  <!-- See http://thdltools.sf.net/BuildSystems.html for info on
        how to use this target.  Note that we must do a distclean
        because Ant doesn't always recompile when it should.  -->
   <target name="releases"
