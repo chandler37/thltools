@@ -1366,12 +1366,23 @@ Nativeness</h2>
   only exceptions are the stacks R+Y, Y+Y, and n+d+Y, which are known
   to have fixed-form subjoined YA, and the stacks n+d+R+Y (where RA
   but not YA is full-form) and K+sh+R, which are known to have
-  fixed-form subjoined RA.&nbsp; Wa-zur, U+0FAD, is never confused
-  with full-form subjoined WA, U+0FBA, though, because ACIP represents
-  the former with {V} and the latter with {W}.&nbsp; Furthermore, the
-  converter never generates U+0F6A, the fixed-form RA (<i>rango</i>);
-  U+0F62 is always produced.&nbsp; (Note that U+0F62 is often
+  fixed-form subjoined RA.&nbsp; (Wa-zur, U+0FAD, is never confused
+  with full-form subjoined WA, U+0FBA, because ACIP represents the
+  former with {V} and the latter with {W}.)&nbsp; Furthermore, the
+  converter only generates U+0F6A, the fixed-form RA (<i>rango</i>),
+  for the stacks R+W, R+Y, R+SH, R+SH+Y, R+sh, R+sh+n, R+sh+n+Y,
+  R+sh+M, R+sh+Y, and R+S; U+0F62 is always produced for the top-most
+  RA in any other stack.&nbsp; (Note that U+0F62 is sometimes
   displayed as a fixed-form RA itself, as in {RNYA}.)
+</p>
+
+<p>
+  Another fine point: The tool treats {N+DZYA} like {N+DZ+YA}, except
+  that it warns, "<tt>There is a stack of three or more consonants in
+  N+DZYA that uses at least one '+' but does not use a '+' between
+  each consonant.</tt>".&nbsp; The tool is inconsistent, however; it
+  will not treat {R+TS+NYA} like {R+T+S+N+YA} (and that would be a
+  terrible idea).
 </p>
 
 <p>
