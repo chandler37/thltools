@@ -68,8 +68,8 @@ public class Jskad extends JPanel implements DocumentListener {
     private final static String enableKeypressStatusProp
         = "thdl.Jskad.enable.tibetan.mode.status";
 
-    /* The .rtf files named below better be included in the jar in the
-       same directory as 'Jskad.class'. */
+    /** Determines which Tibetan keyboards Jskad supports.  Adding a
+        new one is as easy as adding 3 lines of text here. */
     private final static JskadKeyboardManager keybdMgr
         = new JskadKeyboardManager(new JskadKeyboard[] {
             new JskadKeyboard("Extended Wylie Keyboard",
@@ -372,7 +372,8 @@ public class Jskad extends JPanel implements DocumentListener {
 		toolBar.add(new JLabel("Keyboard:"));
 		toolBar.addSeparator();
 
-        /* Initialize dp before calling installKeyboard. */
+        /* Initialize dp before calling
+           JskadKeyboard.activate(DuffPane). */
         if (ThdlOptions.getBooleanOption(Jskad.enableKeypressStatusProp)) {
             dp = new DuffPane(statusBar);
         } else {
@@ -387,12 +388,13 @@ public class Jskad extends JPanel implements DocumentListener {
         try {
             keyboards.setSelectedIndex(initialKeyboard);
         } catch (IllegalArgumentException e) {
-            keyboards.setSelectedIndex(0); // good ol' Wylie
+            initialKeyboard = 0; // good ol' Wylie
+            keyboards.setSelectedIndex(initialKeyboard);
         }
-        installKeyboard(initialKeyboard);
+        keybdMgr.elementAt(initialKeyboard).activate(dp);
 		keyboards.addActionListener(new ThdlActionListener() {
 			public void theRealActionPerformed(ActionEvent e) {
-                installKeyboard(keyboards.getSelectedIndex());
+                keybdMgr.elementAt(keyboards.getSelectedIndex()).activate(dp);
 			}
 		});
 		toolBar.add(keyboards);
@@ -789,83 +791,6 @@ public class Jskad extends JPanel implements DocumentListener {
 		}
 	}
 
-	private TibetanKeyboard sambhota1Keyboard = null, duff1Keyboard = null, duff2Keyboard = null, acipKeyboard = null;
-	private void installKeyboard(int keyboardIndex) {
-        switch (keyboardIndex) {
-        case 1: //TCC 1
-            if (duff1Keyboard == null)
-                duff1Keyboard = installKeyboard("tcc1");
-            else
-                dp.registerKeyboard(duff1Keyboard);
-            break;
-
-        case 2: //TCC 2
-            if (duff2Keyboard == null)
-                duff2Keyboard = installKeyboard("tcc2");
-            else
-                dp.registerKeyboard(duff2Keyboard);
-            break;
-
-        case 3: //Sambhota
-            if (sambhota1Keyboard == null)
-                sambhota1Keyboard = installKeyboard("sambhota1");
-            else
-                dp.registerKeyboard(sambhota1Keyboard);
-            break;
-        case 4: //ACIP
-            if (acipKeyboard == null)
-                acipKeyboard = installKeyboard("acip");
-            else
-                dp.registerKeyboard(acipKeyboard);
-            break;
-        default: //Extended Wylie
-            if (0 != keyboardIndex
-                && ThdlOptions.getBooleanOption("thdl.debug")) {
-                throw new Error("You set thdl.default.tibetan.keyboard to an illegal value: "
-                                + keyboardIndex);
-            }
-            installKeyboard("wylie");
-            break;
-        }
-    }
-
-    private TibetanKeyboard installKeyboard(String name) {
-		TibetanKeyboard tk = null;
-
-		if (!name.equalsIgnoreCase("wylie")) {
-			URL keyboard_url = null;
-
-			if (name.equalsIgnoreCase("acip"))
-				keyboard_url = TibetanMachineWeb.class.getResource("acip_keyboard.ini");
-
-			if (name.equalsIgnoreCase("sambhota1"))
-				keyboard_url = TibetanMachineWeb.class.getResource("sambhota_keyboard_1.ini");
-
-			else if (name.equalsIgnoreCase("tcc1"))
-				keyboard_url = TibetanMachineWeb.class.getResource("tcc_keyboard_1.ini");
-
-			else if (name.equalsIgnoreCase("tcc2"))
-				keyboard_url = TibetanMachineWeb.class.getResource("tcc_keyboard_2.ini");
-
-			if (null != keyboard_url) {
-				try {
-					tk = new TibetanKeyboard(keyboard_url);
-				}
-				catch (TibetanKeyboard.InvalidKeyboardException ike) {
-					System.out.println("invalid keyboard file or file not found");
-                    ThdlDebug.noteIffyCode();
-					return null;
-				}
-			}
-			else
-				return null;
-		}
-
-        ThdlDebug.verify("dp != null", dp != null);
-		dp.registerKeyboard(tk);
-		return tk;
-	}
-
 /**
 * Allows use of Jskad as dependent JFrame.
 * Once you've called this method, users will
@@ -1068,9 +993,9 @@ class JskadKeyboard {
     /** the name of the .ini file for this keyboard */
     private String keybdIniFile;
 
-    /** the associated TibetanKeyboard, which is initialized only when
-        needed */
-    private TibetanKeyboard tibKeybd = null;
+    /** the associated .ini file, which is read in only when needed
+        and only once */
+    private URL tibKeybdURL = null;
 
     /** Creates a new JskadKeyboard. 
      *  @param identifyingString a short string used in the GUI to
@@ -1123,9 +1048,9 @@ class JskadKeyboard {
      *  the active keyboard */
     public void activate(DuffPane dp) {
         URL tibKeybdURL = null;
-        if (null == tibKeybd && keybdIniFile != null) {
+        if (null == tibKeybdURL && keybdIniFile != null) {
             tibKeybdURL = TibetanMachineWeb.class.getResource(keybdIniFile);
-            if (null == tibKeybd)
+            if (null == tibKeybdURL)
                 throw new Error("Cannot load the keyboard initialization resource "
                                 + keybdIniFile);
         }
