@@ -24,9 +24,9 @@ anything that might be affected by those changes.
 Run PrepareDistribution in immediate window.
   This runs automated tests.  For these to work, you need to have the test case 
     files (from CVS/SourceForge) in your running WylieWord folder.
-    The third set of tests may take ten minutes or so.
+    The full set of tests may take quite a long time; maybe half an hour.
     Verify that the results are OK.
-  It also unbinds all the WylieWord keys.  
+  It also unbinds all the WylieWord keys.
     This is critical to having WylieWord work correctly on non-English keyboards.
     (After making the distribution, you may want to restore the keybindings
      in the development copy by calling WylieWordBindKeys.)
@@ -36,8 +36,9 @@ Make a copy and rename it Setup.doc.
 
 If the manual has changed, update its revision date.
 
-The WylieWord installer is created using the program "SEAU",
-available for $49 on the web.  The .INP file is its configuration.
+The WylieWord installer is created using the program "SEAU"
+("Self-Extracting Archive Utility"), available for $49 on the web.
+The .INP file is its configuration.
 
 In SEAU:
 
@@ -45,8 +46,7 @@ In SEAU:
   Update the Archive output file location to be in that folder also.
   Save the SEAU configuration (.INP file) if you have changed it.
   Run the SEAU builder.
-  Run the resulting self-extracting .exe file.
 
-Re-test everything.  Do the testing with the template installed in and
-loaded from the Word Startup folder.  (Due to Word idiocy, VBA runs
-differently (and usually worse) when loaded from there.)
+Now install and re-test.  See the Testing.doc file for how to do a
+clean install and what to test.
+
