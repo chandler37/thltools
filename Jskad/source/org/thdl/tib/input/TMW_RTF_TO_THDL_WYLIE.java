@@ -23,11 +23,14 @@ import java.io.*;
 import org.thdl.util.*;
 import org.thdl.tib.text.*;
 
-/**
+/** DLC FIXME: this is misnamed and it doesn't allow for TM->TMW conversion.
+ *
  *  TMW_RTF_TO_THDL_WYLIE is a command-line utility for converting TMW
- *  to Wylie.  It is a TibetanMachineWeb-in-RichTextFormat to THDL
- *  Extended Wylie converter, more specifically.  Invoke it with no
- *  parameters for usage information.
+ *  to Wylie or to Tibetan Machine.  It is a
+ *  TibetanMachineWeb-in-RichTextFormat to your choice of
+ *  TibetanMachine-in-RichTextFormat or THDL Extended
+ *  Wylie-in-RichTextFormat converter, more specifically.  Invoke it
+ *  with no parameters for usage information.
  *  @author David Chandler */
 public class TMW_RTF_TO_THDL_WYLIE {
     static final String rtfErrorMessage
@@ -48,19 +51,25 @@ public class TMW_RTF_TO_THDL_WYLIE {
      *  @return the exit code. */
     public static int realMain(String[] args, PrintStream out) {
         try {
+            boolean convertToTMMode = false;
+            boolean convertToWylieMode = false;
             boolean findSomeNonTMWMode = false;
             boolean findAllNonTMWMode = false;
             // Process arguments:
             if ((args.length != 1 && args.length != 2)
                 || (args.length == 1
-                    && (args[0].equals("-h")
-                        || args[0].equals("--help")))
+                    && !(args[0].equals("-v")
+                         || args[0].equals("--version")))
                 || (args.length == 2
                     && !((findAllNonTMWMode
                           = args[0].equals("--find-all-non-tmw"))
+                         || (convertToTMMode
+                             = args[0].equals("--to-tibetan-machine"))
+                         || (convertToWylieMode
+                             = args[0].equals("--to-wylie"))
                          || (findSomeNonTMWMode
                              = args[0].equals("--find-some-non-tmw"))))) {
-                out.println("TMW_RTF_TO_THDL_WYLIE [--find-all-non-tmw | --find-some-non-tmw] RTF_file |");
+                out.println("TMW_RTF_TO_THDL_WYLIE [--find-all-non-tmw | --find-some-non-tmw | --to-tibetan-machine | --to-wylie] RTF_file |");
                 out.println("TMW_RTF_TO_THDL_WYLIE [--version | -v | --help | -h]");
                 out.println("");
                 out.println("Distributed under the terms of the THDL Open Community License Version 1.0.");
@@ -72,17 +81,24 @@ public class TMW_RTF_TO_THDL_WYLIE {
                 out.println("   not in Tibetan Machine Web fonts, exit zero iff none found");
                 out.println(" --find-some-non-tmw to locate all distinct characters in the input document");
                 out.println("   not in Tibetan Machine Web fonts, exit zero iff none found");
-                out.println(" Otherwise, needs one argument, the name of the TibetanMachineWeb RTF file.");
-                out.println(" Writes the Wylie transliteration of that file to standard output after");
-                out.println(" dealing with the curly brace problem.  Exit code is zero on success,");
-                out.println(" nonzero otherwise.");
+                out.println(" --to-tibetan-machine to convert TibetanMachineWeb to TibetanMachine");
+                out.println("   rather than TibetanMachineWeb to Wylie");
+                out.println(" --to-wylie to convert TibetanMachineWeb to TibetanMachine");
+                out.println("   rather than TibetanMachineWeb to Wylie");
+                out.println(" In --to... modes, needs one argument, the name of the TibetanMachineWeb RTF");
+                out.println(" file.  Writes the THDL Extended Wylie transliteration of that file [in");
+                out.println(" --to-wylie mode] or the TibetanMachine equivalent of that file [in");
+                out.println(" --to-tibetan-machine mode] to standard output after dealing with the curly");
+                out.println(" brace problem.  Exit code is zero on success, nonzero otherwise.");
                 out.println("");
                 out.println(" You may find it helpful to use `--find-some-non-tmw' mode before doing a");
                 out.println(" conversion so that you have confidence in the conversion's correctness.");
                 return 77;
             }
             if (args[0].equals("--version") || args[0].equals("-v")) {
-                out.println("TMW_RTF_TO_THDL_WYLIE version 0.8");
+                out.println("TMW_RTF_TO_THDL_WYLIE version 0.81");
+                out.println("Compiled at "
+                            + ThdlVersion.getTimeOfCompilation());
                 return 77;
             }
             String tmwRtfPath = args[args.length - 1];
@@ -107,12 +123,19 @@ public class TMW_RTF_TO_THDL_WYLIE {
             } else if (findSomeNonTMWMode) {
                 // 0, -1 is the entire document.
                 return ((TibetanDocument)dp.getDocument()).findSomeNonTMWCharacters(0, -1, out);
-            } else { // conversion mode
+            } else { // conversion {to Wylie or TM} mode
                 // Fix curly braces in the entire document:
                 ((TibetanDocument)dp.getDocument()).replaceTahomaCurlyBracesAndBackslashes(0, -1);
 
-                // Convert to THDL Wylie:
-                dp.toWylie(0, dp.getDocument().getLength());
+                if (convertToWylieMode) {
+                    ThdlDebug.verify(!convertToTMMode);
+                    // Convert to THDL Wylie:
+                    dp.toWylie(0, dp.getDocument().getLength());
+                } else {
+                    ThdlDebug.verify(convertToTMMode);
+                    // Convert to TibetanMachine:
+                    ((TibetanDocument)dp.getDocument()).convertToTM(0, dp.getDocument().getLength());
+                }
 
                 // Write to standard output the result:
                 ((TibetanDocument)dp.getDocument()).writeRTFOutputStream(out);

@@ -74,7 +74,12 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 	private static String fileName = "tibwn.ini";
 	private static final String DELIMITER = "~";
 	private static Set top_vowels;
+    /** a way of encoding the choice of TibetanMachineWeb font from
+        that family of 10 fonts: */
 	private static SimpleAttributeSet[] webFontAttributeSet = new SimpleAttributeSet[11];
+    /** a way of encoding the choice of TibetanMachine font from
+        that family of 5 fonts: */
+	private static SimpleAttributeSet[] normFontAttributeSet = new SimpleAttributeSet[6];
 	private static boolean hasDisambiguatingKey; //to disambiguate gy and g.y=
 	private static char disambiguating_key;
 	private static boolean hasSanskritStackingKey; //for stacking Sanskrit
@@ -242,6 +247,12 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 		for (int i=1; i<webFontAttributeSet.length; i++) {
 			webFontAttributeSet[i] = new SimpleAttributeSet();
 			StyleConstants.setFontFamily(webFontAttributeSet[i],tmwFontNames[i]);
+		}
+
+		normFontAttributeSet[0] = null;
+		for (int i=1; i<normFontAttributeSet.length; i++) {
+			normFontAttributeSet[i] = new SimpleAttributeSet();
+			StyleConstants.setFontFamily(normFontAttributeSet[i],tmFontNames[i]);
 		}
 
 		StringTokenizer sTok;
@@ -561,6 +572,23 @@ public static SimpleAttributeSet getAttributeSet(int font) {
 }
 
 /**
+* Gets the AttributeSet for the given TibetanMachine font.
+* This information is required in order to be able to put styled
+* text into {@link TibetanDocument TibetanDocument}.
+* @param font the number of the TibetanMachineWeb font for which
+* you want the SimpleAttributeSet: TibetanMachine = 1, 
+* TibetanMachineSkt1 = 2, etc. up to 5
+* @return a SimpleAttributeSet for the given font - that is,
+* a way of encoding the font itself
+*/
+public static SimpleAttributeSet getAttributeSetTM(int font) {
+	if (font > -1 && font < normFontAttributeSet.length)
+		return normFontAttributeSet[font];
+	else
+		return null;
+}
+
+/**
 * Says whether or not the character is formatting.
 * @param c the character to be checked
 * @return true if c is formatting (TAB or
@@ -851,6 +879,10 @@ public static DuffCode getHalfHeightGlyph(String hashKey) {
 	return dc[REDUCED_C];
 }
 
+private static final DuffCode TMW_cr = new DuffCode(1, '\r');
+private static final DuffCode TMW_lf = new DuffCode(1, '\n');
+private static final DuffCode TMW_tab = new DuffCode(1, '\t');
+
 /** Returns the DuffCode for the TibetanMachineWeb glyph corresponding
     to the given TibetanMachine font
     (0=norm,1=Skt1,2=Skt2,3=Skt3,4=Skt4) and character(32-254).
@@ -861,13 +893,35 @@ public static DuffCode getHalfHeightGlyph(String hashKey) {
     an existing TibetanMachine glyph, null is returned.  In general,
     though, this method may raise a runtime exception if you pass in a
     (font, ord) that doesn't correspond to an existing TibetanMachine
-    glyph. */
-public static DuffCode mapTMtoTMW(int font, int ordinal) {
+    glyph.
+
+    Only a few control characters are supported: '\r' (carriage
+    return), '\n' (line feed), and '\t' (tab).
+ */
+public static DuffCode mapTMtoTMW(int font, int ordinal)
+    throws ArrayIndexOutOfBoundsException {
+    if (ordinal < 32) {
+        if (ordinal == (int)'\r')
+            return TMW_cr;
+        else if (ordinal == (int)'\n')
+            return TMW_lf;
+        else if (ordinal == (int)'\t')
+            return TMW_tab;
+        else {
+            // for robustness, just return font 1, char ordinal.
+            ThdlDebug.noteIffyCode();
+            return null;
+        }
+    }
     DuffCode ans = TMtoTMW[font][ordinal-32];
     // comment this out to test via main(..):
     ThdlDebug.verify(null != ans);
 	return ans;
 }
+
+private static final DuffCode TM_cr = new DuffCode(1, '\r');
+private static final DuffCode TM_lf = new DuffCode(1, '\n');
+private static final DuffCode TM_tab = new DuffCode(1, '\t');
 
 /** Returns the DuffCode for the TibetanMachine glyph corresponding to
     the given TibetanMachineWeb font
@@ -880,8 +934,27 @@ public static DuffCode mapTMtoTMW(int font, int ordinal) {
     existing TibetanMachineWeb glyph, null is returned.  In general,
     though, this method may raise a runtime exception if you pass in a
     (font, ord) that doesn't correspond to an existing
-    TibetanMachineWeb glyph. */
-public static DuffCode mapTMWtoTM(int font, int ordinal) {
+    TibetanMachineWeb glyph.
+
+    Only a few control characters are supported: '\r' (carriage
+    return), '\n' (line feed), and '\t' (tab).
+
+ */
+public static DuffCode mapTMWtoTM(int font, int ordinal)
+    throws ArrayIndexOutOfBoundsException {
+    if (ordinal < 32) {
+        if (ordinal == (int)'\r')
+            return TM_cr;
+        else if (ordinal == (int)'\n')
+            return TM_lf;
+        else if (ordinal == (int)'\t')
+            return TM_tab;
+        else {
+            // for robustness, just return font 1, char ordinal.
+            ThdlDebug.noteIffyCode();
+            return null;
+        }
+    }
     DuffCode ans = TMWtoTM[font][ordinal-32];
     // comment this out to test via main(..):
     ThdlDebug.verify(null != ans || (font == 7 && ordinal == 91));
@@ -975,7 +1048,13 @@ private static DuffCode getTMtoTMW(int font, int code) {
 	return TMtoTMW[font][code];
 }
 
-private static int getTMFontNumber(String name) {
+/**
+* Gets the TibetanMachine font number for this font name.
+* @param name a font name
+* @return between 1 and 5 if the font is one
+* of the TibetanMachine fonts, otherwise 0
+*/
+public static int getTMFontNumber(String name) {
     String internedName = name.intern();
 	for (int i=1; i<tmFontNames.length; i++) {
 		if (internedName == tmFontNames[i])

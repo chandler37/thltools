@@ -323,7 +323,25 @@ public class Jskad extends JPanel implements DocumentListener {
 			});
 			toolsMenu.addSeparator();
 			toolsMenu.add(importItem);
-		}
+
+            JMenuItem toTMItem = new JMenuItem("Convert TMW to TM"); // DLC FIXME: do it just in the selection?
+            toTMItem.addActionListener(new ThdlActionListener() {
+                    public void theRealActionPerformed(ActionEvent e) {
+                        ((TibetanDocument)dp.getDocument()).convertToTM(0, -1); // entire document
+                    }
+                });
+
+            JMenuItem toTMWItem = new JMenuItem("Convert TM to TMW"); // DLC FIXME: do it just in the selection?
+            toTMWItem.addActionListener(new ThdlActionListener() {
+                    public void theRealActionPerformed(ActionEvent e) {
+                        ((TibetanDocument)dp.getDocument()).convertToTMW(0, -1); // entire document
+                    }
+                });
+            toolsMenu.addSeparator();
+            toolsMenu.add(toTMItem);
+            toolsMenu.add(toTMWItem);
+        }
+
 
         if (ThdlOptions.getBooleanOption("thdl.add.developer.options.to.menu")) {
             toolsMenu.addSeparator();
@@ -338,21 +356,10 @@ public class Jskad extends JPanel implements DocumentListener {
 
         if (ThdlOptions.getBooleanOption("thdl.add.developer.options.to.menu")) {
             toolsMenu.addSeparator();
-            JMenuItem DevelItem = new JMenuItem("Check for non-TMW characters"); // DLC NOW: do it just in the selection
+            JMenuItem DevelItem = new JMenuItem("Check for non-TMW characters"); // FIXME: do it just in the selection?
             DevelItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
                         ((TibetanDocument)dp.getDocument()).findSomeNonTMWCharacters(0, -1); // entire document.
-                    }
-                });
-            toolsMenu.add(DevelItem);
-        }
-
-        if (ThdlOptions.getBooleanOption("thdl.add.developer.options.to.menu")) {
-            toolsMenu.addSeparator();
-            JMenuItem DevelItem = new JMenuItem("Fix curly braces RTF problem"); // DLC NOW: do it just in the selection
-            DevelItem.addActionListener(new ThdlActionListener() {
-                    public void theRealActionPerformed(ActionEvent e) {
-                        ((TibetanDocument)dp.getDocument()).replaceTahomaCurlyBracesAndBackslashes(0, -1); // entire document
                     }
                 });
             toolsMenu.add(DevelItem);
@@ -401,11 +408,11 @@ public class Jskad extends JPanel implements DocumentListener {
                             new SimpleFrame(kbd.getIdentifyingString(),
                                             kbd.getQuickRefPane());
                             /* DLC FIXME -- pressing the "Extended
-                               Wylie" menu item twice causes the first
-                               pane to become dead.  We should check
-                               to see if the first pane exists and
-                               raise it rather than creating a second
-                               pane. */
+                               Wylie" menu item (for example) twice
+                               causes the first pane to become dead.
+                               We should check to see if the first
+                               pane exists and raise it rather than
+                               creating a second pane. */
                         }
                     });
                 infoMenu.add(keybdItem);
@@ -420,11 +427,11 @@ public class Jskad extends JPanel implements DocumentListener {
                     public void theRealActionPerformed(ActionEvent e) {
                         JOptionPane.showMessageDialog(Jskad.this,
                                                       "Copyright 2001-2003 Tibetan and Himalayan Digital Library\n\n"+
-                                                      "Jskad is protected by the THDL Open Community License.\n\n"+ /* FIXME HARD-CODED VERSION NUMBER */
+                                                      "Jskad is protected by the THDL Open Community License.\n\n"+ /* FIXME UPDATE THE YEAR REGULARLY */
 			
                                                       "For more information, or to download the source code\n"+
                                                       "for Jskad, visit our web site:\n"+
-                                                      "     http://www.thdl.org/\n" +
+                                                      "     http://thdl.org/\n" +
                                                       "\n" +
                                                       "When submitting bug reports, please indicate that the\n" +
                                                       "time of compilation is "

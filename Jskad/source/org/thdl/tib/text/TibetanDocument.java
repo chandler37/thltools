@@ -150,16 +150,18 @@ public class TibetanDocument extends DefaultStyledDocument {
 * @param pos the position at which you want to insert text
 */
 	public int insertDuff(int pos, DuffData[] glyphs) {
-        return insertDuff(tibetanFontSize, pos, glyphs);
+        return insertDuff(tibetanFontSize, pos, glyphs, true);
 	}
 
-	private int insertDuff(int fontSize, int pos, DuffData[] glyphs) {
+	private int insertDuff(int fontSize, int pos, DuffData[] glyphs, boolean asTMW) {
 		if (glyphs == null)
 			return pos;
 
 		MutableAttributeSet mas;
 		for (int i=0; i<glyphs.length; i++) {
-			mas = TibetanMachineWeb.getAttributeSet(glyphs[i].font);
+            mas = ((asTMW)
+                   ? TibetanMachineWeb.getAttributeSet(glyphs[i].font)
+                   : TibetanMachineWeb.getAttributeSetTM(glyphs[i].font));
 			appendDuff(fontSize, pos, glyphs[i].text, mas);
 			pos += glyphs[i].text.length();
 		}
@@ -350,7 +352,8 @@ public class TibetanDocument extends DefaultStyledDocument {
         TibetanMachineWeb.  Works within the range [start, end).
         Using a negative number for end means that this will run to
         the end of the document.  Be sure to set the size for Tibetan
-        as you like it before using this.  SPEED_FIXME: might be
+        as you like it before using this (well, it usually gets it
+        right on its own, but just in case).  SPEED_FIXME: might be
         faster to run over the elements, if they are one per font. */
     public void replaceTahomaCurlyBracesAndBackslashes(int begin, int end) {
         if (end < 0)
@@ -382,8 +385,106 @@ public class TibetanDocument extends DefaultStyledDocument {
                         } catch (Exception e) {
                             // leave it as tibetanFontSize
                         }
-                        insertDuff(fontSize, i, toReplaceWith);
+                        insertDuff(fontSize, i, toReplaceWith, true);
                         remove(i+1, 1);
+                    }
+                }
+                i++;
+            }
+        } catch (BadLocationException ble) {
+            ble.printStackTrace();
+            ThdlDebug.noteIffyCode();
+        }
+    }
+
+    /** Converts all TibetanMachineWeb glyphs in the document to
+        TibetanMachine.  Works within the range [start, end).  Using a
+        negative number for end means that this will run to the end of
+        the document.  Be sure to set the size for Tibetan as you like
+        it before using this (well, it usually gets it right on its
+        own, but just in case).  SPEED_FIXME: might be faster to run
+        over the elements, if they are one per font. */
+    public void convertToTM(int begin, int end) {
+        convertTMW_TM(begin, end, true);
+    }
+
+    /** Converts all TibetanMachine glyphs in the document to
+        TibetanMachineWeb.  Works within the range [start, end).
+        Using a negative number for end means that this will run to
+        the end of the document.  Be sure to set the size for Tibetan
+        as you like it before using this (well, it usually gets it
+        right on its own, but just in case).  SPEED_FIXME: might be
+        faster to run over the elements, if they are one per font. */
+    public void convertToTMW(int begin, int end) {
+        convertTMW_TM(begin, end, false);
+    }
+
+    /** Helper function.
+        @see convertToTMW(int,int) 
+        @see convertToTM(int,int) */
+    private void convertTMW_TM(int begin, int end, boolean toTM) {
+        if (end < 0)
+            end = getLength();
+        if (begin >= end)
+            return;
+        int i = begin;
+        try {
+            DuffData[] equivalent = new DuffData[1];
+            equivalent[0] = new DuffData();
+            while (i < end) {
+                AttributeSet attr = getCharacterElement(i).getAttributes();
+                String fontName = StyleConstants.getFontFamily(attr);
+				int fontNum
+                    = (toTM
+                       ? TibetanMachineWeb.getTMWFontNumber(fontName)
+                       : TibetanMachineWeb.getTMFontNumber(fontName));
+
+                if (0 != fontNum) {
+                    DuffCode dc = null;
+                    try {
+                        if (toTM) {
+                            dc = TibetanMachineWeb.mapTMWtoTM(fontNum - 1,
+                                                              getText(i,1).charAt(0));
+                        } else {
+                            dc = TibetanMachineWeb.mapTMtoTMW(fontNum - 1,
+                                                              getText(i,1).charAt(0));
+                        }
+                        if (null != dc) {
+                            equivalent[0].setData(dc.getCharacter(),
+                                                  dc.getFontNum());
+                        }
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                         // we handle this below...
+                        System.out.println("FIXME: "
+                                           + (toTM ? "TMW->TM" : "TM->TMW")
+                                           + " conversion is in trouble");
+                        System.out.println("font is " + (fontNum - 1)
+                                           + ", char is "
+                                           + (int)getText(i,1).charAt(0)
+                                           + "; pos is " + i);
+                        ThdlDebug.noteIffyCode();
+                    }
+                    if (null != dc) {
+                        int fontSize = tibetanFontSize;
+                        try {
+                            fontSize = ((Integer)getCharacterElement(i).getAttributes().getAttribute(StyleConstants.FontSize)).intValue();
+                        } catch (Exception e) {
+                            // leave it as tibetanFontSize
+                        }
+                        insertDuff(fontSize, i, equivalent, !toTM);
+                        remove(i+1, 1);
+                    } else {
+                        // DLC FIXME: insert into document a string
+                        // saying "there's no TM equivalent for this."
+                        // (For now, I'm inserting the alphabet and
+                        // all the numbers in a big font in TMW to try
+                        // and get some attention.  And I've
+                        // *documented* this on the website.)
+                        String trickyTMW
+                            = "!-\"-#-,-%-&-'-(-)-*-+-,-.-/-0-1-2-3-4-5-6-7-8-9-:-;-<-=->-?-0-1-2-3-4-5-6-7-8-9-";
+                        equivalent[0] = new DuffData(trickyTMW, 1);
+                        insertDuff(72, i, equivalent, true);
+                        i += trickyTMW.length() + 1;
                     }
                 }
                 i++;

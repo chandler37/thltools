@@ -19,9 +19,13 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.text;
 
 /**
-* A wrapper object for a stretch of TibetanMachineWeb data that shares the same font.
-* A piece of DuffData consists of a font number and a string.
-* The font number is a number from one to ten, corresponding
+* A wrapper object for a stretch of TibetanMachineWeb (TMW) or
+* TibetanMachine (TM) data that shares the same font.  A piece of
+* DuffData consists of a font number and a string.  The fact that this
+* stretch is TMW vs. TM is not stored in this object; the client must
+* remember that itself.
+*
+* For TMW, the font number is a number from one to ten, corresponding
 * to the ten TibetanMachineWeb fonts, as follows:
 * <p>
 *    1 - TibetanMachineWeb<br>
@@ -29,9 +33,18 @@ package org.thdl.tib.text;
 *    ...<br>
 *    10 - TibetanMachineWeb9<br>
 * <p>
-* The string represents a contiguous stretch of data in that
-* font, i.e. a stretch of TibetanMachineWeb that doesn't require a font change.
-*/
+* For TM, the font number is a number from one to five, corresponding
+* to the five TibetanMachineWeb fonts, as follows:
+* <p>
+*    1 - TibetanMachine<br>
+*    2 - TibetanMachineSkt1<br>
+*    3 - TibetanMachineSkt2<br>
+*    4 - TibetanMachineSkt3<br>
+*    5 - TibetanMachineSkt4<br>
+* <p>
+* The string represents a contiguous stretch of data in that font,
+* i.e. a stretch of TibetanMachineWeb or TibetanMachine that doesn't
+* require a font change.  */
 public class DuffData {
 /**
 * a string of text
@@ -43,11 +56,24 @@ public class DuffData {
     public int font;
 
 /**
-* @param s a string of TibetanMachineWeb text
-* @param i a TibetanMachineWeb font number
+* @param s a string of TibetanMachineWeb or TibetanMachine text
+* @param i a TibetanMachineWeb or TibetanMachine font number
 */
     public DuffData(String s, int i) {
         text = s;
+        font = i;
+    }
+
+    /** Default constructor.  The DuffData is invalid after this until
+        you call setData or manipulate the public fields. */
+    public DuffData() { }
+
+/** Changes the text and font this DuffData represents.
+* @param c a character of TibetanMachineWeb or TibetanMachine text
+* @param i a TibetanMachineWeb or TibetanMachine font number
+*/
+    public void setData(char c, int i) {
+        text = new String(new char[] { c });
         font = i;
     }
 }

@@ -77,74 +77,55 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
         assertTrue(0 == rc);
     }
 
-    /** Tests the --find-some-non-tmw mode of {@link
-     *  org.thdl.tib.input.TMW_RTF_TO_THDL_WYLIE}. */
-    public void testFindSomeNonTMWMode() {
+
+    private void helper(String mode, String extension, int erc) {
         String[] args = new String[] {
-            "--find-some-non-tmw",
-            "source" + File.separator
-            + "org" + File.separator
-            + "thdl" + File.separator
-            + "tib" + File.separator
-            + "input" + File.separator
-            + "TMW_RTF_TO_THDL_WYLIETest1.rtf"
+            mode,
+            getTestFileName("Test1")
         };
         boolean fileNotFound = false;
         try {
-            int rc = TMW_RTF_TO_THDL_WYLIE.realMain(args, new PrintStream(new FileOutputStream("bin/for-junit/TMW_RTF_TO_THDL_WYLIETest1ResultFindSome.out")));
-            assertTrue(rc == 1);
+            int rc = TMW_RTF_TO_THDL_WYLIE.realMain(args, new PrintStream(new FileOutputStream("bin/for-junit/TMW_RTF_TO_THDL_WYLIETest1Result" + extension + ".out")));
+            assertTrue(rc == erc);
         } catch (FileNotFoundException e) {
             fileNotFound = true;
         }
         assertTrue(!fileNotFound);
 
-        testActualAndExpected("Test1ResultFindSome");
+        testActualAndExpected("Test1Result" + extension);
+    }
+
+    private static String getTestFileName(String testName) {
+        return "source" + File.separator
+            + "org" + File.separator
+            + "thdl" + File.separator
+            + "tib" + File.separator
+            + "input" + File.separator
+            + "TMW_RTF_TO_THDL_WYLIE" + testName + ".rtf";
+    }
+
+
+    /** Tests the --find-some-non-tmw mode of {@link
+     *  org.thdl.tib.input.TMW_RTF_TO_THDL_WYLIE}. */
+    public void testFindSomeNonTMWMode() {
+        helper("--find-some-non-tmw", "FindSome", 1);
     }
 
     /** Tests the --find-all-non-tmw mode of {@link
      *  org.thdl.tib.input.TMW_RTF_TO_THDL_WYLIE}. */
     public void testFindAllNonTMWMode() {
-        String[] args = new String[] {
-            "--find-all-non-tmw",
-            "source" + File.separator
-            + "org" + File.separator
-            + "thdl" + File.separator
-            + "tib" + File.separator
-            + "input" + File.separator
-            + "TMW_RTF_TO_THDL_WYLIETest1.rtf"
-        };
-        boolean fileNotFound = false;
-        try {
-            int rc = TMW_RTF_TO_THDL_WYLIE.realMain(args, new PrintStream(new FileOutputStream("bin/for-junit/TMW_RTF_TO_THDL_WYLIETest1ResultFindAll.out")));
-            assertTrue(rc == 1);
-        } catch (FileNotFoundException e) {
-            fileNotFound = true;
-        }
-        assertTrue(!fileNotFound);
-
-        testActualAndExpected("Test1ResultFindAll");
+        helper("--find-all-non-tmw", "FindAll", 1);
     }
 
-    /** Tests the converter mode of {@link
+    /** Tests the --to-wylie converter mode of {@link
      *  org.thdl.tib.input.TMW_RTF_TO_THDL_WYLIE}. */
     public void testConverterMode() {
-        String[] args = new String[] {
-            "source" + File.separator
-            + "org" + File.separator
-            + "thdl" + File.separator
-            + "tib" + File.separator
-            + "input" + File.separator
-            + "TMW_RTF_TO_THDL_WYLIETest1.rtf"
-        };
-        boolean fileNotFound = false;
-        try {
-            int rc = TMW_RTF_TO_THDL_WYLIE.realMain(args, new PrintStream(new FileOutputStream("bin/for-junit/TMW_RTF_TO_THDL_WYLIETest1ResultConversion.out")));
-            assertTrue(rc == 0);
-        } catch (FileNotFoundException e) {
-            fileNotFound = true;
-        }
-        assertTrue(!fileNotFound);
+        helper("--to-wylie", "Conversion", 0);
+    }
 
-        testActualAndExpected("Test1ResultConversion");
+    /** Tests the --to-tibetan-machine converter mode of {@link
+     *  org.thdl.tib.input.TMW_RTF_TO_THDL_WYLIE}. */
+    public void testTMConverterMode() {
+        helper("--to-tibetan-machine", "TM", 0);
     }
 }
