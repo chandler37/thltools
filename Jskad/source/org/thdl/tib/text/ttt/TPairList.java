@@ -603,5 +603,16 @@ class TPairList {
             }
         }
     }
+
+    /** Appends legal Unicode corresponding to this stack to sb.  DLC
+     *  FIXME: which normalization form, if any? */
+    void getUnicode(StringBuffer sb) {
+        boolean subscribed = false;
+        for (int i = 0; i < size(); i++) {
+            get(i).getUnicode(sb, subscribed);
+            subscribed = true;
+        }
+    }
+
 }
 // DLC FIXME: handle 'o' and 'x', e.g. KAo and NYAx.

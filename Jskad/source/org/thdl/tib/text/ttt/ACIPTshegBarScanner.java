@@ -57,7 +57,6 @@ public class ACIPTshegBarScanner {
             System.out.println(errors);
             System.out.println("Exiting with " + maxErrors + " or more errors; please fix input file and try again.");
             System.exit(1);
-        } else {
         }
         if (errors.length() > 0) {
             System.out.println("Errors scanning ACIP input file: ");
@@ -90,6 +89,7 @@ public class ACIPTshegBarScanner {
         while (-1 != (amt = in.read(ch))) {
             s.append(ch, 0, amt);
         }
+        in.close();
         return scan(s.toString(), errors, !strict, maxErrors);
     }
 
@@ -621,6 +621,18 @@ public class ACIPTshegBarScanner {
                 }
 
                 if (startSlashIndex >= 0) {
+                    if (startSlashIndex + 1 == i) {
+                        /* //NYA\\ appears in ACIP input, and I think
+                         * it means /NYA/.  We warn about // for this
+                         * reason.  \\ causes a tsheg-bar error (DLC
+                         * FIXME: verify this is so). */
+                        al.add(new ACIPString("//", ACIPString.ERROR));
+                        if (errors != null) {
+                            errors.append("Offset " + i + ": "
+                                          + "Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\n");
+                        }
+                        if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
+                    }
                     al.add(new ACIPString(s.substring(i, i+1),
                                           ACIPString.END_SLASH));
                     startOfString = i+1;
@@ -766,6 +778,9 @@ public class ACIPTshegBarScanner {
                         if ((int)ch == 65533) {
                             errors.append("Offset " + i + ": "
                                           + "Found an illegal, unprintable character.\n");
+                        } else if ('\\' == ch) {
+                            errors.append("Offset " + i + ": "
+                                          + "Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\n");
                         } else {
                             errors.append("Offset " + i + ": "
                                           + "Found an illegal character, " + ch + ", with ordinal " + (int)ch + ".\n");
@@ -849,7 +864,7 @@ public class ACIPTshegBarScanner {
             || ch == 'x'
             || ch == ':'
             || ch == '^'
-            || ch == '\\'
+            // DLC FIXME: we must treat this guy like a vowel, a special vowel that numerals can take on.  Until then, warn.            || ch == '\\'
 
             || ch == '-'
             || ch == '+'

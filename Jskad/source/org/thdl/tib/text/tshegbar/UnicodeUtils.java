@@ -286,8 +286,41 @@ public class UnicodeUtils implements UnicodeConstants {
     }
 
     /** Returns a human-readable, ASCII form of the Unicode codepoint
-        cp. */
-    public static String unicodeCodepointToString(char cp) {
+        cp. If shortenIfPossible is true, then printable ASCII
+        characters will appear as themselves. */
+    public static String unicodeCodepointToString(char cp,
+                                                  boolean shortenIfPossible) {
+        if (shortenIfPossible) {
+            if ((cp >= 'a' && cp <= 'z')
+                || (cp >= 'A' && cp <= 'Z')
+                || (cp >= '0' && cp <= '9')
+                || cp == '.'
+                || cp == ','
+                || cp == ' '
+                || cp == '\''
+                || cp == '"'
+                || cp == '+'
+                || cp == '-'
+                || cp == '='
+                || cp == '_'
+                || cp == '@'
+                || cp == '!'
+                || cp == '#'
+                || cp == '$'
+                || cp == '%'
+                || cp == '^'
+                || cp == '&'
+                || cp == '*'
+                || cp == '\t'
+                || cp == ':'
+                || cp == '['
+                || cp == ']'
+                || cp == '('
+                || cp == ')'
+                || cp == '{'
+                || cp == '}')
+                return new String(new char[] { cp });
+        }
         if (cp < '\u0010')
             return "\\u000" + Integer.toHexString((int)cp);
         else if (cp < '\u0100')
@@ -304,7 +337,19 @@ public class UnicodeUtils implements UnicodeConstants {
     public static String unicodeStringToString(String s) {
         StringBuffer sb = new StringBuffer(s.length() * 6);
         for (int i = 0; i < s.length(); i++) {
-            sb.append(unicodeCodepointToString(s.charAt(i)));
+            sb.append(unicodeCodepointToString(s.charAt(i), false));
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Returns the most succinct possible, human-readable, ASCII form
+     * of the String s of Unicode codepoints. */
+    public static String unicodeStringToPrettyString(String s) {
+        if (s == null) return "null";
+        StringBuffer sb = new StringBuffer(s.length() * 6);
+        for (int i = 0; i < s.length(); i++) {
+            sb.append(unicodeCodepointToString(s.charAt(i), true));
         }
         return sb.toString();
     }

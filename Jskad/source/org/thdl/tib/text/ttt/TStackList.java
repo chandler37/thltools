@@ -205,6 +205,15 @@ class TStackList {
             throw new IllegalArgumentException("opl (" + opl + ") is bad for this stack list (" + toString() + ")");
         return false;
     }
+
+    /** Returns legal Unicode corresponding to this tsheg bar.  DLC FIXME: which normalization form, if any? */
+    String getUnicode() {
+        StringBuffer u = new StringBuffer(size());
+        for (int i = 0; i < size(); i++) {
+            get(i).getUnicode(u);
+        }
+        return u.toString();
+    }
 }
 
 class BoolPair {

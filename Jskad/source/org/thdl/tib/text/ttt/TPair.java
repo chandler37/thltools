@@ -167,4 +167,19 @@ class TPair {
         if (null == rightWylie) rightWylie = "";
         return leftWylie + rightWylie;
     }
+
+    /** Appends legal Unicode corresponding to this (possible
+     *  subscribed) pair to sb.  DLC FIXME: which normalization form,
+     *  if any? */
+    void getUnicode(StringBuffer sb, boolean subscribed) {
+        if (null != getLeft()) {
+            String x = ACIPRules.getUnicodeFor(getLeft(), subscribed);
+            if (null != x) sb.append(x);
+        }
+        if (null != getRight()
+            && !("-".equals(getRight()) || "A".equals(getRight()))) {
+            String x = ACIPRules.getUnicodeFor(getRight(), subscribed);
+            if (null != x) sb.append(x);
+        }
+    }
 }

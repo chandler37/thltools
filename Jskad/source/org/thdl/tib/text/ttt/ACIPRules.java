@@ -28,9 +28,9 @@ class ACIPRules {
      *  three. */
     public static int MAX_CONSONANT_LENGTH = 3;
 
-    /** {'im:}, the longest "vowel", has 4 characters, so this is
-     *  four. */
-    public static int MAX_VOWEL_LENGTH = 4;
+    /** {'EEm:}, the longest "vowel", has 5 characters, so this is
+     *  five. */
+    public static int MAX_VOWEL_LENGTH = 5;
 
     /** For O(1) {@link #isVowel(String)} calls. */
     private static HashSet acipVowels = null;
@@ -42,18 +42,9 @@ class ACIPRules {
         { "U", "u" },
         { "E", "e" },
         { "O", "o" },
-        { "'I", "I" },
-        { "'U", "U" },
         { "EE", "ai" },
         { "OO", "au" },
-        { "i", "-i" },
-        { "'i", "-I" },
-        { "'A", "A" },
-        { "'O", "Ao" },
-        { "'E", "Ae" }
-        // DLC I'm on my own with 'O and 'E, but GANG'O appears
-        // and I wonder... so here are 'O and 'E.  It's
-        // consistent with 'I and 'A and 'U, at least.
+        { "i", "-i" }
     };
 
     /** Returns true if and only if s is an ACIP "vowel".  You can't
@@ -61,14 +52,24 @@ class ACIPRules {
      *  ACIP, so you have to call this in the right context. */
     public static boolean isVowel(String s) {
         if (null == acipVowels) {
-            acipVowels = new HashSet();
+            acipVowels = new HashSet(baseVowels.length * 8);
             for (int i = 0; i < baseVowels.length; i++) {
-                acipVowels.add(baseVowels[i][0]);
-                acipVowels.add(baseVowels[i][0] + 'm');
-                acipVowels.add(baseVowels[i][0] + ':');
-                acipVowels.add(baseVowels[i][0] + "m:");
-                // DLC '\' for visarga? how shall we do \ the visarga? like a vowel or not?
+                // DLC I'm on my own with 'O and 'E and 'OO and 'EE, but
+                // GANG'O appears and I wonder... so here they are.  It's
+                // consistent with 'I and 'A and 'U, at least: all the vowels
+                // may appear as K'vowel.
 
+                acipVowels.add(baseVowels[i][0]);
+                acipVowels.add('\'' + baseVowels[i][0]);
+                acipVowels.add(baseVowels[i][0] + 'm');
+                acipVowels.add('\'' + baseVowels[i][0] + 'm');
+                acipVowels.add(baseVowels[i][0] + ':');
+                acipVowels.add('\'' + baseVowels[i][0] + ':');
+                acipVowels.add(baseVowels[i][0] + "m:");
+                acipVowels.add('\'' + baseVowels[i][0] + "m:");
+                // DLC keep this code in sync with getUnicodeFor.
+
+                // DLC '\' for visarga? how shall we do \ the visarga? like a vowel or not?
             }
         }
         return (acipVowels.contains(s));
@@ -203,5 +204,213 @@ class ACIPRules {
             }
         }
         return (String)acipVowel2wylie.get(acip);
+    }
+
+    private static HashMap superACIP2unicode = null;
+    private static HashMap subACIP2unicode = null;
+    /** If acip is an ACIP consonant or vowel or punctuation mark,
+     *  then this returns the Unicode for it.  The Unicode for the
+     *  subscribed form of the glyph is returned if subscribed is
+     *  true.  Returns null if acip is unknown. */
+    static String getUnicodeFor(String acip, boolean subscribed) {
+        if (superACIP2unicode == null) {
+            superACIP2unicode = new HashMap(144);
+            subACIP2unicode = new HashMap(42);
+
+            // oddball:
+            subACIP2unicode.put("V", "\u0FAD");
+
+            superACIP2unicode.put("DH", "\u0F52");
+            subACIP2unicode.put("DH", "\u0FA2");
+            superACIP2unicode.put("BH", "\u0F57");
+            subACIP2unicode.put("BH", "\u0FA7");
+            superACIP2unicode.put("dH", "\u0F4D");
+            subACIP2unicode.put("dH", "\u0F9D");
+            superACIP2unicode.put("DZH", "\u0F5C");
+            subACIP2unicode.put("DZH", "\u0FAC");
+            superACIP2unicode.put("Ksh", "\u0F69");
+            subACIP2unicode.put("Ksh", "\u0FB9");
+            superACIP2unicode.put("GH", "\u0F43");
+            subACIP2unicode.put("GH", "\u0F93");
+            superACIP2unicode.put("K", "\u0F40");
+            subACIP2unicode.put("K", "\u0F90");
+            superACIP2unicode.put("KH", "\u0F41");
+            subACIP2unicode.put("KH", "\u0F91");
+            superACIP2unicode.put("G", "\u0F42");
+            subACIP2unicode.put("G", "\u0F92");
+            superACIP2unicode.put("NG", "\u0F44");
+            subACIP2unicode.put("NG", "\u0F94");
+            superACIP2unicode.put("C", "\u0F45");
+            subACIP2unicode.put("C", "\u0F95");
+            superACIP2unicode.put("CH", "\u0F46");
+            subACIP2unicode.put("CH", "\u0F96");
+            superACIP2unicode.put("J", "\u0F47");
+            subACIP2unicode.put("J", "\u0F97");
+            superACIP2unicode.put("NY", "\u0F49");
+            subACIP2unicode.put("NY", "\u0F99");
+            superACIP2unicode.put("T", "\u0F4F");
+            subACIP2unicode.put("T", "\u0F9F");
+            superACIP2unicode.put("TH", "\u0F50");
+            subACIP2unicode.put("TH", "\u0FA0");
+            superACIP2unicode.put("D", "\u0F51");
+            subACIP2unicode.put("D", "\u0FA1");
+            superACIP2unicode.put("N", "\u0F53");
+            subACIP2unicode.put("N", "\u0FA3");
+            superACIP2unicode.put("P", "\u0F54");
+            subACIP2unicode.put("P", "\u0FA4");
+            superACIP2unicode.put("PH", "\u0F55");
+            subACIP2unicode.put("PH", "\u0FA5");
+            superACIP2unicode.put("B", "\u0F56");
+            subACIP2unicode.put("B", "\u0FA6");
+            superACIP2unicode.put("M", "\u0F58");
+            subACIP2unicode.put("M", "\u0FA8");
+            superACIP2unicode.put("TZ", "\u0F59");
+            subACIP2unicode.put("TZ", "\u0FA9");
+            superACIP2unicode.put("TS", "\u0F5A");
+            subACIP2unicode.put("TS", "\u0FAA");
+            superACIP2unicode.put("DZ", "\u0F5B");
+            subACIP2unicode.put("DZ", "\u0FAB");
+            superACIP2unicode.put("W", "\u0F5D");
+            subACIP2unicode.put("W", "\u0FBA"); // oddball
+            superACIP2unicode.put("ZH", "\u0F5E");
+            subACIP2unicode.put("ZH", "\u0FAE");
+            superACIP2unicode.put("Z", "\u0F5F");
+            subACIP2unicode.put("Z", "\u0FAF");
+            superACIP2unicode.put("'", "\u0F60");
+            subACIP2unicode.put("'", "\u0FB0");
+            superACIP2unicode.put("Y", "\u0F61");
+            subACIP2unicode.put("Y", "\u0FB1");
+            superACIP2unicode.put("R", "\u0F62");
+            subACIP2unicode.put("R", "\u0FB2");
+            superACIP2unicode.put("L", "\u0F63");
+            subACIP2unicode.put("L", "\u0FB3");
+            superACIP2unicode.put("SH", "\u0F64");
+            subACIP2unicode.put("SH", "\u0FB4");
+            superACIP2unicode.put("S", "\u0F66");
+            subACIP2unicode.put("S", "\u0FB6");
+            superACIP2unicode.put("H", "\u0F67");
+            subACIP2unicode.put("H", "\u0FB7");
+            superACIP2unicode.put("A", "\u0F68");
+            subACIP2unicode.put("A", "\u0FB8");
+            superACIP2unicode.put("t", "\u0F4A");
+            subACIP2unicode.put("t", "\u0F9A");
+            superACIP2unicode.put("th", "\u0F4B");
+            subACIP2unicode.put("th", "\u0F9B");
+            superACIP2unicode.put("d", "\u0F4C");
+            subACIP2unicode.put("d", "\u0F9C");
+            superACIP2unicode.put("n", "\u0F4E");
+            subACIP2unicode.put("n", "\u0F9E");
+            superACIP2unicode.put("sh", "\u0F65");
+            subACIP2unicode.put("sh", "\u0FB5");
+
+            superACIP2unicode.put("I", "\u0F72");
+            superACIP2unicode.put("E", "\u0F7A");
+            superACIP2unicode.put("O", "\u0F7C");
+            superACIP2unicode.put("U", "\u0F74");
+            superACIP2unicode.put("OO", "\u0F7D");
+            superACIP2unicode.put("EE", "\u0F7B");
+            superACIP2unicode.put("i", "\u0F80");
+            superACIP2unicode.put("'A", "\u0F71");
+            superACIP2unicode.put("'I", "\u0F71\u0F72");
+            superACIP2unicode.put("'E", "\u0F71\u0F7A");
+            superACIP2unicode.put("'O", "\u0F71\u0F7C");
+            superACIP2unicode.put("'U", "\u0F71\u0F74");
+            superACIP2unicode.put("'OO", "\u0F71\u0F7D");
+            superACIP2unicode.put("'EE", "\u0F71\u0F7B");
+            superACIP2unicode.put("'i", "\u0F71\u0F80");
+
+            superACIP2unicode.put("Im", "\u0F72\u0F7E");
+            superACIP2unicode.put("Em", "\u0F7A\u0F7E");
+            superACIP2unicode.put("Om", "\u0F7C\u0F7E");
+            superACIP2unicode.put("Um", "\u0F74\u0F7E");
+            superACIP2unicode.put("OOm", "\u0F7D\u0F7E");
+            superACIP2unicode.put("EEm", "\u0F7B\u0F7E");
+            superACIP2unicode.put("im", "\u0F80\u0F7E");
+            superACIP2unicode.put("'Am", "\u0F71\u0F7E");
+            superACIP2unicode.put("'Im", "\u0F71\u0F72\u0F7E");
+            superACIP2unicode.put("'Em", "\u0F71\u0F7A\u0F7E");
+            superACIP2unicode.put("'Om", "\u0F71\u0F7C\u0F7E");
+            superACIP2unicode.put("'Um", "\u0F71\u0F74\u0F7E");
+            superACIP2unicode.put("'OOm", "\u0F71\u0F7D\u0F7E");
+            superACIP2unicode.put("'EEm", "\u0F71\u0F7B\u0F7E");
+            superACIP2unicode.put("'im", "\u0F71\u0F80\u0F7E");
+
+            superACIP2unicode.put("I:", "\u0F72\u0F7F");
+            superACIP2unicode.put("E:", "\u0F7A\u0F7F");
+            superACIP2unicode.put("O:", "\u0F7C\u0F7F");
+            superACIP2unicode.put("U:", "\u0F74\u0F7F");
+            superACIP2unicode.put("OO:", "\u0F7D\u0F7F");
+            superACIP2unicode.put("EE:", "\u0F7B\u0F7F");
+            superACIP2unicode.put("i:", "\u0F80\u0F7F");
+            superACIP2unicode.put("'A:", "\u0F71\u0F7F");
+            superACIP2unicode.put("'I:", "\u0F71\u0F72\u0F7F");
+            superACIP2unicode.put("'E:", "\u0F71\u0F7A\u0F7F");
+            superACIP2unicode.put("'O:", "\u0F71\u0F7C\u0F7F");
+            superACIP2unicode.put("'U:", "\u0F71\u0F74\u0F7F");
+            superACIP2unicode.put("'OO:", "\u0F71\u0F7D\u0F7F");
+            superACIP2unicode.put("'EE:", "\u0F71\u0F7B\u0F7F");
+            superACIP2unicode.put("'i:", "\u0F71\u0F80\u0F7F");
+
+            superACIP2unicode.put("Im:", "\u0F72\u0F7E\u0F7F");
+            superACIP2unicode.put("Em:", "\u0F7A\u0F7E\u0F7F");
+            superACIP2unicode.put("Om:", "\u0F7C\u0F7E\u0F7F");
+            superACIP2unicode.put("Um:", "\u0F74\u0F7E\u0F7F");
+            superACIP2unicode.put("OOm:", "\u0F7D\u0F7E\u0F7F");
+            superACIP2unicode.put("EEm:", "\u0F7B\u0F7E\u0F7F");
+            superACIP2unicode.put("im:", "\u0F80\u0F7E\u0F7F");
+            superACIP2unicode.put("'Am:", "\u0F71\u0F7E\u0F7F");
+            superACIP2unicode.put("'Im:", "\u0F71\u0F72\u0F7E\u0F7F");
+            superACIP2unicode.put("'Em:", "\u0F71\u0F7A\u0F7E\u0F7F");
+            superACIP2unicode.put("'Om:", "\u0F71\u0F7C\u0F7E\u0F7F");
+            superACIP2unicode.put("'Um:", "\u0F71\u0F74\u0F7E\u0F7F");
+            superACIP2unicode.put("'OOm:", "\u0F71\u0F7D\u0F7E\u0F7F");
+            superACIP2unicode.put("'EEm:", "\u0F71\u0F7B\u0F7E\u0F7F");
+            superACIP2unicode.put("'im:", "\u0F71\u0F80\u0F7E\u0F7F");
+            // :m does not appear, though you'd think it's as valid as m:.
+
+            // I doubt these will occur alone:
+            superACIP2unicode.put("m", "\u0F7E");
+            superACIP2unicode.put(":", "\u0F7F");
+
+            superACIP2unicode.put("Am", "\u0F7E");
+            superACIP2unicode.put("A:", "\u0F7F");
+
+            superACIP2unicode.put("0", "\u0F20");
+            superACIP2unicode.put("1", "\u0F21");
+            superACIP2unicode.put("2", "\u0F22");
+            superACIP2unicode.put("3", "\u0F23");
+            superACIP2unicode.put("4", "\u0F24");
+            superACIP2unicode.put("5", "\u0F25");
+            superACIP2unicode.put("6", "\u0F26");
+            superACIP2unicode.put("7", "\u0F27");
+            superACIP2unicode.put("8", "\u0F28");
+            superACIP2unicode.put("9", "\u0F29");
+
+            // DLC punctuation
+            superACIP2unicode.put("&", "\u0F85");
+            superACIP2unicode.put(",", "\u0F0D");
+            superACIP2unicode.put(" ", "\u0F0B");
+            superACIP2unicode.put(".", "\u0F0C");
+            superACIP2unicode.put("`", "\u0F08");
+            superACIP2unicode.put("`", "\u0F08");
+            superACIP2unicode.put("*", "\u0F04\u0F05");
+            superACIP2unicode.put("#", "\u0F04\u0F05\u0F05");
+            superACIP2unicode.put("%", "\u0F35");
+            superACIP2unicode.put(";", "\u0F11");
+            superACIP2unicode.put("\r", "\r");
+            superACIP2unicode.put("\t", "\t");
+            superACIP2unicode.put("\n", "\n");
+            superACIP2unicode.put("\\", "\u0F84"); // DLC FIXME: make this like a vowel
+            // DLC FIXME: what's the Unicode for caret, ^?
+            // DLC FIXME: what's the Unicode for o?
+            // DLC FIXME: what's the Unicode for x?
+
+        }
+        if (subscribed) {
+            String u = (String)subACIP2unicode.get(acip);
+            if (null != u) return u;
+        }
+        return (String)superACIP2unicode.get(acip);
+
     }
 }

@@ -321,15 +321,15 @@ public class UnicodeUtilsTest extends TestCase implements UnicodeConstants {
      * Tests the {@link UnicodeUtils#unicodeCodepointToString(char)}
      * method. */
     public void testUnicodeCodepointToString() {
-        assertTrue(UnicodeUtils.unicodeCodepointToString('\u0000').equals("\\u0000"));
-        assertTrue(UnicodeUtils.unicodeCodepointToString('\u0001').equals("\\u0001"));
-        assertTrue(UnicodeUtils.unicodeCodepointToString('\u000F').equals("\\u000f"));
-        assertTrue(UnicodeUtils.unicodeCodepointToString('\u001F').equals("\\u001f"));
-        assertTrue(UnicodeUtils.unicodeCodepointToString('\u00fF').equals("\\u00ff"));
-        assertTrue(UnicodeUtils.unicodeCodepointToString('\u01fF').equals("\\u01ff"));
-        assertTrue(UnicodeUtils.unicodeCodepointToString('\u0ffF').equals("\\u0fff"));
-        assertTrue(UnicodeUtils.unicodeCodepointToString('\u1ffF').equals("\\u1fff"));
-        assertTrue(UnicodeUtils.unicodeCodepointToString('\ufffF').equals("\\uffff"));
+        assertTrue(UnicodeUtils.unicodeCodepointToString('\u0000', false).equals("\\u0000"));
+        assertTrue(UnicodeUtils.unicodeCodepointToString('\u0001', false).equals("\\u0001"));
+        assertTrue(UnicodeUtils.unicodeCodepointToString('\u000F', false).equals("\\u000f"));
+        assertTrue(UnicodeUtils.unicodeCodepointToString('\u001F', false).equals("\\u001f"));
+        assertTrue(UnicodeUtils.unicodeCodepointToString('\u00fF', false).equals("\\u00ff"));
+        assertTrue(UnicodeUtils.unicodeCodepointToString('\u01fF', false).equals("\\u01ff"));
+        assertTrue(UnicodeUtils.unicodeCodepointToString('\u0ffF', false).equals("\\u0fff"));
+        assertTrue(UnicodeUtils.unicodeCodepointToString('\u1ffF', false).equals("\\u1fff"));
+        assertTrue(UnicodeUtils.unicodeCodepointToString('\ufffF', false).equals("\\uffff"));
     }
 
     /**

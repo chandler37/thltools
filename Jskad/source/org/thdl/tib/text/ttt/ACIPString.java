@@ -30,6 +30,15 @@ public class ACIPString {
     private int type;
     private String text;
 
+    /** Returns true if and only if an ACIPString with type type is to
+     *  be converted to Latin, not Tibetan, text. */
+    public static boolean isLatin(int type) {
+        return (type != TIBETAN_NON_PUNCTUATION
+                && type != TIBETAN_PUNCTUATION
+                && type != START_SLASH
+                && type != END_SLASH);
+    }
+
     /** For [#COMMENTS] */
     public static final int COMMENT = 0;
     /** For Folio markers like @012B */

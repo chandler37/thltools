@@ -341,7 +341,7 @@ public final class LegalTshegBar
             EWC_ta,  EWC_tha,  EWC_da,     EWC_na,
             EWC_pa,  EWC_pha,  EWC_ba,     EWC_ma,
             EWC_tsa, EWC_tsha, EWC_dza,    EWC_wa,
-            EWC_zha, EWC_za,   EWC_achung,  EWC_ya,
+            EWC_zha, EWC_za,   EWC_achung, EWC_ya,
             EWC_ra,  EWC_la,   EWC_sha,    EWC_sa,
             EWC_ha,  EWC_a
         });
@@ -833,7 +833,7 @@ public final class LegalTshegBar
                     return internalThrowThing(throwIfIllegal,
                                               errorBuf,
                                               "Illegal suffix -- not one of the ten legal suffixes: "
-                                              + UnicodeUtils.unicodeCodepointToString(suffix.charAt(0)));
+                                              + UnicodeUtils.unicodeCodepointToString(suffix.charAt(0), false));
                 }
             }
         }

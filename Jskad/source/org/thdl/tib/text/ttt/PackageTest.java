@@ -292,6 +292,12 @@ public class PackageTest extends TestCase {
                   new String[] { "{SH}{LO}", "{SH+LO}" },
                   new String[] { "{SH+LO}" });
         tstHelper("ZLUM", "{Z}{LU}{M}", new String[] { "{Z}{LU}{M}", "{Z+LU}{M}" }, new String[] { "{Z+LU}{M}" });
+        tstHelper("K'EE", "{K'EE}");
+        tstHelper("K'O", "{K'O}");
+        tstHelper("K'OO", "{K'OO}");
+        tstHelper("K'II", "{K'I}{I}");
+        tstHelper("K'i", "{K'i}");
+        tstHelper("K'A", "{K'A}");
         tstHelper("B+DDZ", "{B+}{D}{DZ}",
                   new String[] { "{B+D}{DZ}",
                                  "{B+D+DZ}" }); // we're conservative.
@@ -6984,7 +6990,7 @@ tstHelper("ZUR");
         shelp("DD]",
               "Offset 2: Found a truly unmatched close bracket, ] or }.\nOffset 2: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
 
-        shelp("///NYA", "Offset END: Slashes are supposed to occur in pairs, but the input had an unmatched '/' character.\n");
+        shelp("///NYA", "Offset 1: Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\nOffset END: Slashes are supposed to occur in pairs, but the input had an unmatched '/' character.\n");
         shelp("/NYA/", "");
         shelp("[?][BP][LS][DD1][DD2][DDD][DR][# (<{A COMMENT)}>]", "");
         shelp("[LS][# A [[[[[COMMENT][LS]",
@@ -7029,14 +7035,26 @@ tstHelper("ZUR");
         shelp("?", "", "[QUESTION:{?}]");
         shelp("KHAN~ BAR ", "Offset 4: Found an illegal character, ~, with ordinal 126.\n");
         shelp("[* Correction with []]",
-              "Offset 5: Found an illegal character, r, with ordinal 114.\nOffset 6: Found an illegal character, r, with ordinal 114.\nOffset 7: Found an illegal character, e, with ordinal 101.\nOffset 8: Found an illegal character, c, with ordinal 99.\nOffset 14: Found an illegal character, w, with ordinal 119.\nOffset 15: Found an illegal character, i, with ordinal 105.\nOffset 19: Found an illegal open bracket (in context, this is []]).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset 21: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
+              "Offset 5: Found an illegal character, r, with ordinal 114.\nOffset 6: Found an illegal character, r, with ordinal 114.\nOffset 7: Found an illegal character, e, with ordinal 101.\nOffset 8: Found an illegal character, c, with ordinal 99.\nOffset 14: Found an illegal character, w, with ordinal 119.\nOffset 19: Found an illegal open bracket (in context, this is []]).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset 21: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
 
         // DLC FIXME: the line SDIG PA'I GROGS PO'I LAG TU SON PAR 'GYUR PA is followed by a blank line.  Note that it's "PA", not "PA ", ending it.  Autocorrect to the latter.
 
         // DLC FIXME: @0B1 isn't handled correctly!
 
         shelp(",NGES ? PA", "", "[TIBETAN_PUNCTUATION:{,}, TIBETAN_NON_PUNCTUATION:{NGES}, TIBETAN_PUNCTUATION:{ }, QUESTION:{?}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{PA}]");
-        shelp("K\\,", "", "[TIBETAN_NON_PUNCTUATION:{K\\}, TIBETAN_PUNCTUATION:{,}]");
+
+
+
+        // FIXME: just until we treat viramas correctly:
+        if (false) {
+            uhelp("1\\", "\u0f21\u0f84");
+            uhelp(" 1\\ ", "\u0f0b\u0f21\u0f84\u0f0b");
+        }
+        shelp("K\\,",
+              "Offset 1: Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\n",
+              "[TIBETAN_NON_PUNCTUATION:{K}, ERROR:{\\}, TIBETAN_PUNCTUATION:{,}]");
+
+
         shelp("MTHAR%", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR%}]");
         shelp("PHYIR;", "", "[TIBETAN_NON_PUNCTUATION:{PHYIR}, TIBETAN_PUNCTUATION:{;}]");
         shelp("......,DAM ",
@@ -7078,7 +7096,69 @@ tstHelper("ZUR");
 
         shelp("{ DD }", "", "[DD:{{ DD }}]"); // TD3790E2.ACT
         shelp("{ BP }", "", "[BP:{{ BP }}]"); // TD3790E2.ACT
+        shelp("//NYA\\\\",
+              "Offset 1: Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\nOffset 5: Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\nOffset 6: Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\n",
+              "[START_SLASH:{/}, ERROR:{//}, END_SLASH:{/}, TIBETAN_NON_PUNCTUATION:{NYA}, ERROR:{\\}, ERROR:{\\}]");
 
+    }
+    private static void uhelp(String acip) {
+        uhelp(acip, null);
+    }
+    private static void uhelp(String acip, String expectedUnicode) {
+        StringBuffer errors = new StringBuffer();
+        String unicode = ACIPConverter.convertToUnicode(acip, errors);
+        if (null == unicode) {
+            if (null != expectedUnicode && "none" != expectedUnicode) {
+                System.out.println("No unicode exists for " + acip + " but you expected " + org.thdl.tib.text.tshegbar.UnicodeUtils.unicodeStringToPrettyString(expectedUnicode));
+                assertTrue(false);
+            }
+            System.out.println("DLC: Unicode for " + acip + " can't be had; errors are " + errors);
+        } else {
+            if (null != expectedUnicode && !expectedUnicode.equals(unicode)) {
+                System.out.println("The unicode for " + acip + " is " + org.thdl.tib.text.tshegbar.UnicodeUtils.unicodeStringToPrettyString(unicode) + ", but you expected " + org.thdl.tib.text.tshegbar.UnicodeUtils.unicodeStringToPrettyString(expectedUnicode));
+                assertTrue(false);
+            }
+        }
+    }
+
+    public void testACIPConversion() {
+        uhelp("G+DHA", "\u0f42\u0fa2");
+        uhelp("P'EE", "\u0f54\u0f71\u0f7b");
+
+        uhelp("KA", "\u0f40");
+        uhelp("KI", "\u0f40\u0f72");
+        uhelp("KO", "\u0f40\u0f7c");
+        uhelp("KE", "\u0f40\u0f7a");
+        uhelp("KU", "\u0f40\u0f74");
+        uhelp("KOO", "\u0f40\u0f7d");
+        uhelp("KEE", "\u0f40\u0f7b");
+        uhelp("KEEm", "\u0f40\u0f7b\u0f7e");
+        uhelp("KEEm:", "\u0f40\u0f7b\u0f7e\u0f7f");
+        uhelp("KEE:", "\u0f40\u0f7b\u0f7f");
+
+        uhelp("K'I", "\u0f40\u0f71\u0f72");
+        uhelp("K'O", "\u0f40\u0f71\u0f7c");
+        uhelp("K'E", "\u0f40\u0f71\u0f7a");
+        uhelp("K'U", "\u0f40\u0f71\u0f74");
+        uhelp("K'OO", "\u0f40\u0f71\u0f7d");
+        uhelp("K'EE", "\u0f40\u0f71\u0f7b");
+        uhelp("K'EEm", "\u0f40\u0f71\u0f7b\u0f7e");
+        tstHelper("K'EEm:", "{K'EEm:}",
+                  new String[] { "{K'EEm:}" },
+                  new String[] { },
+                  "{K'EEm:}");
+        uhelp("K'EEm:", "\u0f40\u0f71\u0f7b\u0f7e\u0f7f");
+        uhelp("K'EE:", "\u0f40\u0f71\u0f7b\u0f7f");
+
+        uhelp("K'A:", "\u0f40\u0f71\u0f7f");
+
+        // DLC FIXME: in ACIP RTF files, (PARENTHESES) seem to make
+        // text go from 24-point to 18-point.  Thus, ACIP->Unicode.txt
+        // is fundamentally flawed, whereas ACIP->Unicode.rtf is OK.
+
+        uhelp("/NY'EE/", "\u0f3C\u0f49\u0F71\u0F7B\u0f3D");
+        uhelp("*#HUm: G+DHOO GRO`;.,", "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b\u0f42\u0fa2\u0f7d\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
+        uhelp("*#HUm: K+DHA GRO`;.,", "none");
     }
 
     /** Tests some more tsheg bars, these from Dr. Lacey's critical
