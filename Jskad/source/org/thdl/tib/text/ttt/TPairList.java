@@ -354,6 +354,9 @@ class TPairList {
             if (ddebug) System.out.println("i is " + i);
             TPair p = get(i);
 
+            // GA-YOGS should be treated like GAYOGS or G-YOGS:
+            if (p.isDisambiguator()) continue;
+
             boolean nn;
             if ((nn = p.isNumeric()) && ("+".equals(get(i-1).getRight())
                                          || "+".equals(p.getRight())))

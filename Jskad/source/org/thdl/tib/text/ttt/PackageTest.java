@@ -410,6 +410,9 @@ tstHelper("KA'", "[(K . A), (' . )]",
         tstHelper("NE+YA", "{NE}{+-}{YA}",
                   null, null, "!null!");
 
+        tstHelper("GA-YOGS", "{GA}{-}{YO}{G}{S}",
+                  new String[] { "{GA}{YO}{G+S}", "{GA}{YO}{G}{S}" }, null, "{GA}{YO}{G}{S}");
+
         tstHelper("GDAMS'O", "{G}{DA}{M}{S'O}",
                   new String[] {
                                  "{G+DA}{M+S'O}",
