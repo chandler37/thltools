@@ -186,7 +186,6 @@ public class DuffPane extends TibetanPane implements FocusListener {
     private Caret caret;
     private Style rootStyle;
     private boolean skipUpdate = false;
-    private boolean isCutAndPasteEnabled = true;
 
     private String romanFontFamily;
     private int romanFontSize;
@@ -992,7 +991,6 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * false if it is 'copy'
 */
     private void copy(int start, int end, boolean remove) {
-        updateStatus("Copied to clipboard");
         int p1 = start;
         int p2 = end;
         if (p1 != p2) {
@@ -1000,11 +998,14 @@ public class DuffPane extends TibetanPane implements FocusListener {
             RTFSelection rtfSelection = new RTFSelection((StyledDocument)getDocument(), p1, p2-p1);
             try {
                 rtfBoard.setContents(rtfSelection, rtfSelection);
+                updateStatus("Copied to clipboard");
             } catch (IllegalStateException ise) {
                 ise.printStackTrace();
                 ThdlDebug.noteIffyCode();
             }
-        }
+        } else
+            updateStatus("Nothing to copy/cut");
+
         if (remove) {
             // Respect setEditable(boolean):
             if (!this.isEditable())
@@ -1013,6 +1014,7 @@ public class DuffPane extends TibetanPane implements FocusListener {
             try {
                 ThdlDebug.verify(getDocument() == getTibDoc());
                 getDocument().remove(p1, p2-p1);
+                updateStatus("Cut to clipboard");
             } catch (BadLocationException ble) {
                 ble.printStackTrace();
                 ThdlDebug.noteIffyCode();
@@ -1116,29 +1118,6 @@ public void paste(int offset)
         ThdlDebug.noteIffyCode();
     }
 }
-
-/**
-* Enables cutting and pasting of Tibetan text.
-*/
-    public void enableCutAndPaste() {
-        isCutAndPasteEnabled = true;
-    }
-
-    /** Returns true iff cut-and-paste operations are enabled. */
-    public boolean isCutAndPasteOn() {
-        return isCutAndPasteEnabled;
-    }
-
-/**
-* Disables cutting and pasting of Tibetan text.
-* Cut and paste must be disabled if Jskad's
-* parent is an applet, because it violates the
-* Java security sandbox to cut and paste from an
-* applet to the system clipboard.
-*/
-    public void disableCutAndPaste() {
-        isCutAndPasteEnabled = false;
-    }
 
     private void processRomanChar(String key, AttributeSet attSet) {
         switch (key.charAt(0)) {
@@ -1652,20 +1631,23 @@ public void paste(int offset)
 
 
 
-    // FIXMEDOC
+/** The JDK contains StringSelection, but we want to copy and paste
+    RTF sometimes. Enter RTFSelection. */
 class RTFSelection implements ClipboardOwner, Transferable {
-    private DataFlavor[] supportedFlavor;
+    private DataFlavor[] supportedFlavors;
     private ByteArrayOutputStream rtfOut;
     private String plainText;
 
-    // FIXMEDOC
     RTFSelection(StyledDocument sdoc, int offset, int length) {
-        supportedFlavor = new DataFlavor[2];
-        supportedFlavor[0] = rtfFlavor;
-        supportedFlavor[1] = DataFlavor.stringFlavor;
+        supportedFlavors = new DataFlavor[2];
+        supportedFlavors[0] = rtfFlavor;
+        supportedFlavors[1] = DataFlavor.stringFlavor;
         try {
             //construct new document that contains only portion of text you want to copy
-            //this workaround is due to bug 4129911, which will not be fixed (see below after source code)
+            //this workaround is due to bug 4129911, which will not be fixed
+
+            // TODO(dchandler): Is this where we lose formatting like
+            // centering and indention?
             StyledDocument newDoc = new DefaultStyledDocument();
             for (int i=offset; i<offset+length; i++) {
                 try {
@@ -1678,7 +1660,10 @@ class RTFSelection implements ClipboardOwner, Transferable {
                 }
             }
             rtfOut = new ByteArrayOutputStream();
-            rtfEd.write(rtfOut, newDoc, 0, newDoc.getLength()); //last two parameters ignored, see bug below
+
+            //last two parameters ignored (bug 4129911?):
+            rtfEd.write(rtfOut, newDoc, 0, newDoc.getLength());
+
             plainText = getText(offset, length);
         } catch (BadLocationException ble) {
             ble.printStackTrace();
@@ -1688,10 +1673,8 @@ class RTFSelection implements ClipboardOwner, Transferable {
             ThdlDebug.noteIffyCode();
         }
     }
-    // FIXMEDOC
     public void lostOwnership(Clipboard clipboard, Transferable contents) {
     }
-    // FIXMEDOC
     public Object getTransferData(DataFlavor flavor) {
         if (flavor.equals(rtfFlavor))
             return new ByteArrayInputStream(rtfOut.toByteArray());
@@ -1699,14 +1682,14 @@ class RTFSelection implements ClipboardOwner, Transferable {
             return plainText;
         return null;
     }
-    // FIXMEDOC
     public DataFlavor[] getTransferDataFlavors() {
-        return supportedFlavor; 
+        // TODO(dchandler): Can't the caller modify our array?  Let's
+        // return a new array that's a copy, for safety.
+        return supportedFlavors; 
     }
-    // FIXMEDOC
     public boolean isDataFlavorSupported(DataFlavor flavor) {
-        for (int i=0; i<supportedFlavor.length; i++)
-            if (flavor.equals(supportedFlavor[i]))
+        for (int i=0; i<supportedFlavors.length; i++)
+            if (flavor.equals(supportedFlavors[i]))
                 return true;
         return false;
     }

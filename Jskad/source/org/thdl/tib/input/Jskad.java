@@ -858,7 +858,8 @@ public class Jskad extends JPanel implements DocumentListener {
         } else if (parentObject instanceof JApplet) {
             JApplet parentApplet = (JApplet)parentObject;
             parentApplet.setJMenuBar(menuBar);
-            dp.disableCutAndPaste();
+            // TODO(dchandler): disable cut and paste in the applet
+            // (we once did this...)
         }
 
         setLayout(new BorderLayout());
