@@ -24,25 +24,20 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-//import java.awt.event.WindowAdapter;
-//import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.FileReader;
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
-import javax.swing.SwingConstants;
+
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.BorderFactory;
+import javax.swing.SwingConstants;
 import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import javax.swing.text.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.JTextComponent;
 
     /**
     * <p>This class creates a panel that displays all the relevant

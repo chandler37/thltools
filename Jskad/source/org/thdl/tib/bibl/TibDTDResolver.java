@@ -19,7 +19,7 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.bibl;
 
  import org.xml.sax.EntityResolver;
- import org.xml.sax.InputSource;
+import org.xml.sax.InputSource;
 
 /* FIXMEDOC.
 *

@@ -18,13 +18,10 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.bibl;
 
-import java.io.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.filechooser.*;
-import org.jdom.*;
-import org.jdom.input.*;
-import org.jdom.output.*;
+import java.io.File;
+import java.util.Hashtable;
+
+import javax.swing.filechooser.FileView;
 //import org.thdl.tib.bibl.shared.*;
 
 /**

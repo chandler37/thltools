@@ -18,9 +18,10 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.bibl;
 
-import java.util.*;
-import org.jdom.*;
-import org.jdom.output.*;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 /**
 * Like its sister class, {@link TitleFactory}, this class is used to access and display the information

@@ -18,9 +18,8 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.bibl;
 
-import java.util.*;
-import org.jdom.*;
-import org.jdom.output.*;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
 * This abstract class is extended by both {@link IDFactory} and {@link TitleFactory}, and provides general functionality

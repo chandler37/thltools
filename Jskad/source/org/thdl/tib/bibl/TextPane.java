@@ -18,14 +18,18 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.bibl;
 
-import java.util.*;
 import java.awt.Color;
 import java.awt.Insets;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
-import org.jdom.*;
-import org.jdom.output.*;
+import java.util.Iterator;
+import java.util.Vector;
+
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 
 //import org.thdl.tib.bibl.shared.*;
 

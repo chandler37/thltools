@@ -18,14 +18,12 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.bibl;
 
-import java.util.*;
-import javax.swing.text.StyledDocument;
-import javax.swing.text.Style;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import org.jdom.*;
-import org.jdom.input.*;
-import org.jdom.output.*;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import org.jdom.DocType;
+import org.jdom.Element;
 
 	/**
 	* <p>

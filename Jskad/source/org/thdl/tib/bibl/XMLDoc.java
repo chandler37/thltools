@@ -18,10 +18,10 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.bibl;
 
-import java.util.*;
-import org.jdom.*;
-import org.jdom.input.*;
-import org.jdom.output.*;
+import java.util.Iterator;
+import java.util.Vector;
+
+import org.jdom.Element;
 
 /**
 * This class extends org.jdom.Document to provide added XML functionality, such as locating specific elements.

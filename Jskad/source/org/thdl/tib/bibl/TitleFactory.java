@@ -18,9 +18,10 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.bibl;
 
-import java.util.*;
-import org.jdom.*;
-import org.jdom.output.*;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
 * The TitleFactory class extends the GenericTibFactory to provide means for locating and manipulating title elements

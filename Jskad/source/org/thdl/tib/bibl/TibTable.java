@@ -18,17 +18,26 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.bibl;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Hashtable;
-import java.util.Vector;
 import java.util.Iterator;
 import java.util.Observable;
-import java.util.Observer;
-import javax.swing.*;
-import javax.swing.text.*;
-import javax.swing.table.*;
-import org.jdom.*;
+import java.util.Vector;
+
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 /**
 * This element is a wrapper element for a JTable that sets up two kinds of tables for editing a Tibbibl--one for

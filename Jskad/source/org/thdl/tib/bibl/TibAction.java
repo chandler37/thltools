@@ -19,7 +19,6 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.bibl;
 
 import javax.swing.AbstractAction;
-import java.io.File;
 
 /**
 * This extension of javax.swing.AbstractAction is used for the various menus in {@link TibFrame}. It assigns two

@@ -18,10 +18,12 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.bibl;
 
-import java.io.*;
-import java.awt.*;
-import javax.swing.*;
-import java.util.Hashtable;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+
+import javax.swing.JOptionPane;
 
 /**
 * This interface contains all the constants used throughout the TiblEdit program. They are roughly organized

@@ -18,10 +18,10 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.bibl;
 
-import java.util.*;
-import org.jdom.*;
-import org.jdom.input.*;
-import org.jdom.output.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 /**
 *

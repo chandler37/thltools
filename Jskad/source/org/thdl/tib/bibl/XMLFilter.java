@@ -19,8 +19,8 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.bibl;
 
 import java.io.File;
-import javax.swing.*;
-import javax.swing.filechooser.*;
+
+import javax.swing.filechooser.FileFilter;
 //import org.thdl.tib.bibl.shared.*;
 
 /**

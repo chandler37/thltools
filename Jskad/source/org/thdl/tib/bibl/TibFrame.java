@@ -18,17 +18,38 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.bibl;
 
-import java.awt.Event;
-import java.awt.event.*;
-import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Event;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
-import java.util.Vector;
 import java.util.Iterator;
-import javax.swing.*;
-import javax.swing.text.*;
-import javax.swing.event.*;
+import java.util.Vector;
+
+import javax.swing.Action;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.KeyStroke;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.text.EditorKit;
+import javax.swing.text.Style;
 
 	/**
 	* <p>

@@ -18,8 +18,8 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.bibl;
 
-import java.util.*;
-import org.jdom.*;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
 * <p>

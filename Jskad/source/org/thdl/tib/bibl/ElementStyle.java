@@ -18,7 +18,6 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.bibl;
 
-import org.jdom.*;
 
 /**
 * This wrapper class associates a String of text with a Style (as defined in {@link TibConstants} [MAYBE]) and a particular
