@@ -1,72 +1,120 @@
 ;
-; These examples come from the draft (8/21/03) THDL Phonetics document
+; These examples mostly come from the THDL Phonetics document (Jan 2004 draft)
 ;
-lha sa > lhasa
+dag pa > dakpa
+ring po > ringpo
+rin chen > rinchen
+lab > lap
+dum bu > dumbu
+dmar po > marpo
+ril bu > rilbu
 sa skya pa > sakyapa
-blo bzang > lobzang
+blo bzang > lozang
 rnying ma pa > nyingmapa
-rdo rje > dorje
+rdo rje > dorjé
 dge lugs pa > gelukpa
-gzhis ka rtse > zhikatse
-mar me > marme
+gzhis ka rtse > zhikatsé
+mar me > marmé
+dge bshes > geshé
 bcu >  chu
-lce > che
-rin chen bzang po > rinchenzangpo
+gcig pa > chikpa
 nag chu > nakchu
-bka' rgyud pa > kagyüpa
+'phag pa > pakpa
+gser thang > sertang
+khang tshan > khangtsen
+lce > ché
+rin chen bzang po > rinchenzangpo
+bka' rgyud > kagyü
 bsod nams> sönam
-thub bstan > thupten
+yul > yül
+dus tshod > dütsö
+bon po > bönpo
+sde dge > degé
+brgyad > gyé
+dge rgan > gegen
+ral pa can > relpachen
+tshe ring > tsering
+byes > jé
+bstan 'dzin > tendzin
 'jam dpal dbyangs > jampelyang
 dge legs > gelek
 kha btags > khatak
+sngags pa > ngakpa
+byang chub > jangchup
+thub bstan > tupten
+tabs > tap
 bka' shag > kashak
 sbra nag zhol > banakzhöl
-thabs > thap
+thabs > tap
 lha sa ba  > lhasawa
 jo bo > jowo
 dpa' bo > pawo
-spyan ras gzig > chenrezik 
+gsal bar > selwar
+; nga'i deb > ngé dep -- can't do this one, it depends on word segmentation
+bar ba > barwa
+spyan ras gzig > chenrezik
+phyag > chak
 sbyin bdag > jindak
 smyong > nyong
+dmyal ba > nyelwa
 sgrol ma > drölma
 rten 'brel > tendrel
 'bras spungs  > drepung
-'phrin las > thrinle
-dbang > wang
-dbral > rel
-dbyar kha > yarkha
-zla ba > dawa
+'phrin las > trinlé
+srung ma > sungma
+rdzun smra ba > dzünmawa
 klad pa > lepa
 glog > lok
+zla ba > dawa
+lha sa > lhasa
+lho phyogs > lhochok
+lhun grub > lhündrup
+dbang > wang
+dbyar kha > yarkha
+dbral > rel
 le'u > leu
+khyi'u > khyiu
 pa'ang > pang
-ba'i > wai
+gri'i > dri
+'gro ba'i > drowé
+rgyal bu'i > gyelbü
+rin po che'i > rinpoché
+bdag po'i > dakpö
+le'u'i > leü
 rta mgrin > tamdrin
-
-; Other tests, to exercise particular rules in the grammar that aren't covered in the rules above
 g.yon > yön
 phyag > chak
 bkra shis > trashi
-khros ma > thröma
+khros ma > tröma
 sprul > trül
 mri tam ga > mitamga
 srid pa > sipa
 pad ma > pema
 pan chen > penchen
-ral pa can > relpachen
-thun > thün
+thun > tün
 dus gsum > düsum
-sbed > be
-ces > che
-pa'i > pai
-che'i > chei
-gri'i > dri
-po'i > poi
-le'u'i > leui
-rdzogs > dzok
-thug pa > thukpa
-'debs > dep
+sbed > bé
+ces > ché
+btsan dbang > tsenwang
+tshong khang > tsongkhang
+rdzong > dzong
+stabs > tap
+thug pa > tukpa
+debs > dep
 sib sib > sipsip
 lobs pa > loppa
 grub > drup
 kla col > lachöl
+spyan snga ba > chenngawa
+sems dpa'i > sempé
+bon po'i > bönpö
+rdzogs > dzok
+
+; Other random tests
+phreng > treng
+
+; Test of second-suffix d removal.  Made-up word because I don't know real ones.
+rand > ren
+; Test that we don't spazz out on single-letter words.
+a > a
+ai > ai

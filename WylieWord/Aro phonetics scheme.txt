@@ -96,20 +96,14 @@ x ng
 ; pronunciation (which may also contain spaces).  A semicolon 
 ; precedes a comment.  Blank lines are OK.
 
-ba : wa                 ; mind you, ba (pronounced ba) means cow.  But that's much rarer than wa.
-bo : wo
-ba'i : wa'i
-bo'i : wo'i
-bar : ?bar/war?         ; bar = "middle"; could be either, so supply both and let user sort it out
-bor : ?bor/wor?         ; bor = "cast away"; could be either, so supply both and let user sort it out
-rdo rje : dorjé
-mkha' 'gro : khandro
-sku mnye : kumnyé
-sprul sku : tulku
-mtsho rgyal : tsogyèl
-rta mgrin: tamdrin
-dga' ldan : ganden
-dge 'dun  : gendün
-a mdo : amdo
-srid pa : sipa
-pad ma : pèma
+rdo rje > dorjé
+mkha' 'gro > khandro
+sku mnye > kumnyé
+sprul sku > tulku
+mtsho rgyal > tsogyèl
+rta mgrin> tamdrin
+dga' ldan > ganden
+dge 'dun  > gendün
+a mdo > amdo
+srid pa > sipa
+pad ma > pèma

@@ -40,7 +40,7 @@ klad pa > lèdpa
 glog > log
 le'u > lé'u
 pa'ang > pa'ang
-ba'i > wa'i
+bar ba'i > barwa'i
 rta mgrin > tamdrin
 
 ; Other tests, to exercise particular rules in the grammar that aren't covered in the rules above
