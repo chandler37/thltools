@@ -95,7 +95,6 @@ gyurd
 ga*ra
 ha_sa
 gangs
-mngas
 'gram
 la'i
 a'i
@@ -114,8 +113,12 @@ khe'i
 'ag
 'ad
 
-// The exceptions to the three-letter root rule
-rags lags nags bags bangs gangs rangs langs nangs sangs babs rabs rams nams
+// The exceptions to the three-letter root rule (that the second letter is normally the root):
+rags lags nags bags bangs gangs rangs langs mangs sangs babs rabs rams nams
+
+// From Chris Fynn's list of three-letter root ambiguities (see SourceForge bug #614464), 
+// these are the ones not covered above:
+dgas 'gas dngas gnad mnad dbas 'bas mags dmas
 
 // This is my old root-letter-capitalization and pronunciation test suite.  
 // It's should also be good for tickling conversion bugs.
