@@ -2,7 +2,7 @@
 <project name="ThdlUsers" default="compile" basedir=".">
 
   <!-- Configure the directory into which the web application is built -->
-	<property name="build" value="${basedir}/../lex/build"/>
+	<property name="build" value="${basedir}/../Dictionary/build"/>
 
    <!-- Configure the directory containing the source files -->
 	<property name="source" value="${basedir}/src"/>
