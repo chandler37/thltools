@@ -1211,19 +1211,11 @@ public class TibetanDocument extends DefaultStyledDocument {
                     = getCharacterElement(i).getAttributes();
                 String fontName = StyleConstants.getFontFamily(attr);
                 int fontNum;
-                int iFontSize = 72; /* the failure ought to be obvious
-                                       at this size */
-                try {
-                    iFontSize
-                        = ((Integer)attr.getAttribute(StyleConstants.FontSize)).intValue();
-                } catch (Exception e) {
-                    // leave it as 72
-                }
-
                 if ((0 == (fontNum
                            = TibetanMachineWeb.getTMWFontNumber(fontName)))
                     || i==endPos.getOffset()) {
                     if (i != start) {
+                        if (i < start) throw new Error("Oops!");
                         SizedDuffCode[] sdc_array
                             = (SizedDuffCode[])dcs.toArray(new SizedDuffCode[0]);
 
@@ -1237,17 +1229,30 @@ public class TibetanDocument extends DefaultStyledDocument {
                         for (int j = 0; j < tb.length(); j++) {
                             TranslitTuple tt = tb.get(j);
                             int thisFontSize;
+                            String ttt = tt.getTranslit();
                             insertString(start,
-                                         tt.getTranslit(),
-                                         getCopyOfRomanAttributeSet(thisFontSize = tt.getFontSize()));
+                                         ttt,
+                                         getCopyOfRomanAttributeSet(thisFontSize
+                                                                    = tt.getFontSize()));
+                            start += ttt.length();
                             if (thisFontSize == lastFontSize)
                                 throw new Error("FIXME: make this an assertion");
                             lastFontSize = thisFontSize;
                         }
+                        i = start - 1; // i++ below will execute.
                         dcs.clear();
+                    } else {
+                        start = i+1;
                     }
-                    start = i+1;
                 } else {
+                    int iFontSize = 72; /* the failure ought to be obvious
+                                           at this size */
+                    try {
+                        iFontSize
+                            = ((Integer)attr.getAttribute(StyleConstants.FontSize)).intValue();
+                    } catch (Exception e) {
+                        // leave it as 72
+                    }
                     char ch = getText(i,1).charAt(0);
                     dcs.add(new SizedDuffCode(new DuffCode(fontNum, ch),
                                               iFontSize));
