@@ -109,7 +109,7 @@ public class LexComponentRepository
 	 * @exception  HibernateException  Description of Exception
 	 * @since
 	 */
-	private static Session getSession() throws HibernateException
+	protected static Session getSession() throws HibernateException
 	{
 		Session session = HibernateSession.currentSession();
 		if ( !session.isConnected() )
@@ -125,7 +125,7 @@ public class LexComponentRepository
 	 *
 	 * @exception  LexRepositoryException  Description of the Exception
 	 */
-	private static void beginTransaction() throws LexRepositoryException
+	protected static void beginTransaction() throws LexRepositoryException
 	{
 		try
 		{
@@ -146,7 +146,7 @@ public class LexComponentRepository
 	 * @exception  LexRepositoryException  Description of the Exception
 	 * @since
 	 */
-	private static void endTransaction( boolean commit ) throws LexRepositoryException
+	protected static void endTransaction( boolean commit ) throws LexRepositoryException
 	{
 		try
 		{
@@ -226,10 +226,13 @@ public class LexComponentRepository
 		{
 			termForQuery = "%" + termForQuery + "%";
 		}
-		String queryString = " FROM org.thdl.lex.component.ITerm as term WHERE term.term like '" + termForQuery + "' AND term.deleted=0 ORDER BY term.term";
+
+		String queryString = " FROM org.thdl.lex.component.ITerm as term WHERE term like :term AND term.deleted=0 ORDER BY term";
 		try
 		{
 			query = getSession().createQuery( queryString );
+			query.setString( "term", termForQuery );
+			
 		}
 		catch ( HibernateException he )
 		{
@@ -292,6 +295,278 @@ public class LexComponentRepository
 		endTransaction( false );
 		return term;
 	}
+	public static List getAllTerms( ) throws LexRepositoryException
+	{
+		List terms = null;
+		
+		beginTransaction();
+		String queryString = " FROM org.thdl.lex.component.ITerm";
+		try
+		{
+			Query query = getSession().createQuery( queryString );
+			terms =  query.list();
+		}
+		catch ( HibernateException he )
+		{
+			throw new LexRepositoryException( he );
+		}
+		endTransaction( false );
+		return terms;
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  lexQuery                    Description of the Parameter
+	 * @return                             Description of the Return Value
+	 * @exception  LexRepositoryException  Description of the Exception
+	 */
+	public static Map findTermsByMeta( LexQuery lexQuery ) throws LexRepositoryException
+	{
+						Logger logger = Logger.getLogger( "org.thdl.lex" );
+		ITerm term = assertTerm( lexQuery.getQueryComponent() );
+		Map terms = new HashMap();
+			ILexComponent comp = null;
+			ITerm aTerm;
+		Query query = null;
+		Iterator it = null;
+
+		setStart( now() );
+		beginTransaction();
+		if ( null == term.getMeta() )
+		{
+			throw new LexRepositoryException( "Query Component term.meta was null." );
+		}
+		
+		if ( logger.isDebugEnabled() )
+		{
+			logger.debug( "Tibetan Dictionary begin query!" );
+		}
+		String queryString = "select term from org.thdl.lex.component.Term as term "
+    //join term collections
+    + " join term.pronunciations as pron "
+    + " join term.etymologies as ety "
+    + " join term.spellings as sp "
+    + " join term.functions as func "
+    + " join term.encyclopediaArticles as ency "
+    + " join term.transitionalData as transData "
+    + " join term.definitions as def "
+    + " join term.glosses as glo "
+    + " join term.keywords as key "
+    + " join term.translationEquivalents as trans "
+    + " join term.relatedTerms as rel "
+    + " join term.passages as pass "
+    + " join term.registers as reg "
+    //join def collections
+    + " join def.subdefinitions as sub "
+    + " join def.glosses as gloDef "
+    + " join def.keywords as keyDef "
+    + " join def.modelSentences as modDef "
+    + " join def.translationEquivalents as transDef "
+    + " join def.relatedTerms as relDef "
+    + " join def.passages as passDef "
+    + " join def.registers as regDef "
+    //join subdef collections
+    + " join sub.glosses as gloSub "
+    + " join sub.keywords as keySub "
+    + " join sub.modelSentences as modSub "
+    + " join sub.translationEquivalents as transSub "
+    + " join sub.relatedTerms as relSub "
+    + " join sub.passages as passSub "
+    + " join sub.registers as regSub "
+   // join translation collections
+/*     + " join ety.translations as etyTrans "
+    + " join term.definitions.translations as defTrans "
+    + " join term.modelSentences.translations as modTrans "
+    + " join term.passages.translations as passTrans "
+    + " join def.subdefinition.translations as subTrans "
+    + " join def.modelSentences.translations as modDefTrans "
+    + " join def.passages.translations as passDefTrans "
+    + " join sub.modelSentences.translations as modSubTrans "
+    + " join sub.passages.translations as passSubTrans " */
+    //restrict by projectSubject in createdByProjSub
+    + " where term.meta.createdByProjSub = :projSub"
+    + " or pron.meta.createdByProjSub = :projSub"
+    + " or ety.meta.createdByProjSub = :projSub"
+    + " or sp.meta.createdByProjSub = :projSub"
+    + " or func.meta.createdByProjSub = :projSub"
+    + " or ency.meta.createdByProjSub = :projSub"
+    + " or transData.meta.createdByProjSub = :projSub"
+    + " or def.meta.createdByProjSub = :projSub"
+    + " or glo.meta.createdByProjSub = :projSub"
+    + " or key.meta.createdByProjSub = :projSub"
+    + " or trans.meta.createdByProjSub = :projSub"
+    + " or rel.meta.createdByProjSub = :projSub"
+    + " or pass.meta.createdByProjSub = :projSub"
+    + " or reg.meta.createdByProjSub = :projSub"
+    + " or sub.meta.createdByProjSub = :projSub"
+    + " or gloDef.meta.createdByProjSub = :projSub"
+    + " or keyDef.meta.createdByProjSub = :projSub"
+    + " or modDef.meta.createdByProjSub = :projSub"
+    + " or transDef.meta.createdByProjSub = :projSub"
+    + " or relDef.meta.createdByProjSub = :projSub"
+    + " or passDef.meta.createdByProjSub = :projSub"
+    + " or regDef.meta.createdByProjSub = :projSub"
+    + " or gloSub.meta.createdByProjSub = :projSub"
+    + " or keySub.meta.createdByProjSub = :projSub"
+    + " or modSub.meta.createdByProjSub = :projSub"
+    + " or transSub.meta.createdByProjSub = :projSub"
+    + " or relSub.meta.createdByProjSub = :projSub"
+    + " or passSub.meta.createdByProjSub = :projSub"
+    + " or regSub.meta.createdByProjSub = :projSub"
+/*     + " or etyTrans.meta.createdByProjSub = :projSub"
+    + " or defTrans.meta.createdByProjSub = :projSub"
+    + " or modTrans.meta.createdByProjSub = :projSub"
+    + " or passTrans.meta.createdByProjSub = :projSub"
+    + " or subTrans.meta.createdByProjSub = :projSub"
+    + " or modDefTrans.meta.createdByProjSub = :projSub"
+    + " or passDefTrans.meta.createdByProjSub = :projSub"
+    + " or modSubTrans.meta.createdByProjSub = :projSub"
+    + " or passSubTrans.meta.createdByProjSub = :projSub" */
+    //restrict by projectSubject in modifiedByProjSub
+    + " or term.meta.modifiedByProjSub = :projSub"
+    + " or pron.meta.modifiedByProjSub = :projSub"
+    + " or ety.meta.modifiedByProjSub = :projSub"
+    + " or sp.meta.modifiedByProjSub = :projSub"
+    + " or func.meta.modifiedByProjSub = :projSub"
+    + " or ency.meta.modifiedByProjSub = :projSub"
+    + " or transData.meta.modifiedByProjSub = :projSub"
+    + " or def.meta.modifiedByProjSub = :projSub"
+    + " or glo.meta.modifiedByProjSub = :projSub"
+    + " or key.meta.modifiedByProjSub = :projSub"
+    + " or trans.meta.modifiedByProjSub = :projSub"
+    + " or rel.meta.modifiedByProjSub = :projSub"
+    + " or pass.meta.modifiedByProjSub = :projSub"
+    + " or reg.meta.modifiedByProjSub = :projSub"
+    + " or sub.meta.modifiedByProjSub = :projSub"
+    + " or gloDef.meta.modifiedByProjSub = :projSub"
+    + " or keyDef.meta.modifiedByProjSub = :projSub"
+    + " or modDef.meta.modifiedByProjSub = :projSub"
+    + " or transDef.meta.modifiedByProjSub = :projSub"
+    + " or relDef.meta.modifiedByProjSub = :projSub"
+    + " or passDef.meta.modifiedByProjSub = :projSub"
+    + " or regDef.meta.modifiedByProjSub = :projSub"
+    + " or gloSub.meta.modifiedByProjSub = :projSub"
+    + " or keySub.meta.modifiedByProjSub = :projSub"
+    + " or modSub.meta.modifiedByProjSub = :projSub"
+    + " or transSub.meta.modifiedByProjSub = :projSub"
+    + " or relSub.meta.modifiedByProjSub = :projSub"
+    + " or passSub.meta.modifiedByProjSub = :projSub"
+    + " or regSub.meta.modifiedByProjSub = :projSub"
+/*     + " or etyTrans.meta.modifiedByProjSub = :projSub"
+    + " or defTrans.meta.modifiedByProjSub = :projSub"
+    + " or modTrans.meta.modifiedByProjSub = :projSub"
+    + " or passTrans.meta.modifiedByProjSub = :projSub"
+    + " or subTrans.meta.modifiedByProjSub = :projSub"
+    + " or modDefTrans.meta.modifiedByProjSub = :projSub"
+    + " or passDefTrans.meta.modifiedByProjSub = :projSub"
+    + " or modSubTrans.meta.modifiedByProjSub = :projSub"
+    + " or passSubTrans.meta.modifiedByProjSub = :projSub";*/
+	
+	+"";
+		try
+		{
+			query = getSession().createQuery( queryString );
+			query.setMaxResults( 100 );
+			query.setInteger( "projSub", lexQuery.getQueryComponent().getMeta().getCreatedByProjSub().intValue() );
+			logger.debug( "About to list query" );
+			List list = query.list();
+			logger.debug( "results size: " + list.size() );
+			it = list.iterator();
+			logger.debug( "Starting to add terms to map" );
+			while ( it.hasNext() )
+			{
+						aTerm = (ITerm) comp;
+						logger.debug( "successfully cast comp to an ITerm" );
+
+						Integer id = aTerm.getMetaId();
+						String tm = aTerm.getTerm();
+						terms.put( id, tm );
+			} 
+		}
+		catch ( HibernateException he )
+		{
+			throw new LexRepositoryException( he );
+		}
+		endTransaction( false );
+		lexQuery.setDuration( getDuration() );
+		return terms;
+	}
+	public static Map findTermsByMetaViaLc( LexQuery lexQuery ) throws LexRepositoryException
+	{
+		Logger logger = Logger.getLogger( "org.thdl.lex" );
+		ITerm term = assertTerm( lexQuery.getQueryComponent() );
+		Map terms = new HashMap();
+			ILexComponent comp = null;
+			ITerm aTerm;
+		Query query = null;
+		Iterator it = null;
+
+		setStart( now() );
+		beginTransaction();
+		if ( null == term.getMeta() )
+		{
+			throw new LexRepositoryException( "Query Component term.meta was null." );
+		}
+		
+		if ( logger.isDebugEnabled() )
+		{
+			logger.debug( "Tibetan Dictionary begin query!" );
+		}
+		String queryString = "from org.thdl.lex.component.LexComponent as comp where comp.meta.createdByProjSub=:projSub";
+
+		try
+		{
+			query = getSession().createQuery( queryString );
+			//query.setMaxResults( 100 );
+			query.setInteger( "projSub", lexQuery.getQueryComponent().getMeta().getCreatedByProjSub().intValue() );
+			logger.debug( "About to list query" );
+			List list = query.list();
+			logger.debug( "results size: " + list.size() );
+			it = list.iterator();
+			while ( it.hasNext() )
+			{
+				logger.debug( "Starting quest for a term parent" );
+				
+				comp = (ILexComponent) it.next();
+				int safetyFirst = 0;
+				parentSearch:while ( !( comp instanceof ITerm ) && comp != null )
+				{
+					logger.debug( "comp class: " + comp.getClass().getName() );
+					comp = comp.getParent();
+					if ( comp instanceof ITerm )
+					{
+						try 
+						{
+						aTerm = (ITerm) comp;
+						terms.put( aTerm.getMetaId(), aTerm.getTerm() );
+						logger.debug( "successfully cast comp to an ITerm" );
+						}
+						catch ( ClassCastException cce )
+						{
+							logger.debug( "LCR caught ClassCastException Failed cast of " +comp.toString() + " to ITerm" );
+							throw cce;
+						}
+					}
+
+					safetyFirst++;
+					if ( safetyFirst > 10 )
+					{
+						logger.debug( "could not find an ITerm parent for component: " + comp );
+						break parentSearch;
+					}
+				}
+			} 
+		}
+		catch ( HibernateException he )
+		{
+			throw new LexRepositoryException( he );
+		}
+		endTransaction( false );
+		lexQuery.setDuration( getDuration() );
+		return terms;
+	}
 
 
 	/**
@@ -333,6 +608,26 @@ public class LexComponentRepository
 			lexQuery.getResults().put( term.getMetaId(), term.getTerm() );
 		}
 		endTransaction( false );
+	}
+
+	public static ITerm loadTermByTerm( String term ) throws LexRepositoryException
+	{
+		ITerm returnTerm = null;
+		beginTransaction();
+		String queryString = " FROM org.thdl.lex.component.ITerm as theTerm where theTerm.term = :term";
+		try
+		{
+			Query query = getSession().createQuery( queryString );
+			query.setString( "term", term );
+			returnTerm = (ITerm) query.uniqueResult();
+		}
+		catch ( HibernateException he )
+		{
+			throw new LexRepositoryException( he );
+		}
+
+		endTransaction( false );
+		return returnTerm;
 	}
 
 
@@ -520,4 +815,127 @@ public class LexComponentRepository
 		}
 	}
 }
+
+
+/*
+    /join term collections
+    + " join term.pronunciations as pron "
+    + " join term.etymologies as ety "
+    + " join term.spellings as sp "
+    + " join term.functions as func "
+    + " join term.encyclopediaArticles as ency "
+    + " join term.transitionalData as trans "
+    + " join term.definitions as def "
+    + " join term.glosses as glo "
+    + " join term.keywords as key "
+    + " join term.translationEquivalents as trans "
+    + " join term.relatedTerms as rel "
+    + " join term.passages as pass "
+    + " join term.registers as reg "
+    join def collections
+    + " join def.subdefinitions as sub "
+    + " join def.glosses as gloDef "
+    + " join def.keywords as keyDef "
+    + " join def.modelSentences as modDef "
+    + " join def.translationEquivalents as transDef "
+    + " join def.relatedTerms as relDef "
+    + " join def.passages as passDef "
+    + " join def.registers as regDef "
+    join subdef collections
+    + " join sub.glosses as gloSub "
+    + " join sub.keywords as keySub "
+    + " join sub.modelSentences as modSub "
+    + " join sub.translationEquivalents as transSub "
+    + " join sub.relatedTerms as relSub "
+    + " join sub.passages as passSub "
+    + " join sub.registers as regSub "
+    join translation collections
+    + " join ety.translations as etyTrans "
+    + " join term.definitions.translations as defTrans "
+    + " join term.modelSentences.translations as modTrans "
+    + " join term.passages.translations as passTrans "
+    + " join def.subdefinition.translations as subTrans "
+    + " join def.modelSentences.translations as modDefTrans "
+    + " join def.passages.translations as passDefTrans "
+    + " join sub.modelSentences.translations as modSubTrans "
+    + " join sub.passages.translations as passSubTrans "
+    /restrict by projectSubject in createdByProjSub
+    + " where term.meta.createdByProjSub = :projSub"
+    + " or pron.meta.createdByProjSub = :projSub"
+    + " or ety.meta.createdByProjSub = :projSub"
+    + " or sp.meta.createdByProjSub = :projSub"
+    + " or func.meta.createdByProjSub = :projSub"
+    + " or ency.meta.createdByProjSub = :projSub"
+    + " or trans.meta.createdByProjSub = :projSub"
+    + " or def.meta.createdByProjSub = :projSub"
+    + " or glo.meta.createdByProjSub = :projSub"
+    + " or key.meta.createdByProjSub = :projSub"
+    + " or trans.meta.createdByProjSub = :projSub"
+    + " or rel.meta.createdByProjSub = :projSub"
+    + " or pass.meta.createdByProjSub = :projSub"
+    + " or reg.meta.createdByProjSub = :projSub"
+    + " or subDef.meta.createdByProjSub = :projSub"
+    + " or gloDef.meta.createdByProjSub = :projSub"
+    + " or keyDef.meta.createdByProjSub = :projSub"
+    + " or modDef.meta.createdByProjSub = :projSub"
+    + " or transDef.meta.createdByProjSub = :projSub"
+    + " or relDef.meta.createdByProjSub = :projSub"
+    + " or passDef.meta.createdByProjSub = :projSub"
+    + " or regDef.meta.createdByProjSub = :projSub"
+    + " or gloSub.meta.createdByProjSub = :projSub"
+    + " or keySub.meta.createdByProjSub = :projSub"
+    + " or modSub.meta.createdByProjSub = :projSub"
+    + " or transSub.meta.createdByProjSub = :projSub"
+    + " or relSub.meta.createdByProjSub = :projSub"
+    + " or passSub.meta.createdByProjSub = :projSub"
+    + " or regSub.meta.createdByProjSub = :projSub"
+    + " or etyTrans.meta.createdByProjSub = :projSub"
+    + " or defTrans.meta.createdByProjSub = :projSub"
+    + " or modTrans.meta.createdByProjSub = :projSub"
+    + " or passTrans.meta.createdByProjSub = :projSub"
+    + " or subTrans.meta.createdByProjSub = :projSub"
+    + " or modDefTrans.meta.createdByProjSub = :projSub"
+    + " or passDefTrans.meta.createdByProjSub = :projSub"
+    + " or modSubTrans.meta.createdByProjSub = :projSub"
+    + " or passSubTrans.meta.createdByProjSub = :projSub"
+    /restrict by projectSubject in modifiedByProjSub
+    + " or term.meta.modifiedByProjSub = :projSub"
+    + " or pron.meta.modifiedByProjSub = :projSub"
+    + " or ety.meta.modifiedByProjSub = :projSub"
+    + " or sp.meta.modifiedByProjSub = :projSub"
+    + " or func.meta.modifiedByProjSub = :projSub"
+    + " or ency.meta.modifiedByProjSub = :projSub"
+    + " or trans.meta.modifiedByProjSub = :projSub"
+    + " or def.meta.modifiedByProjSub = :projSub"
+    + " or glo.meta.modifiedByProjSub = :projSub"
+    + " or key.meta.modifiedByProjSub = :projSub"
+    + " or trans.meta.modifiedByProjSub = :projSub"
+    + " or rel.meta.modifiedByProjSub = :projSub"
+    + " or pass.meta.modifiedByProjSub = :projSub"
+    + " or reg.meta.modifiedByProjSub = :projSub"
+    + " or subDef.meta.modifiedByProjSub = :projSub"
+    + " or gloDef.meta.modifiedByProjSub = :projSub"
+    + " or keyDef.meta.modifiedByProjSub = :projSub"
+    + " or modDef.meta.modifiedByProjSub = :projSub"
+    + " or transDef.meta.modifiedByProjSub = :projSub"
+    + " or relDef.meta.modifiedByProjSub = :projSub"
+    + " or passDef.meta.modifiedByProjSub = :projSub"
+    + " or regDef.meta.modifiedByProjSub = :projSub"
+    + " or gloSub.meta.modifiedByProjSub = :projSub"
+    + " or keySub.meta.modifiedByProjSub = :projSub"
+    + " or modSub.meta.modifiedByProjSub = :projSub"
+    + " or transSub.meta.modifiedByProjSub = :projSub"
+    + " or relSub.meta.modifiedByProjSub = :projSub"
+    + " or passSub.meta.modifiedByProjSub = :projSub"
+    + " or regSub.meta.modifiedByProjSub = :projSub"
+    + " or etyTrans.meta.modifiedByProjSub = :projSub"
+    + " or defTrans.meta.modifiedByProjSub = :projSub"
+    + " or modTrans.meta.modifiedByProjSub = :projSub"
+    + " or passTrans.meta.modifiedByProjSub = :projSub"
+    + " or subTrans.meta.modifiedByProjSub = :projSub"
+    + " or modDefTrans.meta.modifiedByProjSub = :projSub"
+    + " or passDefTrans.meta.modifiedByProjSub = :projSub"
+    + " or modSubTrans.meta.modifiedByProjSub = :projSub"
+    + " or passSubTrans.meta.modifiedByProjSub = :projSub";
+  */
 

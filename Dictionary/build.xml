@@ -5,7 +5,7 @@ This build file requires a build.properties file with the following properties:
 catalina.home=/usr/local/tomcat
 catalina.base=/usr/local/tomcat
 url=http://localhost:2020/manager
-username=
+username=c
 password=
 
 #provide location of working copy of lex-context-config.xml
@@ -32,7 +32,8 @@ jmeterhome=../jmeter
 
 <!--    <property file="${user.home}/.${ant.project.name}-build.properties"/>
 	<property file="${user.home}/.build.properties"/>
--->	<property file="build.properties"/> 
+-->
+	<property file="build.properties"/> 
 
   <!-- Configure the custom Ant tasks for the Manager application 
   			These tasks require catalina-ant.jar in $ANT_HOME/lib-->
@@ -54,6 +55,7 @@ jmeterhome=../jmeter
 		</fileset>
 		<fileset dir="${catalina.home}/common/lib">
 			<include name="servlet.jar"/>
+			<include name="*.jar"/>
 			<include name="mysql-connector-java-3.0.8-stable-bin.jar"/>
 		</fileset>
 		<!--point to org/thdl/users-->
@@ -110,45 +112,48 @@ jmeterhome=../jmeter
 				<include name="*.tld"/>
 			</fileset>
 		</copy>
-
+		
 		<copy todir="${build}/WEB-INF/lib">
 			<fileset dir="${basedir}/lib/jstl">
 				<include name="*.jar"/>
 			</fileset>
 			<fileset dir="${basedir}/lib/hibernate">
 				<include name="*.jar"/>
-			</fileset>			
+			</fileset>
 			<fileset dir="${basedir}/lib/thdl">
 				<include name="*.jar"/>
-			</fileset>	
+			</fileset>
+			
+			<fileset dir="${basedir}/lib/commons">
+				<include name="*.jar"/>
+			</fileset>
 			<fileset dir="${basedir}/lib/jwebunit">
 				<include name="*.jar"/>
 			</fileset>
-			<fileset dir="${basedir}/lib/dlese-oai">
+			<!--<fileset dir="${basedir}/lib/dlese-oai">
 				<include name="*.jar"/>
 			</fileset>
 			<fileset dir="${basedir}/lib/oai-xmlbeans">
 				<include name="*.jar"/>
-			</fileset>
+			</fileset>-->
 		</copy>
-
+	
 	</target>
-
+	
 	<target name="compile" description="Compile web application" depends="copy">
 		<mkdir dir="${build}/WEB-INF/classes"/>
-		<javac srcdir="${thdluser.home}/src/java"
-				 destdir="${build}/WEB-INF/classes"
-				 deprecation="on"
-				 classpathref="classpath"
-				 debug="on"/>
-		<javac  destdir="${build}/WEB-INF/classes" classpathref="classpath" debug="on" listfiles="no">
-		<src path="${source}/java"/>
-		<include name="org/thdl/lex/**"/>
-		<exclude name="**/old/**"/>
-	  </javac> 	
-  </target>
+		<javac srcdir="${thdluser.home}/src/java" destdir="${build}/WEB-INF/classes" deprecation="on" classpathref="classpath" debug="on"></javac>
+		<javac destdir="${build}/WEB-INF/classes" classpathref="classpath" debug="on" listfiles="no">
+			<src path="${source}/java"/>
+			<include name="org/thdl/lex/**"/>
+			<exclude name="**/old/**"/>
+			<exclude name="**/test/**"/>
+			<exclude name="**/util/**"/>
+			<exclude name="**/LexSourceRepository.java/**"/>
+		</javac>
+	</target>
 	
-	<target name="javadoc" description="Create Javadocs">		
+	<target name="javadoc" description="Create Javadocs">
 		<javadoc destdir="${build}/apidocs/" classpathref="classpath" author="true" version="true" use="true" windowtitle="THDL Tibetan Collaborative Dictionary API">
 			
 			<fileset dir="${source}/java" defaultexcludes="yes">
@@ -192,14 +197,17 @@ jmeterhome=../jmeter
 		<remove url="${url}" username="${username}" password="${password}" path="${path}"/>
 	</target>
 	
-	<target name="test" description="Run load and functional tests">
-		<java classname="org.thdl.lex.test.MainMenuTestCase" classpathref="classpath" fork="yes">
-			<classpath>
+	<target name="compile-test" description="Run load and functional tests" depends="compile">
+		<javac srcdir="${source}/java/test/org/thdl/lex" destdir="${build}/WEB-INF/classes" deprecation="on" classpathref="classpath" debug="on"></javac>
+	</target>
+	<target name="test" description="Run load and functional tests" depends="compile-test">
+
+		
+		<java classname="org.thdl.lex.TestAll" classpathref="classpath" fork="yes">
+			<!-- <classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
 			</classpath>
-			<arg value="${ lex.username }"/>
-			<arg value="${ lex.password }"/>
-		</java>
+			<jvmarg  value="-Djava.naming.factory.initial=org.apache.naming.ResourceFactory"/> --></java>
 	</target>
 	
 	<target name="reload-test" description="Remove and Re-install web application" depends="reload">
@@ -211,25 +219,19 @@ jmeterhome=../jmeter
 	</target>
 
 
-<target name="jmeter">
-<taskdef name="jmeter" classname="org.programmerplanet.ant.taskdefs.jmeter.JMeterTask"/> 
-<echo message="${jmeterhome}"/>
-<jmeter
-    jmeterhome="../jmeter"
-    testplan="${basedir}/loadtests/LoadTest.jmx"
-    resultlog="${basedir}/loadtests/JMeterResults.jtl"/> 
+	<target name="jmeter">
+		<taskdef name="jmeter" classname="org.programmerplanet.ant.taskdefs.jmeter.JMeterTask"/>
+		<echo message="${jmeterhome}"/>
+		<jmeter jmeterhome="../jmeter" testplan="${basedir}/loadtests/LoadTest.jmx" resultlog="${basedir}/loadtests/JMeterResults.jtl"/> 
 
 <!--
 For the following task to work, jmeter.properties needs to have the following properties set thusly:
 jmeter.save.saveservice.assertion_results=all 
 jmeter.save.saveservice.output_format=xml 
 -->
-<xslt
-    in="${basedir}/loadtests/JMeterResults.jtl"
-    out="${basedir}/loadtests/JMeterResults.html"
-    style="${jmeterhome}/extras/jmeter-results-report.xsl"/> 
-</target>	
-
+		<xslt in="${basedir}/loadtests/JMeterResults.jtl" out="${basedir}/loadtests/JMeterResults.html" style="${jmeterhome}/extras/jmeter-results-report.xsl"/>
+	</target>
+	
 	<target name="hbm2java" description="generate source code">
 		<!-- <tstamp prefix="now"/>
 		<echo message="time is: ${now.DSTAMP}_${now.TSTAMP}"/>
@@ -241,7 +243,8 @@ jmeter.save.saveservice.output_format=xml
 		<java classname="net.sf.hibernate.tool.hbm2java.CodeGenerator" classpathref="classpath" fork="yes">
 			<arg value="--output=${source}/java"/>
 			<arg value="--config=${basedir}/config/lex-codegen-cfg.xml"/>
-			<arg value="${source}/java/org/thdl/lex/component/LexComponent.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/util/LexComponentDataTransfer.hbm.xml"/>
+			<!-- <arg value="${source}/java/org/thdl/lex/component/LexComponent.hbm.xml"/>
 			<arg value="${source}/java/org/thdl/lex/component/child/Author.hbm.xml"/>
 			<arg value="${source}/java/org/thdl/lex/component/child/Dialect.hbm.xml"/>
 			<arg value="${source}/java/org/thdl/lex/component/child/EtymologyType.hbm.xml"/>
@@ -262,7 +265,7 @@ jmeter.save.saveservice.output_format=xml
 			<arg value="${source}/java/org/thdl/lex/component/child/Source.hbm.xml"/>
 			<arg value="${source}/java/org/thdl/lex/component/child/SpecificDialect.hbm.xml"/>
 			<arg value="${source}/java/org/thdl/lex/component/child/SpellingType.hbm.xml"/>
-			<arg value="${source}/java/org/thdl/lex/component/child/TransitionalDataLabel.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/TransitionalDataLabel.hbm.xml"/> -->
 		</java>
 	</target>
 	
@@ -276,9 +279,9 @@ jmeter.save.saveservice.output_format=xml
 			<arg value="--format"/>
 			<arg value="--quiet"/>
 			<arg value="--delimiter=;"/>
-			<arg value="--properties=${config}/hibernate.properties"/>
-			<arg value="${source}/java/org/thdl/lex/component/LexComponent.hbm.xml"/>
-			<arg value="${source}/java/org/thdl/lex/component/child/Author.hbm.xml"/>
+			<arg value="--properties=${basedir}/hibernate.properties"/>
+			<arg value="${source}/java/org/thdl/lex/util/LexComponentDataTransfer.hbm.xml"/>
+			<!--<arg value="${source}/java/org/thdl/lex/component/child/Author.hbm.xml"/>
 			<arg value="${source}/java/org/thdl/lex/component/child/Dialect.hbm.xml"/>
 			<arg value="${source}/java/org/thdl/lex/component/child/EtymologyType.hbm.xml"/>
 			<arg value="${source}/java/org/thdl/lex/component/child/Function.hbm.xml"/>
@@ -298,7 +301,7 @@ jmeter.save.saveservice.output_format=xml
 			<arg value="${source}/java/org/thdl/lex/component/child/Source.hbm.xml"/>
 			<arg value="${source}/java/org/thdl/lex/component/child/SpecificDialect.hbm.xml"/>
 			<arg value="${source}/java/org/thdl/lex/component/child/SpellingType.hbm.xml"/>
-			<arg value="${source}/java/org/thdl/lex/component/child/TransitionalDataLabel.hbm.xml"/>
+			<arg value="${source}/java/org/thdl/lex/component/child/TransitionalDataLabel.hbm.xml"/>-->
 		</java>
 	</target>
 	
@@ -310,4 +313,24 @@ jmeter.save.saveservice.output_format=xml
 			</fileset>
 		</schemaupdate>
 	</target>
+		
+	<target name="convert-to-new-mapping" description="convert old data to a new db mapping" depends="copy, compile">
+		<java classname="org.thdl.lex.ConvertDataToNewMapping" classpathref="classpath" fork="yes">
+			<classpath>
+				<pathelement location="${build}/WEB-INF/classes"/>
+			</classpath>
+			<arg value="${source}/java/org/thdl/lex/util/hibernate-data-transfer.cfg.xml"/>
+		</java>
+	</target>
+
+	<target name="importer" description="run the dictionary importer. " depends="copy, compile">
+		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
+			<classpath>
+				<pathelement location="${build}/WEB-INF/classes"/>
+			</classpath>
+			<!-- Pass Command-line arguments to the Dictionary Importer. The first argument must always be the Hibernate config file. -->
+			<arg value="${source}/java/hibernate.cfg.xml"/>
+		</java>
+	</target>
+	
 </project>
