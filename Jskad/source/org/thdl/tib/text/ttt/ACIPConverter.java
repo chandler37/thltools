@@ -316,6 +316,9 @@ public class ACIPConverter {
         TStackList lastGuy = null;
         Color lastColor = Color.BLACK;
         Color color = Color.BLACK;
+        boolean outputCurlyBracketsAroundFolioMarkers
+            = ThdlOptions.getBooleanOption("thdl.acip.to.x.output.curly.brackets.around.folio.markers");
+
         for (int i = 0; i < sz; i++) {
             TString s = (TString)scan.get(i);
             int stype = s.getType();
@@ -378,9 +381,11 @@ public class ACIPConverter {
                     lastGuyWasNonPunct = false;
                     lastGuy = null;
                     String text
-                        = (((stype == TString.FOLIO_MARKER) ? "{" : "")
+                        = (((outputCurlyBracketsAroundFolioMarkers
+                             && stype == TString.FOLIO_MARKER) ? "{" : "")
                            + s.getText()
-                           + ((stype == TString.FOLIO_MARKER) ? "}" : ""));
+                           + ((outputCurlyBracketsAroundFolioMarkers
+                               && stype == TString.FOLIO_MARKER) ? "}" : ""));
                     if (null != writer) writer.write(text);
                     if (null != tdoc) {
                         tdoc.appendRoman(tdocLocation[0], text, Color.BLACK);
