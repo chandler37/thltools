@@ -46,10 +46,10 @@ import org.thdl.tib.text.TibetanDocument;
 */
 public class AppletScannerFilter extends JApplet implements ActionListener, FocusListener, ItemListener
 {
-	private JMenuItem mnuSelectAll, aboutItem, mnuClear; // mnuCut, mnuCopy, mnuPaste, mnuDelete
+	private JMenuItem mnuSelectAll, aboutItem, mnuClear, mnuCut, mnuCopy, mnuPaste, mnuDelete;
 	private JCheckBoxMenuItem tibScript;
 	
-	// private JMenu mnuEdit;
+	private JMenu mnuEdit;
 	private Object objModified;
 	private Dialog diagAbout;
 	ScannerPanel sp;
@@ -68,38 +68,42 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
 			url = getCodeBase() + url;
 		}
 
-		// panel = new SimpleScannerPanel(url);
+		// sp = new SimpleScannerPanel(url);
 		sp = new DuffScannerPanel(url);
 		sp.addFocusListener(this);
 		
 		setContentPane(sp);
 		
 		// setup the menu. Almost identical to WindowScannerFilter, but using swing.
+
 		JMenuBar mb = new JMenuBar();
-		// mnuEdit
-		JMenu m = new JMenu ("Edit");		
-/*		mnuCut = new JMenuItem("Cut");		
+		mnuEdit = new JMenu ("Edit");
+		mnuCut = new JMenuItem("Cut");
+		mnuCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, java.awt.Event.CTRL_MASK));
 		mnuEdit.add(mnuCut);
-		mnuCut.addActionListener(this);		
+		mnuCut.addActionListener(this);
 		mnuCopy = new JMenuItem("Copy");
+		mnuCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, java.awt.Event.CTRL_MASK));
 		mnuEdit.add(mnuCopy);
 		mnuCopy.addActionListener(this);
 		mnuPaste = new JMenuItem("Paste");
+		mnuPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, java.awt.Event.CTRL_MASK));
 		mnuEdit.add(mnuPaste);
 		mnuPaste.addActionListener(this);		
 		mnuDelete = new JMenuItem("Delete");
 		mnuEdit.add(mnuDelete);
-		mnuDelete.addActionListener(this);		
-		mnuEdit.addSeparator();*/
+		mnuDelete.addActionListener(this);
+		mnuEdit.addSeparator();
 		mnuSelectAll = new JMenuItem("Select all");
-		m.add(mnuSelectAll);
+		mnuSelectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, java.awt.Event.CTRL_MASK));
+		mnuEdit.add(mnuSelectAll);
 		mnuSelectAll.addActionListener(this);
 		mnuClear = new JMenuItem("Clear all");
-		m.add(mnuClear);
+		mnuEdit.add(mnuClear);
 		mnuClear.addActionListener(this);		
-		mb.add(m);
+		mb.add(mnuEdit);
 		
-   		m = new JMenu("View");
+   		JMenu m = new JMenu("View");
     	tibScript = new JCheckBoxMenuItem("Tibetan Script", true);
 	    m.add(tibScript);
    		tibScript.addItemListener(this);
@@ -113,6 +117,7 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
 		m.add(aboutItem);
 		mb.add(m);
 		setJMenuBar(mb);
+
         //mnuEdit.setEnabled(false);
 	}
 	
@@ -122,7 +127,7 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
 	public void focusGained(FocusEvent e)
 	{
 	    objModified = e.getSource();
-/*	    boolean isEditable=false;
+	    boolean isEditable=false;
 	    
 	    if (objModified instanceof TextComponent)
 	    {
@@ -143,7 +148,9 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
                 mnuPaste.setEnabled(true);
         }
         else mnuPaste.setEnabled(false);
-        mnuDelete.setEnabled(isEditable);*/
+        mnuDelete.setEnabled(isEditable);
+		mnuCopy.setEnabled(true);
+		mnuSelectAll.setEnabled(true);
 	}
 	
 	/** Added to update the Edit menu in dependence upon
@@ -151,8 +158,12 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
 	*/
 	public void focusLost(FocusEvent e)
 	{
-	    /* mnuEdit.setEnabled(false);
-	    objModified=null;*/
+/*	    objModified=null;
+		mnuCut.setEnabled(false);
+		mnuCopy.setEnabled(false);
+		mnuPaste.setEnabled(false);
+		mnuDelete.setEnabled(false);
+		mnuSelectAll.setEnabled(false);*/
 	}
 	/* FIXME: what happens if this throws an exception?  We'll just
        see it on the console--it won't terminate the program.  And the
@@ -160,9 +171,9 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
     public void actionPerformed(ActionEvent e)	
     {
 		Object clicked = e.getSource();
-/*		StringSelection ss;
+		StringSelection ss;
 		String s = null;
-		int start, end;*/
+		int start, end;
 		
 		if (clicked==aboutItem)
 		{
@@ -180,7 +191,7 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
 		    {
 		        TextArea t = (TextArea) objModified;
 		    
-        		/*if (clicked == mnuCut)
+        		if (clicked == mnuCut)
 	        	{
 	        	    ss = new StringSelection(t.getSelectedText());
 	    	        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss,ss);
@@ -202,15 +213,13 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
         		    {
     			        s = data.toString();
 	    	        }
-
-        		    JOptionPane.showMessageDialog(AppletScannerFilter.this, s, "About", JOptionPane.PLAIN_MESSAGE);
-                    t.insert(s, t.getCaretPosition());
+	    	        t.replaceRange(s, t.getSelectionStart(), t.getSelectionEnd());
                 }
                 else if (clicked == mnuDelete)
                 {
                     t.replaceRange("", t.getSelectionStart(), t.getSelectionEnd());
                 }
-                else*/ if (clicked == mnuSelectAll)
+                else if (clicked == mnuSelectAll)
                 {
                     t.selectAll();
                 }
@@ -219,27 +228,16 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
             {
                 DuffPane t = (DuffPane) objModified;
             
-        		/*if (clicked == mnuCut)
+        		if (clicked == mnuCut)
 	        	{
-		    		t.copy(t.getSelectionStart(), t.getSelectionEnd(), true);
+		    		t.cutCurrentSelection();
                 }
                 else if (clicked == mnuCopy)
                 {
-		    		t.copy(t.getSelectionStart(), t.getSelectionEnd(), false);
+		    		t.copyCurrentSelection();
                 }
                 else if (clicked == mnuPaste)
                 {
-            		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            		Transferable data = clipboard.getContents(this);
-
-            		s = null;
-            		try {
-            			s = (String)(data.getTransferData(DataFlavor.stringFlavor));
-		            }
-            		catch (Exception ex) {
-        			    s = data.toString();
-		            }
-        		    JOptionPane.showMessageDialog(AppletScannerFilter.this, s, "About", JOptionPane.PLAIN_MESSAGE);
                     t.paste(t.getCaret().getDot());
                 }
                 else if (clicked == mnuDelete)
@@ -253,7 +251,7 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
                         System.out.println(ex);
                     }
                 }
-                else*/ if (clicked == mnuSelectAll)
+                else if (clicked == mnuSelectAll)
                 {
                     t.selectAll();
                 }    
