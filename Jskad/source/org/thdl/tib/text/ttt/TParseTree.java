@@ -295,7 +295,7 @@ class TParseTree {
                 } else {
                     if (getBestParse().hasStackWithoutVowel(pl, isLastStack)) {
                         if (isLastStack[0]) {
-                            if (warningLevel == "All" || warningLevel == "Most")
+                            if (warningLevel == "All")
                                 return "Warning: The last stack does not have a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}; this may indicate a typo, because Sanskrit, which this is (because it's not legal Tibetan), should have a vowel after each stack.";
                         } else {
                             return "Warning: There is a stack, before the last stack, without a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}; this may indicate a typo, because Sanskrit, which this is (because it's not legal Tibetan), should have a vowel after each stack.";
@@ -308,7 +308,7 @@ class TParseTree {
             } else {
                 if (nip.get(0).hasStackWithoutVowel(pl, isLastStack)) {
                     if (isLastStack[0]) {
-                        if (warningLevel == "All" || warningLevel == "Most")
+                        if (warningLevel == "All")
                             return "Warning: The last stack does not have a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}; this may indicate a typo, because Sanskrit, which this is (because it's not legal Tibetan), should have a vowel after each stack.";
                     } else {
                         return "Warning: There is a stack, before the last stack, without a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}; this may indicate a typo, because Sanskrit, which this is (because it's not legal Tibetan), should have a vowel after each stack.";
