@@ -1,14 +1,16 @@
 package org.thdl.lex;
+import java.sql.*;
 
 import java.util.*;
-import java.sql.*;
+import javax.naming.*;
+import javax.sql.*;
 
 
 /**
  *  Description of the Class
  *
- *@author     travis
- *@created    September 26, 2002
+ * @author     travis
+ * @created    September 26, 2002
  */
 public class LexRepository
 {
@@ -25,8 +27,8 @@ public class LexRepository
 	/**
 	 *  Sets the connection attribute of the LexRepository object
 	 *
-	 *@param  connection  The new connection value
-	 *@since
+	 * @param  connection  The new connection value
+	 * @since
 	 */
 	private void setConnection( Connection connection )
 	{
@@ -37,8 +39,8 @@ public class LexRepository
 	/**
 	 *  Sets the queryStatement attribute of the LexRepository object
 	 *
-	 *@param  queryStatement  The new queryStatement value
-	 *@since
+	 * @param  queryStatement  The new queryStatement value
+	 * @since
 	 */
 	public void setQueryStatement( Statement queryStatement )
 	{
@@ -49,8 +51,8 @@ public class LexRepository
 	/**
 	 *  Sets the updateStatement attribute of the LexRepository object
 	 *
-	 *@param  updateStatement  The new updateStatement value
-	 *@since
+	 * @param  updateStatement  The new updateStatement value
+	 * @since
 	 */
 	public void setUpdateStatement( Statement updateStatement )
 	{
@@ -61,9 +63,9 @@ public class LexRepository
 	/**
 	 *  Gets the instance attribute of the LexRepository class
 	 *
-	 *@return                             The instance value
-	 *@exception  LexRepositoryException  Description of the Exception
-	 *@since
+	 * @return                             The instance value
+	 * @exception  LexRepositoryException  Description of the Exception
+	 * @since
 	 */
 	public static LexRepository getInstance() throws LexRepositoryException
 	{
@@ -78,8 +80,8 @@ public class LexRepository
 	/**
 	 *  Gets the connection attribute of the LexRepository object
 	 *
-	 *@return    The connection value
-	 *@since
+	 * @return    The connection value
+	 * @since
 	 */
 	private Connection getConnection()
 	{
@@ -90,8 +92,8 @@ public class LexRepository
 	/**
 	 *  Gets the queryStatement attribute of the LexRepository object
 	 *
-	 *@return    The queryStatement value
-	 *@since
+	 * @return    The queryStatement value
+	 * @since
 	 */
 	public Statement getQueryStatement()
 	{
@@ -102,8 +104,8 @@ public class LexRepository
 	/**
 	 *  Gets the updateStatement attribute of the LexRepository object
 	 *
-	 *@return    The updateStatement value
-	 *@since
+	 * @return    The updateStatement value
+	 * @since
 	 */
 	public Statement getUpdateStatement()
 	{
@@ -115,11 +117,11 @@ public class LexRepository
 	/**
 	 *  doQuery() performs a SELECT query on the database.
 	 *
-	 *@param  sql                         This is a SQL String passed in from
+	 * @param  sql                         This is a SQL String passed in from
 	 *      outside.
-	 *@return                             ResultSet representing query results
-	 *@exception  LexRepositoryException  Description of the Exception
-	 *@since
+	 * @return                             ResultSet representing query results
+	 * @exception  LexRepositoryException  Description of the Exception
+	 * @since
 	 */
 	public ResultSet doQuery( String sql ) throws LexRepositoryException
 	{
@@ -129,7 +131,7 @@ public class LexRepository
 		}
 		catch ( SQLException sqle )
 		{
-			throw new LexRepositoryException( sqle.getMessage() );
+			throw new LexRepositoryException( sqle );
 		}
 	}
 
@@ -137,10 +139,10 @@ public class LexRepository
 	/**
 	 *  doUpdate() performs an INSERT/UPDATE/DROP action
 	 *
-	 *@param  sql                         Description of the Parameter
-	 *@return                             Description of the Return Value
-	 *@exception  LexRepositoryException  Description of the Exception
-	 *@since
+	 * @param  sql                         Description of the Parameter
+	 * @return                             Description of the Return Value
+	 * @exception  LexRepositoryException  Description of the Exception
+	 * @since
 	 */
 	public int doUpdate( String sql ) throws LexRepositoryException
 	{
@@ -150,7 +152,7 @@ public class LexRepository
 		}
 		catch ( SQLException sqle )
 		{
-			throw new LexRepositoryException( sqle.getMessage() );
+			throw new LexRepositoryException( sqle );
 		}
 	}
 
@@ -159,10 +161,10 @@ public class LexRepository
 	 *  doInsert() is a wrapper for doUpdate() that returns the auto_increment
 	 *  primary key value of the newly inserted row
 	 *
-	 *@param  sql                         Description of the Parameter
-	 *@return                             Description of the Return Value
-	 *@exception  LexRepositoryException  Description of the Exception
-	 *@since
+	 * @param  sql                         Description of the Parameter
+	 * @return                             Description of the Return Value
+	 * @exception  LexRepositoryException  Description of the Exception
+	 * @since
 	 */
 	public int doInsert( String sql ) throws LexRepositoryException
 	{
@@ -197,7 +199,7 @@ public class LexRepository
 		}
 		catch ( SQLException sqle )
 		{
-			throw new LexRepositoryException( sqle.getMessage() );
+			throw new LexRepositoryException( sqle );
 		}
 	}
 
@@ -207,8 +209,8 @@ public class LexRepository
 	 *  The main program for the LexRepository class. This method tests all other
 	 *  methods in this class
 	 *
-	 *@param  args  The command line arguments
-	 *@since
+	 * @param  args  The command line arguments
+	 * @since
 	 */
 	public static void main( String[] args )
 	{
@@ -218,7 +220,7 @@ public class LexRepository
 		{
 			msg = args[0];
 		}
-		//TEST doInsert() method. Insert a message multiple times using the Testing table
+//TEST doInsert() method. Insert a message multiple times using the Testing table
 		System.out.println( "TEST ONE\n--------\n" );
 		try
 		{
@@ -240,8 +242,8 @@ public class LexRepository
 			lre.printStackTrace();
 		}
 
-		//TEST doQuery() method. Accept a table parameter from the command line and output
-		//a tab-delimited representation of the table.
+//TEST doQuery() method. Accept a table parameter from the command line and output
+//a tab-delimited representation of the table.
 		System.out.println( "\nTEST TWO\n--------\n" );
 		try
 		{
@@ -293,30 +295,41 @@ public class LexRepository
 	/**
 	 *  Default Constructor for the LexRepository object
 	 *
-	 *@exception  LexRepositoryException  Description of the Exception
-	 *@since
+	 * @exception  LexRepositoryException  Description of the Exception
+	 * @since
 	 */
 	private LexRepository() throws LexRepositoryException
 	{
 		try
 		{
-			Class.forName( LexConstants.DRIVER );
-			Properties props = new Properties();
-			props.setProperty( "user", LexConstantsSecure.USER );
-			props.setProperty( "password", LexConstantsSecure.PASSWORD );
-			props.setProperty( "useUnicode", "true" );
-			props.setProperty( "characterEncoding", "UTF-8" );
-			setConnection( DriverManager.getConnection( LexConstantsSecure.URL, props ) );
+			/*
+			    Class.forName( LexConstants.DRIVER );
+			    Properties props = new Properties();
+			    props.setProperty( "user", LexConstantsSecure.USER );
+			    props.setProperty( "password", LexConstantsSecure.PASSWORD );
+			    props.setProperty( "useUnicode", "true" );
+			    props.setProperty( "characterEncoding", "UTF-8" );
+			    setConnection( DriverManager.getConnection( LexConstantsSecure.URL, props ) );
+			  */
+			Context context = new InitialContext();
+			DataSource source = (DataSource) context.lookup( LexConstants.DATASOURCE_NAME );
+			setConnection( source.getConnection() );
 			setQueryStatement( getConnection().createStatement() );
 			setUpdateStatement( getConnection().createStatement() );
 		}
-		catch ( ClassNotFoundException cnfe )
+		/*
+		    catch ( ClassNotFoundException cnfe )
+		    {
+		    throw new LexRepositoryException( "No Driver Available for: " + LexConstants.DRIVER );
+		    }
+		  */
+		catch ( NamingException ne )
 		{
-			throw new LexRepositoryException( "No Driver Available for: " + LexConstants.DRIVER );
+			throw new LexRepositoryException( ne );
 		}
 		catch ( SQLException se )
 		{
-			throw new LexRepositoryException( se.getMessage() );
+			throw new LexRepositoryException( se );
 		}
 	}
 }
