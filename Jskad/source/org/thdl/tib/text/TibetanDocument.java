@@ -740,7 +740,8 @@ public class TibetanDocument extends DefaultStyledDocument {
                                 replaceDuff(fontSize, i, equivalent[0], !toTM);
                             }
                         } else {
-                            ThdlDebug.verify(!toUnicode); // DLC NOW
+                            if (toUnicode)
+                                throw new Error("Please execute 'Clear Preferences' and retry -- you've caused us to go into insert-and-remove mode, as opposed to replace mode, and replacing, the default preference, is the only way you can get TMW->Unicode conversion at present.");
                             if (insertBefore()) {
                                 insertDuff(fontSize, i, equivalent, !toTM);
                                 remove(i+1, 1);
