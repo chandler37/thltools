@@ -27,8 +27,8 @@ Contributor(s): ______________________________________.
 
      We have a document,
      http://thdltools.sourceforge.net/BuildSystems.html, that
-     describes how to use this file to build Jskad, Tibbibl, and the
-     translation tool.
+     describes how to use this file to build Jskad, TiblEdit (TIBBIBL
+     editor), and the translation tool.
 
      This build file is the main one, and it uses jwsbuild.xml for
      building Java Web Start (JWS) releases.  See the comments in that
@@ -52,11 +52,11 @@ Contributor(s): ______________________________________.
 
 
   <description>
-    This Jakarta Ant buildfile is used to build Jskad, Tibbibl, and
-    the Translation Tool.  The docs at http://thdltools.sf.net/api are
-    created using this buildfile, for example.  Read the comments of
-    this buildfile to learn more, or see
-    http://thdltools.sourceforge.net/BuildSystems.html.
+    This Jakarta Ant buildfile is used to build Jskad, TiblEdit
+    (TIBBIBL editor), and the Translation Tool.  The docs at
+    http://thdltools.sf.net/api are created using this buildfile, for
+    example.  Read the comments of this buildfile to learn more, or
+    see http://thdltools.sourceforge.net/BuildSystems.html.
   </description>
 
   <!--
@@ -80,7 +80,7 @@ Contributor(s): ______________________________________.
   <property name="bin" location="bin"/>
   <property name="jskadbin" location="bin/jskad"/>
   <property name="converterguibin" location="bin/convertergui"/>
-  <property name="tibbiblbin" location="bin/tibbibl"/>
+  <property name="tibleditbin" location="bin/tibledit"/>
   <property name="junitbin" location="bin/for-junit"/>
   <property name="ttstandalonebin" location="bin/tt-standalone"/>
   <property name="ttappletjwsbin" location="bin/tt-applet-and-java-web-start"/>
@@ -213,7 +213,7 @@ Contributor(s): ______________________________________.
          inheritAll="false" inheritRefs="false">
        <reference refid="entire.class.path"/>
        <property name="junitbin" value="${junitbin}"/>
-    </ant>
+    </ant> 
     <ant antfile="junitbuild.xml" target="run-headless-junit-tests"
          inheritAll="false" inheritRefs="false">
        <reference refid="entire.class.path"/>
@@ -302,17 +302,17 @@ Contributor(s): ______________________________________.
     <delete file="${dist}/DateStampForNightlyBuilds.html"/>
   </target>
 
-  <!-- DLC FIXME: add tibbibl-all-in-one-dist -->
+  <!-- DLC FIXME: add tibledit-all-in-one-dist -->
   <target name="self-contained-dist"
           depends="jskad-all-in-one-dist"
           description="JARs up everything into self-contained JARs for double-click, classpath-worry-free joy" />
 
   <target name="dist"
-          depends="jskad-dist,tt-handheld-dist,tt-standalone-dist,tt-applet-plus-jws-dist,tt-servlet-dist,tibbibl-dist,convertergui-dist"
+          depends="jskad-dist,tt-handheld-dist,tt-standalone-dist,tt-applet-plus-jws-dist,tt-servlet-dist,tibledit-dist,convertergui-dist"
           description="JARs up everything" />
 
   <target name="compile"
-          depends="jskad-compile,tt-standalone-compile,tt-handheld-compile,tt-applet-plus-jws-compile,tt-servlet-compile,tibbibl-compile,convertergui-compile"
+          depends="jskad-compile,tt-standalone-compile,tt-handheld-compile,tt-applet-plus-jws-compile,tt-servlet-compile,tibledit-compile,convertergui-compile"
           description="compiles all programs" />
 
 
@@ -409,23 +409,23 @@ Contributor(s): ______________________________________.
     </antcall>
   </target>
 
-  <target name="tibbibl-compile" depends="init"
-          description="compiles Tibbibl" >
-    <mkdir dir="${tibbiblbin}"/>
+  <target name="tibledit-compile" depends="init"
+          description="compiles TiblEdit" >
+    <mkdir dir="${tibleditbin}"/>
     <antcall target="copy-tmw-fonts-to-bin-dir">
-      <param name="my.bin" value="${tibbiblbin}"/>
+      <param name="my.bin" value="${tibleditbin}"/>
     </antcall>
     <antcall target="create-timestamp-source-code"/> <!-- DLC NOW! The -run targets are mucking with this! It isn't fatal, but it should be fixed. -->
     <antcall target="our-internal-javac-task">
-      <param name="mybin" value="${tibbiblbin}"/>
+      <param name="mybin" value="${tibleditbin}"/>
       <param name="my.included.source.file"
              value="org/thdl/tib/bibl/TiblEdit.java"/>
     </antcall>
     <antcall target="copy-ini-files-to-bin-dir-for-jarring">
-      <param name="mybin" value="${tibbiblbin}"/>
+      <param name="mybin" value="${tibleditbin}"/>
     </antcall>
     <antcall target="copy-license-etc-to-bin-dir-for-jarring">
-      <param name="mybin" value="${tibbiblbin}"/>
+      <param name="mybin" value="${tibleditbin}"/>
     </antcall>
   </target>
 
@@ -637,7 +637,7 @@ Contributor(s): ______________________________________.
     </antcall>
   </target>
 
-  <!-- DLC FIXME: add tibbibl-jws -->
+  <!-- DLC FIXME: add tibledit-jws -->
   <!--
        Note that jardiffs for the JWS stuff are done by the JWS system
        itself when appropriate and when the server is configured
@@ -672,7 +672,7 @@ Contributor(s): ______________________________________.
 
 
   <target name="src-dist" depends="init"
-          description="generates the full Jskad+Tibbibl+Translation Tool source distribution" >
+          description="generates the full Jskad+TiblEdit+Translation Tool source distribution" >
     <!-- Put everything necessary into the zip file -->
     <zip destfile="${dist}/source/THDL-Tools-src-${DSTAMP}.zip">
       <zipfileset dir="${source}"
@@ -733,11 +733,11 @@ Contributor(s): ______________________________________.
   </target>
 
 
-  <target name="tibbibl-dist" depends="tibbibl-compile"
-          description="generates the bare Tibbibl binary distribution" >
-    <!-- Put everything in ${tibbiblbin} into the JAR file -->
-    <jar jarfile="${lib}/Tibbibl${my.jar.suffix}.jar"
-         basedir="${tibbiblbin}">
+  <target name="tibledit-dist" depends="tibledit-compile"
+          description="generates the bare TiblEdit binary distribution" >
+    <!-- Put everything in ${tibleditbin} into the JAR file -->
+    <jar jarfile="${lib}/TiblEdit${my.jar.suffix}.jar"
+         basedir="${tibleditbin}">
       <manifest>
         <attribute name="Main-Class" value="org.thdl.tib.bibl.TiblEdit"/>
       </manifest>
@@ -913,7 +913,7 @@ Contributor(s): ______________________________________.
     </java>
   </target>
 
-  <target name="tibbibl-run" depends="tibbibl-dist" description="runs Tibbibl">
+  <target name="tibledit-run" depends="tibledit-dist" description="runs TiblEdit, the TIBBIBL editor">
     <available classname="org.jdom.Document"
                classpathref="entire.class.path"
                ignoresystemclasses="true"
@@ -922,7 +922,7 @@ Contributor(s): ______________________________________.
           unless="jdom.present"/>
     <java classname="org.thdl.tib.bibl.TiblEdit" fork="yes">
       <classpath>
-        <pathelement location="${lib}/Tibbibl${my.jar.suffix}.jar"/>
+        <pathelement location="${lib}/TiblEdit${my.jar.suffix}.jar"/>
         <path refid="entire.class.path"/>
       </classpath>
       <jvmarg value="-Dthdl.debug=${thdl.debug}"/>
