@@ -35,8 +35,6 @@ public class LocalTibetanScanner extends TibetanScanner
 	private SyllableListTree raiz, silActual, lastCompSil, silAnterior;
 	private String wordActual, lastCompWord;
 	private Vector floatingSil;
-	private static String endOfParagraphMarks = "/;|!:[]^@#$%=<>(){}";
-	private static String endOfSyllableMarks = " _\t";
 
 	static
 	{
@@ -295,11 +293,6 @@ public class LocalTibetanScanner extends TibetanScanner
 		}
 	}
 		
-	private boolean isEndOfSyllable(int ch)
-	{
-	    return (endOfSyllableMarks.indexOf(ch)>-1);
-	}
-	
 	public void scanLine(String linea)
 	{
 		int init = 0, fin;
@@ -325,7 +318,7 @@ outAHere:
 				if (init>=linea.length())
 					break outAHere;
 			    ch = linea.charAt(init);
-			    if (endOfParagraphMarks.indexOf(ch)>=0)
+			    if (Manipulate.isPunctuationMark(ch))
 			    {
 			        if (doNotFinishUp)
 			        {
@@ -334,7 +327,7 @@ outAHere:
 			        }
 			        wordList.addLast(new PunctuationMark(ch));
 			    }
-			    else if (endOfSyllableMarks.indexOf(ch)<0)
+			    else if (!Manipulate.isEndOfSyllableMark(ch))
 			        break;
 
 				init++;
@@ -350,12 +343,12 @@ outAHere:
 			while (fin < linea.length())
 			{
 			    ch = linea.charAt(fin);
-			    if (endOfParagraphMarks.indexOf(ch)>=0)
+			    if (Manipulate.isPunctuationMark(ch))
 			    {
 			        doNotFinishUp = false;
 			        break;
 			    }
-			    else if (endOfSyllableMarks.indexOf(ch)>=0)
+			    else if (Manipulate.isEndOfSyllableMark(ch))
 			    {
 			        break;
 			    }

@@ -80,10 +80,6 @@ class AcipToTab
 	            if (temp.length()>0)
 	            {
 	              currentPage=Integer.parseInt(temp);
-	              if (currentPage==3141)
-	              {
-	                System.out.println("Hello!");
-	              }
 	            }
 	            if (marker<len)
 	            {
@@ -151,7 +147,7 @@ class AcipToTab
                     while (marker<len)
                     {
                         ch = entrada.charAt(marker);
-                        if (ch==' ' || ch=='/') break;
+                        if (Manipulate.isEndOfSyllableMark(ch) || Manipulate.isEndOfParagraphMark(ch)) break;
                         marker++;
                     }
                     
@@ -184,50 +180,56 @@ class AcipToTab
    	                    while (marker < len)
    	                    {
        	                    ch = entrada.charAt(marker);
-   	                        switch(ch)
-   	                        {
-   	                            case '/':
+       	                    
+       	                    if (Manipulate.isEndOfParagraphMark(ch))
+       	                    {
+   	                            markerNotFound=false;
+   	                            marker2=marker+1;
+       	                    }
+       	                    else if (Manipulate.isEndOfSyllableMark(ch))
+       	                    {
+       	                        if (marker+1<len && Manipulate.isEndOfSyllableMark(entrada.charAt(marker+1))) // verify "  "
+       	                        {
    	                                markerNotFound=false;
-   	                                marker2=marker+1;
-   	                            break;
-   	                            case '(': case '<':
-   	                                markerNotFound=false;
-   	                                marker2=marker;
-   	                            break;
-   	                            case 'g': // verify "g "
-       	                            if (marker+1<len && Manipulate.isVowel(entrada.charAt(marker-1)) && entrada.charAt(marker+1)==' ')
-       	                            {
-       	                                temp = entrada.substring(0, marker+1);
-       	                                if (!lastWeirdDefiniendum.startsWith(temp))
+   	                                marker2=++marker;
+   	                            }
+       	                    }
+       	                    else
+       	                    {
+   	                            switch(ch)
+   	                            {
+   	                                case '(': case '<':
+   	                                    markerNotFound=false;
+   	                                    marker2=marker;
+   	                                break;
+   	                                case 'g': // verify "g "
+       	                                if (marker+1<len && Manipulate.isVowel(entrada.charAt(marker-1)) && Manipulate.isEndOfSyllableMark(entrada.charAt(marker+1)))
        	                                {
+       	                                    temp = entrada.substring(0, marker+1);
+       	                                    if (!lastWeirdDefiniendum.startsWith(temp))
+       	                                    {
+   	                                            markerNotFound=false;
+   	                                            marker2=++marker;
+                                                lastWeirdDefiniendum=temp;
+                                                //n++;
+                                                // out.println(currentPage + ": " + entrada);
+                                            }
+   	                                    }
+   	                                break;
+   	                                case '.':
+   	                                    if (marker+2<len && entrada.charAt(marker+1)=='.' && entrada.charAt(marker+2)=='.')
+   	                                    {
    	                                        markerNotFound=false;
-   	                                        marker2=++marker;
-                                            lastWeirdDefiniendum=temp;
-                                            //n++;
-                                            // out.println(currentPage + ": " + entrada);
-                                        }
-   	                                }
-   	                            break;
-   	                            case ' ': // verify "  "
-       	                            if (marker+1<len && entrada.charAt(marker+1)==' ')
-       	                            {
-   	                                    markerNotFound=false;
-   	                                    marker2=++marker;
-   	                                }
-   	                            break;
-   	                            case '.':
-   	                                if (marker+2<len && entrada.charAt(marker+1)=='.' && entrada.charAt(marker+2)=='.')
-   	                                {
-   	                                    markerNotFound=false;
-   	                                    marker2=marker;
-   	                                }
-   	                            break;
-       	                        default:
-   	                                if (Character.isDigit(ch))
-   	                                {
-   	                                    markerNotFound=false;
-   	                                    marker2=marker;
-   	                                }
+   	                                        marker2=marker;
+   	                                    }
+   	                                break;
+       	                            default:
+   	                                    if (Character.isDigit(ch))
+   	                                    {
+   	                                        markerNotFound=false;
+   	                                        marker2=marker;
+   	                                    }
+   	                            }
    	                        }
    	                        
    	                        if (markerNotFound) marker++;

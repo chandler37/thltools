@@ -182,7 +182,14 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 	private BinaryFileGenerator(String sil, String def, int numDef)
 	{
 		super();
-		int marker = sil.indexOf(" ");
+		int marker;
+		while (true)
+		{
+		    marker = Manipulate.indexOfExtendedEndOfSyllableMark(sil);
+		    if (marker==0) sil = sil.substring(1);
+		    else if (marker==sil.length()-1) sil = sil.substring(0,sil.length()-1);
+		    else break;
+		}
 		
 		// fix for updates
 		this.sourceDef = new ByteDictionarySource();
@@ -310,7 +317,7 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
                         while (marker<len)
                         {
                             ch = entrada.charAt(marker);
-                            if (ch==' ' || ch=='/') break;
+                            if (Manipulate.isEndOfSyllableMark(ch) || Manipulate.isEndOfParagraphMark(ch)) break;
                             marker++;
                         }
                     
@@ -333,48 +340,54 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
    	                        while (marker < len)
    	                        {
        	                        ch = entrada.charAt(marker);
-       	                        switch(ch)
-   	                            {
-   	                                case '/':
+       	                        
+       	                        if (Manipulate.isEndOfParagraphMark(ch))
+       	                        {
+   	                                markerNotFound=false;
+   	                                marker2=marker+1;
+       	                        }
+       	                        else if (Manipulate.isEndOfSyllableMark(ch))
+       	                        {
+           	                        if (marker+1<len && Manipulate.isEndOfSyllableMark(entrada.charAt(marker+1))) // verify "  "
+       	                            {
    	                                    markerNotFound=false;
-   	                                    marker2=marker+1;
-   	                                break;
-   	                                case '(': case '<':
-   	                                    markerNotFound=false;
-       	                                marker2=marker;
-   	                                break;
-   	                                case 'g': // verify "g "
-       	                                if (marker+1<len && Manipulate.isVowel(entrada.charAt(marker-1)) && entrada.charAt(marker+1)==' ')
-       	                                {
-       	                                    temp = entrada.substring(0, marker+1);
-       	                                    if (!lastWeirdDefiniendum.startsWith(temp))
-           	                                {
+   	                                    marker2=++marker;
+   	                                }
+       	                        }
+       	                        else
+       	                        {
+       	                            switch(ch)
+   	                                {
+   	                                    case '(': case '<':
+   	                                        markerNotFound=false;
+       	                                    marker2=marker;
+   	                                    break;
+   	                                    case 'g': // verify "g "
+       	                                    if (marker+1<len && Manipulate.isVowel(entrada.charAt(marker-1)) && Manipulate.isEndOfSyllableMark(entrada.charAt(marker+1)))
+       	                                    {
+       	                                        temp = entrada.substring(0, marker+1);
+       	                                        if (!lastWeirdDefiniendum.startsWith(temp))
+           	                                    {
+   	                                                markerNotFound=false;
+   	                                                marker2=++marker;
+                                                    lastWeirdDefiniendum=temp;
+                                                }
+   	                                        }
+   	                                    break;
+   	                                    case '.':
+       	                                    if (marker+2<len && entrada.charAt(marker+1)=='.' && entrada.charAt(marker+2)=='.')
+   	                                        {
    	                                            markerNotFound=false;
-   	                                            marker2=++marker;
-                                                lastWeirdDefiniendum=temp;
-                                            }
-   	                                    }
-   	                                break;
-       	                            case ' ': // verify "  "
-           	                            if (marker+1<len && entrada.charAt(marker+1)==' ')
-       	                                {
-   	                                        markerNotFound=false;
-   	                                        marker2=++marker;
-   	                                    }
-   	                                break;
-   	                                case '.':
-       	                                if (marker+2<len && entrada.charAt(marker+1)=='.' && entrada.charAt(marker+2)=='.')
-   	                                    {
-   	                                        markerNotFound=false;
-   	                                        marker2=marker;
-   	                                    }
-   	                                break;
-       	                            default:
-   	                                    if (Character.isDigit(ch))
-   	                                    {
-   	                                        markerNotFound=false;
-   	                                        marker2=marker;
-       	                                }
+   	                                            marker2=marker;
+   	                                        }
+   	                                    break;
+       	                                default:
+   	                                        if (Character.isDigit(ch))
+   	                                        {
+   	                                            markerNotFound=false;
+   	                                            marker2=marker;
+       	                                    }
+   	                                }
    	                            }
    	                            if (markerNotFound) marker++;
    	                            else break;
@@ -486,16 +499,20 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
         			        default:
 	        		        marker = entrada.indexOf(delimiter);
 	        		    }
-		                if (marker<0)
+		                if (marker<=0)
 		                {
 		                    System.out.println("Error loading line " + currentLine + ", in file " + archivo + ":");
 		                    System.out.println(entrada);
         		        }
 	        	        else
 		                {
+		                    marker2 = Manipulate.indexOfBracketMarks(entrada.substring(0,marker));
+		                    if (marker2>0) marker = marker2;
+		                    
 		                    s1 = Manipulate.deleteQuotes(entrada.substring(0,marker).trim());
-		                    s2 = Manipulate.deleteQuotes(entrada.substring(marker+delimiter.length()).trim());
-		                    if (!s2.equals(""))
+		                    s2 = Manipulate.deleteQuotes(entrada.substring(marker+delimiter.length())).trim();
+		                    
+		                    if (Manipulate.isMeaningful(s2))
 		                    {
 		                        if (currentLine%5000==0)
 		                        {
@@ -527,8 +544,16 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 		Link link, newLink;
 		BinaryFileGenerator ultimo;
 		String firstSillable;
-		int marker = word.indexOf(" "), comp;
+		int marker, comp;
 		
+		while (true)
+		{
+		    marker = Manipulate.indexOfExtendedEndOfSyllableMark(word);
+		    if (marker==0) word = word.substring(1);
+		    else if (marker==word.length()-1) word = word.substring(0,word.length()-1);
+		    else break;
+		}	
+				
 		if (marker<0)
 			firstSillable = word;
 		else firstSillable = word.substring(0,marker);

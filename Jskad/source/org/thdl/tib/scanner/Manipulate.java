@@ -28,6 +28,11 @@ import org.thdl.util.*;
 public class Manipulate
 {
 
+	private static String endOfParagraphMarks = "/;|!:^@#$%=";
+	private static String bracketMarks = "<>(){}[]";
+	private static String endOfSyllableMarks = " _\t";
+	private static String allStopMarkers = endOfSyllableMarks + endOfParagraphMarks + bracketMarks;
+
 	/* public static String[] parseFields (String s, char delimiter)
 	{
 	    int pos;
@@ -43,7 +48,52 @@ public class Manipulate
 	    
 	    ll.addLast(s.trim());
 	    return ll.toStringArray();
-	}*/  
+	}*/
+	
+	public static int indexOfAnyChar(String str, String chars)
+	{
+	    int i;
+	    for (i=0; i<str.length(); i++)
+	    {
+	        if (chars.indexOf(str.charAt(i))>=0)
+	            return i;
+	    }
+	    
+	    return -1;
+	}
+	
+	public static int indexOfExtendedEndOfSyllableMark(String word)
+	{
+	    return indexOfAnyChar(word, allStopMarkers);
+	}
+	
+	public static int indexOfBracketMarks(String word)
+	{
+	    return indexOfAnyChar(word, bracketMarks);
+	}	
+	
+	public static boolean isPunctuationMark(int ch)
+	{
+	    return endOfParagraphMarks.indexOf(ch)>=0 || bracketMarks.indexOf(ch)>=0;
+	}
+	
+	public static boolean isEndOfParagraphMark(int ch)
+	{
+	    return endOfParagraphMarks.indexOf(ch)>=0;
+	}
+	
+	public static boolean isEndOfSyllableMark(int ch)
+	{
+	    return endOfSyllableMarks.indexOf(ch)>=0;
+	}
+	
+	public static boolean isMeaningful(String s)
+	{
+	    for (int i=0; i<s.length(); i++) 
+	        if (Character.isLetterOrDigit(s.charAt(i))) return true;
+	    
+	    return false;
+	}
 	
 	public static String replace(String linea, String origSub, String newSub)
 	{
@@ -88,7 +138,6 @@ public class Manipulate
 			    return string.substring(0, pos).concat(newSub).trim();
 		}	    
 	}
-	
 	
 	public static String deleteSubstring (String string, String sub)
 	{
@@ -251,6 +300,7 @@ public class Manipulate
 		nuevaLinea = replace(nuevaLinea, "kaSH", "k+Sh");
 		nuevaLinea = replace(nuevaLinea, "SH", "Sh");
 		nuevaLinea = replace(nuevaLinea, ":", "H");
+		nuevaLinea = replace(nuevaLinea, "NH", "NaH");
 		nuevaLinea = replace(nuevaLinea, "dh", "d+h");
 		nuevaLinea = replace(nuevaLinea, "gh", "g+h");
 		nuevaLinea = replace(nuevaLinea, "bh", "b+h");
@@ -294,18 +344,19 @@ public class Manipulate
 		          {
 		            chP = nuevaLinea.charAt(i-1);
 		            chN = nuevaLinea.charAt(i+1);
-		            if (Character.isLetter(chP) && !isVowel(chP) && isVowel(chN))
+		            if (isVowel(chN))
 		            {
-		                nuevaLinea = nuevaLinea.substring(0, i) + Character.toUpperCase(chN) + nuevaLinea.substring(i+2);
-		                len--;
+		                if (Character.isLetter(chP) && !isVowel(chP))
+		                {
+		                    nuevaLinea = nuevaLinea.substring(0, i) + Character.toUpperCase(chN) + nuevaLinea.substring(i+2);
+		                    len--;
+		                }
+		                else if (chP=='a' && (i==1 || i>1 && !Character.isLetter(nuevaLinea.charAt(i-2)) || chN == 'a' && (i+2==len || !Character.isLetter(nuevaLinea.charAt(i+2)))))
+		                {
+		                    nuevaLinea = nuevaLinea.substring(0,i-1) + Character.toUpperCase(chN) + nuevaLinea.substring(i+2);
+		                    len-=2;
+		                }
 		            }
-		          }
-		        break;
-		        case 'a':
-		          if ((i<len-3 && nuevaLinea.charAt(i+1)=='\'' && isVowel(nuevaLinea.charAt(i+2))) && (i==0 || !Character.isLetter(nuevaLinea.charAt(i-1))))
-		          {
-		            nuevaLinea = nuevaLinea.substring(0, i) + Character.toUpperCase(nuevaLinea.charAt(i+2)) + nuevaLinea.substring(i+3);
-		            len-=2;
 		          }
 		    }
 		}
@@ -416,14 +467,24 @@ public class Manipulate
 	
     public static String deleteQuotes(String s)
     {
-        int length = s.length();
+        int length = s.length(), pos;
         if (length>2)
         {
-        if ((s.charAt(0)=='\"') && (s.charAt(length-1)=='\"'))
-            return s.substring(1,length-1);
+            if ((s.charAt(0)=='\"') && (s.charAt(length-1)=='\"'))
+                return s.substring(1,length-1);
+                
+            do
+            {
+                pos = s.indexOf("\"\"");
+                if (pos<0) break;
+                s = Manipulate.deleteSubstring(s, pos, pos+1);
+            } while (true);
         }
+        
         return s;
     }	
+    
+    
 	
 	/** Syntax: java Manipulate [word-file] < source-dic-entries > dest-dic-entries
 	
