@@ -1,6 +1,6 @@
 ***********************************************************************
 *                                                                     *
-*               TIBETAN MACHINE WEB TRUE TYPE FONT                    *
+*                 TIBETAN MACHINE TRUE TYPE FONT                      *
 *                                                                     *
 *       Made available publically through the cooperation of          *
 *                                                                     *
@@ -8,10 +8,6 @@
 *       The Trace Foundation (http:/trace.org/)                       *
 *       The Tibetan & Himalayan Digital Library (http://thdl.org/)    *
 *       Fonts and Documentation created by Tony Duff                  *
-*                                                                     *
-*       Released October 1, 2001.                                     *
-*       Updated December 11, 2001.                                    *
-*       Updated again September 30, 2002.                             *
 *                                                                     *
 ***********************************************************************
 
@@ -36,11 +32,13 @@ See 'GPL.txt'.
 
 
 DESCRIPTION: This folder contains the files you will need to install
-and use the Tibetan Machine Web True Type font.  The font itself
-consists of ten (10) files that need to be installed in the system's
-font folder.
-
-SYSTEM REQUIREMENTS: Windows 95 and higher, Mac OS, Linux.
+and use the Tibetan Machine True Type font.  The font itself consists
+of five (5) files that need to be installed in the system's font
+folder, a PDF file containing the font's documentation, and this
+ReadMe file.  IT IS QUITE LIKELY THAT YOU REALLY WANT THE TIBETAN
+MACHINE WEB FONT.  The Tibetan Machine Web font works correctly on
+more systems, and it does not differ in appearance from this font in
+any way.
 
 INSTALLATION FOR WINDOWS XP: To install the files, open the Control
 Panel, select Appearance and Themes, and select Fonts from the "See
@@ -56,21 +54,16 @@ directory.  The fonts are True Type fonts.
 
 FILE NAMES: There are twelve (12) files contained in this folder:
 
-   FONT FILES (10)
-        timwn.ttf
-        timwn1.ttf
-        timwn2.ttf
-        timwn3.ttf
-        timwn4.ttf
-        timwn5.ttf
-        timwn6.ttf
-        timwn7.ttf
-        timwn8.ttf
-        timwn9.ttf
+   FONT FILES (5)
+        Timn.ttf
+        Tims1.ttf
+        Tims2.ttf
+        Tims3.ttf
+        Tims4.ttf
 
    DOCUMENTATION FILES (2)
         GPL.txt         -   The license governing your use of this font
-        tibwnReadMe.txt -   This ReadMe file
+        timReadMe.txt   -   This ReadMe file
 
 In addition, surf to http://thdl.org/ and look for the following
 document:
@@ -86,6 +79,7 @@ document:
         site at http://thdl.org/.
 
 TROUBLESHOOTING: If you have difficulty installing or using the font,
+first try the Tibetan Machine Web font instead, and if that fails,
 visit
 http://sourceforge.net/tracker/?atid=502516&group_id=61934&func=browse
 and submit a support request, or e-mail
