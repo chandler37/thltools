@@ -78,40 +78,51 @@ public class TibetanConverter implements FontConverterConstants {
             boolean findAllNonTMWMode = false;
             boolean findSomeNonTMMode = false;
             boolean findAllNonTMMode = false;
+
+            boolean colors = false;
             
             // Process arguments:
-            if ((args.length != 1 && args.length != 2)
+            final int numArgs = 6;
+            if ((args.length != 1 && args.length != numArgs)
                 || (args.length == 1
                     && !(args[0].equals("-v")
                          || args[0].equals("--version")))
-                || (args.length == 2
-                    && !((findAllNonTMWMode
-                          = args[0].equals("--find-all-non-tmw"))
-                         || (convertToTMMode
-                             = args[0].equals("--to-tibetan-machine"))
-                         || (convertToTMWMode
-                             = args[0].equals("--to-tibetan-machine-web"))
-                         || (convertACIPToUniMode
-                             = args[0].equals("--acip-to-unicode"))
-                         || (convertACIPToTMWMode
-                             = args[0].equals("--acip-to-tmw"))
-                         || (convertToUnicodeMode
-                             = args[0].equals("--to-unicode"))
-                         || (convertToWylieRTFMode
-                             = args[0].equals("--to-wylie"))
-                         || (convertToWylieTextMode
-                             = args[0].equals("--to-wylie-text"))
-                         || (convertToACIPRTFMode
-                             = args[0].equals("--to-acip"))
-                         || (convertToACIPTextMode
-                             = args[0].equals("--to-acip-text"))
-                         || (findSomeNonTMWMode
-                             = args[0].equals("--find-some-non-tmw"))
-                         || (findSomeNonTMMode
-                             = args[0].equals("--find-some-non-tm"))
-                         || (findAllNonTMMode
-                             = args[0].equals("--find-all-non-tm"))
-                ))) {
+                || (args.length == numArgs
+                    && (!(args[numArgs - 6].equals("--colors"))
+                        || !((colors = args[numArgs - 5].equals("yes"))
+                             || args[numArgs - 5].equals("no"))
+                        || !(args[numArgs - 4].equals("--warning-level"))
+                        || !(args[numArgs - 3].equals("Most")
+                             || args[numArgs - 3].equals("Some")
+                             || args[numArgs - 3].equals("All")
+                             || args[numArgs - 3].equals("None"))
+                        || !((findAllNonTMWMode
+                              = args[numArgs - 2].equals("--find-all-non-tmw"))
+                             || (convertToTMMode
+                                 = args[numArgs - 2].equals("--to-tibetan-machine"))
+                             || (convertToTMWMode
+                                 = args[numArgs - 2].equals("--to-tibetan-machine-web"))
+                             || (convertACIPToUniMode
+                                 = args[numArgs - 2].equals("--acip-to-unicode"))
+                             || (convertACIPToTMWMode
+                                 = args[numArgs - 2].equals("--acip-to-tmw"))
+                             || (convertToUnicodeMode
+                                 = args[numArgs - 2].equals("--to-unicode"))
+                             || (convertToWylieRTFMode
+                                 = args[numArgs - 2].equals("--to-wylie"))
+                             || (convertToWylieTextMode
+                                 = args[numArgs - 2].equals("--to-wylie-text"))
+                             || (convertToACIPRTFMode
+                                 = args[numArgs - 2].equals("--to-acip"))
+                             || (convertToACIPTextMode
+                                 = args[numArgs - 2].equals("--to-acip-text"))
+                             || (findSomeNonTMWMode
+                                 = args[numArgs - 2].equals("--find-some-non-tmw"))
+                             || (findSomeNonTMMode
+                                 = args[numArgs - 2].equals("--find-some-non-tm"))
+                             || (findAllNonTMMode
+                                 = args[numArgs - 2].equals("--find-all-non-tm"))
+                             )))) {
                 out.println("TibetanConverter --find-all-non-tmw | --find-some-non-tmw");
                 out.println("                 | --to-tibetan-machine | --to-tibetan-machine-web");
                 out.println("                 | --to-unicode | --to-wylie | --to-acip");
@@ -224,8 +235,7 @@ public class TibetanConverter implements FontConverterConstants {
                 }
             }
             return reallyConvert(in, out, conversionTag,
-                                 "Most" // DLC make me configurable
-                                 );
+                                 args[numArgs - 3].intern(), colors);
         } catch (ThdlLazyException e) {
             out.println("TibetanConverter has a BUG:");
             e.getRealException().printStackTrace(out);
@@ -243,11 +253,12 @@ public class TibetanConverter implements FontConverterConstants {
         return code so that TibetanConverter's usage message is
         honored. */
     static int reallyConvert(InputStream in, PrintStream out, String ct,
-                             String warningLevel) {
+                             String warningLevel, boolean colors) {
         if (ACIP_TO_UNI_TEXT == ct || ACIP_TO_TMW == ct) {
             try {
                 ArrayList al = ACIPTshegBarScanner.scanStream(in, null,
-                                                              250 - 1 // DLC FIXME: make me configurable
+                                                              ThdlOptions.getIntegerOption("thdl.most.errors.a.tibetan.acip.document.can.have",
+                                                                                           250 - 1)
                                                               );
                 if (null == al)
                     return 47;
@@ -259,9 +270,10 @@ public class TibetanConverter implements FontConverterConstants {
                                                         warningLevel))
                         return 46;
                 } else {
+                    if (ct != ACIP_TO_TMW) throw new Error("badness");
                     if (!ACIPConverter.convertToTMW(al, out, null, warnings,
                                                     embeddedWarnings,
-                                                    warningLevel))
+                                                    warningLevel, colors))
                         return 46;
                 }
                 if (embeddedWarnings && warnings.length() > 0)
@@ -295,7 +307,6 @@ public class TibetanConverter implements FontConverterConstants {
                             + rtfErrorMessage);
                 return 3;
             }
-
             try {
                 in.close();
             } catch (IOException e) {

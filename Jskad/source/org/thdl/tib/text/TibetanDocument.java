@@ -145,9 +145,14 @@ public class TibetanDocument extends DefaultStyledDocument {
         }
     }
 
-    private static boolean allowColors = true; // DLC FIXME: make me configurable
+    private static boolean allowColors = false;
+    /** Enables the use of colors. */
     public static void enableColors() { allowColors = true; }
+    /** Disables the use of colors. */
     public static void disableColors() { allowColors = false; }
+    /** Returns true if and only if the use of colors is currently
+     *  enabled. */
+    public static boolean colorsEnabled() { return allowColors; }
 
 
 /**
@@ -167,6 +172,8 @@ public class TibetanDocument extends DefaultStyledDocument {
 * automatically, according to the current Roman font size.
 * @param offset the position at which you want to insert text
 * @param s the string you want to insert
+* @param color the color in which to insert, which is used if and only
+* if {@link #colorsEnabled() colors are enabled}
 * @see #setRomanAttributeSet(AttributeSet)
 */
 	public void appendRoman(int offset, String s, Color color) throws BadLocationException {
@@ -180,6 +187,8 @@ public class TibetanDocument extends DefaultStyledDocument {
 * Inserts Latin text at the end of the document. The font size is
 * applied automatically, according to the current Roman font size.
 * @param s the string you want to insert
+* @param color the color in which to insert, which is used if and only
+* if {@link #colorsEnabled() colors are enabled}
 * @see #setRomanAttributeSet(AttributeSet)
 */
 	public void appendRoman(String s, Color color) {
@@ -203,8 +212,10 @@ public class TibetanDocument extends DefaultStyledDocument {
 
 /**
 * Inserts a stretch of TibetanMachineWeb data into the document.
-* @param glyphs the array of Tibetan data you want to insert
 * @param pos the position at which you want to insert text
+* @param glyphs the array of Tibetan data you want to insert
+* @param color the color in which to insert, which is used if and only
+* if {@link #colorsEnabled() colors are enabled}
 */
 	public int insertDuff(int pos, DuffData[] glyphs, Color color) {
         return insertDuff(tibetanFontSize, pos, glyphs, true, color);
@@ -216,6 +227,9 @@ public class TibetanDocument extends DefaultStyledDocument {
 
 /**
 * Appends all DuffCodes in glyphs to the end of this document.
+* @param glyphs the array of Tibetan data you want to insert
+* @param color the color in which to insert, which is used if and only
+* if {@link #colorsEnabled() colors are enabled}
 */
 	public void appendDuffCodes(DuffCode[] glyphs, Color color) {
         // PERFORMANCE FIXME: this isn't so speedy, but it reuses

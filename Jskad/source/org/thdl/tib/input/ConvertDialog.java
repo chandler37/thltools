@@ -37,6 +37,9 @@ class ConvertDialog extends JDialog
 {
     private static final boolean debug = false;
 
+    private JCheckBox colors;
+    private static final String colorDesc = "Color-coding (ACIP to RTF only)";
+
     // Attributes
     private FontConversion controller;
 
@@ -95,6 +98,11 @@ class ConvertDialog extends JDialog
         updateWarningLevels();
 
         temp.add(warningLevels);
+        this.colors = new JCheckBox(colorDesc, false);
+        this.colors.addActionListener(tal);
+        updateWarningLevels();
+
+        temp.add(colors);
         content.add(temp);
 
         temp = new JPanel(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -151,7 +159,7 @@ class ConvertDialog extends JDialog
         content.add(buttonBox);
         setContentPane(content);
         pack();
-        setSize(new Dimension(620,200));
+        setSize(new Dimension(640,235));
     }
 
     private void setChoices(String[] choices)
@@ -226,6 +234,13 @@ class ConvertDialog extends JDialog
                                               JOptionPane.ERROR_MESSAGE);
                 return;
             }
+            if ("".equals(newTextField.getText())) {
+                JOptionPane.showMessageDialog(this,
+                                              "Choose a target file.",
+                                              "No target chosen",
+                                              JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             File convertedFile = new File(newTextField.getText());
             if(null == convertedFile) {
                 JOptionPane.showMessageDialog(this,
@@ -274,7 +289,8 @@ class ConvertDialog extends JDialog
                                         origFile,
                                         convertedFile,
                                         (String)choices.getSelectedItem(),
-                                        (String)warningLevels.getSelectedItem());
+                                        (String)warningLevels.getSelectedItem(),
+                                        colors.isSelected());
             } catch (OutOfMemoryError e) {
                 JOptionPane.showMessageDialog(this,
                                               "The converter ran out of memory.  Please give the\nJVM more memory by using java -XmxYYYm where YYY\nis the amount of memory your system has, or\nsomething close to it.  E.g., try\n'java -Xmx512m -jar Jskad.jar'.",

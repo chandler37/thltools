@@ -35,8 +35,10 @@ interface FontConversion
         displaying the results if you want happy users.  The
         conversion performed is specified by the interned String
         whichConversion, which must be one of the known conversions.
+        If you want colors to be used in the output (which is only
+        supported by a few conversions), then colors must be true.
         @return true on success, false otherwise */
     boolean doConversion(ConvertDialog cd, File oldFile,
                          File newFile, String whichConversion,
-                         String warningLevel);
+                         String warningLevel, boolean colors);
 }

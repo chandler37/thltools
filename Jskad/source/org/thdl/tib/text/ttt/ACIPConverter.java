@@ -38,6 +38,14 @@ import org.thdl.tib.text.DuffCode;
 public class ACIPConverter {
     // DLC NOW: (KA)'s info is lost when you convert to Unicode text instead of Unicode RTF.  Give an ERROR.
 
+    // DLC NOW: IMPLEMENT (KA) font shrinking
+
+    // DLC NOW: BAo isn't converting.
+
+    // DLC NOW: tRAStA is not converter correctly to Unicode, and no
+    // warning is given when converting to TMW (Wait!  isn't the "a
+    // stack occurs w/o a vowel" warning given?)
+
     /** Command-line converter.  Gives error messages on standard
      *  output about why we can't convert the document perfectly and
      *  exits with non-zero return code, or is silent otherwise and
@@ -50,8 +58,6 @@ public class ACIPConverter {
         ThdlOptions.setUserPreference("thdl.rely.on.system.tmw.fonts", true);
         ThdlOptions.setUserPreference("thdl.rely.on.system.tm.fonts", true);
         ThdlOptions.setUserPreference("thdl.debug", true);
-
-        TibetanDocument.enableColors();
 
         boolean verbose = true;
         if (args.length != 1) {
@@ -74,7 +80,6 @@ public class ACIPConverter {
             System.exit(1);
         }
         final boolean abortUponScanningError = false;
-        // DLC NOW: BAo isn't converting.
         if (errors.length() > 0) {
             System.err.println("Errors scanning ACIP input file: ");
             System.err.println(errors);
@@ -84,7 +89,8 @@ public class ACIPConverter {
             }
         }
 
-        String warningLevel = "Most"; // DLC make me configurable.
+        String warningLevel = "Most";
+        boolean colors = true;
         StringBuffer warnings = null;
         boolean putWarningsInOutput = false;
         if ("None" != warningLevel) {
@@ -92,7 +98,7 @@ public class ACIPConverter {
             putWarningsInOutput = true;
         }
         convertToTMW(al, System.out, errors, warnings,
-                     putWarningsInOutput, warningLevel);
+                     putWarningsInOutput, warningLevel, colors);
         int retCode = 0;
         if (errors.length() > 0) {
             System.err.println("Errors converting ACIP input file: ");
@@ -112,8 +118,6 @@ public class ACIPConverter {
             if (verbose) System.err.println("Converted " + args[0] + " perfectly.");
         }
         System.exit(retCode);
-        // DLC NOW: tRAStA is not converter correctly to Unicode, and
-        // no warning is given when converting to TMW.
     }
 
     /** Writes TMW/Latin to out.  If errors occur in converting a
@@ -124,6 +128,9 @@ public class ACIPConverter {
      *  warnings if warnings is non-null.  Returns true upon perfect
      *  success or if there were merely warnings, false if errors
      *  occurred.
+     *  @param colors true if and only if you want Sanskrit in one
+     *  color, errors/warnings in another, and tsheg-bars affected by
+     *  prefix rules in another
      *  @throws IOException if we cannot write to out
      */
     public static boolean convertToTMW(ArrayList scan,
@@ -131,7 +138,8 @@ public class ACIPConverter {
                                        StringBuffer errors,
                                        StringBuffer warnings,
                                        boolean writeWarningsToResult,
-                                       String warningLevel)
+                                       String warningLevel,
+                                       boolean colors)
         throws IOException
     {
         TibetanDocument tdoc = new TibetanDocument();
@@ -141,7 +149,7 @@ public class ACIPConverter {
                                                                20));
         boolean rv
             = convertToTMW(scan, tdoc, errors, warnings,
-                           writeWarningsToResult, warningLevel);
+                           writeWarningsToResult, warningLevel, colors);
         tdoc.writeRTFOutputStream(out);
         return rv;
     }
@@ -151,16 +159,13 @@ public class ACIPConverter {
                                         StringBuffer errors,
                                         StringBuffer warnings,
                                         boolean writeWarningsToResult,
-                                        String warningLevel)
+                                        String warningLevel,
+                                        boolean colors)
         throws IOException
     {
         return convertTo(false, scan, null, tdoc, errors, warnings,
-                         writeWarningsToResult, warningLevel);
+                         writeWarningsToResult, warningLevel, colors);
     }
-
-    // DLC FIXME: sometimes { } is \u0F0B, and sometimes it is a
-    // space.  Treat it as a tsheg only when it appears after a
-    // syllable or another tsheg.
 
     /** Returns UTF-8 encoded Unicode.  A bit indirect, so use this
      *  for testing only if performance is a concern.  If errors occur
@@ -194,16 +199,20 @@ public class ACIPConverter {
         }
     }
 
-    /** Writes Unicode to out.  If errors occur in converting a tsheg
-     *  bar, then they are appended to errors if errors is non-null.
-     *  Furthermore, errors are written to out.  If writeWarningsToOut
-     *  is true, then warnings also will be written to out.
+    /** Writes Unicode text (not RTF) to out.  <em>NOTE WELL: This
+     *  inherently cannot describe the ACIP {(KA) KHA} properly, as
+     *  that requires showing KA in a smaller font than KHA, which is
+     *  not possible in plain text.</em> If errors occur in converting
+     *  a tsheg bar, then they are appended to errors if errors is
+     *  non-null.  Furthermore, errors are written to out.  If
+     *  writeWarningsToOut is true, then warnings also will be written
+     *  to out.
      *  @return true upon perfect success, false if errors occurred.
      *  @param scan result of ACIPTshegBarScanner.scan(..)
      *  @param out stream to which to write converted text
      *  @param errors if non-null, all error messages are appended
-     *  @param warnings if non-null, all warning messages are appended
-     *  to this
+     *  @param warnings if non-null, all warning messages appropriate
+     *  to warningLevel are appended
      *  @param writeWarningsToOut if true, then all warning messages
      *  are written to out in the appropriate places
      *  @throws IOException if we cannot write to out
@@ -217,7 +226,7 @@ public class ACIPConverter {
         throws IOException
     {
         return convertTo(true, scan, out, null, errors, warnings,
-                         writeWarningsToOut, warningLevel);
+                         writeWarningsToOut, warningLevel, false);
     }
 
     private static boolean peekaheadFindsSpacesAndComma(ArrayList /* of ACIPString */ scan,
@@ -245,9 +254,14 @@ public class ACIPConverter {
                                      StringBuffer errors,
                                      StringBuffer warnings,
                                      boolean writeWarningsToOut,
-                                     String warningLevel)
+                                     String warningLevel,
+                                     boolean colors)
         throws IOException
     {
+        if (colors)
+            tdoc.enableColors();
+        else
+            tdoc.disableColors();
         int sz = scan.size();
         boolean hasErrors = false;
         BufferedWriter writer = null;
@@ -276,7 +290,6 @@ public class ACIPConverter {
                     if (null != writer) writer.write(text);
                     if (null != tdoc) tdoc.appendRoman(text, Color.RED);
                 }
-                // DLC NOW: Warning: We're going with {'}{R}{DA}, but only because our knowledge of prefix rules says that {'}{R+DA} is not a legal Tibetan tsheg bar ("syllable")
 
                 if (null != warnings) {
                     warnings.append("Warning: Lexical warning: ");
@@ -357,6 +370,8 @@ public class ACIPConverter {
                                             color = Color.BLACK;
                                         } else {
                                             // Sanskrit
+
+                                            // DLC FIXME: a funny vowel, the presence of a sanskrit-only stack, and a funny mark like ACIP ':' should cause green too.
                                             color = Color.GREEN;
                                         }
 
@@ -453,7 +468,6 @@ public class ACIPConverter {
                     if (null != tdoc) {
                         if (null != duff && 0 != duff.length) {
                             tdoc.appendDuffCodes(duff, color);
-                            // DLC NOW FIXME: use TibTextUtils.getVowel logic to make the output beautiful.
                         } else {
                             // this happens when you have an
                             // [#ERROR]-producing tsheg bar.
@@ -471,6 +485,3 @@ public class ACIPConverter {
         return !hasErrors;
     }
 }
-// DLC FIXME: putting Tibetan in black, Sanskrit in green, and Latin
-// in yellow would help you quickly decide if ZHIGN maybe should've
-// been ZHING.

@@ -48,15 +48,23 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
     }
 
     public boolean doConversion(ConvertDialog cd, File oldFile, File newFile,
-                                String whichConversion, String warningLevel) {
+                                String whichConversion, String warningLevel,
+                                boolean colors) {
         PrintStream ps;
         try {
+            if (whichConversion == ACIP_TO_UNI_TEXT) {
+                JOptionPane.showMessageDialog(cd,
+                                              "This conversion will lose information about relative font sizes.\n{KA (KHA) GA} will be treated like {KA KHA GA}, that is.",
+                                              "Loss of information may result",
+                                              JOptionPane.WARNING_MESSAGE);
+            }
             returnCode
                 = TibetanConverter.reallyConvert(new FileInputStream(oldFile),
                                                  ps = new PrintStream(new FileOutputStream(newFile),
                                                                       false),
                                                  whichConversion,
-                                                 warningLevel);
+                                                 warningLevel,
+                                                 colors);
             ps.close();
         } catch (FileNotFoundException e) {
             returnCode = 39;

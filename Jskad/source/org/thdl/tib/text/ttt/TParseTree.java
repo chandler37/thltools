@@ -276,6 +276,7 @@ class TParseTree {
 
         TStackListList up = getUniqueParse(false);
         if (null == up || up.size() != 1) {
+            // DLC FIXME: code duplication
             boolean isLastStack[] = new boolean[1];
             TStackListList nip = getNonIllegalParses();
             if (nip.size() != 1) {
@@ -285,9 +286,9 @@ class TParseTree {
                     if (getBestParse().hasStackWithoutVowel(pl, isLastStack)) {
                         if (isLastStack[0]) {
                             if (warningLevel == "All" || warningLevel == "Most")
-                                return "Warning: The last stack does not have a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}";
+                                return "Warning: The last stack does not have a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}; this may indicate a typo, because Sanskrit, which this is (because it's not legal Tibetan), should have a vowel after each stack.";
                         } else {
-                            return "Warning: There is a stack, before the last stack, without a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}";
+                            return "Warning: There is a stack, before the last stack, without a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}; this may indicate a typo, because Sanskrit, which this is (because it's not legal Tibetan), should have a vowel after each stack.";
                         }
                     }
                     if ("All" == warningLevel) {
@@ -298,9 +299,9 @@ class TParseTree {
                 if (nip.get(0).hasStackWithoutVowel(pl, isLastStack)) {
                     if (isLastStack[0]) {
                         if (warningLevel == "All" || warningLevel == "Most")
-                            return "Warning: The last stack does not have a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}";
+                            return "Warning: The last stack does not have a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}; this may indicate a typo, because Sanskrit, which this is (because it's not legal Tibetan), should have a vowel after each stack.";
                     } else {
-                        return "Warning: There is a stack, before the last stack, without a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}";
+                        return "Warning: There is a stack, before the last stack, without a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}; this may indicate a typo, because Sanskrit, which this is (because it's not legal Tibetan), should have a vowel after each stack.";
                     }
                 }
             }

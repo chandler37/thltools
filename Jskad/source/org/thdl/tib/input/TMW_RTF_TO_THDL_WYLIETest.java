@@ -99,6 +99,10 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
 
     private void helper(String mode, String extension, int erc) {
         String[] args = new String[] {
+            "--colors",
+            "no",
+            "--warning-level",
+            "All",
             mode,
             getTestFileName("Test1")
         };
