@@ -121,14 +121,35 @@ public class Jskad extends JPanel implements DocumentListener {
     private Jskad(LayoutManager lm, boolean isDB) { super(lm, isDB); }
 
     /** Saves user preferences to disk if possible. */
-    private static void savePreferencesAction() {
+    private void savePreferencesAction() {
         try {
-            ThdlOptions.saveUserPreferences();
+            if (!ThdlOptions.saveUserPreferences()) {
+                JOptionPane.showMessageDialog(Jskad.this,
+                                              "You previously cleared preferences,\nso you cannot now save them.",
+                                              "Cannot Save User Preferences",
+                                              JOptionPane.PLAIN_MESSAGE);
+            }
         } catch (IOException ioe) {
             System.out.println("IO Exception saving user preferences to " + ThdlOptions.getUserPreferencesPath());
             ioe.printStackTrace();
             ThdlDebug.noteIffyCode();
         }
+    }
+
+    /** Clears user preferences by deleting the preferences file on
+        disk.  Prompts the user to quit and reopen Jskad. */
+    private void clearPreferencesAction() {
+        try {
+            ThdlOptions.clearUserPreferences();
+        } catch (IOException ioe) {
+            System.out.println("IO Exception deleting user preferences file " + ThdlOptions.getUserPreferencesPath());
+            ioe.printStackTrace();
+            ThdlDebug.noteIffyCode();
+        }
+        JOptionPane.showMessageDialog(Jskad.this,
+                                      "You must now exit this application and restart\nbefore default preferences will take effect.",
+                                      "Clearing Preferences",
+                                      JOptionPane.PLAIN_MESSAGE);
     }
 
     /** pane displaying Jskad's single HTML help file */
@@ -291,6 +312,17 @@ public class Jskad extends JPanel implements DocumentListener {
                         savePreferencesAction();
                     }
                 });
+            editMenu.add(preferencesItem);
+        }
+
+        {
+            JMenuItem preferencesItem = new JMenuItem("Clear preferences");
+            preferencesItem.addActionListener(new ThdlActionListener() {
+                    public void theRealActionPerformed(ActionEvent e) {
+                        clearPreferencesAction();
+                    }
+                });
+            editMenu.addSeparator();
             editMenu.add(preferencesItem);
         }
 
@@ -1172,7 +1204,8 @@ public class Jskad extends JPanel implements DocumentListener {
             y_size = d.height/4*3;
             f.setSize(x_size, y_size);
             f.setLocation(d.width/8, d.height/8);
-            f.getContentPane().add(new Jskad(f));
+            final Jskad jskad = new Jskad(f);
+            f.getContentPane().add(jskad);
             f.setVisible(true);
 
             /* Make it so that any time the user exits Jskad by
@@ -1181,7 +1214,7 @@ public class Jskad extends JPanel implements DocumentListener {
              * correct. */
             Runtime.getRuntime().addShutdownHook(new Thread() {
                     public void run() {
-                        savePreferencesAction();
+                        jskad.savePreferencesAction();
                     }
                 }
                                                 );

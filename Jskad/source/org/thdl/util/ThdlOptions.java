@@ -372,12 +372,40 @@ public final class ThdlOptions {
         }
     }
 
+    /** Deletes the user's preferences file, a file whose path is the
+     *  value of {@link #getUserPreferencesPath()}.  You must restart
+     *  the application before this will take effect.
+     *
+     *  @throws IOException if an IO or security exception occurs
+     *  while deleting from disk. */
+    public static void clearUserPreferences() throws IOException {
+        // Avoid saving the preferences to disk at program exit.  Do
+        // this first in case an exception is thrown during deletion.
+        userProperties = null;
+
+        File pf = new File(getUserPreferencesPath());
+
+        try {
+            if (pf.exists() && !pf.delete()) {
+                throw new IOException("Could not delete the preferences file "
+                                      + pf.getAbsolutePath());
+            }
+        } catch (SecurityException e) {
+            throw new IOException("Could not delete the preferences file because a SecurityManager is in place and your security policy does not allow deleting "
+                                  + pf.getAbsolutePath());
+        }
+    }
+
     /** Saves the user's preferences to a file whose path is the value
      *  of {@link #getUserPreferencesPath()}.  You must call
      *  <code>setUserPreference(..)</code> for this to be effective.
+     *
+     *  @return true on success, false if no preferences exist to be
+     *  saved, such as after calling clearUserPreferences()
+     *
      *  @throws IOException if an IO exception occurs while writing to
      *  the disk. */
-    public static void saveUserPreferences() throws IOException {
+    public static boolean saveUserPreferences() throws IOException {
         if (null != userProperties) {
             userProperties.store(new FileOutputStream(getUserPreferencesPath()),
                                  " This file was automatically created by a THDL tool.\n"
@@ -400,7 +428,9 @@ public final class ThdlOptions {
                                  + "# preferences mechanism at this time.  Yell for it!\n"
                                  + "# \n"
                                  + "# Created at:"); // DLC FIXME: document the preferences mechanism.
+            return true;
         }
+        return false;
     }
 
     /** This returns the location of the user's preferences file.
