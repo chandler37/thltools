@@ -212,6 +212,18 @@ public class TibetanMachineWeb implements THDLWylieConstants {
         readInFontFile("/Fonts/TibetanMachineWeb/timwn9.ttf");
     }
 
+    /** Assumes that the TM font files are resources associated with
+     *  this class and loads those font files.
+     *  @throws Error if that assumption does not hold */
+    private static void readInTMFontFiles() {
+        /* Note the leading slashes on these paths: */
+        readInFontFile("/Fonts/TibetanMachine/Timn.ttf");
+        readInFontFile("/Fonts/TibetanMachine/Tims1.ttf");
+        readInFontFile("/Fonts/TibetanMachine/Tims2.ttf");
+        readInFontFile("/Fonts/TibetanMachine/Tims3.ttf");
+        readInFontFile("/Fonts/TibetanMachine/Tims4.ttf");
+    }
+
     /** Assumes that the TMW font file at the given path is a resource
      *  associated with this class and loads that font file.
      *  @param path a path within the JAR containing this class file
@@ -261,6 +273,14 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 	private static void readData() {
         if (!ThdlOptions.getBooleanOption("thdl.rely.on.system.tmw.fonts")) {
             readInFontFiles();
+        }
+
+        // DLC FIXME: include TM fonts with Jskad but not with other
+        // packages.  Right now you can get them manually by editing
+        // build.xml and your options.txt or my_thdl_preferences.txt
+        // file.
+        if (ThdlOptions.getBooleanOption("thdl.do.not.rely.on.system.tm.fonts")) {
+            readInTMFontFiles();
         }
 
         unicodeFontAttributeSet = new SimpleAttributeSet();
@@ -972,27 +992,43 @@ private static final DuffCode TMW_tab = new DuffCode(1, '\t');
     valid.
 
     Only a few control characters are supported: '\r' (carriage
-    return), '\n' (line feed), and '\t' (tab).  */
-public static DuffCode mapTMtoTMW(int font, int ordinal) {
+    return), '\n' (line feed), and '\t' (tab).
+
+    If suggestedFont is not zero, then any ordinals that are the same
+    in all fonts ('\n', '-', ' ', '\r', and '\t') will be converted to
+    the font named tmwFontNames[suggestedFont].
+*/
+public static DuffCode mapTMtoTMW(int font, int ordinal, int suggestedFont) {
     if (font < 0 || font > 4)
         return null;
     if (ordinal > 255)
         return getUnusualTMtoTMW(font, ordinal);
     if (ordinal < 32) {
-        if (ordinal == (int)'\r')
-            return TMW_cr;
-        else if (ordinal == (int)'\n')
-            return TMW_lf;
-        else if (ordinal == (int)'\t')
-            return TMW_tab;
-        else {
+        if (ordinal == (int)'\r') {
+            if (0 == suggestedFont)
+                return TMW_cr;
+            else
+                return new DuffCode(suggestedFont, (char)ordinal);
+        } else if (ordinal == (int)'\n') {
+            if (0 == suggestedFont)
+                return TMW_lf;
+            else
+                return new DuffCode(suggestedFont, (char)ordinal);
+        } else if (ordinal == (int)'\t') {
+            if (0 == suggestedFont)
+                return TMW_tab;
+            else
+                return new DuffCode(suggestedFont, (char)ordinal);
+        } else {
             // for robustness, just return font 1, char ordinal.
             ThdlDebug.noteIffyCode();
             return null;
         }
     }
-    DuffCode ans = TMtoTMW[font][ordinal-32];
-	return ans;
+    if (0 != suggestedFont && 32 == ordinal || 45 == ordinal) {
+        return new DuffCode(suggestedFont, (char)ordinal);
+    }
+	return TMtoTMW[font][ordinal-32];
 }
 
 private static final DuffCode TM_cr = new DuffCode(1, '\r');
@@ -1011,24 +1047,39 @@ private static final DuffCode TM_tab = new DuffCode(1, '\t');
     Only a few control characters are supported: '\r' (carriage
     return), '\n' (line feed), and '\t' (tab).
 
- */
-public static DuffCode mapTMWtoTM(int font, int ordinal) {
+    If suggestedFont is not zero, then any ordinals that are the same
+    in all fonts ('\n', '-', ' ', '\r', and '\t') will be converted to
+    the font named tmwFontNames[suggestedFont].
+*/
+public static DuffCode mapTMWtoTM(int font, int ordinal, int suggestedFont) {
     if (font < 0 || font > 9)
         return null;
     if (ordinal > 127)
         return null;
     if (ordinal < 32) {
-        if (ordinal == (int)'\r')
-            return TM_cr;
-        else if (ordinal == (int)'\n')
-            return TM_lf;
-        else if (ordinal == (int)'\t')
-            return TM_tab;
-        else {
+        if (ordinal == (int)'\r') {
+            if (0 == suggestedFont)
+                return TM_cr;
+            else
+                return new DuffCode(suggestedFont, (char)ordinal);
+        } else if (ordinal == (int)'\n') {
+            if (0 == suggestedFont)
+                return TM_lf;
+            else
+                return new DuffCode(suggestedFont, (char)ordinal);
+        } else if (ordinal == (int)'\t') {
+            if (0 == suggestedFont)
+                return TM_tab;
+            else
+                return new DuffCode(suggestedFont, (char)ordinal);
+        } else {
             // for robustness, just return font 1, char ordinal.
             ThdlDebug.noteIffyCode();
             return null;
         }
+    }
+    if (0 != suggestedFont && 32 == ordinal || 45 == ordinal) {
+        return new DuffCode(suggestedFont, (char)ordinal);
     }
     DuffCode ans = TMWtoTM[font][ordinal-32];
 	return ans;
@@ -1041,7 +1092,7 @@ public static void main(String[] args) {
     count = 0;
     for (font = 0; font < 5; font++) {
         for (ord = 32; ord < 255; ord++) {
-            if (mapTMtoTMW(font, ord) != null) {
+            if (mapTMtoTMW(font, ord, 0) != null) {
                 count++;
             }
         }
@@ -1051,7 +1102,7 @@ public static void main(String[] args) {
     count = 0;
     for (font = 0; font < 10; font++) {
         for (ord = 32; ord < 127; ord++) {
-            if (mapTMWtoTM(font, ord) != null) {
+            if (mapTMWtoTM(font, ord, 0) != null) {
                 count++;
             }
         }
@@ -1062,7 +1113,7 @@ public static void main(String[] args) {
     for (font = 0; font < 10; font++) {
         for (ord = 32; ord < 127; ord++) {
             DuffCode dc;
-            if ((dc = mapTMWtoTM(font, ord)) != null) {
+            if ((dc = mapTMWtoTM(font, ord, 0)) != null) {
                 System.out.println(dc.getCharNum() + " "
                                    + (dc.getFontNum()-1) + " "
                                    + font + " "
@@ -1075,7 +1126,7 @@ public static void main(String[] args) {
     for (font = 0; font < 5; font++) {
         for (ord = 32; ord < 255; ord++) {
             DuffCode dc;
-            if ((dc = mapTMtoTMW(font, ord)) != null) {
+            if ((dc = mapTMtoTMW(font, ord, 0)) != null) {
                 System.out.println(ord + " " + font + " "
                                    + (dc.getFontNum()-1) + " "
                                    + dc.getCharNum());

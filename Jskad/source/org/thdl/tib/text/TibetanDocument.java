@@ -124,7 +124,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 			rtf.write(out, this, 0, getLength());
 		}
 		catch (BadLocationException ble) {
-            ThdlDebug.noteIffyCode();
+            throw new Error("Cannot write RTF output; [0, " + getLength() + ") constitutes a bad position.");
 		}
 	}
 
@@ -167,30 +167,49 @@ public class TibetanDocument extends DefaultStyledDocument {
         fontSize. */
     private void replaceDuff(int fontSize, int pos,
                              DuffData glyph, boolean asTMW) {
+        replaceDuffs(fontSize, pos, pos + 1, glyph.text,
+                     glyph.font, asTMW);
+    }
+
+	/** Replacing can be more efficient than inserting and then
+        removing. This replaces the glyphs at position [startOffset,
+        endOffset) with data, which is interpreted as TMW glyphs if
+        asTMW is true and as TM glyphs otherwise.  The font size for
+        the new glyph is fontSize; the particular TM or TMW font is
+        specified by newFontIndex, which is one-based, not
+        zero-based. */
+    private void replaceDuffs(int fontSize, int startOffset,
+                              int endOffset, String data,
+                              int newFontIndex, boolean asTMW) {
 		MutableAttributeSet mas
             = ((asTMW)
-               ? TibetanMachineWeb.getAttributeSet(glyph.font)
-               : TibetanMachineWeb.getAttributeSetTM(glyph.font));
+               ? TibetanMachineWeb.getAttributeSet(newFontIndex)
+               : TibetanMachineWeb.getAttributeSetTM(newFontIndex));
         StyleConstants.setFontSize(mas, fontSize);
 		try {
-            replace(pos, 1, glyph.text, mas);
+            replace(startOffset, endOffset - startOffset, data, mas);
         } catch (BadLocationException ble) {
             ThdlDebug.noteIffyCode();
 		}
     }
 
 	/** Replacing can be more efficient than inserting and then
-        removing. This replaces the glyph at position pos with
-        unicode.  The font size for the new unicode is fontSize. */
-    private void replaceDuffWithUnicode(int fontSize, int pos,
-                                        String unicode) {
+        removing. This replaces the glyphs at position [startOffset,
+        endOffset) with unicode.  The font size for the new unicode is
+        fontSize.  Which particular Unicode font is used depends on
+        TibetanMachineWeb.getUnicodeAttributeSet().
+    
+        @see TibetanMachineWeb#getUnicodeAttributeSet()
+    */
+    private void replaceDuffsWithUnicode(int fontSize, int startOffset,
+                                         int endOffset, String unicode) {
 		MutableAttributeSet mas
             = TibetanMachineWeb.getUnicodeAttributeSet();
         StyleConstants.setFontSize(mas, fontSize);
 		try {
-            replace(pos, 1, unicode, mas);
+            replace(startOffset, endOffset - startOffset, unicode, mas);
         } catch (BadLocationException ble) {
-            ThdlDebug.noteIffyCode();
+            throw new Error("TMW->Unicode failed because the following constitute a bad position: startOffset " + startOffset + ", endOffset " + endOffset);
 		}
     }
 
@@ -539,7 +558,7 @@ public class TibetanDocument extends DefaultStyledDocument {
         int count = 0;
         for (font = 0; font < 5; font++) {
             for (ord = 32; ord < 255; ord++) {
-                if (TibetanMachineWeb.mapTMtoTMW(font, ord) != null) {
+                if (TibetanMachineWeb.mapTMtoTMW(font, ord, 0) != null) {
                     equivalent[0].setData((char)ord, font + 1);
                     try {
                         insertDuff(tibetanFontSize, count++, equivalent, false);
@@ -672,22 +691,91 @@ public class TibetanDocument extends DefaultStyledDocument {
         @see convertToTM(int,int) */
     private boolean convertHelper(int begin, int end, boolean toTM,
                                   boolean toUnicode, StringBuffer errors) {
+        // To preserve formatting, we go paragraph by paragraph.
+
+        // Use positions, not offsets, because our work on paragraph K
+        // will affect the offsets of paragraph K+1.
+
+        Position finalEndPos;
+        if (end < 0) {
+            end = getLength();
+        }
+        Element[] paragraphs = getParagraphs(begin, end);
+        try {
+            finalEndPos = createPosition(end);
+        } catch (BadLocationException e) {
+            throw new Error("BAD LOCATION DURING CONVERSION");
+        }
+
+        ConversionErrorHelper ceh = new ConversionErrorHelper();
+        int pl = paragraphs.length;
+        for (int i = 0; i < pl; i++) {
+            int p_end = paragraphs[i].getEndOffset();
+            if (i + 1 == paragraphs.length)
+                ceh.doErrorWrapup = true;
+            convertHelperHelper(paragraphs[i].getStartOffset(),
+                                ((finalEndPos.getOffset() < p_end)
+                                 ? finalEndPos.getOffset()
+                                 : p_end),
+                                toTM, toUnicode, errors, ceh);
+
+            // Now that we've changed paragraph i, recalculate
+            // paragraphs.  (PERFORMANCE FIXME: this is O(N*N), and we
+            // could make it O(N) by calculating just one paragraph at
+            // a time.)
+            paragraphs = getParagraphs(begin, finalEndPos.getOffset());
+            if (paragraphs.length != pl)
+                throw new Error("Conversion failed: the number of paragraphs changed, indicating that formatting was lost.");
+        }
+        return ceh.errorReturn;
+    }
+
+    /** See the sole caller, convertHelper. */
+    private void convertHelperHelper(int begin, int end, boolean toTM,
+                                     boolean toUnicode, StringBuffer errors,
+                                     ConversionErrorHelper ceh) {
+        final boolean debug = false;
+        if (debug)
+            System.err.println("cHH: [" + begin + ", " + end + ")");
+        // DLC FIXME: here's an idea, a compressor -- use the '-' (ord
+        // 45) or ' ' (ord 32) glyph from the same font as the
+        // preceding glyph, never others.  This reduces the size of a
+        // TMW RTF file by a factor of 3 sometimes.  To do it, use
+        // this routine, but give it the ability to go from TMW->TMW
+        // and TM->TM.
+
         // toTM is ignored when toUnicode is true:
         ThdlDebug.verify(!toUnicode || !toTM);
 
         boolean toStdout = ThdlOptions.getBooleanOption("thdl.debug");
-        boolean errorReturn = false;
         if (end < 0)
             end = getLength();
         if (begin >= end)
-            return errorReturn; // nothing to do, so no errors in the doing.
-        int i = begin;
-        HashMap problemGlyphsTable = new HashMap();
+            return; // nothing to do
+
+        // For speed, do as few replaces as possible.  To preserve
+        // formatting, we'll try to replace one paragraph at a time.
+        // But we *must* replace when we hit a different font (TMW3 as
+        // opposed to TMW2, e.g.), so we'll likely replace many times
+        // per paragraph.  One very important optimization is that we
+        // don't have to treat TMW3.45 or TMW3.32 as a different font
+        // than TMW.33 -- that's because each of the ten TMW fonts has
+        // the same glyph at position 32 (space) and the same glyph at
+        // position 45 (tsheg).  Note that we're building up a big
+        // ArrayList; we're trading space for time.
         try {
+            int replacementStartIndex = begin;
+            StringBuffer replacementQueue = new StringBuffer();
+            int replacementFontIndex = 0;
+            int replacementFontSize = -1;
+
+            int i = begin;
+            HashMap problemGlyphsTable = new HashMap();
             Position endPos = createPosition(end);
             DuffData[] equivalent = new DuffData[1];
             equivalent[0] = new DuffData();
-            int errorGlyphLocation = 0;
+            boolean mustReplace = false;
+            int mustReplaceUntil = -1;
             while (i < endPos.getOffset()) {
                 AttributeSet attr = getCharacterElement(i).getAttributes();
                 String fontName = StyleConstants.getFontFamily(attr);
@@ -697,6 +785,13 @@ public class TibetanDocument extends DefaultStyledDocument {
                        : TibetanMachineWeb.getTMFontNumber(fontName));
 
                 if (0 != fontNum) {
+
+                    // SPEED_FIXME: determining font size might be slow, allow an override.
+                    int fontSize = tibetanFontSize;
+                    try {
+                        fontSize = ((Integer)getCharacterElement(i).getAttributes().getAttribute(StyleConstants.FontSize)).intValue();
+                    } catch (Exception e) { /* leave it as tibetanFontSize */ }
+
                     DuffCode dc = null;
                     String unicode = null;
                     if (toUnicode) {
@@ -705,63 +800,75 @@ public class TibetanDocument extends DefaultStyledDocument {
                     } else {
                         if (toTM) {
                             dc = TibetanMachineWeb.mapTMWtoTM(fontNum - 1,
-                                                              getText(i,1).charAt(0));
+                                                              getText(i,1).charAt(0),
+                                                              replacementFontIndex);
                         } else {
                             dc = TibetanMachineWeb.mapTMtoTMW(fontNum - 1,
-                                                              getText(i,1).charAt(0));
+                                                              getText(i,1).charAt(0),
+                                                              replacementFontIndex);
                         }
                     }
-                    if (null != dc || null != unicode) {
-                        // SPEED_FIXME: determining font size might be slow
-                        int fontSize = tibetanFontSize;
-                        try {
-                            fontSize = ((Integer)getCharacterElement(i).getAttributes().getAttribute(StyleConstants.FontSize)).intValue();
-                        } catch (Exception e) {
-                            // leave it as tibetanFontSize
-                        }
+                    if (replacementQueue.length() > 0
+                        && (mustReplace
+                            || ((!toUnicode
+                                 && null != dc
+                                 && dc.getFontNum() != replacementFontIndex)
+                                || fontSize != replacementFontSize))) {
+                        // We must replace now, because the attribute
+                        // set has changed.
 
-                        if (!toUnicode) {
-                            equivalent[0].setData(dc.getCharacter(),
-                                                  dc.getFontNum());
-                        }
+                        // We have two choices: replace or
+                        // insert-and-remove.  We replace, because
+                        // that preserves formatting.
 
-                        // We have two choices: remove-then-insert
-                        // second vs. insert-then-remove and also
-                        // insert-before vs. insert-after.  It turns
-                        // out that insert-after preserves formatting
-                        // whereas insert-before doesn't.  And we do
-                        // insert-then-remove because we're guessing
-                        // that helps with formatting too.
-                        if (replaceInsteadOfInserting()) {
-                            if (toUnicode) {
-                                replaceDuffWithUnicode(fontSize, i, unicode);
-                                i += unicode.length() - 1; // we do i++ below
-                            } else {
-                                replaceDuff(fontSize, i, equivalent[0], !toTM);
-                            }
+                        // this if-else statement is duplicated below; beware!
+                        int endIndex = mustReplace ? mustReplaceUntil : i;
+                        if (toUnicode) {
+                            replaceDuffsWithUnicode(replacementFontSize,
+                                                    replacementStartIndex,
+                                                    endIndex,
+                                                    replacementQueue.toString());
                         } else {
-                            if (toUnicode)
-                                throw new Error("Please execute 'Clear Preferences' and retry -- you've caused us to go into insert-and-remove mode, as opposed to replace mode, and replacing, the default preference, is the only way you can get TMW->Unicode conversion at present.");
-                            if (insertBefore()) {
-                                insertDuff(fontSize, i, equivalent, !toTM);
-                                remove(i+1, 1);
-                            } else {
-                                insertDuff(fontSize, i+1, equivalent, !toTM);
-                                remove(i, 1);
+                            replaceDuffs(replacementFontSize,
+                                         replacementStartIndex,
+                                         endIndex,
+                                         replacementQueue.toString(),
+                                         replacementFontIndex,
+                                         !toTM);
+                        }
+
+                        // i += numnewchars - numoldchars;
+                        if (debug)
+                            System.err.println("Incrementing i by " + (replacementQueue.length()
+                              - (endIndex - replacementStartIndex)) + "; replaced a patch with font size " + replacementFontSize + ", fontindex " + replacementFontIndex);
+                        i += (replacementQueue.length()
+                              - (endIndex - replacementStartIndex));
+
+                        replacementQueue.delete(0, replacementQueue.length());
+                        mustReplace = false;
+                    }
+
+                    if (null != dc || null != unicode) {
+                        if (0 == replacementQueue.length()) {
+                            replacementFontSize = fontSize;
+                            replacementStartIndex = i;
+                            if (!toUnicode) {
+                                replacementFontIndex = dc.getFontNum();
                             }
+                        }
+                        if (toUnicode) {
+                            replacementQueue.append(unicode);
+                        } else {
+                            replacementQueue.append(dc.getCharacter());
                         }
                     } else {
-                        // DLC FIXME: insert into document a string
-                        // saying "<<[[there's no TM equivalent for
-                        // this, details are ...]]>>" (For now, I'm
-                        // inserting the alphabet in a big font in TMW
-                        // to try and get some attention.  And I've
-                        // *documented* this on the website.  I'm also
-                        // putting the oddballs at the start of the
-                        // document, but I haven't documented that
-                        // (FIXME).)
+                        // For now, on error, we insert the alphabet
+                        // in a big font in TMW to try and get some
+                        // attention.  We also put the oddballs at the
+                        // start of the document.  But then we delete
+                        // the alphabet usually.
                         
-                        errorReturn = true;
+                        ceh.errorReturn = true;
                         CharacterInAGivenFont cgf
                             = new CharacterInAGivenFont(getText(i,1), fontName);
                         if (!problemGlyphsTable.containsKey(cgf)) {
@@ -784,7 +891,7 @@ public class TibetanDocument extends DefaultStyledDocument {
                                 // Now also put this problem glyph at
                                 // the beginning of the document:
                                 equivalent[0].setData(getText(i,1), fontNum);
-                                insertDuff(72, errorGlyphLocation++,
+                                insertDuff(72, ceh.errorGlyphLocation++,
                                            equivalent, toUnicode || toTM);
                                 ++i;
                             }
@@ -798,20 +905,83 @@ public class TibetanDocument extends DefaultStyledDocument {
                             i += trickyTMW.length();
                         }
                     }
+                } else {
+                    if (debug) System.err.println("non-tm/tmw found at offset " + i + "; font=" + fontName + " ord " + (int)getText(i,1).charAt(0));
+                    if (replacementQueue.length() > 0) {
+                        if (!mustReplace) {
+                            mustReplaceUntil = i;
+                            mustReplace = true;
+                        }
+                    }
                 }
                 i++;
+            }
+            if (replacementQueue.length() > 0) {
+                // this if-else statement is duplicated above; beware!
+                int endIndex = mustReplace ? mustReplaceUntil : i;
+                if (toUnicode) {
+                    replaceDuffsWithUnicode(replacementFontSize,
+                                            replacementStartIndex,
+                                            endIndex,
+                                            replacementQueue.toString());
+                } else {
+                    replaceDuffs(replacementFontSize,
+                                 replacementStartIndex,
+                                 endIndex,
+                                 replacementQueue.toString(),
+                                 replacementFontIndex,
+                                 !toTM);
+                }
             }
 
             if (!ThdlOptions.getBooleanOption("thdl.leave.bad.tm.tmw.conversions.in.place")) {
                 // Remove all characters other than the oddballs:
-                if (errorGlyphLocation > 0) {
-                    remove(errorGlyphLocation, getLength()-errorGlyphLocation-1);
+                if (ceh.doErrorWrapup && ceh.errorGlyphLocation > 0) {
+                    remove(ceh.errorGlyphLocation, getLength()-ceh.errorGlyphLocation-1);
                 }
             }
         } catch (BadLocationException ble) {
             ble.printStackTrace();
             ThdlDebug.noteIffyCode();
         }
-        return errorReturn;
+    }
+
+    /** Returns all the paragraph elements in this document that
+     *  contain glyphs with offsets in the range [start, end) where
+     *  end < 0 is treated as the document's length.  Note that roman,
+     *  TM, Arial Unicode MS, and TMW text can all be intermingled
+     *  within a paragraph.  It's the correct level of abstraction to
+     *  use, however, because the next finer grain is roughly one
+     *  Element per glyph. */
+    private Element[] getParagraphs(int start, int end) {
+        if (end < 0)
+            end = getLength();
+        Element arrayType[] = new Element[0];
+        ArrayList v = new ArrayList();
+        int pos = start;
+        while (pos <= end) {
+            Element pe = getParagraphElement(pos);
+            v.add(pe);
+            if (pe.getEndOffset() == pos)
+                pos = pe.getEndOffset() + 1;
+            else
+                pos = pe.getEndOffset();
+        }
+        return (Element[])v.toArray(arrayType);
+    }
+
+}
+
+/** A helper class used by TibetanDocument.convertHelper(..). */
+class ConversionErrorHelper {
+    boolean errorReturn;
+    /** one more than the location of the last error glyph, or zero if no
+     *  error glyphs yet exist */
+    int errorGlyphLocation;
+    boolean doErrorWrapup;
+    ConversionErrorHelper() {
+        errorReturn = false;
+        errorGlyphLocation = 0;
+        doErrorWrapup = false;
     }
 }
