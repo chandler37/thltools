@@ -386,6 +386,22 @@ tstHelper("KA'", "[(K . A), (' . )]",
                   new String[] { "{B}{DE}" },
                   "{B}{DE}");
 
+        tstHelper("BDEm", "{B}{DEm}",
+                  new String[] { "{B+DEm}", "{B}{DEm}" },
+                  new String[] { "{B}{DEm}" },
+                  "{B}{DEm}");
+
+        /* DLC FIXME
+        tstHelper("BDA:", "{B}{DA:}",
+                  new String[] { "{B+DA:}", "{B}{DA:}" },
+                  new String[] { "{B}{DA:}" },
+                  "{B}{DA:}");
+
+        tstHelper("BDEm:", "{B}{DEm:}",
+                  new String[] { "{B+DEm:}", "{B}{DEm:}" },
+                  new String[] { "{B}{DEm:}" },
+                  "{B}{DEm:}"); */
+
         tstHelper("NA+YA", "{N+}{YA}",
                   new String[] { "{N+YA}" },
                   new String[] { "{N+YA}" },
@@ -7372,6 +7388,14 @@ tstHelper("ZUR");
     }
 
     public void testACIPConversion() {
+        uhelp("DBA", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP DBA has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.]\u0f51\u0f56");
+        // DLC FIXME        uhelp("BDEm:", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP BDEm: has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.]\u0f56DLC\u0f7a\u0f7e\u0f7f");
+        uhelp("DMAR", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP DMAR has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.]\u0f51\u0f58\u0f62");
+        uhelp("D+BA", "\u0f51\u0fa6");
+        uhelp("MNA", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP MNA has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.]\u0f58\u0f53");
+        uhelp("DGRA", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP DGRA has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.]\u0f51\u0f42\u0fb2");
+        uhelp("D+GRA", "[#WARNING CONVERTING ACIP DOCUMENT: There is a stack of three or more consonants in D+GRA that uses at least one '+' but does not use a '+' between each consonant.]\u0f51\u0f92\u0fb2");
+        uhelp("DGYA", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP DGYA has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.]\u0f51\u0f42\u0fb1");
         uhelp("NA+YA", "\u0f53\u0fb1"); // DLC FIXME: warn about the extra A
         uhelp("NE+YA", "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") NE+YA HAS THESE ERRORS: Cannot convert ACIP NE+-YA because + is not an ACIP consonant]");
         uhelp("tRAStA", "\u0f4a\u0fb2\u0f66\u0f9a");

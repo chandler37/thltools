@@ -374,6 +374,43 @@ class TParseTree {
                 }
             }
         }
+
+        // Check for DBA, DBE, DBIm:, etc. (i.e., DB*), BD*, DG*, DM* GD*, DN*, MN*, DGR*, DGY*
+        if (pl.size() >= 3) {
+            String left, middle, right;
+            left = pl.get(0).getLeft();
+            middle = pl.get(1).getLeft();
+            right = pl.get(2).getLeft();
+            if (pl.get(0).getRight() == null
+                && !pl.get(1).endsACIPStack()
+                && pl.get(2).endsACIPStack()
+                && null != left && null != right) {
+                if (("D".equals(left) && "G".equals(middle) && "R".equals(right))
+                    || ("D".equals(left) && "G".equals(middle) && "Y".equals(right))) {
+                    if (pl.size() == 3 || "Some" != warningLevel)
+                        return "The ACIP " + ((null != originalACIP) ? originalACIP : recoverACIP()) + " has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.";
+                }
+            }
+        }
+        if (pl.size() >= 2) {
+            String left, right;
+            left = pl.get(0).getLeft();
+            right = pl.get(1).getLeft();
+            if (pl.get(0).getRight() == null && pl.get(1).endsACIPStack()
+                && null != left && null != right) {
+                if (("D".equals(left) && "B".equals(right))
+                    || ("B".equals(left) && "D".equals(right))
+                    || ("D".equals(left) && "G".equals(right))
+                    || ("D".equals(left) && "M".equals(right))
+                    || ("G".equals(left) && "D".equals(right))
+                    || ("D".equals(left) && "N".equals(right))
+                    || ("M".equals(left) && "N".equals(right))) {
+                    if (pl.size() == 2 || "Some" != warningLevel)
+                        return "The ACIP " + ((null != originalACIP) ? originalACIP : recoverACIP()) + " has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.";
+                }
+            }
+        }
+
         return null;
     }
     
