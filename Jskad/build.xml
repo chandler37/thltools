@@ -197,6 +197,17 @@ Contributor(s): ______________________________________.
   </target>
 
 
+  <target name="check-one"
+          description="Compiles and runs a single named JUnit test."
+          depends="compile-junit-tests">
+    <ant antfile="junitbuild.xml" target="run-one-junit-test"
+         inheritAll="false" inheritRefs="false">
+       <reference refid="entire.class.path"/>
+       <property name="soletest" value="${soletest}"/>
+       <property name="junitbin" value="${junitbin}"/>
+    </ant>
+  </target>
+
   <!--
        See http://thdltools.sourceforge.net/BuildSystems.html for full
        details on unit testing our software.  If you're eager enough

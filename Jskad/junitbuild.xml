@@ -36,7 +36,7 @@
 
   <!-- This creates output files TEST* in the Jskad/ directory. -->
   <target name="run-headed-junit-tests"
-          description="Assuming that compilation of appropriate classes has been done, this target runs all the JUnit tests in the project.">
+          description="Assuming that compilation of appropriate classes has been done, this target runs all the non-headless JUnit tests in the project.">
     <junit fork="no" printsummary="yes" haltonfailure="${halt.after.trouble}" haltonerror="${halt.after.trouble}">
     <!-- we don't halt on error because you get an error when you run
          on a headless display -->
@@ -49,8 +49,20 @@
       <test name="org.thdl.tib.input.DuffPaneTest"/>
     </junit>
   </target>
+  <target name="run-one-junit-test"
+          description="Runs soletest, a single JUnit test [class].">
+    <junit fork="no" printsummary="yes" haltonfailure="true" haltonerror="true">
+      <classpath>
+        <pathelement location="${junitbin}"/>
+        <path refid="entire.class.path"/>
+      </classpath>
+      <formatter type="xml"/><!-- If not XML, then 'ant -buildfile
+                                  build.xml check-report' will fail. -->
+      <test name="${soletest}"/>
+    </junit>
+  </target>
   <target name="run-headless-junit-tests"
-          description="Assuming that compilation of appropriate classes has been done, this target runs all the JUnit tests in the project.">
+          description="Assuming that compilation of appropriate classes has been done, this target runs all the headless JUnit tests in the project.">
     <junit fork="no" printsummary="yes" haltonfailure="yes" haltonerror="yes">
       <sysproperty key="java.awt.headless" value="true"/>
       <classpath>
