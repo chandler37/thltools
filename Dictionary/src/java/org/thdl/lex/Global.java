@@ -1,5 +1,5 @@
 package org.thdl.lex;
-
+import java.io.*;
 import java.util.*;
 import org.thdl.lex.component.*;
 
@@ -27,8 +27,13 @@ public class Global
 	 */
 	public Date getLastUpdate() throws LexRepositoryException
 	{
-		ITerm term = (ITerm) getRecentTerms().get( 0 );
-		return term.getMeta().getModifiedOn();
+		Date date = null;
+		if ( null != getRecentTerms() && getRecentTerms().size() > 0 )
+		{
+			ITerm term = (ITerm) getRecentTerms().get( 0 );
+			date = term.getMeta().getModifiedOn();
+		}
+		return date;
 	}
 
 
@@ -177,8 +182,8 @@ public class Global
 	 */
 	public void doRefresh() throws LexRepositoryException
 	{
-		int limit = getRecentTermsCount();
-		setRecentTerms( LexComponentRepository.getRecentTerms( limit ) );
+		GlobalRefresher gr = new GlobalRefresher();
+		new Thread( gr ).start();
 	}
 
 
@@ -198,6 +203,42 @@ public class Global
 	{
 		setRecentTermsCount( recentItems );
 		setRefreshDelay( refreshDelay );
+	}
+
+
+	/**
+	 *  Description of the Class
+	 *
+	 * @author     travis
+	 * @created    October 21, 2003
+	 */
+	class GlobalRefresher implements Runnable
+	{
+		/**
+		 *  Main processing method for the GlobalRefresher object
+		 */
+		public void run()
+		{
+			int limit = getRecentTermsCount();
+			try
+			{
+				setRecentTerms( LexComponentRepository.getRecentTerms( limit ) );
+			}
+			catch ( Exception e )
+			{
+				StringWriter writer = new StringWriter();
+				e.printStackTrace( new PrintWriter( writer ) );
+				String stackTrace = writer.getBuffer().toString();
+				LexLogger.error( "GlobalRefresher Thread caught an Exception: " + stackTrace );
+			}
+
+		}
+
+
+		/**
+		 *Constructor for the GlobalRefresher object
+		 */
+		GlobalRefresher() { }
 	}
 }
 

@@ -127,6 +127,17 @@ public class LexLogger
 
 
 	/**
+	 *  Description of the Method
+	 *
+	 * @param  msg  Description of the Parameter
+	 */
+	public static void error( String msg )
+	{
+		LOGGER.error( msg );
+	}
+
+
+	/**
 	 *Constructor for the debugComponent object
 	 *
 	 * @param  component  Description of the Parameter
@@ -151,8 +162,6 @@ public class LexLogger
 			String stackTrace = writer.getBuffer().toString();
 			LOGGER.debug( "LexLogger caught an Exception: " + stackTrace );
 		}
-
 	}
-
 }
 

@@ -79,12 +79,12 @@ public class DisplayCommand extends LexCommand implements Command
 				}
 
 				displayHelper.populate( req.getParameterMap() );
-
 			}
 			else
 			{
 				setNext( "menu.jsp" );
-				msg = "The component you were trying to display was not a term.";
+				msg = "The component set for display was not a term.";
+				LexLogger.error( msg );
 			}
 			req.setAttribute( LexConstants.MESSAGE_REQ_ATTR, msg );
 

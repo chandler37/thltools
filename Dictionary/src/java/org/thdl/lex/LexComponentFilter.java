@@ -96,7 +96,8 @@ public class LexComponentFilter implements Filter
 		try
 		{
 			setBlanks( new HashMap() );
-			getBlanks().put( LexConstants.TERMLABEL_VALUE, new Term() );
+			ITerm term = new Term();
+			getBlanks().put( LexConstants.TERMLABEL_VALUE, term );
 			getBlanks().put( LexConstants.PRONUNCIATIONLABEL_VALUE, new Pronunciation() );
 			getBlanks().put( LexConstants.ETYMOLOGYLABEL_VALUE, new Etymology() );
 			getBlanks().put( LexConstants.FUNCTIONLABEL_VALUE, new GrammaticalFunction() );
@@ -145,15 +146,15 @@ public class LexComponentFilter implements Filter
 				{
 					if ( getBlanks().get( labelValue ) != null )
 					{
-						Class glass = getBlanks().get( labelValue ).getClass();
-						LexComponent component = (LexComponent) glass.newInstance();
+						Class c = getBlanks().get( labelValue ).getClass();
+						LexComponent component = (LexComponent) c.newInstance();
 						component.populate( req.getParameterMap() );
 						component.getMeta().populate( req.getParameterMap() );
 						req.setAttribute( LexConstants.COMPONENT_REQ_ATTR, component );
 					}
 					else
 					{
-						req.setAttribute( "LCFilter says: ", "componentLabel was not in blank components" );
+						LexLogger.error( "componentLabel was not in blank components" );
 					}
 				}
 				catch ( InstantiationException ie )
@@ -171,7 +172,7 @@ public class LexComponentFilter implements Filter
 			}
 			else
 			{
-				req.setAttribute( "LexComponentFilter says: '", LexConstants.LABEL_REQ_PARAM + "' was not specified." );
+				LexLogger.error( "Required parameter, '" + LexConstants.LABEL_REQ_PARAM + "' was not specified." );
 			}
 			chain.doFilter( request, response );
 
@@ -187,7 +188,7 @@ public class LexComponentFilter implements Filter
 			    LexLogger.debug( "Checking Request state at end of LexComponentFilter.doFilter()" );
 			    LexLogger.logRequestState( req );
 			    LexLogger.logSessionState( req );
-			 */
+			  */
 			long dur = System.currentTimeMillis() - start;
 			LexLogger.debug( "Total Request took: " + dur / 1000 + " seconds.\n\n" );
 		}
