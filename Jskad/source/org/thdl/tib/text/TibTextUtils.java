@@ -62,34 +62,34 @@ public class TibTextUtils implements THDLWylieConstants {
 * @return an array of DuffData corresponding to this
 * list of glyphs
 */
-	public static DuffData[] convertGlyphs(List glyphs) {
-		if (glyphs.size() == 0)
-			return null;
-		List data = new ArrayList();
-		StringBuffer sb = new StringBuffer();
-		Iterator iter = glyphs.iterator();
-		DuffCode dc = (DuffCode)iter.next();
-		int lastfont = dc.getFontNum();
-		sb.append(dc.getCharacter());
+    public static DuffData[] convertGlyphs(List glyphs) {
+        if (glyphs.size() == 0)
+            return null;
+        List data = new ArrayList();
+        StringBuffer sb = new StringBuffer();
+        Iterator iter = glyphs.iterator();
+        DuffCode dc = (DuffCode)iter.next();
+        int lastfont = dc.getFontNum();
+        sb.append(dc.getCharacter());
 
-		while (iter.hasNext()) {
-			dc = (DuffCode)iter.next();
-			if (dc.getFontNum() == lastfont)
-				sb.append(dc.getCharacter());
-			else {
-				data.add(new DuffData(sb.toString(), lastfont));
-				lastfont = dc.getFontNum();
-				sb = new StringBuffer();
-				sb.append(dc.getCharacter());
-			}
-		}
+        while (iter.hasNext()) {
+            dc = (DuffCode)iter.next();
+            if (dc.getFontNum() == lastfont)
+                sb.append(dc.getCharacter());
+            else {
+                data.add(new DuffData(sb.toString(), lastfont));
+                lastfont = dc.getFontNum();
+                sb = new StringBuffer();
+                sb.append(dc.getCharacter());
+            }
+        }
 
-		data.add(new DuffData(sb.toString(), lastfont));
+        data.add(new DuffData(sb.toString(), lastfont));
 
-		DuffData[] dd = new DuffData[0];
-		dd = (DuffData[])data.toArray(dd);
-		return dd;
-	}
+        DuffData[] dd = new DuffData[0];
+        dd = (DuffData[])data.toArray(dd);
+        return dd;
+    }
 
 /**
 * Figures out how to arrange a list of characters into glyphs. For
@@ -113,135 +113,135 @@ public class TibTextUtils implements THDLWylieConstants {
 * @param definitelySanskrit should be true if the characters are known
 * to be Sanskrit and not Tibetan
 */
-	public static List getGlyphs(List chars, boolean areStacksOnRight, boolean definitelyTibetan, boolean definitelySanskrit) {
-		StringBuffer tibBuffer, sanBuffer;
-		String tibCluster, sanCluster;
+    public static List getGlyphs(List chars, boolean areStacksOnRight, boolean definitelyTibetan, boolean definitelySanskrit) {
+        StringBuffer tibBuffer, sanBuffer;
+        String tibCluster, sanCluster;
 
-		boolean checkTibetan, checkSanskrit;
+        boolean checkTibetan, checkSanskrit;
 
-		if (!(definitelyTibetan || definitelySanskrit)) {
-			checkTibetan = true;
-			checkSanskrit = true;
-		}
-		else {
-			checkTibetan = definitelyTibetan;
-			checkSanskrit = definitelySanskrit;
-		}
+        if (!(definitelyTibetan || definitelySanskrit)) {
+            checkTibetan = true;
+            checkSanskrit = true;
+        }
+        else {
+            checkTibetan = definitelyTibetan;
+            checkSanskrit = definitelySanskrit;
+        }
 
-		int length = chars.size();
+        int length = chars.size();
 
-		List glyphs = new ArrayList();
-		glyphs.clear();
+        List glyphs = new ArrayList();
+        glyphs.clear();
 
-		if (areStacksOnRight) {
-			for (int i=0; i<length; i++) {
-				tibBuffer = new StringBuffer();
-				tibCluster = null;
-		
-				sanBuffer = new StringBuffer();
-				sanCluster = null;
+        if (areStacksOnRight) {
+            for (int i=0; i<length; i++) {
+                tibBuffer = new StringBuffer();
+                tibCluster = null;
+        
+                sanBuffer = new StringBuffer();
+                sanCluster = null;
 
-				for (int k=i; k<length; k++) {
-					String s = (String)chars.get(k);
+                for (int k=i; k<length; k++) {
+                    String s = (String)chars.get(k);
 
-					if (checkTibetan)
-						tibBuffer.append(s);
+                    if (checkTibetan)
+                        tibBuffer.append(s);
 
-					if (checkSanskrit)
-						sanBuffer.append(s);
+                    if (checkSanskrit)
+                        sanBuffer.append(s);
 
-					if (k!=length-1) {
-						if (checkTibetan)
-							tibBuffer.append("-");
+                    if (k!=length-1) {
+                        if (checkTibetan)
+                            tibBuffer.append("-");
 
-						if (checkSanskrit)
-							sanBuffer.append("+");
-					}
-				}
+                        if (checkSanskrit)
+                            sanBuffer.append("+");
+                    }
+                }
 
-				if (checkTibetan) {
-					tibCluster = tibBuffer.toString();
+                if (checkTibetan) {
+                    tibCluster = tibBuffer.toString();
 
-					if (TibetanMachineWeb.hasGlyph(tibCluster)) {
-						Iterator iter = chars.iterator();
-						for (int k=0; k<i; k++) //should really check here to make sure glyphs exist FIXME
-							glyphs.add(TibetanMachineWeb.getGlyph((String)iter.next()));
+                    if (TibetanMachineWeb.hasGlyph(tibCluster)) {
+                        Iterator iter = chars.iterator();
+                        for (int k=0; k<i; k++) //should really check here to make sure glyphs exist FIXME
+                            glyphs.add(TibetanMachineWeb.getGlyph((String)iter.next()));
 
-						glyphs.add(TibetanMachineWeb.getGlyph(tibCluster));
-						return glyphs;
-					}
-				}
+                        glyphs.add(TibetanMachineWeb.getGlyph(tibCluster));
+                        return glyphs;
+                    }
+                }
 
-				if (checkSanskrit) {
-					sanCluster = sanBuffer.toString();
+                if (checkSanskrit) {
+                    sanCluster = sanBuffer.toString();
 
-					if (TibetanMachineWeb.hasGlyph(sanCluster)) {
-						Iterator iter = chars.iterator();
-						for (int k=0; k<i; k++) //should really check here to make sure glyphs exist FIXME
-							glyphs.add(TibetanMachineWeb.getGlyph((String)iter.next()));
+                    if (TibetanMachineWeb.hasGlyph(sanCluster)) {
+                        Iterator iter = chars.iterator();
+                        for (int k=0; k<i; k++) //should really check here to make sure glyphs exist FIXME
+                            glyphs.add(TibetanMachineWeb.getGlyph((String)iter.next()));
 
-						glyphs.add(TibetanMachineWeb.getGlyph(sanCluster));
-						return glyphs;
-					}
-				}
-			}
-		}
-		else {
-			for (int i=length-1; i>-1; i--) {
-				tibBuffer = new StringBuffer();
-				tibCluster = null;
+                        glyphs.add(TibetanMachineWeb.getGlyph(sanCluster));
+                        return glyphs;
+                    }
+                }
+            }
+        }
+        else {
+            for (int i=length-1; i>-1; i--) {
+                tibBuffer = new StringBuffer();
+                tibCluster = null;
 
-				sanBuffer = new StringBuffer();
-				sanCluster = null;
+                sanBuffer = new StringBuffer();
+                sanCluster = null;
 
-				Iterator iter = chars.iterator();
+                Iterator iter = chars.iterator();
 
-				for (int k=0; k<i+1; k++) {
-					String s = (String)iter.next();
+                for (int k=0; k<i+1; k++) {
+                    String s = (String)iter.next();
 
-					if (checkTibetan)
-						tibBuffer.append(s);
+                    if (checkTibetan)
+                        tibBuffer.append(s);
 
-					if (checkSanskrit)
-						sanBuffer.append(s);
+                    if (checkSanskrit)
+                        sanBuffer.append(s);
 
-					if (k!=i) {
-						if (checkTibetan)
-							tibBuffer.append("-");
+                    if (k!=i) {
+                        if (checkTibetan)
+                            tibBuffer.append("-");
 
-						if (checkSanskrit)
-							sanBuffer.append("+");
-					}
-				}
+                        if (checkSanskrit)
+                            sanBuffer.append("+");
+                    }
+                }
 
-				if (checkTibetan) {
-					tibCluster = tibBuffer.toString();
+                if (checkTibetan) {
+                    tibCluster = tibBuffer.toString();
 
-					if (TibetanMachineWeb.hasGlyph(tibCluster)) {
-						glyphs.add(TibetanMachineWeb.getGlyph(tibCluster));
-						for (int k=i+1; k<length; k++)
-							glyphs.add(TibetanMachineWeb.getGlyph((String)iter.next()));
+                    if (TibetanMachineWeb.hasGlyph(tibCluster)) {
+                        glyphs.add(TibetanMachineWeb.getGlyph(tibCluster));
+                        for (int k=i+1; k<length; k++)
+                            glyphs.add(TibetanMachineWeb.getGlyph((String)iter.next()));
 
-						return glyphs;
-					}
-				}
+                        return glyphs;
+                    }
+                }
 
-				if (checkSanskrit) {
-					sanCluster = sanBuffer.toString();
+                if (checkSanskrit) {
+                    sanCluster = sanBuffer.toString();
 
-					if (TibetanMachineWeb.hasGlyph(sanCluster)) {
-						glyphs.add(TibetanMachineWeb.getGlyph(sanCluster));
-						for (int k=i+1; k<length; k++)
-							glyphs.add(TibetanMachineWeb.getGlyph((String)iter.next()));
+                    if (TibetanMachineWeb.hasGlyph(sanCluster)) {
+                        glyphs.add(TibetanMachineWeb.getGlyph(sanCluster));
+                        for (int k=i+1; k<length; k++)
+                            glyphs.add(TibetanMachineWeb.getGlyph((String)iter.next()));
 
-						return glyphs;
-					}
-				}
-			}
-		}
+                        return glyphs;
+                    }
+                }
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
 /**
 * Finds the first meaningful element to occur within a string of
@@ -253,56 +253,56 @@ public class TibTextUtils implements THDLWylieConstants {
 * no meaningful subpart can be found (for example 'x' has no equivalent
 * in Extended Wylie)
 */
-	public static String getNext(String wylie) {
-		boolean hasThereBeenValidity = false;
-		boolean isThereValidity = false;
-	
-		String s;
-		int i;
-		int offset = 0;
+    public static String getNext(String wylie) {
+        boolean hasThereBeenValidity = false;
+        boolean isThereValidity = false;
+    
+        String s;
+        int i;
+        int offset = 0;
 
-		char c = wylie.charAt(offset);
-		int k = (int)c;
+        char c = wylie.charAt(offset);
+        int k = (int)c;
 
-		if (k < 32) //return null if character is just formatting
-			return String.valueOf(c);
+        if (k < 32) //return null if character is just formatting
+            return String.valueOf(c);
 
-		if (c == WYLIE_DISAMBIGUATING_KEY)
-			return String.valueOf(WYLIE_DISAMBIGUATING_KEY);
-	
-		if (c == WYLIE_SANSKRIT_STACKING_KEY)
-			return String.valueOf(WYLIE_SANSKRIT_STACKING_KEY);
+        if (c == WYLIE_DISAMBIGUATING_KEY)
+            return String.valueOf(WYLIE_DISAMBIGUATING_KEY);
+    
+        if (c == WYLIE_SANSKRIT_STACKING_KEY)
+            return String.valueOf(WYLIE_SANSKRIT_STACKING_KEY);
 
-		for (i=offset+1; i<wylie.length()+1; i++) {
-			s = wylie.substring(offset, i);
+        for (i=offset+1; i<wylie.length()+1; i++) {
+            s = wylie.substring(offset, i);
 
-			if (!isThereValidity) {
-				if (TibetanMachineWeb.isWyliePunc(s) || TibetanMachineWeb.isWylieVowel(s) || TibetanMachineWeb.isWylieChar(s)) {
-					isThereValidity = true;
-					hasThereBeenValidity = true;
-				}
-			}
-			else {
-				if (!TibetanMachineWeb.isWyliePunc(s) && !TibetanMachineWeb.isWylieVowel(s) && !TibetanMachineWeb.isWylieChar(s)) {
-					isThereValidity = false;
-					break;
-				}
-			}
-		}
+            if (!isThereValidity) {
+                if (TibetanMachineWeb.isWyliePunc(s) || TibetanMachineWeb.isWylieVowel(s) || TibetanMachineWeb.isWylieChar(s)) {
+                    isThereValidity = true;
+                    hasThereBeenValidity = true;
+                }
+            }
+            else {
+                if (!TibetanMachineWeb.isWyliePunc(s) && !TibetanMachineWeb.isWylieVowel(s) && !TibetanMachineWeb.isWylieChar(s)) {
+                    isThereValidity = false;
+                    break;
+                }
+            }
+        }
 
-		if (!hasThereBeenValidity)
-			s = null;
+        if (!hasThereBeenValidity)
+            s = null;
 
-		else {
-			if (isThereValidity) //the whole text region is valid
-				s = wylie.substring(offset, wylie.length());
+        else {
+            if (isThereValidity) //the whole text region is valid
+                s = wylie.substring(offset, wylie.length());
 
-			else //the loop was broken out of
-				s = wylie.substring(offset, i-1);
-		}
+            else //the loop was broken out of
+                s = wylie.substring(offset, i-1);
+        }
 
-		return s;
-	}
+        return s;
+    }
 
     /** An array containing one boolean value.  Pass this to
         TibetanMachineWeb.getWylieForGlyph(..) if you don't care if a
@@ -318,163 +318,163 @@ public class TibTextUtils implements THDLWylieConstants {
 * @throws InvalidWylieException if the Wylie is deemed invalid,
 * i.e. if it does not conform to the Extended Wylie standard
 */
-	public static DuffData[] getTibetanMachineWeb(String wylie) throws InvalidWylieException {
+    public static DuffData[] getTibetanMachineWeb(String wylie) throws InvalidWylieException {
         List chars = new ArrayList();
-		DuffCode dc;
-		int start = 0;
-		boolean isSanskrit = false;
-		boolean wasLastSanskritStackingKey = false;
-		LinkedList glyphs = new LinkedList();
+        DuffCode dc;
+        int start = 0;
+        boolean isSanskrit = false;
+        boolean wasLastSanskritStackingKey = false;
+        LinkedList glyphs = new LinkedList();
 
-		while (start < wylie.length()) {
-			String next = getNext(wylie.substring(start));
+        while (start < wylie.length()) {
+            String next = getNext(wylie.substring(start));
 
-			if (next == null) {
-				if (!chars.isEmpty()) {
-					glyphs.addAll(getGlyphs(chars, true, !isSanskrit, isSanskrit));
-					chars.clear();
-					isSanskrit = false;
-				}
-				else { //could not convert - throw exception
+            if (next == null) {
+                if (!chars.isEmpty()) {
+                    glyphs.addAll(getGlyphs(chars, true, !isSanskrit, isSanskrit));
+                    chars.clear();
+                    isSanskrit = false;
+                }
+                else { //could not convert - throw exception
                     // FIXME: we're printing to stdout!
-					if (start+5 <= wylie.length()) {
-						System.out.println("Bad wylie: "
+                    if (start+5 <= wylie.length()) {
+                        System.out.println("Bad wylie: "
                                            + wylie.substring(start,
                                                              start + 5));
                     } else {
-						System.out.println("Bad wylie: "+wylie.substring(start));
+                        System.out.println("Bad wylie: "+wylie.substring(start));
                     }
-					throw new InvalidWylieException(wylie, start);
-				}
-			}
+                    throw new InvalidWylieException(wylie, start);
+                }
+            }
 
-			else if (TibetanMachineWeb.isWyliePunc(next)) {
-				if (!chars.isEmpty())
-					glyphs.addAll(getGlyphs(chars, true, !isSanskrit, isSanskrit));
+            else if (TibetanMachineWeb.isWyliePunc(next)) {
+                if (!chars.isEmpty())
+                    glyphs.addAll(getGlyphs(chars, true, !isSanskrit, isSanskrit));
 
-				chars.clear();
+                chars.clear();
 
-				if (next.equals(String.valueOf(BINDU))) {
-					if (glyphs.isEmpty())
-						dc = null;
-					else 
-						dc = (DuffCode)glyphs.removeLast(); //LinkedList implementation
+                if (next.equals(String.valueOf(BINDU))) {
+                    if (glyphs.isEmpty())
+                        dc = null;
+                    else 
+                        dc = (DuffCode)glyphs.removeLast(); //LinkedList implementation
 
-					getBindu(glyphs, dc);
-				}					
+                    getBindu(glyphs, dc);
+                }                    
 
-				else {
-					dc = TibetanMachineWeb.getGlyph(next);
-					glyphs.add(dc);
-				}
+                else {
+                    dc = TibetanMachineWeb.getGlyph(next);
+                    glyphs.add(dc);
+                }
 
-				isSanskrit = false;
-			}
+                isSanskrit = false;
+            }
 
-			else if (TibetanMachineWeb.isWylieVowel(next)) {
-				if (!chars.isEmpty()) {
-					glyphs.addAll(getGlyphs(chars, true, !isSanskrit, isSanskrit));
-					dc = (DuffCode)glyphs.removeLast(); //LinkedList implementation
-					getVowel(glyphs, dc, next);
-					chars.clear();
-				}
-				else { //if previous is punctuation or null, then achen plus vowel - otherwise, previous could be vowel
-					int size = glyphs.size();
+            else if (TibetanMachineWeb.isWylieVowel(next)) {
+                if (!chars.isEmpty()) {
+                    glyphs.addAll(getGlyphs(chars, true, !isSanskrit, isSanskrit));
+                    dc = (DuffCode)glyphs.removeLast(); //LinkedList implementation
+                    getVowel(glyphs, dc, next);
+                    chars.clear();
+                }
+                else { //if previous is punctuation or null, then achen plus vowel - otherwise, previous could be vowel
+                    int size = glyphs.size();
 
-					vowel_block: {
-						if (size > 1) {
-							dc = (DuffCode)glyphs.get(glyphs.size()-1);
-							if (!TibetanMachineWeb.isWyliePunc(TibetanMachineWeb.getWylieForGlyph(dc, weDoNotCareIfThereIsCorrespondingWylieOrNot))) {
-								DuffCode dc_2 = (DuffCode)glyphs.removeLast();
-								DuffCode dc_1 = (DuffCode)glyphs.removeLast();
-								getVowel(glyphs, dc_1, dc_2, next);
-								break vowel_block;
-							}
-						}
-						DuffCode[] dc_array = (DuffCode[])TibetanMachineWeb.getTibHash().get(ACHEN);
-						dc = dc_array[TibetanMachineWeb.TMW];
-						getVowel(glyphs, dc, next);
-					}
+                    vowel_block: {
+                        if (size > 1) {
+                            dc = (DuffCode)glyphs.get(glyphs.size()-1);
+                            if (!TibetanMachineWeb.isWyliePunc(TibetanMachineWeb.getWylieForGlyph(dc, weDoNotCareIfThereIsCorrespondingWylieOrNot))) {
+                                DuffCode dc_2 = (DuffCode)glyphs.removeLast();
+                                DuffCode dc_1 = (DuffCode)glyphs.removeLast();
+                                getVowel(glyphs, dc_1, dc_2, next);
+                                break vowel_block;
+                            }
+                        }
+                        DuffCode[] dc_array = (DuffCode[])TibetanMachineWeb.getTibHash().get(ACHEN);
+                        dc = dc_array[TibetanMachineWeb.TMW];
+                        getVowel(glyphs, dc, next);
+                    }
 
-					chars.clear();
-				}
+                    chars.clear();
+                }
 
-				isSanskrit = false;
-			}
+                isSanskrit = false;
+            }
 
-			else if (TibetanMachineWeb.isWylieChar(next)) {
-				if (!isSanskrit) //add char to list - it is not sanskrit
-					chars.add(next);
+            else if (TibetanMachineWeb.isWylieChar(next)) {
+                if (!isSanskrit) //add char to list - it is not sanskrit
+                    chars.add(next);
 
-				else if (wasLastSanskritStackingKey) { //add char to list - it is still part of sanskrit stack
-					chars.add(next);
-					wasLastSanskritStackingKey = false;
-				}
+                else if (wasLastSanskritStackingKey) { //add char to list - it is still part of sanskrit stack
+                    chars.add(next);
+                    wasLastSanskritStackingKey = false;
+                }
 
-				else { //char is no longer part of sanskrit stack, therefore compute and add previous stack
-					glyphs.addAll(getGlyphs(chars, true, !isSanskrit, isSanskrit));
-					chars.clear();
-					chars.add(next);
-					isSanskrit = false;
-					wasLastSanskritStackingKey = false;
-				}
-			}
+                else { //char is no longer part of sanskrit stack, therefore compute and add previous stack
+                    glyphs.addAll(getGlyphs(chars, true, !isSanskrit, isSanskrit));
+                    chars.clear();
+                    chars.add(next);
+                    isSanskrit = false;
+                    wasLastSanskritStackingKey = false;
+                }
+            }
 
-			else if (next.equals(String.valueOf(WYLIE_DISAMBIGUATING_KEY))) {
-				if (!chars.isEmpty())
-					glyphs.addAll(getGlyphs(chars, true, !isSanskrit, isSanskrit));
+            else if (next.equals(String.valueOf(WYLIE_DISAMBIGUATING_KEY))) {
+                if (!chars.isEmpty())
+                    glyphs.addAll(getGlyphs(chars, true, !isSanskrit, isSanskrit));
 
-				chars.clear();
-				isSanskrit = false;
-			}
+                chars.clear();
+                isSanskrit = false;
+            }
 
-			else if (next.equals(String.valueOf(WYLIE_SANSKRIT_STACKING_KEY))) {
-				if (!isSanskrit) { //begin sanskrit stack
-					switch (chars.size()) {
-						case 0:
-							break; //'+' is not "pre-stacking" key
+            else if (next.equals(String.valueOf(WYLIE_SANSKRIT_STACKING_KEY))) {
+                if (!isSanskrit) { //begin sanskrit stack
+                    switch (chars.size()) {
+                        case 0:
+                            break; //'+' is not "pre-stacking" key
 
-						case 1:
-							isSanskrit = true;
-							wasLastSanskritStackingKey = true;
-							break;
+                        case 1:
+                            isSanskrit = true;
+                            wasLastSanskritStackingKey = true;
+                            break;
 
-						default:
-							String top_char = (String)chars.get(chars.size()-1);
-							chars.remove(chars.size()-1);
+                        default:
+                            String top_char = (String)chars.get(chars.size()-1);
+                            chars.remove(chars.size()-1);
                                                         // DLC PERFORMANCE FIXME: make glyphs a parameter
-							glyphs.addAll(getGlyphs(chars, true, !isSanskrit, isSanskrit));
-							chars.clear();
-							chars.add(top_char);
-							isSanskrit = true;
-							wasLastSanskritStackingKey = true;
-							break;
-					}
-				}
-			}
+                            glyphs.addAll(getGlyphs(chars, true, !isSanskrit, isSanskrit));
+                            chars.clear();
+                            chars.add(top_char);
+                            isSanskrit = true;
+                            wasLastSanskritStackingKey = true;
+                            break;
+                    }
+                }
+            }
 
-			else if (TibetanMachineWeb.isFormatting(next.charAt(0))) {
-				if (!chars.isEmpty())
-					glyphs.addAll(getGlyphs(chars, true, !isSanskrit, isSanskrit));
+            else if (TibetanMachineWeb.isFormatting(next.charAt(0))) {
+                if (!chars.isEmpty())
+                    glyphs.addAll(getGlyphs(chars, true, !isSanskrit, isSanskrit));
 
-				dc = new DuffCode(1,next.charAt(0));
-				glyphs.add(dc);
-				chars.clear();
-				isSanskrit = false;
-			}
+                dc = new DuffCode(1,next.charAt(0));
+                glyphs.add(dc);
+                chars.clear();
+                isSanskrit = false;
+            }
 
-			if (next != null)
-				start += next.length();
-		}
+            if (next != null)
+                start += next.length();
+        }
 
-		if (!chars.isEmpty()) {
-			glyphs.addAll(getGlyphs(chars, true, !isSanskrit, isSanskrit));
-			chars.clear();
-		}
+        if (!chars.isEmpty()) {
+            glyphs.addAll(getGlyphs(chars, true, !isSanskrit, isSanskrit));
+            chars.clear();
+        }
 
-		DuffData[] dd = convertGlyphs(glyphs);
-		return dd;
-	}
+        DuffData[] dd = convertGlyphs(glyphs);
+        return dd;
+    }
 
 /**
 * Gets the bindu sequence for a given context.  In the
