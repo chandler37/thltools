@@ -26,6 +26,7 @@ import java.applet.Applet;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import javax.swing.text.JTextComponent;
+import javax.swing.JOptionPane;
 import org.thdl.tib.input.DuffPane;
 
 /** Provides a graphical interfase to input Tibetan text (Roman or
@@ -44,6 +45,7 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 	private Object objModified;
 	private Frame frame;
 	private Dialog diagAbout;
+	private boolean usingSwing;
 
 	public WindowScannerFilter(String file)
 	{
@@ -55,12 +57,13 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		frame = new Frame("Tibetan Scanner");
 		frame.setLayout(new GridLayout(1,1));
 		frame.setBackground(Color.white);
-	    diagAbout = null;		
+	    diagAbout = null;
+	    usingSwing=!ipaq;
 
-		if (ipaq)
-			sp = new SimpleScannerPanel(file);
-		else
+		if (usingSwing)
 			sp = new DuffScannerPanel(file);
+		else
+			sp = new SimpleScannerPanel(file);
 		
 		MenuBar mb = new MenuBar();
 		Menu m = new Menu ("File");		
@@ -94,7 +97,7 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		m.add(mnuClear);
 		mnuClear.addActionListener(this);
 		mb.add(m);
-		if (!ipaq)
+		if (usingSwing)
 		{
     		m = new Menu("View");
 	    	tibScript = new CheckboxMenuItem("Tibetan Script", true);
@@ -269,7 +272,11 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		
 		if (clicked == mnuAbout)
 		{
-		    if (diagAbout==null)
+		    if (usingSwing)
+		    {
+		        JOptionPane.showMessageDialog(frame, TibetanScanner.aboutUnicode, "About", JOptionPane.PLAIN_MESSAGE);
+		    }
+		    else if (diagAbout==null)
 		    {
     	        diagAbout = new AboutDialog(frame);
 		    }
