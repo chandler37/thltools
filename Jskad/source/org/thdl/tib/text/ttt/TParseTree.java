@@ -207,7 +207,7 @@ class TParseTree {
             if (bt.isLegal) {
                 if (bt.isLegalAndHasAVowelOnRoot)
                     legalParsesWithVowelOnRoot.add(sl);
-                if (!bt.isLegalButSanskrit)
+                if (!bt.isLegalButSanskrit())
                     allStrictlyLegalParses.add(sl);
                 allNonillegalParses.add(sl);
             }

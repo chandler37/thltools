@@ -463,6 +463,8 @@ tstHelper("KA'", "[(K . A), (' . )]",
         tstHelper("SAM'AM", null, null, null, "{SA}{M}{'A}{M}", 2);
         tstHelper("SAMS'ANG", null, null, null, "{SA}{M}{S}{'A}{NG}", 2);
         tstHelper("SNYANGD'O", null, null, null, "{S+NYA}{NG}{D}{'O}", 2);
+        tstHelper("BNA", "{B}{NA}", new String[] { "{B+NA}", "{B}{NA}" },
+                  new String[] { "{B+NA}" }, "{B+NA}", -1);
         tstHelper("T-SNYANGD'O", null, null, null, "{T}{S+NYA}{NG+D}{'O}", 3); // T is no prefix, so NG+D, not NG-D
         tstHelper("T-SNYANGD'O", null, null, null, "{T}{S+NYA}{NG+D'O}", 0);
 
@@ -7409,6 +7411,7 @@ G+NA
 MNA'
 M+NA
 */
+        uhelp("BNA", "[#WARNING CONVERTING ACIP DOCUMENT: Warning: We're going with {B+NA}, but only because our knowledge of prefix rules says that {B}{NA} is not a legal Tibetan tsheg bar (\"syllable\")]\u0f56\u0fa3");
         uhelp("BGLA", "\u0f56\u0f42\u0fb3");
         uhelp("BLCAG", "\u0f56\u0f63\u0f95\u0f42");
         uhelp("DBA", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP DBA has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.]\u0f51\u0f56");

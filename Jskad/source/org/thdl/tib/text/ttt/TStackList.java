@@ -144,6 +144,14 @@ class TStackList {
         if (isLegal) {
             if (isClearlyIllegal())
                 isLegal = false;
+            TPairList firstStack = this.get(0);
+            if (1 == firstStack.size()
+                && firstStack.get(0).isPrefix()
+                && null == firstStack.get(0).getRight() // because GAM is legal
+                && !(candidateType.startsWith("prefix")
+                     || candidateType.startsWith("appendaged-prefix"))) {
+                isLegal = false;
+            }
         }
 
         boolean isLegalAndHasAVowelOnRoot = false;
@@ -163,8 +171,8 @@ class TStackList {
             }
         }
         return new BoolTriple(isLegal,
-                              (candidateType == "single-sanskrit-gc"),
-                              isLegalAndHasAVowelOnRoot);
+                              isLegalAndHasAVowelOnRoot,
+                              candidateType);
     }
 
     private static final boolean ddebug = false;
@@ -241,20 +249,51 @@ class TStackList {
     }
 }
 
-/** Too simple to comment. */
+/** A BoolTriple is used to convey the legality of a particular tsheg
+ *  bar.  (FIXME: This class is misnamed.)
+ *  @author David Chandler */
 class BoolTriple implements Comparable {
+
+    /** candidateType is a {@link
+        org.thdl.tib.text.TibTextUtils#getClassificationOfTshegBar(TGCList,StringBuffer,boolean)}
+        concept.  You cannot derive isLegal() from it because {@link
+        TStackList#isClearlyIllegal()} and more (think {BNA}) comes
+        into play. */
+    String candidateType;
+
+
+    /** True if and only if the tsheg bar is a native Tibetan tsheg
+        bar or is a single Sanskrit grapheme cluster.
+        @see #isLegalButSanskrit() */
     boolean isLegal;
-    boolean isLegalButSanskrit; // some subset are legal but legal Sanskrit -- the single sanskrit stacks are this way, such as B+DE.
+
+
+    /** Some subset of tsheg bars are legal but legal Sanskrit -- the
+        single sanskrit stacks are this way, such as B+DE.  We treat
+        such a thing as legal because B+DE is the perfect way to input
+        such a thing.  But then, we treat B+DEB+DE as illegal, even
+        though it too is perfect.  So we're inconsistent (LOW-PRIORITY
+        FIXME), but you really have to watch what happens to
+        coloration and warning messages if you change this. */
+    boolean isLegalButSanskrit() {
+        return (candidateType == "single-sanskrit-gc");
+    }
+
+    /** True if and only if {@link #isLegal} is true and there may be
+        an ACIP "A" vowel on the root stack. */
     boolean isLegalAndHasAVowelOnRoot;
     BoolTriple(boolean isLegal,
-               boolean isLegalButSanskrit,
-               boolean isLegalAndHasAVowelOnRoot) {
-        if (!isLegal && (isLegalButSanskrit || isLegalAndHasAVowelOnRoot))
-            throw new IllegalArgumentException();
+               boolean isLegalAndHasAVowelOnRoot,
+               String candidateType) {
         this.isLegal = isLegal;
-        this.isLegalButSanskrit = isLegalButSanskrit;
         this.isLegalAndHasAVowelOnRoot = isLegalAndHasAVowelOnRoot;
+        this.candidateType = candidateType;
+        if (!isLegal && (isLegalButSanskrit() || isLegalAndHasAVowelOnRoot))
+            throw new IllegalArgumentException();
     }
+
+    /** The more legal and standard a tsheg bar is, the higher score
+        it has. */
     private int score() {
         int score = 0;
         if (isLegalAndHasAVowelOnRoot) {
@@ -263,12 +302,16 @@ class BoolTriple implements Comparable {
         if (isLegal) {
             score += 5;
         }
-        if (isLegalButSanskrit) {
+        if (isLegalButSanskrit()) {
             score -= 3;
         }
         return score;
     }
-    /** The most legal BoolTriple compares higher. */
+
+
+    /** The "most legal" BoolTriple compares higher.  Native Tibetan
+        beats Sanskrit; native tibetan with a vowel on the root stack
+        beats native Tibetan without. */
     public int compareTo(Object o) {
         BoolTriple b = (BoolTriple)o;
         return score() - b.score();
