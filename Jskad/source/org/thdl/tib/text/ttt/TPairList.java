@@ -318,7 +318,9 @@ class TPairList {
 
         // Handle the first pair specially -- it could be a prefix.
         if (ddebug) System.out.println("i is " + 0);
-        if ((mayHavePrefix = get(0).isPrefix()) && null == get(0).getRight()) {
+        if ((mayHavePrefix = get(0).isPrefix())
+            && sz > 1
+            && null == get(0).getRight()) {
             // special case: we must have a branch in the parse tree
             // for the initial part of this pair list.  For example,
             // is DKHYA D+KH+YA or D-KH+YA?  It depends on prefix
