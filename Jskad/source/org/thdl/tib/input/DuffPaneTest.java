@@ -31,6 +31,7 @@ import org.thdl.util.ThdlOptions;
  * Tests {@link org.thdl.tib.input.Duffpane} at the unit level to see
  * that the various keyboards work as expected.
  */
+// DLC NOW ask around -- does wylie have the ambiguity edge over ACIP because l+ta is not legal wylie (only lta is)?
 public class DuffPaneTest extends TestCase {
     /** A DuffPane that uses THDL's extended Wylie keyboard: */
     private DuffPane dp;
@@ -186,9 +187,15 @@ public class DuffPaneTest extends TestCase {
         ensureKeysGiveCorrectWylie("b.lasd",
                                    "balasda");
 
+        ensureKeysGiveCorrectWylie("b.luHna");
+
+        ensureKeysGiveCorrectWylie("b.lA-iMg");
+
+        ensureKeysGiveCorrectWylie("blA-iMg");
+
         ensureKeysGiveCorrectWylie("b.lag");
         ensureKeysGiveCorrectWylie("blg",
-                                   "b.lga"); // LOW-PRIORITY FIXME: blga is not ambiguous; we're disambiguating without good reason
+                                   "blga");
 
         ensureKeysGiveCorrectWylie("b.las",
                                    "bals");
@@ -199,7 +206,10 @@ public class DuffPaneTest extends TestCase {
 
         ensureKeysGiveCorrectWylie("b.rag");
         ensureKeysGiveCorrectWylie("brg",
-                                   "b.rga"); // LOW-PRIORITY FIXME: brga is not ambiguous; we're disambiguating without good reason
+                                   "brga");
+
+        ensureKeysGiveCorrectWylie("b.rtan", "brtan");
+        ensureKeysGiveCorrectWylie("brtan");
 
         ensureKeysGiveCorrectWylie("bars");
         ensureKeysGiveCorrectWylie("b.rs",
@@ -321,8 +331,7 @@ public class DuffPaneTest extends TestCase {
         ensureKeysGiveCorrectWylie("hi.M ho.M he.M hu.M",
                                    "hiM hoM heM huM");
 
-        ensureKeysGiveCorrectWylie("brgwU-imd",
-                                   "b.rgwU-imd"); // LOW-PRIORITY FIXME: brgwU-imd is not ambiguous; we're disambiguating without good reason
+        ensureKeysGiveCorrectWylie("brgwU-imd");
 
         ensureKeysGiveCorrectWylie("pad+me");
         ensureKeysGiveCorrectWylie("pad+men+b+h+yuM");

@@ -955,6 +955,21 @@ public static boolean isVowel(String s) {
 		return keyboard.isVowel(s);
 }
 
+/** By example, this returns true for le, lA-i, lA-iM, luM, l-i, etc.,
+    and for l, but false for lc, lj, lt, ld, lp, lb, and lh.  Thus,
+    this is useful for seeing if something is truly disambiguous,
+    because blta is unambiguous but blan/b.lan is ambiguous. */
+private static boolean isAmbHelper(String y) {
+    // Wylie vowels are 1 or two (Roman) characters long, so this
+    // works.  But we make it work for three- and four-character long
+    // vowels, just in case someone adds them.
+    return (y.length() == 1
+            || isWylieVowel(y.substring(1,2))
+            || (y.length() > 2 && isWylieVowel(y.substring(1,3)))
+            || (y.length() > 3 && isWylieVowel(y.substring(1,4)))
+            || (y.length() > 4 && isWylieVowel(y.substring(1,5))));
+}
+
 /**
 * Checks to see if the concatenation of x and y is ambiguous in
 * Extended Wylie.  gya and g.ya, bla and b.la, and bra and b.ra are
@@ -974,12 +989,12 @@ public static boolean isAmbiguousWylie(String x, String y) {
     // tibetan Z should get you X==Z in a perfect world), and it
     // doesn't confuse the legal stuff.
 
-	return (("g".equals(x) && y.startsWith("y"))
-            || ("g".equals(x) && y.startsWith("w"))
-            || ("d".equals(x) && y.startsWith("w"))
-            || ("d".equals(x) && y.startsWith("z")) // d.za, d.zha
-            || ("b".equals(x) && y.startsWith("l"))
-            || ("b".equals(x) && y.startsWith("r")));
+	return (("g".equals(x) && y.startsWith("y") && isAmbHelper(y))
+            || ("g".equals(x) && y.startsWith("w") && isAmbHelper(y))
+            || ("d".equals(x) && y.startsWith("w") && isAmbHelper(y))
+            || ("d".equals(x) && y.startsWith("z") && isAmbHelper(y))
+            || ("b".equals(x) && y.startsWith("l") && isAmbHelper(y))
+            || ("b".equals(x) && y.startsWith("r") && isAmbHelper(y)));
 }
 
 /**
