@@ -1,519 +1,605 @@
 Attribute VB_Name = "NewMacros"
+Dim para As Paragraph
+Dim sty As Style
+Dim styName, prevSty, ch, temp, stylesUsed, statusStr, outDoc(3000) As String
+Dim c, l, m, n, nbeg, nend, index, docEnd, level, listLevel, totalParas, tableEnd As Long
+Dim isFront, bodyOpen, useDiv1, listOpen, lgOpen, citOpen, speechOpen, tableOpen As Boolean
 
-Sub conversionHelp()
-    Dim msgTitle, msg As String
+Sub convert()
+Attribute convert.VB_Description = "Macro recorded 3/11/2004 by Than Garson"
+Attribute convert.VB_ProcData.VB_Invoke_Func = "Project.NewMacros.Macro1"
+'
+' Convert Macro
+' Macro created 3/11/2004 by Than Garson
+'
+    ' Switch to normal view
+    switchtonormal
     
-    msgTitle = "Conversion Macro Help"
-    msg = "The shortcut keys for the conversion macros are as follows:" & vbCrLf & _
-        vbTab & "Convert Document to XML:" & vbTab & "    Ctrl + Alt + c" & vbCrLf & _
-        vbTab & "Convert Italics to Specific Styles: Alt + i" & vbCrLf & _
-        vbTab & "Display This Help Message: " & vbTab & "    Alt + Shift + ?"
-    res = MsgBox(msg, vbOKOnly, msgTitle)
-        
-End Sub
-
-Sub convertToXML()
-    Dim teiHead, flName, temp, writepath As String
-    Dim rng As Range
-    
-    ActiveDocument.Endnotes.Convert
-    writepath = ThisDocument.Path
-    
-    ' Replace entities
-    Application.StatusBar = "Proceessing document: replacing entities!"
-    replaceEntities
-    
-    ' Do Metadata
-    Application.StatusBar = "Proceessing document: converting metadata!"
-    teiHead = doMetadata
-    
-    ' Deal with italicized commas
-    Application.StatusBar = "Proceessing document: de-italicizing commas!"
-    unItalicizeCommas
-    
-    'Deal with tables
-    Application.StatusBar = "Processing document: processing tables!"
-    doTables
-    
-    ' Do specific character styles
-    Application.StatusBar = "Proceessing document: processing character styles!"
-    doCharacterStyles
-    
-    ' Do the Links
-    Application.StatusBar = "Proceessing document: processing links!"
-    doLinks
-    
-    ' Do FootNotes
-    Application.StatusBar = "Proceessing document: processing foot- or endnotes!"
-    doFootNotes
-    doNoteTags
-    
-    ' Do the Italics Bold and Underline
-    Application.StatusBar = "Proceessing document: marking bold, italic, and underline!"
-    doItalicsBoldUnderline
-    
-    ' Do the Paragraph tags
-    doParas
-    
-    ' Do the Divs
-    Application.StatusBar = "Proceessing document: marking outline divisions!"
-    doDivs
-    
-    ' Clean up
-    replaceAllEmptyP
-    
-    Application.StatusBar = "Proceessing document: finalizing markup!"
-    Selection.HomeKey unit:=wdStory
-    Selection.TypeParagraph
-    Selection.MoveUp unit:=wdLine, Count:=1
-    Selection.Style = "Normal,no"
-    Selection.TypeText Text:=teiHead
-    Selection.EndKey unit:=wdStory
-    
-    Selection.TypeText Text:="</body></text></TEI.2>"
-    Selection.EndKey unit:=wdStory, Extend:=wdExtend
-    Selection.Cut
-    
-    Selection.HomeKey unit:=wdStory
-    MsgBox ("Conversion complete! Copy the results and paste into your XML editor!")
-    
-    Exit Sub
-
-End Sub
-Sub doDivs()
-    Dim tagName, closeTag, lastTag, headNum, styleName  As String
-    Dim cnt, ind1, ind2, lvl, lastLvl, numOfLevels As Integer
-    
-    numOfLevels = findHighestHeader()
-    ActiveWindow.ActivePane.View.Type = wdMasterView
-    ActiveWindow.View.ShowHeading 9
-    cnt = ActiveWindow.ActivePane.Document.Paragraphs.Count - 1
-    With Selection
-        .HomeKey unit:=wdStory
-        lastLvl = 0
-        For n = 1 To cnt
-            styleName = .Style
-            If InStr(styleName, "Head") > 0 Then
-                ind1 = InStr(styleName, " ") + 1
-                ind2 = InStr(styleName, ",") - ind1
-                headNum = Mid(styleName, ind1, ind2)
-                lvl = Val(headNum)
-                If numOfLevels < 8 Then
-                    tagName = "div" & headNum
-                    closeTag = tagName
-                Else:
-                    tagName = "div n=""" & lvl & """"
-                    closeTag = "div"
-                End If
-                If lastLvl = lvl Then
-                    .TypeText ("</" & closeTag & ">")
-                ElseIf lastLvl > lvl Then
-                    For lvNum = lastLvl To lvl Step -1
-                       If numOfLevels < 8 Then
-                            .TypeText ("</div" & lvNum & ">")
-                       Else:
-                            .TypeText ("</div>")
-                       End If
-                    Next lvNum
-                End If
-                lastLvl = lvl
-                .TypeText ("<" & tagName & "><head>")
-                If n < cnt Then
-                    .MoveDown unit:=wdParagraph, Count:=1
-                    .MoveLeft unit:=wdCharacter, Count:=1
-                Else
-                    .EndKey unit:=wdStory
-                End If
-                .TypeText ("</head>")
-             End If
-             .MoveDown unit:=wdParagraph, Count:=1
-        Next n
-        ActiveWindow.ActivePane.View.Type = wdNormalView
-        .EndKey unit:=wdStory
-        For n = lvl To 1 Step -1
-            If numOfLevels < 8 Then
-                .TypeText ("</div" & n & ">")
-            Else
-                .TypeText ("</div>")
-            End If
-        Next n
-    End With
-    
-    
-End Sub
-Function findHighestHeader() As Integer
-    Dim para As Paragraph
-    Dim lvl, highest As Integer
-    highest = 1
-    For Each para In ActiveDocument.Paragraphs
-        styleName = para.Style
-        If InStr(styleName, "Head") > 0 Then
-            ind1 = InStr(styleName, " ") + 1
-            ind2 = InStr(styleName, ",") - ind1
-            headNum = Mid(styleName, ind1, ind2)
-            lvl = Val(headNum)
-            If lvl > highest Then highest = lvl
-        End If
-    Next para
-    findHighestHeader = highest
-End Function
-Sub doParas()
-
-    Dim inList, inVerse As Boolean
-    Dim rng As Range
-    Dim openTag, endTag, tagName As String
-    Dim ct As Integer
-    
-    inList = False: inVerse = False
-    Selection.HomeKey unit:=wdStory
-    
-    ct = ActiveDocument.Paragraphs.Count
-
-    For n = 1 To ct
-        Set para = ActiveDocument.Paragraphs(n)
-        Application.StatusBar = "Proceessing document: marking paragraphs (" & n & ")!"
-        If InStr(para.Style, "Heading") > 0 Then GoTo 50
-        If isTable(para) Then GoTo 50
-        tagName = "": openTag = "": endTag = ""
-        Select Case para.Style
-        
-            Case "List Number,ln"
-               If inVerse Then
-                  inVerse = False
-                  openTag = "</lg>"
-               End If
-               If Not inList Then
-                  openTag = openTag & "<list rend=""1"">"
-                  inList = True
-               End If
-               tagName = "item"
-               
-            Case "List Bullet,lb"
-               If inVerse Then
-                  inVerse = False
-                  openTag = "</lg>"
-               End If
-               If Not inList Then
-                  openTag = openTag & "<list rend=""bullet"">"
-                  inList = True
-               End If
-               tagName = "item"
-               
-            Case "Citation Prose,cp"
-               If inList Then
-                  openTag = "</list>"
-                  inList = False
-               End If
-               If inVerse Then
-                  inVerse = False
-                  openTag = "</lg>"
-               End If
-               tagName = "q"
-               
-            Case "Citation Verse 1,cv1"
-               If inList Then
-                  openTag = "</list>"
-                  inList = False
-               End If
-               If Not inVerse Then
-                  openTag = openTag & "<lg>"
-                  inVerse = True
-               End If
-               tagName = "l"
-               
-            Case "Citation Verse 2,cv2"
-               If inList Then
-                  openTag = "</list>"
-                  inList = False
-               End If
-               If Not inVerse Then
-                  openTag = openTag & "<lg>"
-                  inVerse = True
-               End If
-               tagName = "l"
-               
-            Case Else
-               If inList Then
-                  openTag = "</list>"
-                  inList = False
-               ElseIf inVerse Then
-                  openTag = "</lg>"
-                  inVerse = False
-               End If
-               tagName = "p"
-         End Select
-
-        Set rng = ActiveDocument.Paragraphs(n).Range
-        rng.StartOf
-        rng.Text = openTag & "<" & tagName & ">"
-  
-        Set rng = ActiveDocument.Paragraphs(n).Range
-        rng.End = rng.End - 1
-        rng.EndOf
-        rng.Text = "</" & tagName & ">" & endTag
-        ActiveDocument.Paragraphs(n).Style = "Normal,no"
-  
-50    Next n
-
-End Sub
-Function isTable(ByVal para As Paragraph) As Boolean
-    Dim tct, pst, pend, tst, tend As Integer
-    pst = para.Range.Start
-    pend = para.Range.End
-    tct = ActiveDocument.Tables.Count
-    For n = 1 To tct
-        With ActiveDocument.Tables(n)
-            tst = .Range.Start
-            tend = .Range.End
-        End With
-        If pst >= tst And pst <= tend Then
-            isTable = True
-            Exit Function
-        End If
-        If pend >= tst And pend <= tend Then
-            isTable = True
-            Exit Function
-        End If
+    ' Initialize variables
+    For n = 0 To 3000
+        outDoc(n) = ""
     Next n
-    isTable = False
-End Function
-Sub doTables()
-    Dim tble As Table
-    Dim wrkCell As Cell
-    Dim outStr As String
-    Dim rwInd As Integer
-    Dim insertRng As Range
+    c = 0
+    level = 0
+    tableEnd = -1
+    isFront = False: listOpen = False: lgOpen = False: citOpen = False:
+    speechOpen = False: bodyOpen = False: tableOpen = False
+    prevSty = ""
     
-    While ActiveDocument.Tables.Count > 0
-        outStr = "<list rend=""table""><item>"
-        Set tble = ActiveDocument.Tables.Item(1)
-        Set wrkCell = tble.Cell(1, 1)
-        rwInd = 1
-        While Not (wrkCell Is Nothing)
-            If wrkCell.Row.Index > rwInd Then
-                outStr = outStr & "</item><item>"
-            End If
-            rwInd = wrkCell.RowIndex
-            outStr = outStr & addToTable(wrkCell)
-            Set wrkCell = wrkCell.Next
-        Wend
-        outStr = outStr & "</item></list>"
-        Set insertRng = tble.Range
-        insertRng.Collapse wdCollapseStart
-        tble.Delete
-        insertRng.Select
-        Selection.TypeText Text:=outStr
-    Wend
-End Sub
-Function addToTable(ByVal cl As Cell) As String
-    Dim rng As Range
-    Set rng = cl.Range
-    rng.End = rng.End - 1
-    addToTable = "<rs>" & rng.Text & "</rs>"
-End Function
-Sub doFootNotes()
-Attribute doFootNotes.VB_Description = "Macro recorded 8/12/2003 by Than G"
-Attribute doFootNotes.VB_ProcData.VB_Invoke_Func = "Project.NewMacros.FootnoteTest"
-'
-' FootnoteTest Macro
-' Macro recorded 8/12/2003 by Than G
-'
-    Dim fn As Footnote
-    Dim n, fnNum As Integer
-    Dim rng As Range
+    ' Find out how deep headers go and set useDiv1 variable appropriately
+    stylesUsed = getStylesUsed()
+    If InStr(stylesUsed, "Heading 8") = 0 Then
+        useDiv1 = True
+    Else:
+        useDiv1 = False
+    End If
     
-    ActiveDocument.Endnotes.Convert
-    fnNum = ActiveDocument.Footnotes.Count
-    If fnNum > 0 Then
-        For n = 1 To fnNum
-            doFootnoteItalEtc (n)
-            Set fn = ActiveDocument.Footnotes.Item(n)
-            fn.Range.Select
-            Selection.Text = Replace(Selection.Text, Chr(13), "<!--[newLine]-->")
-            Selection.Copy
-            ActiveWindow.ActivePane.Close
-            With Selection
-                .GoTo what:=wdGoToFootnote, Which:=wdGoToFirst, Count:=n, Name:=""
-                .TypeText Text:="~"
-                .Paste
-                .TypeText Text:="^"
-                .MoveRight unit:=wdCharacter, Count:=1, Extend:=wdExtend
-            End With
-            
-        Next n
+    ' Do the metadata table
+    temp = doMetadata
+    index = InStr(temp, "<body>") - 1
+    temp = Left(temp, index)
+    outDoc(c) = temp & vbCrLf
+    
+    ' Check for unstylized italic usage
+    If Not (italicsDone) Then
+        convertItalics
+        ItalicOptions.Hide
+    End If
+
+    ' Find Doc end and total paragraphs
+    docEnd = ActiveDocument.Range.End
+    totalParas = ActiveDocument.Paragraphs.Count
+    
+    ' Iterate through paragraphs
+    For Each para In ActiveDocument.Paragraphs
+        c = c + 1
+        statusStr = Str(Int(c / totalParas * 100)) & "% of document processed!"
+        Application.StatusBar = statusStr
+        Set sty = para.Style
+        styName = sty.NameLocal
         
-        n = 1
-        Do
-            ActiveDocument.Footnotes.Item(1).Delete
-            n = n + 1
-            If n > fnNum Then Exit Do
-        Loop While ActiveDocument.Footnotes.Count > 0
+        ' is it a header?
+        If InStr(styName, "Heading") > 0 Then
+            doHeaders
+            
+        ElseIf tableOpen Then
+            
+            If para.Range.End = tableEnd Then
+                tableOpen = False
+                tableEnd = -1
+            End If
+            
+        ElseIf isTable(para.Range) Then
+            
+            tableEnd = doTable
+            tableOpen = True
+            
+        ' otherwise do as regular paragrph (doParaStyles)
+        Else:
+            doParaStyles
+        End If
+        
+        ' Set previous style variable
+        prevSty = styName
+    Next para
+    
+    Selection.HomeKey unit:=wdStory
+    Selection.Paste
+    ' Close any open elements
+    styName = "Normal"
+    c = c + 1
+    outDoc(c) = closeStyle & vbCrLf
+    
+    ' Iterate back through levels to close the div elements
+    For m = level To 0 Step -1
+        If useDiv1 = True Then
+            outDoc(c) = outDoc(c) & "</div" & Format(m + 1) & ">" & vbCrLf
+        Else:
+            outDoc(c) = outDoc(c) + "</div><!--Close of level: " & Format(m + 1) & "//-->" & vbCrLf
+        End If
+    Next m
+    
+    ' Close out the XML document and print it in a new word doc
+    If back Then
+        outDoc(c) = outDoc(c) + "</back>"
+    Else:
+        outDoc(c) = outDoc(c) + "</body>"
+    End If
+    outDoc(c) = outDoc(c) + "</text></TEI.2>"
+    
+    Documents.Add DocumentType:=wdNewBlankDocument
+    For n = 0 To c
+        Selection.TypeText Text:=outDoc(n)
+    Next n
+
+    
+End Sub
+Sub doHeaders()
+
+    ' Front Sections
+    outDoc(c) = outDoc(c) & closeStyle
+    If InStr(sty, "Heading1_Front") > 0 Then
+        outDoc(c) = outDoc(c) & "<front>" & vbCrLf & "<head>" & iterateRange(para.Range) & "</head>" & vbCrLf
+        isFront = True
+        level = 0
+        
+    ' Body Sections
+    ElseIf InStr(sty, "Heading1_Body") > 0 Then
+        ' Close out any open front sections and the front
+        If isFront = True Then
+            For m = level To 0 Step -1
+                If useDiv1 = True Then
+                    outDoc(c) = outDoc(c) & "</div" & Format(m + 1) & ">" & vbCrLf
+                Else:
+                    outDoc(c) = outDoc(c) & "</div>" & vbCrLf
+                End If
+            Next m
+            outDoc(c) = outDoc(c) & "</front>" & vbCrLf
+            front = False
+            level = 0
+        End If
+        ' Add body element
+        outDoc(c) = outDoc(c) & "<body><div1>" & vbCrLf & "<head>" & iterateRange(para.Range) & "</head>" & vbCrLf
+        bodyOpen = True
+        
+    ' Back sections
+    ElseIf InStr(sty, "Heading1_Back") > 0 Then
+        'close out open body sections and body
+        For m = level To 0 Step -1
+            If useDiv1 = True Then
+                outDoc(c) = outDoc(c) & "</div" & Format(m + 1) & ">" & vbCrLf
+            Else:
+                outDoc(c) = outDoc(c) & "</div><!--Close of level: " & Str(m + 1) & "//-->" & vbCrLf
+            End If
+        Next m
+        'add bac sections
+        outDoc(c) = outDoc(c) & "</body>" & vbCrLf & "<back>" & vbCrLf
+        
+    ' Do Divs within the body using the useDiv1 boolean to determine which kind of div to enter
+    ElseIf InStr(sty, "Heading") > 0 Then
+        If Not (isFront) And Not (bodyOpen) Then
+            outDoc(c) = outDoc(c) & "<body>" & vbCrLf
+            bodyOpen = True
+        End If
+        index = InStr(styName, ",")
+        If index > 9 Then
+            temp = Mid(styName, 9, (index - 9))
+            l = Int(temp)
+            If (l - 1) < level Then
+                For m = level To (l - 1) Step -1
+                    If useDiv1 = True Then
+                        outDoc(c) = outDoc(c) & "</div" & Format(m + 1) & ">" & vbCrLf
+                    Else:
+                        outDoc(c) = outDoc(c) & "</div><!--Close of level: " & Format(m + 1) & "//-->" & vbCrLf
+                    End If
+                Next m
+                level = l - 1
+                If useDiv1 = True Then
+                    outDoc(c) = outDoc(c) & "<div" & Format(l) & ">"
+                Else:
+                    outDoc(c) = outDoc(c) & "<div n=""" & Format(l) & """>"
+                End If
+                outDoc(c) = outDoc(c) & vbCrLf & "<head>" & iterateRange(para.Range) & "</head>" & vbCrLf
+            ElseIf (l - 1) = level Then
+                If useDiv1 = True Then
+                    If level > 0 Then outDoc(c) = outDoc(c) & "</div" & Format(l) & ">"
+                    outDoc(c) = outDoc(c) & vbCrLf & "<div" & Format(l) & ">"
+                Else:
+                    If level > 0 Then outDoc(c) = outDoc(c) & "</div><!--Close of level: " & Format(l) & "//-->"
+                    outDoc(c) = outDoc(c) & vbCrLf & "<div n=""" & Format(l) & """>"
+                End If
+                outDoc(c) = outDoc(c) & vbCrLf & "<head>" & iterateRange(para.Range) & "</head>" & vbCrLf
+            Else:
+                level = level + 1
+                If useDiv1 = True Then
+                    outDoc(c) = outDoc(c) & "<div" & Format((level + 1)) & ">"
+                Else:
+                    outDoc(c) = outDoc(c) & "<div n=""" & Format((level + 1)) & """>"
+                End If
+                outDoc(c) = outDoc(c) & vbCrLf & "<head>" & iterateRange(para.Range) & "</head>" & vbCrLf
+            End If
+        End If
     End If
 End Sub
 
-Sub doLinks()
-    Dim hyl As Hyperlink
-    Dim n, hyNum As Integer
-    Dim rng As Range
-    Dim addr As String
+Sub doParaStyles()
+    outDoc(c) = outDoc(c) & closeStyle()
+    ' Normal style becomes a <p>
+    If InStr(styName, "Normal") > 0 Or styName = "Paragraph,pr" Then
+        outDoc(c) = outDoc(c) & "<p>" & vbCrLf
+        outDoc(c) = outDoc(c) & iterateRange(para.Range) & vbCrLf
+        outDoc(c) = outDoc(c) & "</p>" & vbCrLf
     
-    hyNum = ActiveDocument.Hyperlinks.Count
+    ' If the style is a citation style and a <q> element
+    ElseIf InStr(styName, "Citation") > 0 Then
+        If Not (citOpen) Then
+            outDoc(c) = outDoc(c) & "<q>" & vbCrLf
+            citOpen = True
+        End If
+        If styName = "Citation List Bullet,clb" Then
+            If Not (prevSty = "Citation List Bullet,clb") Then
+                outDoc(c) = outDoc(c) & "<list rend=""bullet"">"
+                listOpen = True
+            Else:
+                outDoc(c) = outDoc(c) & "</item>" & vbCrLf
+            End If
+            outDoc(c) = outDoc(c) & "<item>" & iterateRange(para.Range)
+        
+        ElseIf styName = "Citation List Number,cln" Then
+            If Not (prevSty = "Citation List Number,cln") Then
+                outDoc(c) = outDoc(c) & "<list rend=""1"">"
+                listOpen = True
+            Else:
+                outDoc(c) = outDoc(c) & "</item>" & vbCrLf
+            End If
+            outDoc(c) = outDoc(c) & "<item>" & iterateRange(para.Range)
+            
+        ElseIf styName = "Citation Prose Nested,cpn" Then
+            outDoc(c) = outDoc(c) & "<q>" & iterateRange(para.Range) & "</q>" & vbCrLf
+            
+        ElseIf styName = "Citation Prose,cp" Then
+            outDoc(c) = outDoc(c) & "<p>" & iterateRange(para.Range) & "</p>" & vbCrLf
+            
+        ElseIf styName = "Citation Verse 1,cv1" Then
+            If lgOpen Then outDoc(c) = outDoc(c) & "</lg>"
+            outDoc(c) = outDoc(c) & "<lg><l>" & iterateRange(para.Range) & "</l>" & vbCrLf
+            lgOpen = True
+            
+        ElseIf styName = "Citation Verse 2,cv2" Then
+            outDoc(c) = outDoc(c) & "<l>" & iterateRange(para.Range) & "</l>" & vbCrLf
+        
+        End If
+        
+    ' Do lists
+    ElseIf InStr(styName, "List") > 0 Then
+        If Not (listOpen) Then
+            doNewList
+            listOpen = True
+            listLevel = 1
+            outDoc(c) = outDoc(c) & iterateRange(para.Range) & vbCrLf
+            
+        ElseIf Not (prevSty = styName) Then
+            doNestedLists
+
+        Else:
+            outDoc(c) = outDoc(c) & "</item><item>" & iterateRange(para.Range) & vbCrLf
+        End If
+        
+    ElseIf InStr(styName, "Speech") > 0 Then
+        If Not (speechOpen) Then
+            If InStr(styName, "Inline") > 0 Then
+                outDoc(c) = outDoc(c) & "<quote rend=""inline"">" & vbCrLf & iterateRange(para.Range) & "</quote>" & vbCrLf
+            ElseIf InStr(styName, "Verse") > 0 Then
+                outDoc(c) = outDoc(c) & "<quote>" & vbCrLf & "<lg>" & vbCrLf & "<l>" & iterateRange(para.Range) & "</l>" & vbCrLf
+                lgOpen = True
+            Else:
+                outDoc(c) = outDoc(c) & "<quote>" & vbCrLf & "<p>" & vbCrLf & iterateRange(para.Range) & "</p>" & vbCrLf
+            End If
+            speechOpen = True
+        Else:
+            If InStr(styName, "Verse 1") > 0 Then
+                If lgOpen Then outDoc(c) = outDoc(c) & "</lg>"
+                outDoc(c) = outDoc(c) & "<lg>" & vbCrLf & "<l>" & iterateRange(para.Range) & "</l>" & vbCrLf
+                lgOpen = True
+            ElseIf InStr(styName, "Verse 2") > 0 Then
+                outDoc(c) = outDoc(c) & "<l>" & iterateRange(para.Range) & "</l>" & vbCrLf
+            Else:
+                outDoc(c) = outDoc(c) & "<p>" & vbCrLf & iterateRange(para.Range) & "</p>" & vbCrLf
+            End If
+        End If
+    ElseIf InStr(styName, "Verse") > 0 Then
     
-    For n = 1 To hyNum
-        Set hyl = ActiveDocument.Hyperlinks.Item(n)
-        addr = hyl.Address
-        Set rng = hyl.Range
-        With rng.Font
-            .Italic = False
-            .Bold = False
-            .Underline = wdUnderlineNone
-        End With
-        rng.StartOf
-        rng.Text = "<xref n=""" & addr & """>"
-        Set rng = hyl.Range
-        rng.End = rng.End - 1
-        rng.EndOf
-        rng.Text = "</xref>"
+        If InStr(styName, "Verse 1") > 0 Then
+            If lgOpen Then outDoc(c) = outDoc(c) & "</lg>"
+            outDoc(c) = outDoc(c) & "<lg>" & vbCrLf & "<l>" & iterateRange(para.Range) & "</l>" & vbCrLf
+            lgOpen = True
+        ElseIf InStr(styName, "Verse 2") > 0 Then
+            outDoc(c) = outDoc(c) & "<l>" & iterateRange(para.Range) & "</l>" & vbCrLf
+        End If
+        
+    End If
+    
+End Sub
+Function doTable() As Long
+    Dim tableNum As Integer
+    Dim theTable As Table
+    Dim cellText As String
+    
+    For tableNum = 1 To ActiveDocument.Tables.Count
+        If para.Range.Start >= ActiveDocument.Tables(tableNum).Range.Start Then Exit For
+    Next tableNum
+    Set theTable = ActiveDocument.Tables(tableNum)
+    outDoc(c) = outDoc(c) & vbCrLf
+    c = c + 1
+    outDoc(c) = "<list rend=""table"">" & vbCrLf
+    For r = 1 To theTable.Rows.Count
+        outDoc(c) = outDoc(c) & "<item>"
+        For ct = 1 To theTable.Columns.Count
+            cellText = Replace(theTable.Cell(r, ct).Range.Text, Chr(13), "")
+            cellText = Replace(cellText, Chr(7), "")
+            outDoc(c) = outDoc(c) & "<rs>" & cellText & "</rs>"
+        Next ct
+        outDoc(c) = outDoc(c) & "</item>" & vbCrLf
+        If r Mod 5 = 0 Then c = c + 1
+    Next r
+    outDoc(c) = outDoc(c) & "</list>" & vbCrLf
+            
+    doTable = theTable.Range.End
+    
+End Function
+Function closeStyle()
+    If lgOpen And InStr(styName, "Verse") = 0 Then
+        lgOpen = False
+        closeStyle = "</lg>" & vbCrLf
+    
+    ElseIf listOpen And InStr(styName, "List") = 0 Then
+        listOpen = False
+        If InStr(prevSty, "5") Then
+            closeStyle = "</item></list></item></list></item></list></item></list></item></list>" & vbCrLf
+        ElseIf InStr(prevSty, "4") Then
+            closeStyle = "</item></list></item></list></item></list></item></list>" & vbCrLf
+        ElseIf InStr(prevSty, "3") Then
+            closeStyle = "</item></list></item></list></item></list>" & vbCrLf
+        ElseIf InStr(prevSty, "2") Then
+            closeStyle = "</item></list></item></list>" & vbCrLf
+        Else:
+            closeStyle = "</item></list>" & vbCrLf
+        End If
+    End If
+    If citOpen And InStr(styName, "Citation") = 0 Then
+        citOpen = False
+        closeStyle = closeStyle & "</q>" & vbCrLf
+    End If
+    If speechOpen And InStr(styName, "Speech") = 0 Then
+        speechOpen = False
+        closeStyle = closeStyle & "</quote>" & vbCrLf
+    End If
+        
+End Function
+Sub doNestedLists()
+    Dim prevListNum, listNum As Integer
+    
+    prevListNum = Val(Right(prevSty, 1))
+    listNum = Val(Right(styName, 1))
+    If listNum = 0 Or Not IsNumeric(listNum) Then listNum = 1
+    
+    If prevListNum > listNum Then
+        For ln = prevListNum To (listNum + 1) Step -1
+            outDoc(c) = outDoc(c) & "</item></list>"
+        Next ln
+        outDoc(c) = outDoc(c) & "</item>" & vbCrLf & "<item>" & iterateRange(para.Range) & vbCrLf
+    Else:
+        If InStr(styName, "Bullet") > 0 Then
+            outDoc(c) = outDoc(c) & "<list rend=""bullet""><item>" & iterateRange(para.Range) & vbCrLf
+        Else:
+            outDoc(c) = outDoc(c) & "<list rend=""1""><item>" & iterateRange(para.Range) & vbCrLf
+        End If
+    End If
+End Sub
+Sub doNewList()
+    If styName = "List Bullet Tibetan,lbt" Then
+        outDoc(c) = outDoc(c) & "<list rend=""bullet"" lang=""tib""><item>"
+    ElseIf styName = "List Bullet,lb" Then
+        outDoc(c) = outDoc(c) & "<list rend =""bullet""><item>"
+    ElseIf styName = "List Numbered,ln" Then
+        outDoc(c) = outDoc(c) & "<list rend =""1""><item>"
+    Else:
+        outDoc(c) = outDoc(c) & "<list rend =""no bull""><item>"
+    End If
+End Sub
+Function iterateRange(ByVal rng)
+    Dim tempRng, char1 As Range
+    Dim temp, closeTag, currStyle, outStr As String
+    Dim isItalics, isBold, isUnderline As Boolean
+    
+    isItalics = False: isBold = False: isUnderline = False
+    currStyle = styName
+    For n = rng.Start To rng.End - 1
+        If n = docEnd Then Exit For
+        Set char1 = ActiveDocument.Range(Start:=n, End:=(n + 1))
+                
+        If char1.Style = styName Then
+            If Not (currStyle = styName) Then
+                If currStyle = "Page Number,pgn" Then
+                    outStr = outStr & """/>"
+                Else:
+                    outStr = outStr & closeTag
+                End If
+                currStyle = styName
+                closeTag = ""
+            End If
+            outStr = outStr & char1.Text
+            
+        ElseIf char1.Style = "Footnote Reference,fr" Then
+            outStr = outStr & "<note>" & iterateNote(char1.Footnotes(1).Range) & "</note>"
+        Else:
+            If char1.Style = currStyle Then
+                outStr = outStr & char1.Text
+            ElseIf char1.Style = "Page Number,pgn" Then
+                outStr = outStr & "<milestone unit=""page"" n=""" & char1.Text
+                currStyle = char1.Style
+            Else:
+                outStr = outStr & closeTag
+                temp = getElement(char1.Style)
+                closeTag = Mid(temp, InStr(temp, ">") + 1)
+                outStr = outStr & Left(temp, InStr(temp, ">")) & char1.Text
+                currStyle = char1.Style
+            End If
+        End If
+        If n Mod 100 = 0 Then
+            statusStr = statusStr & " !"
+            Application.StatusBar = statusStr
+        End If
     Next n
-
-End Sub
-
-Sub doItalicsBoldUnderline()
-    Dim rngToSearch, srchResult, wrng As Range
-    Dim fcount, addOn, y, max As Integer
-    Dim doingFeet As Boolean
-
-    ' Do the body of the text now
-    Set rngToSearch = ActiveDocument.Range
-    Set srchResult = rngToSearch.Duplicate
-    max = 100
+    iterateRange = outStr & closeTag
+End Function
+Function iterateNote(ByVal rng As Range)
+    Dim tempRng, char1 As Range
+    Dim temp, closeTag, currStyle, outStr As String
+    Dim ct As Integer
+    Dim pnOpen As Boolean
     
-    ' Search and Replace ITALICS
-    y = 0
-    Do
-        y = y + 1
-        With srchResult.Find
-            .ClearFormatting
-            .Format = True
-            .Text = ""
-            .Font.Italic = True
-            .Wrap = wdFindStop
-            .Forward = True
-            .Execute
-        End With
-        
-        If Not srchResult.Find.Found Then Exit Do
-        
-        Set wrng = srchResult.Duplicate
-        addOn = 1
-        If wrng.Style = "Normal,no" Or InStr(wrng.Style, "List") > 0 Then
-            If Not isCharStyle(wrng) Then
-                Set wrng = fixRange(wrng)
-                wrng.Font.Italic = False
-                wrng.StartOf
-                wrng.Text = "<hi rend=""weak"">"
-                Set wrng = srchResult.Duplicate
-                wrng.End = wrng.End - 1
-                wrng.EndOf
-                wrng.Text = "</hi>"
-                wrng.Font.Italic = False
-                addOn = 5
+    currStyle = styName
+    pnOpen = False
+    
+    For ct = 1 To rng.Characters.Count
+
+        Set char1 = rng.Characters(ct)
+        If char1.Style = styName Then
+            If Not (currStyle = styName) Then
+                outStr = outStr & closeTag
+                currStyle = styName
+                closeTag = ""
+            End If
+            outStr = outStr & char1.Text
+            
+        Else:
+            If char1.Style = currStyle Then
+                outStr = outStr & char1.Text
+            ElseIf char1.Style = "Page Number,pgn" Then
+                outStr = outStr & "<milestone unit=""page"" n=""" & char1.Text
+                currStyle = char1.Style
+                closeTag = """/>"
+            Else:
+                outStr = outStr & closeTag
+                temp = getElement(char1.Style)
+                closeTag = Mid(temp, InStr(temp, ">") + 1)
+                outStr = outStr & Left(temp, InStr(temp, ">")) & char1.Text
+                currStyle = char1.Style
             End If
         End If
-        srchResult.Start = wrng.End + addOn
-        srchResult.End = rngToSearch.End
-        If y > 100 Then Exit Do
-    Loop Until Not srchResult.Find.Found
-    
-    '  Search and Replace BOLD
-    y = 0
-    Set srchResult = rngToSearch.Duplicate
-    Do
-        y = y + 1
-        With srchResult.Find
-            .ClearFormatting
-            .Format = True
-            .Text = ""
-            .Font.Bold = True
-            .Wrap = wdFindStop
-            .Forward = True
-            .Execute
-        End With
-        
-        If Not srchResult.Find.Found Then Exit Do
-        
-        Set wrng = srchResult.Duplicate
-        addOn = 1
-        If wrng.Style = "Normal,no" Or InStr(wrng.Style, "List") > 0 Then
-            If Not isCharStyle(wrng) Then
-                Set wrng = fixRange(wrng)
-                wrng.Font.Bold = False
-                wrng.StartOf
-                wrng.Text = "<hi rend=""strong"">"
-                Set wrng = srchResult.Duplicate
-                wrng.End = wrng.End - 1
-                wrng.EndOf
-                wrng.Text = "</hi>"
-                wrng.Font.Bold = False
-                addOn = 5
-            End If
+        If ct Mod 100 = 0 Then
+            statusStr = statusStr & " !"
+            Application.StatusBar = statusStr
         End If
-        srchResult.Start = wrng.End + addOn
-        srchResult.End = rngToSearch.End
-        If y > 100 Then Exit Do
-    Loop Until Not srchResult.Find.Found
+    Next ct
     
-    ' Do Underline
-    y = 0
-    Set srchResult = rngToSearch.Duplicate
-    Do
-        y = y + 1
-        With srchResult.Find
-            .ClearFormatting
-            .Format = True
-            .Text = ""
-            .Font.Underline = True
-            .Wrap = wdFindStop
-            .Forward = True
-            .Execute
-        End With
-        
-        If Not srchResult.Find.Found Then Exit Do
-        
-        Set wrng = srchResult.Duplicate
-        addOn = 1
-        If wrng.Style = "Normal,no" Or InStr(wrng.Style, "List") > 0 Then
-            If Not isCharStyle(wrng) Then
-                Set wrng = fixRange(wrng)
-                wrng.Font.Underline = wdUnderlineNone
-                wrng.StartOf
-                wrng.Text = "<hi rend=""underline"">"
-                Set wrng = srchResult.Duplicate
-                wrng.End = wrng.End - 1
-                wrng.EndOf
-                wrng.Text = "</hi>"
-                wrng.Font.Underline = wdUnderlineNone
-                addOn = 5
-            End If
-        End If
-        srchResult.Start = wrng.End + addOn
-        srchResult.End = rngToSearch.End
-        If y > 100 Then Exit Do
-    Loop Until Not srchResult.Find.Found
+    iterateNote = outStr & closeTag
+End Function
+Function getElement(ByVal chStyle) As String
     
-End Sub
-
-
+    If chStyle = "Annotations,an" Then
+        getElement = "<add n=""annotation""></add>"
+        
+    ElseIf chStyle = "Dates,dt" Then
+        getElement = "<date></date>"
+        
+    ElseIf chStyle = "Date Range,dr" Then
+        getElement = "<dateRange></dateRange>"
+        
+    ElseIf chStyle = "Doxographical-Bibliographical Category,dbc" Then
+        getElement = "<term type=""doxbibl""></term>"
+        
+    ElseIf chStyle = "Emphasis Strong,es" Then
+        getElement = "<hi rend=""strong""></hi>"
+    
+    ElseIf chStyle = "Emphasis Weak,ew" Then
+        getElement = "<hi rend=""weak""></hi>"
+    
+    ElseIf chStyle = "Lang Chinese,chi" Then
+        getElement = "<foreign lang=""chi""></foreign>"
+    
+    ElseIf chStyle = "Lang English,en" Then
+        getElement = "<foreign lang=""eng""></foreign>"
+    
+    ElseIf chStyle = "Lang Japanese,jap" Then
+        getElement = "<foreign lang=""jap""></foreign>"
+    
+    ElseIf chStyle = "Lang Korean,kor" Then
+        getElement = "<foreign lang=""kor""></foreign>"
+    
+    ElseIf chStyle = "Lang Nepali,nep" Then
+        getElement = "<foreign lang=""nep""></foreign>"
+    
+    ElseIf chStyle = "Lang Pali,pal" Then
+        getElement = "<foreign lang=""pal""></foreign>"
+    
+    ElseIf chStyle = "Lang Sanskrit,san" Then
+        getElement = "<foreign lang=""san""></foreign>"
+    
+    ElseIf chStyle = "Lang Tibetan,tib" Then
+        getElement = "<foreign lang=""tib""></foreign>"
+    
+    ElseIf chStyle = "Monuments,mm" Then
+        getElement = "<placeName n=""monument""></placeName>"
+    
+    ElseIf chStyle = "Name Buddhist  Deity,npb" Or chStyle = "Name Buddhist Deity,npb" Then
+        getElement = "<persName type=""bud_deity""></persName>"
+    
+    ElseIf chStyle = "Name generic,ng" Then
+        getElement = "<name></name>"
+    
+    ElseIf chStyle = "Name of ethnicity,noe" Then
+        getElement = "<orgName type=""ethnic""></orgName>"
+    
+    ElseIf chStyle = "Name org clan,noc" Then
+        getElement = "<orgName type=""clan""></orgName>"
+    
+    ElseIf chStyle = "Name org lineage,nol" Then
+        getElement = "<orgName type=""lineage""></orgName>"
+        
+    ElseIf chStyle = "Name organization monastery,norm" Then
+        getElement = "<orgName type=""monastery""></orgName>"
+        
+    ElseIf chStyle = "Name organization,nor" Then
+        getElement = "<orgName></orgName>"
+        
+    ElseIf chStyle = "Name Personal Human,nph" Then
+        getElement = "<persName></persName>"
+        
+    ElseIf chStyle = "Name Personal other,npo" Then
+        getElement = "<persName type=""other""></persName>"
+    
+    ElseIf chStyle = "Name Place,np" Then
+        getElement = "<placeName></placeName>"
+    
+    ElseIf chStyle = "Pages,pg" Then
+        getElement = "<num type=""pagination""></num>"
+        
+    ElseIf chStyle = "Page Number,pgn" Then
+        getElement = "<milestone unit=""page"" n=""REPLACE""/>"
+    
+    ElseIf chStyle = "Root text,rt" Then
+        getElement = "<seg type=""roottext""></seg>"
+    
+    ElseIf chStyle = "Speaker generic,sg" Then
+        getElement = "<persName type=""speaker""></persName>"
+    
+    ElseIf chStyle = "SpeakerBuddhistDeity,sb" Then
+        getElement = "<persName type=""speaker_bud_deity""></persName>"
+    
+    ElseIf chStyle = "SpeakerHuman,sh" Then
+        getElement = "<persName type=""human""></persName>"
+    
+    ElseIf chStyle = "SpeakerOther,so" Then
+        getElement = "<persName type=""other""></persName>"
+    
+    ElseIf chStyle = "Text Title Sanksrit,tts" Then
+        getElement = "<title lang=""san"" level=""m""></title>"
+    
+    ElseIf chStyle = "Text Title Tibetan,ttt" Then
+        getElement = "<title lang=""tib"" level=""m""></title>"
+    
+    ElseIf chStyle = "Text Title,tt" Then
+        getElement = "<title level=""m""></title>"
+    
+    ElseIf chStyle = "TextGroup,tg" Then
+        getElement = "<title level=""s"" type=""group""></title>"
+    
+    ElseIf chStyle = "Topical Outline,to" Then
+        getElement = "<seg type=""outline""></seg>"
+    
+    End If
+    
+End Function
 Function doMetadata() As String
-Attribute doMetadata.VB_Description = "Macro recorded 8/13/2003 by Than G"
-Attribute doMetadata.VB_ProcData.VB_Invoke_Func = "Project.NewMacros.tableaccess"
 
 '
 ' tableaccess Macro
 ' Macro recorded 8/13/2003 by Than G
 '
     Dim metaTable As Table
-    Dim inData, header As String
+    Dim inData, header, today As String
     
     Open "C:\xml\teiHeader.dat" For Input As #1
     
@@ -538,25 +624,30 @@ Attribute doMetadata.VB_ProcData.VB_Invoke_Func = "Project.NewMacros.tableaccess
     header = Replace(header, "{Editor Date}", doTrim(metaTable.Cell(6, 4)))
     header = Replace(header, "{Markup}", doTrim(metaTable.Cell(7, 2)))
     header = Replace(header, "{Markup Date}", doTrim(metaTable.Cell(7, 4)))
-    header = Replace(header, "{Journal Title}", doTrim(metaTable.Cell(3, 2)))
-    header = Replace(header, "{Editor Coll}", doTrim(metaTable.Cell(9, 2)))
-    header = Replace(header, "{Vol}", doTrim(metaTable.Cell(8, 4)))
-    header = Replace(header, "{Pages}", doTrim(metaTable.Cell(8, 6)))
-    header = Replace(header, "{Pub Place}", doTrim(metaTable.Cell(11, 2)))
-    header = Replace(header, "{Pub Per}", doTrim(metaTable.Cell(10, 2)))
-    header = Replace(header, "{Pub Date}", doTrim(metaTable.Cell(10, 4)))
-    header = Replace(header, "{Description}", doTrim(metaTable.Cell(12, 2)))
-    header = Replace(header, "{Domain URL}", doTrim(metaTable.Cell(13, 2)))
-    header = Replace(header, "{Domain Text}", doTrim(metaTable.Cell(13, 4)))
-    header = Replace(header, "{Portal URL}", doTrim(metaTable.Cell(14, 2)))
-    header = Replace(header, "{Portal Text}", doTrim(metaTable.Cell(14, 4)))
-    header = Replace(header, "{Project URL}", doTrim(metaTable.Cell(15, 2)))
-    header = Replace(header, "{Project Text}", doTrim(metaTable.Cell(15, 4)))
-    header = Replace(header, "{Home URL}", doTrim(metaTable.Cell(16, 2)))
-    header = Replace(header, "{Home Text}", doTrim(metaTable.Cell(16, 4)))
-    
-    ActiveDocument.Tables(1).Delete
-    
+    header = Replace(header, "{Input}", doTrim(metaTable.Cell(8, 2)))
+    header = Replace(header, "{Input Date}", doTrim(metaTable.Cell(8, 4)))
+    header = Replace(header, "{Journal Title}", doTrim(metaTable.Cell(9, 2)))
+    header = Replace(header, "{Editor Coll}", doTrim(metaTable.Cell(10, 2)))
+    header = Replace(header, "{Vol}", doTrim(metaTable.Cell(9, 4)))
+    header = Replace(header, "{Pages}", doTrim(metaTable.Cell(9, 6)))
+    header = Replace(header, "{Pub Place}", doTrim(metaTable.Cell(12, 2)))
+    header = Replace(header, "{Pub Per}", doTrim(metaTable.Cell(11, 2)))
+    header = Replace(header, "{Pub Date}", doTrim(metaTable.Cell(11, 4)))
+    header = Replace(header, "{Description}", doTrim(metaTable.Cell(13, 2)))
+    header = Replace(header, "{Domain URL}", doTrim(metaTable.Cell(14, 2)))
+    header = Replace(header, "{Domain Text}", doTrim(metaTable.Cell(14, 4)))
+    header = Replace(header, "{Portal URL}", doTrim(metaTable.Cell(15, 2)))
+    header = Replace(header, "{Portal Text}", doTrim(metaTable.Cell(15, 4)))
+    header = Replace(header, "{Project URL}", doTrim(metaTable.Cell(16, 2)))
+    header = Replace(header, "{Project Text}", doTrim(metaTable.Cell(16, 4)))
+    header = Replace(header, "{Home URL}", doTrim(metaTable.Cell(17, 2)))
+    header = Replace(header, "{Home Text}", doTrim(metaTable.Cell(17, 4)))
+    header = Replace(header, "{Self Crumb}", doTrim(metaTable.Cell(18, 2)))
+    header = Replace(header, "{Elec Pub Date}", Format(Date, "yyyy-mm-dd"))
+    ActiveDocument.Tables(1).Select
+    Selection.Cut
+    header = Replace(header, "&", "&amp;")
+    header = Replace(header, "&amp;amp;", "&amp;")
     doMetadata = header
     
 End Function
@@ -571,195 +662,49 @@ Function doTrim(ByVal aCell As Cell) As String
     
     
 End Function
-Function fixRange(ByVal rng As Range) As Range
-    Dim gtPlace, ltPlace As Integer
+
+
+Function getStylesUsed()
+    Dim para As Paragraph
+    Dim ch As Range
+    Dim outStr As String
     
-    rng.Select
-    rng.Style = "Plain Text"
-    rng.Font.Bold = False
-    rng.Font.Italic = False
-    rng.Font.Underline = wdUnderlineNone
+    For Each para In ActiveDocument.Paragraphs
+        If InStr(outStr, para.Range.Style) = 0 Then
+            outStr = outStr & vbCrLf & para.Range.Style
+        End If
+    Next para
     
-    gtPlace = InStr(rng.Text, ">")
-    ltPlace = InStr(rng.Text, "<")
-    If gtPlace < ltPlace Then
-        If gtPlace > 0 Then rng.Start = rng.Start + gtPlace
-        If ltPlace > 0 Then rng.End = rng.Start + ltPlace - 1
-    ElseIf gtPlace > ltPlace Then
-        rng.End = rng.Start + ltPlace - 1
-    End If
-    Set fixRange = rng
+    getStylesUsed = outStr
+    
+End Function
+Function isTable(ByVal paraRang As Range) As Boolean
+    For tableCount = 1 To ActiveDocument.Tables.Count
+        tableStart = ActiveDocument.Tables(tableCount).Range.Start
+        tableStop = ActiveDocument.Tables(tableCount).Range.End
+        If paraRang.Start >= tableStart And paraRang.End <= tableStop Then
+            isTable = True
+            Exit Function
+        End If
+    Next tableCount
+    isTable = False
 End Function
 
-Sub doNoteTags()
-    Selection.Find.ClearFormatting
-    Selection.Find.Replacement.ClearFormatting
-    With Selection.Find
-        .Text = "~"
-        .Replacement.Text = "<note>"
-        .Forward = True
-        .Wrap = wdFindContinue
-        .Format = False
-        .MatchCase = False
-        .MatchWholeWord = False
-        .MatchWildcards = False
-        .MatchSoundsLike = False
-        .MatchAllWordForms = False
-    End With
-    Selection.Find.Execute Replace:=wdReplaceAll
-    
-    Selection.Find.ClearFormatting
-    Selection.Find.Replacement.ClearFormatting
-    With Selection.Find
-        .Text = "^"
-        .Replacement.Text = "</note>"
-        .Forward = True
-        .Wrap = wdFindContinue
-        .Format = False
-        .MatchCase = False
-        .MatchWholeWord = False
-        .MatchWildcards = False
-        .MatchSoundsLike = False
-        .MatchAllWordForms = False
-    End With
-    Selection.Find.Execute Replace:=wdReplaceAll
-
+Sub switchtonormal()
+Attribute switchtonormal.VB_Description = "Macro recorded 3/31/2004 by Than Garson"
+Attribute switchtonormal.VB_ProcData.VB_Invoke_Func = "Project.NewMacros.switchtonormal"
+'
+' switchtonormal Macro
+' Macro recorded 3/31/2004 by Than Garson
+'
+    If ActiveWindow.View.SplitSpecial = wdPaneNone Then
+        ActiveWindow.ActivePane.View.Type = wdNormalView
+    Else
+        ActiveWindow.View.Type = wdNormalView
+    End If
 End Sub
 
-Sub doFootnoteItalEtc(ByVal fn As Integer)
-Attribute doFootnoteItalEtc.VB_Description = "Macro recorded 8/13/2003 by Than G"
-Attribute doFootnoteItalEtc.VB_ProcData.VB_Invoke_Func = "Project.NewMacros.closeFootnotes"
-'
-' closeFootnotes Macro
-' Macro recorded 8/13/2003 by Than G
-'
-      'ActiveDocument.Endnotes.Convert
-      Dim loopCt, addOn As Integer
-      
-        loopCt = 0
-        Set rngToSearch = ActiveDocument.Footnotes.Item(fn).Range
-        rngToSearch.End = rngToSearch.End - 1
-        Set srchResult = rngToSearch.Duplicate
-        Do
-            loopCt = loopCt + 1
-            With srchResult.Find
-                .ClearFormatting
-                .Format = True
-                .Text = ""
-                .Font.Italic = True
-                .Wrap = wdFindStop
-                .Forward = True
-                .Execute
-            End With
-            
-            If Not srchResult.Find.Found Then Exit Do
-            addOn = 2
-            Set wrng = srchResult.Duplicate
-            If Not isCharStyle(wrng) Then
-                wrng.StartOf
-                wrng.Text = "<hi rend=""weak"">"
-                Set wrng = srchResult.Duplicate
-                wrng.End = wrng.End - 1
-                wrng.EndOf
-                wrng.Text = "</hi>"
-                addOn = 5
-            End If
-            srchResult.Start = wrng.End + addOn
-            srchResult.End = rngToSearch.End
-            If loopCt > 10 Then Exit Do
-        Loop Until Not srchResult.Find.Found
-        
-        loopCt = 0
-        Set srchResult = rngToSearch.Duplicate
-        Do
-            loopCt = loopCt + 1
-            With srchResult.Find
-                .ClearFormatting
-                .Format = True
-                .Text = ""
-                .Font.Bold = True
-                .Wrap = wdFindStop
-                .Forward = True
-                .Execute
-            End With
-            
-            If Not srchResult.Find.Found Then Exit Do
-            
-            Set wrng = srchResult.Duplicate
-            addOn = 2
-            If Not isCharStyle(wrng) Then
-                wrng.StartOf
-                wrng.Text = "<hi rend=""strong"">"
-                Set wrng = srchResult.Duplicate
-                wrng.End = wrng.End - 1
-                wrng.EndOf
-                wrng.Text = "</hi>"
-                addOn = 5
-            End If
-            srchResult.Start = wrng.End + addOn
-            srchResult.End = rngToSearch.End
-            If loopCt > 10 Then Exit Do
-        Loop Until Not srchResult.Find.Found
-        
-        loopCt = 0
-        Set srchResult = rngToSearch.Duplicate
-        Do
-            loopCt = loopCt + 1
-            With srchResult.Find
-                .ClearFormatting
-                .Format = True
-                .Text = ""
-                .Font.Underline = True
-                .Wrap = wdFindStop
-                .Forward = True
-                .Execute
-            End With
-            
-            If Not srchResult.Find.Found Then Exit Do
-            
-            Set wrng = srchResult.Duplicate
-            addOn = 2
-            If Not isCharStyle(wrng) Then
-                wrng.StartOf
-                wrng.Text = "<hi rend=""underline"">"
-                Set wrng = srchResult.Duplicate
-                wrng.End = wrng.End - 1
-                wrng.EndOf
-                wrng.Text = "</hi>"
-            End If
-            srchResult.Start = wrng.End + addOn
-            srchResult.End = rngToSearch.End
-            If loopCt > 10 Then Exit Do
-        Loop Until Not srchResult.Find.Found
-
-      End Sub
-
-Sub replaceAllEmptyP()
-Attribute replaceAllEmptyP.VB_Description = "Macro recorded 8/18/2003 by Than G"
-Attribute replaceAllEmptyP.VB_ProcData.VB_Invoke_Func = "Project.NewMacros.replaceAllP"
-'
-' replaceAllP Macro
-' Macro recorded 8/18/2003 by Than G
-'
-    Selection.Find.ClearFormatting
-    Selection.Find.Replacement.ClearFormatting
-    With Selection.Find
-        .Text = "<p></p>"
-        .Replacement.Text = ""
-        .Forward = True
-        .Wrap = wdFindContinue
-        .Format = False
-        .MatchCase = False
-        .MatchWholeWord = False
-        .MatchWildcards = False
-        .MatchSoundsLike = False
-        .MatchAllWordForms = False
-    End With
-    Selection.Find.Execute Replace:=wdReplaceAll
-End Sub
 Sub convertItalics()
-Attribute convertItalics.VB_Description = "Macro recorded 8/18/2003 by Than G"
-Attribute convertItalics.VB_ProcData.VB_Invoke_Func = "Project.NewMacros.searchItalics"
 '
 ' searchItalics Macro
 ' Macro recorded 8/18/2003 by Than G
@@ -812,11 +757,13 @@ Attribute convertItalics.VB_ProcData.VB_Invoke_Func = "Project.NewMacros.searchI
     Loop Until Not srchResult.Find.Found
     
     convertFootnoteItalics
+    
+    Unload ItalicOptions
   End Sub
   Sub convertFootnoteItalics()
     Dim loopCt As Integer
     
-    ActiveDocument.Endnotes.Convert
+    ActiveDocument.Endnotes.convert
     For n = 1 To ActiveDocument.Footnotes.Count
         Set rngToSearch = ActiveDocument.Footnotes(n).Range.Duplicate
         Set srchResult = rngToSearch.Duplicate
@@ -856,134 +803,8 @@ Attribute convertItalics.VB_ProcData.VB_Invoke_Func = "Project.NewMacros.searchI
     Next n
     
 End Sub
-Sub doCharacterStyles()
-    Dim styleData(50, 3) As String
-    Dim styleCount As Integer
-    Dim rngToSearch, srchResult, wrng As Range
-    
-    styleData(1, 1) = "Emphasis Weak,ew": styleData(1, 2) = "<hi rend=""weak"">": styleData(1, 3) = "</hi>"
-    styleData(2, 1) = "Text Title,tt": styleData(2, 2) = "<title>": styleData(2, 3) = "</title>"
-    styleData(3, 1) = "Lang Tibetan,tib": styleData(3, 2) = "<foreign lang=""tib"">": styleData(3, 3) = "</foreign>"
-    styleData(4, 1) = "Lang Sanskrit,san": styleData(4, 2) = "<foreign lang=""san"">": styleData(4, 3) = "</foreign>"
-    styleData(5, 1) = "Lang Chinese,chi": styleData(5, 2) = "<foreign lang=""chi"">": styleData(5, 3) = "</foreign>"
-    styleData(6, 1) = "Lang Japanese,jap": styleData(6, 2) = "<foreign lang=""jap"">": styleData(6, 3) = "</foreign>"
-    styleData(7, 1) = "Name Personal Human,nph": styleData(7, 2) = "<persName type=""human"">": styleData(7, 3) = "</persName>"
-    styleData(8, 1) = "Name Personal other,npo": styleData(8, 2) = "<persName type=""other"">": styleData(8, 3) = "</persName>"
-    styleData(9, 1) = "Name Place,np": styleData(9, 2) = "<placeName>": styleData(9, 3) = "</placeName>"
-    styleData(10, 1) = "Name organization,nor": styleData(10, 2) = "<orgName>": styleData(10, 3) = "</orgName>"
-    styleData(11, 1) = "Reference,rf": styleData(11, 2) = "<ref type=""bibl"">": styleData(11, 3) = "</ref>"
-    styleData(12, 1) = "Emphasis Strong,es": styleData(12, 2) = "<hi rend=""strong"">": styleData(12, 3) = "</hi>"
-    styleData(13, 1) = "Dates , dt": styleData(13, 2) = "<date>": styleData(13, 3) = "</date>"
-    styleCount = 13
-    
-    For x = 1 To styleCount
-      Set rngToSearch = ActiveDocument.Range
-      Set srchResult = rngToSearch.Duplicate
-        y = 0
-        Do
-              Application.StatusBar = "Proceessing document: processing character styles (" & styleData(x, 1) & ")! " & y
-
-            With srchResult.Find
-                .ClearFormatting
-                .Format = True
-                .Style = styleData(x, 1)
-                .Text = ""
-                .Wrap = wdFindStop
-                .Forward = True
-                .Execute
-            End With
-            
-            If Not srchResult.Find.Found Or InStr(srchResult.Text, "</hi></hi>") > 0 Then Exit Do
-            
-            Set wrng = fixRange(srchResult.Duplicate)
-            wrng.Select
-            Selection.Style = "Plain Text"
-            wrng.StartOf
-            wrng.Text = styleData(x, 2)
-            wrng.Select
-            Selection.Style = "Plain Text"
-            Set wrng = srchResult.Duplicate
-            wrng.EndOf
-            wrng.Text = styleData(x, 3)
-            wrng.Select
-            Selection.Style = "Plain Text"
-            srchResult.Start = wrng.End + Len(styleData(x, 3))
-            srchResult.End = rngToSearch.End
-50            y = y + 1
-            If y > 100 Then Exit Do
-        Loop Until Not srchResult.Find.Found
-    Next x
-    
-    Application.StatusBar = "Proceessing document: processing character styles in footnotes!"
-    For n = 1 To ActiveDocument.Footnotes.Count
-        For x = 1 To styleCount
-          Application.StatusBar = "Proceessing document: processing footnote character styles (" & styleData(x, 1) & ")!"
-          Set rngToSearch = ActiveDocument.Footnotes(n).Range
-          Set srchResult = rngToSearch.Duplicate
-          y = 0
-        Do
-            With srchResult.Find
-                .ClearFormatting
-                .Format = True
-                .Style = styleData(x, 1)
-                .Text = ""
-                .Wrap = wdFindStop
-                .Forward = True
-                .Execute
-            End With
-            
-            If srchResult.Find.Found = False Or InStr(srchResult.Text, "</hi></hi>") > 0 Then Exit Do
-            Set wrng = fixRange(srchResult.Duplicate)
-           
-            wrng.Select
-            Selection.Style = "Plain Text"
-            wrng.StartOf
-            wrng.Text = styleData(x, 2)
-            wrng.Select
-            Selection.Style = "Plain Text"
-            Set wrng = srchResult.Duplicate
-            wrng.EndOf
-            wrng.Text = styleData(x, 3)
-            wrng.Select
-            Selection.Style = "Plain Text"
-            srchResult.Start = wrng.End + Len(styleData(x, 2)) + Len(styleData(x, 3)) + 2
-            srchResult.End = rngToSearch.End
-100         y = y + 1
-            If y > 10 Then Exit Do
-       Loop Until Not srchResult.Find.Found
-       Next x
-    Next n
-    
-End Sub
-Function isCharStyle(ByVal rng As Range) As Boolean
-    styleName = rng.Style
-    isCharStyle = False
-    If styleName = "Emphasis Weak,ew" Then
-        isCharStyle = True
-    ElseIf styleName = "Text Title,tt" Then
-        isCharStyle = True
-    ElseIf styleName = "Lang Tibetan,tib" Then
-        isCharStyle = True
-    ElseIf styleName = "Lang Sanskrit,san" Then
-        isCharStyle = True
-    ElseIf styleName = "Lang Chinese,chi" Then
-        isCharStyle = True
-    ElseIf styleName = "Lang Japanese,jap" Then
-        isCharStyle = True
-    ElseIf styleName = "Name Personal Human,nph" Then
-        isCharStyle = True
-    ElseIf styleName = "Name Personal other,npo" Then
-        isCharStyle = True
-    ElseIf styleName = "Name Place,np" Then
-        isCharStyle = True
-    ElseIf styleName = "Name organization,nor" Then
-        isCharStyle = True
-    End If
-End Function
 
 Sub unItalicizeCommas()
-Attribute unItalicizeCommas.VB_Description = "Macro recorded 8/19/2003 by Than G"
-Attribute unItalicizeCommas.VB_ProcData.VB_Invoke_Func = "Project.NewMacros.unItalicizeCommas"
 '
 ' unItalicizeCommas Macro
 ' Macro recorded 8/19/2003 by Than G
@@ -1032,58 +853,33 @@ Attribute unItalicizeCommas.VB_ProcData.VB_Invoke_Func = "Project.NewMacros.unIt
     Loop Until Not srchResult.Find.Found
         
     Next n
-
 End Sub
 
-Sub replaceEntities()
-    Selection.Find.ClearFormatting
-    Selection.Find.Replacement.ClearFormatting
-    With Selection.Find
-        .Text = "&"
-        .Replacement.Text = "&amp;"
-        .Forward = True
-        .Wrap = wdFindContinue
-        .Format = False
-        .MatchCase = False
-        .MatchWholeWord = False
-        .MatchWildcards = False
-        .MatchSoundsLike = False
-        .MatchAllWordForms = False
-    End With
-    Selection.Find.Execute Replace:=wdReplaceAll
-    Selection.Find.ClearFormatting
-    Selection.Find.Replacement.ClearFormatting
-    With Selection.Find
-        .Text = "<"
-        .Replacement.Text = "&lt;"
-        .Forward = True
-        .Wrap = wdFindContinue
-        .Format = False
-        .MatchCase = False
-        .MatchWholeWord = False
-        .MatchWildcards = False
-        .MatchSoundsLike = False
-        .MatchAllWordForms = False
-    End With
-    Selection.Find.Execute Replace:=wdReplaceAll
-    Selection.Find.ClearFormatting
-    Selection.Find.Replacement.ClearFormatting
-    With Selection.Find
-        .Text = ">"
-        .Replacement.Text = "&gt;"
-        .Forward = True
-        .Wrap = wdFindContinue
-        .Format = False
-        .MatchCase = False
-        .MatchWholeWord = False
-        .MatchWildcards = False
-        .MatchSoundsLike = False
-        .MatchAllWordForms = False
-    End With
-    Selection.Find.Execute Replace:=wdReplaceAll
-    
-    
-    
+Function isCharStyle(ByVal rng As Range) As Boolean
+    StyleName = rng.Style
+    isCharStyle = False
 
-End Sub
-
+    If StyleName = "Emphasis Weak,ew" Or _
+        StyleName = "Annotations,an" Or _
+        StyleName = "Lang Tibetan,tib" Or _
+        StyleName = "Lang Sanskrit,san" Or _
+        StyleName = "Lang Chinese,chi" Or _
+        StyleName = "Lang Japanese,jap" Or _
+        StyleName = "Name Personal Human,nph" Or _
+        StyleName = "Name Personal other,npo" Or _
+        StyleName = "Name Place,np" Or _
+        StyleName = "Name organization,nor" Or _
+        StyleName = "Date Range,dr" Or _
+        StyleName = "Page Number,pgn" Or _
+        StyleName = "Speaker generic,sg" Or _
+        StyleName = "SpeakerBuddhistDeity,sb" Or _
+        StyleName = "SpeakerHuman,sh" Or _
+        StyleName = "SpeakerOther,so" Or _
+        StyleName = "Text Title,tt" Or _
+        StyleName = "Text Title Sanksrit,tts" Or _
+        StyleName = "Text Title Tibetan,ttt" Or _
+        StyleName = "TextGroup,tg" Then
+            isCharStyle = True
+    End If
+    
+End Function
