@@ -1262,15 +1262,12 @@ Contributor(s): ______________________________________.
           append="true">
 <![CDATA[      href="DictionarySearchAppletAndJavaWebStart.jnlp">
 <information>
-  <title>DictionarySearchAppletAndJavaWebStart</title>
-  <vendor>THDL</vendor>
+  <title>Tibetan to English Translation Tool</title>
+  <vendor>THDL, Andres Montano Pellegrini</vendor>
   <homepage href="http://iris.lib.virginia.edu/tibet/reference/translation-tool.html" />
 
-  <description>
-    The translation tool provides a Tibetan-to-English dictionary.
-    You must have the Tibetan Machine Web fonts installed on your
-    computer to take full advantage of this dictionary.
-  </description>
+  <description>This tool divides Tibetan language passages up into their component
+phrases and words and displays corresponding dictionary definitions.</description>
 
   <offline-allowed/>
 </information>
