@@ -58,7 +58,6 @@ public class TibetanMachineWeb implements THDLWylieConstants {
     private final static String anyOldObjectWillDo
         = "this placeholder is useful for debugging; we need a nonnull Object anyway";
 
-	private static boolean hasReadData = false;
 	private static TibetanKeyboard keyboard = null;
 	private static Set charSet = null;
 	private static Set vowelSet = null;
@@ -72,9 +71,12 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 	private static String[][] toHashKey = new String[11][95]; //note: toHashKey[0][..] is not used
 	private static DuffCode[][] TMtoTMW = new DuffCode[5][255-32]; // ordinal 255 doesn't occur in TM
 	private static DuffCode[][] TMWtoTM = new DuffCode[10][127-32]; // ordinal 127 doesn't occur in TMW
+	private static String[][] TMWtoUnicode = new String[10][127-32]; // ordinal 127 doesn't occur in TMW
 	private static String fileName = "tibwn.ini";
 	private static final String DELIMITER = "~";
 	private static Set top_vowels;
+    /** the font we use when we convert TMW->Unicode: */
+	private static SimpleAttributeSet unicodeFontAttributeSet = null;
     /** a way of encoding the choice of TibetanMachineWeb font from
         that family of 10 fonts: */
 	private static SimpleAttributeSet[] webFontAttributeSet = new SimpleAttributeSet[11];
@@ -260,6 +262,11 @@ public class TibetanMachineWeb implements THDLWylieConstants {
         if (!ThdlOptions.getBooleanOption("thdl.rely.on.system.tmw.fonts")) {
             readInFontFiles();
         }
+
+        unicodeFontAttributeSet = new SimpleAttributeSet();
+        StyleConstants.setFontFamily(unicodeFontAttributeSet,
+                                     ThdlOptions.getStringOption("thdl.tmw.to.unicode.font",
+                                                                 "Arial Unicode MS"));
 
 		webFontAttributeSet[0] = null;
 		for (int i=1; i<webFontAttributeSet.length; i++) {
@@ -473,11 +480,12 @@ public class TibetanMachineWeb implements THDLWylieConstants {
                                                 ThdlDebug.verify(false);
                                             }
                                         }
-                                        // DLC FIXME: use unicodeBuffer for a TMW->Unicode conversion.
+                                        TMWtoUnicode[duffCodes[TMW].getFontNum()-1][duffCodes[TMW].getCharNum()-32]
+                                            = unicodeBuffer.toString(); // TMW->Unicode mapping
 
                                         // For V&V:
 
-// DLC FIXME: also check for ^[90-bc] and ^.+[40-6a]
+// DLC FIXME: also check for ^[90-bc]. and ^.+[40-6a]
 
 //                                          StringBuffer wylie_minus_plusses_buf
 //                                              = UnicodeCodepointToThdlWylie.getThdlWylieForUnicodeString(unicodeBuffer.toString());
@@ -545,8 +553,6 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 			System.out.println("file Disappeared");
             ThdlDebug.noteIffyCode();
 		}
-
-		hasReadData = true;
 	}
 
 /**
@@ -632,6 +638,17 @@ public static SimpleAttributeSet getAttributeSet(int font) {
 		return webFontAttributeSet[font];
 	else
 		return null;
+}
+
+/**
+* Gets the AttributeSet for the font we use for the Unicode we create
+* in our TMW->Unicode conversion.  This information is required in
+* order to be able to put styled text into {@link TibetanDocument
+* TibetanDocument}.
+* @return a SimpleAttributeSet for the Unicode font - that is, a way
+* of encoding the font itself */
+public static SimpleAttributeSet getUnicodeAttributeSet() {
+    return unicodeFontAttributeSet;
 }
 
 /**
@@ -1147,6 +1164,45 @@ private static DuffCode getUnusualTMtoTMW(int font, int code) {
     } else {
         return null;
     }
+}
+
+private static final String Unicode_cr = "\r";
+private static final String Unicode_lf = "\n";
+private static final String Unicode_tab = "\t";
+
+
+/** Returns the sequence of Unicode corresponding to the given
+    TibetanMachineWeb font
+    (0=TibetanMachineWeb,1=TibetanMachineWeb1,...) and
+    character(32-127).
+
+    Null is returned for an existing TibetanMachineWeb glyph if and
+    only if that glyph has no corresponding Unicode mapping.  Null is
+    returned if the input isn't valid.
+
+    Only a few control characters are supported: '\r' (carriage
+    return), '\n' (line feed), and '\t' (tab).
+ */
+public static String mapTMWtoUnicode(int font, int ordinal) {
+    if (font < 0 || font > 9)
+        return null;
+    if (ordinal > 127)
+        return null;
+    if (ordinal < 32) {
+        if (ordinal == (int)'\r')
+            return Unicode_cr;
+        else if (ordinal == (int)'\n')
+            return Unicode_lf;
+        else if (ordinal == (int)'\t')
+            return Unicode_tab;
+        else {
+            // for robustness, just return a String consisting of the
+            // character which has the ordinal 'ordinal'.
+            ThdlDebug.noteIffyCode();
+            return null;
+        }
+    }
+    return TMWtoUnicode[font][ordinal-32];
 }
 
 /**

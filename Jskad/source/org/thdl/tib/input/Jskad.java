@@ -332,7 +332,7 @@ public class Jskad extends JPanel implements DocumentListener {
                             = ((TibetanDocument)dp.getDocument()).convertToTM(0, -1, errors); // entire document
                         if (errorReturn) {
                             JOptionPane.showMessageDialog(Jskad.this,
-                                                          "At least one error occurred while converting Tibetan Machine Web\nto Tibetan Machine.  Your document is mostly converted,\nexcept for the glyphs found after the 72-point Tibetan Machine Web\n30-letter alphabet.\nThe following glyphs were problems:\n"
+                                                          "At least one error occurred while converting Tibetan Machine Web\nto Tibetan Machine.  Your document is mostly converted,\nexcept for the following glyphs, which you should replace manually\nbefore retrying:\n"
                                                           + errors.toString(),
                                                           "TMW to TM Errors",
                                                           JOptionPane.PLAIN_MESSAGE);
@@ -352,7 +352,7 @@ public class Jskad extends JPanel implements DocumentListener {
                             = ((TibetanDocument)dp.getDocument()).convertToTMW(0, -1, errors); // entire document
                         if (errorReturn) {
                             JOptionPane.showMessageDialog(Jskad.this,
-                                                          "At least one error occurred while converting Tibetan Machine\nto Tibetan Machine Web.  Your document is mostly converted,\nexcept for the glyphs found after the 72-point Tibetan Machine Web\n30-letter alphabet.\nThe following glyphs were problems:\n"
+                                                          "At least one error occurred while converting Tibetan Machine\nto Tibetan Machine Web.  Your document is mostly converted,\nexcept for the following glyphs, which you should replace manually\nbefore retrying:\n"
                                                           + errors.toString(),
                                                           "TM to TMW Errors", JOptionPane.PLAIN_MESSAGE);
                         } else {
@@ -362,9 +362,29 @@ public class Jskad extends JPanel implements DocumentListener {
                         }
                     }
                 });
+
+            JMenuItem toUnicodeItem = new JMenuItem("Convert TMW to Unicode"); // DLC FIXME: do it just in the selection?
+            toUnicodeItem.addActionListener(new ThdlActionListener() {
+                    public void theRealActionPerformed(ActionEvent e) {
+                        StringBuffer errors = new StringBuffer();
+                        boolean errorReturn
+                            = ((TibetanDocument)dp.getDocument()).convertToUnicode(0, -1, errors); // entire document
+                        if (errorReturn) {
+                            JOptionPane.showMessageDialog(Jskad.this,
+                                                          "At least one error occurred while converting Tibetan Machine Web\nto Unicode.  Your document is mostly converted,\nexcept for the following glyphs, which you should replace manually\nbefore retrying:\n"
+                                                          + errors.toString(),
+                                                          "TMW to Unicode Errors", JOptionPane.PLAIN_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(Jskad.this,
+                                                          "Converting Tibetan Machine Web to Unicode met with perfect success.",
+                                                          "Success", JOptionPane.PLAIN_MESSAGE);
+                        }
+                    }
+                });
             toolsMenu.addSeparator();
             toolsMenu.add(toTMItem);
             toolsMenu.add(toTMWItem);
+            toolsMenu.add(toUnicodeItem);
         }
 
 

@@ -174,6 +174,21 @@ public class TibetanDocument extends DefaultStyledDocument {
 		}
     }
 
+	/** Replacing can be more efficient than inserting and then
+        removing. This replaces the glyph at position pos with
+        unicode.  The font size for the new unicode is fontSize. */
+    private void replaceDuffWithUnicode(int fontSize, int pos,
+                                        String unicode) {
+		MutableAttributeSet mas
+            = TibetanMachineWeb.getUnicodeAttributeSet();
+        StyleConstants.setFontSize(mas, fontSize);
+		try {
+            replace(pos, 1, unicode, mas);
+        } catch (BadLocationException ble) {
+            ThdlDebug.noteIffyCode();
+		}
+    }
+
 	private int insertDuff(int fontSize, int pos, DuffData[] glyphs, boolean asTMW) {
 		if (glyphs == null)
 			return pos;
@@ -441,7 +456,7 @@ public class TibetanDocument extends DefaultStyledDocument {
         cases will be appended to this StringBuffer
     */
     public boolean convertToTM(int begin, int end, StringBuffer errors) {
-        return convertTMW_TM(begin, end, true, errors);
+        return convertHelper(begin, end, true, false, errors);
     }
 
     /** Converts all TibetanMachine glyphs in the document to
@@ -457,7 +472,22 @@ public class TibetanDocument extends DefaultStyledDocument {
         cases will be appended to this StringBuffer
     */
     public boolean convertToTMW(int begin, int end, StringBuffer errors) {
-        return convertTMW_TM(begin, end, false, errors);
+        return convertHelper(begin, end, false, false, errors);
+    }
+
+    /** Converts all TibetanMachineWeb glyphs in the document to
+        Unicode.  Works within the range [start, end).  Using a
+        negative number for end means that this will run to the end of
+        the document.  Be sure to set the size for Tibetan as you like
+        it before using this (well, it usually gets it right on its
+        own, but just in case).  SPEED_FIXME: might be faster to run
+        over the elements, if they are one per font.
+        @return false on 100% success, true if any exceptional case
+        was encountered
+        @param errors if non-null, then notes about all exceptional
+        cases will be appended to this StringBuffer */
+    public boolean convertToUnicode(int begin, int end, StringBuffer errors) {
+        return convertHelper(begin, end, false, true, errors);
     }
 
     /** For debugging only.  Start with an empty document, and call
@@ -594,15 +624,20 @@ public class TibetanDocument extends DefaultStyledDocument {
         return !ThdlOptions.getBooleanOption("thdl.insert.and.remove.instead.of.replacing");
     }
 
-    /** Helper function.
+    /** Helper function.  Converts TMW->TM if !toUnicode&&toTM,
+        TM->TMW if !toUnicode&&!toTM, TMW->Unicode if toUnicode.
         @param errors if non-null, then notes about all exceptional
         cases will be appended to this StringBuffer
         @return false on 100% success, true if any exceptional case
         was encountered
+        @see convertToUnicode(int,int) 
         @see convertToTMW(int,int) 
         @see convertToTM(int,int) */
-    private boolean convertTMW_TM(int begin, int end, boolean toTM,
-                                  StringBuffer errors) {
+    private boolean convertHelper(int begin, int end, boolean toTM,
+                                  boolean toUnicode, StringBuffer errors) {
+        // toTM is ignored when toUnicode is true:
+        ThdlDebug.verify(!toUnicode || !toTM);
+
         boolean toStdout = ThdlOptions.getBooleanOption("thdl.debug");
         boolean errorReturn = false;
         if (end < 0)
@@ -620,22 +655,26 @@ public class TibetanDocument extends DefaultStyledDocument {
                 AttributeSet attr = getCharacterElement(i).getAttributes();
                 String fontName = StyleConstants.getFontFamily(attr);
 				int fontNum
-                    = (toTM
+                    = ((toTM || toUnicode)
                        ? TibetanMachineWeb.getTMWFontNumber(fontName)
                        : TibetanMachineWeb.getTMFontNumber(fontName));
 
                 if (0 != fontNum) {
                     DuffCode dc = null;
-                    if (toTM) {
-                        dc = TibetanMachineWeb.mapTMWtoTM(fontNum - 1,
-                                                          getText(i,1).charAt(0));
+                    String unicode = null;
+                    if (toUnicode) {
+                        unicode = TibetanMachineWeb.mapTMWtoUnicode(fontNum - 1,
+                                                                    getText(i,1).charAt(0));
                     } else {
-                        dc = TibetanMachineWeb.mapTMtoTMW(fontNum - 1,
-                                                          getText(i,1).charAt(0));
+                        if (toTM) {
+                            dc = TibetanMachineWeb.mapTMWtoTM(fontNum - 1,
+                                                              getText(i,1).charAt(0));
+                        } else {
+                            dc = TibetanMachineWeb.mapTMtoTMW(fontNum - 1,
+                                                              getText(i,1).charAt(0));
+                        }
                     }
-                    if (null != dc) {
-                        equivalent[0].setData(dc.getCharacter(),
-                                              dc.getFontNum());
+                    if (null != dc || null != unicode) {
                         // SPEED_FIXME: determining font size might be slow
                         int fontSize = tibetanFontSize;
                         try {
@@ -643,6 +682,12 @@ public class TibetanDocument extends DefaultStyledDocument {
                         } catch (Exception e) {
                             // leave it as tibetanFontSize
                         }
+
+                        if (!toUnicode) {
+                            equivalent[0].setData(dc.getCharacter(),
+                                                  dc.getFontNum());
+                        }
+
                         // We have two choices: remove-then-insert
                         // second vs. insert-then-remove and also
                         // insert-before vs. insert-after.  It turns
@@ -651,8 +696,13 @@ public class TibetanDocument extends DefaultStyledDocument {
                         // insert-then-remove because we're guessing
                         // that helps with formatting too.
                         if (replaceInsteadOfInserting()) {
-                            replaceDuff(fontSize, i, equivalent[0], !toTM);
+                            if (toUnicode) {
+                                replaceDuffWithUnicode(fontSize, i, unicode);
+                            } else {
+                                replaceDuff(fontSize, i, equivalent[0], !toTM);
+                            }
                         } else {
+                            ThdlDebug.verify(!toUnicode); // DLC NOW
                             if (insertBefore()) {
                                 insertDuff(fontSize, i, equivalent, !toTM);
                                 remove(i+1, 1);
@@ -679,7 +729,9 @@ public class TibetanDocument extends DefaultStyledDocument {
                             problemGlyphsTable.put(cgf, "yes this character appears once");
                             if (null != errors) {
                                 String err
-                                    = (toTM ? "TMW->TM" : "TM->TMW")
+                                    = (toUnicode
+                                       ? "TMW->Unicode"
+                                       : (toTM ? "TMW->TM" : "TM->TMW"))
                                     + " conversion failed for a glyph:\nFont is "
                                     + fontName + ", glyph number is "
                                     + (int)getText(i,1).charAt(0)
@@ -694,16 +746,18 @@ public class TibetanDocument extends DefaultStyledDocument {
                                 // the beginning of the document:
                                 equivalent[0].setData(getText(i,1), fontNum);
                                 insertDuff(72, errorGlyphLocation++,
-                                           equivalent, toTM);
+                                           equivalent, toUnicode || toTM);
                                 ++i;
                             }
                         }
 
-                        String trickyTMW
-                            = "!-\"-#-$-%-&-'-(-)-*-+-,-.-/-0-1-2-3-4-5-6-7-8-9-:-;-<-=->-?-";
-                        equivalent[0].setData(trickyTMW, 1);
-                        insertDuff(72, i, equivalent, true);
-                        i += trickyTMW.length();
+                        if (ThdlOptions.getBooleanOption("thdl.leave.bad.tm.tmw.conversions.in.place")) {
+                            String trickyTMW
+                                = "!-\"-#-$-%-&-'-(-)-*-+-,-.-/-0-1-2-3-4-5-6-7-8-9-:-;-<-=->-?-";
+                            equivalent[0].setData(trickyTMW, 1);
+                            insertDuff(72, i, equivalent, true);
+                            i += trickyTMW.length();
+                        }
                     }
                 }
                 i++;
