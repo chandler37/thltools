@@ -33,14 +33,16 @@
 	'<c:out value="${ passage.pagination }" escapeXml="false" />'   <br />
 	</c:if>
 	
-	<!--<span class="label">Passage:</span>-->
-<c:set target="${ sessionScope.visit.helper}" property="wylie" value="${ passage.passage }"/>
+<!--If it's a Tibetan Passage, convert the wylie.-->
+<c:if test="${ passage.meta.language == 2 }">
+	<c:set target="${ sessionScope.visit.helper}" property="wylie" value="${ passage.passage }"/>
 <c:catch var="exception">
 	<c:set var="tib" value="${ sessionScope.visit.helper.tibetan } " />
 	<c:if test="${ ! empty tib }">
 		<div class="tmw-block"><c:out value="${ tib }" escapeXml="false" /></div>
 	</c:if>
 </c:catch>
+</c:if>
 
 <c:if test="${ ! empty exception }">
 	<span class="error-info">Wylie conversion error (view source for details)</span>

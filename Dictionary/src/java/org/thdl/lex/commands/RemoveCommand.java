@@ -72,6 +72,7 @@ public class RemoveCommand extends LexCommand implements Command
 			ThdlUser user = visit.getUser();
 			LexQuery query = visit.getQuery();
 			ITerm term = query.getEntry();
+			LexComponentRepository.update( term );
 
 			if ( CommandToken.isValid( req ) && validate( user, component ) )
 			{
