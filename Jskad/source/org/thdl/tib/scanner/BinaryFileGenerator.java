@@ -104,7 +104,7 @@ public class BinaryFileGenerator extends LinkedList
 	    int marker, len, marker2, n=0, total=0, currentPage=0, currentLine=1;
 	    char ch;	    
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(archivo)));
-		String entrada="", s1="", s2="", currentLetter="", temp="";
+		String entrada="", s1="", s2="", currentLetter="", temp="", lastWeirdDefiniendum="";
 		boolean markerNotFound;
         
         // used for acip dict 
@@ -234,8 +234,13 @@ public class BinaryFileGenerator extends LinkedList
    	                            case 'g': // verify "g "
        	                            if (marker+1<len && Manipulate.isVowel(entrada.charAt(marker-1)) && entrada.charAt(marker+1)==' ')
        	                            {
-   	                                    markerNotFound=false;
-   	                                    marker2=++marker;
+       	                                temp = entrada.substring(0, marker+1);
+       	                                if (!lastWeirdDefiniendum.startsWith(temp))
+       	                                {
+   	                                        markerNotFound=false;
+   	                                        marker2=++marker;
+                                            lastWeirdDefiniendum=temp;
+                                        }
    	                                }
    	                            break;
    	                            case ' ': // verify "  "
@@ -517,11 +522,15 @@ public class BinaryFileGenerator extends LinkedList
 		System.out.println("Stores multiple dictionaries into a binary tree file.");
         System.out.println("Sintaxis:");
 		System.out.println("-For multiple dictionary sources:");
-		System.out.println("  java BinaryFileGenerator arch-dest [-delimiter1] arch-dict1 [[-delimiter2] arch-dict2 ...]");
+		System.out.println("  java BinaryFileGenerator arch-dest [-delimiter1] arch-dict1");
+		System.out.println("                                    [[-delimiter2] arch-dict2 ...]");
 		System.out.println("-For one dictionary");
 		System.out.println("  java BinaryFileGenerator [-delimiter] arch-dict");
 		System.out.println("Dictionary files are assumed to be .txt. Don't include extensions!");
 		System.out.println("  -delimiter: default value is \'-\'. -tab takes \'\\t\' as delimiter.");
+		System.out.println("  -acip: use this to process dictionaries entered using the ACIP standard");
+		System.out.println("         to mark page numbers, comments, etc. Make sure to convert it to");
+		System.out.println("         THDL's extended Wylie scheme first using the AcipToWylie class.");
     }
 
 	public static void main(String args[]) throws Exception
