@@ -49,6 +49,27 @@ public class SimplifiedLinkedList
 		else cabeza = cabeza.createPrevious(o);
 	}
 	
+	public void addSorted(Comparable o)
+	{
+	    Link previous, currentLink, temp;
+	    if (cabeza==null || o.compareTo(cabeza.get())<0)
+	    {
+	        addLast(o);
+	    }	    
+	    else
+	    {
+	        currentLink = cabeza;
+	        do
+	        {
+                previous = currentLink;
+                currentLink = currentLink.next();
+	        } while ((currentLink != null) && (o.compareTo(currentLink.get())>=0));
+	        temp = new Link (o);
+	        previous.siguiente = temp;
+	        temp.siguiente = currentLink;
+        }
+    }
+	
 	public Object getLast()
 	{
 	    if (cabeza==null) return null;
