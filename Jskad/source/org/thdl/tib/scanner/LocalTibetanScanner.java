@@ -29,24 +29,18 @@ import java.util.Enumeration;
     @author Andr&eacute;s Montano Pellegrini
     @see SyllableListTree
 */
-public class LocalTibetanScanner implements TibetanScanner
+public class LocalTibetanScanner extends TibetanScanner
 {
 	public static String archivo;
 	private SyllableListTree raiz, silActual, lastCompSil, silAnterior;
 	private String wordActual, lastCompWord;
 	private Vector floatingSil;
-	private SimplifiedLinkedList wordList;
 	private static String endOfParagraphMarks = "/;|!:[]^@#$%=<>(){}";
 	private static String endOfSyllableMarks = " _\t";
 
 	static
 	{
 		archivo = null;
-	}
-
-	public void clearTokens()
-	{
-		wordList = new SimplifiedLinkedList();
 	}
 
 	public DictionarySource getDictionarySource()
@@ -57,12 +51,12 @@ public class LocalTibetanScanner implements TibetanScanner
 
 	public LocalTibetanScanner(String arch) throws Exception
 	{
+	    super();
 		archivo = arch;
 		// raiz = new MemorySyllableListTree(archivo);
 		// raiz = new FileSyllableListTree(archivo);
 		raiz = new CachedSyllableListTree(archivo);
 		floatingSil = new Vector();
-		wordList = new SimplifiedLinkedList();
 		resetAll();
 	}
 
@@ -377,20 +371,6 @@ outAHere:
 		}
 	}
 
-	public SimplifiedLinkedList getTokenLinkedList()
-	{
-		return wordList;
-	}
-
-	public Token[] getTokenArray()
-	{
-		int i=wordList.size();
-		Token token[] = new Token[i];
-		SimplifiedListIterator li = wordList.listIterator();
-		while(li.hasNext())
-			token[--i] = (Token)li.next();
-		return token;
-	}
 
 	/** Looks for .dic file, and returns the dictionary descriptions.
 		Also updates the definitionTags in the Definitions class.

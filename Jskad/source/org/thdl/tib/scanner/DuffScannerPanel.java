@@ -156,7 +156,7 @@ public class DuffScannerPanel extends ScannerPanel
 			doingStatus("Translating...");
 			scanner.scanBody(in);
 			scanner.finishUp();
-			model.newSearch(scanner.getTokenArray());
+			model.newSearch(scanner.getWordArray());
 //			printAllDefs();
 			scanner.clearTokens();
 			returnStatusToNorm();

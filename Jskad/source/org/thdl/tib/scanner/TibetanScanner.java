@@ -23,16 +23,16 @@ import org.thdl.util.*;
 
     @author Andr&eacute;s Montano Pellegrini
 */
-public interface TibetanScanner
+public abstract class TibetanScanner
 {
 	public static final String copyrightUnicode="Copyright " + '\u00A9' + " 2000-2003 by Andr" + '\u00E9' + "s Montano Pellegrini, all rights reserved.";
 	public static final String copyrightASCII="Copyright 2000-2003 by Andres Montano Pellegrini, all rights reserved.";
-	public static final String copyrightHTML="<hr><h5>" + "The Tibetan to English Translation Tool: Version 1.3.0, compiled on " + ThdlVersion.getTimeOfCompilation() + ". Copyright &copy; 2000-2002 by <a href=\"http://www.people.virginia.edu/~am2zb/\" target=\"_blank\">Andr&eacute;s Montano Pellegrini</a><br>All rights reserved</h5>";
+	public static final String copyrightHTML="<hr><h5>" + "The Tibetan to English Translation Tool: Version 2.0.0, compiled on " + ThdlVersion.getTimeOfCompilation() + ". Copyright &copy; 2000-2002 by <a href=\"http://www.people.virginia.edu/~am2zb/\" target=\"_blank\">Andr&eacute;s Montano Pellegrini</a><br>All rights reserved</h5>";
 	public static final String aboutUnicode=
 	"Warning: Since version 1.3.0. the dictionary database format changed and " +
 	"is incompatible with previous versions. In order to use the newest version " +
 	"you have to re-build the dictionary database.\n\n" +
-	"The Tibetan to English Translation Tool, version 1.3.0\n" +
+	"The Tibetan to English Translation Tool, version 2.0.0\n" +
 	"Copyright " + '\u00A9' + " 2000-2002 by Andr" + '\u00E9' + "s Montano Pellegrini, all rights reserved.\n\n" + 
 	"This software is protected by the terms of the AMP Open Community License, " +
 	"Version 1.0 (available at www.tibet.iteso.mx/Guatemala/). The Tibetan script " +
@@ -262,12 +262,63 @@ public interface TibetanScanner
 	"(Kyoto: Heirakuji-Shoten, 1974).<p>\n" + 
 	"YT: Oral commentary by Yeshi Thupten.";
 	
-	public void scanLine(String linea);
-	public void scanBody(String linea);
-	public void finishUp();
-	public SimplifiedLinkedList getTokenLinkedList();
-	public Token[] getTokenArray();
-	public void clearTokens();
-	public DictionarySource getDictionarySource();
-	public String[] getDictionaryDescriptions();
+	protected SimplifiedLinkedList wordList;
+	
+	public TibetanScanner()
+	{
+	    wordList = new SimplifiedLinkedList();
+	}
+
+	public void clearTokens()
+	{
+		wordList = new SimplifiedLinkedList();
+	}
+
+	public Token[] getTokenArray()
+	{
+		int i=0;
+		Token token[] = new Token[wordList.size()];
+		SimplifiedListIterator li = wordList.listIterator();
+		while(li.hasNext())
+			token[i++] = (Token)li.next();
+		return token;
+	}
+
+	public SimplifiedLinkedList getTokenLinkedList()
+	{
+		return wordList;
+	}
+	
+	public Word[] getWordArray()
+	{
+	    Token token;
+	    Word array[];
+	    int n=0;
+		SimplifiedListIterator li = wordList.listIterator();
+		while(li.hasNext())
+			if (li.next() instanceof Word) n++;
+	    
+	    if (n==0) return null;
+	    
+	    array = new Word[n];
+	    n--;
+		li = wordList.listIterator();
+		while(li.hasNext())
+		{
+		    token = (Token) li.next();
+			if (token instanceof Word)
+			{
+			    array[n] = (Word) token;
+			    n--;
+			}
+		}
+		
+	    return array;
+	}
+		
+	public abstract void scanLine(String linea);
+	public abstract void scanBody(String linea);
+	public abstract void finishUp();
+	public abstract DictionarySource getDictionarySource();
+	public abstract String[] getDictionaryDescriptions();
 }

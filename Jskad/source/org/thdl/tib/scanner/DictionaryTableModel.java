@@ -76,36 +76,12 @@ public class DictionaryTableModel extends AbstractTableModel
         return getValueAt(0, c).getClass();
     }
     
-    public void newSearch(Token[] token)
+    public void newSearch(Word[] array)
 	{
 	    int i, n=0;
-	    if (token==null)
-		    array = null;
-		else
-		{
-		    for (i=0; i<token.length; i++)
-		    {
-		        if (token[i] instanceof Word)
-		            n++;
-		    }
-		    if (n==0)
-		    {
-		        array=null;
-		    }
-		    else
-		    {
-    		    array = new Word[n];
-	    	    n=0;
-		        for (i=0; i<token.length; i++)
-		        {
-		            if (token[i] instanceof Word)
-    		        {
-	    	            array[n] = (Word) token[i];
-		                n++;
-		            }
-		        }
-		    }
-		}
+	    
+	    this.array = array;
+	    
 		if (array==null)
 		    arrayTibetan = null;
 		else

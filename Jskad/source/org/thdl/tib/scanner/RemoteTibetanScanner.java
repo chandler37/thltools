@@ -28,17 +28,16 @@ import java.io.*;
     @author Andr&eacute;s Montano Pellegrini
     @see RemoteScannerFilter
 */
-public class RemoteTibetanScanner implements TibetanScanner
+public class RemoteTibetanScanner extends TibetanScanner
 {
 	private String url;
-	private SimplifiedLinkedList wordList;
 	private DictionarySource defSourcesWanted;
 		
 	public RemoteTibetanScanner(String url) throws Exception
 	{
+	    super();
 		defSourcesWanted = DictionarySource.getAllDictionaries();
 		this.url = url;
-		wordList = new SimplifiedLinkedList();
 	}
 	
 	/** dont use */
@@ -90,25 +89,6 @@ public class RemoteTibetanScanner implements TibetanScanner
 		}
 	}
 	
-	public SimplifiedLinkedList getTokenLinkedList()
-	{
-		return wordList;
-	}
-	
-	public void clearTokens()
-	{
-		wordList = new SimplifiedLinkedList();
-	}
-	
-	public Token[] getTokenArray()
-	{
-		int i=0;
-		Token token[] = new Token[wordList.size()];
-		SimplifiedListIterator li = wordList.listIterator();
-		while(li.hasNext())
-			token[i++] = (Token)li.next();
-		return token;
-	}
 
 	/** does not do anything */
 	public void finishUp()

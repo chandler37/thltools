@@ -20,6 +20,7 @@ package org.thdl.tib.scanner;
 
 import java.awt.*;
 import java.awt.event.*;
+import org.thdl.util.*;
 
 /** Window that displays copyright stuff.
     
@@ -28,22 +29,34 @@ import java.awt.event.*;
 */
 public class AboutDialog extends Dialog implements ActionListener, WindowListener
 {
-    public AboutDialog(Frame parent, boolean big)
+   	public static String windowAboutOption = "thdl.scanner.omit.about.window";
+    private Checkbox chkOmitNextTime;
+    
+    public AboutDialog(Frame parent, boolean pocketpc)
     {
         super(parent, "About...", true);
+        Panel p  = new Panel(new BorderLayout());
+        chkOmitNextTime = new Checkbox("Don't show this window at startup", ThdlOptions.getBooleanOption(windowAboutOption));
+        p.add(chkOmitNextTime, BorderLayout.CENTER);
         Button close = new Button("Close this window");
-        add(close, BorderLayout.NORTH);
+        p.add(close, BorderLayout.EAST);
+        add(p, BorderLayout.NORTH);
         close.addActionListener(this);
         TextArea ta = new TextArea(TibetanScanner.aboutUnicode,0,0,TextArea.SCROLLBARS_VERTICAL_ONLY);
         ta.setEditable(false);
         addWindowListener(this);
         add(ta, BorderLayout.CENTER);
-        if (big) setSize(480,400);
-        else
+        if (pocketpc)
         {
             Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
             setSize(d); // the size ipaq's window.
         }
+        else setSize(480,400);
+    }
+    
+    public boolean omitNextTime()
+    {
+        return chkOmitNextTime.getState();
     }
     
 	/* FIXME: what happens if this throws an exception?  We'll just

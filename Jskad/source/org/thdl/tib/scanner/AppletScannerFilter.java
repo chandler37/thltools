@@ -25,6 +25,7 @@ import javax.swing.text.JTextComponent;
 import java.awt.event.*;
 import java.awt.datatransfer.*;
 import org.thdl.tib.input.DuffPane;
+import org.thdl.util.*;
 
 /** Inputs a Tibetan text and displays the words with
 	their definitions through through a graphical interfase using a
@@ -50,7 +51,9 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
 	
 	private JMenu mnuEdit;
 	private Object objModified;
+	private AboutDialog diagAbout;
 	ScannerPanel sp;
+	private Frame fakeFrame;
 	
 	public void init()
 	{
@@ -65,6 +68,8 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
 		{
 			url = getCodeBase() + url;
 		}
+		
+		diagAbout = null;
 
 		// sp = new SimpleScannerPanel(url);
 		sp = new DuffScannerPanel(url);
@@ -123,6 +128,25 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
 		SymComponent aSymComponent = new SymComponent();
 		this.addComponentListener(aSymComponent);
 		//}}
+		
+		fakeFrame = new Frame();
+	    if (!ThdlOptions.getBooleanOption(AboutDialog.windowAboutOption))
+	    {
+            diagAbout = new AboutDialog(fakeFrame, true);
+            
+	        diagAbout.show();
+	        if (diagAbout.omitNextTime())
+	        {
+	            ThdlOptions.setUserPreference(AboutDialog.windowAboutOption, true);
+	            try
+	            { 
+	                ThdlOptions.saveUserPreferences();
+	            }
+	            catch(Exception e)
+	            {
+	            }
+	        }
+	    }
 	}
 	
 	/** Added to update the Edit menu in dependence upon
@@ -172,15 +196,27 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
 	/* FIXME: what happens if this throws an exception?  We'll just
        see it on the console--it won't terminate the program.  And the
        user may not see the console! See ThdlActionListener. -DC */
-    public void actionPerformed(ActionEvent e)	
+    public void actionPerformed(ActionEvent event)	
     {
-		Object clicked = e.getSource();
+		Object clicked = event.getSource();
 		StringSelection ss;
 		String s = null;
 		
 		if (clicked==aboutItem)
 		{
-		    JOptionPane.showMessageDialog(AppletScannerFilter.this, TibetanScanner.aboutUnicode, "About", JOptionPane.PLAIN_MESSAGE);
+		    if (diagAbout==null)
+		    {
+		        diagAbout = new AboutDialog(fakeFrame, true);
+		    }
+		    diagAbout.show();
+		    ThdlOptions.setUserPreference(AboutDialog.windowAboutOption, diagAbout.omitNextTime());
+		    try
+	        { 
+	            ThdlOptions.saveUserPreferences();
+	        }
+	        catch(Exception e)
+	        {
+	        }		    
 		}
 		else if (clicked == mnuClear)
 		{

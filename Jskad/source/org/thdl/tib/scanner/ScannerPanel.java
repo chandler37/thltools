@@ -120,6 +120,8 @@ public abstract class ScannerPanel extends Panel implements ActionListener
 		}
 		return null;
 	}
+	
+	
 
 	protected void doingStatus(String s)
 	{
