@@ -33,12 +33,50 @@ import java.awt.event.*;
 public class SimpleScannerPanel extends ScannerPanel
 {
 	private TextArea txtInput, txtOutput;
+	private Panel inputPanel;
 	
-	public SimpleScannerPanel(String file)
+	public SimpleScannerPanel(String file, boolean landscape)
 	{
-		super(file, true);
-		Panel panel1;	
-        GridBagLayout gridbag = new GridBagLayout();
+		super(file);
+		Panel panel1, panel2;
+		inputPanel = new Panel(new CardLayout());
+		txtInput = new TextArea("",1,1,TextArea.SCROLLBARS_VERTICAL_ONLY);
+		inputPanel.add(txtInput, "1");
+
+		if (landscape) panel2 = getDictPanel(5);
+		else panel2 = getDictPanel(4);
+		if (panel2!=null)
+		{
+		    inputPanel.add(panel2, "2");
+		}
+		
+		txtOutput = new TextArea("",0,0,TextArea.SCROLLBARS_VERTICAL_ONLY);
+		txtOutput.setEditable(false);
+		
+		panel1 = new Panel(new BorderLayout());
+		panel1.add(inputPanel, BorderLayout.NORTH);
+		panel1.add(txtOutput, BorderLayout.CENTER);
+		
+		/*panel1 = new Panel (new GridLayout(2,1));
+		panel1.add(inputPanel);
+		panel1.add(txtOutput);*/
+
+        /*GridBagLayout gridbag = new GridBagLayout();
+        GridBagConstraints c = new GridBagConstraints();
+		panel1 = new Panel(gridbag);
+		c.weightx=1;
+		c.gridheight=1;		
+        c.fill = GridBagConstraints.BOTH;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+		gridbag.setConstraints(inputPanel, c);
+		panel1.add(inputPanel);
+		c.gridheight=2;
+		c.weighty=1;
+        c.gridheight = GridBagConstraints.REMAINDER;
+		gridbag.setConstraints(txtOutput, c);
+		panel1.add(txtOutput);*/
+		
+        /* GridBagLayout gridbag = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
 		panel1 = new Panel(gridbag);
 		c.weightx=1;
@@ -46,17 +84,22 @@ public class SimpleScannerPanel extends ScannerPanel
 		c.gridheight=1;
         c.fill = GridBagConstraints.BOTH;
         c.gridwidth = GridBagConstraints.REMAINDER;
-		txtInput = new TextArea("",0,0,TextArea.SCROLLBARS_VERTICAL_ONLY);
-		txtOutput = new TextArea("",0,0,TextArea.SCROLLBARS_VERTICAL_ONLY);
-		txtOutput.setEditable(false);
 		gridbag.setConstraints(txtInput, c);
 		panel1.add(txtInput);
 		c.gridheight = GridBagConstraints.REMAINDER;
 		c.ipady = 70;
-		gridbag.setConstraints(txtOutput, c);		
-		panel1.add(txtOutput);
+		gridbag.setConstraints(txtOutput, c);*/
+		
 		add(panel1, BorderLayout.CENTER);		
 	}
+	
+	public void setWylieInput(boolean enabled)
+	{
+	    CardLayout cl = (CardLayout) inputPanel.getLayout();
+	    if (enabled) cl.first(inputPanel);
+	    else cl.last(inputPanel);
+	}
+	
 
 	public void addFocusListener(FocusListener fl)
 	{

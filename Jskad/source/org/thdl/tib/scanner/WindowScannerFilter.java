@@ -46,7 +46,7 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 {
 	private ScannerPanel sp;
 	private MenuItem mnuExit, mnuCut, mnuCopy, mnuPaste, mnuDelete, mnuSelectAll, mnuAbout, mnuClear;
-	private CheckboxMenuItem tibScript;
+	private CheckboxMenuItem tibScript, mnuDicts;
 	private Object objModified;
 	private Frame frame;
 	private Dialog diagAbout;
@@ -64,11 +64,12 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		frame.setBackground(Color.white);
 	    diagAbout = null;
 	    usingSwing=!ipaq;
+	    Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 
 		if (usingSwing)
 			sp = new DuffScannerPanel(file);
 		else
-			sp = new SimpleScannerPanel(file);
+			sp = new SimpleScannerPanel(file, d.width >d.height);
 		
 		MenuBar mb = new MenuBar();
 		Menu m = new Menu ("File");		
@@ -102,15 +103,22 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		m.add(mnuClear);
 		mnuClear.addActionListener(this);
 		mb.add(m);
+   		m = new Menu("View");
 		if (usingSwing)
 		{
-    		m = new Menu("View");
 	    	tibScript = new CheckboxMenuItem("Tibetan Script", true);
 		    m.add(tibScript);
     		tibScript.addItemListener(this);
-    		mb.add(m);
+    		mnuDicts=null;
     	}
-    	else tibScript=null;
+    	else
+    	{
+	    	mnuDicts = new CheckboxMenuItem("Dictionaries", false);
+		    m.add(mnuDicts);
+    		mnuDicts.addItemListener(this);
+    	    tibScript=null;
+    	}
+   		mb.add(m);
     	
 		m = new Menu("Help");
 		mnuAbout = new MenuItem("About...");
@@ -125,7 +133,7 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		frame.setMenuBar(mb);
 		frame.add(sp);
 		frame.addWindowListener(this);
-		frame.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+		frame.setSize(d);
 		// frame.setSize(240,320);
 		//else frame.setSize(500,600);
 		frame.show();
@@ -374,6 +382,6 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
     
     public void itemStateChanged(ItemEvent e)
     {
-        sp.setEnableTibetanScript(e.getStateChange()==ItemEvent.SELECTED);
+        sp.setWylieInput(e.getStateChange()!=ItemEvent.SELECTED);
     }
 }

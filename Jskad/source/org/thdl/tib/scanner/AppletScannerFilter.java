@@ -263,7 +263,7 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
     }	
     public void itemStateChanged(ItemEvent e)
     {
-        sp.setEnableTibetanScript(e.getStateChange()==ItemEvent.SELECTED);
+        sp.setWylieInput(e.getStateChange()!=ItemEvent.SELECTED);
     }
 
 	class SymComponent extends java.awt.event.ComponentAdapter

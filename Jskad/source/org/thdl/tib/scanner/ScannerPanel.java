@@ -31,6 +31,7 @@ import java.io.*;
 */
 public abstract class ScannerPanel extends Panel implements ActionListener
 {
+    private static int dictCols=4;
 	private Label status;
 	protected Checkbox chkDicts[];
 	Button cmdTranslate;
@@ -40,26 +41,9 @@ public abstract class ScannerPanel extends Panel implements ActionListener
 	    hidden through the menu.
 	*/
 
-	public ScannerPanel(String file, boolean ipaq)
-	{
-		this(file, ipaq, 4);
-	}
-	
 	public ScannerPanel(String file)
 	{
-		this(file, false, 4);
-	}
-	
-	public ScannerPanel(String file, int cols)
-	{
-	    this(file, false, 4);
-	}
-
-	public ScannerPanel(String file, boolean ipaq, int cols)
-
-	{
 		boolean exito=true;
-		int rows, n;
 
 		setLayout(new BorderLayout());
 		status = new Label();
@@ -83,56 +67,57 @@ public abstract class ScannerPanel extends Panel implements ActionListener
 				else
 					scanner = new LocalTibetanScanner(file);
 						
-			String dictionaries[] = scanner.getDictionaryDescriptions();
-			if (dictionaries!=null)
-			{
-				n = dictionaries.length;
-				chkDicts = new Checkbox[n];
-				if (n>cols)
-				{
-					rows = n/cols;
-					if (n%cols>0) rows++;
-				}
-				else
-				{
-					cols = n;
-					rows = 1;
-				}
-				Panel panel2 = new Panel(new GridLayout(rows,cols));
-				// panel2 = new Panel();
-				int i;
-
-				for (i=0; i<dictionaries.length; i++)
-				{
-					if (dictionaries[i]!=null)
-						chkDicts[i] = new Checkbox(dictionaries[i] + " (" + Definitions.defTags[i] + ")", true);
-					else
-						chkDicts[i] = new Checkbox(Definitions.defTags[i], true);
-					panel2.add(chkDicts[i]);
-				}
-				panel1.add(panel2, BorderLayout.SOUTH);
-			}			
 		}
 		catch (Exception e)
 		{
 			status.setText("Dictionary could no be loaded!");
 			exito=false;
 		}
-		if (ipaq)
-		{
-/*		    panel2 = new Panel(new BorderLayout());
-		    panel2.add(panel1, BorderLayout.CENTER);
-		    panel2.add(copyright, BorderLayout.SOUTH);
-		    add(panel2, BorderLayout.SOUTH);*/
-		    add(panel1, BorderLayout.SOUTH);
-		}
-		else
-		{
-    		add(panel1, BorderLayout.NORTH);
-//   	    	add(copyright, BorderLayout.SOUTH);
-		}
+  		add(panel1, BorderLayout.NORTH);
+		
 		if (exito)
 			returnStatusToNorm();
+	}
+	
+	protected Panel getDictPanel()
+	{
+	    return getDictPanel(dictCols);
+	}
+	
+	protected Panel getDictPanel(int dictCols)
+	{
+		int rows, n;
+		
+		String dictionaries[] = scanner.getDictionaryDescriptions();
+		if (dictionaries!=null)
+		{
+			n = dictionaries.length;
+			chkDicts = new Checkbox[n];
+			if (n>dictCols)
+			{
+				rows = n/dictCols;
+				if (n%dictCols>0) rows++;
+			}
+			else
+			{
+				dictCols = n;
+				rows = 1;
+			}
+			Panel panel2 = new Panel(new GridLayout(rows,dictCols));
+			// panel2 = new Panel();
+			int i;
+
+			for (i=0; i<dictionaries.length; i++)
+			{
+				if (dictionaries[i]!=null)
+					chkDicts[i] = new Checkbox(dictionaries[i] + " (" + Definitions.defTags[i] + ")", true);
+				else
+					chkDicts[i] = new Checkbox(Definitions.defTags[i], true);
+				panel2.add(chkDicts[i]);
+			}
+			return panel2;
+		}
+		return null;
 	}
 
 	protected void doingStatus(String s)
@@ -177,6 +162,6 @@ public abstract class ScannerPanel extends Panel implements ActionListener
 	
 	public abstract void translate();
 	public abstract void clear();
-	public void setEnableTibetanScript(boolean enabled) {}
+	public abstract void setWylieInput(boolean enabled);
 	public void addFocusListener(FocusListener fl) {}
 }

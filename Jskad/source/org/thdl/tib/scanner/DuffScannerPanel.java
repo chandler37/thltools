@@ -50,7 +50,10 @@ public class DuffScannerPanel extends ScannerPanel
 	public DuffScannerPanel(String file)
 	{
 		super(file);
-		Panel panel1;
+		Panel panel1, panel2;
+		panel2 = new Panel(new BorderLayout());
+		panel1 = getDictPanel();
+		if (panel1!=null) panel2.add (panel1, BorderLayout.NORTH);
 		panel1 = new Panel(new GridLayout(3,1));
 		/* Looks up tibcodes in directory of applet. In order
 		to work through a proxy store all the applet classes toghether
@@ -77,7 +80,8 @@ public class DuffScannerPanel extends ScannerPanel
 
 		panel1.add(listDef);
 		panel1.add(fullDef);
-		add(panel1, BorderLayout.CENTER);
+		panel2.add(panel1, BorderLayout.CENTER);
+		add(panel2, BorderLayout.CENTER);
 		showingTibetan = true;
 		
 //		tibetanFont = new Font("TibetanMachine",Font.PLAIN,36);
@@ -175,10 +179,10 @@ public class DuffScannerPanel extends ScannerPanel
     	table.repaint();
     }
 
-	public void setEnableTibetanScript(boolean enabled)
+	public void setWylieInput(boolean enabled)
 	{
 	    CardLayout cl = (CardLayout) inputPanel.getLayout();
-	    if (enabled && !showingTibetan)
+	    if (!enabled && !showingTibetan)
 	    {
 			String s = txtInput.getText();
 /*			int posEnter = s.indexOf('\n');
@@ -191,7 +195,7 @@ public class DuffScannerPanel extends ScannerPanel
 			cl.first(inputPanel);
 			showingTibetan = true;
 	    }
-	    if (!enabled && showingTibetan)
+	    if (enabled && showingTibetan)
 	    {
 			txtInput.setText(duffInput.getWylie());
 			table.activateTibetan(false);
