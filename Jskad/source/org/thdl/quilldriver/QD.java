@@ -593,7 +593,12 @@ public String getMediaPlayerProperty() {
 	//if already set, return current media player
 	if (thdl_mediaplayer_property == null) {
 		//else get default based on system, user prefs, etc.
-		String os = System.getProperty("os.name").toLowerCase();
+        String os;
+        try {
+            os = System.getProperty("os.name").toLowerCase();
+        } catch (SecurityException e) {
+            os = "unknown";
+        }
 		if (os.indexOf("mac") != -1) //macs default to qt4j
 			thdl_mediaplayer_property = ThdlOptions.getStringOption("thdl.media.player", "qt4j");
 		else if (os.indexOf("windows") != -1)
