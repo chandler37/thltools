@@ -7,46 +7,80 @@
 <c:if test="${ ! sessionScope.user.guest }">
 	<c:set var="editMode" value="${ true }" />
 </c:if>
-<div id="label"><p>THDL Tibetan Collaborative Dictionaries: Main Menu</p></div><!--END label-->
 
-<div id="message">
-<p>
-Message: 
-<c:if test="${ ! empty message }">
-<c:out value="${ message }" />
-</c:if>
-</p>
-</div><!--END message-->
-
-<div id="columnSingle">
-	<div id="menu">
-	<form id="cmd-menu" action="/lex/action" method="get" >
+<div id="columnLeft">
+	
+	<div class="highlightBox">
+	<form action="/lex/action" method="get" >
+	<h2>Find a term</h2>
 	<p>
-	<input type="hidden" name="cmd" value="" />
+	<input type="hidden" name="cmd" value="find" />
 	<input type="hidden" name="comp" value="term" />
-	Step 1: Enter a term <br />
-	<input type="text" name="term" id="term" size="20" value="" onfocus="setCmd('find','menu')" /> <br />
-	Step 2: Choose an action <br />
-	<input type="submit" value="Find Term" onclick="setCmd('find','menu')" /> <br />
-	<c:if test="${ editMode }">
-	<input type="submit" value="New Entry" onclick="setCmd('getInsertTermForm', 'menu')" /> <br />
-	Metadata Preferences <br />
-	<input type="submit" value="Defaults" onclick="setCmd('getMetaDefaultsForm','menu')"/> <br />
-	<input type="submit" value="Preferences" onclick="setCmd('getMetaPrefsForm','menu')"/> <br />
-	</c:if>
+	Term: <input type="text" name="term" id="term" size="20" value=""  /> <br />
+	Find:
+
+	<select name="findMode">
+		<option value="exact">Exact match</option>
+		<option value="startsWith">At beginning of term</option>
+		<option value="anywhere">Anywhere in term</option>
+	</select>
+	</p>
+	
+	<p>
+	<input type="submit" value="Find Term"/>
 	</p>
 	</form>
 	</div>
+	
+	<c:if test="${ editMode }">
 
-<%-- <p>This THDL Dictionary Server is a new online rich dictionary. </p>
-<p>During development, please follow this advice:
-<ul>
-	<li><em>bookmark this page</em> and use the bookmark to get back after any unexpected errors.</li>
-	<li><em>Don't refresh pages</em> pages with your browser's refresh commands. After database inserts, a browser refresh will cause a duplicate insert.</li>
-	<li>After you request to add/edit a component look for the 'GO TO FORM' link in the navigation bar to quickly get to the form.</li>
-</ul>
-</p> --%>
-</div><!--END columnSingle-->
+	<div class="highlightBox">
+	<form action="/lex/action" method="get" >
+	<h2>Add a new term</h2>	
+	<p>
+	<input type="hidden" name="cmd" value="getInsertTermForm" />
+	<input type="hidden" name="comp" value="term" />
+	Term: <input type="text" name="term" id="term" size="20" value=""  />
+	</p>
+	<p class="inlineDocumentation">
+	Note: if an exact match of this term already exists, this action will direct to the edit page for that term.
+	</p>
+	<p>
+	<input type="submit" value="New Entry" /> <br />
+	</p>
+	</form>
+	</div>
+	
+	<div class="highlightBox">
+	<h2>Defaults &amp; Preferences</h2>
+	<form action="/lex/action" method="get" >
+	<p>
+	<input type="hidden" name="cmd" value="getMetaDefaultsForm" />
+	<input type="submit" value="Defaults"/> 
+	</p>
+	</form>
+	
+	<form action="/lex/action" method="get" >
+	<p>
+	<input type="hidden" name="cmd" value="getMetaPrefsForm" />
+	<input type="submit" value="Preferences" /> <br />
+	</p>
+	</form>
+	</div>
+	
+	</c:if>
+</div><!--END COLUMN LEFT-->
+	
+<div id="columnCenter">
+	<h1>THDL Tibetan Collaborative Dictionaries: Main Menu</h1>
+
+	<c:if test="${ ! empty message }">
+	<p id="message">
+	Message: <c:out value="${ message }" />
+	</p>
+	</c:if>
+
+</div><!--END COLUMN CENTER-->
 
 <jsp:include page="footer.jsf" flush="false" />
 

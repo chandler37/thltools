@@ -36,6 +36,7 @@ public class FindCommand extends LexCommand implements Command
 			String next = getNext();
 			DisplayHelper displayHelper = getSessionManager().getDisplayHelper( req.getSession( true ) );
 			LexQuery query = getSessionManager().getQuery( req.getSession( true ) );
+			query.populate( req.getParameterMap() );
 
 			if ( component instanceof ITerm )
 			{

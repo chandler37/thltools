@@ -90,12 +90,14 @@ analysis |
 <c:out value='<input name="showTranslations" type="checkbox" value="true" ${ckd}/>' escapeXml='false'/>
 translations
 
+<c:if test="${ ! sessionScope.user.guest }">
 <c:set var="ckd" value=""/>
 <c:if test="${ sessionScope.helper.showEditOptions }">
 <c:set var="ckd" value='checked="checked"'/>
 </c:if>
 <c:out value='<input name="showEditOptions" type="checkbox" value="true" ${ckd}/>' escapeXml='false'/>
 edit options
+</c:if>
 
 <input type="hidden" name="cmd" value="displayFull"/>
 <input type="submit" value="Redisplay"/>
