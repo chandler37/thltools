@@ -74,15 +74,37 @@
 <servlet>
 	<servlet-name>action</servlet-name>
 	<servlet-class>org.thdl.lex.LexActionServlet</servlet-class>
+
+	<!--These init parameter provide configuration info for the Global object that stores recently modified terms.-->
 	<init-param>
 		<param-name>globalDataRefreshDelay</param-name>
-		<!--delay in minutes-->
-		<param-value>6</param-value>
+		<param-value>6</param-value><!--delay in seconds-->
 	</init-param>
 	<init-param>
-		<param-name>recentItems</param-name>
-		<!--number of recently modified terms to store in the global object-->
+		<param-name>recentItems</param-name><!--number of recently modified terms -->
 		<param-value>6</param-value>
+	</init-param>
+
+	<!--These init parameter provide configuration info for the OAI Metadata Harvesting of Bibliographical entries-->
+	<init-param>
+		<param-name>oaiServer</param-name>
+		<param-value>http://datastore.lib.virginia.edu/tibet/spt/SPT--OAI.php</param-value>
+	</init-param>
+	<init-param>
+		<param-name>oaiMetadataPrefix</param-name>
+		<param-value>oai_dc</param-value>
+	</init-param>
+	<init-param>
+		<param-name>oaiHome</param-name>
+		<param-value>/Users/travis/webapps/oai-sources</param-value>
+	</init-param>
+	<init-param>
+		<param-name>oaiLocalCopy</param-name>
+		<param-value>Thdl_Oai_Bibliography_Sources.xml</param-value>
+	</init-param>
+	<init-param>
+		<param-name>oaiRefreshDelay</param-name><!--Hours between total refresh of sources-->
+		<param-value>24</param-value>
 	</init-param>
 </servlet>
 

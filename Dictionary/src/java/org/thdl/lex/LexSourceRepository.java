@@ -25,10 +25,124 @@ public class LexSourceRepository
 {
 //attributes
 	private static LexSourceRepository instance;
-
 	private ScheduledHarvestManager harvestManager;
-
 	private ScheduledHarvest harvest;
+
+	private String oaiServer;
+	private String oaiMetadataPrefix;
+	private String oaiHome;
+	private String oaiLocalCopy;
+	private int oaiRefreshDelay;
+
+
+	/**
+	 *  Sets the oaiServer attribute of the LexSourceRepository object
+	 *
+	 * @param  oaiServer  The new oaiServer value
+	 */
+	public void setOaiServer( String oaiServer )
+	{
+		this.oaiServer = oaiServer;
+	}
+
+
+	/**
+	 *  Sets the oaiMetadataPrefix attribute of the LexSourceRepository object
+	 *
+	 * @param  oaiMetadataPrefix  The new oaiMetadataPrefix value
+	 */
+	public void setOaiMetadataPrefix( String oaiMetadataPrefix )
+	{
+		this.oaiMetadataPrefix = oaiMetadataPrefix;
+	}
+
+
+	/**
+	 *  Sets the oaiHome attribute of the LexSourceRepository object
+	 *
+	 * @param  oaiHome  The new oaiHome value
+	 */
+	public void setOaiHome( String oaiHome )
+	{
+		this.oaiHome = oaiHome;
+	}
+
+
+	/**
+	 *  Sets the oaiLocalCopy attribute of the LexSourceRepository object
+	 *
+	 * @param  oaiLocalCopy  The new oaiLocalCopy value
+	 */
+	public void setOaiLocalCopy( String oaiLocalCopy )
+	{
+		this.oaiLocalCopy = oaiLocalCopy;
+	}
+
+
+	/**
+	 *  Sets the oaiRefreshDelay attribute of the LexSourceRepository object
+	 *
+	 * @param  oaiRefreshDelay  The new oaiRefreshDelay value
+	 */
+	public void setOaiRefreshDelay( int oaiRefreshDelay )
+	{
+		this.oaiRefreshDelay = oaiRefreshDelay;
+	}
+
+
+	/**
+	 *  Gets the oaiServer attribute of the LexSourceRepository object
+	 *
+	 * @return    The oaiServer value
+	 */
+	public String getOaiServer()
+	{
+		return oaiServer;
+	}
+
+
+	/**
+	 *  Gets the oaiMetadataPrefix attribute of the LexSourceRepository object
+	 *
+	 * @return    The oaiMetadataPrefix value
+	 */
+	public String getOaiMetadataPrefix()
+	{
+		return oaiMetadataPrefix;
+	}
+
+
+	/**
+	 *  Gets the oaiHome attribute of the LexSourceRepository object
+	 *
+	 * @return    The oaiHome value
+	 */
+	public String getOaiHome()
+	{
+		return oaiHome;
+	}
+
+
+	/**
+	 *  Gets the oaiLocalCopy attribute of the LexSourceRepository object
+	 *
+	 * @return    The oaiLocalCopy value
+	 */
+	public String getOaiLocalCopy()
+	{
+		return oaiLocalCopy;
+	}
+
+
+	/**
+	 *  Gets the oaiRefreshDelay attribute of the LexSourceRepository object
+	 *
+	 * @return    The oaiRefreshDelay value
+	 */
+	public int getOaiRefreshDelay()
+	{
+		return oaiRefreshDelay;
+	}
 
 
 	/**
@@ -150,7 +264,7 @@ public class LexSourceRepository
 	 *
 	 * @exception  Exception  Description of the Exception
 	 */
-	public LexSourceRepository() throws Exception
+	private LexSourceRepository() throws Exception
 	{
 		SimpleDataStore dataStore = new SimpleDataStore( "/Users/travis/webapps/lex/dlese-oai/scheduled-harvester", true );
 		File initialHarvestDir = new File( "/Users/travis/webapps/lex/dlese-oai/datastore.lib.virginia.edu" );

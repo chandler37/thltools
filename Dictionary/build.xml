@@ -1,3 +1,23 @@
+<!-- 
+This build file requires a build.properties file with the following properties:
+
+#Configure properties to access the Manager application user/pass combo should be in $TOMCAT_HOME/conf/tomcat-users.xml with manager role.
+catalina.home=/usr/local/tomcat
+catalina.base=/usr/local/tomcat
+url=http://localhost:2020/manager
+username=
+password=
+
+#provide location of working copy of lex-context-config.xml
+lex.context.config=lex-context-config-working.xml
+
+#These properties need to be set to run the unit tests. They are your login to the dictionary
+lex.username=
+lex.password=
+jmeterhome=../jmeter
+
+ -->
+
 <project name="Lex" default="compile" basedir=".">
 
 	<!-- Configure the directory into which the web application is built -->
@@ -10,9 +30,9 @@
   <!-- Configure the context path for this application -->
 	<property name="path" value="/lex"/>
 
-<!-- 	<property file="${user.home}/.${ant.project.name}-build.properties"/>
-	<property file="${user.home}/.build.properties"/> -->
-	<property file="working.build.properties"/> 
+    <property file="${user.home}/.${ant.project.name}-build.properties"/>
+	<property file="${user.home}/.build.properties"/>
+	<property file="build.properties"/> 
 
   <!-- Configure the custom Ant tasks for the Manager application 
   			These tasks require catalina-ant.jar in $ANT_HOME/lib-->
