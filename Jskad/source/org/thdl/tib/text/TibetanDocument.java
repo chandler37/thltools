@@ -1148,6 +1148,15 @@ public class TibetanDocument extends DefaultStyledDocument {
         return romanAttributeSet;
     }
 
+    /** Gets a copy of the attribute set applied to Roman text in this
+        document but with the font size set to fontSize. */
+    public MutableAttributeSet getCopyOfRomanAttributeSet(int fontSize) {
+        SimpleAttributeSet s
+            = new SimpleAttributeSet(getRomanAttributeSet());
+        StyleConstants.setFontSize(s, fontSize);
+        return s;
+    }
+
     /** Sets the attribute set applied to Roman text in this
         document. */
     public void setRomanAttributeSet(MutableAttributeSet ras) {
@@ -1205,16 +1214,28 @@ public class TibetanDocument extends DefaultStyledDocument {
                 String fontName = StyleConstants.getFontFamily(attr);
                 int fontNum;
 
-                if ((0 == (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName))) || i==endPos.getOffset()) {
+                if ((0 == (fontNum
+                           = TibetanMachineWeb.getTMWFontNumber(fontName)))
+                    || i==endPos.getOffset()) {
                     if (i != start) {
                         dc_array = (DuffCode[])dcs.toArray(any_dc_array);
+
+                        // SPEED_FIXME: determining font size might be slow
+                        int fontSize = 72; /* the failure ought to be
+                                              obvious at this size */
+                        try {
+                            fontSize = ((Integer)getCharacterElement(start).getAttributes().getAttribute(StyleConstants.FontSize)).intValue();
+                        } catch (Exception e) {
+                            // leave it as 72
+                        }
+
                         remove(start, i-start);
                         ThdlDebug.verify(getRomanAttributeSet() != null);
                         insertString(start,
                                      TibTextUtils.getTranslit(EWTSNotACIP,
                                                               dc_array,
                                                               noSuchWylie),
-                                     getRomanAttributeSet());
+                                     getCopyOfRomanAttributeSet(fontSize));
                         dcs.clear();
                     }
                     start = i+1;
