@@ -60,7 +60,7 @@ public class DisplayCommand extends LexCommand implements Command
 		{
 			component.populate( req.getParameterMap() );
 
-			LexQuery query = getSessionMgr().getQuery( req.getSession( true ) );
+			LexQuery query = getSessionManager().getQuery( req.getSession( true ) );
 			query.setQueryComponent( component );
 			LexComponentRepository.loadTermByPk( query );
 

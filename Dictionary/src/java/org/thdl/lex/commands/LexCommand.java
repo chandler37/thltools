@@ -34,7 +34,7 @@ public abstract class LexCommand implements Command
 	 *@param  sessionMgr  The new sessionMgr value
 	 *@since
 	 */
-	public void setSessionMgr( UserSessionManager sessionMgr )
+	public void setSessionManager( UserSessionManager sessionMgr )
 	{
 		this.sessionMgr = sessionMgr;
 	}
@@ -107,11 +107,11 @@ public abstract class LexCommand implements Command
 	 *@return    The sessionMgr value
 	 *@since
 	 */
-	public UserSessionManager getSessionMgr()
+	public UserSessionManager getSessionManager()
 	{
 		if ( null == sessionMgr )
 		{
-			setSessionMgr( UserSessionManager.getInstance() );
+			setSessionManager( UserSessionManager.getInstance() );
 		}
 		return sessionMgr;
 	}

@@ -42,7 +42,7 @@ public class FindCommand extends LexCommand implements Command
 			{
 				ITerm term = (ITerm) component;
 
-				LexQuery query = getSessionMgr().getQuery( req.getSession( true ) );
+				LexQuery query = getSessionManager().getQuery( req.getSession( true ) );
 
 				query.setQueryComponent( term );
 				LexComponentRepository.findTermsByTerm( query );
@@ -50,7 +50,7 @@ public class FindCommand extends LexCommand implements Command
 				if ( iterator.hasNext() )
 				{
 					setNext( "displayEntry.jsp" );
-					getSessionMgr().setQuery( req.getSession( true ), query );
+					getSessionManager().setQuery( req.getSession( true ), query );
 					msg = "There are " + query.getResults().size() + " terms matching " + term.getTerm();
 				}
 				else

@@ -12,7 +12,7 @@ public class NullCommand extends LexCommand implements Command
 		if( null == req.getParameter( LexConstants.COMMAND_REQ_PARAM ) )
 			req.setAttribute( LexConstants.MESSAGE_REQ_ATTR, "Start from here." );
 		if( "login" == req.getParameter( LexConstants.COMMAND_REQ_PARAM ) 
-			&& null != getSessionMgr().getSessionUser( req.getSession(true) ) )
+			&& null != getSessionManager().getSessionUser( req.getSession(true) ) )
 			setNext("menu.jsp");
 		return getNext();
 	}

@@ -19,6 +19,54 @@ import org.thdl.users.*;
  */
 public class UpdateCommand extends LexCommand implements Command
 {
+
+	private boolean insertMode;
+	private boolean termMode;
+
+
+	/**
+	 *  Sets the termMode attribute of the GetFormCommand object
+	 *
+	 * @param  termMode  The new termMode value
+	 */
+	public void setTermMode( boolean termMode )
+	{
+		this.termMode = termMode;
+	}
+
+
+	/**
+	 *  Gets the termMode attribute of the GetFormCommand object
+	 *
+	 * @return    The termMode value
+	 */
+	public boolean isTermMode()
+	{
+		return termMode;
+	}
+
+
+	/**
+	 *  Sets the insertMode attribute of the GetFormCommand object
+	 *
+	 * @param  insertMode  The new insertMode value
+	 */
+	public void setInsertMode( boolean insertMode )
+	{
+		this.insertMode = insertMode;
+	}
+
+
+	/**
+	 *  Gets the insertMode attribute of the GetFormCommand object
+	 *
+	 * @return    The insertMode value
+	 */
+	public boolean isInsertMode()
+	{
+		return insertMode;
+	}
+
 //helper methods
 	/**
 	 *  Description of the Method
@@ -35,49 +83,40 @@ public class UpdateCommand extends LexCommand implements Command
 		{
 			if ( CommandToken.isValid( req ) )
 			{
-				ThdlUser user = getSessionMgr().getSessionUser( req.getSession( true ) );
+				HttpSession ses = req.getSession( false );
+				if ( null == ses )
+				{
+					throw new CommandException( "Could not update component, uses session has expired" );
+				}
+				ThdlUser user = getSessionManager().getSessionUser( ses );
+				LexQuery query = getSessionManager().getQuery( ses );
+
+				Map params = req.getParameterMap();
+				query.getUpdateComponent().populate( params );
+				query.getUpdateComponent().getMeta().populate( params );
+				Date now = new Date( System.currentTimeMillis() );
+				query.getUpdateComponent().getMeta().setModifiedOn( now );
+				query.getUpdateComponent().getMeta().setModifiedBy( user.getId() );
+				if ( isInsertMode() )
+				{
+					query.getUpdateComponent().getMeta().setCreatedOn( now );
+					query.getUpdateComponent().getMeta().setCreatedBy( user.getId() );
+				}
+				ITerm term = query.getEntry();
+				LexComponentRepository.saveOrUpdate( term );
 				msg = "Successful Update";
-
-				/*
-				    component.setMetaId( new Integer( req.getParameter( "metaId" ) ) );
-				    LexComponentRepository.loadByPk( component );
-				    component.populate( req.getParameterMap() );
-				    Date now = new Date( System.currentTimeMillis() );
-				    component.getMeta().setModifiedOn( now );
-				    component.getMeta().setModifiedBy( user.getId() );
-				    LexComponentRepository.update( component );
-				    req.setAttribute( LexConstants.MESSAGE_REQ_ATTR, msg );
-				    req.setAttribute( "jumpToLocation", component.getLabel() );
-				  */
-				ITerm term = getSessionMgr().getQuery( req.getSession( true ) ).getEntry();
-				LexComponentRepository.update( term );
-
-				/*
-				    term = new Term();
-				    term.setMetaId( new Integer( 1 ) );
-				    try
-				    {
-				    LexComponentRepository.loadTermByPk( term );
-				    }
-				    catch ( LexRepositoryException e )
-				    {
-				    throw new CommandException( "Command had trouble processing " + term, e );
-				    }
-				  */
-				getSessionMgr().setDisplayMode( req.getSession( true ), "edit" );
+				getSessionManager().setDisplayMode( req.getSession( true ), "edit" );
 			}
 			else
 			{
-				msg = "Invalid Reload Attempted";
+				msg = "Invalid Reload Attempted.";
 			}
 			return getNext();
 		}
-		/*
-		    catch ( LexComponentException e )
-		    {
-		    throw new CommandException( e );
-		    }
-		 */
+		catch ( LexComponentException e )
+		{
+			throw new CommandException( e );
+		}
 		catch ( LexRepositoryException e )
 		{
 			throw new CommandException( "Command had trouble processing " + component, e );
@@ -97,9 +136,9 @@ public class UpdateCommand extends LexCommand implements Command
 	public HashMap initForwards()
 	{
 		HashMap map = new HashMap();
-		map.put( LexConstants.TERMLABEL_VALUE, "displayEntry.jsp" );
-		map.put( LexConstants.SUBDEFINITIONLABEL_VALUE, "displayEntry.jsp" );
-		map.put( LexConstants.TRANSLATIONLABEL_VALUE, "displayEntry.jsp" );
+		// map.put( LexConstants.TERMLABEL_VALUE, "displayEntry.jsp" );
+		// map.put( LexConstants.SUBDEFINITIONLABEL_VALUE, "displayEntry.jsp" );
+		// map.put( LexConstants.TRANSLATIONLABEL_VALUE, "displayEntry.jsp" );
 		// map.put( LexConstants.DEFINITIONLABEL_VALUE, "displayEntry.jsp" );
 		// map.put( LexConstants.PASSAGELABEL_VALUE, "displayEntry.jsp" );
 		return map;
@@ -107,24 +146,29 @@ public class UpdateCommand extends LexCommand implements Command
 
 //constructors
 	/**
-	 *Constructor for the UpdateCommand object
+	 *Constructor for the GetFormCommand object
+	 *
+	 * @param  next        Description of the Parameter
+	 * @param  insertMode  Description of the Parameter
+	 * @param  termMode    Description of the Parameter
 	 */
-	public UpdateCommand()
+	public UpdateCommand( String next, Boolean insertMode, Boolean termMode )
 	{
-		super();
-		//setForwards( initForwards() );
+		super( next );
+		setInsertMode( insertMode.booleanValue() );
+		setTermMode( termMode.booleanValue() );
 	}
 
 
 	/**
-	 *Constructor for the UpdateCommand object
+	 *Constructor for the GetFormCommand object
 	 *
-	 * @param  next  Description of the Parameter
+	 * @param  next        Description of the Parameter
+	 * @param  insertMode  Description of the Parameter
 	 */
-	public UpdateCommand( String next )
+	public UpdateCommand( String next, Boolean insertMode )
 	{
-		this();
-		setNext( next );
+		this( next, insertMode, Boolean.FALSE );
 	}
 }
 
