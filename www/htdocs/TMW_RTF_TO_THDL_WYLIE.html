@@ -192,8 +192,13 @@ The first section of text is the short "introduction" about the Theme and the va
 
 <p>
   In the same JAR file as Jskad, power users will find a command-line
-  utility that converts a Tibetan Machine Web-encoded (TMW-encoded) Rich
-  Text Format (RTF) file to either of these three output formats:
+  utility that converts Tibetan documents from one digital
+  representation to another.&nbsp; The converter embodies the same
+  technology as Jskad itself, but often works even when Jskad fails
+  due to Java's presently poor support for viewing RTF
+  documents.&nbsp; This command-line utility converts a Tibetan
+  Machine Web-encoded (TMW-encoded) Rich Text Format (RTF) file to
+  either of these three output formats:
 </p>
 <ul>
   <li>RTF files in Unicode</li>
@@ -245,10 +250,11 @@ The first section of text is the short "introduction" about the Theme and the va
   font.&nbsp; Here is some example output:
 </p>
 <pre>
-java -cp Jskad.jar \
+java -cp "c:\my thdl tools\Jskad.jar" \
      org.thdl.tib.input.TibetanConverter \
         --find-some-non-tmw \
         "Dalai Lama Fifth History 01.rtf"
+
 non-TMW character newline in the font Tahoma appears first at location 39
 non-TMW character ' ' in the font TimesNewRoman appears first at location 45
 non-TMW character '}' in the font Tahoma appears first at location 66
@@ -260,14 +266,15 @@ non-TMW character newline in the font Times New Roman appears first at location 
 <p>
   Given the above output, you can be sure that a flawless conversion
   (barring the appearance of <a href="#knownbugs">known bugs</a>) will
-  result when you run <tt>java -cp Jskad.jar
-  org.thdl.tib.input.TibetanConverter --to-wylie "Dalai Lama
-  Fifth History 01.rtf" &gt; "Dalai Lama Fifth History 01 in THDL
-  Extended Wylie.rtf"</tt>.&nbsp; This is because the only text in the
-  input file besides Tibetan is whitespace and the Tahoma characters
-  <tt>'{'</tt>, <tt>'}'</tt>, and <tt>'\'</tt>.  These Tahoma
-  characters are understood by the tool; they are symptoms of the
-  &quot;curly-brace problem&quot;.
+  result when you run <tt>java -cp "c:\my thdl tools\Jskad.jar"
+  org.thdl.tib.input.TibetanConverter --to-wylie "Dalai Lama Fifth
+  History 01.rtf" &gt; "Dalai Lama Fifth History 01 in THDL Extended
+  Wylie.rtf"</tt>.&nbsp; (Note that the '&gt;' causes the output to be
+  directed to the file named thereafter; this is quite handy.)&nbsp;
+  This is because the only text in the input file besides Tibetan is
+  whitespace and the Tahoma characters <tt>'{'</tt>, <tt>'}'</tt>, and
+  <tt>'\'</tt>.  These Tahoma characters are understood by the tool;
+  they are symptoms of the &quot;curly-brace problem&quot;.
 </p>
 
 <h3>Failed Conversions</h3>
@@ -281,26 +288,56 @@ non-TMW character newline in the font Times New Roman appears first at location 
 
 <p>
   Note that some TMW glyphs have no transliteration in Exteded
-  Wylie.&nbsp; When you encounter such a glyph, you'll find a message
-  like the following in your RTF output:
+  Wylie.&nbsp; When you encounter such a glyph, you'll find
+  <tt>\tmwXYYY</tt> in your output, where X tells you which TMW font
+  the troublesome glyph comes from and YYY is the decimal number of
+  the glyph in that font (which is a number between 000 and 255
+  inclusive, usually between 33 and 126).&nbsp; The following are
+  values corresponding to X:
 </p>
 
-<p>
-  <tt>&lt;&lt;[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert
-  DuffCode &lt;duffcode font=TibetanMachineWeb8 charNum=101
-  character=e/&gt; to THDL Extended Wylie.&nbsp; Please see the <a
-  href="http://iris.lib.virginia.edu/tibet/tools/tmw.html#doc">
-  documentation for the TMW font</a> and transcribe this
-  yourself.]]&gt;&gt;</tt>
-</p>
+<ul>
+  <li>
+    When X is 0, the TibetanMachineWeb font contains the glyph.
+  </li>
+  <li>
+    When X is 1, the TibetanMachineWeb1 font contains the glyph.
+  </li>
+  <li>
+    When X is 2, the TibetanMachineWeb2 font contains the glyph.
+  </li>
+  <li>
+    When X is 3, the TibetanMachineWeb3 font contains the glyph.
+  </li>
+  <li>
+    When X is 4, the TibetanMachineWeb4 font contains the glyph.
+  </li>
+  <li>
+    When X is 5, the TibetanMachineWeb5 font contains the glyph.
+  </li>
+  <li>
+    When X is 6, the TibetanMachineWeb6 font contains the glyph.
+  </li>
+  <li>
+    When X is 7, the TibetanMachineWeb7 font contains the glyph.
+  </li>
+  <li>
+    When X is 8, the TibetanMachineWeb8 font contains the glyph.
+  </li>
+  <li>
+    When X is 9, the TibetanMachineWeb9 font contains the glyph.
+  </li>
+</ul>
 
 <p>
-  Upon seeing this, you should consult the <a
+  Upon finding a <tt>\tmwXYYY</tt> sequence in your output, you should
+  consult the <a
   href="http://iris.lib.virginia.edu/tibet/tools/tmw.html#doc">
   documentation</a> for the specific TMW font named.&nbsp; Find the
-  glyph (by its charNum) and decide how to proceed.&nbsp; If you find
-  a glyph that you believe should have been converted into Extended
-  Wylie by the tool, please report this as a bug.
+  glyph (by its YYY value) and decide how to proceed.&nbsp; If you
+  find a glyph that you believe should have been converted into
+  Extended Wylie by the tool, please report this as a bug through the
+  SourceForge website or via e-mail.
 </p>
 
 <h4>Other Conversions</h4>
@@ -313,9 +350,13 @@ non-TMW character newline in the font Times New Roman appears first at location 
 </p>
 
 <p>
-  There is one TMW glyph (TibetanMachineWeb7, glyph 91) that has no
-  Tibetan Machine equivalent.&nbsp; This glyph is the only TMW glyph
-  that can cause a TMW-&gt;TM conversion to fail.
+  There is one TMW glyph (TibetanMachineWeb7, glyph 91 [\tmw7091])
+  that has no Tibetan Machine equivalent.&nbsp; This glyph is the only
+  TMW glyph that can cause a TMW-&gt;TM conversion to fail.&nbsp; It
+  is fairly common, though, especially if you've used Jskad to prepare
+  your document.&nbsp; It might be appropriate to change the document
+  to use TibetanMachineWeb7, glyph 90 [\tmw7090], a similar glyph that
+  does have a TM equivalent.
 </p>
 
 <p>
@@ -326,23 +367,37 @@ non-TMW character newline in the font Times New Roman appears first at location 
 <p>
   If you ever encounter problems in a TM-&gt;TMW conversion, please
   send us mail with the error report (and the problem input document's
-  resulting document) so that we can improve our tools.&nbsp;
+  resulting document) so that we can improve our tools.
 </p>
 
 <h3>Invoking the Converter</h3>
 
 <p>
-  First add Jskad.jar to your CLASSPATH.&nbsp; Now run the command
-  <tt>java org.thdl.tib.input.TibetanConverter</tt> from a
-  command prompt.&nbsp; You will see usage information appear.
+  First add Jskad.jar to your CLASSPATH.&nbsp; You can do this by
+  setting an environment variable CLASSPATH to contain the absolute
+  path of the Jskad.jar file and then running the command <tt>java
+  org.thdl.tib.input.TibetanConverter</tt>.&nbsp; Alternatively, you
+  can use <code>java -cp "c:\my tibetan documents\Jskad.jar"
+  org.thdl.tib.input.TibetanConverter</code> where you put in the
+  appropriate path to Jskad.jar.&nbsp; You will see usage information
+  appear if you do this correctly; you'll see a message like
+  <code>java.lang.NoClassDefFoundError:
+  org/thdl/tib/input/TibetanConverter; Exception in thread
+  "main"</code> if you've not correctly told Java where to find
+  Jskad.jar.
 </p>
 
 <h3><a name="knownbugs"></a>Known Bugs</h3>
 
 <p>
-  If the TMW given is not syntactically legal, then the Wylie that
-  results will not necessarily yield, if imported into Jskad, the same
-  Tibetan with which the converter started.&nbsp; The glyphs
+  All known bugs are listed in this section.&nbsp; They're more likely
+  to be fixed if users complain, so complain away.
+</p>
+
+<p>
+  First, if the TMW given is not syntactically legal, then the Wylie
+  that results will not necessarily yield, if imported into Jskad, the
+  same Tibetan with which the converter started.&nbsp; The glyphs
   corresponding to the Wylie 'jaskadaskeda' have this problem, for
   example.
 </p>
