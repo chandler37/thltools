@@ -384,57 +384,74 @@ public class OnLineScannerFilter extends HttpServlet
 		pw.println("</p>");
 	}
 	
-	public void printAllDefs(PrintWriter pw, boolean tibetan)
-	{
-		int i, j;
+	public void printAllDefs(PrintWriter pw, boolean tibetan) {
+		int i, j, k=0;
 		Word words[];
-		SwingWord word=null;
+		SwingWord word = null;
 		Definitions defs;
 		String tag;
 		DictionarySource ds;
+		ByteDictionarySource sourceb=null;
 
 		words = scanner.getWordArray(false);
-		
-		if (words == null) return;
-		
-		pw.println("<table border=\"1\" width=\"100%\">");
-		
-		for (j=0; j<words.length; j++)
-		{
-                    try
-                    {
-                        
-                        word = new SwingWord(words[j]);
-                        defs = word.getDefs();
-                        ds = defs.getDictionarySource();
-                        pw.println("  <tr>");
-                        if (ds!=null && !ds.isEmpty()) tag = ds.getTag(0);
-                        else tag = "&nbsp;";
-                        if (tag==null) tag = "&nbsp;";
-                        
-                        pw.println("    <td width=\"20%\" rowspan=\""+ defs.def.length +"\" valign=\"top\">"+ word.getBookmark(tibetan) +"</td>");
-                        pw.println("    <td width=\"12%\">"+ tag +"</td>");
-                        pw.println("    <td width=\"68%\">" + defs.def[0] + "</td>");
 
-                        pw.println("  </tr>");
-                        for (i=1; i<defs.def.length; i++)
-                        {
-                            pw.println("  <tr>");
-                            if (ds!=null && !ds.isEmpty()) tag = ds.getTag(i);
-                            else tag = "&nbsp;";
-                            if (tag==null) tag = "&nbsp;";
-                            pw.println("    <td width=\"12%\">"+ tag +"</td>");
-                            pw.println("    <td width=\"68%\">" + defs.def[i] + "</td>");
-                            //else pw.println("    <td width=\"80%\" colspan=\"2\">" + defs.def[i] + "</td>");
-                            pw.println("  </tr>");
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        sl.writeLog("Crash\tOnLineScannerFilter\t" + word.getWylie());
-                        sl.writeException(e);
-                    }
-                    
+		if (words == null)
+			return;
+
+		pw.println("<table border=\"1\" width=\"100%\">");
+
+		for (j = 0; j < words.length; j++) {
+			try {
+
+				word = new SwingWord(words[j]);
+				defs = word.getDefs();
+				ds = defs.getDictionarySource();
+				pw.println("  <tr>");
+				if (ds == null) {
+					tag = "&nbsp;";
+				}
+				else {
+					if (FileSyllableListTree.versionNumber==2) {
+						tag = ds.getTag(0);
+					}
+					else {
+						sourceb = (ByteDictionarySource) ds;
+					    k=0;
+					    while (sourceb.isEmpty(k)) k++;
+					    tag = sourceb.getTag(k);
+					    k++;
+					}
+				}
+				
+				pw.println("    <td width=\"20%\" rowspan=\"" + defs.def.length
+						+ "\" valign=\"top\">" + word.getBookmark(tibetan)
+						+ "</td>");
+				pw.println("    <td width=\"12%\">" + tag + "</td>");
+				pw.println("    <td width=\"68%\">" + defs.def[0] + "</td>");
+
+				pw.println("  </tr>");
+				for (i = 1; i < defs.def.length; i++) {
+					pw.println("  <tr>");
+					
+					if (FileSyllableListTree.versionNumber==2) {
+						tag = ds.getTag(i);
+					}
+					else {
+					    while (sourceb.isEmpty(k)) k++;
+					    tag = sourceb.getTag(k);
+					    k++;
+					}
+					
+					pw.println("    <td width=\"12%\">" + tag + "</td>");
+					pw.println("    <td width=\"68%\">" + defs.def[i] + "</td>");
+					//else pw.println("    <td width=\"80%\" colspan=\"2\">" + defs.def[i] + "</td>");
+					pw.println("  </tr>");
+				}
+			} catch (Exception e) {
+				sl.writeLog("Crash\tOnLineScannerFilter\t" + word.getWylie());
+				sl.writeException(e);
+			}
+
 		}
 		pw.println("</table>");
 	}
