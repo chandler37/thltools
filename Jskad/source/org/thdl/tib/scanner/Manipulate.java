@@ -28,7 +28,7 @@ import org.thdl.util.*;
 public class Manipulate
 {
 
-	public static String[] parseFields (String s, char delimiter)
+	/* public static String[] parseFields (String s, char delimiter)
 	{
 	    int pos;
 	    String field;
@@ -43,7 +43,7 @@ public class Manipulate
 	    
 	    ll.addLast(s.trim());
 	    return ll.toStringArray();
-	}    
+	}*/  
 	
 	public static String replace(String linea, String origSub, String newSub)
 	{
@@ -122,6 +122,27 @@ public class Manipulate
 		nuevaPalabra = replace(nuevaPalabra, "|", ";");
 		nuevaPalabra = fixWazur(nuevaPalabra);
 		return nuevaPalabra;
+	}
+	
+	/** If more than half of the first letters among the first are 10 characters
+	    are uppercase assume its acip */
+	public static boolean guessIfAcip(String line)
+	{
+	    char ch;
+	    int letters=0, upperCase=0, i, n;
+	    n = line.length();
+	    if (n>10) n = 10;
+	    for (i=0; i<n; i++)
+	    {
+	        ch = line.charAt(i);
+	        if (Character.isLetter(ch))
+	        {
+	            letters++;
+	            if (Character.isUpperCase(ch)) upperCase++;
+	        }
+	    }
+	    if (letters==0 || upperCase==0) return false;
+	    else return (letters / upperCase < 2);
 	}
 	
 	public static String acipToWylie(String linea)
@@ -321,6 +342,16 @@ public class Manipulate
 	    return sil.substring(i,i+1);
 	}
 	
+    public static String deleteQuotes(String s)
+    {
+        int length = s.length();
+        if (length>2)
+        {
+        if ((s.charAt(0)=='\"') && (s.charAt(length-1)=='\"'))
+            return s.substring(1,length-1);
+        }
+        return s;
+    }	
 	
 	/** Syntax: java Manipulate [word-file] < source-dic-entries > dest-dic-entries
 	
