@@ -17,14 +17,15 @@ Contributor(s): ______________________________________.
 */
 
 package org.thdl.tib.scanner;
+
+import org.thdl.util.*;
+import org.thdl.tib.text.TibetanHTML;
 import java.util.*;
 import java.io.*;
 import java.text.*;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import org.thdl.tib.text.TibetanHTML;
-import org.thdl.util.ThdlOptions;
 
 /** Interfase to provide access to an on-line dictionary through a form in html; 
     Inputs Tibetan text (Roman script only) and displays the
@@ -267,7 +268,7 @@ public class OnLineScannerFilter extends HttpServlet {
 	
 	public void printAllDefs(PrintWriter pw, Object words[], boolean tibetan)
 	{
-		LinkedList temp = new LinkedList();
+		SimplifiedLinkedList temp = new SimplifiedLinkedList();
 		int i;
 		Word word;
 		Definitions defs;
@@ -283,7 +284,7 @@ public class OnLineScannerFilter extends HttpServlet {
 			}
 		}
 		
-		ListIterator li = temp.listIterator();
+		SimplifiedListIterator li = temp.listIterator();
 		String tag;
 		pw.println("<table border=\"1\" width=\"100%\">");
 		while (li.hasNext())

@@ -17,8 +17,10 @@ Contributor(s): ______________________________________.
 */
 
 package org.thdl.tib.scanner;
-import java.util.*;
+import org.thdl.util.*;
 import java.io.*;
+import java.util.Vector;
+import java.util.Enumeration;
 
 /** Loads dictionary stored in tree format and searches for words recursively.
     How the the dictionary is loaded depends on which implementation of
@@ -33,7 +35,7 @@ public class LocalTibetanScanner implements TibetanScanner
 	private SyllableListTree raiz, silActual, lastCompSil, silAnterior;
 	private String wordActual, lastCompWord;
 	private Vector floatingSil;
-	private LinkedList wordList;
+	private SimplifiedLinkedList wordList;
 	private static String endOfParagraphMarks = "/;|!:[]^@#$%=<>(){}";
 	private static String endOfSyllableMarks = " _\t";
 
@@ -44,7 +46,7 @@ public class LocalTibetanScanner implements TibetanScanner
 
 	public void clearTokens()
 	{
-		wordList = new LinkedList();
+		wordList = new SimplifiedLinkedList();
 	}
 
 	public DictionarySource getDictionarySource()
@@ -60,7 +62,7 @@ public class LocalTibetanScanner implements TibetanScanner
 		// raiz = new FileSyllableListTree(archivo);
 		raiz = new CachedSyllableListTree(archivo);
 		floatingSil = new Vector();
-		wordList = new LinkedList();
+		wordList = new SimplifiedLinkedList();
 		resetAll();
 	}
 
@@ -375,7 +377,7 @@ outAHere:
 		}
 	}
 
-	public LinkedList getTokenLinkedList()
+	public SimplifiedLinkedList getTokenLinkedList()
 	{
 		return wordList;
 	}
@@ -384,7 +386,7 @@ outAHere:
 	{
 		int i=wordList.size();
 		Token token[] = new Token[i];
-		ListIterator li = wordList.listIterator();
+		SimplifiedListIterator li = wordList.listIterator();
 		while(li.hasNext())
 			token[--i] = (Token)li.next();
 		return token;
@@ -399,7 +401,7 @@ outAHere:
 		try
 		{
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(archivo + ".dic")));
-			LinkedList ll1 = new LinkedList(), ll2 = new LinkedList();
+			SimplifiedLinkedList ll1 = new SimplifiedLinkedList(), ll2 = new SimplifiedLinkedList();
 			String s;
 			while ((s=br.readLine())!=null)
 			{

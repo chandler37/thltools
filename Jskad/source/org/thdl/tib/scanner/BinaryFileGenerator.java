@@ -18,6 +18,10 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.scanner;
 
 import java.io.*;
+import org.thdl.util.SimplifiedLinkedList;
+import org.thdl.util.SimplifiedListIterator;
+import org.thdl.util.Link;
+
 
 /** Converts Tibetan dictionaries stored in text files
 	into a binary file tree structure format, to be used
@@ -144,7 +148,7 @@ myglossary_uma.txt</i> in the transliteration format explained above.<br>
     @see FileSyllableListTree
     @see CachedSyllableListTree
 */
-public class BinaryFileGenerator extends LinkedList
+public class BinaryFileGenerator extends SimplifiedLinkedList
 {
 	private long posHijos;
 	private String sil, def[];
@@ -628,7 +632,8 @@ public class BinaryFileGenerator extends LinkedList
 	private void print() throws Exception
 	{
 		long pos;
-		ListIterator i = listIterator();
+		SimplifiedListIterator i = listIterator();
+		
 		BinaryFileGenerator silHijos;
 		boolean hasNext;
 

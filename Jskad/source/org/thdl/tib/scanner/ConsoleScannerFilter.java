@@ -17,9 +17,10 @@ Contributor(s): ______________________________________.
 */
 package org.thdl.tib.scanner;
 
+import org.thdl.util.*;
+
 import java.io.*;
 import java.net.*;
-import java.util.*;
 
 /** Inputs a Tibetan text and displays the words with their
     definitions through the console over a shell. Use when no
@@ -94,8 +95,8 @@ public class ConsoleScannerFilter
 
 	public void printWords()
 	{
-		LinkedList words = scanner.getTokenLinkedList();
-		ListIterator i = words.listIterator();
+		SimplifiedLinkedList words = scanner.getTokenLinkedList();
+		SimplifiedListIterator i = words.listIterator();
 		Token token;
 		while (i.hasNext())
 		{

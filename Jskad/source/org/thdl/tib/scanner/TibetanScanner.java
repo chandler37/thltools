@@ -17,8 +17,7 @@ Contributor(s): ______________________________________.
 */
 
 package org.thdl.tib.scanner;
-import java.util.*;
-import org.thdl.util.ThdlVersion;
+import org.thdl.util.*;
 
 /** Defines the core methods required to provide access to a dictionary; local or remote.
 
@@ -41,7 +40,7 @@ public interface TibetanScanner
 	public void scanLine(String linea);
 	public void scanBody(String linea);
 	public void finishUp();
-	public LinkedList getTokenLinkedList();
+	public SimplifiedLinkedList getTokenLinkedList();
 	public Token[] getTokenArray();
 	public void clearTokens();
 	public DictionarySource getDictionarySource();

@@ -16,7 +16,7 @@ Pellegrini. All Rights Reserved.
 Contributor(s): ______________________________________.
 */
 
-package org.thdl.tib.scanner;
+package org.thdl.util;
 import java.util.*;
 
 /** Used by {@link LinkedList} to provide the implementation of a
@@ -27,16 +27,16 @@ import java.util.*;
     @see Link
 */
 
-public class ListIterator
+public class SimplifiedListIterator
 {
 	Link current;
 	
-	public ListIterator(Link current)
+	public SimplifiedListIterator(Link current)
 	{
 		this.current=current;
 	}
 	
-	public ListIterator(Link current, int n)
+	public SimplifiedListIterator(Link current, int n)
 	{
 		this(current);
 		int i;

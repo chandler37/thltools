@@ -17,6 +17,7 @@ Contributor(s): ______________________________________.
 */
 package org.thdl.tib.scanner;
 
+import org.thdl.util.*;
 import java.net.*; 
 import java.io.*; 
 
@@ -30,14 +31,14 @@ import java.io.*;
 public class RemoteTibetanScanner implements TibetanScanner
 {
 	private String url;
-	private LinkedList wordList;
+	private SimplifiedLinkedList wordList;
 	private DictionarySource defSourcesWanted;
 		
 	public RemoteTibetanScanner(String url) throws Exception
 	{
 		defSourcesWanted = DictionarySource.getAllDictionaries();
 		this.url = url;
-		wordList = new LinkedList();
+		wordList = new SimplifiedLinkedList();
 	}
 	
 	/** dont use */
@@ -89,21 +90,21 @@ public class RemoteTibetanScanner implements TibetanScanner
 		}
 	}
 	
-	public LinkedList getTokenLinkedList()
+	public SimplifiedLinkedList getTokenLinkedList()
 	{
 		return wordList;
 	}
 	
 	public void clearTokens()
 	{
-		wordList = new LinkedList();
+		wordList = new SimplifiedLinkedList();
 	}
 	
 	public Token[] getTokenArray()
 	{
 		int i=0;
 		Token token[] = new Token[wordList.size()];
-		ListIterator li = wordList.listIterator();
+		SimplifiedListIterator li = wordList.listIterator();
 		while(li.hasNext())
 			token[i++] = (Token)li.next();
 		return token;
@@ -131,7 +132,7 @@ public class RemoteTibetanScanner implements TibetanScanner
 			uC.setRequestProperty("Content-type", "text/plain");
 
 			BufferedReader br = new BufferedReader(new InputStreamReader(uC.getInputStream()));
-			LinkedList ll1 = new LinkedList(), ll2 = new LinkedList();
+			SimplifiedLinkedList ll1 = new SimplifiedLinkedList(), ll2 = new SimplifiedLinkedList();
 			String s;
 			while ((s=br.readLine())!=null)
 			{

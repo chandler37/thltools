@@ -16,24 +16,26 @@ Pellegrini. All Rights Reserved.
 Contributor(s): ______________________________________.
 */
 
-package org.thdl.tib.scanner;
+package org.thdl.util;
 import java.util.*;
 
 /** Implementation of a simple dynamic link list. Be careful with word order!
+    Why not just use java.util.LinkedList? It is not supported for the
+    handheld's virtual machine.
 
     @author Andr&eacute;s Montano Pellegrini
     @see Link
-    @see ListIterator
+    @see SimplifiedListIterator
 */
-public class LinkedList
+public class SimplifiedLinkedList
 {	
 	protected Link cabeza;
-	public LinkedList()
+	public SimplifiedLinkedList()
 	{
 		cabeza=null;
 	}
 	
-	private LinkedList(Link cabeza)
+	private SimplifiedLinkedList(Link cabeza)
 	{
 		this.cabeza = cabeza;
 	}
@@ -53,14 +55,14 @@ public class LinkedList
 		else return cabeza.get();
 	}
 
-	public ListIterator listIterator()
+	public SimplifiedListIterator listIterator()
 	{
-		return new ListIterator(cabeza);
+		return new SimplifiedListIterator(cabeza);
 	}	
 
-	public ListIterator listIterator(int n)
+	public SimplifiedListIterator listIterator(int n)
 	{
-		return new ListIterator(cabeza, n);
+		return new SimplifiedListIterator(cabeza, n);
 	}
 	
 	public boolean isEmpty()
@@ -85,9 +87,9 @@ public class LinkedList
 		return cabeza.size();
 	}
 	
-	public LinkedList sort()
+	public SimplifiedLinkedList sort()
 	{
-		return new LinkedList(cabeza.sort());
+		return new SimplifiedLinkedList(cabeza.sort());
 	}
 	
 	public Object[] toArray()
@@ -95,7 +97,7 @@ public class LinkedList
 		int n = size();
 		if (n==0) return null;
 		Object array[] = new Object[n];
-		ListIterator li = listIterator();
+		SimplifiedListIterator li = listIterator();
 		while (li.hasNext())
 		{
 			n--;
@@ -110,7 +112,7 @@ public class LinkedList
 		if (n==0) return null;
 		Object o;
 		String array[] = new String[n];
-		ListIterator li = listIterator();
+		SimplifiedListIterator li = listIterator();
 		while (li.hasNext())
 		{
 			n--;

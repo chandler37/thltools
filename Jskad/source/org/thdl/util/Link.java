@@ -16,7 +16,7 @@ Pellegrini. All Rights Reserved.
 Contributor(s): ______________________________________.
 */
 
-package org.thdl.tib.scanner;
+package org.thdl.util;
 import java.io.*;
 
 /** Used by {@link LinkedList} to provide the implementation of a

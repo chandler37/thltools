@@ -17,6 +17,7 @@ Contributor(s): ______________________________________.
 */
 package org.thdl.tib.scanner;
 
+import org.thdl.util.*;
 import java.util.*;
 import java.io.*;
 import java.text.*;
@@ -47,7 +48,7 @@ public class RemoteScannerFilter extends GenericServlet
   	{
   		BufferedReader br;
   		res.setContentType ("text/plain");
-  		LinkedList words;
+  		SimplifiedLinkedList words;
   		Word word;
 	    PrintWriter out = res.getWriter();
 	    int i;
@@ -86,7 +87,7 @@ public class RemoteScannerFilter extends GenericServlet
 		words = scanner.getTokenLinkedList();
 		Token token;
 		
-		ListIterator li = words.listIterator();
+		SimplifiedListIterator li = words.listIterator();
 		
 		while (li.hasNext())
 		{

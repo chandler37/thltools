@@ -18,6 +18,7 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.scanner;
 
 import java.io.*;
+import org.thdl.util.*;
 
 /** Provides recommended implementation of the {@link SyllableListTree}
 	(currently most efficient memory-speed combination) loading
@@ -43,7 +44,7 @@ public class CachedSyllableListTree implements SyllableListTree
 		int i;
 		FileSyllableListTree.openFiles(archivo);
 		long posLista = FileSyllableListTree.wordRaf.length() - 4;
-		LinkedList syllables = new LinkedList();
+		SimplifiedLinkedList syllables = new SimplifiedLinkedList();
 
 		FileSyllableListTree.wordRaf.seek(posLista);
 		posLista = (long) FileSyllableListTree.wordRaf.readInt();
@@ -67,7 +68,7 @@ public class CachedSyllableListTree implements SyllableListTree
 
 		int n = syllables.size();
 		this.syllables = new SyllableListTree[n];
-		ListIterator li = syllables.listIterator();
+		SimplifiedListIterator li = syllables.listIterator();
 		while (li.hasNext())
 		{
 			n--;

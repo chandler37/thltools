@@ -17,6 +17,8 @@ Contributor(s): ______________________________________.
 */
 
 package org.thdl.tib.scanner;
+
+import org.thdl.util.*;
 import java.util.*;
 import java.io.*;
 
@@ -34,7 +36,7 @@ import java.io.*;
     @see BinaryFileGenerator
 */
 
-public class MemorySyllableListTree extends LinkedList implements SyllableListTree
+public class MemorySyllableListTree extends SimplifiedLinkedList implements SyllableListTree
 {
 	protected String sil, def;
 	
@@ -171,7 +173,7 @@ public class MemorySyllableListTree extends LinkedList implements SyllableListTr
 		}
 		
 		MemorySyllableListTree silHijos;
-		ListIterator i = listIterator();
+		SimplifiedListIterator i = listIterator();
 		while (i.hasNext())
 		{
 			silHijos = (MemorySyllableListTree) i.next();
@@ -182,7 +184,7 @@ public class MemorySyllableListTree extends LinkedList implements SyllableListTr
 	public SyllableListTree lookUp(String silStr)
 	{
 		MemorySyllableListTree sil;
-		ListIterator i = listIterator();
+		SimplifiedListIterator i = listIterator();
 		while (i.hasNext())
 		{
 			sil = (MemorySyllableListTree) i.next();
