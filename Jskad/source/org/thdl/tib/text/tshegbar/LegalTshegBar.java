@@ -1266,6 +1266,8 @@ public final class LegalTshegBar
      *  @param sub the {@link #isNominalRepresentationOfConsonant(char)
      *  nominal representation} of the subjoined letter, or EW_ABSENT
      *  if not present */
+    // NOTE WELL: THE ACIP->TIBETAN CONVERTER USER GUIDE LISTS ALL
+    // PREFIX RULES; KEEP IT IN SYNC.
     public static boolean takesGao(char head, char root, char sub) {
         if (EW_ABSENT == head) {
             if (EW_ABSENT == sub) {
@@ -1298,6 +1300,8 @@ public final class LegalTshegBar
      *  @param sub the {@link #isNominalRepresentationOfConsonant(char)
      *  nominal representation} of the subjoined letter, or EW_ABSENT
      *  if not present */
+    // NOTE WELL: THE ACIP->TIBETAN CONVERTER USER GUIDE LISTS ALL
+    // PREFIX RULES; KEEP IT IN SYNC.
     public static boolean takesDao(char head, char root, char sub) {
         if (EW_ABSENT == head) {
             if (EW_ABSENT == sub) {
@@ -1340,6 +1344,8 @@ public final class LegalTshegBar
      *  @param sub the {@link #isNominalRepresentationOfConsonant(char)
      *  nominal representation} of the subjoined letter, or EW_ABSENT
      *  if not present */
+    // NOTE WELL: THE ACIP->TIBETAN CONVERTER USER GUIDE LISTS ALL
+    // PREFIX RULES; KEEP IT IN SYNC.
     public static boolean takesAchungPrefix(char head, char root, char sub) {
         if (EW_ABSENT == head) {
             if (EW_ABSENT == sub) {
@@ -1383,6 +1389,8 @@ public final class LegalTshegBar
      *  @param sub the {@link #isNominalRepresentationOfConsonant(char)
      *  nominal representation} of the subjoined letter, or EW_ABSENT
      *  if not present */
+    // NOTE WELL: THE ACIP->TIBETAN CONVERTER USER GUIDE LISTS ALL
+    // PREFIX RULES; KEEP IT IN SYNC.
     public static boolean takesMao(char head, char root, char sub) {
         if (EW_ABSENT == head) {
             if (EW_ABSENT == sub) {
@@ -1422,6 +1430,8 @@ public final class LegalTshegBar
      *  @param sub the {@link #isNominalRepresentationOfConsonant(char)
      *  nominal representation} of the subjoined letter, or EW_ABSENT
      *  if not present */
+    // NOTE WELL: THE ACIP->TIBETAN CONVERTER USER GUIDE LISTS ALL
+    // PREFIX RULES; KEEP IT IN SYNC.
     public static boolean takesBao(char head, char root, char sub) {
 
         if (EW_ABSENT == head) {
