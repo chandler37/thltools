@@ -76,6 +76,7 @@ public class LocalTibetanScanner implements TibetanScanner
 		Enumeration enum;
 		Word w;
 		String silSinDec;
+		boolean aadded;
 
 		if (silActual==null)
 			silActual = raiz;
@@ -94,22 +95,32 @@ public class LocalTibetanScanner implements TibetanScanner
 			else
 			{
 				silSinDec = withOutDec(sil);
-				if (silSinDec!=null)
+				resultado=null;	
+				// while to take into account very weird cases like le'u'i'o
+				while (resultado == null && silSinDec!=null)
 				{
 					resultado = silAnterior.lookUp(silSinDec);
 					if (resultado == null)
 					{
 						silSinDec += "\'";
 						resultado = silAnterior.lookUp(silSinDec);
+						aadded=true;
 					}
+					else aadded=false;
 					
 					if (resultado!=null && resultado.hasDef())
 					{
 						lastCompWord = concatWithSpace(wordActual, silSinDec);
 						lastCompSil = resultado;
 						wordActual = concatWithSpace(wordActual, sil);
+						floatingSil.removeAllElements();
 					}
-					else resultado = null;
+					else
+					{
+					    resultado = null;
+					    if (aadded) silSinDec = silSinDec.substring(0, silSinDec.length()-1);
+					    silSinDec = withOutDec(silSinDec);
+					}
 				}
 				if (resultado!=null) return;
 				
@@ -121,14 +132,18 @@ public class LocalTibetanScanner implements TibetanScanner
 		else
 		{
 			silSinDec = withOutDec(sil);
-			if (silSinDec!=null)
+			resultado = null;
+			// while to take into account very weird cases like le'u'i'o
+			while (resultado==null && silSinDec!=null)
 			{
 				resultado = silAnterior.lookUp(silSinDec);
 				if (resultado == null)
 				{
 					silSinDec += "\'";
 					resultado = silAnterior.lookUp(silSinDec);
+					aadded=true;
 				}
+				else aadded=false;
 				// si funciona sin declension arreglado problema
 				if (resultado!=null && resultado.hasDef())
 				{
@@ -136,7 +151,13 @@ public class LocalTibetanScanner implements TibetanScanner
 					resetAll();
 					floatingSil.removeAllElements();
 				}
-				else resultado = null;
+				else
+				{
+				    resultado = null;
+				    if (aadded) silSinDec = silSinDec.substring(0, silSinDec.length()-1);
+				    silSinDec = withOutDec(silSinDec);
+				}
+				    
 			}
 			if (resultado!=null) return;
 			
@@ -207,7 +228,7 @@ public class LocalTibetanScanner implements TibetanScanner
 	private static String withOutDec(String sil)
 	{
 		boolean isDeclined =false;
-		int len = sil.length();
+		int len = sil.length(), apos;
 
 		if (len<3) return null;
 
@@ -217,10 +238,19 @@ public class LocalTibetanScanner implements TibetanScanner
 			isDeclined=true;
 			sil = sil.substring(0, len-1);
 		}
-		else if ((lastCar == 'i' || lastCar == 'o') && sil.charAt(len-2)=='\'')
+		else
 		{
-			isDeclined=true;
-			sil = sil.substring(0, len-2);
+		    apos = sil.lastIndexOf('\'');
+		    if (apos>0 && apos < len-1 && Manipulate.isVowel(sil.charAt(apos-1)) && sil.charAt(apos+1)!='u')
+		    {
+	    		isDeclined=true;
+		    	sil = sil.substring(0, apos);		        
+		    }
+		    /* if ((lastCar == 'i' || lastCar == 'o') && sil.charAt(len-2)=='\'')
+    		{
+	    		isDeclined=true;
+		    	sil = sil.substring(0, len-2);
+    		}*/
 		}
 
 		if (!isDeclined) return null;

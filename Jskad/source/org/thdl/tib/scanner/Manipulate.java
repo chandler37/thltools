@@ -110,7 +110,7 @@ public class Manipulate
 	    aa -> a, a'a -> A, ai->i, aee ->ai, au->u, aoo->au, ae->e,
 		ao->o, ee->ai, oo->au, 'I->-I I->-i,  a'i->I, a'u->U, a'e->E, a'o->O,
 		a'i->I, a'u->U, a'e->E, a'o->O, ,->/, # -> @##, * -> @#, \ -> ?, ` -> !,
-		/-/ -> (-), ga-y -> g.y, g-y -> g.y */
+		/-/ -> (-), ga-y -> g.y, g-y -> g.y, na-y -> n+y */
 		
 		nuevaLinea = replace(nuevaLinea, "ts", "tq");
 		nuevaLinea = replace(nuevaLinea, "tz", "ts");
@@ -141,6 +141,7 @@ public class Manipulate
 		nuevaLinea = replace(nuevaLinea, "`", "!");
 		nuevaLinea = replace(nuevaLinea, "ga-y", "g.y");
 		nuevaLinea = replace(nuevaLinea, "g-y", "g.y");
+		nuevaLinea = replace(nuevaLinea, "na-y", "n+y");
 
 		len = nuevaLinea.length();
 		for (i=0; i<len; i++)
