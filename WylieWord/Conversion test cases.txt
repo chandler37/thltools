@@ -69,8 +69,11 @@ dbangs
 
 // A common word that is not grammatical, according to some 
 // sources, and that is also hard because br- looks like
-// b should be the root
+// b should be the root.  (Actually r is, but it's pronounced "lap"!)
 brlabs
+
+// One of the few native Tibetan words with nr in it.
+snrubs
 
 // "'is" is the form of kyis used after bare vowel or a chung
 re'u'is
