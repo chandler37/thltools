@@ -97,10 +97,12 @@ public class UnicodeUtils implements UnicodeConstants {
         Unicode codepoints, into either Normalization Form KD (NFKD),
         D (NFD), or THDL (NFTHDL), depending on the value of normForm.
         NFD and NFKD are specified by Unicode 3.2; NFTHDL is needed
-        for {@link org.thdl.tib.text.tshegbar#GraphemeCluster} because
-        NFKD normalizes <code>U+0F0C</code>.  NFTHDL uses a maximum of
-        codepoints, and it never uses codepoints whose use has been
-        {@link #isDiscouraged(char) discouraged}.
+        for {@link org.thdl.tib.text.tshegbar#UnicodeGraphemeCluster}
+        because NFKD normalizes <code>U+0F0C</code> and neither NFD
+        nor NFKD breaks down <code>U+0F00</code> into its constituent
+        codepoints.  NFTHDL uses a maximum of codepoints, and it never
+        uses codepoints whose use has been {@link #isDiscouraged(char)
+        discouraged}.
 
         <p>The Tibetan passages of the returned string are in the
         chosen normalized form, but codepoints outside of the {@link
@@ -170,6 +172,8 @@ public class UnicodeUtils implements UnicodeConstants {
             // Where not specified, the NFKD and NFTHDL forms are
             // identical to the NFD form.
             switch (tibetanUnicodeCP) {
+            case '\u0F00': return ((normalizationForm == NORM_NFTHDL)
+                                   ? "\u0F68\u0F7C\u0F7E" : null);
             case '\u0F0C': return ((normalizationForm == NORM_NFKD)
                                    ? "\u0F0B" : null);
             case '\u0F43': return "\u0F42\u0FB7";
@@ -282,9 +286,37 @@ public class UnicodeUtils implements UnicodeConstants {
     }
 
     /** Returns a human-readable, ASCII form of the Unicode codepoint
-        ch. */
-    public static String unicodeCPToString(char ch) {
-        return "U+" + Integer.toHexString((int)ch);
+        cp. */
+    public static String unicodeCodepointToString(char cp) {
+        if (cp < '\u0010')
+            return "\\u000" + Integer.toHexString((int)cp);
+        else if (cp < '\u0100')
+            return "\\u00" + Integer.toHexString((int)cp);
+        else if (cp < '\u1000')
+            return "\\u0" + Integer.toHexString((int)cp);
+        else
+            return "\\u" + Integer.toHexString((int)cp);
+    }
+
+    public static String unicodeStringToString(String s) {
+        StringBuffer sb = new StringBuffer(s.length() * 6);
+        for (int i = 0; i < s.length(); i++) {
+            sb.append(unicodeCodepointToString(s.charAt(i)));
+        }
+        return sb.toString();
+    }
+
+    /** Returns true iff cp is a Unicode 3.2 Tibetan consonant,
+        subjoined or not.  This counts precomposed consonant stacks
+        like <code>U+0FA7</code> as consonants.  If you don't wish to
+        treat such as consonants, then put the input into NORM_NFD,
+        NORM_NFKD, or NORM_NFTHDL first.  If it changes under such a
+        normalization, it is a precomposed consonant. */
+    public static boolean isTibetanConsonant(char cp) {
+        return (((cp >= '\u0F40' && cp <= '\u0F6A')
+                 || (cp >= '\u0F90' && cp <= '\u0FBC'))
+                && '\u0F48' != cp
+                && '\u0F98' != cp);
     }
 }
 

@@ -21,7 +21,7 @@ package org.thdl.tib.text.tshegbar;
 import org.thdl.tib.text.TibetanMachineWeb;
 
 /** This noninstantiable class allows for converting from Unicode
- *  codepoints to Extended Wylie.  It cannot be used for long
+ *  codepoints to THDL Extended Wylie.  It cannot be used for long
  *  stretches of text, though, as it is unaware of context, which is
  *  essential to understanding a non-trivial string of Tibetan
  *  Unicode.
@@ -29,21 +29,22 @@ import org.thdl.tib.text.TibetanMachineWeb;
  *  <p>See the document by Nathaniel Garson and David Germano entitled
  *  <i>Extended Wylie Transliteration Scheme</i>.  Note that there are
  *  a couple of issues with the November 18, 2001 revision of that
- *  document; these issues are in the Bugs tracker at our SourceForge site.</p>
+ *  document; these issues are in the Bugs tracker at our SourceForge
+ *  site.</p>
  *
  *  @see <a href="http://sourceforge.net/projects/thdltools">SourceForge site</a>
  *
  *  @author David Chandler */
-public class UnicodeCharToExtendedWylie {
+public class UnicodeCodepointToThdlWylie {
 
-    /** Returns the extended Wylie for the very simple sequence x.
-     *  Returns null iff some (Unicode) char in s has no extended
-     *  Wylie representation.  This is unaware of context, so use it
-     *  sparingly. */
-    public static StringBuffer getExtendedWylieForUnicodeString(String x) {
+    /** Returns the THDL extended Wylie for the very simple sequence
+     *  x.  Returns null iff some (Unicode) char in s has no THDL
+     *  extended Wylie representation.  This is unaware of context, so
+     *  use it sparingly. */
+    public static StringBuffer getThdlWylieForUnicodeString(String x) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < x.length(); i++) {
-            String ew = getExtendedWylieForUnicodeChar(x.charAt(i));
+            String ew = getThdlWylieForUnicodeCodepoint(x.charAt(i));
             if (null == ew)
                 return null;
             sb.append(ew);
@@ -51,12 +52,14 @@ public class UnicodeCharToExtendedWylie {
         return sb;
     }
 
-    /** Returns the extended Wylie for x, or null if there is none.
-     *  Understand that multiple Unicode code points (chars) map to
-     *  the same Extended Wylie representation.  Understand also that
-     *  the scrap of Extended Wylie returned is only valid in certain
-     *  contexts.  For example, not all consonants take ra-btags.  DLC NOW what about canonicalization? */
-    public static String getExtendedWylieForUnicodeChar(char x) {
+    /** Returns the THDL extended Wylie for x, or null if there is
+     *  none.  Understand that multiple Unicode code points (chars)
+     *  map to the same THDL Extended Wylie representation.
+     *  Understand also that the scrap of THDL Extended Wylie returned
+     *  is only valid in certain contexts.  For example, not all
+     *  consonants take ra-btags.  DLC NOW what about
+     *  canonicalization? */
+    public static String getThdlWylieForUnicodeCodepoint(char x) {
         switch (x) {
 
         case '\u0F00': return "oM";
@@ -130,9 +133,9 @@ public class UnicodeCharToExtendedWylie {
         case '\u0F40': return "k";
         case '\u0F41': return "kh";
         case '\u0F42': return "g";
-        case '\u0F43': return (getExtendedWylieForUnicodeChar('\u0F42')
+        case '\u0F43': return (getThdlWylieForUnicodeCodepoint('\u0F42')
                                + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY // DLC FIXME: is this right?
-                               + getExtendedWylieForUnicodeChar('\u0FB7'));
+                               + getThdlWylieForUnicodeCodepoint('\u0FB7'));
         case '\u0F44': return "ng";
         case '\u0F45': return "c";
         case '\u0F46': return "ch";
@@ -142,31 +145,31 @@ public class UnicodeCharToExtendedWylie {
         case '\u0F4A': return "T";
         case '\u0F4B': return "Th";
         case '\u0F4C': return "D";
-        case '\u0F4D': return (getExtendedWylieForUnicodeChar('\u0F4C')
+        case '\u0F4D': return (getThdlWylieForUnicodeCodepoint('\u0F4C')
                                + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY // DLC FIXME: is this right?
-                               + getExtendedWylieForUnicodeChar('\u0FB7'));
+                               + getThdlWylieForUnicodeCodepoint('\u0FB7'));
         case '\u0F4E': return "N";
         case '\u0F4F': return "t";
 
         case '\u0F50': return "th";
         case '\u0F51': return "d";
-        case '\u0F52': return (getExtendedWylieForUnicodeChar('\u0F51')
+        case '\u0F52': return (getThdlWylieForUnicodeCodepoint('\u0F51')
                                + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY // DLC FIXME: is this right?
-                               + getExtendedWylieForUnicodeChar('\u0FB7'));
+                               + getThdlWylieForUnicodeCodepoint('\u0FB7'));
         case '\u0F53': return "n";
         case '\u0F54': return "p";
         case '\u0F55': return "ph";
         case '\u0F56': return "b";
-        case '\u0F57': return (getExtendedWylieForUnicodeChar('\u0F56')
+        case '\u0F57': return (getThdlWylieForUnicodeCodepoint('\u0F56')
                                + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY // DLC FIXME: is this right?
-                               + getExtendedWylieForUnicodeChar('\u0FB7'));
+                               + getThdlWylieForUnicodeCodepoint('\u0FB7'));
         case '\u0F58': return "m";
         case '\u0F59': return "ts";
         case '\u0F5A': return "tsh";
         case '\u0F5B': return "dz";
-        case '\u0F5C': return (getExtendedWylieForUnicodeChar('\u0F5B')
+        case '\u0F5C': return (getThdlWylieForUnicodeCodepoint('\u0F5B')
                                + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY // DLC FIXME: is this right?
-                               + getExtendedWylieForUnicodeChar('\u0FB7'));
+                               + getThdlWylieForUnicodeCodepoint('\u0FB7'));
         case '\u0F5D': return "w";
         case '\u0F5E': return "zh";
         case '\u0F5F': return "z";
@@ -180,9 +183,9 @@ public class UnicodeCharToExtendedWylie {
         case '\u0F66': return "s";
         case '\u0F67': return "h";
         case '\u0F68': return "a"; // DLC: maybe the empty string is OK here because typing just 'i' into Jskad causes root letter \u0F68 to appear... yuck...
-        case '\u0F69': return (getExtendedWylieForUnicodeChar('\u0F40')
+        case '\u0F69': return (getThdlWylieForUnicodeCodepoint('\u0F40')
                                + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY // DLC FIXME: is this right?
-                               + getExtendedWylieForUnicodeChar('\u0FB5'));
+                               + getThdlWylieForUnicodeCodepoint('\u0FB5'));
         case '\u0F6A': return "r";
         case '\u0F6B': return null;
         case '\u0F6C': return null;
@@ -227,9 +230,9 @@ public class UnicodeCharToExtendedWylie {
         case '\u0F90': return "k";
         case '\u0F91': return "kh";
         case '\u0F92': return "g";
-        case '\u0F93': return (getExtendedWylieForUnicodeChar('\u0F92')
+        case '\u0F93': return (getThdlWylieForUnicodeCodepoint('\u0F92')
                                + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY // DLC FIXME: is this right?
-                               + getExtendedWylieForUnicodeChar('\u0FB7'));
+                               + getThdlWylieForUnicodeCodepoint('\u0FB7'));
         case '\u0F94': return "ng";
         case '\u0F95': return "c";
         case '\u0F96': return "ch";
@@ -239,31 +242,31 @@ public class UnicodeCharToExtendedWylie {
         case '\u0F9A': return "T";
         case '\u0F9B': return "Th";
         case '\u0F9C': return "D";
-        case '\u0F9D': return (getExtendedWylieForUnicodeChar('\u0F92')
+        case '\u0F9D': return (getThdlWylieForUnicodeCodepoint('\u0F92')
                                + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY // DLC FIXME: is this right?
-                               + getExtendedWylieForUnicodeChar('\u0FB7'));
+                               + getThdlWylieForUnicodeCodepoint('\u0FB7'));
         case '\u0F9E': return "N";
         case '\u0F9F': return "t";
 
         case '\u0FA0': return "th";
         case '\u0FA1': return "d";
-        case '\u0FA2': return (getExtendedWylieForUnicodeChar('\u0FA1')
+        case '\u0FA2': return (getThdlWylieForUnicodeCodepoint('\u0FA1')
                                + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY // DLC FIXME: is this right?
-                               + getExtendedWylieForUnicodeChar('\u0FB7'));
+                               + getThdlWylieForUnicodeCodepoint('\u0FB7'));
         case '\u0FA3': return "n";
         case '\u0FA4': return "p";
         case '\u0FA5': return "ph";
         case '\u0FA6': return "b";
-        case '\u0FA7': return (getExtendedWylieForUnicodeChar('\u0FA6')
+        case '\u0FA7': return (getThdlWylieForUnicodeCodepoint('\u0FA6')
                                + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY // DLC FIXME: is this right?
-                               + getExtendedWylieForUnicodeChar('\u0FB7'));
+                               + getThdlWylieForUnicodeCodepoint('\u0FB7'));
         case '\u0FA8': return "m";
         case '\u0FA9': return "ts";
         case '\u0FAA': return "tsh";
         case '\u0FAB': return "dz";
-        case '\u0FAC': return (getExtendedWylieForUnicodeChar('\u0FAB')
+        case '\u0FAC': return (getThdlWylieForUnicodeCodepoint('\u0FAB')
                                + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY // DLC FIXME: is this right?
-                               + getExtendedWylieForUnicodeChar('\u0FB7'));
+                               + getThdlWylieForUnicodeCodepoint('\u0FB7'));
         case '\u0FAD': return "w";
         case '\u0FAE': return "zh";
         case '\u0FAF': return "z";
@@ -277,9 +280,9 @@ public class UnicodeCharToExtendedWylie {
         case '\u0FB6': return "s";
         case '\u0FB7': return "h";
         case '\u0FB8': return "a"; // DLC see note on \u0F68 ...
-        case '\u0FB9': return (getExtendedWylieForUnicodeChar('\u0F90')
+        case '\u0FB9': return (getThdlWylieForUnicodeCodepoint('\u0F90')
                                + TibetanMachineWeb.WYLIE_SANSKRIT_STACKING_KEY // DLC FIXME: is this right?
-                               + getExtendedWylieForUnicodeChar('\u0FB5'));
+                               + getThdlWylieForUnicodeCodepoint('\u0FB5'));
         case '\u0FBA': return "w";
         case '\u0FBB': return "y";
         case '\u0FBC': return "r";
@@ -309,7 +312,7 @@ public class UnicodeCharToExtendedWylie {
 
             // This codepoint is in the range 0FD0-0FFF or is not in
             // the Tibetan range at all.  In either case, there is no
-            // corresponding Extended Wylie.
+            // corresponding THDL Extended Wylie.
             return null;
         }
         } // end switch
