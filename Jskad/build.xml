@@ -87,6 +87,8 @@
        shouldn't mess with this. -->
   <property name="our.javac.classpathref" value="entire.class.path"/>
 
+  <!-- Javadoc needs to find all classes, so you have to give it a megaclasspath: -->
+  <property name="javadocs.class.path.ref" value="all.extras.class.path"/>
 
   <!-- To easily add a jar to the CLASSPATH, just drop it into
        'extensions/drop-ins/'. -->
@@ -117,6 +119,14 @@
     <pathelement path="${additional.class.path}"/>
 
   </path>
+
+
+  <path id="all.extras.class.path">
+    <pathelement location="${j2ee.sdk.home}/j2ee.jar"/>
+    <pathelement location="${tomcat.servlet.jar}"/>
+    <path refid="entire.class.path"/>
+  </path>
+
 
   <target name="init">
     <!-- Create the time stamp -->
@@ -277,10 +287,9 @@
           depends="ttsc-init"
           if="found.servlet.classes"
           description="compiles the servlet form of the Translation Tool if you've set the j2ee.sdk.home property correctly" >
+    <!-- For now, these two paths are identical: -->
     <path id="ttsc.class.path">
-      <pathelement location="${j2ee.sdk.home}/j2ee.jar"/>
-      <pathelement location="${tomcat.servlet.jar}"/>
-      <path refid="entire.class.path"/>
+      <path refid="all.extras.class.path"/>
     </path>
     <antcall target="our-internal-javac-task">
       <reference torefid="ttsc.class.path" refid="ttsc.class.path"/>
@@ -703,19 +712,15 @@
              access="${access}"
              version="false"
              use="true"
-             classpathref="entire.class.path"
+             classpathref="${javadocs.class.path.ref}"
              windowtitle="THDL Tools APIs"
              Overview="${source}/overview.html">
 
       <fileset dir="${source}" defaultexcludes="yes">
-        <include name="org/thdl/**" />
+        <include name="org/thdl/**/*.java" />
         <!-- Exclude JUnit tests: -->
         <exclude name="**/*Test.java"/>
         <exclude name="**/*AllTests.java"/>
-        <exclude name="**/*.ini"/>
-        <exclude name="**/*.html"/>
-        <exclude name="**/*.gif"/>
-        <exclude name="**/*.jpg"/>
       </fileset>
 
       <doctitle><![CDATA[<h1>THDL Tools</h1>]]></doctitle>
