@@ -1111,6 +1111,11 @@ Contributor(s): ______________________________________.
     </copy>
     <copy todir="${mybin}">
       <fileset dir="${source}">
+        <include name="org/thdl/tib/bibl/dia.dat"/>
+      </fileset>
+    </copy>
+    <copy todir="${mybin}">
+      <fileset dir="${source}">
         <include name="keyboards.ini"/>
       </fileset>
     </copy>

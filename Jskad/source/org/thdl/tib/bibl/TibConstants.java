@@ -39,7 +39,7 @@ public interface TibConstants
 	final String DATA_DIRECTORY 	= java.io.File.separatorChar + "data" + java.io.File.separatorChar;
 	final String OUT_DIRECTORY 		= java.io.File.separatorChar + "data" + java.io.File.separatorChar;
 	final String BIN_LOGIN			= java.io.File.separatorChar + "bin" + java.io.File.separatorChar + "logs" + java.io.File.separatorChar;
-	final String DIA_DATA			= java.io.File.separatorChar + "bin" + java.io.File.separatorChar + "dia.dat";
+	final String DIA_DATA			= "dia.dat";
 	final String TEMP_DIR			= java.io.File.separatorChar + "bin" + java.io.File.separatorChar + "temp" + java.io.File.separatorChar;
 	final String PREFS				= "ttprefs.ini";
 
