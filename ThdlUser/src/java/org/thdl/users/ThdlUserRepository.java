@@ -118,12 +118,11 @@ public class ThdlUserRepository
 	{
 		ThdlUser thdlUser = validate( user );
 
-		String sql = "SELECT UserRolesForApplication.roles "
-				 + "FROM UserRolesForApplication, Applications "
-				 + "LEFT  JOIN UserRolesForApplication AS urfa ON urfa.applicationId =  Applications.id "
-				 + "WHERE Applications.application = '" + application + "'"
+		String sql = "SELECT urfa.roles "
+				 + "FROM UserRolesForApplication AS urfa, Applications AS apps "
+				 + "WHERE urfa.applicationId = apps.id "
+				 + "AND apps.application =  '" + application + "' "
 				 + "AND urfa.userId = " + thdlUser.getId() + " ";
-
 		try
 		{
 			Statement stmt = getConnection().createStatement();
