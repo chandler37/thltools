@@ -1,0 +1,77 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" errorPage="/jsp/error.jsp" %>
+<%@ taglib prefix = "c" uri = "http://java.sun.com/jstl/core" %>
+<%@ taglib prefix = "req" uri = "http://jakarta.apache.org/taglibs/request-1.0" %>
+<%@ taglib prefix = "res" uri = "http://jakarta.apache.org/taglibs/response-1.0" %>
+<%@ taglib prefix = "sess" uri = "http://jakarta.apache.org/taglibs/session-1.0" %>
+<div id = "debug">
+
+
+<table>
+<tr>
+<td>
+<h2>DEBUG INFO</h2>  
+<a href = "http://jigsaw.w3.org/css-validator/validator?uri=http://mayor.lib.virginia.edu:8080/lex/lex.css">
+Validate CSS</a>
+
+</td>
+</tr>
+<tr>
+<td>
+<h2>USER INFO</h2>  
+User Roles: <c:out value="${ sessionScope.visit.user.roles }"/>
+
+</td>
+</tr>
+
+<tr>
+<td>
+<h3>
+Request Parameters:</h3>
+<req:parameters id = "loop">
+<jsp:getProperty name = "loop" property = "name"/> = '<jsp:getProperty name = "loop" property = "value"/>'<br />
+</req:parameters>       
+</td>
+</tr>
+<tr>
+	<td>
+		<h3>
+		Request Attributes:</h3>
+		<req:attributes id = "loop">
+		<jsp:getProperty name = "loop" property = "name"/> = '<jsp:getProperty name = "loop" property = "value"/>'<br />
+		</req:attributes>
+		
+	</td>
+</tr>
+<tr>
+	<td>
+		<h3>
+		Session Attributes:</h3>
+			<sess:attributes id = "loop">
+			<jsp:getProperty name = "loop" property = "name"/> = '<jsp:getProperty name = "loop" property = "value"/>'<br />
+			</sess:attributes>
+	</td>
+</tr>
+
+
+<tr>
+	<td colspan = "3">
+		
+		<h3>
+		Response Headers:</h3>
+
+	</td>
+</tr>
+
+
+<tr>
+	<td>
+	<c:if test="${ ! empty results }">	
+		<h3>Results Array Items: </h3>	
+		<c:forEach var="resultsArrayItem" items="${query.results}">
+			<c:out value="${resultsArrayItem}" /> <br />
+		</c:forEach>
+	</c:if>
+	</td>
+</tr>
+</table>
+</div>

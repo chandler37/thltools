@@ -1,0 +1,109 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+
+
+
+
+	<c:set var="passage" value="${ sessionScope.visit.helper.component }"/>
+	<p class="data">
+
+		<c:if test="${ editMode }">
+	<span class="compEditOptions">
+		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=passage&amp;metaId=${ passage.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=passage&amp;metaId=${ passage.metaId }" title="Edit this passage"><img alt="Edit this passage" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=passage&amp;parentId=${passage.parentId}&amp;translationOf=${passage.metaId}" title="Translate this passage"><img alt="Translate this passage" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
+		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=passage&amp;metaId=${ passage.metaId }&amp;parentId=${ passage.parentId }" title="Remove this passage"><img alt="Remove this passage" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+		</span>
+	</c:if>  
+
+	<c:set var="source" value="${  applicationScope.flatData.literarySources[ passage.literarySource ]   }"/> 
+	
+	<c:if test="${ ! empty  source }">
+	<!--<span class="label">Literary Source:</span>-->
+	  	<c:out value="${ source }" escapeXml="false" />   <br />
+	</c:if>
+	
+	<c:if test="${ ! empty  passage.spelling }">
+	<span class="label">Spelling:</span>
+	<c:out value="${ passage.spelling }" escapeXml="false" />   <br />
+	</c:if>
+	
+	<c:if test="${ ! empty  passage.pagination && ! passage.pagination == ' ' }">
+	<span class="label">Pagination:</span>
+	'<c:out value="${ passage.pagination }" escapeXml="false" />'   <br />
+	</c:if>
+	
+<!--If it's a Tibetan Passage, convert the wylie.-->
+<c:if test="${ passage.meta.language == 2 }">
+	<c:set target="${ sessionScope.visit.helper}" property="wylie" value="${ passage.passage }"/>
+<c:catch var="exception">
+	<c:set var="tib" value="${ sessionScope.visit.helper.tibetan } " />
+	<c:if test="${ ! empty tib }">
+		<div class="tmw-block"><c:out value="${ tib }" escapeXml="false" /></div>
+	</c:if>
+</c:catch>
+</c:if>
+
+<c:if test="${ ! empty exception }">
+	<span class="error-info">Wylie conversion error (view source for details)</span>
+	<!-- <c:out value="${ exception }"/>  -->
+		<!--Here was the wylie: <c:out value="${ passage.passage }" /> -->
+</c:if>	
+	 
+		<div><c:out value="${ passage.passage }" escapeXml="false"/></div>
+	
+		
+		
+		<jsp:include page="displayMeta.jsf" />
+		
+	</p>
+
+		<c:if test="${sessionScope.visit.helper.showTranslations }">
+		<c:set value="${passage.translations}" target="${sessionScope.visit.helper}" property="collection"/>
+		<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
+		<h3>Translations</h3>
+		<ul>
+		<c:forEach var="translation" items="${ passage.translations }" >
+		<li>
+		<p class="data">
+		<c:if test="${ editMode }">
+	<span class="compEditOptions">
+		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=passage&amp;metaId=${ translation.metaId }&amp;translationOf=${ translation.translationOf }&amp;parentId=${ translation.parentId }" title="Edit this passage"><img alt="Edit this passage" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=passage&amp;metaId=${ translation.metaId }&amp;translationOf=${ translation.translationOf }&amp;parentId=${ translation.parentId }" title="Remove this passage"><img alt="Remove this passage" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+		</span>
+	</c:if>  
+		<c:set var="source" value="${  LexFlatDataRepository.literarySources[ translation.literarySource ]   }"/> 
+	
+	<c:if test="${ ! empty  source }">
+	  	<c:out value="${ source }" />   <br />
+	</c:if>
+	
+	<c:if test="${ ! empty  translation.spelling }">
+	<span class="label">Spelling:</span>
+	<c:out value="${ translation.spelling }"  />   <br />
+	</c:if>
+	
+	<c:if test="${ ! empty  translation.pagination && ! translation.pagination == ' ' }">
+	<span class="label">Pagination:</span>
+	<c:out value="${ translation.pagination }" /> <br />
+	</c:if>
+
+		<c:out value="${ translation.passage }" />   
+		
+		<c:set var="originalComponent" value="${ passage }" />
+		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ translation }" />
+		<jsp:include page="displayMeta.jsf" />
+		
+		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ originalComponent }" />
+		</p>
+		</li>
+		</c:forEach> 
+		</ul>
+		</c:if>
+		</c:if>
+		
+		
+		<jsp:include page="displayNotes.jsf" />
+
+
+

@@ -1,0 +1,54 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*"  %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<!--registerForm.jsf-->
+<c:out value='<a name="${ component }" ></a>' escapeXml="false" />
+<c:choose>
+	<c:when test="${ ! empty param.formMode && param.formMode == 'insert'}">
+		<c:set var="updateMode" value="${ false }" />		
+		<c:set var="newCmd" value="insert" />
+		<c:set var="register" value="" />
+		<c:set var="metaId" value="" />
+		<%-- <c:set var="precedence" value="1" /> --%>
+		
+	</c:when>
+	<c:when test="${ ! empty param.formMode && param.formMode == 'update'}">
+		<c:set var="updateMode" value="${ true }" />		
+		<c:set var="newCmd" value="update" />
+		<c:set var="register" value="${ component.register }" />
+		<c:set var="metaId" value="${ component.metaId }" />
+		<%-- <c:set var="precedence" value="${ component.precedence }" /> --%>
+		
+	</c:when>
+	<c:otherwise>
+		<c:set var="updateMode" value="${ false }" />		
+		<c:set var="newCmd" value="" />
+		<c:set var="register" value="ERROR" />
+		<%-- <c:set var="precedence" value="ERROR" /> --%>
+		
+	</c:otherwise>
+</c:choose>
+
+<form id="newCompForm" action="/lex/action" method="post">
+<p>
+<input type="hidden" name="comp" value="speechRegister" />
+<c:if test="${ updateMode }">
+<c:out value='<input type="hidden" name="metaId" value="${metaId}" />' escapeXml="false" />
+</c:if>
+<c:out value='<input type="hidden" name="cmd" value="${newCmd}" />' escapeXml='false' />
+
+Register: 
+<select name="register">
+	<c:forEach var="reg" items="${ applicationScope.flatData.registers }" >
+		<c:set var="sel" value="" />
+		<c:if test="${ reg.key == register }">
+			<c:set var="sel" value="selected='selected'" />
+		</c:if>
+		<c:out value="<option value='${ reg.key }' ${sel}>${ reg.value }</option>" escapeXml="false" /> <br />
+	</c:forEach>
+</select>
+<br />
+<jsp:include page="metaForm.jsf" />
+
+<input type="submit" value="Submit Register" />
+</p>
+</form>

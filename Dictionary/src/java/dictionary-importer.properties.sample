@@ -1,0 +1,4 @@
+# Default localized resources for DictionaryImporter
+
+dictionaryimporter.driverclassname=com.mysql.jdbc.Driver
+dictionaryimporter.url=jdbc:mysql://localhost:3306/lex?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&user=USERNAME&password=PASSWORD

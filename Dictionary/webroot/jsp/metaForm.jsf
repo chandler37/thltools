@@ -1,0 +1,278 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<%@ taglib prefix="sess" uri="http://java.sun.com/jstl/core" %>
+<%@ taglib prefix="str" uri="http://jakarta.apache.org/taglibs/string-1.0" %>
+<!--metaForm.jsf-->
+
+<c:choose>
+	<c:when test="${ ! empty param.formMode && param.formMode == 'insert'}">
+		<c:set var="updateMode" value="${ false }" />		
+		<c:set var="language" value="${ sessionScope.visit.preferences.language }" />
+		<c:set var="dialect" value="${ sessionScope.visit.preferences.dialect }" />
+		<c:set var="source" value="${ sessionScope.visit.preferences.source }" />
+		<c:set var="projectSubject" value="${ sessionScope.visit.preferences.projectSubject }" />
+		<c:set var="script" value="${ sessionScope.visit.preferences.script }" />
+		<%-- <c:set var="precedence" value="0" /> --%>
+		<c:set var="note" value="${ sessionScope.visit.preferences.note }" />
+	</c:when>
+	<c:when test="${ ! empty param.formMode && param.formMode == 'update'}">
+		<c:set var="updateMode" value="${ true }" />		
+		<c:set var="language" value="${ component.meta.language }" />
+		<c:set var="dialect" value="${ component.meta.dialect }" />
+		<c:set var="source" value="${ component.meta.source }" />
+		<c:set var="projectSubject" value="${ component.meta.modifiedByProjSub }" />
+		<c:set var="script" value="${ component.meta.script }" />
+		<%-- <c:set var="precedence" value="${ component.precedence }" />  --%>
+		<c:set var="note" value="${ component.meta.note }" />
+	</c:when>
+	<c:otherwise>
+		<c:set var="updateMode" value="${ false }" />		
+		<c:set var="language" value="ERROR" />
+		<c:set var="dialect" value="ERROR" />
+		<c:set var="source" value="ERROR" />
+		<c:set var="projectSubject" value="ERROR" />
+		<c:set var="script" value="ERROR" />
+		<c:set var="note" value="ERROR" />
+	</c:otherwise>
+</c:choose>
+
+<c:set var="parentId" value="${ component.parentId }" />
+<%-- <c:if test="${ parentId == null || component.parentId < 1 }">
+	<c:set var="parentId" value="${ param.parentId }" />
+</c:if> --%>
+<c:out value=' <input type="hidden" name="parentId" value="${parentId}" /> ' escapeXml='false' />
+<%-- <c:out value='<input type="hidden" name="precedence" value="${ precedence }" />'escapeXml="false" /> --%>
+
+
+
+<c:if test="${ ! updateMode && param.cmd != 'getAnnotationForm' && param.cmd != 'getTranslationForm' }">
+<p>
+Analysis: <br />
+<textarea name="analyticalNote" rows="8" cols="90"></textarea>
+</p>
+</c:if>
+
+<!--Add Token-->
+<c:out value='<input type="hidden" name="token" value="${ sessionScope.visit.token }" />' escapeXml="false" />
+
+<c:choose>
+<c:when test="${ ! sessionScope.visit.preferences.useDefaultLanguage || updateMode }">
+<p>
+Language: 
+<select name="language">
+	<c:set var="sel" value="" />
+	<c:if test="${ 0 == language }">
+		<c:set var="sel" value="selected='selected'" />
+	</c:if>
+	<c:out value="<option value='0' ${sel}>none</option>" escapeXml="false" /> 
+		<c:forEach var="prefLangs" items="${ sessionScope.visit.preferences.languageSet }">
+		<c:set var="sel" value="" />		
+		<c:if test="${ language == prefLangs }">
+			<c:set var="sel" value="selected='selected'" />
+		</c:if>
+		<c:out value='<option value="${ prefLangs }" ${ sel }>${ applicationScope.flatData.languages[ prefLangs ] }</option>' escapeXml="false" />
+	</c:forEach>
+	<c:forEach var="langs" items="${ applicationScope.flatData.languages }">
+		<c:set var="printOption" value="${ true }" />
+		<c:forEach var="prefLangs" items="${ sessionScope.visit.preferences.languageSet }">
+			<c:if test="${ prefLangs == langs.key }">
+				<c:set var="printOption" value="${ false }" />
+			</c:if>
+		</c:forEach>
+		<c:if test="${ printOption }">
+			<c:set var="sel" value="" />		
+			<c:if test="${ langs.key == language }">
+				<c:set var="sel" value="selected='selected'" />
+			</c:if>
+			<c:out value='<option value="${ langs.key }" ${sel}>${ langs.value }</option>' escapeXml="false" />
+		</c:if>
+	</c:forEach>
+</select>
+</p>
+</c:when>
+<c:otherwise>
+	<c:out value='<input type="hidden" name="language" value="${ sessionScope.visit.preferences.language }" />' escapeXml='false' /> 
+</c:otherwise>
+</c:choose>
+
+<c:choose>
+<c:when test="${ ! sessionScope.visit.preferences.useDefaultScript || updateMode }">
+<p>
+Script: 
+<select name="script">
+	<c:set var="sel" value="" />
+	<c:if test="${ 0 == script }">
+		<c:set var="sel" value="selected='selected'" />
+	</c:if>
+	<c:out value="<option value='0' ${sel}>none</option>" escapeXml="false" /> 
+<c:forEach var="prefScripts" items="${ sessionScope.visit.preferences.scriptSet }">
+		<c:set var="sel" value="" />		
+		<c:if test="${ script == prefScripts }">
+			<c:set var="sel" value="selected='selected'" />
+		</c:if>
+<c:out value='<option value="${ prefScripts }" ${ sel }>${ applicationScope.flatData.scripts[ prefScripts ] }</option>' escapeXml="false" />
+</c:forEach>
+<option disabled="disabled" value="">----------------</option>
+<c:forEach var="scripts" items="${ applicationScope.flatData.scripts }">
+	<c:set var="printOption" value="${ true }" />
+	<c:forEach var="prefScripts" items="${ sessionScope.visit.preferences.scriptSet }">
+		<c:if test="${ prefScripts == scripts.key }">
+			<c:set var="printOption" value="${ false }" />
+		</c:if>
+	</c:forEach>
+<c:if test="${ printOption }">
+			<c:set var="sel" value="" />		
+			<c:if test="${ scripts.key == script }">
+				<c:set var="sel" value="selected='selected'" />
+			</c:if>
+<c:out value='<option value="${ scripts.key }"  ${ sel }>${ scripts.value }</option>' escapeXml="false" />
+</c:if>
+</c:forEach>
+</select>
+
+</p>
+</c:when>
+<c:otherwise>
+	<c:out value='<input type="hidden" name="script" value="${ sessionScope.visit.preferences.script }" />' escapeXml='false' /> 
+</c:otherwise>
+</c:choose>
+
+<c:choose>
+<c:when test="${ ! sessionScope.visit.preferences.useDefaultDialect || updateMode }">
+<%-- <c:if test="${ ! translateMode }"> --%>
+<p>
+Dialect: 
+<select name="dialect">
+	<c:set var="sel" value="" />
+	<c:if test="${ 0 == dialect }">
+		<c:set var="sel" value="selected='selected'" />
+	</c:if>
+	<c:out value="<option value='0' ${sel}>none</option>" escapeXml="false" /> 
+<c:forEach var="prefDials" items="${ sessionScope.visit.preferences.dialectSet }">
+		<c:set var="sel" value="" />		
+		<c:if test="${ dialect == prefDials }">
+			<c:set var="sel" value="selected='selected'" />
+		</c:if>
+<c:out value='<option value="${ prefDials }" ${ sel }>${ applicationScope.flatData.majorDialectFamilies[ prefDials ] }</option>' escapeXml="false" />
+</c:forEach>
+	<option disabled="disabled" value="">----------------</option>
+<c:forEach var="dials" items="${ applicationScope.flatData.majorDialectFamilies }">
+	<c:set var="printOption" value="${ true }" />
+	<c:forEach var="prefDials" items="${ sessionScope.visit.preferences.dialectSet }">
+		<c:if test="${ prefDials == dials.key }">
+			<c:set var="printOption" value="${ false }" />
+		</c:if>
+	</c:forEach>
+<c:if test="${ printOption }">
+			<c:set var="sel" value="" />		
+			<c:if test="${ dials.key == dialect }">
+				<c:set var="sel" value="selected='selected'" />
+			</c:if>
+<c:out value='<option value="${ dials.key }"  ${ sel }>${ dials.value }</option>' escapeXml="false" />
+</c:if>
+</c:forEach>
+</select>
+</p>
+</c:when>
+<c:otherwise>
+	<c:out value='<input type="hidden" name="dialect" value="${ sessionScope.visit.preferences.dialect }" />' escapeXml='false' /> 
+</c:otherwise>
+</c:choose>
+
+<c:choose>
+<c:when test="${ ! sessionScope.visit.preferences.useDefaultSource  || updateMode }">
+<p>
+Source: 
+<select name="source">
+	<c:set var="sel" value="" />
+	<c:if test="${ 0 == source }">
+		<c:set var="sel" value="selected='selected'" />
+	</c:if>
+	<c:out value="<option value='0' ${sel}>none</option>" escapeXml="false" /> 
+<c:forEach var="prefSources" items="${ sessionScope.visit.preferences.sourceSet }">
+		<c:set var="sel" value="" />		
+		<c:if test="${ source == prefSources }">
+			<c:set var="sel" value="selected='selected'" />
+		</c:if>
+<c:out value='<option value="${ prefSources }" ${ sel }>${ applicationScope.flatData.sources[ prefSources ] }</option>' escapeXml="false" />
+</c:forEach>
+<option disabled="disabled" value="">----------------</option>
+<c:forEach var="srcs" items="${ applicationScope.flatData.sources }">
+	<c:set var="printOption" value="${ true }" />
+	<c:forEach var="prefSources" items="${ sessionScope.visit.preferences.sourceSet }">
+		<c:if test="${ prefSources == srcs.key }">
+			<c:set var="printOption" value="${ false }" />
+		</c:if>
+	</c:forEach>
+<c:if test="${ printOption }">
+			<c:set var="sel" value="" />		
+			<c:if test="${ srcs.key == source }">
+				<c:set var="sel" value="selected='selected'" />
+			</c:if>
+<c:out value='<option value="${ srcs.key }"  ${ sel }>${ srcs.value }</option>' escapeXml="false" />
+</c:if>
+</c:forEach>
+</select>
+</p>
+</c:when>
+<c:otherwise>
+	<c:out value='<input type="hidden" name="source" value="${ sessionScope.visit.preferences.source }" />' escapeXml='false' /> 
+</c:otherwise>
+</c:choose>
+
+<c:choose>
+<c:when test="${ ! sessionScope.visit.preferences.useDefaultProjSub  || updateMode }">
+<p>
+Project/Subject: 
+<select name="projectSubject" style="width: 80%;">
+	<c:set var="sel" value="" />
+	<c:if test="${ 0 == projectSubject }">
+		<c:set var="sel" value="selected='selected'" />
+	</c:if>
+	<c:out value="<option value='0' ${sel}>none</option>" escapeXml="false" /> 
+<c:forEach var="prefProjSub" items="${ sessionScope.visit.preferences.projectSubjectSet }">
+		<c:set var="sel" value="" />		
+		<c:if test="${ projectSubject == prefProjSub }">
+			<c:set var="sel" value="selected='selected'" />
+		</c:if>
+<c:out value='<option value="${ prefProjSub }" ${ sel }>${ applicationScope.flatData.projectSubjects[ prefProjSub ] }</option>' escapeXml="false" />
+</c:forEach>
+<option disabled="disabled" value="">----------------</option>
+<c:forEach var="projSubs" items="${ applicationScope.flatData.projectSubjects }">
+	<c:set var="printOption" value="${ true }" />
+	<c:forEach var="prefProjSub" items="${ sessionScope.visit.preferences.projectSubjectSet }">
+		<c:if test="${ prefProjSub == projSubs.key }">
+			<c:set var="printOption" value="${ false }" />
+		</c:if>
+	</c:forEach>
+<c:if test="${ printOption }">
+	<c:set var="sel" value="" />		
+	<c:if test="${ projSubs.key == projectSubject }">
+		<c:set var="sel" value="selected='selected'" />
+	</c:if>
+<c:out value='<option value="${ projSubs.key }"  ${ sel }>${ projSubs.value }</option>' escapeXml="false" />
+</c:if>
+</c:forEach>
+</select>
+</p>
+</c:when>
+<c:otherwise>
+	<c:out value='<input type="hidden" name="projectSubject" value="${ sessionScope.visit.preferences.projectSubject }" />' escapeXml='false' /> 
+</c:otherwise>
+</c:choose>
+
+<c:choose>
+<c:when test="${ ! sessionScope.visit.preferences.useDefaultNote  || updateMode }">
+
+<p>
+<c:out value="${ originalNote }" escapeXml="false"/>
+Metadata Note: <br />
+<textarea name="note" rows="8" cols="90"><c:out value='${ note }' escapeXml='false' /></textarea> <br />
+</p>
+</c:when>
+<c:otherwise>
+	<c:out value='<input type="hidden" name="note" value="${ sessionScope.visit.preferences.note }" />' escapeXml='false' /> 
+</c:otherwise>
+</c:choose>
+
+

@@ -1,0 +1,63 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false"  %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+
+
+
+
+	<c:set var="modelSentence" value="${ sessionScope.visit.helper.component }"/>
+	<p class="data">
+
+		<c:if test="${ editMode }">
+	<span class="compEditOptions">
+		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }" title="Edit this modelSentence"><img alt="Edit this modelSentence" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=modelSentence&amp;parentId=${modelSentence.parentId}&amp;translationOf=${modelSentence.metaId}" title="Translate this modelSentence"><img alt="Translate this modelSentence" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
+		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }&amp;parentId=${modelSentence.parentId}" title="Remove this modelSentence"><img alt="Remove this modelSentence" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+		</span>
+	</c:if>
+
+	<!--<span class="label">Model Sentence:</span>-->
+	<c:out value="${ modelSentence.modelSentence }" escapeXml="false" />  
+		
+		<jsp:include page="displayMeta.jsf" />
+		
+</p>
+
+		<c:if test="${sessionScope.visit.helper.showTranslations }">
+		<c:set value="${modelSentence.translations}" target="${sessionScope.visit.helper}" property="collection"/>
+		<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
+		<h3>Translations</h3>
+		<ul>
+		<c:forEach var="translation" items="${ modelSentence.translations }" >
+		<li>
+		<p class="data">
+		
+		<c:if test="${ editMode }">
+			<span class="compEditOptions">			
+			<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=modelSentence&amp;metaId=${ translation.metaId }&amp;translationOf=${ translation.translationOf }&amp;parentId=${ translation.parentId }" title="Edit this modelSentence"><img alt="Edit this modelSentence" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=modelSentence&amp;metaId=${ translation.metaId }&amp;translationOf=${ translation.translationOf }&amp;parentId=${ translation.parentId }" title="Remove this modelSentence"><img alt="Remove this modelSentence" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+			</span>
+		</c:if>
+				
+		<c:out value="${ translation.modelSentence }" escapeXml="false"  /> 
+		
+		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ translation }" />
+		<jsp:include page="displayMeta.jsf" />
+		</p>
+		</li>
+		</c:forEach> 
+		</ul>
+		</c:if>
+		</c:if>
+
+
+
+
+
+
+
+		
+		
+		<jsp:include page="displayNotes.jsf" />
+
+

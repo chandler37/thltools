@@ -1,0 +1,84 @@
+<%@ page import="org.thdl.lex.*" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8;" />
+
+<script type='text/javascript' src='http://iris.lib.virginia.edu/tibet/scripts/thdl_scripts.js'></script>
+<script type='text/javascript' src='/lex/js/lex.js'></script>
+
+<link rel="stylesheet" type="text/css" media="screen" href="/lex/css/lex.css" />
+
+<title>THDL Tibetan Collaborative Dictionaries</title>
+<style type="text/css">
+<c:if test="${ ! sessionScope.visit.helper.showEditOptions }">
+p.data
+{
+border: none;
+}
+</c:if>
+/* <%= org.thdl.tib.text.TibetanHTML.getStyles( "20" ) %> */
+</style>
+</head>
+<body> 
+
+<div id="banner">
+	<a id="logo" href="http://iris.lib.virginia.edu/tibet/index.html"><img id="test" alt="THDL Logo" src="http://iris.lib.virginia.edu/tibet/images/logo.png"/></a>
+	<h1>The Tibetan &amp; Himalayan Digital Library</h1>
+
+	<div id="menubar">
+		<%-- <script type='text/javascript'>function Go() { return }</script>
+		<script type='text/javascript' src='http://iris.lib.virginia.edu/tibet/scripts/new/thdl_menu_config.js'></script>
+		<script type='text/javascript' src='http://iris.lib.virginia.edu/tibet/scripts/new/menu_new.js'></script>
+		<script type='text/javascript' src='http://iris.lib.virginia.edu/tibet/scripts/new/menu9_com.js'></script>
+		<noscript><p>Your browser does not support javascript.</p></noscript>
+		<div id='MenuPos' >Menu Loading...	</div> --%>
+	</div><!--END menubar-->
+</div><!--END banner-->
+
+<div id="sub_banner">
+	<div id="search">
+		<form  method="get" action="http://www.google.com/u/thdl">
+			<p>
+				<input type="text" name="q" id="q" size="15" maxlength="255" value="" />
+				<input type="submit" name="sa" id="sa" value="Search"/>
+				<input type="hidden" name="hq" id="hq"  value="inurl:iris.lib.virginia.edu"/>
+			</p>
+		</form>
+	</div>
+
+	 <div id="breadcrumbs">
+		<a href="http://iris.lib.virginia.edu/tibet/index.html">THDL</a> &gt;
+		<a href="http://iris.lib.virginia.edu/tibet/reference/index.html">Reference</a> &gt;
+		THDL Tibetan Collaborative Dictionaries
+	</div> 
+</div><!--END sub_banner-->
+
+<div id="main">
+
+<%-- <!--header.jsf-->
+<div id="header">
+
+<jsp:include page="navLinks.jsf" />
+<c:if test="${ ! empty jumpToLocation }">
+	| <c:out value="<a href='#${ jumpToLocation }'>" escapeXml="false"/>Jump to Most Recent Component</a>
+</c:if>
+
+<c:if test="${ false && false && ! empty jumpToLocation }">
+	<script type="text/javascript">
+		function scrollIt(anchorname) {
+		 if (document.all)
+		document.all(anchorname).scrollIntoView()
+		 else if (document.anchors)
+			window.scrollTo(0,document.anchors[anchorname].y);
+		}
+		scrollIt('<c:out value="${ jumpToLocation }"/>');
+	</script>
+
+<c:set var="jsParams" value="javascript:scrollIt('${ jumpToLocation }')" />
+
+</c:if>
+
+</div><!--end header--> --%>

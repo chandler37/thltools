@@ -1,0 +1,46 @@
+<%@ page  buffer="512kb" autoFlush="false" import="org.thdl.lex.*,org.thdl.lex.component.*" errorPage="/jsp/error.jsp"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+
+<!--displayTerm.jsf-->
+
+
+
+
+<!--TERM-->
+<h1 class="tmw-block">
+<c:set target="${ sessionScope.visit.helper}" property="wylie" value="${ sessionScope.visit.query.entry.term }"/>
+<c:catch var="exception">
+<c:out value="${ sessionScope.visit.helper.tibetan }" escapeXml="false"/>
+</c:catch>
+<c:if test="${ ! empty exception }">
+	<span class="error-info">Wylie conversion error: <c:out value="${ exception }"/></span>
+</c:if>	
+</h1>
+
+<p class="data" >
+
+		<c:if test="${ editMode }">
+		<span class="compEditOptions">
+			<c:out value='<a href="/lex/action?cmd=getUpdateTermForm&amp;comp=term&amp;metaId=${ sessionScope.visit.query.entry.metaId }" title="Edit Term"><img alt="Edit Term" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=term&amp;metaId=${sessionScope.visit.query.entry.metaId}" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=pronunciation&amp;parentId=${sessionScope.visit.query.entry.metaId}" title="Add Pronunciation"><img alt="Add Pronunciation" src="/lex/images/pron.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=etymology&amp;parentId=${sessionScope.visit.query.entry.metaId}" title="Add Etymology"><img alt="Add Etymology" src="/lex/images/etym.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=spelling&amp;parentId=${sessionScope.visit.query.entry.metaId}" title="Add Spelling"><img alt="Add Spelling" src="/lex/images/spell.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=grammaticalFunction&amp;parentId=${sessionScope.visit.query.entry.metaId}" title="Add Grammatical Function"><img alt="Add a Grammatical Function" src="/lex/images/gram.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=encyclopediaArticle&amp;parentId=${sessionScope.visit.query.entry.metaId}" title="Add Encyclopedia Article"><img alt="Add Encyclopedia Article" src="/lex/images/ency.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=definition&amp;parentId=${sessionScope.visit.query.entry.metaId}" title="Add Definition"><img alt="Add Definition" src="/lex/images/def.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getRemoveTermForm&amp;comp=term&amp;metaId=${ sessionScope.visit.query.entry.metaId }" title="Remove Term"><img alt="Edit Term" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+		</span>
+		</c:if>
+
+		<strong><c:out value="${ sessionScope.visit.query.entry.term }" /></strong>
+
+		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ sessionScope.visit.query.entry }" />
+		<jsp:include page="displayMeta.jsf" />
+
+		<jsp:include page="displayNotes.jsf" />
+
+</p>
+
+	<!--END TERM-->
+

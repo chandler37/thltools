@@ -1,0 +1,33 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+
+
+
+
+<!--PRONUNCIATION-->
+<c:set var="pronunciation" value="${ sessionScope.visit.helper.component }"/>
+	<p class="data">
+
+		<c:if test="${ editMode }">
+		<span class="compEditOptions">
+		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=pronunciation&amp;metaId=${ pronunciation.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=pronunciation&amp;metaId=${ pronunciation.metaId }" title="Edit this component"><img alt="Edit this component" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=pronunciation&amp;metaId=${ pronunciation.metaId }&amp;parentId=${pronunciation.parentId}" title="Remove this component"><img alt="Remove this component" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+		</span>
+		</c:if>
+		
+	<!--<span class="label">Type of Phonetics:</span> -->
+	<em><c:out value="${ applicationScope.flatData.phoneticsTypes[ pronunciation.phoneticsType ] }"  escapeXml="false"/></em>; 
+		<!--<span class="label">Phonetic Rendering:</span>-->
+		<strong><c:out value="${ pronunciation.phonetics }"  escapeXml="false"/></strong>   
+		
+		
+		
+		
+		<jsp:include page="displayMeta.jsf" />
+		
+		
+		<jsp:include page="displayNotes.jsf" />
+
+	</p>
+

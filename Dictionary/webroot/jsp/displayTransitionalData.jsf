@@ -1,0 +1,29 @@
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false"  %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<!--displayTransitionalData.jsf-->
+
+
+
+<!--TRANSITIONAL DATA-->
+<c:set var="transitionalData" value="${ sessionScope.visit.helper.component }"/>
+<c:if test="${ transitionalData.forPublicConsumption == 'true' || ! sessionScope.visit.user.guest }">
+<li>
+	<c:out value="<a name='${ sessionScope.visit.helper.hashCodeForComponent }'></a>" escapeXml="false"/>
+	<p class="data">
+		<c:if test="${ editMode }">
+		<span class="compEditOptions">
+		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=transitionalData&amp;metaId=${ transitionalData.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=transitionalData&amp;metaId=${ transitionalData.metaId }" title="Edit this component"><img alt="Edit this component" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=transitionalData&amp;metaId=${ transitionalData.metaId }&amp;parentId=${transitionalData.parentId}" title="Remove this component"><img alt="Remove this component" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+		</span>
+		</c:if>
+
+		<span><c:out value="${ applicationScope.flatData.transitionalDataLabels[ transitionalData.transitionalDataLabel ] }" /></span>  <c:out value="${ pronunciation.phonetics }"  escapeXml="false"/>   <br />
+		<c:out value="${ transitionalData.transitionalDataText }"  escapeXml="false"/>   
+
+		<jsp:include page="displayMeta.jsf" />
+
+		<jsp:include page="displayNotes.jsf" />
+	</p>
+</li>
+</c:if>
