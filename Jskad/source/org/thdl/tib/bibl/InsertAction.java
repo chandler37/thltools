@@ -32,6 +32,8 @@ import java.awt.event.ActionEvent;
 * <li>{@link TibConstants.TITLE_DISC TITLE_DISC} - calls {@link TiblEdit#insertDiscussion()}
 * <li>{@link TibConstants.INSERT_APP INSERT_APP} - calls {@link TiblEdit#insertApp()}
 * </ul>
+*
+* @author Than Garson, Tibetan and Himalayan Digital Library
 */
 
 public class InsertAction extends TibAction

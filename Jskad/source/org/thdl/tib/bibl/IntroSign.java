@@ -34,6 +34,8 @@ import javax.swing.border.BevelBorder;
 
 /**
 * This class displays the initial splash screen upon opening the program.
+*
+* @author Than Garson, Tibetan and Himalayan Digital Library
 */
 
 public class IntroSign extends JFrame implements Runnable

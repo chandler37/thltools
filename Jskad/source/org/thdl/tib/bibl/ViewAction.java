@@ -30,6 +30,8 @@ import java.awt.event.ActionEvent;
 * <li>{@link TibConstants.USER_ID_VIEW USER_ID_VIEW} - calls {@link TiblEdit#getEditorInfo()}
 * <li>{@link TibConstants.ABOUT ABOUT} - calls {@link TiblEdit#showSplash()}
 * </ul>
+*
+* @author Than Garson, Tibetan and Himalayan Digital Library
 */
 
 public class ViewAction extends TibAction

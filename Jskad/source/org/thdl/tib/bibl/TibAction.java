@@ -25,6 +25,8 @@ import java.io.File;
 * This extension of javax.swing.AbstractAction is used for the various menus in {@link TibFrame}. It assigns two
 * special key/value pairs: the frame, which points to the TibFrame, and the controller which is the main program,
 * TiblEdit.
+*
+* @author Than Garson, Tibetan and Himalayan Digital Library
 */
 
 abstract class TibAction extends AbstractAction implements TibConstants

@@ -31,6 +31,8 @@ import java.awt.event.ActionEvent;
 * <li>{@link TibConstants.REMOVE_APP REMOVE_APP} - calls {@link TiblEdit#removeApp()}
 * <li>{@link TibConstants.REMOVE_TITLE REMOVE_TITLE} - calls {@link TiblEdit#removeTitle()}
 * </ul>
+*
+* @author Than Garson, Tibetan and Himalayan Digital Library
 */
 
 public class EditAction extends TibAction

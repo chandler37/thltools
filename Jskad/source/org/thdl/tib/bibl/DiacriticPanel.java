@@ -52,6 +52,8 @@ import javax.swing.text.*;
 	* These are read and converted into characters by DiacriticPanel and they are displayed in the order they are read.
 	* Thus, to reorder, modify, or add diacritics, one needs only to make the appropriate changes to the dia.dat file.
 	* </p>
+	*
+	* @author Than Garson, Tibetan and Himalayan Digital Library
 	*/
 
 public class DiacriticPanel extends JPanel implements TibConstants

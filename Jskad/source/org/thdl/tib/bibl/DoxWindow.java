@@ -29,6 +29,8 @@ import java.util.NoSuchElementException;
 * This class displays a separate window with information concerning a texts doxographical category and it
 * allows the user to set the doxographical categorization for a text. It changes options as the category is
 * specificed and allows the user to view the categories in either English or Tibetan.
+*
+* @author Than Garson, Tibetan and Himalayan Digital Library
 */
 
 public class DoxWindow extends JFrame

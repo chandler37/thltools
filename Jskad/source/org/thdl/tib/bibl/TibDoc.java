@@ -36,6 +36,8 @@ import org.jdom.output.*;
 	* contained inside the associated Title element that contains as its text the transliteration
 	* of the Tibetan title.
 	* </p>
+	*
+	* @author Than Garson, Tibetan and Himalayan Digital Library
 	*/
 
 public class TibDoc extends XMLDoc

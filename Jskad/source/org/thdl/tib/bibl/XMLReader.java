@@ -30,6 +30,8 @@ import org.xml.sax.*;
 
 /**
 * This class reads in an XML file using the SAXBuilder in org.jdom.input.
+*
+* @author Than Garson, Tibetan and Himalayan Digital Library
 */
 
 public class XMLReader extends Observable implements TibConstants

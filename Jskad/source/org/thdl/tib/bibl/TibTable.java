@@ -33,6 +33,8 @@ import org.jdom.*;
 /**
 * This element is a wrapper element for a JTable that sets up two kinds of tables for editing a Tibbibl--one for
 * displaying various editions and one for displaying alternative readings.
+*
+* @author Than Garson, Tibetan and Himalayan Digital Library
 */
 
 public class TibTable extends Observable implements TibConstants, ActionListener

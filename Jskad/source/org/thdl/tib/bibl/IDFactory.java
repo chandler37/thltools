@@ -25,6 +25,8 @@ import org.jdom.output.*;
 /**
 * Like its sister class, {@link TitleFactory}, this class is used to access and display the information
 * in the ID section of a TIBBIBL record.
+*
+* @author Than Garson, Tibetan and Himalayan Digital Library
 */
 
 public class IDFactory extends GenericTibFactory implements TibConstants

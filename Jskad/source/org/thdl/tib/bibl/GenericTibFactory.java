@@ -25,6 +25,8 @@ import org.jdom.output.*;
 /**
 * This abstract class is extended by both {@link IDFactory} and {@link TitleFactory}, and provides general functionality
 * such as setting the document associated with the factory and setting text/styles for the {@link TextPane}.
+*
+* @author Than Garson, Tibetan and Himalayan Digital Library
 */
 
 abstract class GenericTibFactory implements TibConstants

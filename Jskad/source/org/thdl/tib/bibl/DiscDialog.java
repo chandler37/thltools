@@ -33,6 +33,8 @@ import org.jdom.*;
 * There are two types of discussion: brief (no paragraphs) and long (with paragraphs). It provides the user
 * with a {@link DiacriticPanel} so that diacritics can be easily entered into the discussion. It also provides
 * means to format the text as either bold and/or italic.
+*
+* @author Than Garson, Tibetan and Himalayan Digital Library
 */
 public class DiscDialog extends JDialog implements TibConstants, ActionListener
 {

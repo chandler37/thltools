@@ -29,6 +29,8 @@ import org.jdom.output.*;
 * extended by {@link TibDoc}, which adds more specific functionality and is the class used in the TiblEdit program.
 * This class needs to be cleaned up so that only the most general XML functions remain and the functions that are
 * specific to our DTD are relegated to TibDoc.
+*
+* @author Than Garson, Tibetan and Himalayan Digital Library
 */
 
 public class XMLDoc extends org.jdom.Document implements TibConstants

@@ -26,6 +26,8 @@ import java.util.Hashtable;
 /**
 * This interface contains all the constants used throughout the TiblEdit program. They are roughly organized
 * according to type, but the organization could definitely be cleaned up some.
+*
+* @author Than Garson, Tibetan and Himalayan Digital Library
 */
 
 public interface TibConstants

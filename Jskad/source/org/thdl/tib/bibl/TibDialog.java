@@ -31,6 +31,7 @@ import javax.swing.event.*;
 *  TiblEdit. It may be a relic. CHECK!
 * </p>
 *
+* @author Than Garson, Tibetan and Himalayan Digital Library
 */
 
 public class TibDialog extends JDialog implements ActionListener, TibConstants

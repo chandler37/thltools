@@ -21,6 +21,10 @@ package org.thdl.tib.bibl;
  import org.xml.sax.EntityResolver;
  import org.xml.sax.InputSource;
 
+/* FIXMEDOC.
+*
+* @author Than Garson, Tibetan and Himalayan Digital Library
+*/
  public class TibDTDResolver implements EntityResolver, TibConstants {
    public InputSource resolveEntity (String publicId, String systemId)
    {

@@ -25,6 +25,8 @@ import javax.swing.filechooser.*;
 
 /**
 * XMLFilter extends java.io.FileFilter to display only XML files in the open filechooser window.
+*
+* @author Than Garson, Tibetan and Himalayan Digital Library
 */
 
 public class XMLFilter extends FileFilter {

@@ -24,6 +24,8 @@ import org.jdom.*;
 * This wrapper class associates a String of text with a Style (as defined in {@link TibConstants}?) and a particular
 * element. It is used for interactivity with the {@link TextPane} so that highlighting or clicking on a string in the
 * text pane can be associated with actions for processing the text within an element.
+*
+* @author Than Garson, Tibetan and Himalayan Digital Library
 */
 
 public class ElementStyle implements TibConstants

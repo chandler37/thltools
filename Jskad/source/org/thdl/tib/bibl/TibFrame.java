@@ -38,6 +38,8 @@ import javax.swing.event.*;
 	* view window, but also allows split screens with a {@link DiacriticPanel} on the left and/or
 	* a {@link TibTable} at the bottom.
 	* </p>
+	*
+	* @author Than Garson, Tibetan and Himalayan Digital Library
 	*/
 
 public class TibFrame extends JFrame implements CaretListener, TibConstants

@@ -35,6 +35,8 @@ import org.jdom.output.*;
 * text's bibliographic information. The panel is created using the text's information
 * contained in a {@link TibDoc} and then is added or set to the content pane
 * of the main frame which is an {@link TibFrame}.
+*
+* @author Than Garson, Tibetan and Himalayan Digital Library
 */
 
 public class TextPane extends JTextPane implements TibConstants

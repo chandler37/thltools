@@ -22,6 +22,8 @@ import java.awt.event.ActionEvent;
 
 /**
 * This class is used to associate actions with the File menu of {@link TibFrame}.
+*
+* @author Than Garson, Tibetan and Himalayan Digital Library
 */
 
 public class FileAction extends TibAction

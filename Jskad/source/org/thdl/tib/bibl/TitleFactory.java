@@ -25,6 +25,8 @@ import org.jdom.output.*;
 /**
 * The TitleFactory class extends the GenericTibFactory to provide means for locating and manipulating title elements
 * within a {@link TibDoc}.
+*
+* @author Than Garson, Tibetan and Himalayan Digital Library
 */
 
 public class TitleFactory extends GenericTibFactory implements TibConstants

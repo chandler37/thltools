@@ -28,6 +28,8 @@ import org.jdom.output.*;
 * This class provides the mechanism to "parse" a Tibbibl title tag and understand its contents. Some title tags
 * will contain AP children that represent variant readings. TitleParser can among other things supply the text
 * of the main readings in the title, weeding out the alternative one.
+*
+* @author Than Garson, Tibetan and Himalayan Digital Library
 */
 
 public class TitleParser implements TibConstants
