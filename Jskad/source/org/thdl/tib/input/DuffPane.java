@@ -53,7 +53,7 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 * screen, the {@link #newGlyphList glyphList}) is computed on the basis 
 * of charList.
 */
-	private java.util.LinkedList charList;
+	private java.util.ArrayList charList;
 /* 
 * This field holds a copy of the last {@link #newGlyphList}.
 * Then, when a key is pressed, {@link #charList} is updated, a new
@@ -313,7 +313,7 @@ public RTFEditorKit rtfEd = null;
 				isStackingOn_default = true;
 			}
 		}
-		charList = new LinkedList();
+		charList = new ArrayList();
 		oldGlyphList = new ArrayList();
 		newGlyphList = new ArrayList();
 		initKeyboard();
@@ -1074,7 +1074,7 @@ public void paste(int offset) {
 						initKeyboard();
 
 					else if (size > 1 && isStackingRightToLeft) {
-						String s = (String)charList.removeLast();
+						String s = (String)charList.remove(charList.size() - 1);
 						newGlyphList = TibetanDocument.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
 						oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
 						initKeyboard();
@@ -1223,7 +1223,7 @@ public void paste(int offset) {
 
 						if (isTopHypothesis) {
 							if (TibetanMachineWeb.isAChungConsonant() && isStackingOn && charList.size()>1 && s2.equals(TibetanMachineWeb.ACHUNG)) {
-								charList.removeLast();
+								charList.remove(charList.size() - 1);
 								newGlyphList = TibetanDocument.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
 								oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
 								putVowel(TibetanMachineWeb.A_VOWEL);
