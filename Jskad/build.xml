@@ -37,8 +37,10 @@ info on where to find these.
 
 
   <!-- set global properties for this build -->
+  <property name="key.alias" value="David Germano"/>
+  <property name="keystore" value="file:///f:/thdl/Jskad/thawte/keystore"/>
   <property name="my.jar.suffix" value="vanilla"/>
-  <property name="link.offline" value="true"/>
+  <property name="link.offline" value="false"/>
   <property name="javacdashg" value="yes"/>
   <property name="source" location="source"/>
   <property name="license" location="license"/>
@@ -829,10 +831,10 @@ info on where to find these.
 
       <!-- David Chandler signs our JARs for now, and he uses this info: -->
       <jarsigner
-          keystore  = "file:///f:/thdl/Jskad/thawte/keystore"
+          keystore  = "${keystore}"
           storepass = "${keystore.password}"
           keypass = "${dgkey.password}"
-          alias     = "David Germano"/>
+          alias     = "${key.alias}"/>
     </vampwar>
 
     <!-- Extract the JAR file and delete the WAR file: -->
@@ -843,6 +845,11 @@ info on where to find these.
         <exclude name="**/*"/>
       </patternset>
     </unwar>
+    <antcall target="maybe-delete-the-war"/>
+  </target>
+
+  <target name="maybe-delete-the-war" if="delete.the.war" depends="init">
+<!--      <echo message="deleting the war"/> -->
     <delete file="${dist}/java-web-start/${my.app}-web-start.war"/>
   </target>
 
