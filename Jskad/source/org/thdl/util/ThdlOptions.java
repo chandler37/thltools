@@ -209,10 +209,12 @@ public class ThdlOptions {
 
     /** Call this when you're testing some code that uses the
      *  preferences mechanism provided by this class, and you don't
-     *  want to use options.txt etc. with that code.  You'll be
-     *  relying on the defaults encoded in the calls to
-     *  getBooleanOption etc.  If you call this twice, it will wipe
-     *  out preferences stored programmatically on each call. */
+     *  want to use the system preferences or the user preferences
+     *  with that code.  (By "system or user preferences", think
+     *  options.txt and my_thdl_preferences.txt.)  You'll be relying
+     *  on the defaults encoded in the calls to getBooleanOption etc.
+     *  If you call this twice, it will wipe out preferences stored
+     *  programmatically on each call. */
     public static void forTestingOnlyInitializeWithoutDefaultOptionsFile() {
         userProperties = new Properties(); // empty
         isInitialized = true;
