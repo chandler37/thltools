@@ -39,5 +39,7 @@ public interface SyllableListTree
 	public Definitions getDefs();
 	public boolean hasDef();
 	public SyllableListTree lookUp(String silStr);	
+	
 	public DictionarySource getDictionarySource();
+	public BitDictionarySource getDictionarySourcesWanted();
 }

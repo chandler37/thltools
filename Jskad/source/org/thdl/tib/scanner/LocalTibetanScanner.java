@@ -43,9 +43,9 @@ public class LocalTibetanScanner extends TibetanScanner
 		archivo = null;
 	}
 
-	public DictionarySource getDictionarySource()
+	public BitDictionarySource getDictionarySource()
 	{
-		return raiz.getDictionarySource();
+		return raiz.getDictionarySourcesWanted();
 	}
 
 
@@ -401,7 +401,7 @@ outAHere:
 					ll2.addLast(s.substring(n+1).trim());
 				}
 			}
-			Definitions.defTags = ll2.toStringArray();
+			DictionarySource.setTags(ll2.toStringArray());
 			return ll1.toStringArray();
 		}
 		catch (Exception e)

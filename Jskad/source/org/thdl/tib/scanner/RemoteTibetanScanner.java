@@ -31,12 +31,12 @@ import java.io.*;
 public class RemoteTibetanScanner extends TibetanScanner
 {
 	private String url;
-	private DictionarySource defSourcesWanted;
+	private BitDictionarySource defSourcesWanted;
 		
 	public RemoteTibetanScanner(String url) throws Exception
 	{
 	    super();
-		defSourcesWanted = DictionarySource.getAllDictionaries();
+		defSourcesWanted = new BitDictionarySource().getAllDictionaries();
 		this.url = url;
 	}
 	
@@ -95,7 +95,7 @@ public class RemoteTibetanScanner extends TibetanScanner
 	{
 	}	
 	
-	public DictionarySource getDictionarySource()
+	public BitDictionarySource getDictionarySource()
 	{
 		return defSourcesWanted;
 	}
@@ -129,7 +129,7 @@ public class RemoteTibetanScanner extends TibetanScanner
 				}
 			}
 			br.close();
-			Definitions.defTags = ll2.toStringArray();
+			DictionarySource.setTags(ll2.toStringArray());
 			return ll1.toStringArray();
 		}
 		catch (Exception e)

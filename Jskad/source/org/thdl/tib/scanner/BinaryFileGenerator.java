@@ -150,6 +150,8 @@ myglossary_uma.txt</i> in the transliteration format explained above.<br>
 */
 public class BinaryFileGenerator extends SimplifiedLinkedList
 {
+    private static final int versionNumber = 3;
+    
 	private long posHijos;
 	private String sil, def[];
     public final static int delimiterGeneric=0;
@@ -158,7 +160,7 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 
 	/** Number of dictionary. If 0, partial word (no definition).
 	*/
-	private DictionarySource sourceDef;
+	private ByteDictionarySource sourceDef;
 	public static RandomAccessFile wordRaf;
 	private static RandomAccessFile defRaf;
 
@@ -181,14 +183,16 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 	{
 		super();
 		int marker = sil.indexOf(" ");
-		this.sourceDef = new DictionarySource();
+		
+		// fix for updates
+		this.sourceDef = new ByteDictionarySource();
 
 		if (marker<0)
 		{
 			this.sil = sil;
 			this.def = new String[1];
 			this.def[0] = def;
-			this.sourceDef.add(numDef);
+			this.sourceDef.addNewDef(numDef);
 		}
 		else
 		{
@@ -208,9 +212,7 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 	{
 	    final short newDefiniendum=1, halfDefiniendum=2, definition=3;
 	    short status=newDefiniendum;
-	    int marker, len, marker2;
-//	    int n=0;
-	    int currentPage=0, currentLine=1;
+	    int marker, len, marker2, currentPage=0, currentLine=1;
 	    char ch;	    
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(archivo)));
 		String entrada="", s1="", s2="", currentLetter="", temp="", lastWeirdDefiniendum="", alternateWords[];
@@ -495,6 +497,11 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 		                    s2 = Manipulate.deleteQuotes(entrada.substring(marker+delimiter.length()).trim());
 		                    if (!s2.equals(""))
 		                    {
+		                        if (currentLine%5000==0)
+		                        {
+		                            System.out.println("Adding " + s1 + "...");
+		                            System.out.flush();
+		                        }
 		                        marker2 = s1.indexOf(';');
             		            if (marker2>0)
             		            {
@@ -564,32 +571,234 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 			}
 		}
 	}
+	
+	private void reGroup (int n)
+	{
+	    int i, pos, posEnd;
+	    
+	    for (i=0; i<def.length; i++)
+	    {
+	        if (i!=n)
+	        {
+	            // deal with repetitions of definitions
+	            if (def[i].length()>=def[n].length())
+	            {
+	                pos = def[i].indexOf(def[n]);
+	                
+	                // if it is the same String exactly
+	                if (pos==0 && def[i].length()==def[n].length())
+	                {
+	                    if (i<n)
+	                    {
+	                        sourceDef.addDictToDef(sourceDef.getDef(n), i);
+	                        def = Manipulate.deleteString(def, n);
+	                        sourceDef.deleteDef(n);
+	                        n = i;
+	                        continue;
+	                    }
+	                    else
+	                    {
+	                        sourceDef.addDictToDef(sourceDef.getDef(i), n);
+	                        def = Manipulate.deleteString(def, i);
+	                        sourceDef.deleteDef(i);
+	                        i--;
+	                        continue;
+	                    }
+	                }
+	                else
+	                {
+	                    posEnd = pos + def[n].length();
+
+	                    if ((pos==0 || (pos>0 && !Character.isLetter(def[i].charAt(pos-1)))) && (posEnd==def[i].length() || !Character.isLetter(def[i].charAt(posEnd))))
+	                    {
+	                        if(sourceDef.getDef(i).contains(sourceDef.getDef(n)))
+	                        {
+	                            def = Manipulate.deleteString(def, n);
+	                            sourceDef.deleteDef(n);
+	                            return;
+	                        }
+	                        
+	                        // else
+	                        sourceDef.addDictToDef(sourceDef.getDef(i), n);
+	                        
+	                        do
+	                        {
+	                            def[i] = Manipulate.replace(def[i], pos, posEnd, "*");
+	                            pos = def[i].indexOf(def[n]);
+	                            posEnd = pos + def[n].length();
+	                        } while ((pos==0 || (pos>0 && !Character.isLetter(def[i].charAt(pos-1)))) && (posEnd==def[i].length() || !Character.isLetter(def[i].charAt(posEnd))));
+	                    
+	                        if (i<n)
+	                        {
+	                            def = Manipulate.addString(def, def[n], i);
+	                            def = Manipulate.deleteString(def, n+1);
+	                            sourceDef.insertDef(sourceDef.getDef(n), i);
+	                            sourceDef.deleteDef(n+1);
+	                            n = i;
+	                            reGroup(i+1);
+	                        }
+	                        else
+	                        {
+	                            reGroup(i);
+	                        }
+	                    }
+	                }
+	            }
+	            else
+	            {
+	                pos = def[n].indexOf(def[i]);	                
+	                posEnd = pos + def[i].length();
+	                
+	                if ((pos==0 || (pos>0 && !Character.isLetter(def[n].charAt(pos-1)))) && (posEnd==def[n].length() || !Character.isLetter(def[n].charAt(posEnd))))
+	                {
+	                    if (sourceDef.getDef(n).contains(sourceDef.getDef(i)))
+	                    {
+	                        def = Manipulate.deleteString(def, i);
+	                        sourceDef.deleteDef(i);
+	                        i--;
+	                        continue;
+	                    }	                        
+
+                        sourceDef.addDictToDef(sourceDef.getDef(n), i);
+	                    
+	                    do
+	                    {
+	                        def[n] = Manipulate.replace(def[n], pos, posEnd, "*");
+	                        pos = def[n].indexOf(def[i]);
+	                        posEnd = pos + def[i].length();
+	                    } while ((pos==0 || (pos>0 && !Character.isLetter(def[n].charAt(pos-1)))) && (posEnd==def[n].length() || !Character.isLetter(def[n].charAt(posEnd))));
+	                
+	                    i=-1; // start over
+	                    continue;
+	                }
+	            }
+	            
+	            // deal with repetition of dictionaries
+	            
+	            if (sourceDef.getDef(i).equals(sourceDef.getDef(n)))
+	            {
+	                if (i<n)
+	                {
+	                    def[i] = def[i] + ". " + def[n];
+	                    def = Manipulate.deleteString(def, n);
+	                    sourceDef.deleteDef(n);
+	                    n = i;
+	                    continue;
+	                }
+	                else
+	                {
+	                    def[n] = def[n] + ". " + def[i];
+	                    def = Manipulate.deleteString(def, i);
+	                    sourceDef.deleteDef(i);
+	                }
+	            }
+	        }
+	    }
+	}
 
 	private void addMoreDef(String def, int numDef)
 	{
+	    String temp;
+	    boolean notAlreadyThere, changed;
+	    int i, pos, posEnd;
+	    
 		if (this.def==null)
 		{
+		    // add a new definition for this dictionary
 			this.def = new String[1];
 			this.def[0] = def;
-			sourceDef.add(numDef);
+			//sourceDef.add(numDef);
+			sourceDef.addNewDef(numDef);
 		}
 		else
 		{
-			// if the word is repeated in the same dictionary
-			if (sourceDef.contains(numDef))
-				this.def[this.def.length-1] = this.def[this.def.length-1] + ". " + def;
-			else
+			notAlreadyThere = true;
+			do
 			{
-				int i=0;
-				String newDef[] = new String[this.def.length+1];
-				while(i<this.def.length)
-				{
-					newDef[i] = this.def[i];
-					i++;
+			    i=0;
+    			changed = false;
+			        
+			    while (notAlreadyThere && i<this.def.length)
+			    {
+			        if (this.def[i].length()>=def.length())
+			        {
+			            pos = this.def[i].indexOf(def);
+			            posEnd = pos + def.length();
+			            if ((pos==0 || (pos>0 && !Character.isLetter(this.def[i].charAt(pos-1)))) && (posEnd==this.def[i].length() || !Character.isLetter(this.def[i].charAt(posEnd))))
+			            {
+			                if (!sourceDef.isDictInDef(numDef, i))
+			                {
+			                    if (this.def[i].length()>def.length())
+			                    {
+			                        //temp = Manipulate.deleteSubstring(this.def[i], pos, posEnd);
+			                        temp = this.def[i];
+			                        do
+			                        {
+			                            temp = Manipulate.replace(temp, pos, posEnd, "*");
+			                            pos = temp.indexOf(def);
+			                            posEnd = pos + def.length();
+			                        } while ((pos==0 || (pos>0 && !Character.isLetter(temp.charAt(pos-1)))) && (posEnd==temp.length() || !Character.isLetter(temp.charAt(posEnd))));
+			                        
+			                        this.def[i] = def;
+			                        this.def = Manipulate.addString(this.def, temp, i+1);
+			                        sourceDef.dubDef(i);
+			                        sourceDef.addDictToDef(numDef, i);
+			                        
+			                        reGroup(i);
+			                        if (i+1<this.def.length) reGroup(i+1);
+			                        else reGroup(this.def.length-1);
+			                    }
+			                    else sourceDef.addDictToDef(numDef, i);
+			                }
+			                notAlreadyThere = false;
+			                changed = false;
+			            }
+			        }
+			        else
+			        {
+			            pos = def.indexOf(this.def[i]);
+			            posEnd = pos + this.def[i].length();
+			            
+			            if ((pos==0 || (pos>0 && !Character.isLetter(def.charAt(pos-1)))) && (posEnd==def.length() || !Character.isLetter(def.charAt(posEnd))))
+			            {
+			                if (sourceDef.isDictInDefAlone(numDef, i))
+			                {
+			                    this.def[i] = def;
+			                    reGroup(i);
+			                }
+			                else
+			                {
+    			                sourceDef.addDictToDef(numDef, i);
+			                    do
+    			                {
+    			                    //def = Manipulate.deleteSubstring(def, pos, posEnd);
+    			                    def = Manipulate.replace(def, pos, posEnd, "*");
+    			                    pos = def.indexOf(this.def[i]);
+	    		                    posEnd = pos + this.def[i].length();	                
+			                    } while ((pos==0 || (pos>0 && !Character.isLetter(def.charAt(pos-1)))) && (posEnd==def.length() || !Character.isLetter(def.charAt(posEnd))));
+			                }
+			                changed = true;
+			            }
+			        }
+			        i++;
+			    }
+			} while (changed);
+			    
+			if (notAlreadyThere)
+			{
+			    // check if it is a duplicate for the same dictionary.
+			    i = sourceDef.containsAlone(numDef);
+			    if (i>-1)
+			    {
+			        this.def[i] = this.def[i] + ". " + def;
+			        reGroup(i);
+			    }
+			    else
+			    {
+			        this.def = Manipulate.addString(this.def, def, this.def.length);
+				    sourceDef.addNewDef(numDef);
+				    reGroup(this.def.length-1);
 				}
-				newDef[i] = def;
-				this.def = newDef;
-				sourceDef.add(numDef);
 			}
 		}
 	}
@@ -617,8 +826,8 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 			{
 			    try
 			    {
-				wordRaf.writeInt((int)defRaf.getFilePointer());
-				defRaf.writeUTF(def[i]);
+				    wordRaf.writeInt((int)defRaf.getFilePointer());
+				    defRaf.writeUTF(def[i]);
 				}
 				catch (Exception e)
 				{
@@ -681,6 +890,12 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 		print();
 		wordRaf.writeInt((int)posHijos);
         
+        // write version marker
+        wordRaf.writeShort(-1);
+        wordRaf.writeByte(-1);
+        
+        // write version number
+        wordRaf.writeByte(versionNumber);
     }
 
 	public static void main(String args[]) throws Exception
@@ -754,11 +969,14 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
                     {
                         delimiterType=delimiterDash;
                     }
+                    System.out.println("\nProcessing " + args[i] + "...");
                     sl.addFile(args[i] + ".txt", delimiterType, delimiter, n);
                     n++; i++;
                 }
             }
 		}
+		System.out.println("Writing to file " + args[a] + "...");
+		System.out.flush();
 		sl.generateDatabase(args[a]);
 	}
 }

@@ -70,16 +70,13 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
 		}
 		
 		diagAbout = null;
-
+		
 		// sp = new SimpleScannerPanel(url);
-		sp = new DuffScannerPanel(url);
-		
+		sp = new DuffScannerPanel(url);		
 		sp.addFocusListener(this);
-		
 		setContentPane(sp);
 		
 		// setup the menu. Almost identical to WindowScannerFilter, but using swing.
-
 		JMenuBar mb = new JMenuBar();
 		mnuEdit = new JMenu ("Edit");
 		mnuCut = new JMenuItem("Cut");
@@ -107,13 +104,14 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
 		mnuClear.addActionListener(this);		
 		mb.add(mnuEdit);
 		
-   		JMenu m = new JMenu("View");
+		JMenu m;
+		
+   		/* m = new JMenu("View");
     	tibScript = new JCheckBoxMenuItem("Tibetan Script", true);
 	    m.add(tibScript);
    		tibScript.addItemListener(this);
-   		mb.add(m);
+   		mb.add(m);*/
 		
-		//JMenuItem 
 		aboutItem = new JMenuItem("About...");
 		aboutItem.addActionListener(this);
 		
@@ -128,7 +126,7 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
 		SymComponent aSymComponent = new SymComponent();
 		this.addComponentListener(aSymComponent);
 		//}}
-		
+				
 		fakeFrame = new Frame();
 	    if (!ThdlOptions.getBooleanOption(AboutDialog.windowAboutOption))
 	    {

@@ -76,6 +76,16 @@ public class Word extends Token
 	public String getDef()
 	{
 		return def.toString();
+	}	
+	
+	public String getDefPreview()
+	{
+		return def.getPreview();
+	}
+	
+	public String getWordDefPreview()
+	{
+	    return super.token + " - " + getDefPreview();
 	}
 	
 	public Definitions getDefs()

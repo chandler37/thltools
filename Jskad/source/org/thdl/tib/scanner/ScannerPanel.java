@@ -128,9 +128,9 @@ public abstract class ScannerPanel extends Panel implements ActionListener
 			for (i=0; i<dictionaries.length; i++)
 			{
 				if (dictionaries[i]!=null)
-					chkDicts[i] = new Checkbox(dictionaries[i] + " (" + Definitions.defTags[i] + ")", true);
+					chkDicts[i] = new Checkbox(dictionaries[i] + " (" + DictionarySource.defTags[i] + ")", true);
 				else
-					chkDicts[i] = new Checkbox(Definitions.defTags[i], true);
+					chkDicts[i] = new Checkbox(DictionarySource.defTags[i], true);
 				panel2.add(chkDicts[i]);
 			}
 			return panel2;
@@ -153,7 +153,7 @@ public abstract class ScannerPanel extends Panel implements ActionListener
 		status.setText("Finishing...");
 	}
 
-	protected void setDicts(DictionarySource ds)
+	protected void setDicts(BitDictionarySource ds)
 	{
 		if (chkDicts==null)
 		{

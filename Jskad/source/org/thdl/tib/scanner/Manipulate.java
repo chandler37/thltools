@@ -55,6 +55,78 @@ public class Manipulate
 		return linea;
 	}
 	
+	public static String deleteSubstring (String string, int pos, int posEnd)
+	{
+	    if (pos<0) return string;
+
+		if (pos==0)
+		{
+			return string.substring(posEnd).trim();
+		}
+		else
+		{
+			if (posEnd<string.length())
+			    return string.substring(0, pos).concat(string.substring(posEnd)).trim();
+			else
+			    return string.substring(0, pos).trim();
+		}	    
+	}
+	
+	public static String replace(String string, int pos, int posEnd, String newSub)
+	{
+	    if (pos<0) return string;
+
+		if (pos==0)
+		{
+			return newSub.concat(string.substring(posEnd)).trim();
+		}
+		else
+		{
+			if (posEnd<string.length())
+			    return string.substring(0, pos).concat(newSub).concat(string.substring(posEnd)).trim();
+			else
+			    return string.substring(0, pos).concat(newSub).trim();
+		}	    
+	}
+	
+	
+	public static String deleteSubstring (String string, String sub)
+	{
+	    int pos = string.indexOf(sub), posEnd = pos + sub.length();
+	    return deleteSubstring(string, pos, posEnd);
+	}
+	
+	public static String[] addString(String array[], String s, int n)
+	{
+	    int i;
+	    String newArray[] = new String[array.length+1];
+	    
+	    for (i=0; i<n; i++)
+	        newArray[i] = array[i];
+	    
+	    newArray[n] = s;
+	    
+	    for (i=n+1; i<newArray.length; i++)
+	        newArray[i] = array[i-1];
+	        
+	    return newArray;
+	}
+	
+	public static String[] deleteString(String array[], int n)
+	{
+	    int i;
+	    
+	    String newArray[] = new String[array.length-1];
+	    
+	    for (i=0; i<n; i++)
+	        newArray[i] = array[i];
+	    
+	    for (i=n; i<newArray.length; i++)
+	        newArray[i] = array[i+1];
+	        
+	    return newArray;	    
+	}
+	
 	public static boolean isVowel (char ch)
 	{
 	    ch = Character.toLowerCase(ch);

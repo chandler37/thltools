@@ -37,13 +37,14 @@ public class SimpleScannerPanel extends ScannerPanel implements ItemListener
 	private List listDefs;
 	private Word wordArray[];
 	private int lenPreview;
-	private static int WIDTH_PORTRAIT = 34;
-	private static int WIDTH_LANDSCAPE = 46;
+	private static int WIDTH_PORTRAIT = 36;
+	private static int WIDTH_LANDSCAPE = 48;
 	
 	public SimpleScannerPanel(String file, boolean landscape)
 	{
 		super(file);
 		Panel panel1, panel2;
+		Font f;
 		cardPanel = new Panel(new CardLayout());
 		
 		// FIXME values shouldn't be hardwired
@@ -53,22 +54,44 @@ public class SimpleScannerPanel extends ScannerPanel implements ItemListener
 
 		// panel1 = new Panel(new GridLayout(3, 1));
 		
-		panel1 = new Panel(new BorderLayout());
 		// txtInput = new TextArea("",1,1,TextArea.SCROLLBARS_VERTICAL_ONLY);
-		if (landscape) txtInput = new TextArea("", 3, WIDTH_LANDSCAPE, TextArea.SCROLLBARS_VERTICAL_ONLY);
-		else txtInput = new TextArea("", 4, WIDTH_PORTRAIT, TextArea.SCROLLBARS_VERTICAL_ONLY);
-		//panel1.add(txtInput);
-		panel1.add(txtInput, BorderLayout.NORTH);
-		listDefs = new List();
+		
+    	panel1 = new Panel(new BorderLayout());
+		panel2 = new Panel(new GridLayout(2, 1));
+		
+    	listDefs = new List();
+    	
+		if (landscape) 
+		{
+		    txtInput = new TextArea("", 0, 0, TextArea.SCROLLBARS_VERTICAL_ONLY);
+    		txtOutput = new TextArea("", 4, WIDTH_LANDSCAPE,TextArea.SCROLLBARS_VERTICAL_ONLY);
+
+    		panel2.add(txtInput);
+    		panel2.add(listDefs);
+    		
+		    panel1.add(panel2, BorderLayout.CENTER);
+		    panel1.add(txtOutput, BorderLayout.SOUTH);		    
+		}
+		else
+		{
+		    txtInput = new TextArea("", 4, WIDTH_PORTRAIT, TextArea.SCROLLBARS_VERTICAL_ONLY);
+    		txtOutput = new TextArea("",0, 0,TextArea.SCROLLBARS_VERTICAL_ONLY);
+    		
+    		panel2.add(listDefs);
+    		panel2.add(txtOutput);
+    		    		
+    		panel1.add(txtInput, BorderLayout.NORTH);
+    		panel1.add(panel2, BorderLayout.CENTER);
+		}
 		listDefs.setMultipleMode(false);
 		listDefs.addItemListener(this);
 		
-		panel2 = new Panel(new GridLayout(2,1));		
-		panel2.add(listDefs);
-		txtOutput = new TextArea("",0,0,TextArea.SCROLLBARS_VERTICAL_ONLY);
-		txtOutput.setEditable(false);		
-		panel2.add(txtOutput);
-		panel1.add(panel2, BorderLayout.CENTER);
+		txtOutput.setEditable(false);
+
+		/*f = new Font(null, Font.PLAIN, 10);
+		txtOutput.setFont(f);
+		txtInput.setFont(f);*/		
+		
 		cardPanel.add(panel1, "1");
 		
 		// FIXME: values shouldn't be hardwired
@@ -79,7 +102,7 @@ public class SimpleScannerPanel extends ScannerPanel implements ItemListener
 		    cardPanel.add(panel2, "2");
 		}
 		
-    	add(cardPanel, BorderLayout.CENTER);		
+    	add(cardPanel, BorderLayout.CENTER);
 	}
 	
     public void itemStateChanged(ItemEvent e)
@@ -113,8 +136,7 @@ public class SimpleScannerPanel extends ScannerPanel implements ItemListener
 		
 		for(i=0; i<wordArray.length; i++)
 		{
-		    
-		    preview = wordArray[i].toString();
+		    preview = wordArray[i].getWordDefPreview();
 		    if (preview.length()>lenPreview) preview = preview.substring(0,lenPreview);
 		    listDefs.add(preview);
 		}

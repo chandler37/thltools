@@ -35,7 +35,7 @@ import javax.servlet.http.*;
 public class RemoteScannerFilter extends GenericServlet
 {
 	private TibetanScanner scanner;
-	private DictionarySource ds;
+	private BitDictionarySource ds;
 	
 	public RemoteScannerFilter() throws Exception
 	{
@@ -53,6 +53,7 @@ public class RemoteScannerFilter extends GenericServlet
 	    PrintWriter out = res.getWriter();
 	    int i;
   		String linea, dicts = req.getParameter("dicts"), dicDescrip[];
+  		
   		if (dicts!=null)
   		{
   			if (dicts.equals("names"))
@@ -66,7 +67,7 @@ public class RemoteScannerFilter extends GenericServlet
 				
 				for (i=0; i<dicDescrip.length; i++)
 				{
-					out.println(dicDescrip[i] + "," + Definitions.defTags[i]);
+					out.println(dicDescrip[i] + "," + DictionarySource.defTags[i]);
 				}
 				out.close();
 				return;

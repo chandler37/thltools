@@ -42,18 +42,21 @@ public class CachedSyllableListTree implements SyllableListTree
 		long pos, defSources[];
 		DictionarySource sourceDef;
 		int i;
+		
 		FileSyllableListTree.openFiles(archivo);
-		long posLista = FileSyllableListTree.wordRaf.length() - 4;
-		SimplifiedLinkedList syllables = new SimplifiedLinkedList();
-
-		FileSyllableListTree.wordRaf.seek(posLista);
-		posLista = (long) FileSyllableListTree.wordRaf.readInt();
-		FileSyllableListTree.wordRaf.seek(posLista);
+				
+		SimplifiedLinkedList syllables = new SimplifiedLinkedList();		
 		do
 		{
+		    // get "link" to children
 			pos = (long) FileSyllableListTree.wordRaf.readInt();
+			// get syllable
 			sil = FileSyllableListTree.wordRaf.readUTF();
-			sourceDef = DictionarySource.read(FileSyllableListTree.wordRaf);
+			// get dictionary information for each definition
+			if (FileSyllableListTree.versionNumber==2) sourceDef = new BitDictionarySource();
+			else sourceDef = new ByteDictionarySource();
+			sourceDef.read(FileSyllableListTree.wordRaf);
+
 			if (sourceDef.isEmpty()) defSources = null;
 			else
 			{
@@ -88,9 +91,13 @@ public class CachedSyllableListTree implements SyllableListTree
 	
 	public DictionarySource getDictionarySource()
 	{
+	    return null;
+	}
+	
+	public BitDictionarySource getDictionarySourcesWanted()
+	{
 		return FileSyllableListTree.defSourcesWanted;
 	}
-
 
 	public boolean hasDef()
 	{

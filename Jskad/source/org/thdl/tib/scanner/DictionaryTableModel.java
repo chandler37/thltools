@@ -64,7 +64,7 @@ public class DictionaryTableModel extends AbstractTableModel
 		    case 0:
 		    if (tibetanActivated) return arrayTibetan[row];
 		    else return array[row].getWylie();
-		    case 1: return array[row].getDef();
+		    case 1: return array[row].getDefPreview();
 		    default: return array[row].toString();
 		}
 	}

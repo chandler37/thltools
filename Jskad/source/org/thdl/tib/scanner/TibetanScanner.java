@@ -25,7 +25,7 @@ import org.thdl.util.*;
 */
 public abstract class TibetanScanner
 {
-    public static final String version = "The Tibetan to English Translation Tool, version 2.2.2 compiled on " + ThdlVersion.getTimeOfCompilation() + ". ";
+    public static final String version = "The Tibetan to English Translation Tool, version 3.0.0 compiled on " + ThdlVersion.getTimeOfCompilation() + ". ";
 	public static final String copyrightUnicode="Copyright " + '\u00A9' + " 2000-2004 by Andr" + '\u00E9' + "s Montano Pellegrini, all rights reserved.";
 	public static final String copyrightASCII="Copyright 2000-2004 by Andres Montano Pellegrini, all rights reserved.";
 	public static final String copyrightHTML="<hr><small><strong>" + version + "Copyright &copy; 2000-2004 by <a href=\"http://www.people.virginia.edu/~am2zb/\" target=\"_blank\">Andr&eacute;s Montano Pellegrini.</a><br/>All rights reserved.</strong></small>";
@@ -293,6 +293,7 @@ public abstract class TibetanScanner
 	public Token[] getTokenArray()
 	{
 		int n=wordList.size();
+		if (n==0) return null;
 		Token token[] = new Token[n];
 		SimplifiedListIterator li = wordList.listIterator();
 		while(li.hasNext())
@@ -307,34 +308,75 @@ public abstract class TibetanScanner
 	
 	public Word[] getWordArray()
 	{
+	    return getWordArray(true);
+	}
+	
+	public Word[] getWordArray(boolean includeRepeated)
+	{
 	    Token token;
-	    Word array[];
+	    Word array[], word;
 	    int n=0;
 		SimplifiedListIterator li = wordList.listIterator();
-		while(li.hasNext())
-			if (li.next() instanceof Word) n++;
-	    
-	    if (n==0) return null;
-	    
-	    array = new Word[n];
-	    n--;
-		li = wordList.listIterator();
+		SimplifiedLinkedList ll2, ll = new SimplifiedLinkedList();
+		
 		while(li.hasNext())
 		{
 		    token = (Token) li.next();
-			if (token instanceof Word)
-			{
-			    array[n] = (Word) token;
-			    n--;
+		    
+		    if (token instanceof Word)
+		    {
+	            ll.addLast(token);
 			}
 		}
 		
+		if (includeRepeated)
+		{
+		    n = ll.size();
+    		
+	        if (n==0) return null;
+    	    
+	        array = new Word[n];
+	        li = ll.listIterator();
+    	    
+	        n=0;
+	        while (li.hasNext())
+	        {
+	            array[n++] = (Word) li.next();
+	        }
+		}
+		else
+		{
+		    ll2 = new SimplifiedLinkedList();
+		    li = ll.listIterator();
+		    
+		    while(li.hasNext())
+		    {
+		        word = (Word) li.next();
+    		    
+	            if (!ll2.contains(word)) ll2.addLast(word);
+		    }
+		    
+		    n = ll2.size();
+    		
+	        if (n==0) return null;
+    	    
+	        array = new Word[n];
+	        li = ll2.listIterator();
+    	    
+	        while (li.hasNext())
+	        {
+	            array[--n] = (Word) li.next();
+	        }   
+		}
+		
+		
+
 	    return array;
 	}
 		
 	public abstract void scanLine(String linea);
 	public abstract void scanBody(String linea);
 	public abstract void finishUp();
-	public abstract DictionarySource getDictionarySource();
+	public abstract BitDictionarySource getDictionarySource();
 	public abstract String[] getDictionaryDescriptions();
 }

@@ -38,20 +38,24 @@ public class FileSyllableListTree implements SyllableListTree
 	private long def[];
 	private long posLista;
 	private DictionarySource defSource;
-	public static DictionarySource defSourcesWanted;
+	public static BitDictionarySource defSourcesWanted;
 	public static RandomAccessFile wordRaf=null;
 	private static RandomAccessFile defRaf=null;
+	public static int versionNumber;
 	
 	/** Creates the root */
 	public FileSyllableListTree(String archivo, int defSourcesWanted) throws Exception
 	{
 		sil = null;
 		def = null;
-		this.defSource = new DictionarySource();
-		openFiles(archivo);
-		posLista = wordRaf.length() - 4;
-		wordRaf.seek(posLista);
-		posLista = (long)wordRaf.readInt();
+		defSource = null;
+		
+		this.openFiles(archivo);
+		posLista = this.wordRaf.getFilePointer();
+
+		/* if versionNumber is 2 use BitDictionarySource
+		else use ByteDictionarySource. */		
+		this.defSourcesWanted.setDicts(defSourcesWanted);
 	}
 	
 	/** Used to create each node (except the root)
@@ -73,12 +77,61 @@ public class FileSyllableListTree implements SyllableListTree
 	{
 		return defSource;
 	}
+	
+	public BitDictionarySource getDictionarySourcesWanted()
+	{
+	    return this.defSourcesWanted;
+	}
 
 	public static void openFiles(String archivo) throws Exception
 	{
+	    long fileSize;
+	    int pos;
+		
 		wordRaf = new RandomAccessFile(archivo + ".wrd", "r");
 		defRaf = new RandomAccessFile(archivo + ".def", "r");
-		defSourcesWanted = DictionarySource.getAllDictionaries();
+
+		fileSize = wordRaf.length();
+		wordRaf.seek(fileSize-4L);
+		pos = wordRaf.readInt();
+		
+		if (pos >> 8 == -1)
+		{
+		    versionNumber = pos & 255;
+		    
+		    // for now, only version 2 & 3 should be expected
+		    if (versionNumber != 3) versionNumber=2;
+		    wordRaf.seek(fileSize-8L);
+		    pos = wordRaf.readInt();
+		}
+		else
+		{
+		    // Updates the dictionary for backward compatibility.		    
+		    try
+		    {
+    		    wordRaf.close();
+	    	    wordRaf = new RandomAccessFile(archivo + ".wrd", "rw");
+    		    wordRaf.seek(fileSize);    	    
+		        wordRaf.writeShort(-1);
+		        wordRaf.writeByte(-1);
+		        
+		        // Because it didn't have a version number, must be version 2.
+		        versionNumber = 2;
+		        wordRaf.writeByte(versionNumber);
+		        wordRaf.close();
+		        wordRaf = new RandomAccessFile(archivo + ".wrd", "r");
+		    }
+		    catch (Exception e)
+		    {
+		        // dictionary is stored on a non-writable media. Do nothing.
+		    }
+		}
+		
+		/* if versionNumber is 2 use BitDictionarySource else use 
+		ByteDictionarySource. */
+		defSourcesWanted = new BitDictionarySource();
+		
+	    wordRaf.seek(pos);		
 	}
 
 	public String getDef()
@@ -89,28 +142,54 @@ public class FileSyllableListTree implements SyllableListTree
 	public Definitions getDefs()
 	{
 		if (def==null) return null;
-		DictionarySource defSourceAvail = defSource.intersection(defSourcesWanted);
-		
-		int defsAvail[] = defSourceAvail.untangleDefs(), defsFound[] = defSource.untangleDefs(def.length);
-
-
-		String defs[] = new String[defsAvail.length];
+        DictionarySource defSourceAvail = defSource.intersection(defSourcesWanted);
+        String defs[];
 		int i, n=0;
-		try
+        
+		if (versionNumber==2)
 		{
-			for (i=0; i<defsAvail.length; i++)
-			{
-				while(defsAvail[i]!=defsFound[n]) n++;
-				defRaf.seek(def[n]);
-				defs[i] = defRaf.readUTF();
-			}
+		    int defsAvail[] = ((BitDictionarySource) defSourceAvail).untangleDefs(), defsFound[] = ((BitDictionarySource) defSource).untangleDefs(def.length);
+
+		    defs = new String[defsAvail.length];
+		    try
+		    {
+			    for (i=0; i<defsAvail.length; i++)
+			    {
+				    while(defsAvail[i]!=defsFound[n]) n++;
+				    defRaf.seek(def[n]);
+				    defs[i] = defRaf.readUTF();
+			    }
+		    }
+		    catch (Exception e)
+		    {
+			    System.out.println(e);
+			    return null;
+		    }
 		}
-		catch (Exception e)
+		else
 		{
-			System.out.println(e);
-			return null;
+		    ByteDictionarySource defSourceAvailBy = (ByteDictionarySource) defSourceAvail;
+		    defs = new String [defSourceAvailBy.countDefs()];
+		    
+		    try
+		    {
+			    for (i=0; i < def.length; i++)
+			    {
+				    if (!defSourceAvailBy.isEmpty(i))
+				    {
+				        defRaf.seek(def[i]);
+				        defs[n] = defRaf.readUTF();
+				        n++;
+				    }
+				}
+		    }
+		    catch (Exception e)
+		    {
+			    System.out.println(e);
+			    return null;
+		    }
 		}
-		return new Definitions(defs, defsAvail);
+		return new Definitions(defs, defSourceAvail);
 	}
 
 	public boolean hasDef()
@@ -125,6 +204,7 @@ public class FileSyllableListTree implements SyllableListTree
 		String sil;
 		long pos, defSource[];
 		DictionarySource sourceDef;
+		
 		int i;
 
 		if (silStr==null) return null;
@@ -135,7 +215,11 @@ public class FileSyllableListTree implements SyllableListTree
 			{
 				pos = (long) wordRaf.readInt();
 				sil = wordRaf.readUTF();
-				sourceDef = DictionarySource.read(wordRaf);
+				
+				if (versionNumber==2) sourceDef = new BitDictionarySource();
+				else sourceDef = new ByteDictionarySource();
+				sourceDef.read(wordRaf);
+				
 				if (sourceDef.isEmpty()) defSource = null;
 				else
 				{

@@ -189,10 +189,12 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 	    	mnuDicts = new CheckboxMenuItem("Dictionaries", false);
 		    m.add(mnuDicts);
     		mnuDicts.addItemListener(this);
+           	mb.add(m);
     	}
-    	else
+    	
+	    m = new Menu("Help");
+    	if (!pocketpc)
    		{
-   		    m = new Menu("Help");
             for (int i = 0; i < DuffScannerPanel.keybdMgr.size(); i++)
             {
                 final JskadKeyboard kbd = DuffScannerPanel.keybdMgr.elementAt(i);
@@ -217,10 +219,10 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
                 }
             }   		    
    		    m.add("-");
-        	mnuAbout = new MenuItem("About...");
-	        m.add(mnuAbout);
-   		    mnuAbout.addActionListener(this);
-        }
+   		}
+       	mnuAbout = new MenuItem("About...");
+        m.add(mnuAbout);
+	    mnuAbout.addActionListener(this);
        	mb.add(m);
 		
 		// disable menus

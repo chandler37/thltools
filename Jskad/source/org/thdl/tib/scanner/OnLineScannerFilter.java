@@ -57,8 +57,7 @@ public class OnLineScannerFilter extends HttpServlet
 	}
 
     synchronized public void doGet(HttpServletRequest request,
-                      HttpServletResponse response)
-        throws IOException, ServletException
+                      HttpServletResponse response) throws IOException, ServletException
     {
 		String answer, parrafo = null, checkboxName;
         
@@ -69,7 +68,7 @@ public class OnLineScannerFilter extends HttpServlet
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
 				
-		DictionarySource ds=null;
+		BitDictionarySource ds=null;
 		boolean checkedDicts[], allUnchecked, wantsTibetan, useTHDLBanner = (request.getParameter("thdlBanner")!=null);
 		// int percent=100;
 		
@@ -225,14 +224,15 @@ public class OnLineScannerFilter extends HttpServlet
 					ds.add(i);
 				}
 				if (dictionaries[i]!=null)
-					out.print(">" + dictionaries[i] + " (" + Definitions.defTags[i] + ")&nbsp;&nbsp;&nbsp;");
+					out.print(">" + dictionaries[i] + " (" + DictionarySource.defTags[i] + ")&nbsp;&nbsp;&nbsp;");
 				else
-					out.print(">" + Definitions.defTags[i] + "&nbsp;&nbsp;&nbsp;");				
+					out.print(">" + DictionarySource.defTags[i] + "&nbsp;&nbsp;&nbsp;");				
 //				out.println(" + "</td>");
 			}
 //			out.println("  </tr>");
 		}
-		else ds = DictionarySource.getAllDictionaries();
+		// fix for updates
+		else ds = new BitDictionarySource().getAllDictionaries();
 //		out.println("</table>");
 		out.println("</p>");
         out.println("<table border=\"0\" width=\"100%\">");
@@ -300,36 +300,40 @@ public class OnLineScannerFilter extends HttpServlet
 				
 				init = fin+1;
 			}	*/
+			scanner.clearTokens();
 			scanner.scanBody(in);
 			scanner.finishUp();
-			words = scanner.getTokenArray();
-			printText(pw, words, tibetan);
-			printAllDefs(pw, words, tibetan);
+			printText(pw, tibetan);
+			printAllDefs(pw, tibetan);
 			scanner.clearTokens();			
 		}
 	}
 	
-	public void printText(PrintWriter pw, Object words[], boolean tibetan)
+	public void printText(PrintWriter pw, boolean tibetan)
 	{
-		Token token;
+		Token words[] = scanner.getTokenArray();
 		Word word;
 		char pm;
 		int i;
 		
+		if (words==null) return;
+		
 		pw.print("<p>");
 		for (i=0; i < words.length; i++)
 		{
-			token = (Token) words[i];
-			if (token instanceof Word)
+			
+			if (words[i] instanceof Word)
 			{
-			    word = (Word) token;
-				pw.print(word.getLink());
+			    word = (Word) words[i];
+			    if (word.getDefs().getDictionarySource()!=null)
+				    pw.print(word.getLink());
+				else pw.print(word.getWylie() + " ");
 			}
 			else
 			{
-			    if (token instanceof PunctuationMark)
+			    if (words[i] instanceof PunctuationMark)
 			    {
-			        pm = token.toString().charAt(0);
+			        pm = words[i].toString().charAt(0);
 			        switch (pm)
 			        {
 			            case '\n':
@@ -352,53 +356,49 @@ public class OnLineScannerFilter extends HttpServlet
 		pw.println("</p>");
 	}
 	
-	public void printAllDefs(PrintWriter pw, Object words[], boolean tibetan)
+	public void printAllDefs(PrintWriter pw, boolean tibetan)
 	{
-		SimplifiedLinkedList temp = new SimplifiedLinkedList();
-		int i;
-		Word word;
+		int i, j;
+		Word words[];
 		Definitions defs;
-				
-		for (i=words.length-1; i >= 0; i--)
-		{
-		    if (words[i] instanceof Word)
-		    {
-	    		if (!temp.contains(words[i]))
-		    	{
-			    	temp.addLast(words[i]);
-			    }
-			}
-		}
-		
-		SimplifiedListIterator li = temp.listIterator();
 		String tag;
+		DictionarySource ds;
+
+		words = scanner.getWordArray(false);
+		
+		if (words == null) return;
+		
 		pw.println("<table border=\"1\" width=\"100%\">");
-		while (li.hasNext())
+		
+		for (j=0; j<words.length; j++)
 		{
-			word = (Word)li.next();
-			defs = word.getDefs();
+			defs = words[j].getDefs();
+			ds = defs.getDictionarySource();
+		    if (ds==null) continue;
 			pw.println("  <tr>");
-			tag = defs.getTag(0);
-			if (tag!=null)
-			{
-				pw.println("    <td width=\"20%\" rowspan=\""+ defs.def.length +"\" valign=\"top\">"+ word.getBookmark(tibetan) +"</td>");
-				pw.println("    <td width=\"5%\">"+ tag +"</td>");
-				pw.println("    <td width=\"75%\">" + defs.def[0] + "</td>");
-			}
+			tag = ds.getTag(0);
+			// else tag = null;
+			/*if (tag!=null)
+			{*/
+				pw.println("    <td width=\"20%\" rowspan=\""+ defs.def.length +"\" valign=\"top\">"+ words[j].getBookmark(tibetan) +"</td>");
+				pw.println("    <td width=\"12%\">"+ tag +"</td>");
+				pw.println("    <td width=\"68%\">" + defs.def[0] + "</td>");
+			/*}
 			else
 			{
-				pw.println("    <td width=\"20%\" rowspan=\""+ defs.def.length +"\" valign=\"top\">"+ word.getBookmark(tibetan) +"</td>");
+				pw.println("    <td width=\"20%\" rowspan=\""+ defs.def.length +"\" valign=\"top\">"+ words[j].getBookmark(tibetan) +"</td>");
 				pw.println("    <td width=\"80%\" colspan=\"2\">" + defs.def[0] + "</td>");
-			}
+			}*/
 			pw.println("  </tr>");
 			for (i=1; i<defs.def.length; i++)
 			{
 				pw.println("  <tr>");
-				tag = defs.getTag(i);
+				if (ds!=null) tag = ds.getTag(i);
+				else tag = null;
 				if (tag!=null)
 				{
-					pw.println("    <td width=\"5%\">"+ tag +"</td>");
-					pw.println("    <td width=\"75%\">" + defs.def[i] + "</td>");
+					pw.println("    <td width=\"12%\">"+ tag +"</td>");
+					pw.println("    <td width=\"68%\">" + defs.def[i] + "</td>");
 				}
 				else pw.println("    <td width=\"80%\" colspan=\"2\">" + defs.def[i] + "</td>");
 				pw.println("  </tr>");

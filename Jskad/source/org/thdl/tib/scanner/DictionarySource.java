@@ -15,123 +15,54 @@ Pellegrini. All Rights Reserved.
 
 Contributor(s): ______________________________________.
 */
-package org.thdl.tib.scanner;
 
+package org.thdl.tib.scanner;
 import java.io.*;
 
-/** Specifies a subset of dictionaries among a set of
-	dictionaries. Supports a maximum of 30 dictionaries.
+/** Specifies a generic interface to access and process a subset of 
+    dictionaries among a set of dictionaries.
 
     @author Andr&eacute;s Montano Pellegrini
 */
-public class DictionarySource
+public abstract class DictionarySource
 {
-	private int dicts;
-
-	/** Last bit of word; 1 if there are more brothers.*/
-	private static final int lastBit=1073741824;
-	private static final int allDicts=lastBit-1;
-
-	public DictionarySource()
+	public static String[] defTags;
+	static
 	{
-		dicts = 0;
+		defTags=null;
 	}
-
-	public static DictionarySource getAllDictionaries()
+	
+	public static void setTags(String tags[])
 	{
-		DictionarySource ds = new DictionarySource();
-		ds.setDicts(allDicts);
-		return ds;
+		defTags = tags;
 	}
+	
+	/** Get the tag or tags associated to definition number i. */
+	public abstract String getTag(int i);
+    
+    /** Marks all dictionaries as unselected */
+    public abstract void reset();
+            
+    /** Returns an instance of DictionarySource marking as selected all dictionaries
+        that were selected in both the current and dsO. */
+    public abstract DictionarySource intersection(DictionarySource dsO);
+    
+    /** Returns true if no dictionaries are selected. */
+    public abstract boolean isEmpty();
 
-	public void setAllDictionaries()
-	{
-		dicts = allDicts;
-	}
-
-	public void setDicts(int dicts)
-	{
-		this.dicts = dicts;
-	}
-
-	public int getDicts()
-	{
-		return dicts;
-	}
-
-	private int getBits(int n)
-	{
-		return 1 << n;
-	}
-
-	public boolean contains(int dict)
-	{
-		return (dicts & getBits(dict))>0;
-	}
-
-	public void add(int dict)
-	{
-		dicts|= getBits(dict);
-	}
-
-	/** Write to file using BinaryFileGenerator	*/
-	public void print(boolean hasNext, DataOutput raf) throws IOException
-	{
-		int numDict;
-		if (hasNext) numDict = lastBit | dicts;
-		else numDict = dicts;
-		raf.writeInt(numDict);
-	}
-
-	public static DictionarySource read(DataInput raf) throws IOException
-	{
-		DictionarySource ds = new DictionarySource();
-		ds.setDicts(raf.readInt());
-		return ds;
-	}
-
-	public boolean hasBrothers()
-	{
-		return (dicts & lastBit)>0;
-	}
-
-	public int countDefs()
-	{
-		int n, source;
-		for (n=0, source = dicts & allDicts; source>0; source>>=1)
-			if (source%2==1) n++;
-		return n;
-	}
-
-	public DictionarySource intersection(DictionarySource dsO)
-	{
-		DictionarySource ds = new DictionarySource();
-		ds.setDicts(this.dicts & dsO.dicts);
-		return ds;
-	}
-
-	public int[] untangleDefs(int n)
-	{
-		int arr[], i, pos, source;
-		arr = new int[n];
-		for (i=0, pos=0, source=dicts & allDicts; pos<n; i++, source>>=1)
-			if (source%2==1)
-				arr[pos++]=i;
-		return arr;
-	}
-
-	public int[] untangleDefs()
-	{
-		return untangleDefs(countDefs());
-	}
-
-	public boolean isEmpty()
-	{
-		return (dicts & allDicts)<=0;
-	}
-
-	public void reset()
-	{
-		dicts = 0;
-	}
+    /** Writes the dictionary information to a random access file. */
+    public abstract void print(boolean hasNext, DataOutput raf) throws IOException;
+    
+    /** Reads the dictionary information from a random access file, according
+        to the way it was written with @print. */
+    public abstract void read(DataInput raf) throws IOException;
+    
+    /** Returns the number of definitions available. */
+    public abstract int countDefs();
+    
+    /** Returns true if the node has brothers. This is used by @FileSyllableListTree. */
+    public abstract boolean hasBrothers();
+    
+    /** Returns true if dict is a selected dictionary. */
+    public abstract boolean contains(int dict);    
 }

@@ -52,6 +52,14 @@ public class MemorySyllableListTree extends SimplifiedLinkedList implements Syll
 		return null;
 	}
 
+	/** Null because it does not support multiple dictionaries.
+	*/
+	public BitDictionarySource getDictionarySourcesWanted()
+	{
+	    return null;
+	}
+
+
 	
 	public MemorySyllableListTree(String sil, String def)
 	{
