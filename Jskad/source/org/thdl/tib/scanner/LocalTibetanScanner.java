@@ -27,7 +27,7 @@ import java.io.*;
     @author Andr&eacute;s Montano Pellegrini
     @see SyllableListTree
 */
-class LocalTibetanScanner implements TibetanScanner
+public class LocalTibetanScanner implements TibetanScanner
 {
 	public static String archivo;
 	private SyllableListTree raiz, silActual, lastCompSil, silAnterior;

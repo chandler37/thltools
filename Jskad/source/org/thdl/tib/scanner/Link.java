@@ -27,7 +27,7 @@ import java.io.*;
     @see ListIterator
 */
 
-class Link
+public class Link
 {
 	private Object obj;
 	public Link siguiente;

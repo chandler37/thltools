@@ -33,7 +33,7 @@ import java.util.*;
     @author Andr&eacute;s Montano Pellegrini
 */
 
-class ConsoleScannerFilter
+public class ConsoleScannerFilter
 {
 	private BufferedReader in;
 	private PrintWriter out;

@@ -26,7 +26,7 @@ package org.thdl.tib.scanner;
     @author Andr&eacute;s Montano Pellegrini
     @see LocalTibetanScanner
 */
-class PunctuationMark extends Token
+public class PunctuationMark extends Token
 {
     public PunctuationMark(char ch)
     {

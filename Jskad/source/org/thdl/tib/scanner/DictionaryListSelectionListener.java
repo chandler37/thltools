@@ -28,7 +28,7 @@ import javax.swing.table.*;
     @author Andr&eacute;s Montano Pellegrini
     @see DictionaryTable
 */
-class DictionaryListSelectionListener implements ListSelectionListener
+public class DictionaryListSelectionListener implements ListSelectionListener
 {
 	private TableModel table;
 	private TextArea fullDef;
