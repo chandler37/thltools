@@ -51,6 +51,7 @@
        subdirectories of ${bin}. -->
   <property name="bin" location="bin"/>
   <property name="jskadbin" location="bin/jskad"/>
+  <property name="converterguibin" location="bin/convertergui"/>
   <property name="tibbiblbin" location="bin/tibbibl"/>
   <property name="junitbin" location="bin/for-junit"/>
   <property name="ttstandalonebin" location="bin/tt-standalone"/>
@@ -272,11 +273,11 @@
           description="JARs up everything into self-contained JARs for double-click, classpath-worry-free joy" />
 
   <target name="dist"
-          depends="jskad-dist,tt-handheld-dist,tt-standalone-dist,tt-applet-plus-jws-dist,tt-servlet-dist,tibbibl-dist"
+          depends="jskad-dist,tt-handheld-dist,tt-standalone-dist,tt-applet-plus-jws-dist,tt-servlet-dist,tibbibl-dist,convertergui-dist"
           description="JARs up everything" />
 
   <target name="compile"
-          depends="jskad-compile,tt-standalone-compile,tt-handheld-compile,tt-applet-plus-jws-compile,tt-servlet-compile,tibbibl-compile"
+          depends="jskad-compile,tt-standalone-compile,tt-handheld-compile,tt-applet-plus-jws-compile,tt-servlet-compile,tibbibl-compile,convertergui-compile"
           description="compiles all programs" />
 
 
@@ -309,6 +310,11 @@
       <param name="my.included.source.file"
              value="org/thdl/tib/input/TibetanConverter.java"/>
     </antcall>
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${jskadbin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/tib/input/ConverterGUI.java"/>
+    </antcall>
     <antcall target="copy-ini-files-to-bin-dir-for-jarring">
       <param name="mybin" value="${jskadbin}"/>
     </antcall>
@@ -329,6 +335,30 @@
              programmatically. (FIXME) -->
       </fileset>
     </copy>
+  </target>
+
+  <target name="convertergui-compile" depends="init"
+          description="compiles Convertergui" >
+    <mkdir dir="${converterguibin}"/>
+    <antcall target="create-timestamp-source-code"/> <!-- DLC NOW! The -run targets are mucking with this! It isn't fatal, but it should be fixed. -->
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${converterguibin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/tib/input/ConverterGUI.java"/>
+    </antcall>
+    <!-- Put TibetanConverter in this jar for those who want
+         to use it. -->
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${converterguibin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/tib/input/TibetanConverter.java"/>
+    </antcall>
+    <antcall target="copy-ini-files-to-bin-dir-for-jarring">
+      <param name="mybin" value="${converterguibin}"/>
+    </antcall>
+    <antcall target="copy-license-etc-to-bin-dir-for-jarring">
+      <param name="mybin" value="${converterguibin}"/>
+    </antcall>
   </target>
 
   <target name="tibbibl-compile" depends="init"
@@ -598,6 +628,18 @@
          basedir="${jskadbin}">
       <manifest>
         <attribute name="Main-Class" value="org.thdl.tib.input.Jskad"/>
+      </manifest>
+    </jar>
+  </target>
+
+
+  <target name="convertergui-dist" depends="convertergui-compile"
+          description="generates the bare ConverterGUI binary distribution" >
+    <!-- Put everything in ${converterguibin} into the JAR file -->
+    <jar jarfile="${lib}/TibetanConverterGUI${my.jar.suffix}.jar"
+         basedir="${converterguibin}">
+      <manifest>
+        <attribute name="Main-Class" value="org.thdl.tib.input.ConverterGUI"/>
       </manifest>
     </jar>
   </target>

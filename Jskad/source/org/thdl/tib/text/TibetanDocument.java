@@ -213,6 +213,16 @@ public class TibetanDocument extends DefaultStyledDocument {
             throw new Error("TMW->Unicode failed because the following constitute a bad position: startOffset " + startOffset + ", endOffset " + endOffset);
 		}
     }
+    // DLC NOW do I stick to these rules in TMW->Unicode mappings?
+//  Chris Fynn wrote:
+//
+//  By normal Tibetan & Dzongkha spelling, writing, and input rules
+//  Tibetan script stacks should be entered and written: 1 headline
+//  consonant (0F40->0F6A), any  subjoined consonant(s) (0F90->
+//  0F9C),  achung (0F71), shabkyu (0F74), any above headline
+//  vowel(s) (0F72 0F7A 0F7B 0F7C 0F7D and 0F80) ; any ngaro (0F7E,
+//  0F82 and 0F83)
+
 
 	private int insertDuff(int fontSize, int pos, DuffData[] glyphs, boolean asTMW) {
 		if (glyphs == null)
@@ -544,7 +554,7 @@ public class TibetanDocument extends DefaultStyledDocument {
         @param errors if non-null, then notes about all exceptional
         cases will be appended to this StringBuffer
         @param unicodeFont the name of the Unicode font to use;
-        defaults to Arial Unicode MS if null
+        defaults to Ximalaya if null
     */
     public boolean convertToUnicode(int begin, int end, StringBuffer errors,
                                     String unicodeFont) {
@@ -974,7 +984,7 @@ public class TibetanDocument extends DefaultStyledDocument {
     /** Returns all the paragraph elements in this document that
      *  contain glyphs with offsets in the range [start, end) where
      *  end < 0 is treated as the document's length.  Note that roman,
-     *  TM, Arial Unicode MS, and TMW text can all be intermingled
+     *  TM, Ximalaya, and TMW text can all be intermingled
      *  within a paragraph.  It's the correct level of abstraction to
      *  use, however, because the next finer grain is roughly one
      *  Element per glyph. */

@@ -285,7 +285,7 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 
         defaultUnicodeFontAttributeSet = new SimpleAttributeSet();
         StyleConstants.setFontFamily(defaultUnicodeFontAttributeSet,
-                                     "Arial Unicode MS");
+                                     "Ximalaya");
 
 		webFontAttributeSet[0] = null;
 		for (int i=1; i<webFontAttributeSet.length; i++) {
@@ -665,12 +665,12 @@ public static SimpleAttributeSet getAttributeSet(int font) {
 * order to be able to put styled text into {@link TibetanDocument
 * TibetanDocument}.
 * @param unicodeFont the interned name of the Unicode font to use;
-* defaults to Arial Unicode MS if null
+* defaults to Ximalaya if null
 * @return a SimpleAttributeSet for the Unicode font - that is, a way
 * of encoding the font itself */
 public static SimpleAttributeSet getUnicodeAttributeSet(String unicodeFont) {
     if (null == unicodeFont
-        || "Arial Unicode MS" == unicodeFont)
+        || "Ximalaya" == unicodeFont)
         return defaultUnicodeFontAttributeSet;
     else {
         SimpleAttributeSet cached
