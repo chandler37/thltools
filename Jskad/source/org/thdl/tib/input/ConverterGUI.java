@@ -23,6 +23,8 @@ import java.io.*;
 import org.thdl.util.*;
 import org.thdl.tib.text.*;
 import javax.swing.JOptionPane;
+import java.awt.Frame;
+import java.awt.Dialog;
 
 /** DLC FIXMEDOC
  *  @author David Chandler */
@@ -30,16 +32,14 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
     /** Default constructor; does nothing */
     ConverterGUI() { }
 
-    static {
-        // No need for the TM or TMW fonts.
-        System.setProperty("thdl.rely.on.system.tmw.fonts", "true");
-        System.setProperty("thdl.do.not.rely.on.system.tmw.fonts", "false");
-    }
-
     /**
      *  Runs the converter. */
 	public static void main(String[] args) {
-        System.exit(realMain(args, System.out));
+        // No need for the TM or TMW fonts.
+        System.setProperty("thdl.rely.on.system.tmw.fonts", "true");
+        System.setProperty("thdl.do.not.rely.on.system.tmw.fonts", "false");
+
+        System.exit(realMain(args, System.out, null));
     }
 
     // DLC FIXMEDOC returns true on success
@@ -61,7 +61,13 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
                                           JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        if (0 != returnCode) {
+        if (3 == returnCode) {
+            JOptionPane.showMessageDialog(cd,
+                                          TibetanConverter.rtfErrorMessage,
+                                          "Conversion failed",
+                                          JOptionPane.ERROR_MESSAGE);
+            return false;
+        } else if (0 != returnCode) {
             JOptionPane.showMessageDialog(cd,
                                           "The conversion failed with code " + returnCode + "; please e-mail\ndchandler@users.sourceforge.net to learn what that means if\nyou can't find out from the output.",
                                           "Conversion failed",
@@ -87,22 +93,32 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
 
     /** Runs the converter without exiting the program.
      *  @return the exit code. */
-    public static int realMain(String[] args, PrintStream out) {
+    public static int realMain(String[] args, PrintStream out, Frame owner) {
+        returnCode = 0;
         try {
-
-            final ConvertDialog convDialog
-                = new ConvertDialog(new ConverterGUI(),
-                                    new String[]{
-                                        TM_TO_TMW,
-                                        TMW_TO_UNI,
-                                        TMW_TO_WYLIE,
-                                        TMW_TO_TM,
-                                        FIND_SOME_NON_TMW,
-                                        FIND_SOME_NON_TM,
-                                        FIND_ALL_NON_TMW,
-                                        FIND_ALL_NON_TM
-                                    },
-                                    true);
+            final ConvertDialog convDialog;
+            String[] choices = new String[]{
+                TM_TO_TMW,
+                TMW_TO_UNI,
+                TMW_TO_WYLIE,
+                TMW_TO_TM,
+                FIND_SOME_NON_TMW,
+                FIND_SOME_NON_TM,
+                FIND_ALL_NON_TMW,
+                FIND_ALL_NON_TM
+            };
+            if (null == owner) {
+                convDialog
+                    = new ConvertDialog(new ConverterGUI(),
+                                        choices,
+                                        true);
+            } else {
+                convDialog
+                    = new ConvertDialog(owner,
+                                        new ConverterGUI(),
+                                        choices,
+                                        true);
+            }
 
             /* Make it so that any time the user exits this program by
              * (almost) any means, the user's preferences are saved if

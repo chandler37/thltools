@@ -60,11 +60,12 @@ class ConvertDialog extends JDialog
     File oldFile, newFile;
     String default_directory;
 
-    final String BROWSENEW     = "Browse";
+    final String BROWSENEW     = "Browse...";
     final String BROWSEOLD     = BROWSENEW;
     final String CONVERT     = "Convert";
     final String CANCEL       = "Close";
     final String ABOUT       = "About";
+    final String OPEN_WITH       = "Open With...";
 
     private final ThdlActionListener tal = new ThdlActionListener() {
             public void theRealActionPerformed(ActionEvent e) {
@@ -123,6 +124,10 @@ class ConvertDialog extends JDialog
             browseNew.addActionListener(tal);
         }
         temp.add(browseNew);
+        openDoc = new JButton(OPEN_WITH);
+        openDoc.addActionListener(tal);
+        openDoc.setEnabled(false);
+        temp.add(openDoc);
         content.add(temp);
 
         buttonBox = Box.createHorizontalBox();
@@ -137,12 +142,6 @@ class ConvertDialog extends JDialog
         buttonBox.add(cancel);
         buttonBox.add(Box.createHorizontalGlue());
 
-        openDoc = new JButton("Open Document");
-        openDoc.addActionListener(tal);
-        buttonBox.add(openDoc);
-        buttonBox.add(Box.createHorizontalGlue());
-        openDoc.setVisible(false);
-
         about = new JButton(ABOUT);
         about.addActionListener(tal);
         buttonBox.add(about);
@@ -151,7 +150,7 @@ class ConvertDialog extends JDialog
         content.add(buttonBox);
         setContentPane(content);
         pack();
-        setSize(new Dimension(500,200));
+        setSize(new Dimension(620,200));
     }
 
     public void setChoices(String[] choices)
@@ -204,17 +203,32 @@ class ConvertDialog extends JDialog
         return newFile;
     }
 
-    public ConvertDialog(FontConversion controller,
+    public ConvertDialog(Frame owner,
+                         FontConversion controller,
                          String[] choices,
                          boolean modal)
     {
-        super(new JDialog(),PROGRAM_TITLE,modal);
+        super(owner,PROGRAM_TITLE,modal);
+        initConvertDialog(controller, choices, modal);
+    }
+
+    private void initConvertDialog(FontConversion controller,
+                                   String[] choices,
+                                   boolean modal) {
         setController(controller);
         setChoices(choices);
         init();
         if (debug)
             System.out.println("Default close operation: "
                                + getDefaultCloseOperation());
+    }
+
+    public ConvertDialog(FontConversion controller,
+                         String[] choices,
+                         boolean modal)
+    {
+        super(new JDialog(),PROGRAM_TITLE,modal);
+        initConvertDialog(controller, choices, modal);
     }
 
     void theRealActionPerformed(ActionEvent ae)
@@ -239,12 +253,9 @@ class ConvertDialog extends JDialog
                 newTextField.setText(chosenFile.getPath());
                 newFieldChanged = false;
                 newFile = chosenFile;
-                openDoc.setVisible(false);
+                openDoc.setEnabled(true);
             }
         } else if(cmd.equals(CONVERT)) {
-            if (debug)
-                System.out.println("Need to write checks for complete info...");
-
             if(oldFieldChanged || getOldFile() == null) {
                 if (debug)
                     System.out.println("old field changed");
@@ -282,16 +293,33 @@ class ConvertDialog extends JDialog
                 // allow it.
             }
 
-            // Success or failure is immaterial; we still want to bust
-            // out the "Open Document" button.
+            if (newFile.exists()) {
+                int overwriteExisingFile
+                    = JOptionPane.showConfirmDialog(this,
+                                                    "Do you want to overwrite "
+                                                    + newFile.getName() + "?",
+                                                    "Please select",
+                                                    JOptionPane.YES_NO_OPTION);
+
+                switch (overwriteExisingFile) {
+                case JOptionPane.YES_OPTION: // continue.
+                    break;
+                default:
+                    return;
+                }
+            }
+
             controller.doConversion(this,
                                     getOldFile(),
                                     getNewFile(),
                                     (String)choices.getSelectedItem());
             oldFieldChanged = false;
             newFieldChanged = false;
-            openDoc.setVisible(true);
-        } else if(cmd.equals("Open Document")) {
+            // Success or failure is immaterial; we still want to
+            // enable the OPEN_WITH button.  If the conversion failed,
+            // the document contains the weird glyphs.
+            openDoc.setEnabled(true);
+        } else if(cmd.equals(OPEN_WITH)) {
             try {
                 if(newFile == null) {return;}
                 boolean done = false;
@@ -323,9 +351,7 @@ class ConvertDialog extends JDialog
                                               JOptionPane.ERROR_MESSAGE);
             }
         } else if(cmd.equals(CANCEL)) {
-            System.runFinalization();
             this.dispose();
-            System.exit(0);
         } else if(cmd.equals(ABOUT)) {
             JOptionPane.showMessageDialog(this,
                                           "This Tibetan Converter is Copyright 2003\nTibetan and Himalayan Digital Library and\nis protected by the THDL Open Community\nLicense Version 1.0.\n\nCompiled " + ThdlVersion.getTimeOfCompilation(),
@@ -396,7 +422,7 @@ class ConvertDialog extends JDialog
 
     public File updateFile(File setFile, JTextField textField)
     {
-        if(textField.equals(newTextField)) {openDoc.setVisible(false);}
+        if(textField.equals(newTextField)) {openDoc.setEnabled(false);}
         String txt = textField.getText();
         if (txt.equals(""))
             return null;
