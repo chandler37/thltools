@@ -18,6 +18,7 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.input;
 
+import java.io.*;
 import java.util.*;
 import java.awt.*;
 import java.awt.datatransfer.*;
@@ -25,13 +26,9 @@ import java.awt.font.*;
 import java.awt.event.*;
 import javax.swing.*; 
 import javax.swing.text.*;
-
-import java.lang.*;
-import org.thdl.tib.text.*;
-
-import java.io.*;
 import javax.swing.text.rtf.*;
 
+import org.thdl.tib.text.*;
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlOptions;
 import org.thdl.util.StatusBar;
@@ -307,13 +304,11 @@ public RTFEditorKit rtfEd = null;
 /**
 * This method sets up the editor, assigns fonts and point sizes,
 * sets the document, the caret, and adds key and focus listeners.
-*
-* @param sek the StyledEditorKit for the editing window
 */
 	private void setupEditor() {
 		rtfBoard = getToolkit().getSystemClipboard();
 		rtfFlavor = new DataFlavor("text/rtf", "Rich Text Format");
-		rtfEd = new RTFEditorKit();
+		rtfEd = new TibetanRTFEditorKit();
 		setEditorKit(rtfEd);
 		styleContext = new StyleContext();
 

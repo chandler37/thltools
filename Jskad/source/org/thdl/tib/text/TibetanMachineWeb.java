@@ -221,6 +221,11 @@ public class TibetanMachineWeb {
 	private static final String farrights = "d,s,ng";
 
 	static {
+
+        // FIXME: we have it so that you can select the default
+        // keyboard via the preferences mechanism.  We can remove this
+        // DEFAULT_KEYBOARD stuff, can't we?
+
 		readData();
 
 		URL keyboard_url = TibetanMachineWeb.class.getResource(DEFAULT_KEYBOARD);
