@@ -18,23 +18,18 @@ class CreateDatabaseWizard extends Dialog implements ActionListener, ItemListene
     private Button add, ok, cancel, browse;
     private Frame owner;
     private SimplifiedLinkedList dicts;
-    private boolean pocketpc;
     private String response;
     
-    CreateDatabaseWizard(Frame owner, boolean pocketpc)
+    CreateDatabaseWizard(Frame owner)
     {
         super(owner, "Generation of Binary Tree Dictionary", true);
-        this.pocketpc = pocketpc;
         this.owner = owner;
         response = "";
         dicts = new SimplifiedLinkedList();
         
         this.setLayout(new BorderLayout());
-        if (pocketpc)
-        {
-            Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-            this.setSize(d);
-        } else this.setSize(400,300);
+        this.setSize(400,300);
+        
         Panel p1, p2, p3;
         p1 = new Panel(new GridLayout(4, 1));
         p2 = new Panel(new FlowLayout(FlowLayout.LEFT));
@@ -53,13 +48,11 @@ class CreateDatabaseWizard extends Dialog implements ActionListener, ItemListene
         p2.add(browse, BorderLayout.EAST);
         p1.add(p2);
         p2 = new Panel(new BorderLayout());
-        if (pocketpc) p2.add(new Label("Desc:"), BorderLayout.WEST);
-        else p2.add(new Label("Description:"), BorderLayout.WEST);
+        p2.add(new Label("Description:"), BorderLayout.WEST);
         dicDesc = new TextField(20);
         p2.add(dicDesc, BorderLayout.CENTER);
         p3 = new Panel(new FlowLayout());
-        if (pocketpc) p3.add(new Label("Abv:"));
-        else p3.add(new Label("Abbreviation:"));
+        p3.add(new Label("Abbreviation:"));
         dicAbb = new TextField(6);
         p3.add(dicAbb);
         p2.add(p3, BorderLayout.EAST);
@@ -149,37 +142,21 @@ class CreateDatabaseWizard extends Dialog implements ActionListener, ItemListene
 		    AcipToWylie a2w=null;
 
 		    // getting the database name
-   		    if (pocketpc)
-		    {
-    		    fd = new FileDialog(owner, "Save database to", FileDialog.SAVE);
-		        fd.show();
-		        fileName = fd.getFile();
-		        if (fileName!= null)
-		        {
-		            // dropping the extension
-    	            pos = fileName.lastIndexOf('.');
-	                if (pos>0) fileName = fileName.substring(0, pos);
-		            path = fd.getDirectory() + fileName;
-		        }
-		    }
-		    else
-		    {
-		        DictionaryFileFilter dicFilter = new DictionaryFileFilter();
-		        JFileChooser fileChooser = new JFileChooser("Save database to");
-		        fileChooser.addChoosableFileFilter(dicFilter);
-		        /*setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		    DictionaryFileFilter dicFilter = new DictionaryFileFilter();
+		    JFileChooser fileChooser = new JFileChooser("Save database to");
+		    fileChooser.addChoosableFileFilter(dicFilter);
+		    /*setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-                if (fileChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION)
-                {
-                    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                    return;
-                }*/
-                if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
-                {
-                    path = fileChooser.getSelectedFile().getPath();
-    	            pos = path.lastIndexOf('.');
-	                if (pos>0) path = path.substring(0, pos);
-                }
+            if (fileChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION)
+            {
+                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                return;
+            }*/
+            if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
+            {
+                path = fileChooser.getSelectedFile().getPath();
+    	        pos = path.lastIndexOf('.');
+	            if (pos>0) path = path.substring(0, pos);
             }
 		    
 		    PrintWriter pr=null;

@@ -25,7 +25,7 @@ import org.thdl.util.*;
 */
 public abstract class TibetanScanner
 {
-    public static final String version = "The Tibetan to English Translation Tool, version 3.0.0 compiled on " + ThdlVersion.getTimeOfCompilation() + ". ";
+    public static final String version = "The Tibetan to English Translation Tool, version 3.1.0 compiled on " + ThdlVersion.getTimeOfCompilation() + ". ";
 	public static final String copyrightUnicode="Copyright " + '\u00A9' + " 2000-2004 by Andr" + '\u00E9' + "s Montano Pellegrini, all rights reserved.";
 	public static final String copyrightASCII="Copyright 2000-2004 by Andres Montano Pellegrini, all rights reserved.";
 	public static final String copyrightHTML="<hr><small><strong>" + version + "Copyright &copy; 2000-2004 by <a href=\"http://www.people.virginia.edu/~am2zb/\" target=\"_blank\">Andr&eacute;s Montano Pellegrini.</a><br/>All rights reserved.</strong></small>";

@@ -20,7 +20,7 @@ Contributor(s): ______________________________________.
 	to store the dictionary. */
 package org.thdl.tib.scanner;
 
-import org.thdl.tib.text.TibetanHTML;
+//import org.thdl.tib.text.TibetanHTML;
 
 /** Tibetan word with its corresponding definitions.
 
@@ -29,8 +29,13 @@ import org.thdl.tib.text.TibetanHTML;
 public class Word extends Token
 {	
 	/** Used to rebuild the text the user entered. */
-	private String wordSinDec;
-	private Definitions def;
+	protected String wordSinDec;
+	protected Definitions def;
+	
+	public Word (Word word)
+	{
+	    this(word.token, word.wordSinDec, word.def);
+	}
 	
 	public Word (String word, String wordSinDec, String def)
 	{
@@ -96,54 +101,6 @@ public class Word extends Token
 	public String toString()
 	{
 		return super.token + " - " + def;
-	}
-
-	public String getBookmark(boolean tibetan)
-	{
-	    String localWord;
-	    if (tibetan) 
-	    {
-	        try
-	        {
-	            localWord = TibetanHTML.getHTML(super.token + " ");
-	        }
-	        catch (Exception e)
-	        {
-	            localWord = "<b>" + super.token + "</b>";
-	        }
-	    }
-	    else localWord = "<b>" + super.token + "</b>";
-		return "<a name=\"" + super.token + "\">" + localWord + "</a>";
-	}
-
-	public String getLink()
-	{
-	    return getLink(false);
-	}
-	
-	public String getLink(boolean tibetan)
-	{
-	    String localWord, result=null;
-	    // String result;
-		if (wordSinDec==null) localWord = super.token;
-		else localWord = wordSinDec;
-		if (tibetan) 
-		{
-		    try
-		    {
-		        result = TibetanHTML.getHTML(localWord + " ");
-		    }
-		    catch (Exception e)
-		    {
-		        result = localWord;
-		    }
-		}
-		else result = localWord;
-/*		result = "<a href=\"#" + word + "\">" + localWord;
-		if (tibetan) result+= "</a>";
-		else result+= "</a> ";
-		return result;*/
-		return "<a href=\"#" + super.token + "\">" + result + "</a> ";
 	}
 	
 	/** Called in order to redisplay the text with links keeping

@@ -31,14 +31,16 @@ public class AboutDialog extends Dialog implements ActionListener, WindowListene
 {
    	public static String windowAboutOption = "thdl.scanner.omit.about.window";
     private Checkbox chkOmitNextTime;
+    private Button close;
     
     public AboutDialog(Frame parent, boolean pocketpc)
     {
         super(parent, "About...", true);
+        this.setFont(WindowScannerFilter.getTHDLFont());
         Panel p  = new Panel(new BorderLayout());
         chkOmitNextTime = new Checkbox("Don't show this window at startup", ThdlOptions.getBooleanOption(windowAboutOption));
         p.add(chkOmitNextTime, BorderLayout.CENTER);
-        Button close = new Button("Close this window");
+        close = new Button("Close this window");
         p.add(close, BorderLayout.EAST);
         add(p, BorderLayout.NORTH);
         close.addActionListener(this);
@@ -54,6 +56,13 @@ public class AboutDialog extends Dialog implements ActionListener, WindowListene
         else setSize(480,400);
     }
     
+/*    public void setDefaultFont(Font f)
+    {
+        this.setFont(f);
+        chkOmitNextTime.setFont(f);
+        close.setFont(f);
+    }*/
+    
     public boolean omitNextTime()
     {
         return chkOmitNextTime.getState();
@@ -64,7 +73,7 @@ public class AboutDialog extends Dialog implements ActionListener, WindowListene
        user may not see the console! See ThdlActionListener. -DC */
     public void actionPerformed(ActionEvent e)
     {
-        hide();
+        dispose();
     }
     
 	/**
@@ -74,7 +83,7 @@ public class AboutDialog extends Dialog implements ActionListener, WindowListene
 	 */
 	 public void windowClosing(WindowEvent e)
 	 {
-   	 	hide();
+   	 	dispose();
 	 }
 
 	/**

@@ -312,7 +312,7 @@ public class OnLineScannerFilter extends HttpServlet
 	public void printText(PrintWriter pw, boolean tibetan)
 	{
 		Token words[] = scanner.getTokenArray();
-		Word word;
+		SwingWord word;
 		char pm;
 		int i;
 		
@@ -324,7 +324,7 @@ public class OnLineScannerFilter extends HttpServlet
 			
 			if (words[i] instanceof Word)
 			{
-			    word = (Word) words[i];
+			    word = new SwingWord((Word)words[i]);
 			    if (word.getDefs().getDictionarySource()!=null)
 				    pw.print(word.getLink());
 				else pw.print(word.getWylie() + " ");
@@ -360,6 +360,7 @@ public class OnLineScannerFilter extends HttpServlet
 	{
 		int i, j;
 		Word words[];
+		SwingWord word;
 		Definitions defs;
 		String tag;
 		DictionarySource ds;
@@ -372,7 +373,8 @@ public class OnLineScannerFilter extends HttpServlet
 		
 		for (j=0; j<words.length; j++)
 		{
-			defs = words[j].getDefs();
+		    word = new SwingWord(words[j]);
+			defs = word.getDefs();
 			ds = defs.getDictionarySource();
 		    if (ds==null) continue;
 			pw.println("  <tr>");
@@ -380,7 +382,7 @@ public class OnLineScannerFilter extends HttpServlet
 			// else tag = null;
 			/*if (tag!=null)
 			{*/
-				pw.println("    <td width=\"20%\" rowspan=\""+ defs.def.length +"\" valign=\"top\">"+ words[j].getBookmark(tibetan) +"</td>");
+				pw.println("    <td width=\"20%\" rowspan=\""+ defs.def.length +"\" valign=\"top\">"+ word.getBookmark(tibetan) +"</td>");
 				pw.println("    <td width=\"12%\">"+ tag +"</td>");
 				pw.println("    <td width=\"68%\">" + defs.def[0] + "</td>");
 			/*}

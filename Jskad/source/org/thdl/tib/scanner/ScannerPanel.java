@@ -31,10 +31,10 @@ import java.io.*;
 */
 public abstract class ScannerPanel extends Panel implements ActionListener
 {
-    private static int dictCols=4;
-	private Label status;
+    private static int dictCols=5;
+	protected Label status;
 	protected Checkbox chkDicts[];
-	Button cmdTranslate;
+	protected Button cmdTranslate;
 	protected TibetanScanner scanner;
 	private Panel toolBar;
     
@@ -49,6 +49,7 @@ public abstract class ScannerPanel extends Panel implements ActionListener
 	public ScannerPanel(String file, boolean includeToolBar)
 	{
 		boolean exito=true;
+		setFont(WindowScannerFilter.getTHDLFont());
 
 		setLayout(new BorderLayout());
 		status = new Label();
@@ -79,10 +80,13 @@ public abstract class ScannerPanel extends Panel implements ActionListener
 		{
 			if (file==null || file.equals(""))
 				scanner = null;
-			else if (file.toLowerCase().startsWith("http://"))
-					scanner = new RemoteTibetanScanner(file);
+			else
+			{
+			    if (file.toLowerCase().startsWith("http://"))
+				    scanner = new RemoteTibetanScanner(file);
 				else
 					scanner = new LocalTibetanScanner(file);
+			}
 						
 		}
 		catch (Exception e)
@@ -178,16 +182,27 @@ public abstract class ScannerPanel extends Panel implements ActionListener
         translate();
     }
     
-    /**Optionally overridden. */
-    public void setPreferences()
-    {
-    }
+    public abstract void setPreferences(Frame owner);
     
     public Panel getToolBar()
     {
         return toolBar;
     }
-
+    
+    /*public void setDefaultFont(Font f)
+    {
+        int i;
+        status.setFont(f);
+        cmdTranslate.setFont(f);
+        
+        if (chkDicts!=null)
+        {
+            for (i=0; i<chkDicts.length; i++)
+            {
+                chkDicts[i].setFont(f);
+            }
+        }
+    }*/
 	
 	public abstract void translate();
 	public abstract void clear();

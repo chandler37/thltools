@@ -37,19 +37,18 @@ public class SimpleScannerPanel extends ScannerPanel implements ItemListener
 	private List listDefs;
 	private Word wordArray[];
 	private int lenPreview;
-	private static int WIDTH_PORTRAIT = 36;
-	private static int WIDTH_LANDSCAPE = 48;
+	private boolean landscape;
 	
 	public SimpleScannerPanel(String file, boolean landscape)
 	{
 		super(file);
 		Panel panel1, panel2;
-		Font f;
+		Font defFont;
+		
+		this.landscape = landscape;
 		cardPanel = new Panel(new CardLayout());
 		
-		// FIXME values shouldn't be hardwired
-		if (landscape) lenPreview = WIDTH_LANDSCAPE;
-		else lenPreview = WIDTH_PORTRAIT;
+		lenPreview = PocketWindowScannerFilter.getParsePaneCols(landscape);
 		wordArray=null;
 
 		// panel1 = new Panel(new GridLayout(3, 1));
@@ -59,38 +58,41 @@ public class SimpleScannerPanel extends ScannerPanel implements ItemListener
     	panel1 = new Panel(new BorderLayout());
 		panel2 = new Panel(new GridLayout(2, 1));
 		
+		defFont = WindowScannerFilter.getTHDLFont();
+		    
+		txtInput = new TextArea("", 0, 0, TextArea.SCROLLBARS_VERTICAL_ONLY);
+		txtInput.setFont(defFont);
+		    
     	listDefs = new List();
     	
-		if (landscape) 
+    	txtOutput = new TextArea("", 0, 0, TextArea.SCROLLBARS_VERTICAL_ONLY);
+		txtOutput.setFont(defFont);
+    	
+		if (landscape)
 		{
-		    txtInput = new TextArea("", 0, 0, TextArea.SCROLLBARS_VERTICAL_ONLY);
-    		txtOutput = new TextArea("", 4, WIDTH_LANDSCAPE,TextArea.SCROLLBARS_VERTICAL_ONLY);
-
+		    txtOutput.setRows(WindowScannerFilter.getOutputPaneRows());
+		    
     		panel2.add(txtInput);
     		panel2.add(listDefs);
     		
 		    panel1.add(panel2, BorderLayout.CENTER);
-		    panel1.add(txtOutput, BorderLayout.SOUTH);		    
+		    panel1.add(txtOutput, BorderLayout.SOUTH);
 		}
 		else
 		{
-		    txtInput = new TextArea("", 4, WIDTH_PORTRAIT, TextArea.SCROLLBARS_VERTICAL_ONLY);
-    		txtOutput = new TextArea("",0, 0,TextArea.SCROLLBARS_VERTICAL_ONLY);
-    		
+		    txtInput.setRows(WindowScannerFilter.getInputPaneRows());
+		    
+    		panel2.add(txtInput);
     		panel2.add(listDefs);
-    		panel2.add(txtOutput);
-    		    		
-    		panel1.add(txtInput, BorderLayout.NORTH);
-    		panel1.add(panel2, BorderLayout.CENTER);
+    		
+		    panel1.add(panel2, BorderLayout.NORTH);
+		    panel1.add(txtOutput, BorderLayout.CENTER);
 		}
+
 		listDefs.setMultipleMode(false);
 		listDefs.addItemListener(this);
 		
 		txtOutput.setEditable(false);
-
-		/*f = new Font(null, Font.PLAIN, 10);
-		txtOutput.setFont(f);
-		txtInput.setFont(f);*/		
 		
 		cardPanel.add(panel1, "1");
 		
@@ -164,5 +166,32 @@ public class SimpleScannerPanel extends ScannerPanel implements ItemListener
 			scanner.clearTokens();
 			returnStatusToNorm();
 		}
-    }	
+    }
+    
+    public void setPreferences(Frame owner)
+    {
+        PocketPreferenceWindow ppw = new PocketPreferenceWindow(owner, landscape);
+        Font font;
+        int i;
+        
+        if (ppw.dataInputed())
+        {
+            lenPreview = PocketWindowScannerFilter.getParsePaneCols(landscape);
+            font = WindowScannerFilter.getTHDLFont();
+            if (landscape) txtOutput.setRows(WindowScannerFilter.getOutputPaneRows());
+            else txtInput.setRows(WindowScannerFilter.getInputPaneRows());
+            status.setFont(font);
+            cmdTranslate.setFont(font);
+            txtInput.setFont(font);
+            listDefs.setFont(font);
+            txtOutput.setFont(font);
+            for (i=0; i<chkDicts.length; i++)
+                chkDicts[i].setFont(font);
+            setFont(font);
+            owner.setFont(font);
+            validate();
+            owner.validate();
+        }
+        ppw.dispose();
+    }
 }

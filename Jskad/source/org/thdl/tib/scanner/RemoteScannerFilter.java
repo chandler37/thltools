@@ -42,14 +42,23 @@ public class RemoteScannerFilter extends GenericServlet
 		ResourceBundle rb = ResourceBundle.getBundle("dictionary");
 		scanner = new LocalTibetanScanner(rb.getString("onlinescannerfilter.dict-file-name"));
 		ds = scanner.getDictionarySource();
+
+    		
+	    String fileName = rb.getString("remotescannerfilter.log-file-name");
+	    Calendar rightNow = Calendar.getInstance();
+	    	
+	    PrintStream pw = new PrintStream(new FileOutputStream(fileName, true));
+	    pw.println("Testing: " + rightNow.toString());
+	    pw.flush();
+	    pw.close();
 	}
 
   	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException
   	{
   		BufferedReader br;
   		res.setContentType ("text/plain");
-  		Token token[];  		
-  		Word word;
+  		Token token[] = null;  		
+  		Word word = null;
 	    PrintWriter out = res.getWriter();
 	    int i;
   		String linea, dicts = req.getParameter("dicts"), dicDescrip[];
@@ -79,22 +88,52 @@ public class RemoteScannerFilter extends GenericServlet
   		}
   		br = new BufferedReader(new InputStreamReader(req.getInputStream()));
   		
-  		while((linea = br.readLine())!= null)
-  			scanner.scanLine(linea);
-  		
-  		br.close();
-  		
-		scanner.finishUp();
-		token = scanner.getTokenArray();
-		
-		for (i=0; i<token.length; i++)
-		{
-			if (!(token[i] instanceof Word)) continue;
-			word = (Word) token[i];
-			out.println(word.getWylie());
-			out.println(word.getDef());
-			out.println();
+  		/*  FIXME: sometimes getDef returns raises a NullPointerException.
+  		    In the meantime, I'll just keep it from crashing
+  		*/
+  		try
+  		{
+  		    while((linea = br.readLine())!= null)
+  			    scanner.scanLine(linea);
+      		
+  		    br.close();
+      		
+		    scanner.finishUp();
+		    token = scanner.getTokenArray();
+    		
+		    for (i=0; i<token.length; i++)
+		    {
+			    if (!(token[i] instanceof Word)) continue;
+			    word = (Word) token[i];
+			    out.println(word.getWylie());
+			    out.println(word.getDef());
+			    out.println();
+		    }
 		}
+		catch (Exception e)
+		{
+    		ResourceBundle rb = ResourceBundle.getBundle("dictionary");
+	    	String fileName = rb.getString("remotescannerfilter.log-file-name");
+	    	Calendar rightNow = Calendar.getInstance();
+	    	
+	    	PrintStream pw = new PrintStream(new FileOutputStream(fileName, true));
+	    	pw.println("Translation tool crashed on: " + rightNow.toString());
+	    	e.printStackTrace(pw);
+	    	pw.println();
+	    	pw.println("Word that crashed: " + word.getWylie());
+	    	pw.println();
+	    	pw.println("All words:");
+		    for (i=0; i<token.length; i++)
+		    {
+			    if (!(token[i] instanceof Word)) continue;
+			    word = (Word) token[i];
+			    out.println(word.getWylie());
+			}
+			pw.println();
+			pw.flush();
+			pw.close();
+		}
+
 		scanner.clearTokens();
 	    out.close();
 	}

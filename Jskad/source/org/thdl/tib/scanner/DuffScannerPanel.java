@@ -281,7 +281,7 @@ public class DuffScannerPanel extends ScannerPanel implements ItemListener
 		table.repaint();
 	}
 	
-    public void setPreferences()
+    public void setPreferences(Frame owner)
     {
         Font f;
         if (prefWindow==null) prefWindow = new PreferenceWindow(this, duffInput);
