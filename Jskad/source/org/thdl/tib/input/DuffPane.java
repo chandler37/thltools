@@ -279,15 +279,11 @@ public class DuffPane extends TibetanPane implements FocusListener {
     }
 
     private static int defaultTibFontSize() {
-        // FIXME: at program exit, or when the user selects "Save
-        // preferences", or somehow, save the value the users chooses:
         return ThdlOptions.getIntegerOption("thdl.default.tibetan.font.size",
                                             36);
     }
 
     private static int defaultRomanFontSize() {
-        // FIXME: at program exit, or when the user selects "Save
-        // preferences", or somehow, save the value the users chooses:
         return ThdlOptions.getIntegerOption("thdl.default.roman.font.size",
                                             14);
     }

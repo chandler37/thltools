@@ -26,7 +26,12 @@ import javax.swing.JOptionPane;
 import java.awt.Frame;
 import java.awt.Dialog;
 
-/** DLC FIXMEDOC
+/** The ConverterGUI is a Swing GUI application.  It is used for
+ *  converting TibetanMachine-, TibetanMachineWeb-, and THDL Extended
+ *  Wylie-encoded Rich Text Files to any of several formats, including
+ *  Unicode.  The TibetanMachine-to-TibetanMachineWeb conversion is
+ *  flawless, and is used as an intermediate step in other
+ *  conversions, for example the TibetanMachine-to-Unicode conversion.
  *  @author David Chandler */
 public class ConverterGUI implements FontConversion, FontConverterConstants {
     /** Default constructor; does nothing */
@@ -42,7 +47,6 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
         System.exit(realMain(args, System.out, null));
     }
 
-    // DLC FIXMEDOC returns true on success
     public boolean doConversion(ConvertDialog cd, File oldFile, File newFile,
                                 String whichConversion) {
         PrintStream ps;
@@ -101,12 +105,12 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
         }
     }
 
-    // DLC FIXMEDOC
     public String getDefaultDirectory() {
         return ThdlOptions.getStringOption("thdl.Jskad.working.directory",
                                            null);
     }
 
+    /** the exit status of this application */
     private static int returnCode = 0;
 
     /** Runs the converter without exiting the program.

@@ -31,7 +31,6 @@ import java.io.File;
 class RecentlyOpenedFilesDatabase {
 
     /** Tells ThdlOptions about the recently opened files.  Call this before program exit. */
-    // DLC FIXME: this doesn't keep the second-most recently opened item second if you have just three items.
     public static void storeRecentlyOpenedFilePreferences() {
         int n = 0;
         // We store 2*N files in the preferences in case some are deleted.

@@ -20,10 +20,22 @@ package org.thdl.tib.input;
 
 import java.io.File;
 
-// DLC FIXMEDOC
+/** A FontConversion is an implementer of the conversions built into
+ *  (@link #ConvertDialog}.
+ *  @author Nathaniel Garson, Tibetan and Himalayan Digital Library */
 interface FontConversion
 {
+    /** Returns the directory to be displayed when the user selects
+        "Browse..." to look for either the new or old file.  May
+        return null if no particular choice seems more appropriate
+        than any other. */
     String getDefaultDirectory();
+
+    /** Converts oldFile to newFile, yielding a modal dialog box
+        displaying the results if you want happy users.  The
+        conversion performed is specified by the interned String
+        whichConversion, which must be one of the known conversions.
+        @return true on success, false otherwise */
     boolean doConversion(ConvertDialog cd, File oldFile,
                          File newFile, String whichConversion);
 }

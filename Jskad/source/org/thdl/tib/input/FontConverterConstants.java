@@ -40,8 +40,6 @@ interface FontConverterConstants
     final String suggested_TO_UNI_prefix = "Uni_";
     final String suggested_TO_TM_prefix = "TM_";
 
-    // DLC prune
-
     // String Constants
     public final String PROGRAM_TITLE = "THDL Font Conversion (with Jskad Technology)";
 
