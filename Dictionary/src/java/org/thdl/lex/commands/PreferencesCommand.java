@@ -26,8 +26,9 @@ public class PreferencesCommand extends LexCommand implements Command
 	{
 		try
 		{
+			Visit visit = UserSessionManager.getInstance().getVisit( req.getSession( true ) );
 
-			Preferences isb = UserSessionManager.getInstance().getPreferences( req.getSession( true ) );
+			Preferences isb = visit.getPreferences();
 			if ( req.getParameter( LexConstants.COMMAND_REQ_PARAM ).equals( "setMetaPrefs" ) )
 			{
 				isb.setLanguageSet( LexUtilities.convertToIntegerArray( req.getParameterValues( "languages" ) ) );
@@ -99,10 +100,7 @@ public class PreferencesCommand extends LexCommand implements Command
 		{
 			throw new CommandException( "LexComponentException says: " + lre.getMessage() );
 		}
-		catch ( LexRepositoryException lre )
-		{
-			throw new CommandException( "LexComponentException says: " + lre.getMessage() );
-		}
+		
 		return getNext();
 	}
 

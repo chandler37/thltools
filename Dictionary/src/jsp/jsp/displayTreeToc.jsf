@@ -5,65 +5,65 @@
 
 <h2>Term Map</h2>
 <h3>
-<c:out value="${ query.entry.term }"/>
+<c:out value="${ sessionScope.visit.query.entry.term }"/>
 </h3>
 
 <ol>			
 
 <!--TRANSITIONAL DATA-->
-<c:set value="${query.entry.transitionalData}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
-<c:out value='<li><a href="#${query.entry.transitionalData}">Special Guests</a></li>' escapeXml='false' />
-<c:forEach var="transitionalData" items="${ query.entry.transitionalData }"></c:forEach>
+<c:set value="${sessionScope.visit.query.entry.transitionalData}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
+<c:out value='<li><a href="#${sessionScope.visit.query.entry.transitionalData}">Special Guests</a></li>' escapeXml='false' />
+<c:forEach var="transitionalData" items="${ sessionScope.visit.query.entry.transitionalData }"></c:forEach>
 </c:if>
 
 <!--PRONUNCIATION-->
-<c:set value="${query.entry.pronunciations}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
-<c:out value='<li><a href="#${query.entry.pronunciations}">Pronunciations</a></li>' escapeXml='false' />					
-<c:forEach var="pronunciation" items="${ query.entry.pronunciations }"></c:forEach>
+<c:set value="${sessionScope.visit.query.entry.pronunciations}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
+<c:out value='<li><a href="#${sessionScope.visit.query.entry.pronunciations}">Pronunciations</a></li>' escapeXml='false' />					
+<c:forEach var="pronunciation" items="${ sessionScope.visit.query.entry.pronunciations }"></c:forEach>
 </c:if>
 
 <!--ETYMOLOGY-->
-<c:set value="${query.entry.etymologies}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
-<c:out value='<li><a href="#${query.entry.etymologies}">Etymologies</a></li>' escapeXml='false' />					
-<c:forEach var="etymology" items="${ query.entry.etymologies }"></c:forEach>
+<c:set value="${sessionScope.visit.query.entry.etymologies}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
+<c:out value='<li><a href="#${sessionScope.visit.query.entry.etymologies}">Etymologies</a></li>' escapeXml='false' />					
+<c:forEach var="etymology" items="${ sessionScope.visit.query.entry.etymologies }"></c:forEach>
 </c:if>
 
 <!--SPELLINGS-->
-<c:set value="${query.entry.spellings}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
-<c:out value='<li><a href="#${query.entry.spellings}">Spellings</a></li>' escapeXml='false' />					
-<c:forEach var="spelling" items="${ query.entry.spellings }"></c:forEach>
+<c:set value="${sessionScope.visit.query.entry.spellings}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
+<c:out value='<li><a href="#${sessionScope.visit.query.entry.spellings}">Spellings</a></li>' escapeXml='false' />					
+<c:forEach var="spelling" items="${ sessionScope.visit.query.entry.spellings }"></c:forEach>
 </c:if>
 
 <!--FUNCTIONS-->
-<c:set value="${query.entry.functions}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
-<c:out value='<li><a href="#${query.entry.functions}">Functions</a></li>' escapeXml='false' />					
-<c:forEach var="function" items="${ query.entry.functions }"></c:forEach>
+<c:set value="${sessionScope.visit.query.entry.functions}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
+<c:out value='<li><a href="#${sessionScope.visit.query.entry.functions}">Functions</a></li>' escapeXml='false' />					
+<c:forEach var="function" items="${ sessionScope.visit.query.entry.functions }"></c:forEach>
 </c:if>
 
 <!--ENCYCLOPEDIA ARTICLES-->
-<c:set value="${query.entry.encyclopediaArticles}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
-<c:out value='<li><a href="#${query.entry.encyclopediaArticles}">Encyclopedia Articles</a></li>' escapeXml='false' />					
-<c:forEach var="encyclopediaArticle" items="${ query.entry.encyclopediaArticles }"></c:forEach>
+<c:set value="${sessionScope.visit.query.entry.encyclopediaArticles}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
+<c:out value='<li><a href="#${sessionScope.visit.query.entry.encyclopediaArticles}">Encyclopedia Articles</a></li>' escapeXml='false' />					
+<c:forEach var="encyclopediaArticle" items="${ sessionScope.visit.query.entry.encyclopediaArticles }"></c:forEach>
 </c:if>
 
 <!--DEFINITION LOOP-->
-<c:set value="${query.entry.definitions}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
-<c:forEach var="definition" items="${query.entry.definitions}">
+<c:set value="${sessionScope.visit.query.entry.definitions}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
+<c:forEach var="definition" items="${sessionScope.visit.query.entry.definitions}">
 <li>
 <c:out value='<a href="#${definition}">Definition ${ definition.precedence + 1}</a>' escapeXml='false' />					
 
 <ol>
 
 <!--SUBDEFINITION-->
-<c:set value="${definition.subdefinitions}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${definition.subdefinitions}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <c:forEach var="subdefinition" items="${ definition.subdefinitions }">
 <li>
 <c:out value='<a href="#${subdefinition}">Subdefinition ${ subdefinition.precedence + 1 }</a>' escapeXml='false' />					
@@ -71,43 +71,43 @@
 <ol>
 
 <!--KEYWORD-->
-<c:set value="${subdefinition.keywords}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${subdefinition.keywords}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <c:out value='<li><a href="#${subdefinition.keywords}">Keywords</a></li>' escapeXml='false' />					
 <c:forEach var="keyword" items="${ subdefinition.keywords }"></c:forEach>
 </c:if> 
 
 <!--MODEL SENTENCE-->
-<c:set value="${subdefinition.modelSentences}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${subdefinition.modelSentences}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <c:out value='<li><a href="#${subdefinition.modelSentences}">Model Sentences</a></li>' escapeXml='false' />					
 <c:forEach var="modelSentence" items="${ subdefinition.modelSentences }"></c:forEach>
 </c:if> 
 
 <!--TRANSLATION EQUIVALENT-->
-<c:set value="${subdefinition.translationEquivalents}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${subdefinition.translationEquivalents}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <c:out value='<li><a href="#${subdefinition.translationEquivalents}">Translation Equivalents</a></li>' escapeXml='false' />					
 <c:forEach var="translationEquivalent" items="${ subdefinition.translationEquivalents }"></c:forEach>
 </c:if> 
 
 <!--RELATED TERM-->
-<c:set value="${subdefinition.relatedTerms}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${subdefinition.relatedTerms}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <c:out value='<li><a href="#${subdefinition.relatedTerms}">RelatedTerm</a></li>' escapeXml='false' />					
 <c:forEach var="relatedTerm" items="${ subdefinition.relatedTerms }"></c:forEach>
 </c:if> 
 
 <!--PASSAGE-->
-<c:set value="${subdefinition.passages}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${subdefinition.passages}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <c:out value='<li><a href="#${subdefinition.passages}">Passages</a></li>' escapeXml='false' />					
 <c:forEach var="passage" items="${ subdefinition.passages }"></c:forEach>
 </c:if>
 
 <!--REGISTER-->
-<c:set value="${subdefinition.registers}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${subdefinition.registers}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <c:out value='<li><a href="#${subdefinition.registers}">Registers</a></li>' escapeXml='false' />					
 <c:forEach var="register" items="${ subdefinition.registers }"></c:forEach>
 </c:if>

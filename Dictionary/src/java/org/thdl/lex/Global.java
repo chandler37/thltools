@@ -1,6 +1,7 @@
 package org.thdl.lex;
 
-import java.util.List;
+import java.util.*;
+import org.thdl.lex.component.*;
 
 
 /**
@@ -12,43 +13,33 @@ import java.util.List;
 public class Global
 {
 	private static long refreshDelay;
-	private static int recentUpdatesCount;
+	private static int recentTermsCount;
 	private static long lastRefresh;
 	private int entryCount;
-	private List recentUpdates;
-	private boolean requiresRefresh;
+	private List recentTerms;
 
 
 	/**
-	 *  Sets the requiresRefresh attribute of the Global object
+	 *  Gets the lastUpdateAsDate attribute of the LexComponentRepository class
 	 *
-	 * @param  requiresRefresh  The new requiresRefresh value
+	 * @return                             The lastUpdateAsDate value
+	 * @exception  LexRepositoryException  Description of the Exception
 	 */
-	public void setRequiresRefresh( boolean requiresRefresh )
+	public Date getLastUpdate() throws LexRepositoryException
 	{
-		this.requiresRefresh = requiresRefresh;
+		ITerm term = (ITerm) getRecentTerms().get( 0 );
+		return term.getMeta().getModifiedOn();
 	}
 
 
 	/**
-	 *  Gets the requiresRefresh attribute of the Global object
+	 *  Sets the recentTermsCount attribute of the Global object
 	 *
-	 * @return    The requiresRefresh value
+	 * @param  recentTermsCount  The new recentTermsCount value
 	 */
-	public boolean getRequiresRefresh()
+	public void setRecentTermsCount( int recentTermsCount )
 	{
-		return requiresRefresh;
-	}
-
-
-	/**
-	 *  Sets the recentUpdatesCount attribute of the Global object
-	 *
-	 * @param  recentUpdatesCount  The new recentUpdatesCount value
-	 */
-	public void setRecentUpdatesCount( int recentUpdatesCount )
-	{
-		this.recentUpdatesCount = recentUpdatesCount;
+		this.recentTermsCount = recentTermsCount;
 	}
 
 
@@ -64,13 +55,13 @@ public class Global
 
 
 	/**
-	 *  Gets the recentUpdatesCount attribute of the Global object
+	 *  Gets the recentTermsCount attribute of the Global object
 	 *
-	 * @return    The recentUpdatesCount value
+	 * @return    The recentTermsCount value
 	 */
-	public int getRecentUpdatesCount()
+	public int getRecentTermsCount()
 	{
-		return recentUpdatesCount;
+		return recentTermsCount;
 	}
 
 
@@ -108,13 +99,13 @@ public class Global
 
 
 	/**
-	 *  Sets the recentUpdates attribute of the Global object
+	 *  Sets the recentTerms attribute of the Global object
 	 *
-	 * @param  recentUpdates  The new recentUpdates value
+	 * @param  recentTerms  The new recentTerms value
 	 */
-	public void setRecentUpdates( List recentUpdates )
+	public void setRecentTerms( List recentTerms )
 	{
-		this.recentUpdates = recentUpdates;
+		this.recentTerms = recentTerms;
 		setLastRefresh( System.currentTimeMillis() );
 	}
 
@@ -131,34 +122,63 @@ public class Global
 
 
 	/**
-	 *  Gets the recentUpdates attribute of the Global object
+	 *  Gets the recentTerms attribute of the Global object
 	 *
-	 * @return                             The recentUpdates value
+	 * @return                             The recentTerms value
 	 * @exception  LexRepositoryException  Description of the Exception
 	 */
-	public List getRecentUpdates() throws LexRepositoryException
+	public List getRecentTerms() throws LexRepositoryException
 	{
-		if ( null == recentUpdates )
+		if ( null == recentTerms )
 		{
-			refresh( getRecentUpdatesCount() );
+			doRefresh();
 		}
-		return recentUpdates;
+		return recentTerms;
 	}
 //helpers
 
 	/**
 	 *  Description of the Method
 	 *
-	 * @param  limit                       Description of the Parameter
+	 * @return    Description of the Return Value
+	 */
+	public boolean requiresRefresh()
+	{
+		boolean requiresRefresh = false;
+		long now = System.currentTimeMillis();
+		long lastUpdate = LexComponentRepository.getLastUpdate();
+		long sinceLastRefresh = now - getLastRefresh();
+		if ( sinceLastRefresh > getRefreshDelay() && lastUpdate > getLastRefresh() )
+		{
+			requiresRefresh = true;
+		}
+		return requiresRefresh;
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
 	 * @exception  LexRepositoryException  Description of the Exception
 	 */
-	public void refresh( int limit ) throws LexRepositoryException
+	public void refresh() throws LexRepositoryException
 	{
-		long now = System.currentTimeMillis();
-		if ( now - getLastRefresh() > getRefreshDelay() )
+		if ( requiresRefresh() )
 		{
-			setRecentUpdates( LexComponentRepository.getRecentTerms( limit ) );
+			doRefresh();
 		}
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @exception  LexRepositoryException  Description of the Exception
+	 */
+	public void doRefresh() throws LexRepositoryException
+	{
+		int limit = getRecentTermsCount();
+		setRecentTerms( LexComponentRepository.getRecentTerms( limit ) );
 	}
 
 
@@ -176,7 +196,7 @@ public class Global
 	 */
 	public Global( int recentItems, long refreshDelay )
 	{
-		setRecentUpdatesCount( recentItems );
+		setRecentTermsCount( recentItems );
 		setRefreshDelay( refreshDelay );
 	}
 }

@@ -5,7 +5,7 @@
 
 
 <!--PRONUNCIATION-->
-<c:set var="pronunciation" value="${ sessionScope.helper.component }"/>
+<c:set var="pronunciation" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
 <c:out value='<a name="${ pronunciation }" ></a>' escapeXml="false" />
 		<c:if test="${ editMode }">
@@ -18,7 +18,7 @@
 		<!--<span class="label">Phonetic Rendering:</span>-->
 		<c:out value="${ pronunciation.phonetics }"  escapeXml="false"/>   <br />
 	<!--<span class="label">Type of Phonetics:</span> -->
-	<c:out value="${ applicationScope.flatData.phoneticsTypes[ pronunciation.phoneticsType ] }"  escapeXml="false"/>   <br />
+	<c:out value="${ applicationScope.flatData.phoneticsTypes[ pronunciation.phoneticsType ] }"  escapeXml="false"/> 
 		
 		
 		<!--metadata--> 

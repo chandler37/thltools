@@ -4,7 +4,7 @@
 <jsp:include page="header.jsf" flush="false" />
 <!--menu.jsp-->
 <c:set var="editMode" value="${ false }" />
-<c:if test="${ ! sessionScope.user.guest }">
+<c:if test="${ ! sessionScope.visit.user.guest }">
 	<c:set var="editMode" value="${ true }" />
 </c:if>
 
@@ -12,7 +12,7 @@
 	
 	<div class="highlightBox">
 	<form action="/lex/action" method="get" >
-	<h2>Find a term</h2>
+	<h2>Dictionary Quick Search</h2>
 	<p>
 	<input type="hidden" name="cmd" value="find" />
 	<input type="hidden" name="comp" value="term" />
@@ -72,26 +72,29 @@
 </div><!--END COLUMN LEFT-->
 	
 <div id="columnCenter">
+	<jsp:include page="navLinks.jsf" flush="false"/>
 	<h1>THDL Tibetan Collaborative Dictionaries: Main Menu</h1>
-
+	<p>
+		<c:set target="${ sessionScope.visit.helper }" property="date" value="${ applicationScope.global.lastUpdate }"/>
+		<span class="label">Last Update</span>: <c:out value="${ sessionScope.visit.helper.formattedDate }"/>
+	</p>
 	<c:if test="${ ! empty message }">
 	<p id="message">
-	Message: <c:out value="${ message }" />
+		<c:out value="${ message }" />
 	</p>
 	</c:if>
 	
-	<h2>Recently Updated Terms</h2>
-	<c:forEach var="term" items="${applicationScope.global.recentUpdates }">
-		<h3><c:out value="${ term.term }"/></h3>
+	<h2>Recently Modified Terms</h2>
+	<div id="recentTerms">
+	<c:forEach var="term" items="${applicationScope.global.recentTerms }">
 		<p>
-		<span class="label">Created by </span><c:out value="${ applicationScope.flatData.users[ term.meta.createdBy ] }"   escapeXml="false"/>		
-		<span class="label">on </span><c:out value="${  term.meta.createdOn }"  default="unknown"  escapeXml="false"/>		
-		<br/>
-		<span class="label">Modified by </span><c:out value="${ applicationScope.flatData.users[ term.meta.modifiedBy ] }"  default="unknown"  escapeXml="false"/>
-		<span class="label">on </span><c:out value="${ term.meta.modifiedOn }"  default="unknown"  escapeXml="false"/>
+		<c:out value='<a href="/lex/action?cmd=displayFull&comp=term&metaId=${term.metaId}">${ term.term}</a>' escapeXml='false' /><br/>
+		Modified by <c:out value="${ applicationScope.flatData.users[ term.meta.modifiedBy ] }" /><br/>
+		<c:set target="${ sessionScope.visit.helper }" property="date" value="${ term.meta.modifiedOn }"/>
+		<c:out value="${ sessionScope.visit.helper.formattedDate }"  />
 		</p>
 	</c:forEach>
-	
+	</div><!--END RECENT TERMS-->
 </div><!--END COLUMN CENTER-->
 
 <jsp:include page="footer.jsf" flush="false" />

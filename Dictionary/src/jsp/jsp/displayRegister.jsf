@@ -4,7 +4,7 @@
 
 
 
-	<c:set var="register" value="${ sessionScope.helper.component }"/>
+	<c:set var="register" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
 		<c:out value='<a name="${ register }" ></a>' escapeXml="false" />
 		<c:if test="${ editMode }">
@@ -15,7 +15,7 @@
 		</c:if>
 	<!--<span class="label">Speech Register:</span>-->
 	<c:out value="${ applicationScope.flatData.registers[register.register] }" escapeXml="false" />  
-	<br />
+
 	
 		
 		<!--metadata--> 

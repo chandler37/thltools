@@ -5,7 +5,7 @@
 
 
 <!--ETYMOLOGY-->
-<c:set var="etymology" value="${ sessionScope.helper.component }"/>
+<c:set var="etymology" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
 <c:out value='<a name="${ etymology }" ></a>' escapeXml="false" />
 		<c:if test="${ editMode }">
@@ -28,7 +28,7 @@
 		
 		<c:if test="${ empty etymology.derivation != 'none'  }">
 		<%-- <span class="label">Derivation</span>: --%>
-		<c:out value="${ etymology.derivation }" escapeXml="false" />   <br />
+		<c:out value="${ etymology.derivation }" escapeXml="false" />   
 		</span>
 		</c:if>
 		
@@ -38,10 +38,10 @@
 		
 		
 		<!--translation-->
-		<c:if test="${sessionScope.helper.showTranslations }">
+		<c:if test="${sessionScope.visit.helper.showTranslations }">
 		
-		<c:set value="${etymology.translations}" target="${sessionScope.helper}" property="collection"/>
-		<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+		<c:set value="${etymology.translations}" target="${sessionScope.visit.helper}" property="collection"/>
+		<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 		<h3>Translations</h3>
 		<ul>
 		
@@ -61,13 +61,13 @@
 		<!--<span class="label">Loan Language:</span>-->
 	  <c:out value="${ applicationScope.flatData.languages[ translation.loanLanguage ] }" escapeXml="false" />   <br />
 		<!--<span class="label">Derivation:</span>-->
-		<c:out value="${ translation.derivation }" escapeXml="false" />   <br />		
+		<c:out value="${ translation.derivation }" escapeXml="false" />   
 		<!--metadata--> 
 		</span>
 		<c:set var="originalComponent" value="${ etymology }" />
-		<c:set target="${ sessionScope.helper }" property="component" value="${ translation }" />
+		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ translation }" />
 		<jsp:include page="displayMeta.jsf" />	
-		<c:set target="${ sessionScope.helper }" property="component" value="${ originalComponent }" />
+		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ originalComponent }" />
 		</li>
 		</c:forEach>
 		</ul>

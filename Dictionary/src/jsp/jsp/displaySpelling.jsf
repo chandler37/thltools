@@ -1,7 +1,7 @@
 <%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 
-<c:set var="spelling" value="${ sessionScope.helper.component }"/>
+<c:set var="spelling" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
 <c:if test="${ editMode }">
 <span class="compEditOptions">			
@@ -14,7 +14,7 @@
 <!--<span class="label">Spelling:</span> --> 
 <c:out value="${ spelling.spelling }" escapeXml="false" />   <br />
 <!--<span class="label">Spelling Type:</span> --> 
-<c:out value="${ applicationScope.flatData.spellingTypes[ spelling.spellingType ] }" escapeXml="false" />   <br />
+<c:out value="${ applicationScope.flatData.spellingTypes[ spelling.spellingType ] }" escapeXml="false" />   
 
 <!--metadata--> 
 

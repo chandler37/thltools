@@ -5,22 +5,22 @@
 
 <!--displayEntry.jsp-->
 <c:set var="editMode" value="${ false }" scope="request" />
-<c:if test="${ ! sessionScope.user.guest && sessionScope.helper.showEditOptions }">
+<c:if test="${ ! sessionScope.visit.user.guest && sessionScope.visit.helper.showEditOptions }">
 	<c:set var="editMode" value="${ true }" scope="request"/>
 </c:if>
 <%-- 
 <c:set var="showNotes" value="${ false }" scope="request" />
-<c:if test="${ sessionScope.helper.showNotes }">
+<c:if test="${ sessionScope.visit.helper.showNotes }">
 	<c:set var="showNotes" value="${ true }" scope="request"/>
 </c:if>
 
 <c:set var="showMeta" value="${ false }" scope="request" />
-<c:if test="${ sessionScope.helper.showMeta }">
+<c:if test="${ sessionScope.visit.helper.showMeta }">
 	<c:set var="showMeta" value="${ true }" scope="request"/>
 </c:if>
 
 <c:set var="showTranslations" value="${ false }" scope="request" />
-<c:if test="${ sessionScope.helper.showTranslations }">
+<c:if test="${ sessionScope.visit.helper.showTranslations }">
 	<c:set var="showTranslations" value="${ true }" scope="request"/>
 </c:if> --%>
 
@@ -28,9 +28,9 @@
 	<div id="results" class="highlightBox">
 	<h2>	Search Results </h2>	
 		<ol>
-		<c:forEach var="resultsMapItem" items="${query.results}">
+		<c:forEach var="resultsMapItem" items="${sessionScope.visit.query.results}">
 					<c:set var="cls" value="" />
-					<c:if test="${ resultsMapItem.key == query.entry.metaId }">
+					<c:if test="${ resultsMapItem.key == sessionScope.visit.query.entry.metaId }">
 						<c:set var="cls" value="class='selected'" />
 					</c:if>
 			<li>
@@ -70,33 +70,33 @@
 <span class="label">Display</span>:
 
 <c:set var="ckd" value=""/>
-<c:if test="${ sessionScope.helper.showMeta }">
+<c:if test="${ sessionScope.visit.helper.showMeta }">
 <c:set var="ckd" value='checked="checked"'/>
 </c:if>
 <c:out value='<input name="showMeta" type="checkbox" value="true" ${ckd}/>' escapeXml='false'/>
 credits | 
 
 <c:set var="ckd" value=""/>
-<c:if test="${ sessionScope.helper.showNotes }">
+<c:if test="${ sessionScope.visit.helper.showNotes }">
 <c:set var="ckd" value='checked="checked"'/>
 </c:if>
 <c:out value='<input name="showNotes" type="checkbox" value="true" ${ckd}/>' escapeXml='false'/>
 analysis | 
 
 <c:set var="ckd" value=""/>
-<c:if test="${ sessionScope.helper.showTranslations }">
+<c:if test="${ sessionScope.visit.helper.showTranslations }">
 <c:set var="ckd" value='checked="checked"'/>
 </c:if>
 <c:out value='<input name="showTranslations" type="checkbox" value="true" ${ckd}/>' escapeXml='false'/>
 translations
 
-<c:if test="${ ! sessionScope.user.guest }">
+<c:if test="${ ! sessionScope.visit.user.guest }">
 <c:set var="ckd" value=""/>
-<c:if test="${ sessionScope.helper.showEditOptions }">
+<c:if test="${ sessionScope.visit.helper.showEditOptions }">
 <c:set var="ckd" value='checked="checked"'/>
 </c:if>
 <c:out value='<input name="showEditOptions" type="checkbox" value="true" ${ckd}/>' escapeXml='false'/>
-edit options
+ | edit options
 </c:if>
 
 <input type="hidden" name="cmd" value="displayFull"/>

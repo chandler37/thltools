@@ -237,9 +237,13 @@ public class LexConstants
 	/**
 	 *  Description of the Field
 	 */
-	public final static String DISPLAY_HELPER_SESSION_ATT = "helper";
+	public final static String VISIT_SESSION_ATTR = "visit";
+	/**
+	 *  Description of the Field
+	 */
+	public final static String GLOBAL_CONTEXT_ATTR = "global";
 
-//public final static String URL = "jdbc:mysql://localhost/LexTorque";
+	//public final static String URL = "jdbc:mysql://localhost/LexTorque";
 
 }
 

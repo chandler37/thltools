@@ -4,7 +4,7 @@
 
 
 
-<c:set var="translationEquivalent" value="${ sessionScope.helper.component }"/>
+<c:set var="translationEquivalent" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
 <c:out value='<a name="${ translationEquivalent }" ></a>' escapeXml="false" />
 	 			<c:if test="${ editMode }">
@@ -16,7 +16,7 @@
 
 	<!--<span class="label">Translation Equivalent: </span>  -->
 	<c:out value="${ translationEquivalent.translationEquivalent }" escapeXml="false" />  
- <br />
+
  
 		
 		<!--metadata--> 

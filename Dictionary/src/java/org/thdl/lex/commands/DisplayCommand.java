@@ -59,10 +59,11 @@ public class DisplayCommand extends LexCommand implements Command
 	{
 		String msg = null;
 		String next = getNext();
-		DisplayHelper displayHelper = getSessionManager().getDisplayHelper( req.getSession( true ) );
+		Visit visit = UserSessionManager.getInstance().getVisit( req.getSession( true ) );
+		DisplayHelper displayHelper = visit.getHelper();
 		try
 		{
-			LexQuery query = getSessionManager().getQuery( req.getSession( true ) );
+			LexQuery query = visit.getQuery();
 			if ( null != component )
 			{
 				component.populate( req.getParameterMap() );

@@ -8,6 +8,7 @@ import org.apache.log4j.*;
 import org.thdl.lex.component.*;
 
 
+
 /**
  *  Description of the Class
  *
@@ -16,6 +17,7 @@ import org.thdl.lex.component.*;
  */
 public class LexComponentRepository
 {
+
 	/**
 	 *  Description of the Field
 	 */
@@ -29,6 +31,32 @@ public class LexComponentRepository
 	 */
 	public final static String ANYWHERE = "anywhere";
 	private static long start;
+
+	private static long lastUpdate;
+
+
+	/**
+	 *  Sets the lastUpdate attribute of the LexComponentRepository class
+	 *
+	 * @param  last  The new lastUpdate value
+	 */
+	public static void setLastUpdate( long last )
+	{
+		lastUpdate = last;
+	}
+
+
+	/**
+	 *  Gets the lastUpdate attribute of the LexComponentRepository class
+	 *
+	 * @return    The lastUpdate value
+	 */
+	public static long getLastUpdate()
+	{
+		return lastUpdate;
+	}
+
+
 
 
 	/**
@@ -359,7 +387,7 @@ public class LexComponentRepository
 	 * @param  component                   Description of the Parameter
 	 * @exception  LexRepositoryException  Description of the Exception
 	 */
-	public static void saveOrUpdate( ILexComponent component ) throws LexRepositoryException
+	public static void save( ILexComponent component ) throws LexRepositoryException
 	{
 
 		try
@@ -367,6 +395,7 @@ public class LexComponentRepository
 			beginTransaction();
 			getSession().saveOrUpdate( component );
 			endTransaction( true );
+			setLastUpdate( now() );
 		}
 		catch ( HibernateException he )
 		{

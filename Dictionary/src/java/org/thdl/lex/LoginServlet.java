@@ -171,28 +171,29 @@ public class LoginServlet extends HttpServlet
 	/**
 	 *  Description of the Method
 	 *
-	 * @param  request                     Description of Parameter
 	 * @param  response                    Description of Parameter
 	 * @param  user                        Description of Parameter
+	 * @param  req                         Description of the Parameter
 	 * @exception  IOException             Description of Exception
 	 * @exception  LexRepositoryException  Description of Exception
 	 * @exception  LexComponentException   Description of Exception
 	 * @since
 	 */
-	private void doLoginSuccess( HttpServletRequest request, HttpServletResponse response, ThdlUser user ) throws IOException, LexRepositoryException, LexComponentException
+	private void doLoginSuccess( HttpServletRequest req, HttpServletResponse response, ThdlUser user ) throws IOException, LexRepositoryException, LexComponentException
 	{
-		HttpSession session = request.getSession( true );
-		getSessionManager().setSessionUser( session, user );
+		Visit visit = UserSessionManager.getInstance().getVisit( req.getSession( true ) );
+
+		visit.setUser( user );
 
 		Preferences preferences = new Preferences( user );
-		getSessionManager().setPreferences( session, preferences );
+		visit.setPreferences( preferences );
 
-		getSessionManager().setDisplayMode( session, "brief" );
-		String targetPage = getSessionManager().getSessionLoginTarget( session, true );
+		visit.setDisplayMode( "brief" );
+		String targetPage = UserSessionManager.getInstance().getSessionLoginTarget( req.getSession( true ), true );
 
 		if ( targetPage == null )
 		{
-			UserSessionManager.doRedirect( request, response, getWelcomePage() );
+			UserSessionManager.doRedirect( req, response, getWelcomePage() );
 		}
 		else
 		{

@@ -2,25 +2,25 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 
 <!--displayNotes.jsf-->
-<c:if test="${ sessionScope.helper.showNotes }">
+<c:if test="${ sessionScope.visit.helper.showNotes }">
 
-<c:set value="${sessionScope.helper.component.analyticalNotes}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${sessionScope.visit.helper.component.analyticalNotes}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <h3>Notes</h3>
 <ol class="notes">
-<c:forEach var="note" items="${ sessionScope.helper.component.analyticalNotes }">
+<c:forEach var="note" items="${ sessionScope.visit.helper.component.analyticalNotes }">
 <li>
 <span class="analysis">
-<c:out value="${ note.analyticalNote }" escapeXml="false" /><br />
+<c:out value="${ note.analyticalNote }" escapeXml="false" />
 
 <!--metadata--> 
-<c:set var="parent" value="${ sessionScope.helper.component }" />
+<c:set var="parent" value="${ sessionScope.visit.helper.component }" />
 
-<c:set target="${ sessionScope.helper }" property="component" value="${ note }" />
+<c:set target="${ sessionScope.visit.helper }" property="component" value="${ note }" />
 
 <jsp:include page="displayMeta.jsf" />
 
-<c:set target="${ sessionScope.helper }" property="component" value="${ parent }" />
+<c:set target="${ sessionScope.visit.helper }" property="component" value="${ parent }" />
 </span>
 </li>
 </c:forEach>

@@ -4,27 +4,27 @@
 <!--displayTree.jsf-->
 
 <c:set var="editMode" value="${ false }" />
-<c:if test="${ ! sessionScope.user.guest }">
+<c:if test="${ ! sessionScope.visit.user.guest }">
 	<c:set var="editMode" value="${ true }" />
 </c:if>
 
-<c:if test="${ ! empty query.entry }">
+<c:if test="${ ! empty sessionScope.visit.query.entry }">
 
 <jsp:include page="displayTerm.jsf" flush="false"/>
 
 <ol>
 
 <!--TRANSITIONAL DATA-->
-<c:set value="${query.entry.transitionalData}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${sessionScope.visit.query.entry.transitionalData}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <li>
-<c:out value='<a name="${ sessionScope.helper.collection }"></a>' escapeXml='false'/>
+<c:out value='<a name="${ sessionScope.visit.helper.collection }"></a>' escapeXml='false'/>
 <h2>Special Guests</h2>
 <ul>
-<c:forEach var="transitionalData" items="${ query.entry.transitionalData }">
-<c:set target="${ sessionScope.helper }" property="component" value="${transitionalData}"/>
+<c:forEach var="transitionalData" items="${ sessionScope.visit.query.entry.transitionalData }">
+<c:set target="${ sessionScope.visit.helper }" property="component" value="${transitionalData}"/>
 <li>
-	<c:out value='<a name="${ sessionScope.helper.component }"></a>' escapeXml='false'/>
+	<c:out value='<a name="${ sessionScope.visit.helper.component }"></a>' escapeXml='false'/>
 	<jsp:include page="displayTransitionalData.jsf" flush="false"/>
 </li>
 </c:forEach>
@@ -33,16 +33,16 @@
 </c:if>
 
 <!--PRONUNCIATION-->
-<c:set value="${query.entry.pronunciations}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${sessionScope.visit.query.entry.pronunciations}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <li>
-<c:out value='<a name="${ sessionScope.helper.collection }"></a>' escapeXml='false'/>
+<c:out value='<a name="${ sessionScope.visit.helper.collection }"></a>' escapeXml='false'/>
 <h2>Pronunciations</h2>
 <ul>
-<c:forEach var="pronunciation" items="${ query.entry.pronunciations }">
-<c:set target="${ sessionScope.helper }" property="component" value="${pronunciation}"/>
+<c:forEach var="pronunciation" items="${ sessionScope.visit.query.entry.pronunciations }">
+<c:set target="${ sessionScope.visit.helper }" property="component" value="${pronunciation}"/>
 <li>
-	<c:out value='<a name="${ sessionScope.helper.component }"></a>' escapeXml='false'/>
+	<c:out value='<a name="${ sessionScope.visit.helper.component }"></a>' escapeXml='false'/>
 	<jsp:include page="displayPronunciation.jsf" flush="false"/>
 </li>
 </c:forEach>
@@ -51,16 +51,16 @@
 </c:if>
 
 <!--ETYMOLOGY-->
-<c:set value="${query.entry.etymologies}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${sessionScope.visit.query.entry.etymologies}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <li>
-<c:out value='<a name="${ sessionScope.helper.collection }"></a>' escapeXml='false'/>
+<c:out value='<a name="${ sessionScope.visit.helper.collection }"></a>' escapeXml='false'/>
 <h2>Etymologies</h2>
 <ul>
-<c:forEach var="etymology" items="${ query.entry.etymologies }">
-<c:set target="${ sessionScope.helper }" property="component" value="${etymology}"/>
+<c:forEach var="etymology" items="${ sessionScope.visit.query.entry.etymologies }">
+<c:set target="${ sessionScope.visit.helper }" property="component" value="${etymology}"/>
 <li>
-	<c:out value='<a name="${ sessionScope.helper.component }"></a>' escapeXml='false'/>
+	<c:out value='<a name="${ sessionScope.visit.helper.component }"></a>' escapeXml='false'/>
 	<jsp:include page="displayEtymology.jsf" flush="false"/>
 </li>
 </c:forEach>
@@ -69,16 +69,16 @@
 </c:if>
 
 <!--SPELLINGS-->
-<c:set value="${query.entry.spellings}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${sessionScope.visit.query.entry.spellings}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <li>
-<c:out value='<a name="${ sessionScope.helper.collection }"></a>' escapeXml='false'/>
+<c:out value='<a name="${ sessionScope.visit.helper.collection }"></a>' escapeXml='false'/>
 <h2>Spellings</h2>
 <ul>
-<c:forEach var="spelling" items="${ query.entry.spellings }">
-<c:set target="${ sessionScope.helper }" property="component" value="${spelling}"/>
+<c:forEach var="spelling" items="${ sessionScope.visit.query.entry.spellings }">
+<c:set target="${ sessionScope.visit.helper }" property="component" value="${spelling}"/>
 <li>
-	<c:out value='<a name="${ sessionScope.helper.component }"></a>' escapeXml='false'/>
+	<c:out value='<a name="${ sessionScope.visit.helper.component }"></a>' escapeXml='false'/>
 	<jsp:include page="displaySpelling.jsf" flush="false"/>
 </li>
 </c:forEach>
@@ -87,16 +87,16 @@
 </c:if>
 
 <!--FUNCTIONS-->
-<c:set value="${query.entry.functions}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${sessionScope.visit.query.entry.functions}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <li>
-<c:out value='<a name="${ sessionScope.helper.collection }"></a>' escapeXml='false'/>
+<c:out value='<a name="${ sessionScope.visit.helper.collection }"></a>' escapeXml='false'/>
 <h2>Functions</h2>
 <ul>
-<c:forEach var="function" items="${ query.entry.functions }">
-<c:set target="${ sessionScope.helper }" property="component" value="${function}"/>
+<c:forEach var="function" items="${ sessionScope.visit.query.entry.functions }">
+<c:set target="${ sessionScope.visit.helper }" property="component" value="${function}"/>
 <li>
-	<c:out value='<a name="${ sessionScope.helper.component }"></a>' escapeXml='false'/>
+	<c:out value='<a name="${ sessionScope.visit.helper.component }"></a>' escapeXml='false'/>
 	<jsp:include page="displayFunction.jsf" flush="false"/>
 </li>
 </c:forEach>
@@ -105,16 +105,16 @@
 </c:if>
 
 <!--ENCYCLOPEDIA ARTICLES-->
-<c:set value="${query.entry.encyclopediaArticles}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${sessionScope.visit.query.entry.encyclopediaArticles}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <li>
-<c:out value='<a name="${ sessionScope.helper.collection }"></a>' escapeXml='false'/>
+<c:out value='<a name="${ sessionScope.visit.helper.collection }"></a>' escapeXml='false'/>
 <h2>Encyclopedia Articles</h2>
 <ul>
-<c:forEach var="encyclopediaArticle" items="${ query.entry.encyclopediaArticles }">
-<c:set target="${ sessionScope.helper }" property="component" value="${encyclopediaArticle}"/>
+<c:forEach var="encyclopediaArticle" items="${ sessionScope.visit.query.entry.encyclopediaArticles }">
+<c:set target="${ sessionScope.visit.helper }" property="component" value="${encyclopediaArticle}"/>
 <li>
-	<c:out value='<a name="${ sessionScope.helper.component }"></a>' escapeXml='false'/>
+	<c:out value='<a name="${ sessionScope.visit.helper.component }"></a>' escapeXml='false'/>
 	<jsp:include page="displayEncyclopediaArticle.jsf" flush="false"/>
 </li>
 </c:forEach>
@@ -123,41 +123,41 @@
 </c:if>
 
 <!--DEFINITION LOOP-->
-<c:set value="${query.entry.definitions}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${sessionScope.visit.query.entry.definitions}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <li>
-<c:out value='<a name="${ sessionScope.helper.collection }"></a>' escapeXml='false'/>
+<c:out value='<a name="${ sessionScope.visit.helper.collection }"></a>' escapeXml='false'/>
 <h2>Definitions</h2>
 
-<c:forEach var="definition" items="${query.entry.definitions}">
-	<c:set target="${ sessionScope.helper }" property="component" value="${definition}"/>
-	<c:out value='<a name="${ sessionScope.helper.component }"></a>' escapeXml='false'/>
+<c:forEach var="definition" items="${sessionScope.visit.query.entry.definitions}">
+	<c:set target="${ sessionScope.visit.helper }" property="component" value="${definition}"/>
+	<c:out value='<a name="${ sessionScope.visit.helper.component }"></a>' escapeXml='false'/>
 	<jsp:include page="displayDefinition.jsf" flush="false"/>
 
 <!--SUBDEFINITION-->
-<c:set value="${definition.subdefinitions}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${definition.subdefinitions}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 
 <ol>
 <c:forEach var="subdefinition" items="${ definition.subdefinitions }">
-	<c:set target="${ sessionScope.helper }" property="component" value="${subdefinition}"/>
+	<c:set target="${ sessionScope.visit.helper }" property="component" value="${subdefinition}"/>
 <li>
-	<c:out value='<a name="${ sessionScope.helper.component }"></a>' escapeXml='false'/>
+	<c:out value='<a name="${ sessionScope.visit.helper.component }"></a>' escapeXml='false'/>
 	<jsp:include page="displaySubdefinition.jsf" flush="false"/>
 
 <ol>
 
 <!--KEYWORD-->
-<c:set value="${subdefinition.keywords}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${subdefinition.keywords}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <li>
-<c:out value='<a name="${ sessionScope.helper.collection }"></a>' escapeXml='false'/>
+<c:out value='<a name="${ sessionScope.visit.helper.collection }"></a>' escapeXml='false'/>
 <h2>Keywords</h2>
 <ul>
 <c:forEach var="keyword" items="${ subdefinition.keywords }">
-	<c:set target="${ sessionScope.helper }" property="component" value="${keyword}"/>
+	<c:set target="${ sessionScope.visit.helper }" property="component" value="${keyword}"/>
 <li>
-	<c:out value='<a name="${ sessionScope.helper.component }"></a>' escapeXml='false'/>
+	<c:out value='<a name="${ sessionScope.visit.helper.component }"></a>' escapeXml='false'/>
 	<jsp:include page="displayKeyword.jsf" flush="false"/>
 </li>
 </c:forEach>
@@ -166,16 +166,16 @@
 </c:if>
 
 <!--MODEL SENTENCE-->
-<c:set value="${subdefinition.modelSentences}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${subdefinition.modelSentences}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <li>
-<c:out value='<a name="${ sessionScope.helper.collection }"></a>' escapeXml='false'/>
+<c:out value='<a name="${ sessionScope.visit.helper.collection }"></a>' escapeXml='false'/>
 <h2>Model Sentences</h2>
 <ul>
 <c:forEach var="modelSentence" items="${ subdefinition.modelSentences }">
-	<c:set target="${ sessionScope.helper }" property="component" value="${modelSentence}"/>
+	<c:set target="${ sessionScope.visit.helper }" property="component" value="${modelSentence}"/>
 <li>
-	<c:out value='<a name="${ sessionScope.helper.component }"></a>' escapeXml='false'/>
+	<c:out value='<a name="${ sessionScope.visit.helper.component }"></a>' escapeXml='false'/>
 	<jsp:include page="displayModelSentence.jsf" flush="false"/>
 </li>
 </c:forEach>
@@ -184,16 +184,16 @@
 </c:if>
 
 <!--TRANSLATION EQUIVALENT-->
-<c:set value="${subdefinition.translationEquivalents}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${subdefinition.translationEquivalents}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <li>
-<c:out value='<a name="${ sessionScope.helper.collection }"></a>' escapeXml='false'/>
+<c:out value='<a name="${ sessionScope.visit.helper.collection }"></a>' escapeXml='false'/>
 <h2>Translation Equivalents</h2>
 <ul>
 <c:forEach var="translationEquivalent" items="${ subdefinition.translationEquivalents }">
-	<c:set target="${ sessionScope.helper }" property="component" value="${translationEquivalent}"/>
+	<c:set target="${ sessionScope.visit.helper }" property="component" value="${translationEquivalent}"/>
 <li>
-	<c:out value='<a name="${ sessionScope.helper.component }"></a>' escapeXml='false'/>
+	<c:out value='<a name="${ sessionScope.visit.helper.component }"></a>' escapeXml='false'/>
 	<jsp:include page="displayTranslationEquivalent.jsf" flush="false"/>
 </li>
 </c:forEach>
@@ -202,16 +202,16 @@
 </c:if>
 
 <!--RELATED TERM-->
-<c:set value="${subdefinition.relatedTerms}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${subdefinition.relatedTerms}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <li>
-<c:out value='<a name="${ sessionScope.helper.collection }"></a>' escapeXml='false'/>
+<c:out value='<a name="${ sessionScope.visit.helper.collection }"></a>' escapeXml='false'/>
 <h2>RelatedTerm</h2>
 <ul>
 <c:forEach var="relatedTerm" items="${ subdefinition.relatedTerms }">
-	<c:set target="${ sessionScope.helper }" property="component" value="${relatedTerm}"/>
+	<c:set target="${ sessionScope.visit.helper }" property="component" value="${relatedTerm}"/>
 <li>
-	<c:out value='<a name="${ sessionScope.helper.component }"></a>' escapeXml='false'/>
+	<c:out value='<a name="${ sessionScope.visit.helper.component }"></a>' escapeXml='false'/>
 	<jsp:include page="displayRelatedTerm.jsf" flush="false"/>
 </li>
 </c:forEach>
@@ -220,16 +220,16 @@
 </c:if>
 
 <!--PASSAGE-->
-<c:set value="${subdefinition.passages}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${subdefinition.passages}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <li>
-<c:out value='<a name="${ sessionScope.helper.collection }"></a>' escapeXml='false'/>
+<c:out value='<a name="${ sessionScope.visit.helper.collection }"></a>' escapeXml='false'/>
 <h2>Passages</h2>
 <ul>
 <c:forEach var="passage" items="${ subdefinition.passages }">
-	<c:set target="${ sessionScope.helper }" property="component" value="${passage}"/>
+	<c:set target="${ sessionScope.visit.helper }" property="component" value="${passage}"/>
 <li>
-	<c:out value='<a name="${ sessionScope.helper.component }"></a>' escapeXml='false'/>
+	<c:out value='<a name="${ sessionScope.visit.helper.component }"></a>' escapeXml='false'/>
 	<jsp:include page="displayPassage.jsf" flush="false"/>
 </li>
 </c:forEach>
@@ -238,17 +238,17 @@
 </c:if>
 
 <!--REGISTER-->
-<c:set value="${subdefinition.registers}" target="${sessionScope.helper}" property="collection"/>
-<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+<c:set value="${subdefinition.registers}" target="${sessionScope.visit.helper}" property="collection"/>
+<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 <li>
-<c:out value='<a name="${ sessionScope.helper.collection }"></a>' escapeXml='false'/>
+<c:out value='<a name="${ sessionScope.visit.helper.collection }"></a>' escapeXml='false'/>
 <h2>Registers</h2>
 <ul>
 <c:forEach var="register" items="${ subdefinition.registers }">
-	<c:set target="${ sessionScope.helper }" property="component" value="${register}"/>
+	<c:set target="${ sessionScope.visit.helper }" property="component" value="${register}"/>
 
 <li>
-	<c:out value='<a name="${ sessionScope.helper.component }"></a>' escapeXml='false'/>
+	<c:out value='<a name="${ sessionScope.visit.helper.component }"></a>' escapeXml='false'/>
 	<jsp:include page="displayRegister.jsf" flush="false"/>
 </li>
 </c:forEach>

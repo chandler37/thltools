@@ -1,5 +1,25 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<ul class="navLinks">
+<li>
 <a href="http://iris.lib.virginia.edu/tibet/reference/dictionary.html">Dictionary Home</a> | 
-<a href="/lex/action?cmd=menu">Search</a> | 
-<a href="/lex/login.jsp">Login</a> | 
-<a href="/lex/logout.jsp">Logout</a>
+</li>
+<li>
+<a href="/lex/action?cmd=menu" label="Main Menu">Main Menu</a> | 
+</li>
+<li>
+<a href="/lex/action?cmd=search" label="Advanced Search">Advanced Search</a>
+</li>
 
+<c:choose>
+<c:when test="${ sessionScope.visit.user.guest }">
+<li>
+ | <a href="/lex/login.jsp">Login</a>
+</li>
+</c:when>
+<c:otherwise>
+<li>
+ | <a href="/lex/logout.jsp">Logout</a>
+</li>
+</c:otherwise>
+</c:choose>
+</ul>

@@ -56,15 +56,15 @@ public class GetInsertFormCommand extends LexCommand implements Command
 	public String execute( HttpServletRequest req, ILexComponent component ) throws CommandException
 	{
 		String next = getNext();
-		HttpSession ses = req.getSession( true );
-		LexQuery query = getSessionManager().getQuery( ses );
+		Visit visit = UserSessionManager.getInstance().getVisit( req.getSession( true ) );
+		LexQuery query = visit.getQuery();
 		ITerm term = query.getEntry();
 		String msg = null;
 
 		try
 		{
-			LexUser user = (LexUser) getSessionManager().getSessionUser( ses );
-			Preferences prefs = getSessionManager().getPreferences( ses );
+			LexUser user = (LexUser) visit.getUser();
+			Preferences prefs = visit.getPreferences();
 
 			if ( isTermMode() )
 			{
@@ -75,7 +75,7 @@ public class GetInsertFormCommand extends LexCommand implements Command
 				{
 					msg = newTerm.getTerm() + " is present in the dictionary, please add to this term.";
 					next = "displayEntry.jsp";
-					getSessionManager().setQuery( req.getSession( true ), query );
+					visit.setQuery( query );
 				}
 				component = newTerm;
 			}
@@ -141,7 +141,7 @@ public class GetInsertFormCommand extends LexCommand implements Command
 		}
 
 		msg = "You have reached the Insert Form";
-		getSessionManager().setDisplayMode( req.getSession( true ), "addEditForm" );
+		visit.setDisplayMode( "addEditForm" );
 
 		req.setAttribute( LexConstants.MESSAGE_REQ_ATTR, msg );
 

@@ -59,8 +59,9 @@ public class UpdateCommand extends LexCommand implements Command
 	{
 		String msg = null;
 		String next = getNext();
-		DisplayHelper displayHelper = getSessionManager().getDisplayHelper( req.getSession( true ) );
-		Global global = (Global) req.getServletContext().getAttribute( "global" );
+				Visit visit = UserSessionManager.getInstance().getVisit( req.getSession( true ) );
+
+		DisplayHelper displayHelper = visit.getHelper( );
 		try
 		{
 			HttpSession ses = req.getSession( false );
@@ -69,8 +70,8 @@ public class UpdateCommand extends LexCommand implements Command
 				throw new CommandException( "Could not update component, user's session has expired" );
 			}
 
-			ThdlUser user = getSessionManager().getSessionUser( ses );
-			LexQuery query = getSessionManager().getQuery( ses );
+			ThdlUser user = visit.getUser();
+			LexQuery query = visit.getQuery();
 			ITerm term = query.getEntry();
 
 			if ( CommandToken.isValid( req ) && validate( user, component ) )
@@ -104,10 +105,9 @@ public class UpdateCommand extends LexCommand implements Command
 				LexLogger.debugComponent( component );
 				LexLogger.debugComponent( term );
 
-				LexComponentRepository.update( term );
-				global.setRequiresRefresh( true );
+				LexComponentRepository.save( term );
 				msg = "Successful Update";
-				getSessionManager().setDisplayMode( req.getSession( true ), "edit" );
+				visit.setDisplayMode( "edit" );
 			}
 			else
 			{

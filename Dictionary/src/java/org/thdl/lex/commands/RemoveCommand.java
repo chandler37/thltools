@@ -29,7 +29,9 @@ public class RemoveCommand extends LexCommand implements Command
 	 */
 	public String execute( HttpServletRequest req, ILexComponent component ) throws CommandException
 	{
-		DisplayHelper displayHelper = getSessionManager().getDisplayHelper( req.getSession( true ) );
+		Visit visit = UserSessionManager.getInstance().getVisit( req.getSession( true ) );
+
+		DisplayHelper displayHelper = visit.getHelper();
 
 		/*
 		    try

@@ -50,25 +50,6 @@ public class GuestFilter implements Filter
 	}
 
 
-	/**
-	 *  Sets the sessionManager attribute of the GuestFilter object
-	 */
-	public void setSessionManager()
-	{
-		this.sessionMgr = UserSessionManager.getInstance();
-	}
-
-
-	/**
-	 *  Gets the sessionManager attribute of the GuestFilter object
-	 *
-	 * @return    The sessionManager value
-	 */
-	public UserSessionManager getSessionManager()
-	{
-		return sessionMgr;
-	}
-
 //contract methods
 	/**
 	 *  Description of the Method
@@ -78,7 +59,6 @@ public class GuestFilter implements Filter
 	 */
 	public void init( FilterConfig config ) throws ServletException
 	{
-		setSessionManager();
 	}
 
 
@@ -96,8 +76,8 @@ public class GuestFilter implements Filter
 		if ( request instanceof HttpServletRequest && response instanceof HttpServletResponse )
 		{
 			HttpServletRequest req = (HttpServletRequest) request;
-			HttpSession session = req.getSession( true );
-			ThdlUser user = getSessionManager().getSessionUser( session );
+			Visit visit = UserSessionManager.getInstance().getVisit( req.getSession( true ) );
+			ThdlUser user = visit.getUser();
 			if ( null == user )
 			{
 				try
@@ -109,8 +89,8 @@ public class GuestFilter implements Filter
 					throw new ServletException( e );
 				}
 				user.setRoles( "guest" );
-				getSessionManager().setSessionUser( session, user );
-				getSessionManager().setDisplayMode( session, "full" );
+				visit.setUser( user );
+				visit.setDisplayMode( "full" );
 			}
 			chain.doFilter( request, response );
 		}

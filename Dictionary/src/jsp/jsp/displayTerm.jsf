@@ -24,7 +24,7 @@
 		</c:if>
 		
 		<!--metadata--> 
-		<c:set target="${ sessionScope.helper }" property="component" value="${ query.entry }" />
+		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ query.entry }" />
 		<jsp:include page="displayMeta.jsf" />
 
 		<!--notes-->

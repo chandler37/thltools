@@ -4,7 +4,7 @@
 
 
 
-	<c:set var="passage" value="${ sessionScope.helper.component }"/>
+	<c:set var="passage" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
 <c:out value='<a name="${ passage }" ></a>' escapeXml="false" />
 		<c:if test="${ editMode }">
@@ -15,7 +15,7 @@
 		</span>
 	</c:if>
 
-	<c:set var="source" value="${  LexFlatDataRepository.literarySources[ passage.literarySource ]   }"/> 
+	<c:set var="source" value="${  applicationScope.flatData.literarySources[ passage.literarySource ]   }"/> 
 	
 	<c:if test="${ ! empty  source }">
 	<!--<span class="label">Literary Source:</span>-->
@@ -33,7 +33,7 @@
 	</c:if>
 	
 	<!--<span class="label">Passage:</span>-->
-	<c:out value="${ passage.passage }" escapeXml="false" />   <br />
+	<c:out value="${ passage.passage }" escapeXml="false" />
  
 		
 		<!--metadata--> 
@@ -42,9 +42,9 @@
 		
 
  		<!--translation-->
-		<c:if test="${sessionScope.helper.showTranslations }">
-		<c:set value="${passage.translations}" target="${sessionScope.helper}" property="collection"/>
-		<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+		<c:if test="${sessionScope.visit.helper.showTranslations }">
+		<c:set value="${passage.translations}" target="${sessionScope.visit.helper}" property="collection"/>
+		<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 		<h3>Translations</h3>
 		<ul>
 		<c:forEach var="translation" items="${ passage.translations }" >
@@ -71,14 +71,14 @@
 	<c:out value="${ translation.pagination }" /> <br />
 	</c:if>
 
-		<c:out value="${ translation.passage }" />   <br />
+		<c:out value="${ translation.passage }" />   
 		 <%-- </span> --%>
 		<!--metadata--> 
 		<c:set var="originalComponent" value="${ passage }" />
-		<c:set target="${ sessionScope.helper }" property="component" value="${ translation }" />
+		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ translation }" />
 		<jsp:include page="displayMeta.jsf" />
 		
-		<c:set target="${ sessionScope.helper }" property="component" value="${ originalComponent }" />
+		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ originalComponent }" />
 		
 		</li>
 		</c:forEach> 

@@ -3,7 +3,7 @@
 
 
 
-	<c:set var="relatedTerm" value="${ sessionScope.helper.component }"/>
+	<c:set var="relatedTerm" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
 <c:out value='<a name="${ relatedTerm }" ></a>' escapeXml="false" />
 		<c:if test="${ editMode }">
@@ -17,8 +17,7 @@
 	<c:out value="${ relatedTerm.relatedTerm }" escapeXml="false" />  <br />
 	<!--<span class="label">Related Term Type:</span> -->
 	<c:out value="${ applicationScope.flatData.relatedTermTypes[relatedTerm.relatedTermType] }" escapeXml="false" />  
- <br />
- 
+
 		
 		<!--metadata--> 
 		

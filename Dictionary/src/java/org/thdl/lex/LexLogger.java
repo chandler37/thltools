@@ -1,6 +1,7 @@
 package org.thdl.lex;
 import java.io.*;
 import java.util.*;
+import javax.servlet.ServletContext;
 import javax.servlet.http.*;
 
 import org.apache.commons.beanutils.*;
@@ -56,22 +57,39 @@ public class LexLogger
 			LOGGER.debug( "Session was null" );
 			return;
 		}
+		Visit visit = UserSessionManager.getInstance().getVisit( req.getSession( true ) );
 		Enumeration enum = ses.getAttributeNames();
 		while ( enum.hasMoreElements() )
 		{
 			String att = (String) enum.nextElement();
 			LOGGER.debug( "Session Attribute " + att + " = " + ses.getAttribute( att ) );
 		}
-		LexQuery query = (LexQuery) ses.getAttribute( "query" );
-		if ( null == query )
+
+		if ( null == visit )
 		{
+			LOGGER.debug( "Visit was null" );
 			return;
 		}
-		LOGGER.debug( "Query Entry: " + query.getEntry() );
-		LOGGER.debug( "Query QueryComponent: " + query.getQueryComponent() );
-		LOGGER.debug( "Query UpdateComponent: " + query.getUpdateComponent() );
-		LOGGER.debug( "Query Results, " + query.getResults() + "\n" );
-		debugComponent( UserSessionManager.getInstance().getSessionUser( ses ) );
+		debugComponent( visit );
+		debugComponent( visit.getQuery() );
+		debugComponent( visit.getUser() );
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  context  Description of the Parameter
+	 */
+	public static void logContextState( ServletContext context )
+	{
+		Enumeration enum = context.getAttributeNames();
+		while ( enum.hasMoreElements() )
+		{
+			String att = (String) enum.nextElement();
+			LOGGER.debug( "Context Attribute " + att + " = " + context.getAttribute( att ) );
+		}
+		debugComponent( context.getAttribute( LexConstants.GLOBAL_CONTEXT_ATTR ) );
 	}
 
 

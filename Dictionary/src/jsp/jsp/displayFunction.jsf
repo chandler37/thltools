@@ -1,7 +1,7 @@
 <%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 
-<c:set var="function" value="${ sessionScope.helper.component }"/>
+<c:set var="function" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
 <c:if test="${ editMode }">
 <span class="compEditOptions">			
@@ -11,7 +11,7 @@
 </c:if>
 <c:out value='<a name="${ function }" ></a>' escapeXml="false" />
 <!--<span class="label">Grammatical Function:</span>-->
-<c:out value="${ applicationScope.flatData.functionsGeneral[function.function] }" escapeXml="false" />   <br />
+<c:out value="${ applicationScope.flatData.functionsGeneral[function.function] }" escapeXml="false" /> 
 
 
 <!--metadata--> 

@@ -27,14 +27,14 @@ in the metadata section of every form in this application.
 Languages: <br />
 <select name="languages" multiple="multiple" size="10">
 <optgroup label="Preferred Languages">
-<c:forEach var="prefLangs" items="${ sessionScope.preferences.languageSet }">
+<c:forEach var="prefLangs" items="${ sessionScope.visit.preferences.languageSet }">
 <c:out value='<option value="${ prefLangs }" selected="selected">${ applicationScope.flatData.languages[ prefLangs ] }</option>' escapeXml="false" />
 </c:forEach>
 </optgroup>
 <optgroup label="All Languages">
 <c:forEach var="langs" items="${ applicationScope.flatData.languages }">
 	<c:set var="disabled" value="" />
-	<c:forEach var="prefLangs" items="${ sessionScope.preferences.languageSet }">
+	<c:forEach var="prefLangs" items="${ sessionScope.visit.preferences.languageSet }">
 		<c:if test="${ prefLangs == langs.key }">
 			<c:set var="disabled" value='disabled="disabled"' />
 		</c:if>
@@ -48,14 +48,14 @@ Languages: <br />
 Dialects: <br />
 <select name="dialects" multiple="multiple" size="10">
 <optgroup label="Preferred Dialects">
-<c:forEach var="prefDials" items="${ sessionScope.preferences.dialectSet }">
+<c:forEach var="prefDials" items="${ sessionScope.visit.preferences.dialectSet }">
 <c:out value='<option value="${ prefDials }" selected="selected">${ applicationScope.flatData.majorDialectFamilies[ prefDials ] }</option>' escapeXml="false" />
 </c:forEach>
 </optgroup>
 <optgroup label="All Dialects">
 <c:forEach var="dials" items="${ applicationScope.flatData.majorDialectFamilies }">
 	<c:set var="disabled" value="" />
-	<c:forEach var="prefDials" items="${ sessionScope.preferences.dialectSet }">
+	<c:forEach var="prefDials" items="${ sessionScope.visit.preferences.dialectSet }">
 		<c:if test="${ prefDials == dials.key }">
 			<c:set var="disabled" value='disabled="disabled"' />
 		</c:if>
@@ -69,14 +69,14 @@ Dialects: <br />
 Sources: <br />
 <select name="sources" multiple="multiple" size="10">
 <optgroup label="Preferred Sources">
-<c:forEach var="prefSources" items="${ sessionScope.preferences.sourceSet }">
+<c:forEach var="prefSources" items="${ sessionScope.visit.preferences.sourceSet }">
 <c:out value='<option value="${ prefSources }" selected="selected">${ applicationScope.flatData.sources[ prefSources ] }</option>' escapeXml="false" />
 </c:forEach>
 </optgroup>
 <optgroup label="All Sources">
 <c:forEach var="srcs" items="${ applicationScope.flatData.sources }">
 	<c:set var="disabled" value="" />
-	<c:forEach var="prefSources" items="${ sessionScope.preferences.sourceSet }">
+	<c:forEach var="prefSources" items="${ sessionScope.visit.preferences.sourceSet }">
 		<c:if test="${ prefSources == srcs.key }">
 			<c:set var="disabled" value='disabled="disabled"' />
 		</c:if>
@@ -91,14 +91,14 @@ Sources: <br />
 Project/Subject: <br />
 <select name="projectSubjects" multiple="multiple" size="10">
 <optgroup label="Preferred Project/Subjects">
-<c:forEach var="prefProjSub" items="${ sessionScope.preferences.projectSubjectSet }">
+<c:forEach var="prefProjSub" items="${ sessionScope.visit.preferences.projectSubjectSet }">
 <c:out value='<option value="${ prefProjSub }" selected="selected">${ applicationScope.flatData.projectSubjects[ prefProjSub ] }</option>' escapeXml="false" />
 </c:forEach>
 </optgroup>
 <optgroup label="All Project/Subjects">
 <c:forEach var="projSubs" items="${ applicationScope.flatData.projectSubjects }">
 	<c:set var="disabled" value="" />
-	<c:forEach var="prefProjSub" items="${ sessionScope.preferences.projectSubjectSet }">
+	<c:forEach var="prefProjSub" items="${ sessionScope.visit.preferences.projectSubjectSet }">
 		<c:if test="${ prefProjSub == projSubs.key }">
 			<c:set var="disabled" value='disabled="disabled"' />
 		</c:if>
@@ -112,14 +112,14 @@ Project/Subject: <br />
 Scripts: <br />
 <select name="scripts" multiple="multiple" size="10">
 <optgroup label="Preferred Scripts">
-<c:forEach var="prefScripts" items="${ sessionScope.preferences.scriptSet }">
+<c:forEach var="prefScripts" items="${ sessionScope.visit.preferences.scriptSet }">
 <c:out value='<option value="${ prefScripts }" selected="selected">${ applicationScope.flatData.scripts[ prefScripts ] }</option>' escapeXml="false" />
 </c:forEach>
 </optgroup>
 <optgroup label="All Scripts">
 <c:forEach var="scripts" items="${ applicationScope.flatData.scripts }">
 	<c:set var="disabled" value="" />
-	<c:forEach var="prefScripts" items="${ sessionScope.preferences.scriptSet }">
+	<c:forEach var="prefScripts" items="${ sessionScope.visit.preferences.scriptSet }">
 		<c:if test="${ prefScripts == scripts.key }">
 			<c:set var="disabled" value='disabled="disabled"' />
 		</c:if>

@@ -4,7 +4,7 @@
 
 
 
-	<c:set var="modelSentence" value="${ sessionScope.helper.component }"/>
+	<c:set var="modelSentence" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
 <c:out value='<a name="${ modelSentence }" ></a>' escapeXml="false" />
 		<c:if test="${ editMode }">
@@ -17,7 +17,7 @@
 
 	<!--<span class="label">Model Sentence:</span>-->
 	<c:out value="${ modelSentence.modelSentence }" escapeXml="false" />  
-	<br />
+	
 	
 		
 		<!--metadata--> 
@@ -26,10 +26,10 @@
 		
 
 		<!--translation-->
-		<c:if test="${sessionScope.helper.showTranslations }">
+		<c:if test="${sessionScope.visit.helper.showTranslations }">
 
-		<c:set value="${modelSentence.translations}" target="${sessionScope.helper}" property="collection"/>
-		<c:if test="${ sessionScope.helper.collectionSize > 0 }">
+		<c:set value="${modelSentence.translations}" target="${sessionScope.visit.helper}" property="collection"/>
+		<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 		<h3>Translations</h3>
 		<ul>
 
@@ -43,14 +43,14 @@
 		<c:out value='<a class="meta" href="${href} ">'escapeXml="false" /><img src="/lex/images/trans.gif" alt="view/edit translation" /> --%>
 		<span class="translation">
 		<!--<span class="label">Model Sentence:</span>-->  
-		<c:out value="${ translation.modelSentence }" escapeXml="false" /> <br />  
+		<c:out value="${ translation.modelSentence }" escapeXml="false" />  
 		 </span> 
 		<!--metadata--> 
 		<c:set var="originalComponent" value="${ modelSentence }" />
 
-		<c:set target="${ sessionScope.helper }" property="component" value="${ translation }" />
+		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ translation }" />
 		<jsp:include page="displayMeta.jsf" />
-		<c:set target="${ sessionScope.helper }" property="component" value="${ originalComponent }" />
+		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ originalComponent }" />
 		</li>
 		</c:forEach>
 		</ul>

@@ -18,7 +18,7 @@ Validate CSS</a>
 <tr>
 <td>
 <h2>USER INFO</h2>  
-User Roles: <c:out value="${ sessionScope.user.roles }"/>
+User Roles: <c:out value="${ sessionScope.visit.user.roles }"/>
 
 </td>
 </tr>

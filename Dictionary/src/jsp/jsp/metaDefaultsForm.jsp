@@ -17,18 +17,18 @@ Message:
 <div id="columnSingle">
 <form id="preferencesForm" action="/lex/action" method="post">
 
-<c:set var="language" value="${ sessionScope.preferences.language }" />
-<c:set var="dialect" value="${ sessionScope.preferences.dialect }" />
-<c:set var="source" value="${ sessionScope.preferences.source }" />
-<c:set var="projectSubject" value="${ sessionScope.preferences.projectSubject }" />
-<c:set var="script" value="${ sessionScope.preferences.script }" />
-<c:set var="note" value="${ sessionScope.preferences.note }" />
+<c:set var="language" value="${ sessionScope.visit.preferences.language }" />
+<c:set var="dialect" value="${ sessionScope.visit.preferences.dialect }" />
+<c:set var="source" value="${ sessionScope.visit.preferences.source }" />
+<c:set var="projectSubject" value="${ sessionScope.visit.preferences.projectSubject }" />
+<c:set var="script" value="${ sessionScope.visit.preferences.script }" />
+<c:set var="note" value="${ sessionScope.visit.preferences.note }" />
 
-<%-- <c:out value="${ sessionScope.preferences.language }" /> <br />
-<c:out value="${ sessionScope.preferences.dialect }" /> <br />
-<c:out value="${ sessionScope.preferences.source }" /> <br />
-<c:out value="${ sessionScope.preferences.projectSubject }" /> <br />
-<c:out value="${ sessionScope.preferences.script }" /> --%>
+<%-- <c:out value="${ sessionScope.visit.preferences.language }" /> <br />
+<c:out value="${ sessionScope.visit.preferences.dialect }" /> <br />
+<c:out value="${ sessionScope.visit.preferences.source }" /> <br />
+<c:out value="${ sessionScope.visit.preferences.projectSubject }" /> <br />
+<c:out value="${ sessionScope.visit.preferences.script }" /> --%>
 
 <p>
 In the metadata categories below, indicate the option you would like to appear by default.
@@ -39,7 +39,7 @@ When this box is checked, the dropdown for that field will not appear
 
 <p>
 <c:set var="checked" value="" />
-<c:if test="${ sessionScope.preferences.useDefaultLanguage }">
+<c:if test="${ sessionScope.visit.preferences.useDefaultLanguage }">
 <c:set var="checked" value="checked='checked'" />
 </c:if>
 <c:out value='<input type="checkbox" name="useDefaultLanguage" value="true" ${checked}/>' escapeXml="false" />
@@ -50,7 +50,7 @@ Use Default Language: <br />
 		<c:set var="sel" value='selected="selected"' />
 	</c:if>
 	<c:out value="<option value='0' ${sel}>none</option>" escapeXml="false" /> 
-		<c:forEach var="prefLangs" items="${ sessionScope.preferences.languageSet }">
+		<c:forEach var="prefLangs" items="${ sessionScope.visit.preferences.languageSet }">
 		<c:set var="sel" value="" />		
 		<c:if test="${ language == prefLangs }">
 			<c:set var="sel" value='selected="selected"' />
@@ -60,7 +60,7 @@ Use Default Language: <br />
 	<option disabled="disabled" value="">----------------</option>
 	<c:forEach var="langs" items="${ applicationScope.flatData.languages }">
 		<c:set var="printOption" value="${ true }" />
-		<c:forEach var="prefLangs" items="${ sessionScope.preferences.languageSet }">
+		<c:forEach var="prefLangs" items="${ sessionScope.visit.preferences.languageSet }">
 			<c:if test="${ prefLangs == langs.key }">
 				<c:set var="printOption" value="${ false }" />
 			</c:if>
@@ -78,7 +78,7 @@ Use Default Language: <br />
 
 <p>
 <c:set var="checked" value="" />
-<c:if test="${ sessionScope.preferences.useDefaultScript }">
+<c:if test="${ sessionScope.visit.preferences.useDefaultScript }">
 <c:set var="checked" value="checked='checked'" />
 </c:if>
 <c:out value='<input type="checkbox" name="useDefaultScript" value="true" ${checked}/>' escapeXml="false" />
@@ -89,7 +89,7 @@ Use Default Script: <br />
 		<c:set var="sel" value='selected="selected"' />
 	</c:if>
 	<c:out value="<option value='0' ${sel}>none</option>" escapeXml="false" /> 
-<c:forEach var="prefScripts" items="${ sessionScope.preferences.scriptSet }">
+<c:forEach var="prefScripts" items="${ sessionScope.visit.preferences.scriptSet }">
 		<c:set var="sel" value="" />		
 		<c:if test="${ script == prefScripts }">
 			<c:set var="sel" value='selected="selected"' />
@@ -99,7 +99,7 @@ Use Default Script: <br />
 <option disabled="disabled" value="">----------------</option>
 <c:forEach var="scripts" items="${ applicationScope.flatData.scripts }">
 	<c:set var="printOption" value="${ true }" />
-	<c:forEach var="prefScripts" items="${ sessionScope.preferences.scriptSet }">
+	<c:forEach var="prefScripts" items="${ sessionScope.visit.preferences.scriptSet }">
 		<c:if test="${ prefScripts == scripts.key }">
 			<c:set var="printOption" value="${ false }" />
 		</c:if>
@@ -118,7 +118,7 @@ Use Default Script: <br />
 
 <p>
 <c:set var="checked" value="" />
-<c:if test="${ sessionScope.preferences.useDefaultDialect }">
+<c:if test="${ sessionScope.visit.preferences.useDefaultDialect }">
 <c:set var="checked" value="checked='checked'" />
 </c:if>
 <c:out value='<input type="checkbox" name="useDefaultDialect" value="true" ${checked}/>' escapeXml="false" />
@@ -129,7 +129,7 @@ Use Default Dialect: <br />
 		<c:set var="sel" value='selected="selected"' />
 	</c:if>
 	<c:out value="<option value='0' ${sel}>none</option>" escapeXml="false" /> 
-<c:forEach var="prefDials" items="${ sessionScope.preferences.dialectSet }">
+<c:forEach var="prefDials" items="${ sessionScope.visit.preferences.dialectSet }">
 		<c:set var="sel" value="" />		
 		<c:if test="${ dialect == prefDials }">
 			<c:set var="sel" value='selected="selected"' />
@@ -139,7 +139,7 @@ Use Default Dialect: <br />
 	<option disabled="disabled" value="">----------------</option>
 <c:forEach var="dials" items="${ applicationScope.flatData.majorDialectFamilies }">
 	<c:set var="printOption" value="${ true }" />
-	<c:forEach var="prefDials" items="${ sessionScope.preferences.dialectSet }">
+	<c:forEach var="prefDials" items="${ sessionScope.visit.preferences.dialectSet }">
 		<c:if test="${ prefDials == dials.key }">
 			<c:set var="printOption" value="${ false }" />
 		</c:if>
@@ -157,7 +157,7 @@ Use Default Dialect: <br />
 
 <p>
 <c:set var="checked" value="" />
-<c:if test="${ sessionScope.preferences.useDefaultSource }">
+<c:if test="${ sessionScope.visit.preferences.useDefaultSource }">
 <c:set var="checked" value="checked='checked'" />
 </c:if>
 <c:out value='<input type="checkbox" name="useDefaultSource" value="true" ${checked}/>' escapeXml="false" />
@@ -168,7 +168,7 @@ Use Default Source: <br />
 		<c:set var="sel" value='selected="selected"' />
 	</c:if>
 	<c:out value="<option value='0' ${sel}>none</option>" escapeXml="false" /> 
-<c:forEach var="prefSources" items="${ sessionScope.preferences.sourceSet }">
+<c:forEach var="prefSources" items="${ sessionScope.visit.preferences.sourceSet }">
 		<c:set var="sel" value="" />		
 		<c:if test="${ source == prefSources }">
 			<c:set var="sel" value='selected="selected"' />
@@ -178,7 +178,7 @@ Use Default Source: <br />
 <option disabled="disabled" value="">----------------</option>
 <c:forEach var="srcs" items="${ applicationScope.flatData.sources }">
 	<c:set var="printOption" value="${ true }" />
-	<c:forEach var="prefSources" items="${ sessionScope.preferences.sourceSet }">
+	<c:forEach var="prefSources" items="${ sessionScope.visit.preferences.sourceSet }">
 		<c:if test="${ prefSources == srcs.key }">
 			<c:set var="printOption" value="${ false }" />
 		</c:if>
@@ -196,7 +196,7 @@ Use Default Source: <br />
 
 <p>
 <c:set var="checked" value="" />
-<c:if test="${ sessionScope.preferences.useDefaultProjSub }">
+<c:if test="${ sessionScope.visit.preferences.useDefaultProjSub }">
 <c:set var="checked" value="checked='checked'" />
 </c:if>
 <c:out value='<input type="checkbox" name="useDefaultProjSub" value="true" ${checked}/>' escapeXml="false" />
@@ -207,7 +207,7 @@ Use Default Project/Subject: <br />
 		<c:set var="sel" value='selected="selected"' />
 	</c:if>
 	<c:out value="<option value='0' ${sel}>none</option>" escapeXml="false" /> 
-<c:forEach var="prefProjSub" items="${ sessionScope.preferences.projectSubjectSet }">
+<c:forEach var="prefProjSub" items="${ sessionScope.visit.preferences.projectSubjectSet }">
 		<c:set var="sel" value="" />		
 		<c:if test="${ projectSubject == prefProjSub }">
 			<c:set var="sel" value='selected="selected"' />
@@ -217,7 +217,7 @@ Use Default Project/Subject: <br />
 <option disabled="disabled" value="">----------------</option>
 <c:forEach var="projSubs" items="${ applicationScope.flatData.projectSubjects }">
 	<c:set var="printOption" value="${ true }" />
-	<c:forEach var="prefProjSub" items="${ sessionScope.preferences.projectSubjectSet }">
+	<c:forEach var="prefProjSub" items="${ sessionScope.visit.preferences.projectSubjectSet }">
 		<c:if test="${ prefProjSub == projSubs.key }">
 			<c:set var="printOption" value="${ false }" />
 		</c:if>
@@ -237,7 +237,7 @@ Use Default Project/Subject: <br />
 <p>
 
 <c:set var="checked" value="" />
-<c:if test="${ sessionScope.preferences.useDefaultNote }">
+<c:if test="${ sessionScope.visit.preferences.useDefaultNote }">
 <c:set var="checked" value="checked='checked'" />
 </c:if>
 <c:out value='<input type="checkbox" name="useDefaultNote" value="true" ${checked}/>' escapeXml="false" />

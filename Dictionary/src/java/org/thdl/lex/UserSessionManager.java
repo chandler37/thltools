@@ -21,79 +21,41 @@ public class UserSessionManager
 
 
 	/**
-	 *  Gets the displayHelper attribute of the UserSessionManager object
+	 *  Gets the visit attribute of the UserSessionManager object
 	 *
 	 * @param  session  Description of the Parameter
-	 * @return          The displayHelper value
+	 * @return          The visit value
 	 */
-	public DisplayHelper getDisplayHelper( HttpSession session )
+	public Visit getVisit( HttpSession session )
 	{
-		if ( null == session.getAttribute( LexConstants.DISPLAY_HELPER_SESSION_ATT ) )
+		if ( null == session.getAttribute( LexConstants.VISIT_SESSION_ATTR ) )
 		{
-			setDisplayHelper( session, new DisplayHelper() );
+			setVisit( session, new Visit( session ) );
 		}
-		return (DisplayHelper) session.getAttribute( LexConstants.DISPLAY_HELPER_SESSION_ATT );
+		return (Visit) session.getAttribute( LexConstants.VISIT_SESSION_ATTR );
 	}
 
 
 	/**
-	 *  Sets the displayHelper attribute of the UserSessionManager object
+	 *  Sets the visit attribute of the UserSessionManager object
 	 *
-	 * @param  session  The new displayHelper value
-	 * @param  helper   The new displayHelper value
+	 * @param  session  The new visit value
+	 * @param  visit    The new visit value
 	 */
-	public void setDisplayHelper( HttpSession session, DisplayHelper helper )
+	public void setVisit( HttpSession session, Visit visit )
 	{
-		session.setAttribute( LexConstants.DISPLAY_HELPER_SESSION_ATT, helper );
+		session.setAttribute( LexConstants.VISIT_SESSION_ATTR, visit );
 	}
 
 
 	/**
-	 *  Sets the preferences attribute of the UserSessionManager object
+	 *  Description of the Method
 	 *
-	 * @param  session      The new preferences value
-	 * @param  preferences  The new preferences value
-	 * @since
+	 * @param  session  Description of the Parameter
 	 */
-	public void setPreferences( HttpSession session, Preferences preferences )
+	public void removeVisit( HttpSession session )
 	{
-		session.setAttribute( LexConstants.PREFERENCES_SESS_ATTR, preferences );
-	}
-
-
-	/**
-	 *  Sets the query attribute of the UserSessionManager object
-	 *
-	 * @param  session  The new query value
-	 * @param  terms    The new query value
-	 * @since
-	 */
-	public void setQuery( HttpSession session, LexQuery terms )
-	{
-		session.setAttribute( LexConstants.QUERY_SESS_ATTR, terms );
-	}
-
-
-	/**
-	 *  Sets the sessionUser attribute of the UserSessionManager object
-	 *
-	 * @param  session  The new sessionUser value
-	 * @param  user     The new sessionUser value
-	 * @since
-	 */
-	public void setSessionUser( HttpSession session, ThdlUser user )
-	{
-		session.setAttribute( LexConstants.USER_SESS_ATTR, user );
-		String roleParam = "administrator";
-		if ( user.hasRole( roleParam ) )
-		{
-			//roles from Lex.Users.userRoleList (references Lex.UserRoles)
-			session.setMaxInactiveInterval( 60 * 60 * 8 );
-		}
-		else
-		{
-			session.setMaxInactiveInterval( 60 * 45 );
-		}
+		session.setAttribute( LexConstants.VISIT_SESSION_ATTR, null );
 	}
 
 
@@ -111,32 +73,6 @@ public class UserSessionManager
 
 
 	/**
-	 *  Sets the displayMode attribute of the UserSessionManager object
-	 *
-	 * @param  session      The new displayMode value
-	 * @param  displayMode  The new displayMode value
-	 * @since
-	 */
-	public void setDisplayMode( HttpSession session, String displayMode )
-	{
-		session.setAttribute( LexConstants.DISPLAYMODE_SESS_ATTR, displayMode );
-	}
-
-
-	/**
-	 *  Sets the entry attribute of the UserSessionManager object
-	 *
-	 * @return    The instance value
-	 * @since
-	 */
-	/*
-	    public void setEntry( HttpSession session, ITerm entry )
-	    {
-	    session.setAttribute( LexConstants.TERMENTRYBEAN_SESS_ATTR, entry );
-	    }
-	  */
-//helper methods
-	/**
 	 *  Gets the instance attribute of the UserSessionManager class
 	 *
 	 * @return    The instance value
@@ -145,59 +81,6 @@ public class UserSessionManager
 	public static UserSessionManager getInstance()
 	{
 		return INSTANCE;
-	}
-
-
-	/**
-	 *  Gets the query attribute of the UserSessionManager object
-	 *
-	 * @param  session  Description of Parameter
-	 * @return          The query value
-	 * @since
-	 */
-	public LexQuery getQuery( HttpSession session )
-	{
-		Object query = session.getAttribute( LexConstants.QUERY_SESS_ATTR );
-		if ( null == query || !( query instanceof LexQuery ) )
-		{
-			query = new LexQuery();
-			session.setAttribute( LexConstants.QUERY_SESS_ATTR, query );
-		}
-		return (LexQuery) query;
-	}
-
-
-	/**
-	 *  Gets the preferences attribute of the UserSessionManager object
-	 *
-	 * @param  session                     Description of Parameter
-	 * @return                             The preferences value
-	 * @exception  LexRepositoryException  Description of the Exception
-	 * @exception  LexComponentException   Description of the Exception
-	 * @since
-	 */
-	public Preferences getPreferences( HttpSession session ) throws LexRepositoryException, LexComponentException
-	{
-		Object sesAtt = session.getAttribute( LexConstants.PREFERENCES_SESS_ATTR );
-		if ( null == sesAtt )
-		{
-			ThdlUser user = getSessionUser( session );
-			setPreferences( session, new Preferences( user ) );
-		}
-		return (Preferences) session.getAttribute( LexConstants.PREFERENCES_SESS_ATTR );
-	}
-
-
-	/**
-	 *  Gets the sessionUser attribute of the UserSessionManager object
-	 *
-	 * @param  session  Description of Parameter
-	 * @return          The sessionUser value
-	 * @since
-	 */
-	public ThdlUser getSessionUser( HttpSession session )
-	{
-		return (ThdlUser) session.getAttribute( LexConstants.USER_SESS_ATTR );
 	}
 
 
@@ -217,20 +100,6 @@ public class UserSessionManager
 			session.removeAttribute( LexConstants.LOGINTARGET_SESS_PARAM );
 		}
 		return target;
-	}
-
-
-
-	/**
-	 *  Description of the Method
-	 *
-	 * @param  session  Description of Parameter
-	 * @since
-	 */
-	public void removeSessionUser( HttpSession session )
-	{
-		session.removeAttribute( LexConstants.USER_SESS_ATTR );
-		session.removeAttribute( LexConstants.PREFERENCES_SESS_ATTR );
 	}
 
 

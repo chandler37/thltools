@@ -34,8 +34,9 @@ public class FindCommand extends LexCommand implements Command
 		{
 			String msg = null;
 			String next = getNext();
-			DisplayHelper displayHelper = getSessionManager().getDisplayHelper( req.getSession( true ) );
-			LexQuery query = getSessionManager().getQuery( req.getSession( true ) );
+			Visit visit = UserSessionManager.getInstance().getVisit( req.getSession( true ) );
+			DisplayHelper displayHelper = visit.getHelper();
+			LexQuery query = visit.getQuery();
 			query.populate( req.getParameterMap() );
 
 			if ( component instanceof ITerm )
@@ -47,7 +48,7 @@ public class FindCommand extends LexCommand implements Command
 				Iterator iterator = query.getResults().keySet().iterator();
 				if ( iterator.hasNext() )
 				{
-					getSessionManager().setQuery( req.getSession( true ), query );
+					visit.setQuery( query );
 					msg = "There are " + query.getResults().size() + " terms matching " + term.getTerm();
 				}
 				else

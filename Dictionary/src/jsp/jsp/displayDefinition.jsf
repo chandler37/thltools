@@ -5,7 +5,7 @@
 
 
 <!--DEFINITION LOOP-->
-<c:set var="defintion" value="${ sessionScope.helper.component }"/>
+<c:set var="defintion" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
 <c:out value='<a name="${ definition }" ></a>' escapeXml="false" />
 		<c:if test="${ editMode }">
@@ -19,7 +19,7 @@
 
 	<!--<span class="label">Definition ${definition.precedence}:</span>-->
 	<c:out value="${ definition.definition }" escapeXml="false"  /> 
-	<br />
+	
 	
 		
 		<!--metadata--> 
@@ -28,7 +28,7 @@
 		
 
 		<!--translation-->
-		<c:if test="${sessionScope.helper.showTranslations }">
+		<c:if test="${sessionScope.visit.helper.showTranslations }">
 		<c:forEach var="translation" items="${ definition.translations }" >
 		<c:set var='href' value='#'/>
 		<c:if test="${ editMode }">
@@ -37,10 +37,10 @@
 		<c:out value='<a class="meta" href="${href} ">'escapeXml="false" /><img src="/lex/images/trans.gif" alt="view/edit translation" />
 		<span class="translation">
 		<!--<span class="label">Definition ${translation.precedence}:</span>--> 
-		<c:out value="${ translation.definition }" escapeXml="false"  /> <br />
+		<c:out value="${ translation.definition }" escapeXml="false"  /> 
 		</span></a>
 		<!--metadata--> 
-		<c:set target="${ sessionScope.helper }" property="component" value="${ translation }" />
+		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ translation }" />
 		<jsp:include page="displayMeta.jsf" />
 		</c:forEach> 
 		</c:if>

@@ -1,4 +1,5 @@
 package org.thdl.lex;
+import java.text.DateFormat;
 
 import java.util.*;
 import org.apache.commons.beanutils.*;
@@ -16,11 +17,34 @@ public class DisplayHelper
 	private Collection collection;
 	private ILexComponent component;
 	private ILexComponent note;
-
+	private Date date;
+	private final static DateFormat DATE_FORMAT = DateFormat.getDateInstance( DateFormat.LONG );
 	private boolean showNotes;
 	private boolean showMeta;
 	private boolean showEditOptions;
 	private boolean showTranslations;
+
+
+	/**
+	 *  Sets the date attribute of the DisplayHelper object
+	 *
+	 * @param  date  The new date value
+	 */
+	public void setDate( Date date )
+	{
+		this.date = date;
+	}
+
+
+	/**
+	 *  Gets the date attribute of the DisplayHelper object
+	 *
+	 * @return    The date value
+	 */
+	public Date getDate()
+	{
+		return date;
+	}
 
 
 	/**
@@ -177,7 +201,7 @@ public class DisplayHelper
 		return collection;
 	}
 
-
+//composite properties
 	/**
 	 *  Gets the collectionSize attribute of the DisplayHelper object
 	 *
@@ -209,6 +233,17 @@ public class DisplayHelper
 			b = t.getTranslationOf() != null ? true : false;
 		}
 		return b;
+	}
+
+
+	/**
+	 *  Gets the formattedDate attribute of the DisplayHelper object
+	 *
+	 * @return    The formattedDate value
+	 */
+	public String getFormattedDate()
+	{
+		return DATE_FORMAT.format( getDate() );
 	}
 
 // helpers

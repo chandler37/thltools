@@ -57,11 +57,11 @@ public class GetUpdateFormCommand extends LexCommand implements Command
 	public String execute( HttpServletRequest req, ILexComponent component ) throws CommandException
 	{
 		String next = getNext();
-		HttpSession ses = req.getSession( true );
-		LexQuery query = getSessionManager().getQuery( ses );
+		Visit visit = UserSessionManager.getInstance().getVisit( req.getSession( true ) );
+		LexQuery query = visit.getQuery( );
 		ITerm term = query.getEntry();
 		String msg = null;
-		ThdlUser user = getSessionManager().getSessionUser( req.getSession( true ) );
+		ThdlUser user = visit.getUser();
 		if ( validate( user, component ) )
 		{
 
@@ -122,7 +122,7 @@ public class GetUpdateFormCommand extends LexCommand implements Command
 			}
 
 			msg = "You have reached the Update Form";
-			getSessionManager().setDisplayMode( req.getSession( true ), "addEditForm" );
+			visit.setDisplayMode( "addEditForm" );
 		}
 		else
 		{

@@ -12,7 +12,7 @@
 
 <title>THDL Tibetan Collaborative Dictionaries</title>
 <style type="text/css">
-<c:if test="${ ! sessionScope.helper.showEditOptions }">
+<c:if test="${ ! sessionScope.visit.helper.showEditOptions }">
 p.data
 {
 border: none;

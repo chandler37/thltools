@@ -97,7 +97,7 @@ public class LexActionServlet extends HttpServlet
 		String recent = config.getInitParameter( "recentItems" );
 		int recentItems = Integer.parseInt( recent );
 		Global global = new Global( recentItems, refreshDelay );
-		config.getServletContext().setAttribute( "global", global );
+		config.getServletContext().setAttribute( LexConstants.GLOBAL_CONTEXT_ATTR, global );
 		LexLogger.debugComponent( global );
 	}
 
@@ -162,6 +162,7 @@ public class LexActionServlet extends HttpServlet
 		LexLogger.debug( "Checking Request state at end of LexActionServlet.service()" );
 		LexLogger.logRequestState( req );
 		LexLogger.logSessionState( req );
+		LexLogger.logContextState( getServletContext() );
 
 	}
 

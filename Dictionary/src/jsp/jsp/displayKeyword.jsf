@@ -4,7 +4,7 @@
 
 
 
-	<c:set var="keyword" value="${ sessionScope.helper.component }"/>
+	<c:set var="keyword" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
 <c:out value='<a name="${ keyword }" ></a>' escapeXml="false" />
 		<c:if test="${ editMode }">
@@ -16,7 +16,6 @@
 
 	<!--<span class="label">Keyword:</span>-->
 	<c:out value="${ keyword.keyword }" escapeXml="false" />  
- <br /> 
 		
 		<!--metadata--> 
 		
