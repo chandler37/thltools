@@ -24,7 +24,7 @@ INSERT PAGE TITLE HERE
  Always incorporate Tibetan and Himalayan
 -->
 
-<title>TMW to THDL Extended Wylie Converter</title>
+<title>Tibetan Machine Web Converter</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-utf-8">
 
 <!--
@@ -116,7 +116,7 @@ INSERT THE BREADCRUMBS
  A HREF tags should not be applied to current page, e.g. THDL and Collections get link, Literature and Home do not. If you were on a subpage of Literature, then Literature would link to the Literature home page.
  -->
 
-	<div align="right"><font color="#000000"><A HREF="http://iris.lib.virginia.edu/tibet/index.html">THDL</A> : <A HREF="http://iris.lib.virginia.edu/tibet/tools/index.html">Tools</A> : <a href="http://iris.lib.virginia.edu/tibet/tools/software.html">Software</a> : TMW_RTF_TO_THDL_WYLIE</a></font>
+	<div align="right"><font color="#000000"><A HREF="http://iris.lib.virginia.edu/tibet/index.html">THDL</A> : <A HREF="http://iris.lib.virginia.edu/tibet/tools/index.html">Tools</A> : <a href="http://iris.lib.virginia.edu/tibet/tools/software.html">Software</a> : Tibetan Machine Web Converter</a></font>
 	</div>
 </div>
 
@@ -188,14 +188,18 @@ The first section of text is the short "introduction" about the Theme and the va
  Design principle: Bold the first few words of this text section.
 ==============
 -->
-<h2>TMW to THDL Extended Wylie Converter</h2>
+<h2>Tibetan Machine Web Converter</h2>
 
 <p>
   In the same JAR file as Jskad, power users will find a command-line
-  utility that converts Tibetan Machine Web-encoded (TMW-encoded) Rich
-  Text Format (RTF) files to RTF files with the appropriate THDL
-  Extended Wylie (Wylie) used instead of TMW.
+  utility that converts a Tibetan Machine Web-encoded (TMW-encoded) Rich
+  Text Format (RTF) file to either of these two output formats:
 </p>
+<ul>
+  <li>RTF files with the appropriate THDL Extended Wylie (Wylie) used
+   instead of TMW</li>
+  <li>RTF files in Tibetan Machine (used in legacy systems)</li>
+</ul>
 
 <p>
   This converter is smart enough to solve the &quot;curly-brace
@@ -233,10 +237,10 @@ non-TMW character newline in the font Times New Roman appears first at location 
   Given the above output, you can be sure that a flawless conversion
   (barring the appearance of <a href="#knownbugs">known bugs</a>) will
   result when you run <tt>java -cp Jskad.jar
-  org.thdl.tib.input.TMW_RTF_TO_THDL_WYLIE "Dalai Lama Fifth History
-  01.rtf" > "Dalai Lama Fifth History 01 in THDL Extended
-  Wylie.rtf"</tt>.&nbsp; This is because the only text in the input
-  file besides Tibetan is whitespace and the Tahoma characters
+  org.thdl.tib.input.TMW_RTF_TO_THDL_WYLIE --to-wylie "Dalai Lama
+  Fifth History 01.rtf" &gt; "Dalai Lama Fifth History 01 in THDL
+  Extended Wylie.rtf"</tt>.&nbsp; This is because the only text in the
+  input file besides Tibetan is whitespace and the Tahoma characters
   <tt>'{'</tt>, <tt>'}'</tt>, and <tt>'\'</tt>.  These Tahoma
   characters are understood by the tool; they are symptoms of the
   &quot;curly-brace problem&quot;.
@@ -266,12 +270,20 @@ non-TMW character newline in the font Times New Roman appears first at location 
   Wylie by the tool, please report this as a bug.
 </p>
 
+<p>
+  Note also that there is one TMW glyph (TibetanMachineWeb7, glyph 91)
+  that has no Tibetan Machine equivalent.  A 72-point copy of the
+  alphabet and the Tibetan numbers will be inserted (in TMW) in place
+  of this glyph.
+</p>
+
 <h3>Invoking the Converter</h3>
 
 <p>
   First add Jskad.jar to your CLASSPATH.&nbsp; Now run the command
   <tt>java org.thdl.tib.input.TMW_RTF_TO_THDL_WYLIE</tt> from a
-  command prompt.&nbsp; You will see usage information appear.
+  command prompt.&nbsp; You will see usage information appear.&nbsp;
+  Forgive the name; this converter's scope widened after its creation.
 </p>
 
 <h3><a name="knownbugs"></a>Known Bugs</h3>
