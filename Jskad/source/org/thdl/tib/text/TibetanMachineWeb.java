@@ -407,6 +407,16 @@ public class TibetanMachineWeb implements THDLWylieConstants {
             validInputSequences.put(ntk, anyOldObjectWillDo);
         }
 
+        charSet.add("Y");
+        charSet.add("R");
+        charSet.add("W");
+
+        // Useless because none is two or more characters, but for
+        // completeness we put these in since EWTS allows w+W etc.
+        validInputSequences.put("Y", anyOldObjectWillDo);
+        validInputSequences.put("R", anyOldObjectWillDo);
+        validInputSequences.put("W", anyOldObjectWillDo);
+
         sTok = null;
 
 		top_vowels = new HashSet();
