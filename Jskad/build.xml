@@ -309,16 +309,11 @@
     </copy>
     <copy todir="${jskadbin}/org/thdl/tib/input">
       <fileset dir="${source}">
-        <include name="Sambhota_keymap_one.rtf"/>
-        <include name="TCC_keyboard_1.rtf"/>
-        <include name="TCC_keyboard_2.rtf"/>
-        <include name="Wylie_keyboard.rtf"/>
-
+        <include name="*.rtf"/>
         <!-- We don't have ACIP_keyboard.rtf yet, but creating such a
              thing manually is just one option.  We could easily
              generate all the keyboard descriptions
-             programmatically. -->
-
+             programmatically. (FIXME) -->
       </fileset>
     </copy>
   </target>
