@@ -1043,7 +1043,7 @@ public void paste(int offset) {
 			    Assumes that if roman is disabled and you are pasting something
 			    in RTF but is not TibetanMachineWeb it most be wylie.
 			*/
-			if (!sd.getFont((sd.getCharacterElement(0).getAttributes())).getFamily().equals("TibetanMachineWeb") && !isRomanEnabled && contents.isDataFlavorSupported(DataFlavor.stringFlavor))
+			if (!sd.getFont((sd.getCharacterElement(0).getAttributes())).getFamily().startsWith("TibetanMachineWeb") && !isRomanEnabled && contents.isDataFlavorSupported(DataFlavor.stringFlavor))
 			{
 				String data = (String)contents.getTransferData(DataFlavor.stringFlavor);
 				toTibetanMachineWeb(data, offset);			    
