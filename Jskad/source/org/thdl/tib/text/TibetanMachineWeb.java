@@ -383,8 +383,16 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 									break;
 
 								case 3: //TibetanMachineWeb code
-									duffCodes[k-1] = new DuffCode(val,true);
-									TMtoTMW[duffCodes[TM].fontNum-1][duffCodes[TM].charNum-32] = duffCodes[TMW];
+									duffCodes[k-1/* TMW */] = new DuffCode(val,true);
+                                    // TibetanMachineWeb7.91, for
+                                    // example, has no TM(win32)
+                                    // equivalent (though it has a
+                                    // TM(dos) equivalent), so we must
+                                    // test for null here:
+                                    if (null != duffCodes[TM]) {
+                                        TMtoTMW[duffCodes[TM].fontNum-1][duffCodes[TM].charNum-32]
+                                            = duffCodes[TMW];
+                                    }
 									break;
 								case 4:
 								case 5:
