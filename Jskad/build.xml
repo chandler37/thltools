@@ -203,11 +203,12 @@
          am lazy).  I stopped a couple from so doing, but I'm not sure
          if I got them all. -->
 
-    <!-- DLC FIXME: If you change *build.xml, then 'ant
-         dc-nightly-build' will be using the OLD build.xml, not the new
-         one.  You should update and then use a new ant process to read
-         the potentially revised buildfiles. -->
-    <antcall target="cvs-update"/>
+    <!-- If you change *build.xml, then 'ant dc-nightly-build' will be
+         using the OLD build.xml, not the new one, if it were to
+         execute the 'cvs-update' target itself.  You should update
+         and then use a new ant process to read the potentially
+         revised buildfiles; e.g., ant distclean cvs-update && ant
+         dc-nightly-build.  -->
 
     <antcall target="web-start-releases"/>
 
@@ -865,7 +866,8 @@
   </target>
 
   <target name="cvs-update" description="Performs a CVS update.">
-    <cvs command="-f -z3 -q update -d -P" failonerror="true"/>
+    <cvs cvsRoot=":pserver:anonymous@cvs.sourceforge.net:/cvsroot/thdltools"
+         command="-f -z3 -q update -d -P" failonerror="true"/>
   </target>
 
 
