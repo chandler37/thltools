@@ -501,7 +501,7 @@ public class TibetanMachineWeb implements THDLWylieConstants {
                                     wylie = val;
 									break;
 
-								case 1:
+								case 1: // Tibetan Machine glyph
 									duffCodes[TM] = new DuffCode(val,false);
 									break;
 
@@ -545,7 +545,7 @@ public class TibetanMachineWeb implements THDLWylieConstants {
                                     }
                                     break;
 
-								case 10: //Unicode: ignore for now
+								case 10: //Unicode:
                                     if (!val.equals("none")) {
                                         StringBuffer unicodeBuffer = new StringBuffer();
                                         StringTokenizer uTok = new StringTokenizer(val, ",");
@@ -1165,9 +1165,13 @@ public static DuffCode mapTMtoTMW(int font, int ordinal, int suggestedFont) {
     if (font < 0 || font > 4)
         return null;
     if (ordinal >= 255) {
+        /* \'9e, etc. */
         DuffCode rv = getUnusualTMtoTMW(font, ordinal);
-        if (false && /* DLC FIXME: we now have \bullet issues, etc. */ null != rv && !ThdlOptions.getBooleanOption("thdl.do.not.fix.rtf.hex.escapes"))
+        if (null != rv && !ThdlOptions.getBooleanOption("thdl.do.not.fix.rtf.hex.escapes"))
             throw new Error("oddballs still found after fixing RTF hex escapes");
+        /* \bullet, etc. */
+        if (null == rv)
+            rv = getOtherUnusualTMtoTMW(font, ordinal);
         return rv;
     }
     if (ordinal < 32) {
@@ -1314,6 +1318,58 @@ public static void main(String[] args) {
 }
 
 /** A horrible kludge.  A kludge is needed because javax.swing.rtf is
+    quite busted.
+
+    <p>If you open up a file that MS Word has saved (not TibetDoc, I
+    don't think), it will appear, thanks to Java's bugs, to have weird
+    RTF where you see TibetanMachine.8211 etc.  The highest possible
+    glyph value should be 255, but that's not what appears.  The bug,
+    precisely, is that the RTF <code>\endash</code> is not treated
+    like the RTF <code>\u0150</code>, as it should be, but is instead
+    turned into something akin to <code>\u8211</code>.  This is Java's
+    fault, not MS Word's.  This happens for \bullet, \emdash, \endash,
+    \lquote, \rquote, \ldblquote, and \rdblquote.
+    @return non-null if (font, code) identify an oddball we know.
+*/
+private static DuffCode getOtherUnusualTMtoTMW(int font, int code) {
+    if (code > 254) {
+        switch (code) {
+        case 8211: // \endash, following number assumes this is a
+                   // Windows or OS/2 RTF file, not a Mac RTF file:
+            return TMtoTMW[font][150 - 32];
+
+        case 8212: // \emdash, following number assumes this is a
+                   // Windows or OS/2 RTF file, not a Mac RTF file:
+            return TMtoTMW[font][151 - 32];
+
+        case 8216: // \lquote, following number assumes this is a
+                   // Windows or OS/2 RTF file, not a Mac RTF file:
+            return TMtoTMW[font][145 - 32];
+
+        case 8217: // \rquote, following number assumes this is a
+                   // Windows or OS/2 RTF file, not a Mac RTF file:
+            return TMtoTMW[font][146 - 32];
+
+        case 8220: // \ldblquote, following number assumes this is a
+                   // Windows or OS/2 RTF file, not a Mac RTF file:
+            return TMtoTMW[font][147 - 32];
+
+        case 8221: // \rdblquote, following number assumes this is a
+                   // Windows or OS/2 RTF file, not a Mac RTF file:
+            return TMtoTMW[font][148 - 32];
+
+        case 8226: // \bullet, following number assumes this is a
+                   // Windows or OS/2 RTF file, not a Mac RTF file:
+            return TMtoTMW[font][149 - 32];
+        default:
+            return null;
+        }
+    } else {
+        return null;
+    }
+}
+
+/** A horrible kludge.  A kludge is needed because javax.swing.rtf is
     quite busted.  As you'll see below though, this kludge does not
     suffice.
 
@@ -1393,32 +1449,8 @@ private static DuffCode getUnusualTMtoTMW(int font, int code) {
         case 8126: // 0=r-w
             return TMtoTMW[font][149 - 32];
 
-        case 8211: // \endash, following number assumes this is a
-                   // Windows or OS/2 RTF file, not a Mac RTF file:
-            return TMtoTMW[font][150 - 32];
-
-        case 8212: // \emdash, following number assumes this is a
-                   // Windows or OS/2 RTF file, not a Mac RTF file:
-            return TMtoTMW[font][151 - 32];
-
-        case 8216: // \lquote, following number assumes this is a
-                   // Windows or OS/2 RTF file, not a Mac RTF file:
-            return TMtoTMW[font][145 - 32];
-
-        case 8217: // \rquote, following number assumes this is a
-                   // Windows or OS/2 RTF file, not a Mac RTF file:
-            return TMtoTMW[font][146 - 32];
-
         case 8218: // 0=s-b-y 2=n-y
             return TMtoTMW[font][130 - 32];
-
-        case 8220: // \ldblquote, following number assumes this is a
-                   // Windows or OS/2 RTF file, not a Mac RTF file:
-            return TMtoTMW[font][147 - 32];
-
-        case 8221: // \rdblquote, following number assumes this is a
-                   // Windows or OS/2 RTF file, not a Mac RTF file:
-            return TMtoTMW[font][148 - 32];
 
         case 8222: // 0=s-k-r
             return TMtoTMW[font][132 - 32];
@@ -1428,10 +1460,6 @@ private static DuffCode getUnusualTMtoTMW(int font, int code) {
 
         case 8225: // 0=s-p-r
             return TMtoTMW[font][135 - 32];
-
-        case 8226: // \bullet, following number assumes this is a
-                   // Windows or OS/2 RTF file, not a Mac RTF file:
-            return TMtoTMW[font][149 - 32];
 
         case 8230: // 0=s-g-r
             return TMtoTMW[font][133 - 32];
