@@ -25,18 +25,19 @@ import org.thdl.util.*;
 */
 public interface TibetanScanner
 {
-	public static final String copyrightUnicode="Copyright " + '\u00A9' + " 2000-2002 by Andr" + '\u00E9' + "s Montano Pellegrini, all rights reserved.";
-	public static final String copyrightASCII="Copyright 2000-2002 by Andres Montano Pellegrini, all rights reserved.";
-	public static final String copyrightHTML="<hr><h5>" + "The Tibetan to English Translation Tool: Version 1.1, compiled on " + ThdlVersion.getTimeOfCompilation() + ". Copyright &copy; 2000-2002 by <a href=\"http://www.people.virginia.edu/~am2zb/\" target=\"_blank\">Andr&eacute;s Montano Pellegrini</a><br>All rights reserved</h5>";
+	public static final String copyrightUnicode="Copyright " + '\u00A9' + " 2000-2003 by Andr" + '\u00E9' + "s Montano Pellegrini, all rights reserved.";
+	public static final String copyrightASCII="Copyright 2000-2003 by Andres Montano Pellegrini, all rights reserved.";
+	public static final String copyrightHTML="<hr><h5>" + "The Tibetan to English Translation Tool: Version 1.2, compiled on " + ThdlVersion.getTimeOfCompilation() + ". Copyright &copy; 2000-2002 by <a href=\"http://www.people.virginia.edu/~am2zb/\" target=\"_blank\">Andr&eacute;s Montano Pellegrini</a><br>All rights reserved</h5>";
 	public static final String aboutUnicode=
-    "The Tibetan to English Translation Tool: Version 1.1.\n" + 
+    "The Tibetan to English Translation Tool: Version 1.2.\n" + 
     "Compiled on " + ThdlVersion.getTimeOfCompilation() + ".\n\n" +	/* FIXME HARD-CODED VERSION NUMBER */
-	"Copyright " + '\u00A9' + " 2000-2002 by Andr" + '\u00E9' + "s Montano Pellegrini, all rights reserved.\n\n" + 
+	"Copyright " + '\u00A9' + " 2000-2003 by Andr" + '\u00E9' + "s Montano Pellegrini, all rights reserved.\n\n" + 
 	"This software is protected by the terms of the AMP Open Community\n" + 
-	"License 1.0 (available at www.tibet.iteso.mx/Guatemala/). The Tibetan\n" + 
-	"script input facility was built by THDL's Edward Garrett (http://www.thdl.org/).\n" +
-	"It uses Tibetan Computer Company (http://www.tibet.dk/tcc/) fonts created\n" +
-	"by Tony Duff and made available by the Trace Foundation (http://trace.org/).";
+	"License 1.0 (available at www.tibet.iteso.mx/Guatemala/). The\n" + 
+	"Tibetan script input facility was built by THDL's Edward Garrett\n" +
+	"(http://www.thdl.org/). It uses Tibetan Computer Company\n" +
+	"(http://www.tibet.dk/tcc/) fonts created by Tony Duff and made\n" +
+	"available by the Trace Foundation (http://trace.org/).";
 	public void scanLine(String linea);
 	public void scanBody(String linea);
 	public void finishUp();
