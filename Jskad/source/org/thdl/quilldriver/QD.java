@@ -45,7 +45,6 @@ import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlActionListener;
 import org.thdl.util.ThdlAbstractAction;
 
-
 public class QD extends JDesktopPane {
     /** When opening a file, this is the only extension QuillDriver
         cares about.  This is case-insensitive. */
@@ -58,7 +57,7 @@ public class QD extends JDesktopPane {
 	protected SpeakerTable speakerTable;
 
 	//video related
-	protected QDPlayer player = null;
+	protected SmartMoviePanel player = null;
 
 	//frame related
 	protected JInternalFrame videoFrame = null;
@@ -90,7 +89,7 @@ public class QD extends JDesktopPane {
 	protected TibetanDocument findDoc = null;
 	protected TibetanDocument replaceDoc = null;
 
-protected URL keyboard_url = null; 
+	protected URL keyboard_url = null;
 
 
 public QD(ResourceBundle messages) {
@@ -109,7 +108,7 @@ public QD(ResourceBundle messages) {
 		public void theRealActionPerformed(ActionEvent e) {
 			new TimePoint(pane, clockIcon, tcp.getOutTime());
 			tcp.setInTime(tcp.getOutTime().intValue());
-			tcp.setOutTime(player.getLastTime());
+			tcp.setOutTime(player.getEndTime());
 		}
 	};
 
@@ -124,7 +123,7 @@ public QD(ResourceBundle messages) {
 			if (p1 == p2)
 				pane.setCaretPosition(pane.getCaretPosition()-1);
 			tcp.setInTime(tcp.getOutTime().intValue());
-			tcp.setOutTime(player.getLastTime());
+			tcp.setOutTime(player.getEndTime());
 		}
 	};
 
@@ -216,7 +215,7 @@ private void startTimer() {
 		timer.schedule(new TimerTask() {
 			public void run()
 			{
-				if (player.cmd_isSized())
+				if (player.isInitialized())
 				{
 					timer.cancel();
 
@@ -275,7 +274,7 @@ class TimePoint extends JLabel implements DragGestureListener, DragSourceListene
 				if (e.getButton() == MouseEvent.BUTTON1)
 					playSegment();
 				else {
-					SpinnerNumberModel snm1 = new SpinnerNumberModel(0, 0, player.getLastTime(), 10);
+					SpinnerNumberModel snm1 = new SpinnerNumberModel(0, 0, player.getEndTime(), 10);
 					JSpinner spinner = new JSpinner(snm1);
 					spinner.setPreferredSize(new Dimension(100, 40));
 					spinner.setValue(getTime());
@@ -306,17 +305,22 @@ class TimePoint extends JLabel implements DragGestureListener, DragSourceListene
 	public void playSegment() {
 		int i=pos.getOffset();
 		System.out.println(String.valueOf(i));
-		for (i++; i<doc.getLength(); i++) {
-			AttributeSet attr = doc.getCharacterElement(i).getAttributes();
-			Component comp;
-			if (null != (comp = StyleConstants.getComponent(attr)))
-				if (comp instanceof TimePoint) {
-					TimePoint t2 = (TimePoint)comp;
-					player.cmd_play(time, t2.time);
-					return;
-				}
+		try {
+			for (i++; i<doc.getLength(); i++) {
+				AttributeSet attr = doc.getCharacterElement(i).getAttributes();
+				Component comp;
+				if (null != (comp = StyleConstants.getComponent(attr)))
+					if (comp instanceof TimePoint) {
+						TimePoint t2 = (TimePoint)comp;
+						player.cmd_playSegment(time, t2.time);
+						return;
+					}
+			}
+			player.cmd_playSegment(time, null);
+		} catch (SmartMoviePanelException smpe) {
+			smpe.printStackTrace();
+			ThdlDebug.noteIffyCode();
 		}
-		player.cmd_playFrom(time);
 	}
 	public void dragGestureRecognized(DragGestureEvent dge) {
 		Transferable transferable = new TimePointTransferable(this);
@@ -429,7 +433,7 @@ class TimeCodeManager extends JPanel {
 		setLayout(new BorderLayout());
 		JPanel inPanel = new JPanel();
 		JButton inButton = new JButton(messages.getString("In"));
-		SpinnerNumberModel snm1 = new SpinnerNumberModel(0, 0, player.getLastTime(), 10);
+		SpinnerNumberModel snm1 = new SpinnerNumberModel(0, 0, player.getEndTime(), 10);
 		inSpinner = new JSpinner(snm1);
 		inSpinner.setValue(new Integer(0));
 		inSpinner.setPreferredSize(new Dimension(100, inButton.getPreferredSize().height));
@@ -438,7 +442,7 @@ class TimeCodeManager extends JPanel {
 
 		inButton.addActionListener(new ThdlActionListener() {
 			public void theRealActionPerformed(ActionEvent e) {
-				int k = player.when();
+				int k = player.getCurrentTime();
 				if (k != -1)
 					setInTime(k);
 			}
@@ -447,19 +451,24 @@ class TimeCodeManager extends JPanel {
 
 		JPanel outPanel = new JPanel();
 		JButton outButton = new JButton(messages.getString("Out"));
-		SpinnerNumberModel snm2 = new SpinnerNumberModel(0, 0, player.getLastTime(), 10);
+		SpinnerNumberModel snm2 = new SpinnerNumberModel(0, 0, player.getEndTime(), 10);
 		outSpinner = new JSpinner(snm2);
-		outSpinner.setValue(new Integer(player.getLastTime()));
+		outSpinner.setValue(new Integer(player.getEndTime()));
 		outSpinner.setPreferredSize(new Dimension(100, inButton.getPreferredSize().height));
 		outPanel.add(outButton);
 		outPanel.add(outSpinner);
 
 		outButton.addActionListener(new ThdlActionListener() {
 			public void theRealActionPerformed(ActionEvent e) {
-				int k = player.when();
+				int k = player.getCurrentTime();
 				if (k != -1) {
 					setOutTime(k);
-					player.cmd_stop();
+					try {
+						player.cmd_stop();
+					} catch (SmartMoviePanelException smpe) {
+						smpe.printStackTrace();
+						ThdlDebug.noteIffyCode();
+					}
 				}
 			}
 		});
@@ -470,8 +479,14 @@ class TimeCodeManager extends JPanel {
 			public void theRealActionPerformed(ActionEvent e) {
 				Integer in = getInTime();
 				Integer out = getOutTime();
-				if (out.intValue() > in.intValue())
-					player.cmd_play(in, out);
+				if (out.intValue() > in.intValue()) {
+					try {
+						player.cmd_playSegment(in, out);
+					} catch (SmartMoviePanelException smpe) {
+						smpe.printStackTrace();
+						ThdlDebug.noteIffyCode();
+					}
+				}
 			}
 		});
 		JPanel ps = new JPanel();
@@ -483,14 +498,26 @@ class TimeCodeManager extends JPanel {
 
 		playButton.addActionListener(new ThdlActionListener() {
 			public void theRealActionPerformed(ActionEvent e) {
-				if (player != null)
-					player.cmd_play();
+				if (player != null) {
+					try {
+						player.cmd_playOn();
+					} catch (SmartMoviePanelException smpe) {
+						smpe.printStackTrace();
+						ThdlDebug.noteIffyCode();
+					}
+				}
 			}
 		});
 		pauseButton.addActionListener(new ThdlActionListener() {
 			public void theRealActionPerformed(ActionEvent e) {
-				if (player != null)
-					player.cmd_stop();
+				if (player != null) {
+					try {
+						player.cmd_stop();
+					} catch (SmartMoviePanelException smpe) {
+						smpe.printStackTrace();
+						ThdlDebug.noteIffyCode();
+					}
+				}
 			}
 		});
 */
@@ -578,8 +605,13 @@ public void setMedia(File f) {
 		media = f;
 		mediaField.setText(media.getPath());
 		if (player != null) {
-			player.cmd_stop();
-			player.destroy();
+			try {
+				player.cmd_stop();
+				player.destroy();
+			} catch (SmartMoviePanelException smpe) {
+				smpe.printStackTrace();
+				ThdlDebug.noteIffyCode();
+			}
 			videoFrame.getContentPane().remove(player);
 			videoFrame.getContentPane().invalidate();
 			videoFrame.getContentPane().validate();
@@ -597,13 +629,33 @@ public void setMedia(File f) {
 			URL url = f.toURL();
 
 			if (player != null) {
-				player.cmd_stop();
-				player.destroy();
+				try {
+					player.cmd_stop();
+					player.destroy();
+				} catch (SmartMoviePanelException smpe) {
+					smpe.printStackTrace();
+					ThdlDebug.noteIffyCode();
+				}
 			}
-			player = new QDPlayer(QD.this, url);
-			media = f;
-			mediaField.setText(media.getPath());
-			startTimer();
+
+
+//if user properties opt for qt4j instead of jmf, then load qt4j instead
+
+			String os = System.getProperty("os.name").toLowerCase();
+			try {
+				if (os.indexOf("windows") != -1) {
+					player = new SmartJMFPlayer(QD.this, url);
+				} else if (os.indexOf("mac") != -1) {
+					player = new SmartQT4JPlayer();
+					player.loadMovie(url);
+				}
+				media = f;
+				mediaField.setText(media.getPath());
+				startTimer();
+			} catch (SmartMoviePanelException smpe) {
+				smpe.printStackTrace();
+				ThdlDebug.noteIffyCode();
+			}
 		} catch (MalformedURLException murle) {
 			murle.printStackTrace();
 			ThdlDebug.noteIffyCode();
@@ -893,6 +945,7 @@ if (keyboard_url != null) {
 
 			dp.registerKeyboard();
 		//	project.tName.setupKeyboard();
+
 		//	project.tTask.setupKeyboard();
 			sharedDP.setupKeyboard();
 			sharedDP2.setupKeyboard();
