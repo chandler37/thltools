@@ -154,5 +154,6 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
         helper("Test1", "--to-tibetan-machine", "TM", 0);
         helper("Test2", "--to-tibetan-machine", "TM", 0);
         helper("Test2", "--to-tibetan-machine-web", "TMW", 0);
+        helper("Test3", "--acip-to-tmw", "TMW", 0);
     }
 }

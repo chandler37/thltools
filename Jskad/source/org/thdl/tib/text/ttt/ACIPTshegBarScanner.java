@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import org.thdl.util.ThdlDebug;
+import org.thdl.util.ThdlOptions;
 
 /**
 * This class is able to break up Strings of ACIP text (for example, an
@@ -903,11 +904,31 @@ public class ACIPTshegBarScanner {
                             errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
                                           + "Found an illegal, unprintable character.\n");
                     } else if ('\\' == ch) {
-                        al.add(new TString("Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.",
-                                           TString.ERROR));
-                        if (null != errors)
-                            errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
-                                          + "Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\n");
+                        int x = -1;
+                        if (!ThdlOptions.getBooleanOption("thdl.tib.text.disallow.unicode.character.escapes.in.acip")
+                            && i + 5 < sl && 'u' == s.charAt(i+1)) {
+                            try {
+                                if (!((x = Integer.parseInt(s.substring(i+2, i+6), 16)) >= 0x0000 && x <= 0xFFFF))
+                                    x = -1;
+                            } catch (NumberFormatException e) {
+                                // Though this is unlikely to be
+                                // legal, we allow it through.
+                                // (FIXME: warn.)
+                            }
+                        }
+                        if (x >= 0) {
+                            al.add(new TString(new String(new char[] { (char)x }),
+                                               TString.UNICODE_CHARACTER));
+                            i += "uXXXX".length();
+                            startOfString = i+1;
+                            break;
+                        } else {
+                            al.add(new TString("Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.",
+                                               TString.ERROR));
+                            if (null != errors)
+                                errors.append("Offset " + i + ((numNewlines == 0) ? "" : (" or maybe " + (i-numNewlines))) + ": "
+                                              + "Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\n");
+                        }
                     } else {
                         al.add(new TString("Found an illegal character, " + ch + ", with ordinal " + (int)ch + ".",
                                            TString.ERROR));

@@ -266,6 +266,8 @@ public class ACIPConverter {
         throws IOException
     {
         try {
+        if (null != tdoc && (toUnicode && !toRTF))
+            throw new Error("Doing both at once might work, but it's not been tested.  I bet some 'continue;' statements will need to go.");
         if (toUnicode && toRTF)
             throw new Error("FIXME: support this ACIP->Unicode.rtf mode so that KA (GA) shows up in two different font sizes.  See RFE 838591.");
         if (!toUnicode && !toRTF)
@@ -363,7 +365,7 @@ public class ACIPConverter {
                     warnings.append('\n');
                 }
             } else {
-                if (s.isLatin(stype)) {
+                if (s.isLatin()) {
                     lastGuyWasNonPunct = false;
                     lastGuy = null;
                     String text
@@ -576,7 +578,7 @@ public class ACIPConverter {
                                         tdoc.appendRoman(tdocLocation[0], s.getText(),
                                                          Color.BLACK);
                                         tdocLocation[0] += s.getText().length();
-                                        continue;
+                                        continue; // FIXME: this means the unicode above doesn't go into the output if null != writer && null != tdoc?
                                     } else {
                                         String wy = ACIPRules.getWylieForACIPOther(s.getText());
                                         if (null == wy) throw new Error("No wylie for ACIP " + s.getText());
@@ -594,6 +596,24 @@ public class ACIPConverter {
                                 tdoc.setTibetanFontSize(regularFontSize);
                             }
                             continue;
+                        } else if (stype == TString.UNICODE_CHARACTER) {
+                            if (null != writer) {
+                                unicode = s.getText();
+                            }
+                            if (null != tdoc) {
+                                duff = TibetanMachineWeb.mapUnicodeToTMW(s.getText().charAt(0));
+                                if (null == duff) {
+                                    hasErrors = true;
+                                    String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: The Unicode escape with ordinal " + (int)s.getText().charAt(0) + " does not match up with any TibetanMachineWeb glyph.]";
+                                    tdoc.appendRoman(tdocLocation[0],
+                                                     errorMessage,
+                                                     Color.RED);
+                                    tdocLocation[0] += errorMessage.length();
+                                    if (null != errors)
+                                        errors.append(errorMessage + "\n");
+                                    continue; // FIXME: if null != writer, we dropped some output.
+                                }
+                            }
                         } else {
                             throw new Error("forgot a case");
                         }

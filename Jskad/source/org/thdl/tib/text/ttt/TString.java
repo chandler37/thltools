@@ -19,6 +19,8 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.text.ttt;
 
 import org.thdl.util.ThdlOptions;
+import org.thdl.util.ThdlDebug;
+import org.thdl.tib.text.tshegbar.UnicodeUtils;
 
 import java.util.HashSet;
 import java.io.*;
@@ -35,16 +37,19 @@ public class TString {
     private int type;
     private String text;
 
-    /** Returns true if and only if an TString with type type is to
-     *  be converted to Latin, not Tibetan, text. */
-    public static boolean isLatin(int type) {
+    /** Returns true if and only if an TString with type <i>type</i>
+     *  is to be converted to something other than Tibetan text.
+     *  (Chinese Unicode, Latin, etc. all qualify as non-Tibetan.) */
+    public boolean isLatin() {
         return (type != TIBETAN_NON_PUNCTUATION
                 && type != TIBETAN_PUNCTUATION
                 && type != TSHEG_BAR_ADORNMENT
                 && type != START_PAREN
                 && type != END_PAREN
                 && type != START_SLASH
-                && type != END_SLASH);
+                && type != END_SLASH
+                && (type != UNICODE_CHARACTER
+                    || !UnicodeUtils.isInTibetanRange(getText().charAt(0))));
     }
 
     /** For ACIP [#COMMENTS] and EWTS (DLC FIXME: what are EWTS comments?) */
@@ -87,13 +92,15 @@ public class TString {
     public static final int WARNING = 17;
     /** For ACIP %, o, and x or EWTS (DLC FIXME: what are EWTS adornments?) */
     public static final int TSHEG_BAR_ADORNMENT = 18;
+    /** For "\\uMNOP", this TString will contain the string that has
+        just the sole character "\\uMNOP". */
+    public static final int UNICODE_CHARACTER = 19;
     /** For things that are not legal syntax, such as a file that
-     * contains just "[# HALF A COMMEN" */
-    public static final int ERROR = 19;
+     *  contains just "[# HALF A COMMEN".  THIS MUST COME LAST. */
+    public static final int ERROR = 20;
 
-    /** Returns true if and only if this string is Latin (usually
-     *  English).  Returns false if this string is transliteration of
-     *  Tibetan. */
+    /** Returns the type of this string, which is one of the
+        enumerated integer static final members of this class. */
     public int getType() {
         return type;
     }
@@ -126,6 +133,8 @@ public class TString {
         String ftext = (TIBETAN_NON_PUNCTUATION == type)
             ? MidLexSubstitution.getFinalValueForTibetanNonPunctuationToken(text)
             : text;
+        // FIXME: assert this
+        ThdlDebug.verify(type != UNICODE_CHARACTER || text.length() == 1);
         setText(ftext);
         if ((outputAllTshegBars || outputUniqueTshegBars) && TIBETAN_NON_PUNCTUATION == type)
             outputTshegBar(ftext);
@@ -182,6 +191,7 @@ public class TString {
         if (type == END_PAREN) typeString = "END_PAREN";
         if (type == WARNING) typeString = "WARNING";
         if (type == TSHEG_BAR_ADORNMENT) typeString = "TSHEG_BAR_ADORNMENT";
+        if (type == UNICODE_CHARACTER) typeString = "UNICODE_CHARACTER";
         if (type == ERROR) typeString = "ERROR";
         return typeString + ":{" + getText() + "}";
     }
