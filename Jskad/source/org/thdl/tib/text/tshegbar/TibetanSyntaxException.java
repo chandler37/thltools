@@ -18,6 +18,8 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.tshegbar;
 
+import java.util.Vector;
+
 /** DLC FIXMEDOC: says "this isn't legal Tibetan", not "this isn't a valid sequence of Unicode" */
 class TibetanSyntaxException extends Exception {
     /** This constructor creates an exception with a less than helpful
@@ -46,6 +48,6 @@ class TibetanSyntaxException extends Exception {
         GraphemeCluster in the syntactically incorrect stretch of
         Tibetan. */
     TibetanSyntaxException(Vector grcls, int start, int end) {
-        DLC NOW;
+        throw new Error("DLC NOW");
     }
 }

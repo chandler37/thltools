@@ -146,7 +146,7 @@ public final class LegalTshegBar
      *  must not be absent.  To learn about the arguments, and to be
      *  sure that your input won't cause an exception to be thrown,
      *  see {@link
-     *  #formsLegalTshegBar(char,char,char,char,boolean,boolean,String,char,char)}.
+     *  #formsLegalTshegBar(char,char,char,char,boolean,boolean,String,char,char,StringBuffer)}.
      *
      *  @exception IllegalArgumentException if the rootLetter is not
      *  one of the thirty consonants (and represented nominally, at
@@ -712,7 +712,7 @@ public final class LegalTshegBar
      *  @exception IllegalArgumentException if the syllable does not
      *  follow the rules of a Tibetan syllable.  To learn about the
      *  arguments, see {@link
-     *  #formsLegalTshegBar(char,char,char,char,boolean,boolean,String,char,char)}. */
+     *  #formsLegalTshegBar(char,char,char,char,boolean,boolean,String,char,char,StringBuffer)}. */
     private static void throwIfNotLegalTshegBar(char prefix,
                                                 char headLetter,
                                                 char rootLetter,
@@ -745,7 +745,7 @@ public final class LegalTshegBar
     /** If you get through this gauntlet without having an exception
      *  thrown, then this combination makes a legal Tibetan syllable.
      *  To learn about the arguments, see {@link
-     *  #formsLegalTshegBar(char,char,char,char,boolean,boolean,String,char,char)}.
+     *  #formsLegalTshegBar(char,char,char,char,boolean,boolean,String,char,char,StringBuffer)}.
      *  @param errorBuf if non-null, the reason this is illegal will
      *  be written here, if this is illegal
      *  @return true if this syllable is legal, false if this syllable
@@ -1257,13 +1257,13 @@ public final class LegalTshegBar
      *  combination of superscribed, root, and subscribed letters)
      *  takes an EWC_ga prefix.
      *  @param head the {@link
-     *  isNominalRepresentationOfConsonant(char) nominal
+     *  #isNominalRepresentationOfConsonant(char) nominal
      *  representation} of the superscribed letter, or EW_ABSENT if
      *  not present
      *  @param root the {@link
-     *  isNominalRepresentationOfConsonant(char) nominal
+     *  #isNominalRepresentationOfConsonant(char) nominal
      *  representation} of the root letter
-     *  @param sub the {@link isNominalRepresentationOfConsonant(char)
+     *  @param sub the {@link #isNominalRepresentationOfConsonant(char)
      *  nominal representation} of the subjoined letter, or EW_ABSENT
      *  if not present */
     static boolean takesGao(char head, char root, char sub) {
@@ -1289,13 +1289,13 @@ public final class LegalTshegBar
      *  combination of superscribed, root, and subscribed letters)
      *  takes an EWC_da prefix.
      *  @param head the {@link
-     *  isNominalRepresentationOfConsonant(char) nominal
+     *  #isNominalRepresentationOfConsonant(char) nominal
      *  representation} of the superscribed letter, or EW_ABSENT if
      *  not present
      *  @param root the {@link
-     *  isNominalRepresentationOfConsonant(char) nominal
+     *  #isNominalRepresentationOfConsonant(char) nominal
      *  representation} of the root letter
-     *  @param sub the {@link isNominalRepresentationOfConsonant(char)
+     *  @param sub the {@link #isNominalRepresentationOfConsonant(char)
      *  nominal representation} of the subjoined letter, or EW_ABSENT
      *  if not present */
     static boolean takesDao(char head, char root, char sub) {
@@ -1327,13 +1327,13 @@ public final class LegalTshegBar
      *  combination of superscribed, root, and subscribed letters)
      *  takes an EWC_achung prefix.
      *  @param head the {@link
-     *  isNominalRepresentationOfConsonant(char) nominal
+     *  #isNominalRepresentationOfConsonant(char) nominal
      *  representation} of the superscribed letter, or EW_ABSENT if
      *  not present
      *  @param root the {@link
-     *  isNominalRepresentationOfConsonant(char) nominal
+     *  #isNominalRepresentationOfConsonant(char) nominal
      *  representation} of the root letter
-     *  @param sub the {@link isNominalRepresentationOfConsonant(char)
+     *  @param sub the {@link #isNominalRepresentationOfConsonant(char)
      *  nominal representation} of the subjoined letter, or EW_ABSENT
      *  if not present */
     static boolean takesAchungPrefix(char head, char root, char sub) {
@@ -1370,13 +1370,13 @@ public final class LegalTshegBar
      *  combination of superscribed, root, and subscribed letters)
      *  takes an EWC_ma prefix.
      *  @param head the {@link
-     *  isNominalRepresentationOfConsonant(char) nominal
+     *  #isNominalRepresentationOfConsonant(char) nominal
      *  representation} of the superscribed letter, or EW_ABSENT if
      *  not present
      *  @param root the {@link
-     *  isNominalRepresentationOfConsonant(char) nominal
+     *  #isNominalRepresentationOfConsonant(char) nominal
      *  representation} of the root letter
-     *  @param sub the {@link isNominalRepresentationOfConsonant(char)
+     *  @param sub the {@link #isNominalRepresentationOfConsonant(char)
      *  nominal representation} of the subjoined letter, or EW_ABSENT
      *  if not present */
     static boolean takesMao(char head, char root, char sub) {
@@ -1409,13 +1409,13 @@ public final class LegalTshegBar
      *  combination of superscribed, root, and subscribed letters)
      *  takes an EWC_ba prefix.
      *  @param head the {@link
-     *  isNominalRepresentationOfConsonant(char) nominal
+     *  #isNominalRepresentationOfConsonant(char) nominal
      *  representation} of the superscribed letter, or EW_ABSENT if
      *  not present
      *  @param root the {@link
-     *  isNominalRepresentationOfConsonant(char) nominal
+     *  #isNominalRepresentationOfConsonant(char) nominal
      *  representation} of the root letter
-     *  @param sub the {@link isNominalRepresentationOfConsonant(char)
+     *  @param sub the {@link #isNominalRepresentationOfConsonant(char)
      *  nominal representation} of the subjoined letter, or EW_ABSENT
      *  if not present */
     static boolean takesBao(char head, char root, char sub) {

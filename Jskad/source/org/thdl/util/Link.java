@@ -19,12 +19,12 @@ Contributor(s): ______________________________________.
 package org.thdl.util;
 import java.io.*;
 
-/** Used by {@link LinkedList} to provide the implementation of a
+/** Used by {@link SimplifiedLinkedList} to provide the implementation of a
     simple dynamic link list.
 
     @author Andr&eacute;s Montano Pellegrini
-    @see LinkedList
-    @see ListIterator
+    @see SimplifiedLinkedList
+    @see SimplifiedListIterator
 */
 
 public class Link

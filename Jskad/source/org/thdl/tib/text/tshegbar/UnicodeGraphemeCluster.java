@@ -387,7 +387,7 @@ public class UnicodeGraphemeCluster
         throw new Error("DLC FIXME");
     }
 
-    // DLC NOW -- LegalSyllable doesn't handle digits w/ underlining, etc.
+    // DLC NOW -- LegalTshegBar doesn't handle digits w/ underlining, etc.
 
     /** If this is a Tibetan consonant stack, this returns the root
      *  letter.  If this is a Tibetan digit (perhaps with other

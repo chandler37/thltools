@@ -19,7 +19,7 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.text;
 
 /** This is where basic, static knowledge of THDL's Extended Wylie is housed.
- *  @see org.thdl.tib.text#TibetanMachineWeb */
+ *  @see TibetanMachineWeb */
 public interface THDLWylieConstants {
 /**
 * the Wylie for bindu/anusvara

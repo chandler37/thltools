@@ -18,14 +18,17 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.tshegbar;
 
+import java.util.Vector;
+
 class ValidatingUnicodeReader implements UnicodeReadingStateMachineConstants {
     /** Don't instantiate this class. */
-    private Foo() { super(); }
+    private ValidatingUnicodeReader() { super(); }
 
-    /** This table tells how to transition from state a 6 states + error state */
+    /** This table tells how to transition from state to state upon
+     *  encountering certain classes of Unicode codepoints.  There are
+     *  6 legal states + an error state. */
     private static final TransitionInstruction
-        transitionTable[6 /* number of STATEs */]
-                       [11 /* number of CC classes */]
+        transitionTable[/* 6 is the number of STATEs */][/* 11 is the number of CC classes */]
         = {
             // STATE_START:
             {
@@ -50,7 +53,7 @@ class ValidatingUnicodeReader implements UnicodeReadingStateMachineConstants {
                 null,
                 /* upon seeing CC_0F39 in this state: */
                 null,
-                /* upon seeing CC_ACHUNG in this state: */
+                /* upon seeing CC_SUBSCRIBED_ACHUNG in this state: */
                 null,
                 /* upon seeing CC_DIGIT in this state: */
                 new TransitionInstruction(STATE_DIGIT,
@@ -73,7 +76,7 @@ class ValidatingUnicodeReader implements UnicodeReadingStateMachineConstants {
                 new TransitionInstruction(STATE_STACKING,
                                           ACTION_BEGINS_NEW_GRAPHEME_CLUSTER),
                 /* upon seeing CC_V in this state: */
-                null
+                null,
                 /* upon seeing CC_0F8A in this state: */
                 new TransitionInstruction(STATE_PARTIALMARK,
                                           ACTION_BEGINS_NEW_GRAPHEME_CLUSTER),
@@ -82,7 +85,7 @@ class ValidatingUnicodeReader implements UnicodeReadingStateMachineConstants {
                                           ACTION_CONTINUES_GRAPHEME_CLUSTER),
                 /* upon seeing CC_0F39 in this state: */
                 null,
-                /* upon seeing CC_ACHUNG in this state: */
+                /* upon seeing CC_SUBSCRIBED_ACHUNG in this state: */
                 null, // because 0F71 comes after SJCs, before Vs, and
                       // before CMs.
                 /* upon seeing CC_DIGIT in this state: */
@@ -115,7 +118,7 @@ class ValidatingUnicodeReader implements UnicodeReadingStateMachineConstants {
                                           ACTION_CONTINUES_GRAPHEME_CLUSTER),
                 /* upon seeing CC_0F39 in this state: */
                 null,
-                /* upon seeing CC_ACHUNG in this state: */
+                /* upon seeing CC_SUBSCRIBED_ACHUNG in this state: */
                 null,
                 /* upon seeing CC_DIGIT in this state: */
                 new TransitionInstruction(STATE_DIGIT,
@@ -149,7 +152,7 @@ class ValidatingUnicodeReader implements UnicodeReadingStateMachineConstants {
                 /* upon seeing CC_0F39 in this state: */
                 new TransitionInstruction(STATE_STACKING,
                                           ACTION_CONTINUES_GRAPHEME_CLUSTER),
-                /* upon seeing CC_ACHUNG in this state: */
+                /* upon seeing CC_SUBSCRIBED_ACHUNG in this state: */
                 new TransitionInstruction(STATE_STACKPLUSACHUNG,
                                           ACTION_CONTINUES_GRAPHEME_CLUSTER),
                 /* upon seeing CC_DIGIT in this state: */
@@ -182,7 +185,7 @@ class ValidatingUnicodeReader implements UnicodeReadingStateMachineConstants {
                                           ACTION_CONTINUES_GRAPHEME_CLUSTER),
                 /* upon seeing CC_0F39 in this state: */
                 null,
-                /* upon seeing CC_ACHUNG in this state: */
+                /* upon seeing CC_SUBSCRIBED_ACHUNG in this state: */
                 null,
                 /* upon seeing CC_DIGIT in this state: */
                 new TransitionInstruction(STATE_DIGIT,
@@ -209,48 +212,48 @@ class ValidatingUnicodeReader implements UnicodeReadingStateMachineConstants {
                                           ACTION_CONTINUES_GRAPHEME_CLUSTER),
                 /* upon seeing CC_0F39 in this state: */
                 null,
-                /* upon seeing CC_ACHUNG in this state: */
+                /* upon seeing CC_SUBSCRIBED_ACHUNG in this state: */
                 null,
                 /* upon seeing CC_DIGIT in this state: */
                 null
             }
         };
 
-    DLC NOW -- clearly, we need LegalSyllable to be convertable to and from GraphemeClusters;
+    /* DLC NOW FIXME -- clearly, we need LegalTshegBar to be convertable to and from UnicodeGraphemeClusters; */
 
-    /** Breaks a sequence of GraphemeClusters into LegalSyllables.
-        @param grcls a sequence of nonnull GraphemeClusters
-        @return a sequence of nonnull LegalSyllables
+    /** Breaks a sequence of UnicodeGraphemeClusters into LegalTshegBars.
+        @param grcls a sequence of nonnull UnicodeGraphemeClusters
+        @return a sequence of nonnull LegalTshegBars
         @exception TibetanSyntaxException if grcls does not consist
         entirely of legal Tibetan syllables
-        @see #GraphemeCluster
-        @see #LegalSyllable
+        @see UnicodeGraphemeCluster
+        @see LegalTshegBar
     */
-    private static Vector breakGraphemeClustersIntoOnlySyllables(Vector grcls)
+    private static Vector breakGraphemeClustersIntoOnlyTshegBars(Vector grcls)
         throws TibetanSyntaxException
     {
-        return breakGraphemeClustersIntoSyllablesAndGraphemeClusters(grcls,
+        return breakGraphemeClustersIntoTshegBarsAndGraphemeClusters(grcls,
                                                                      true);
     }
 
-    private static Vector breakGraphemeClustersIntoOnlySyllables(Vector grcls) {
+    private static Vector breakLegalGraphemeClustersIntoOnlyTshegBars(Vector grcls) {
         try {
-            return breakGraphemeClustersIntoSyllablesAndGraphemeClusters(grcls,
+            return breakGraphemeClustersIntoTshegBarsAndGraphemeClusters(grcls,
                                                                          false);
-        } catch (TibetanSyntaxException) {
+        } catch (TibetanSyntaxException ex) {
             throw new Error("This can never happen, because the second parameter, validating, was false.");
         }
     }
 
     /** 
-     @param grcls a Vector consisting entirely of GraphemeClusters
+     @param grcls a Vector consisting entirely of UnicodeGraphemeClusters
      @param validate true iff you wish to have a
      TibetanSyntaxException thrown upon encountering a sequence of
-     GraphemeClusters that is syntactically incorrect Tibetan
+     UnicodeGraphemeClusters that is syntactically incorrect Tibetan
      @return if validate is true, a Vector consisting entirely of
-     LegalSyllables, else a vector of LegalSyllables and
-     GraphemeClusters */
-    private static Vector breakGraphemeClustersIntoSyllablesAndGraphemeClusters(Vector grcls,
+     LegalTshegBars, else a vector of LegalTshegBars and
+     UnicodeGraphemeClusters */
+    private static Vector breakGraphemeClustersIntoTshegBarsAndGraphemeClusters(Vector grcls,
                                                                                 boolean validate)
         throws TibetanSyntaxException
     {
@@ -258,8 +261,8 @@ class ValidatingUnicodeReader implements UnicodeReadingStateMachineConstants {
         int grcls_len = grcls.length();
         int beginning_of_cluster = 0;
         for (int i = 0; i < grcls_len; i++) {
-            GraphemeCluster current_grcl
-                = (GraphemeCluster)grcls.elementAt(i);
+            UnicodeGraphemeCluster current_grcl
+                = (UnicodeGraphemeCluster)grcls.elementAt(i);
             if (current_grcl.isTshegLike()) {
                 if (beginning_of_cluster < i) {
                     // One or more non-tsheg-like grapheme clusters is
@@ -269,7 +272,7 @@ class ValidatingUnicodeReader implements UnicodeReadingStateMachineConstants {
                                                          beginning_of_cluster,
                                                          i))
                         {
-                            syllables.add(new LegalSyllable(grcls,
+                            syllables.add(new LegalTshegBar(grcls,
                                                             beginning_of_cluster,
                                                             i, tsheg=current_grcl));
                         }
@@ -299,17 +302,17 @@ class ValidatingUnicodeReader implements UnicodeReadingStateMachineConstants {
     }
 
     /** Breaks a string of perfectly-formed Unicode into
-        GraphemeClusters.
+        UnicodeGraphemeClusters.
         @param nfthdl_unicode a String of NFTHDL-normalized Unicode
         codepoints
         @exception Exception if the input is not perfectly formed
-        @return a vector of GraphemeClusters
-        @see #GraphemeCluster
+        @return a vector of UnicodeGraphemeClusters
+        @see UnicodeGraphemeCluster
     */
     private static Vector nonErrorCorrectingReader(String nfthdl_unicode)
         throws Exception
     {
-        // a vector of GraphemeClusters that we build up little by
+        // a vector of UnicodeGraphemeClusters that we build up little by
         // little:
         Vector grcls = new Vector();
         int currentState = STATE_START;
@@ -326,7 +329,7 @@ class ValidatingUnicodeReader implements UnicodeReadingStateMachineConstants {
             } else {
                 switch (ti.getAction()) {
                 case ACTION_BEGINS_NEW_GRAPHEME_CLUSTER:
-                    grcls.add(new GraphemeCluster(holdingPen));
+                    grcls.add(new UnicodeGraphemeCluster(holdingPen));
                     holdingPen = new StringBuffer();
                     break;
                 case ACTION_CONTINUES_GRAPHEME_CLUSTER:
