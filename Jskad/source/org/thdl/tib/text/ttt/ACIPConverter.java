@@ -367,9 +367,8 @@ public class ACIPConverter {
                         tdocLocation[0] += text.length();
                     }
                 }
-
+                if (null != hasWarnings) hasWarnings[0] = true;
                 if (null != warnings) {
-                    if (null != hasWarnings) hasWarnings[0] = true;
                     warnings.append("Warning: Lexical warning: ");
                     warnings.append(s.getText());
                     warnings.append('\n');
@@ -488,8 +487,8 @@ public class ACIPConverter {
                                                 tdocLocation[0] += text.length();
                                             }
                                         }
+                                        if (null != hasWarnings) hasWarnings[0] = true;
                                         if (null != warnings) {
-                                            if (null != hasWarnings) hasWarnings[0] = true;
                                             warnings.append(warning);
                                             warnings.append('\n');
                                         }
@@ -563,16 +562,15 @@ public class ACIPConverter {
                                         // one) and then a comma:
                                         peekaheadFindsSpacesAndComma(scan, i+1))) {
                                     if (null != writer) {
-                                        unicode = "    ";
+                                        unicode = " "; // DLC NOW FIXME: allow for U+00A0 between two <i>shad</i>s (0F0D or 0F0E), and optionally insert a U+200B after the <i>shad</i> following the whitespace so that stupid software will break lines more nicely
                                         done = true;
                                     }
                                     if (null != tdoc) {
-                                        String x = "    ";
-                                        tdoc.appendRoman(tdocLocation[0],
-                                                         x,
-                                                         Color.BLACK);
-                                        tdocLocation[0] += x.length();
-                                        continue;
+                                        DuffCode spaceDuff = TibetanMachineWeb.getGlyph("_");
+                                        if (null == spaceDuff) throw new Error("whitespace duff");
+                                        tdoc.appendDuffCode(tdocLocation[0]++,
+                                                            spaceDuff, Color.BLACK);
+                                        continue; // FIXME: if null != writer, output was just dropped.
                                     }
                                 }
                             } else if (s.getText().equals(",")

@@ -7425,7 +7425,7 @@ M+NA
         uhelp("^\rGONG SA", "\u0f38\u0f42\u0f7c\u0f44\u0f0b\u0f66");
         uhelp("^\r\nGONG SA", "\u0f38\u0f42\u0f7c\u0f44\u0f0b\u0f66");
         uhelp("^\nGONG SA", "\u0f38\u0f42\u0f7c\u0f44\u0f0b\u0f66");
-        uhelp("^  GONG SA", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP {^} must precede a tsheg bar.]        \u0f42\u0f7c\u0f44\u0f0b\u0f66");
+        uhelp("^  GONG SA", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP {^} must precede a tsheg bar.]  \u0f42\u0f7c\u0f44\u0f0b\u0f66");
         uhelp("BGLA", "\u0f56\u0f42\u0fb3");
         uhelp("BLCAG", "\u0f56\u0f63\u0f95\u0f42");
         uhelp("DBA", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP DBA has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.]\u0f51\u0f56");
@@ -7526,18 +7526,18 @@ M+NA
               "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b\u0f42\u0fa2\u0f7d\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
         uhelp("*#HUm: K+DHA GRO`;.,",
               "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b\u0f40\u0fa2\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
-        uhelp("HA,\nHA\n\nHA", "\u0f67\u0f0d    \u0f67\u0f0b\n\n\u0f67");
+        uhelp("HA,\nHA\n\nHA", "\u0f67\u0f0d \u0f67\u0f0b\n\n\u0f67");
         uhelp("NGA,", "\u0f44\u0f0c\u0f0d");
-        uhelp("NGA,\nHA\n\nHA", "\u0f44\u0f0c\u0f0d    \u0f67\u0f0b\n\n\u0f67");
+        uhelp("NGA,\nHA\n\nHA", "\u0f44\u0f0c\u0f0d \u0f67\u0f0b\n\n\u0f67");
         uhelp("MDO,\n\nKA\n\nHA", "\u0f58\u0f51\u0f7c\u0f0d\n\n\u0f40\u0f0b\n\n\u0f67");
-        uhelp("GA ,HA", "\u0f42    \u0f0d\u0f67");
-        uhelp("GA  ,HA", "\u0f42        \u0f0d\u0f67");
+        uhelp("GA ,HA", "\u0f42 \u0f0d\u0f67");
+        uhelp("GA  ,HA", "\u0f42  \u0f0d\u0f67");
         uhelp("GU ,HA", "\u0f42\u0f74\u0f0b\u0f0d\u0f67");
         uhelp("MA ,HA", "\u0f58\u0f0b\u0f0d\u0f67");
         uhelp("GA HA", "\u0f42\u0f0b\u0f67");
-        uhelp("GU, ,KHO", "\u0f42\u0f74\u0f0d    \u0f0d\u0f41\u0f7c");
-        uhelp("GU  ,KHO", "\u0f42\u0f74\u0f0b    \u0f0d\u0f41\u0f7c"); // FIXME: missing a shad after GU, warn about that.
-        uhelp("GA  HA", "\u0f42\u0f0b    \u0f67");
+        uhelp("GU, ,KHO", "\u0f42\u0f74\u0f0d \u0f0d\u0f41\u0f7c");
+        uhelp("GU  ,KHO", "\u0f42\u0f74\u0f0b \u0f0d\u0f41\u0f7c"); // FIXME: missing a shad after GU, warn about that.
+        uhelp("GA  HA", "\u0f42\u0f0b \u0f67");
     }
     public void testFixedFormSubjoinedConsonants() {
         // Usual subjoined RA:
