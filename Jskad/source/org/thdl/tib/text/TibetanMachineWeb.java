@@ -989,12 +989,21 @@ public static boolean isAmbiguousWylie(String x, String y) {
     // tibetan Z should get you X==Z in a perfect world), and it
     // doesn't confuse the legal stuff.
 
+    // How do I know this list is complete?  Because tibwn.ini has a
+    // list of all legal Tibetan (not Sanskrit) glyphs, and searching
+    // for the regular expressions ^d-, ^m-, ^'-, ^g-, and ^b- shows
+    // you all the fellows that could be ambiguous.
+
 	return (("g".equals(x) && y.startsWith("y") && isAmbHelper(y))
             || ("g".equals(x) && y.startsWith("w") && isAmbHelper(y))
             || ("d".equals(x) && y.startsWith("w") && isAmbHelper(y))
             || ("d".equals(x) && y.startsWith("z") && isAmbHelper(y))
             || ("b".equals(x) && y.startsWith("l") && isAmbHelper(y))
-            || ("b".equals(x) && y.startsWith("r") && isAmbHelper(y)));
+            || ("b".equals(x) && y.startsWith("r") && isAmbHelper(y))
+            || ("m".equals(x) && y.startsWith("y") && isAmbHelper(y))
+            || ("b".equals(x) && y.startsWith("y") && isAmbHelper(y))
+            || ("g".equals(x) && y.startsWith("rw"))
+            || ("d".equals(x) && y.startsWith("rw")));
 }
 
 /**
