@@ -165,7 +165,8 @@ public class LocalTibetanScanner extends TibetanScanner
 			
 			if (lastCompSil!=null)
 			{
-				w = new Word(lastCompWord, lastCompSil.getDefs());
+			    if (lastCompWord.equals(wordActual)) w = new Word(lastCompWord, lastCompSil.getDefs());
+				else w = new Word(lastCompWord, wordActual, lastCompSil.getDefs());
 				wordList.addLast(w);
 				this.resetAll();
 
@@ -202,7 +203,8 @@ public class LocalTibetanScanner extends TibetanScanner
 
 		while (lastCompSil!=null)
 		{
-			w = new Word(lastCompWord, lastCompSil.getDefs());
+			if (lastCompWord.equals(wordActual)) w = new Word(lastCompWord, lastCompSil.getDefs());
+			else w = new Word(lastCompWord, wordActual, lastCompSil.getDefs());
 			wordList.addLast(w);
 			this.resetAll();
 

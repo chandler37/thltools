@@ -76,28 +76,31 @@ public class SwingWord extends Word
 	    return getLink(false);
 	}
 	
+        /** Returns the word marked up as a link.
+         *
+         */
 	public String getLink(boolean tibetan)
 	{
 	    String localWord, result=null;
-	    // String result;
-		if (wordSinDec==null) localWord = super.token;
-		else localWord = wordSinDec;
-		if (tibetan) 
-		{
-		    try
-		    {
-		        result = TibetanHTML.getHTML(localWord + " ");
-		    }
-		    catch (Exception e)
-		    {
-		        result = localWord;
-		    }
-		}
-		else result = localWord;
-/*		result = "<a href=\"#" + word + "\">" + localWord;
-		if (tibetan) result+= "</a>";
-		else result+= "</a> ";
-		return result;*/
-		return "<a href=\"#" + super.token + "\">" + result + "</a> ";
+
+            if (wordSinDec==null) localWord = super.token;
+            else localWord = wordSinDec;
+            if (tibetan) 
+            {
+                try
+                {
+                    result = TibetanHTML.getHTML(localWord + " ");
+                }
+                catch (Exception e)
+                {
+                    result = localWord;
+                }
+            }
+            else result = localWord;
+/*          result = "<a href=\"#" + word + "\">" + localWord;
+            if (tibetan) result+= "</a>";
+            else result+= "</a> ";
+            return result;*/
+            return "<a href=\"#" + super.token + "\">" + result + "</a> ";
 	}	
 }

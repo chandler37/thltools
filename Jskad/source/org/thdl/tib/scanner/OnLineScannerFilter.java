@@ -351,35 +351,35 @@ public class OnLineScannerFilter extends HttpServlet
 		for (i=0; i < words.length; i++)
 		{
 			
-			if (words[i] instanceof Word)
-			{
-			    word = new SwingWord((Word)words[i]);
-			    if (word.getDefs().getDictionarySource()!=null)
-				    pw.print(word.getLink());
-				else pw.print(word.getWylie() + " ");
-			}
-			else
-			{
-			    if (words[i] instanceof PunctuationMark)
-			    {
-			        pm = words[i].toString().charAt(0);
-			        switch (pm)
-			        {
-			            case '\n':
-    				        pw.println("</p>");
-	    			        pw.print("<p>");
-	    			    break;
-	    			    case '<':
-	    			        pw.print("&lt; ");
-	    			    break;
-	    			    case '>':
-	    			        pw.print("&gt; ");
-	    			    break;
-	    			   default:
-	    			        pw.print(pm + " ");
-                                }
-                            }      
-			}
+                    if (words[i] instanceof Word)
+                    {
+                        word = new SwingWord((Word)words[i]);
+                        // if (word.getDefs().getDictionarySource()!=null)
+                        pw.print(word.getLink());
+                        // else pw.print(word.getWylie() + " ");
+                    }
+                    else
+                    {
+                        if (words[i] instanceof PunctuationMark)
+                        {
+                            pm = words[i].toString().charAt(0);
+                            switch (pm)
+                            {
+                                case '\n':
+                                    pw.println("</p>");
+                                    pw.print("<p>");
+                                break;
+                                case '<':
+                                    pw.print("&lt; ");
+                                break;
+                                case '>':
+                                    pw.print("&gt; ");
+                                break;
+                               default:
+                                    pw.print(pm + " ");
+                            }
+                        }      
+                    }
 		}
 		pw.println("</p>");
 	}
@@ -407,34 +407,24 @@ public class OnLineScannerFilter extends HttpServlet
                         word = new SwingWord(words[j]);
                         defs = word.getDefs();
                         ds = defs.getDictionarySource();
-                        if (ds==null || ds.isEmpty()) continue;
                         pw.println("  <tr>");
-                        tag = ds.getTag(0);
-                        // else tag = null;
-                        /*if (tag!=null)
-                        {*/
-                                pw.println("    <td width=\"20%\" rowspan=\""+ defs.def.length +"\" valign=\"top\">"+ word.getBookmark(tibetan) +"</td>");
-                                pw.println("    <td width=\"12%\">"+ tag +"</td>");
-                                pw.println("    <td width=\"68%\">" + defs.def[0] + "</td>");
-                        /*}
-                        else
-                        {
-                                pw.println("    <td width=\"20%\" rowspan=\""+ defs.def.length +"\" valign=\"top\">"+ words[j].getBookmark(tibetan) +"</td>");
-                                pw.println("    <td width=\"80%\" colspan=\"2\">" + defs.def[0] + "</td>");
-                        }*/
+                        if (ds!=null && !ds.isEmpty()) tag = ds.getTag(0);
+                        else tag = "&nbsp;";
+                        
+                        pw.println("    <td width=\"20%\" rowspan=\""+ defs.def.length +"\" valign=\"top\">"+ word.getBookmark(tibetan) +"</td>");
+                        pw.println("    <td width=\"12%\">"+ tag +"</td>");
+                        pw.println("    <td width=\"68%\">" + defs.def[0] + "</td>");
+
                         pw.println("  </tr>");
                         for (i=1; i<defs.def.length; i++)
                         {
-                                pw.println("  <tr>");
-                                if (ds!=null) tag = ds.getTag(i);
-                                else tag = null;
-                                if (tag!=null)
-                                {
-                                        pw.println("    <td width=\"12%\">"+ tag +"</td>");
-                                        pw.println("    <td width=\"68%\">" + defs.def[i] + "</td>");
-                                }
-                                else pw.println("    <td width=\"80%\" colspan=\"2\">" + defs.def[i] + "</td>");
-                                pw.println("  </tr>");
+                            pw.println("  <tr>");
+                            if (ds!=null && !ds.isEmpty()) tag = ds.getTag(i);
+                            else tag = "&nbsp;";
+                            pw.println("    <td width=\"12%\">"+ tag +"</td>");
+                            pw.println("    <td width=\"68%\">" + defs.def[i] + "</td>");
+                            //else pw.println("    <td width=\"80%\" colspan=\"2\">" + defs.def[i] + "</td>");
+                            pw.println("  </tr>");
                         }
                     }
                     catch (Exception e)
