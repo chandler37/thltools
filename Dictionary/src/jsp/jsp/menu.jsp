@@ -90,9 +90,8 @@
 		<p class="tmw-block">
 		<c:set target="${ sessionScope.visit.helper}" property="wylie" value="${ term.term }"/>
 		<c:set var="tib" value="${ sessionScope.visit.helper.tibetan } " />
-		<c:set var="wylie" value=" <span class='tmw-roman'>${ term.term }</span>" />
-		<c:out value='<a class="tmw-link" href="/lex/action?cmd=displayFull&comp=term&metaId=${term.metaId}">${ tib } </a>' escapeXml='false' /> 
-		<c:out value='<a class="tmw-link" href="/lex/action?cmd=displayFull&comp=term&metaId=${term.metaId}">${ wylie }</a>' escapeXml='false' /> 
+		<c:out value="<a class='tmw-link' href='/lex/action?cmd=displayFull&comp=term&metaId=${term.metaId}'>${ tib } </a>" escapeXml='false' /> 
+		<c:out value="<a href='/lex/action?cmd=displayFull&comp=term&metaId=${term.metaId}'><span class='tmw-roman'>${ term.term }</span></a>" escapeXml='false' /> 
 		<span class="tmw-roman">
 		Modified by <c:out value="${ applicationScope.flatData.users[ term.meta.modifiedBy ] }" /> 
 		<c:set target="${ sessionScope.visit.helper }" property="date" value="${ term.meta.modifiedOn }"/>
