@@ -27,8 +27,6 @@ import java.util.Properties;
 import org.thdl.util.ThdlLazyException;
 
 /**
- * @author David Chandler
- *
  * Provides a clean interface to the multi-tiered system of user
  * preferences (also known as options).
  *
@@ -59,7 +57,10 @@ import org.thdl.util.ThdlLazyException;
  * easier.</p>
  * 
  * <p>ThdlOptions is a final class so that compilers can make this
- * code run efficiently.</p> */
+ * code run efficiently.</p>
+ *
+ * @author David Chandler
+ */
 public final class ThdlOptions {
 	/**
 	 * So that you're not tempted to instantiate this class, the
