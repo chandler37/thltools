@@ -68,27 +68,9 @@ public class Jskad extends JPanel implements DocumentListener {
     private final static String enableKeypressStatusProp
         = "thdl.Jskad.enable.tibetan.mode.status";
 
-    /** Determines which Tibetan keyboards Jskad supports.  Adding a
-        new one is as easy as adding 3 lines of text here. */
     private final static JskadKeyboardManager keybdMgr
-        = new JskadKeyboardManager(new JskadKeyboard[] {
-            new JskadKeyboard("Extended Wylie Keyboard",
-                              null,
-                              "Wylie_keyboard.rtf"),
-            new JskadKeyboard("TCC Keyboard #1",
-                              "tcc_keyboard_1.ini",
-                              "TCC_keyboard_1.rtf"),
-            new JskadKeyboard("TCC Keyboard #2",
-                              "tcc_keyboard_2.ini",
-                              "TCC_keyboard_2.rtf"),
-            new JskadKeyboard("Sambhota Keymap One",
-                              "sambhota_keyboard_1.ini",
-                              "Sambhota_keymap_one.rtf"),
-            new JskadKeyboard("Asian Classics Input Project (ACIP) Keyboard",
-                              "acip_keyboard.ini",
-                              null)
-                });
-
+		= new JskadKeyboardManager(JskadKeyboardFactory.getAllAvailableJskadKeyboards());
+    
 	private JComboBox fontFamilies, fontSizes;
 	private JFileChooser fileChooser;
 	private javax.swing.filechooser.FileFilter rtfFilter;
@@ -1064,6 +1046,30 @@ class JskadKeyboard {
     }
 }
 
+    /** Determines which Tibetan keyboards Jskad supports.  Adding a
+        new one is as easy as adding 3 lines of text here. */
+
+class JskadKeyboardFactory {
+	static JskadKeyboard[] getAllAvailableJskadKeyboards() {
+	   return new JskadKeyboard[] {
+            new JskadKeyboard("Extended Wylie Keyboard",
+                              null,
+                              "Wylie_keyboard.rtf"),
+            new JskadKeyboard("TCC Keyboard #1",
+                              "tcc_keyboard_1.ini",
+                              "TCC_keyboard_1.rtf"),
+            new JskadKeyboard("TCC Keyboard #2",
+                              "tcc_keyboard_2.ini",
+                              "TCC_keyboard_2.rtf"),
+            new JskadKeyboard("Sambhota Keymap One",
+                              "sambhota_keyboard_1.ini",
+                              "Sambhota_keymap_one.rtf"),
+            new JskadKeyboard("Asian Classics Input Project (ACIP) Keyboard",
+                              "acip_keyboard.ini",
+                              null)
+                };
+	}
+}
 
 /** A JskadKeyboardManager maintains a list of JskadKeyboards. */
 class JskadKeyboardManager {
