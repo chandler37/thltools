@@ -163,6 +163,12 @@
 	<url-pattern>/test</url-pattern>
 </servlet-mapping>
 
+<!-- The mapping for the JSP servlet -->
+<servlet-mapping>
+      <servlet-name>jsp</servlet-name>
+      <url-pattern>*.jsf</url-pattern>
+</servlet-mapping>
+
 <!--TAGLIBS-->
 
 <!--RELEASE TAGLIBS
