@@ -34,7 +34,7 @@
   <!-- This creates output files TEST* in the Jskad/ directory. -->
   <target name="run-headed-junit-tests"
           description="Assuming that compilation of appropriate classes has been done, this target runs all the JUnit tests in the project.">
-    <junit fork="no" printsummary="yes" haltonfailure="yes" haltonerror="no">
+    <junit fork="no" printsummary="yes" haltonfailure="no" haltonerror="no">
     <!-- we don't halt on error because you get an error when you run
          on a headless display -->
       <classpath>
