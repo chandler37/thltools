@@ -105,7 +105,7 @@
 	<servlet-class>org.thdl.lex.LogoutServlet</servlet-class>
 	<init-param>
 		<param-name>goodbyePage</param-name>
-		<param-value>/index.jsp</param-value>
+		<param-value>http://iris.lib.virginia.edu/tibet/reference/dictionary.html</param-value>
 	</init-param>
 </servlet>
 

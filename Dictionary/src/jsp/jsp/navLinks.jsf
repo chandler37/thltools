@@ -12,7 +12,7 @@
 </li>
 
 <c:choose>
-<c:when test="${ sessionScope.visit.user.guest }">
+<c:when test="${ sessionScope.visit.user.guest || empty sessionScope.visit }">
 <li>
  | <a href="/lex/login.jsp">Login</a>
 </li>
