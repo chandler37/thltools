@@ -232,6 +232,14 @@ public class UnicodeUtils implements UnicodeConstants {
         /* DLC FIXME -- I was using 3.0 p.437-440, check 3.2. */
     }
 
+    /** If ch is in one of the ranges U+0F90-U+0F97, U+0F99-U+0FB9,
+     *  then this returns the same consonant in the range
+     *  U+0F40-U+0F69.  If ch is not in that range, this returns
+     *  garbage. */
+    public static char getNominalRepresentationOfSubscribedConsonant(char ch) {
+        return (char)((int)ch-(((int)'\u0F90') - ((int)'\u0F40')));
+    }
+
     /** Returns true iff ch corresponds to the Tibetan letter ra.
         Several Unicode codepoints correspond to the Tibetan letter ra
         (in its subscribed form or otherwise).  Oftentimes,

@@ -178,14 +178,19 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 
 
 
-    // NOTE WELL: if you delete from consonants, numbers, vowels, or
-    // others, you'll change the way Jskad's Extended Wylie keyboard
-    // works, yes, but you'll also change TMW->Wylie.
+    // NOTE WELL: if you delete from tibetanConsonants,
+    // otherConsonants, numbers, vowels, or others, you'll change the
+    // way Jskad's Extended Wylie keyboard works, yes, but you'll also
+    // change TMW->Wylie.
 
-    /** comma-delimited list of supported consonants (Tibetan and
-        Tibetanized Sanskrit): */
-	private static final String consonants
-        = "k,kh,g,ng,c,ch,j,ny,t,th,d,n,p,ph,b,m,ts,tsh,dz,w,zh,z,',y,r,l,sh,s,h,a,T,Th,D,N,Sh,v,f,Dz";
+    /** comma-delimited list of supported Tibetan consonants: */
+	private static final String tibetanConsonants
+        = "k,kh,g,ng,c,ch,j,ny,t,th,d,n,p,ph,b,m,ts,tsh,dz,w,zh,z,',y,r,l,sh,s,h,a";
+
+    /** comma-delimited list of supported non-Tibetan consonants, such
+     *  as Sanskrit consonants: */
+	private static final String otherConsonants // va and fa are treated pretty-much like Sanskrit.
+        = "T,Th,D,N,Sh,v,f,Dz";
 
     /** comma-delimited list of supported numbers (superscribed,
         subscribed, normal, half-numerals): */
@@ -371,11 +376,20 @@ public class TibetanMachineWeb implements THDLWylieConstants {
         charSet = new HashSet();
 
         tibSet = new HashSet();
-		sTok = new StringTokenizer(consonants, ",");
+		sTok = new StringTokenizer(tibetanConsonants, ",");
 		while (sTok.hasMoreTokens()) {
             String ntk;
 			charSet.add(ntk = sTok.nextToken());
             tibSet.add(ntk);
+            validInputSequences.put(ntk, anyOldObjectWillDo);
+        }
+
+        sanskritStackSet = new HashSet();
+		sTok = new StringTokenizer(otherConsonants, ",");
+		while (sTok.hasMoreTokens()) {
+            String ntk;
+			charSet.add(ntk = sTok.nextToken());
+            sanskritStackSet.add(ntk);
             validInputSequences.put(ntk, anyOldObjectWillDo);
         }
 
@@ -386,7 +400,7 @@ public class TibetanMachineWeb implements THDLWylieConstants {
             // do it in <?Input:Numbers?> so that Jskad has the same
             // TMW->Wylie conversion regardless of whether or not it
             // chooses to support inputting numbers.  Likewise for
-            // consonants, others, and vowels.
+            // tibetanConsonants, otherConsonants, others, and vowels.
             String ntk;
 			charSet.add(ntk = sTok.nextToken());
             numberSet.add(ntk);
@@ -426,8 +440,6 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 			boolean isSanskrit = false;
 
 			boolean ignore = false;
-
-            sanskritStackSet = new HashSet();
 
 			while ((line = in.readLine()) != null) {
 				if (line.startsWith("<?")) { //line is command
@@ -1182,6 +1194,23 @@ public static boolean hasGlyph(String hashKey) {
 		return true;
 }
 
+/** Returns the Unicode correspondence for the Wylie wylie, which must
+ *  be Wylie returned by getWylieForGlyph(int, int, boolean[]).
+ *  Returns null if the Unicode correspondence is nonexistent or
+ *  unknown. */
+public static String getUnicodeForWylieForGlyph(String wylie) {
+    DuffCode dc = getGlyph(wylie);
+    return mapTMWtoUnicode(dc.getFontNum() - 1, dc.getCharNum());
+}
+
+/**
+* Returns true if and only if hashKey is a known hash key from tibwn.ini.
+*/
+public static boolean isKnownHashKey(String hashKey) {
+	DuffCode[] dc = (DuffCode[])tibHash.get(hashKey);
+    return (null != dc);
+}
+
 /**
 * Gets a glyph for this hash key. Hash keys are not identical to Extended
 * Wylie. The hash key for a Tibetan stack separates the members of the stack
@@ -1193,7 +1222,7 @@ public static boolean hasGlyph(String hashKey) {
 public static DuffCode getGlyph(String hashKey) {
 	DuffCode[] dc = (DuffCode[])tibHash.get(hashKey);
     if (null == dc)
-        throw new Error("It is likely that you misconfigured tibwn.ini such that, say, M is expected (i.e., it is listed as, e.g. punctuation), but no 'M~...' line appears.");
+        throw new Error("Hash key " + hashKey + " not found; it is likely that you misconfigured tibwn.ini such that, say, M is expected (i.e., it is listed as, e.g. punctuation), but no 'M~...' line appears.");
 	return dc[TMW];
 }
 

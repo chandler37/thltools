@@ -133,16 +133,18 @@ public class ACIPTshegBarScanner {
         Stack bracketTypeStack = new Stack();
         int startSlashIndex = -1;
         int startParenIndex = -1;
+        int numNewlines = 0;
         for (int i = 0; i < sl; i++) {
             if (i < startOfString) throw new Error("bad reset");
             char ch;
             ch = s.charAt(i);
+            if (ch == '\n') ++numNewlines;
             if (ACIPString.COMMENT == currentType && ch != ']') {
                 if ('[' == ch) {
                     al.add(new ACIPString("Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n",
                                           ACIPString.ERROR));
                     if (null != errors)
-                        errors.append("Offset " + i + ": "
+                        errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                       + "Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n");
                     if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                 }
@@ -157,17 +159,18 @@ public class ACIPTshegBarScanner {
                         al.add(new ACIPString(s.substring(startOfString, i),
                                               currentType));
                     }
-                    al.add(new ACIPString(s.substring(i, i+1), ACIPString.ERROR));
+                    al.add(new ACIPString("Found a truly unmatched close bracket, " + s.substring(i, i+1),
+                                          ACIPString.ERROR));
                     if (!waitingForMatchingIllegalClose) {
                         if (null != errors) {
-                            errors.append("Offset " + i + ": "
+                            errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                           + "Found a truly unmatched close bracket, ] or }.\n");
                         }
                         if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     }
                     waitingForMatchingIllegalClose = false;
                     if (null != errors)
-                        errors.append("Offset " + i + ": "
+                        errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                       + "Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
                     if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     startOfString = i+1;
@@ -248,6 +251,11 @@ public class ACIPTshegBarScanner {
                            && (s.substring(i, i + "[BP]".length()).equals("[BP]")
                                || s.substring(i, i + "[BP]".length()).equals("{BP}"))) {
                     thingy = "[BP]";
+                    currentType = ACIPString.BP;
+                } else if (i + "[BLANK PAGE]".length() <= sl
+                           && (s.substring(i, i + "[BLANK PAGE]".length()).equals("[BLANK PAGE]")
+                               || s.substring(i, i + "[BLANK PAGE]".length()).equals("{BLANK PAGE}"))) {
+                    thingy = "[BLANK PAGE]";
                     currentType = ACIPString.BP;
                 } else if (i + "[ BP ]".length() <= sl
                            && (s.substring(i, i + "[ BP ]".length()).equals("[ BP ]")
@@ -414,11 +422,11 @@ public class ACIPTshegBarScanner {
                     // This is an error.  Sometimes [COMMENTS APPEAR
                     // WITHOUT # MARKS].  Though "... [" could cause
                     // this too.
-                    al.add(new ACIPString(s.substring(i, i+1),
+                    al.add(new ACIPString("Found an illegal open bracket: " + s.substring(i, i+1),
                                           ACIPString.ERROR));
                     if (waitingForMatchingIllegalClose) {
                         if (null != errors) {
-                            errors.append("Offset " + i + ": "
+                            errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                           + "Found a truly unmatched open bracket, [ or {, prior to this current illegal open bracket.\n");
                         }
                         if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
@@ -435,7 +443,7 @@ public class ACIPTshegBarScanner {
                                 inContext = inContext + "...";
                             }
                         }
-                        errors.append("Offset " + i + ": "
+                        errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                       + "Found an illegal open bracket (in context, this is " + inContext + ").  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\n");
                         if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     }
@@ -477,7 +485,6 @@ public class ACIPTshegBarScanner {
                             if (i+numdigits+2 < sl && s.charAt(i+numdigits+2) == '.') {
                                 if (!(i+numdigits+4 < sl && isNumeric(s.charAt(i+numdigits+3))
                                       && !isNumeric(s.charAt(i+numdigits+4)))) {
-                                    al.add(new ACIPString(s.substring(i, i+numdigits+3), ACIPString.ERROR));
                                     String inContext = s.substring(i, i+Math.min(sl-i, 10));
                                     if (inContext.indexOf("\r") >= 0) {
                                         inContext = inContext.substring(0, inContext.indexOf("\r"));
@@ -488,8 +495,10 @@ public class ACIPTshegBarScanner {
                                             inContext = inContext + "...";
                                         }
                                     }
+                                    al.add(new ACIPString("Found an illegal at sign, @ (in context, this is " + inContext + ").  This folio marker has a period, '.', at the end of it, which is illegal.",
+                                                          ACIPString.ERROR));
                                     if (null != errors)
-                                        errors.append("Offset " + i + ": "
+                                        errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                                       + "Found an illegal at sign, @ (in context, this is " + inContext + ").  This folio marker has a period, '.', at the end of it, which is illegal.\n");
                                     if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                                     startOfString = i+numdigits+3;
@@ -498,7 +507,6 @@ public class ACIPTshegBarScanner {
                                     break;
                                 }
                                 if (i+numdigits+4 < sl && (s.charAt(i+numdigits+4) == '.' || s.charAt(i+numdigits+4) == 'A' || s.charAt(i+numdigits+4) == 'B' || s.charAt(i+numdigits+4) == 'a' || s.charAt(i+numdigits+4) == 'b' || isNumeric(s.charAt(i+numdigits+4)))) {
-                                    al.add(new ACIPString(s.substring(i, i+1), ACIPString.ERROR));
                                     String inContext = s.substring(i, i+Math.min(sl-i, 10));
                                     if (inContext.indexOf("\r") >= 0) {
                                         inContext = inContext.substring(0, inContext.indexOf("\r"));
@@ -509,8 +517,10 @@ public class ACIPTshegBarScanner {
                                             inContext = inContext + "...";
                                         }
                                     }
+                                    al.add(new ACIPString("Found an illegal at sign, @ (in context, this is " + inContext + ").  This folio marker is not followed by whitespace, as is expected.",
+                                                          ACIPString.ERROR));
                                     if (null != errors)
-                                        errors.append("Offset " + i + ": "
+                                        errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                                       + "Found an illegal at sign, @ (in context, this is " + inContext + ").  This folio marker is not followed by whitespace, as is expected.\n");
                                     if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                                     startOfString = i+1; // DLC FIXME: skip over more?
@@ -572,7 +582,9 @@ public class ACIPTshegBarScanner {
                     }
                     
                     // This case, @NNN, must come after the @NNN{AB} case.
-                    if (i+numdigits+1 < sl && s.charAt(i+numdigits+1) == ' ') {
+                    if (i+numdigits+1 < sl && (s.charAt(i+numdigits+1) == ' '
+                                               || s.charAt(i+numdigits+1) == '\n'
+                                               || s.charAt(i+numdigits+1) == '\r')) {
                         boolean allAreNumeric = true;
                         for (int k = 1; k <= numdigits; k++) {
                             if (!isNumeric(s.charAt(i+k))) {
@@ -591,7 +603,6 @@ public class ACIPTshegBarScanner {
                     }
                 }
                 if (startOfString == i) {
-                    al.add(new ACIPString(s.substring(i, i+1), ACIPString.ERROR));
                     String inContext = s.substring(i, i+Math.min(sl-i, 10));
                     if (inContext.indexOf("\r") >= 0) {
                         inContext = inContext.substring(0, inContext.indexOf("\r"));
@@ -602,8 +613,10 @@ public class ACIPTshegBarScanner {
                             inContext = inContext + "...";
                         }
                     }
+                    al.add(new ACIPString("Found an illegal at sign, @ (in context, this is " + inContext + ").  @012B is an example of a legal folio marker.",
+                                          ACIPString.ERROR));
                     if (null != errors)
-                        errors.append("Offset " + i + ": "
+                        errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                       + "Found an illegal at sign, @ (in context, this is " + inContext + ").  @012B is an example of a legal folio marker.\n");
                     if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     startOfString = i+1;
@@ -626,9 +639,10 @@ public class ACIPTshegBarScanner {
                          * it means /NYA/.  We warn about // for this
                          * reason.  \\ causes a tsheg-bar error (DLC
                          * FIXME: verify this is so). */
-                        al.add(new ACIPString("//", ACIPString.ERROR));
+                        al.add(new ACIPString("Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.",
+                                              ACIPString.ERROR));
                         if (errors != null) {
-                            errors.append("Offset " + i + ": "
+                            errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                           + "Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\n");
                         }
                         if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
@@ -661,9 +675,10 @@ public class ACIPTshegBarScanner {
 
                 if (startParenIndex >= 0) {
                     if (ch == '(') {
-                        al.add(new ACIPString("Nesting of parentheses () is not allowed", ACIPString.ERROR));
+                        al.add(new ACIPString("Found an illegal open parenthesis, (.  Nesting of parentheses is not allowed.",
+                                              ACIPString.ERROR));
                         if (null != errors)
-                            errors.append("Offset " + i + ": "
+                            errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                           + "Found an illegal open parenthesis, (.  Nesting of parentheses is not allowed.\n");
                         if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     } else {
@@ -674,9 +689,10 @@ public class ACIPTshegBarScanner {
                     currentType = ACIPString.ERROR;
                 } else {
                     if (ch == ')') {
-                        al.add(new ACIPString("Unexpected closing parenthesis )", ACIPString.ERROR));
+                        al.add(new ACIPString("Unexpected closing parenthesis, ), found.",
+                                              ACIPString.ERROR));
                         if (null != errors)
-                            errors.append("Offset " + i + ": "
+                            errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                           + "Unexpected closing parenthesis, ), found.\n");
                         if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     } else {
@@ -724,10 +740,10 @@ public class ACIPTshegBarScanner {
                     al.add(new ACIPString(s.substring(i, i+1),
                                           ACIPString.TIBETAN_PUNCTUATION));
                 } else {
-                    al.add(new ACIPString(s.substring(i, i+1),
+                    al.add(new ACIPString("A non-breaking tsheg, '.', appeared, but not like \"...,\" or \".,\" or \".dA\" or \".DA\".",
                                           ACIPString.ERROR));
                     if (null != errors)
-                        errors.append("Offset " + i + ": "
+                        errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                       + "A non-breaking tsheg, '.', appeared, but not like \"...,\" or \".,\" or \".dA\" or \".DA\".\n");
                     if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                 }
@@ -772,19 +788,24 @@ public class ACIPTshegBarScanner {
                         al.add(new ACIPString(s.substring(startOfString, i),
                                               currentType));
                     }
-                    al.add(new ACIPString(s.substring(i, i+1),
-                                          ACIPString.ERROR));
-                    if (null != errors) {
-                        if ((int)ch == 65533) {
-                            errors.append("Offset " + i + ": "
+                    if ((int)ch == 65533) {
+                        al.add(new ACIPString("Found an illegal, unprintable character.",
+                                              ACIPString.ERROR));
+                        if (null != errors)
+                            errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                           + "Found an illegal, unprintable character.\n");
-                        } else if ('\\' == ch) {
-                            errors.append("Offset " + i + ": "
+                    } else if ('\\' == ch) {
+                        al.add(new ACIPString("Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.",
+                                              ACIPString.ERROR));
+                        if (null != errors)
+                            errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                           + "Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\n");
-                        } else {
-                            errors.append("Offset " + i + ": "
+                    } else {
+                        al.add(new ACIPString("Found an illegal character, " + ch + ", with ordinal " + (int)ch + ".",
+                                              ACIPString.ERROR));
+                        if (null != errors)
+                            errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                           + "Found an illegal character, " + ch + ", with ordinal " + (int)ch + ".\n");
-                        }
                     }
                     if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     startOfString = i+1;

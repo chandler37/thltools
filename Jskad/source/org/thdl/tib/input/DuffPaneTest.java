@@ -102,19 +102,23 @@ public class DuffPaneTest extends TestCase {
         ensureKeysGiveCorrectWylie("gya");
         ensureKeysGiveCorrectWylie("g.ya");
         ensureKeysGiveCorrectWylie("bya");
-        ensureKeysGiveCorrectWylie("b.ya");
+        ensureKeysGiveCorrectWylie("b.ya", "baya");
         ensureKeysGiveCorrectWylie("mya");
-        ensureKeysGiveCorrectWylie("m.ya");
-        ensureKeysGiveCorrectWylie("'ya");
-        ensureKeysGiveCorrectWylie("'.ya", "'ya");
-        ensureKeysGiveCorrectWylie("dya");
-        ensureKeysGiveCorrectWylie("d.ya", "dya");
+        ensureKeysGiveCorrectWylie("m.ya", "maya");
+        ensureKeysGiveCorrectWylie("'ya", "'aya");
+        ensureKeysGiveCorrectWylie("'.ya", "'aya");
+        ensureKeysGiveCorrectWylie("dya",
+                                   "daya");
+        ensureKeysGiveCorrectWylie("d.ya",
+                                   "daya");
         ensureKeysGiveCorrectWylie("grwa");
-        ensureKeysGiveCorrectWylie("g.rwa");
+        ensureKeysGiveCorrectWylie("g.rwa",
+                                   "garwa");
         ensureKeysGiveCorrectWylie("gra");
         ensureKeysGiveCorrectWylie("dra");
         ensureKeysGiveCorrectWylie("drwa");
-        ensureKeysGiveCorrectWylie("d.rwa");
+        ensureKeysGiveCorrectWylie("d.rwa",
+                                   "darwa");
         ensureKeysGiveCorrectWylie("g.r", "gar");
         ensureKeysGiveCorrectWylie("d.r", "dar");
         ensureKeysGiveCorrectWylie("'.r", "'ar");
@@ -134,7 +138,7 @@ public class DuffPaneTest extends TestCase {
         ensureKeysGiveCorrectWylie("t.sa",
                                    "tas");
 
-        ensureKeysGiveCorrectWylie("d.za");
+        ensureKeysGiveCorrectWylie("d.za", "daza");
         ensureKeysGiveCorrectWylie("dza");
 
         ensureKeysGiveCorrectWylie("s.ha",
@@ -219,7 +223,7 @@ public class DuffPaneTest extends TestCase {
 
         ensureKeysGiveCorrectWylie("b.lag");
         ensureKeysGiveCorrectWylie("blg",
-                                   "blga");
+                                   "balga");
 
         ensureKeysGiveCorrectWylie("b.las",
                                    "bals");
@@ -244,21 +248,24 @@ public class DuffPaneTest extends TestCase {
                                    "bras");
         ensureKeysGiveCorrectWylie("bras");
 
-        ensureKeysGiveCorrectWylie("d.wa");
+        ensureKeysGiveCorrectWylie("d.wa",
+                                   "dawa");
         ensureKeysGiveCorrectWylie("dawa",
-                                   "d.wa");
+                                   "dawa");
         ensureKeysGiveCorrectWylie("dwa");
 
-        ensureKeysGiveCorrectWylie("g.wa");
+        ensureKeysGiveCorrectWylie("g.wa",
+                                   "gawa");
         ensureKeysGiveCorrectWylie("gawa",
-                                   "g.wa");
+                                   "gawa");
         ensureKeysGiveCorrectWylie("gwa");
 
         ensureKeysGiveCorrectWylie("'.wa",
-                                   "'wa");
+                                   "'awa");
         ensureKeysGiveCorrectWylie("'awa",
-                                   "'wa");
-        ensureKeysGiveCorrectWylie("'wa");
+                                   "'awa");
+        ensureKeysGiveCorrectWylie("'wa",
+                                   "'awa");
 
         ensureKeysGiveCorrectWylie("gyg",
                                    "g.yag");
@@ -282,7 +289,8 @@ public class DuffPaneTest extends TestCase {
         ensureKeysGiveCorrectWylie("ma.a.asa",
                                    "mas");
 
-        ensureKeysGiveCorrectWylie("'ka");
+        ensureKeysGiveCorrectWylie("'ka",
+                                   "'aka");
 
         ensureKeysGiveCorrectWylie("'gas");
 
@@ -319,8 +327,9 @@ public class DuffPaneTest extends TestCase {
                                    "lamanga");
 
         ensureKeysGiveCorrectWylie("b.m.ng",
-                                   "bmang");
-        ensureKeysGiveCorrectWylie("bmang");
+                                   "bamanga");
+        ensureKeysGiveCorrectWylie("bmang",
+                                   "bamanga");
 
         ensureKeysGiveCorrectWylie("gdams");
         ensureKeysGiveCorrectWylie("g.d.m.s.",
@@ -372,7 +381,7 @@ public class DuffPaneTest extends TestCase {
         ensureKeysGiveCorrectWylie("fivikikhigingicichijinyitithidinipiphibimitsitshidziwizhizi'iyirilishisihiTiThiDiNiShi");
 
         ensureKeysGiveCorrectWylie("don't touch my coffee/that makes me very angry/supersize my drink",
-                                   "dona'ata tocha mya cofafe/thata mkes me veraya angaraya/superasize mya drinaka");
+                                   "dona'ata tocha mya cofafe/thata makesa me veraya angaraya/superasize mya drinaka");
 
     }
 }

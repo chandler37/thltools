@@ -91,7 +91,7 @@ class TParseTree {
         ParseIterator pi = getParseIterator();
         while (pi.hasNext()) {
             TStackList sl = pi.next();
-            if (sl.isLegalTshegBar().isLegal) {
+            if (sl.isLegalTshegBar(false).isLegal) {
                 sll.add(sl);
             }
         }
@@ -118,12 +118,12 @@ class TParseTree {
      *  a unique non-illegal parse, you get it.  If there's not a
      *  unique answer, null is returned. */
     // {TZANDRA} is not solved by this, DLC NOW.  Solve PADMA PROBLEM!
-
     // DLC by using this we can get rid of single-sanskrit-gc, eh?
     public TStackList getBestParse() {
-        TStackListList up = getUniqueParse();
+        TStackListList up = getUniqueParse(false);
         if (up.size() == 1)
             return up.get(0);
+
         up = getNonIllegalParses();
         int sz = up.size();
         if (sz == 1) {
@@ -192,14 +192,17 @@ class TParseTree {
      *  legal parses if there two or more equally good parses.  By
      *  &quot;legal&quot;, we mean a sequence of stacks that is legal
      *  by the rules of Tibetan tsheg bar syntax (sometimes called
-     *  spelling). */
-    public TStackListList getUniqueParse() {
+     *  spelling).
+     *  @param noPrefixTests true if you want to pretend that every
+     *  stack can take every prefix, which is not the case in
+     *  reality */
+    public TStackListList getUniqueParse(boolean noPrefixTests) {
         TStackListList allLegalParses = new TStackListList(2); // save memory
         TStackListList legalParsesWithVowelOnRoot = new TStackListList(1);
         ParseIterator pi = getParseIterator();
         while (pi.hasNext()) {
             TStackList sl = pi.next();
-            BoolPair bpa = sl.isLegalTshegBar();
+            BoolPair bpa = sl.isLegalTshegBar(noPrefixTests);
             if (bpa.isLegal) {
                 if (bpa.isLegalAndHasAVowelOnRoot)
                     legalParsesWithVowelOnRoot.add(sl);
@@ -253,13 +256,23 @@ class TParseTree {
     public String getWarning(boolean paranoid,
                              TPairList pl,
                              String originalACIP) {
-        TStackListList up = getUniqueParse();
+
+        {
+            TStackList bestParse = getBestParse();
+            TStackListList noPrefixTestsUniqueParse = getUniqueParse(true);
+            if (noPrefixTestsUniqueParse.size() == 1
+                && !noPrefixTestsUniqueParse.get(0).equals(bestParse)) {
+                return "Warning: We're going with " + bestParse + ", but only because our knowledge of prefix rules says that " + noPrefixTestsUniqueParse.get(0) + " is not a legal Tibetan tsheg bar (\"syllable\")";
+            }
+        }
+
+        TStackListList up = getUniqueParse(false);
         if (null == up || up.size() != 1) {
             boolean isLastStack[] = new boolean[1];
             TStackListList nip = getNonIllegalParses();
             if (nip.size() != 1) {
                 if (null == getBestParse()) {
-                    return "There's not even a unique, non-illegal parse for ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}";
+                    return "Warning: There's not even a unique, non-illegal parse for ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}";
                 } else {
                     if (getBestParse().hasStackWithoutVowel(pl, isLastStack)) {
                         if (isLastStack[0]) {
@@ -269,7 +282,7 @@ class TParseTree {
                         }
                     }
                     if (paranoid) {
-                        return "Though the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "} is unambiguous, it would be more computer-friendly if + signs were used to stack things because there are two (or more) ways to interpret this ACIP if you're not careful.";
+                        return "Warning: Though the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "} is unambiguous, it would be more computer-friendly if + signs were used to stack things because there are two (or more) ways to interpret this ACIP if you're not careful.";
                     }
                 }
             } else {

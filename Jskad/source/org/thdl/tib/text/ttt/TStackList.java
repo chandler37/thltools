@@ -125,15 +125,17 @@ class TStackList {
      *  Tibetan syntax (sometimes called rules of spelling).  If this
      *  is legal, then {@link BoolPair#isLegalAndHasAVowelOnRoot} will
      *  be true if and only if there is an explicit {A} vowel on the
-     *  root stack. */
-    public BoolPair isLegalTshegBar() {
-        // DLC handle PADMA and other Tibetanized Sanskrit fellows.  Right now we only handle single-stack guys.
+     *  root stack.
+     *  @param noPrefixTests true if you want to pretend that every
+     *  stack can take every prefix, which is not the case in
+     *  reality */
+    public BoolPair isLegalTshegBar(boolean noPrefixTests) {
+        // DLC handle PADMA and other Tibetanized Sanskrit fellows consistently.  Right now we only treat single-stack Sanskrit guys as legal.
 
         TTGCList tgcList = new TTGCList(this);
         StringBuffer warnings = new StringBuffer();
         String candidateType
-            = TibTextUtils.getClassificationOfTshegBar(tgcList, warnings);
-        // System.out.println("DLC: " + toString() + " has candidateType " + candidateType + " and warnings " + warnings);
+            = TibTextUtils.getClassificationOfTshegBar(tgcList, warnings, noPrefixTests);
 
         // preliminary answer:
         boolean isLegal = (candidateType != "invalid");

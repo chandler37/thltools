@@ -520,7 +520,8 @@ class TPairList {
      *  corresponds to exactly one Tibetan grapheme cluster (i.e.,
      *  stack).  Note that U+0F7F (ACIP {:}) is part of a stack, not a
      *  stack all on its own. */
-    void populateWithTGCPairs(ArrayList pl, ArrayList indexList, int index) {
+    void populateWithTGCPairs(ArrayList pl,
+                              ArrayList indexList, int index) {
         int sz = size();
         if (sz == 0) {
             return;
@@ -540,8 +541,8 @@ class TPairList {
             // The last pair:
             TPair p = get(i);
             ThdlDebug.verify(!"+".equals(p.getRight()));
-            int where;
             boolean add_U0F7F = false;
+            int where;
             if (p.getRight() != null
                 && (where = p.getRight().indexOf(':')) >= 0) {
                 // this ':' guy is his own TGCPair.
@@ -579,27 +580,21 @@ class TPairList {
             }
             TGCPair tp;
             indexList.add(new Integer(index));
-            tp = new TGCPair(lWylie.toString()
-                             + (hasNonAVowel
-                                ? ACIPRules.getWylieForACIPVowel(p.getRight())
-                                : ""),
+            tp = new TGCPair(lWylie.toString(),
+                             (hasNonAVowel
+                              ? ACIPRules.getWylieForACIPVowel(p.getRight())
+                              : ""),
                              (isNumeric
-                              ? TGCPair.OTHER
-                              : (hasNonAVowel
-                                 ? (isSanskrit
-                                    ? TGCPair.SANSKRIT_WITH_VOWEL
-                                    : (isTibetan
-                                       ? TGCPair.CONSONANTAL_WITH_VOWEL
-                                       : TGCPair.OTHER))
-                                 : (isSanskrit
-                                    ? TGCPair.SANSKRIT_WITHOUT_VOWEL
-                                    : (isTibetan
-                                       ? TGCPair.CONSONANTAL_WITHOUT_VOWEL
-                                       : TGCPair.OTHER)))));
+                              ? TGCPair.TYPE_OTHER
+                              : (isSanskrit
+                                 ? TGCPair.TYPE_SANSKRIT
+                                 : (isTibetan
+                                    ? TGCPair.TYPE_TIBETAN
+                                    : TGCPair.TYPE_OTHER))));
             pl.add(tp);
             if (add_U0F7F) {
                 indexList.add(new Integer(index));
-                pl.add(new TGCPair("H", TGCPair.OTHER));
+                pl.add(new TGCPair("H", null, TGCPair.TYPE_OTHER));
             }
         }
     }

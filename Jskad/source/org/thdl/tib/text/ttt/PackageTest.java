@@ -128,7 +128,7 @@ public class PackageTest extends TestCase {
         }
 
         {
-            TStackListList legalParses = pt.getUniqueParse();
+            TStackListList legalParses = pt.getUniqueParse(false);
             boolean goodness2 = (expectedLegalParses == null
                                  || expectedLegalParses.length == legalParses.size());
             for (int i = 0 ; i < legalParses.size(); i++) {
@@ -139,18 +139,21 @@ public class PackageTest extends TestCase {
                                 || expectedLegalParses.length < i+1
                                 || n.equals(expectedLegalParses[i]));
                 if (!okay || !goodness2)
-                    System.out.println("Legal parse " + (i) + " (from zero) is " + n + " (toString2=" + n.toString2() + ") and expected is " + expectedLegalParses[i]);
+                    System.out.println("Legal parse " + (i) + " (from zero) is " + n + " (toString2=" + n.toString2() + ") and expected is "
+                                       + ((i < expectedLegalParses.length)
+                                          ? expectedLegalParses[i]
+                                          : "not present"));
                 assertTrue(okay);
             }
             if (!goodness2)
-                System.out.println("You expected " + expectedLegalParses.length + " legal parses, but there were instead " + legalParses.size() + " legal parses.");
+                System.out.println("You expected " + expectedLegalParses.length + " legal parses, but there were instead " + legalParses.size() + " legal parses for ACIP " + acip + ".");
             assertTrue(goodness2);
             TStackListList allLegalParses = pt.getLegalParses();
             TStackListList decentParses = pt.getNonIllegalParses();
             if (pt.getBestParse() == null) {
                 if (legalParses.size() == 0) {
                     if (null != expectedBestParse && !"".equals(expectedBestParse)) {
-                        System.out.print("Expected is that there is a best parse \"" + expectedBestParse + "\" but there is no best parse for acip {" + acip + "}");
+                        System.out.print("Expected is that there is a best parse \"" + expectedBestParse + "\" but there is no best parse for ACIP {" + acip + "}");
                         assertTrue(false);
                     }
                     System.out.print("ACIPNoBestParseError: There is no best parse for the ACIP {" + acip + "}; ");
@@ -163,7 +166,7 @@ public class PackageTest extends TestCase {
                     }
                 } else {
                     if (legalParses.size() > 1) {
-                        System.out.println("ACIPTooManyLegalParsesError: see these " + legalParses.size() + " legal parses for acip " + acip + ": " + legalParses);
+                        System.out.println("ACIPTooManyLegalParsesError: see these " + legalParses.size() + " legal parses for ACIP " + acip + ": " + legalParses);
                         assertTrue(legalParses.size() == 2
                                    && (legalParses.get(0).size()
                                        == 1 + legalParses.get(1).size()));
@@ -176,7 +179,7 @@ public class PackageTest extends TestCase {
                 if (null != expectedBestParse) {
                     boolean good = pt.getBestParse().equals(expectedBestParse);
                     if (!good) {
-                        System.out.print("Expected best parse is \"" + expectedBestParse + "\" but the best parse is " + pt.getBestParse() + " for acip {" + acip + "}");
+                        System.out.print("Expected best parse is \"" + expectedBestParse + "\" but the best parse is " + pt.getBestParse() + " for ACIP {" + acip + "}");
                     }
                     assertTrue(good);
                 }
@@ -229,6 +232,116 @@ public class PackageTest extends TestCase {
      *  {@link TPairList#getACIPError()}, and {@link
      *  TPairList#recoverACIP()}. */
     public void testBreakACIPIntoChunks() {
+tstHelper("GASN"); // ambiguous with regard to prefix rules
+tstHelper("BARMA"); // ambiguous with regard to prefix rules
+tstHelper("MARDA"); // ambiguous with regard to prefix rules
+tstHelper("BBA"); // ambiguous with regard to prefix rules
+tstHelper("BBLUGS"); // ambiguous with regard to prefix rules
+tstHelper("BDRA"); // ambiguous with regard to prefix rules
+tstHelper("BDRAG"); // ambiguous with regard to prefix rules
+tstHelper("BDRA'I"); // ambiguous with regard to prefix rules
+tstHelper("BDRAL"); // ambiguous with regard to prefix rules
+tstHelper("BDRAN"); // ambiguous with regard to prefix rules
+tstHelper("BDRANGS"); // ambiguous with regard to prefix rules
+tstHelper("BDREN"); // ambiguous with regard to prefix rules
+tstHelper("BDRI"); // ambiguous with regard to prefix rules
+tstHelper("BDRIS"); // ambiguous with regard to prefix rules
+tstHelper("BDROL"); // ambiguous with regard to prefix rules
+tstHelper("BDRUG"); // ambiguous with regard to prefix rules
+tstHelper("BLCAG"); // ambiguous with regard to prefix rules
+tstHelper("BLCI"); // ambiguous with regard to prefix rules
+tstHelper("BLKONG"); // ambiguous with regard to prefix rules
+tstHelper("BLNGA"); // ambiguous with regard to prefix rules
+tstHelper("BLNGAG"); // ambiguous with regard to prefix rules
+tstHelper("BMA"); // ambiguous with regard to prefix rules
+tstHelper("BMYOD"); // ambiguous with regard to prefix rules
+tstHelper("BSALDA"); // ambiguous with regard to prefix rules
+tstHelper("BSAMS"); // ambiguous with regard to prefix rules
+tstHelper("BSEMS"); // ambiguous with regard to prefix rules
+tstHelper("BTSAMS"); // ambiguous with regard to prefix rules
+tstHelper("BTSIMS"); // ambiguous with regard to prefix rules
+tstHelper("DDANG"); // ambiguous with regard to prefix rules
+tstHelper("DDAR"); // ambiguous with regard to prefix rules
+tstHelper("DDRANGS"); // ambiguous with regard to prefix rules
+tstHelper("DDRUG"); // ambiguous with regard to prefix rules
+tstHelper("DNAG"); // ambiguous with regard to prefix rules
+tstHelper("DNOGS"); // ambiguous with regard to prefix rules
+tstHelper("DRBAN"); // ambiguous with regard to prefix rules
+tstHelper("DRGYU"); // ambiguous with regard to prefix rules
+tstHelper("DRTOG"); // ambiguous with regard to prefix rules
+tstHelper("DYA"); // ambiguous with regard to prefix rules
+tstHelper("DYAN"); // ambiguous with regard to prefix rules
+tstHelper("GDRA"); // ambiguous with regard to prefix rules
+tstHelper("GDRIM"); // ambiguous with regard to prefix rules
+tstHelper("GGAN"); // ambiguous with regard to prefix rules
+tstHelper("GGYUR"); // ambiguous with regard to prefix rules
+tstHelper("GLTAR"); // ambiguous with regard to prefix rules
+tstHelper("GLTUNG"); // ambiguous with regard to prefix rules
+tstHelper("GMA"); // ambiguous with regard to prefix rules
+tstHelper("GMAN"); // ambiguous with regard to prefix rules
+tstHelper("GMON"); // ambiguous with regard to prefix rules
+tstHelper("GRDEGS"); // ambiguous with regard to prefix rules
+tstHelper("GRDZU"); // ambiguous with regard to prefix rules
+tstHelper("GRGYA"); // ambiguous with regard to prefix rules
+tstHelper("GRNAGS"); // ambiguous with regard to prefix rules
+tstHelper("GRTAN"); // ambiguous with regard to prefix rules
+tstHelper("GRTOGS"); // ambiguous with regard to prefix rules
+tstHelper("GRTZO"); // ambiguous with regard to prefix rules
+tstHelper("GRTZOD"); // ambiguous with regard to prefix rules
+tstHelper("GRTZON"); // ambiguous with regard to prefix rules
+tstHelper("GSLA"); // ambiguous with regard to prefix rules
+tstHelper("GSNAD"); // ambiguous with regard to prefix rules
+tstHelper("GZLA"); // ambiguous with regard to prefix rules
+tstHelper("MBA"); // ambiguous with regard to prefix rules
+tstHelper("MBA'"); // ambiguous with regard to prefix rules
+tstHelper("MBI'I"); // ambiguous with regard to prefix rules
+tstHelper("MHA'A"); // ambiguous with regard to prefix rules
+tstHelper("MRDA"); // ambiguous with regard to prefix rules
+tstHelper("MRDO"); // ambiguous with regard to prefix rules
+tstHelper("MRDZOGS"); // ambiguous with regard to prefix rules
+tstHelper("MRGA"); // ambiguous with regard to prefix rules
+tstHelper("MRGAD"); // ambiguous with regard to prefix rules
+tstHelper("MRGAN"); // ambiguous with regard to prefix rules
+tstHelper("MRJES"); // ambiguous with regard to prefix rules
+tstHelper("MRJOD"); // ambiguous with regard to prefix rules
+tstHelper("MRTOGS"); // ambiguous with regard to prefix rules
+tstHelper("MRTOL"); // ambiguous with regard to prefix rules
+tstHelper("MRTZE'I"); // ambiguous with regard to prefix rules
+tstHelper("MRTZIGS"); // ambiguous with regard to prefix rules
+tstHelper("MSAM"); // ambiguous with regard to prefix rules
+tstHelper("MSGRIB"); // ambiguous with regard to prefix rules
+tstHelper("MSKYES"); // ambiguous with regard to prefix rules
+tstHelper("MSON"); // ambiguous with regard to prefix rules
+tstHelper("MSOS"); // ambiguous with regard to prefix rules
+tstHelper("MSTAMS"); // ambiguous with regard to prefix rules
+tstHelper("MSTAN"); // ambiguous with regard to prefix rules
+
+
+
+
+
+        // If you're not careful, you'll think GGYES is a legal
+        // Tibetan tsheg bar and parse it as {G}{G+YE}{S}.  But it's
+        // Sanskrit, really, because GA doesn't take a GA prefix.
+        // This doesn't occur in ACIP input files that I've seen, but
+        // GGYI (S1000I.INC) and GGYUR (S5275MC4.ACT) do occur.
+        tstHelper("GGYES", "{G}{G}{YE}{S}",
+                  new String[] { "{G}{G}{YE}{S}", "{G}{G+YE}{S}", "{G+G}{YE}{S}" },
+                  new String[] { },
+                  "{G+G}{YE}{S}");
+
+        tstHelper("DRUG", "{D}{RU}{G}",
+                  new String[] { "{D}{RU}{G}", "{D+RU}{G}" },
+                  new String[] { "{D+RU}{G}" },
+                  "{D+RU}{G}");
+
+
+        tstHelper("d+H+d+HA", "{d+}{H+}{d+}{HA}",
+                  new String[] { "{d+H+d+HA}" },
+                  new String[] { "{d+H+d+HA}" });
+
+        tstHelper("Gd+H+d+HA");
+
         tstHelper("AUTPA", "{AU}{T}{PA}",
                   new String[] { "{AU}{T}{PA}", "{AU}{T+PA}" },
                   new String[] { },
@@ -249,7 +362,8 @@ public class PackageTest extends TestCase {
                   new String[] { "{G+R+VA}{'I}" });
         tstHelper("G-RVA'I", "{G-}{R}{VA}{'I}",
                   new String[] { "{G}{R+VA}{'I}" },
-                  new String[] { "{G}{R+VA}{'I}" });
+                  new String[] { },
+                  "{G}{R+VA}{'I}");
         tstHelper("RVA", "{R}{VA}",
                   new String[] { "{R+VA}" },
                   new String[] { "{R+VA}" });
@@ -6967,8 +7081,8 @@ tstHelper("ZUR");
               "",
               "[TIBETAN_NON_PUNCTUATION:{LA}, TIBETAN_PUNCTUATION:{.}, TIBETAN_PUNCTUATION:{.}, TIBETAN_PUNCTUATION:{.}, TIBETAN_NON_PUNCTUATION:{SGRUB}]"); // DLC FIXME
         shelp("PAS... LA",
-              "Offset 5: A non-breaking tsheg, '.', appeared, but not like \"...,\" or \".,\" or \".dA\" or \".DA\".\n",
-              "[TIBETAN_NON_PUNCTUATION:{PAS}, TIBETAN_PUNCTUATION:{.}, TIBETAN_PUNCTUATION:{.}, ERROR:{.}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{LA}]");
+              "Offset 5 or maybe 5: A non-breaking tsheg, '.', appeared, but not like \"...,\" or \".,\" or \".dA\" or \".DA\".\n",
+              "[TIBETAN_NON_PUNCTUATION:{PAS}, TIBETAN_PUNCTUATION:{.}, TIBETAN_PUNCTUATION:{.}, ERROR:{A non-breaking tsheg, '.', appeared, but not like \"...,\" or \".,\" or \".dA\" or \".DA\".}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{LA}]");
         shelp("PAS... LA",
               "",
               true,
@@ -6983,28 +7097,28 @@ tstHelper("ZUR");
         shelp("", "", "[]");
         shelp("[DD]", "");
         shelp("[",
-              "Offset 0: Found an illegal open bracket (in context, this is [).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset END: Truly unmatched open bracket found.\n");
+              "Offset 0 or maybe 0: Found an illegal open bracket (in context, this is [).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset END: Truly unmatched open bracket found.\n");
         shelp("{",
-              "Offset 0: Found an illegal open bracket (in context, this is {).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset END: Truly unmatched open bracket found.\n");
+              "Offset 0 or maybe 0: Found an illegal open bracket (in context, this is {).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset END: Truly unmatched open bracket found.\n");
         shelp("DD", "");
         shelp("DD]",
-              "Offset 2: Found a truly unmatched close bracket, ] or }.\nOffset 2: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
+              "Offset 2 or maybe 2: Found a truly unmatched close bracket, ] or }.\nOffset 2 or maybe 2: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
 
-        shelp("///NYA", "Offset 1: Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\nOffset END: Slashes are supposed to occur in pairs, but the input had an unmatched '/' character.\n");
+        shelp("///NYA", "Offset 1 or maybe 1: Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\nOffset END: Slashes are supposed to occur in pairs, but the input had an unmatched '/' character.\n");
         shelp("/NYA/", "");
         shelp("[?][BP][LS][DD1][DD2][DDD][DR][# (<{A COMMENT)}>]", "");
         shelp("[LS][# A [[[[[COMMENT][LS]",
-              "Offset 9: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
-              + "Offset 10: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
-              + "Offset 11: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
-              + "Offset 12: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
-              + "Offset 13: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n");
+              "Offset 9 or maybe 9: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
+              + "Offset 10 or maybe 10: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
+              + "Offset 11 or maybe 11: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
+              + "Offset 12 or maybe 12: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n"
+              + "Offset 13 or maybe 13: Found an open bracket within a [#COMMENT]-style comment.  Brackets may not appear in comments.\n");
         shelp("[ILLEGAL COMMENT]",
-              "Offset 0: Found an illegal open bracket (in context, this is [ILLEGAL C...).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset 16: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
+              "Offset 0 or maybe 0: Found an illegal open bracket (in context, this is [ILLEGAL C...).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset 16 or maybe 16: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
         shelp("(BSKYABS GRO)", ""); // DLC WHAT ARE THESE FOR?
-        shelp("BSKYABS GRO)", "Offset 11: Unexpected closing parenthesis, ), found.\n");
+        shelp("BSKYABS GRO)", "Offset 11 or maybe 11: Unexpected closing parenthesis, ), found.\n");
         shelp("BSKYABS GRO(", "Offset END: Unmatched open parenthesis, (, found.\n");
-        shelp("((NESTAGE))", "Offset 1: Found an illegal open parenthesis, (.  Nesting of parentheses is not allowed.\nOffset 10: Unexpected closing parenthesis, ), found.\n");
+        shelp("((NESTAGE))", "Offset 1 or maybe 1: Found an illegal open parenthesis, (.  Nesting of parentheses is not allowed.\nOffset 10 or maybe 10: Unexpected closing parenthesis, ), found.\n");
         shelp("(BA)(PA)NYA(CA)", "");
         shelp("NYAx", "");
         shelp("NYA x", "");
@@ -7033,9 +7147,9 @@ tstHelper("ZUR");
         shelp("(NYA ", "Offset END: Unmatched open parenthesis, (, found.\n");
         shelp("[*NYA ", "Offset END: Unmatched open bracket found.  A correction does not terminate.\n");
         shelp("?", "", "[QUESTION:{?}]");
-        shelp("KHAN~ BAR ", "Offset 4: Found an illegal character, ~, with ordinal 126.\n");
+        shelp("KHAN~ BAR ", "Offset 4 or maybe 4: Found an illegal character, ~, with ordinal 126.\n");
         shelp("[* Correction with []]",
-              "Offset 5: Found an illegal character, r, with ordinal 114.\nOffset 6: Found an illegal character, r, with ordinal 114.\nOffset 7: Found an illegal character, e, with ordinal 101.\nOffset 8: Found an illegal character, c, with ordinal 99.\nOffset 14: Found an illegal character, w, with ordinal 119.\nOffset 19: Found an illegal open bracket (in context, this is []]).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset 21: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
+              "Offset 5 or maybe 5: Found an illegal character, r, with ordinal 114.\nOffset 6 or maybe 6: Found an illegal character, r, with ordinal 114.\nOffset 7 or maybe 7: Found an illegal character, e, with ordinal 101.\nOffset 8 or maybe 8: Found an illegal character, c, with ordinal 99.\nOffset 14 or maybe 14: Found an illegal character, w, with ordinal 119.\nOffset 19 or maybe 19: Found an illegal open bracket (in context, this is []]).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset 21 or maybe 21: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
 
         // DLC FIXME: the line SDIG PA'I GROGS PO'I LAG TU SON PAR 'GYUR PA is followed by a blank line.  Note that it's "PA", not "PA ", ending it.  Autocorrect to the latter.
 
@@ -7051,8 +7165,8 @@ tstHelper("ZUR");
             uhelp(" 1\\ ", "\u0f0b\u0f21\u0f84\u0f0b");
         }
         shelp("K\\,",
-              "Offset 1: Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\n",
-              "[TIBETAN_NON_PUNCTUATION:{K}, ERROR:{\\}, TIBETAN_PUNCTUATION:{,}]");
+              "Offset 1 or maybe 1: Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\n",
+              "[TIBETAN_NON_PUNCTUATION:{K}, ERROR:{Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.}, TIBETAN_PUNCTUATION:{,}]");
 
 
         shelp("MTHAR%", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR%}]");
@@ -7073,15 +7187,15 @@ tstHelper("ZUR");
         shelp("@01A.3 ", "", "[FOLIO_MARKER:{@01A.3}, TIBETAN_PUNCTUATION:{ }]");
         shelp("@001 ", "", "[FOLIO_MARKER:{@001}, TIBETAN_PUNCTUATION:{ }]");
         shelp("@19-20A",
-              "Offset 0: Found an illegal at sign, @ (in context, this is @19-20A).  @012B is an example of a legal folio marker.\n",
-              "[ERROR:{@}, TIBETAN_NON_PUNCTUATION:{19-20A}]");  // DLC FIXME: yes it occurs in the kangyur.
+              "Offset 0 or maybe 0: Found an illegal at sign, @ (in context, this is @19-20A).  @012B is an example of a legal folio marker.\n",
+              "[ERROR:{Found an illegal at sign, @ (in context, this is @19-20A).  @012B is an example of a legal folio marker.}, TIBETAN_NON_PUNCTUATION:{19-20A}]");  // DLC FIXME: yes it occurs in the kangyur.
         shelp("@[7B]", "");
         shelp("@012A.3KA",
               "",
               "[FOLIO_MARKER:{@012A.3}, TIBETAN_NON_PUNCTUATION:{KA}]");
         shelp("@012A.34",
-              "Offset 0: Found an illegal at sign, @ (in context, this is @012A.34).  This folio marker has a period, '.', at the end of it, which is illegal.\n",
-              "[ERROR:{@012A.}, TIBETAN_NON_PUNCTUATION:{34}]");
+              "Offset 0 or maybe 0: Found an illegal at sign, @ (in context, this is @012A.34).  This folio marker has a period, '.', at the end of it, which is illegal.\n",
+              "[ERROR:{Found an illegal at sign, @ (in context, this is @012A.34).  This folio marker has a period, '.', at the end of it, which is illegal.}, TIBETAN_NON_PUNCTUATION:{34}]");
         shelp("@[07B]", "");
         shelp("@[00007B]", "");
         shelp("@7B", "");
@@ -7097,8 +7211,8 @@ tstHelper("ZUR");
         shelp("{ DD }", "", "[DD:{{ DD }}]"); // TD3790E2.ACT
         shelp("{ BP }", "", "[BP:{{ BP }}]"); // TD3790E2.ACT
         shelp("//NYA\\\\",
-              "Offset 1: Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\nOffset 5: Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\nOffset 6: Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\n",
-              "[START_SLASH:{/}, ERROR:{//}, END_SLASH:{/}, TIBETAN_NON_PUNCTUATION:{NYA}, ERROR:{\\}, ERROR:{\\}]");
+              "Offset 1 or maybe 1: Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.\nOffset 5 or maybe 5: Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\nOffset 6 or maybe 6: Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.\n",
+              "[START_SLASH:{/}, ERROR:{Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.}, END_SLASH:{/}, TIBETAN_NON_PUNCTUATION:{NYA}, ERROR:{Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.}, ERROR:{Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.}]");
 
     }
     private static void uhelp(String acip) {
@@ -7106,7 +7220,7 @@ tstHelper("ZUR");
     }
     private static void uhelp(String acip, String expectedUnicode) {
         StringBuffer errors = new StringBuffer();
-        String unicode = ACIPConverter.convertToUnicode(acip, errors);
+        String unicode = ACIPConverter.convertToUnicode(acip, errors, null, true);
         if (null == unicode) {
             if (null != expectedUnicode && "none" != expectedUnicode) {
                 System.out.println("No unicode exists for " + acip + " but you expected " + org.thdl.tib.text.tshegbar.UnicodeUtils.unicodeStringToPrettyString(expectedUnicode));
@@ -8729,22 +8843,22 @@ tstHelper("shKA");
 }
 /* DLC FIXME: add test cases: from R0021F.ACE: ambiguous Tibetan/Sanskrit:
 
- BDA'  þþþþ 
-B+DA   þþþ
-DBANG  þþþ 
-D+BA   þþþ
-DGA'  þþþþ 
-D+GA   þþþ
-DGRA   þþþ 
-D+GRA  þþþ
-DGYESþþþþþ 
-D+GYA  þþþ 
-DMAR  þþþþ
-D+MA   þþþ
-GDA'  þþþþ
-G+DA   þþþ
-GNAD  þþþþ
-G+NA   þþþ
-MNA'  þþþþ
-M+NA    þþþ 
+BDA'
+B+DA
+DBANG
+D+BA
+DGA'
+D+GA
+DGRA
+D+GRA
+DGYES
+D+GYA
+DMAR
+D+MA
+GDA'
+G+DA
+GNAD
+G+NA
+MNA'
+M+NA
 */

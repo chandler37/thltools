@@ -1266,7 +1266,7 @@ public final class LegalTshegBar
      *  @param sub the {@link #isNominalRepresentationOfConsonant(char)
      *  nominal representation} of the subjoined letter, or EW_ABSENT
      *  if not present */
-    static boolean takesGao(char head, char root, char sub) {
+    public static boolean takesGao(char head, char root, char sub) {
         if (EW_ABSENT == head) {
             if (EW_ABSENT == sub) {
                 return (EWC_ca == root
@@ -1298,7 +1298,7 @@ public final class LegalTshegBar
      *  @param sub the {@link #isNominalRepresentationOfConsonant(char)
      *  nominal representation} of the subjoined letter, or EW_ABSENT
      *  if not present */
-    static boolean takesDao(char head, char root, char sub) {
+    public static boolean takesDao(char head, char root, char sub) {
         if (EW_ABSENT == head) {
             if (EW_ABSENT == sub) {
                 return (EWC_ka == root
@@ -1312,6 +1312,7 @@ public final class LegalTshegBar
                         || (EWC_pa == root && EWC_ya == sub)
                         || (EWC_ba == root && EWC_ya == sub)
                         || (EWC_ma == root && EWC_ya == sub)
+                        || (EWC_ka == root && EWC_ya == sub) // dkyil, for example
 
                         || (EWC_ka == root && EWC_ra == sub)
                         || (EWC_ga == root && EWC_ra == sub)
@@ -1336,7 +1337,7 @@ public final class LegalTshegBar
      *  @param sub the {@link #isNominalRepresentationOfConsonant(char)
      *  nominal representation} of the subjoined letter, or EW_ABSENT
      *  if not present */
-    static boolean takesAchungPrefix(char head, char root, char sub) {
+    public static boolean takesAchungPrefix(char head, char root, char sub) {
         if (EW_ABSENT == head) {
             if (EW_ABSENT == sub) {
                 return (EWC_ga == root
@@ -1379,7 +1380,7 @@ public final class LegalTshegBar
      *  @param sub the {@link #isNominalRepresentationOfConsonant(char)
      *  nominal representation} of the subjoined letter, or EW_ABSENT
      *  if not present */
-    static boolean takesMao(char head, char root, char sub) {
+    public static boolean takesMao(char head, char root, char sub) {
         if (EW_ABSENT == head) {
             if (EW_ABSENT == sub) {
                 return (EWC_kha == root
@@ -1418,11 +1419,12 @@ public final class LegalTshegBar
      *  @param sub the {@link #isNominalRepresentationOfConsonant(char)
      *  nominal representation} of the subjoined letter, or EW_ABSENT
      *  if not present */
-    static boolean takesBao(char head, char root, char sub) {
+    public static boolean takesBao(char head, char root, char sub) {
         // DLC ask Ten-lo la about Wazur.
         if (EW_ABSENT == head) {
             if (EW_ABSENT == sub) {
                 return (EWC_ka == root
+                        || EWC_sa == root // bsams, for example
                         || EWC_ca == root
                         || EWC_ta == root
                         || EWC_tsa == root
