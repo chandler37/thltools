@@ -6,14 +6,14 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <%-- <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"> --%>
-<script type='text/javascript' src='/lex/scripts/lex.js'></script>
+<script type='text/javascript' src='/lex/js/lex.js'></script>
 
 <c:choose>
 <c:when test="${ displayMode == 'full' }">
-	<link rel="stylesheet" type="text/css" media="screen" href="/lex/style/lex-full.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="/lex/css/lex-full.css" />
 </c:when>
 <c:otherwise>
-	<link rel="stylesheet" type="text/css" media="screen" href="/lex/style/lex.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="/lex/css/lex.css" />
 </c:otherwise>
 </c:choose>
 <title>THDL Tibetan Collaborative Dictionaries</title>

@@ -1,0 +1,237 @@
+/* ID Selectors */
+#header 
+{ 
+position: absolute;
+top: 80px;
+left: 0px;
+width: 98%;
+height: 25px;
+margin-top: 10px;
+margin-left: 5px;
+background-color: #ffffff; 
+color:gray;
+font-size:.9em;
+border-left:1px solid #000; 
+border-right:1px solid #000; 
+border-top:1px solid #000;
+padding: 3px 0 0 3px;
+}
+
+#label p
+{
+	color:white;
+}
+
+#label
+{
+position: absolute;
+top: 115px;
+left: 0px;
+margin-left: 5px;
+width: 98%;
+height: 25px;
+background-color: #666666;
+color:white;
+font-size:.9em;
+border-left:1px solid #000; 
+border-right:1px solid #000; 
+border-top:1px solid #000;
+padding: 3px 0 0 3px;
+}
+
+#message 
+{ 
+position: absolute;
+top: 140px;
+left: 0px;
+margin-left: 5px;
+width: 98%;
+height: 25px;
+font-size:.9em;
+background-color: #999999; 
+border-left:1px solid #000; 
+border-right:1px solid #000; 
+border-top:1px solid #000;
+padding: 3px 0 0 3px;
+
+}
+
+#columnSingle
+{
+position:absolute;
+top:166px;
+left: 0;
+margin-left: 5px;
+padding-bottom:10px;
+width: 98%;
+background-color: white;
+border:1px solid #000;
+padding: 3px 0 0 3px;
+}
+
+#columnSingle #menu
+{ 
+float:right;
+border-left:1px solid #000; 
+border-bottom:1px solid #000;
+width: 230px;
+background:#eee;
+margin:0px 0px 10px 10px;
+padding-top: 5px;
+padding-bottom: 5px;
+}
+
+#columnSingle form, #columnSingle h1
+{ 
+margin:5px 5px 5px 5px;
+}
+
+#menu > form
+{
+border-left: 0; 
+border-bottom: 0;
+margin-left:10px;
+}
+
+#termChildren, #defChildren, #subdefChildren
+{
+margin-left: 35px;
+margin-right: 0;
+}
+
+#columnMain textarea
+{
+border: black solid 1px;
+}
+
+#debug
+{
+display: none;
+position: absolute;
+top: 0;
+margin-left: 105%;
+font-size:.8em;
+width: 60%;
+height: auto;
+z-index: 4;
+background-color: white; 
+}
+
+#debug table
+{
+position:absolute;
+top: 0px;
+left: 0px;
+width: 100%;
+border: black solid 2px;
+color: black;
+background-color: cyan;
+margin: 0 0 15px 0;}
+
+#debug th, #debug td
+{
+border-collapse: collapse;
+border-spacing: 0;
+background-color: cyan;
+font-size: .9em;
+text-align: left;
+vertical-align: top;
+margin: 0;
+}
+
+#debug h3
+{
+	background-color: #99ccff;
+}
+
+#backButton
+{
+float:right;
+margin-right: 25px;
+margin-top: 25px;
+}
+
+#newCompForm, #preferencesForm
+{
+background-color: #99ccff;
+border: black solid 1px;
+margin: 8px 8px 8px 8px !important;
+}
+
+#newCompForm input, select, textarea
+{
+margin: 5px 5px 5px 5px;
+}
+
+/* Class Selectors.*/
+.label
+{
+font-weight: bold;
+}
+
+.compEditOptions
+{
+padding: 0;
+}
+
+.data
+{
+border-top: 1px solid silver;
+padding-top: 6px;
+margin-left: 0;
+margin-right: 0;
+margin-top: 0;
+margin-bottom: 0;
+}
+
+#columnSingle > p.data
+{
+	margin-left: 3px;
+}
+.data img
+{
+margin-right: 2px;
+}
+
+.metadata, .translation, .analysis
+{
+display: block;
+/* font-size: .75em; */
+margin-left: 1.5em;
+/* margin-top: .5em; */
+color: black;
+}
+
+.data input
+{
+	font-size: .9em;
+	padding: 0px;
+}
+
+/* CSS Rollovers */
+
+p.data a:hover
+{
+/* 
+Don't Remove bgcolor and color or rollover will not work on IE Windows
+These CSS Rollovers do not work on IE Mac. but they do work on Mozilla Mac
+*/	
+text-decoration: none;
+background-color: white;
+/* color: #003366; */
+}
+
+p.data img
+{
+	display: none;
+}
+
+.translation, .analysis
+{
+	color: black;
+}
+
+
+/* TEMP WORK/TESTING  AREA */
+
+/* END OF CSS*/
