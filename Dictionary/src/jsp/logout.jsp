@@ -3,7 +3,7 @@
 <div id="columns">
 <div id="columnSingle">
 <div class="label">
-Log out of Lex the Dictionary Server</div>
+Log out of THDL Tibetan Collaborative Dictionaries</div>
 
 <div class="content">
 

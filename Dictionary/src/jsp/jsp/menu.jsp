@@ -38,14 +38,14 @@ Message:
 	</form>
 	</div>
 
-<p>This THDL Dictionary Server is a new online rich dictionary. </p>
+<%-- <p>This THDL Dictionary Server is a new online rich dictionary. </p>
 <p>During development, please follow this advice:
 <ul>
 	<li><em>bookmark this page</em> and use the bookmark to get back after any unexpected errors.</li>
 	<li><em>Don't refresh pages</em> pages with your browser's refresh commands. After database inserts, a browser refresh will cause a duplicate insert.</li>
 	<li>After you request to add/edit a component look for the 'GO TO FORM' link in the navigation bar to quickly get to the form.</li>
 </ul>
-</p>
+</p> --%>
 </div><!--END columnSingle-->
 
 <jsp:include page="footer.jsf" flush="false" />
