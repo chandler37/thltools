@@ -930,7 +930,13 @@ public void paste(int offset) {
         return;
 	try {
 		Transferable contents = rtfBoard.getContents(this);
-		if (contents.isDataFlavorSupported(rtfFlavor)) {
+
+		if (!isRomanEnabled || !contents.isDataFlavorSupported(rtfFlavor)) {
+			if (contents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+				String data = (String)contents.getTransferData(DataFlavor.stringFlavor);
+				doc.toTibetanMachineWeb(data, offset);
+			}
+		} else {
 			InputStream in = (InputStream)contents.getTransferData(rtfFlavor);
 			int p1 = offset;
 
@@ -942,6 +948,7 @@ public void paste(int offset) {
             ThdlDebug.verify(null != in);
 
 			rtfEd.read(in, sd, 0);
+
 			for (int i=0; i<sd.getLength()-1; i++) { //getLength()-1 so that final newline is not included in paste
 				try {
 					String s = sd.getText(i,1);
