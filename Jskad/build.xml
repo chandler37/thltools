@@ -857,11 +857,27 @@
   <target name="dc-nightly-build"
           description="How Chandler r0x0rs the nightly build's b0x0rs">
     <antcall target="${dcnbt}">
-      <param name="keystore" value="file:///home/chandler/thdl/sandboxes/Jskad/NightlyBuildStore"/>
+      <param name="keystore" value="file:///home/my_www/thdl/nightly/Jskad/NightlyBuildStore"/>
       <param name="key.alias" value="me"/>
       <param name="dgkey.password" value="nightly"/>
       <param name="keystore.password" value="nightly"/>
       <param name="jnlp.codebase" value="http://he.is-a-geek.org/thdl/nightly/builds/java-web-start"/>
+    </antcall>
+  </target>
+
+  <!-- THDL uses this to do nightly builds. The passwords are included
+       in this publically-available file because the keystore is basically
+       a dummy keystore. -->
+  <target name="thdl-nightly-build"
+          description="How THDL does nightly builds">
+    <antcall target="${dcnbt}">
+      <param name="keystore"
+             value="file:///home/www/thdl/builds/Jskad/NightlyBuildStore"/>
+      <param name="key.alias" value="me"/>
+      <param name="dgkey.password" value="nightly"/>
+      <param name="keystore.password" value="nightly"/>
+      <param name="jnlp.codebase"
+             value="http://iris.lib.virginia.edu/thdl/builds"/>
     </antcall>
   </target>
 
