@@ -1679,6 +1679,7 @@ public static String getHashKeyForGlyph(int font, int code) {
 public static String getHashKeyForGlyph(DuffCode dc) {
 	int font = dc.getFontNum();
 	int code = dc.getCharNum()-32;
+        if (code < 0) return null;
 	return toHashKey[font][code];
 }
 

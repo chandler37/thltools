@@ -569,7 +569,7 @@ public class TibTextUtils implements THDLWylieConstants {
         if (vowel.equals(WYLIE_aVOWEL)
             || TibetanMachineWeb.isTopVowel(context_2)) {
             if (TibetanMachineWeb.isTopVowel(context_2))
-                throw new IllegalArgumentException("dropping vowels is bad");
+                throw new IllegalArgumentException("dropping vowels is bad1");
             if (!context_added[0]) {
                 context_added[0] = true;
                 if (context_1 != null)
@@ -622,7 +622,7 @@ public class TibTextUtils implements THDLWylieConstants {
             if (!TibetanMachineWeb.isTopVowel(context_2)) {
                 DuffCode[] dc_v = (DuffCode[])TibetanMachineWeb.getTibHash().get(reverse_i_VOWEL);
                 l.add(dc_v[TibetanMachineWeb.TMW]);
-            } else throw new IllegalArgumentException("dropping vowels is bad");
+            } else throw new IllegalArgumentException("dropping vowels is bad2");
 
             return;
         }
@@ -652,7 +652,7 @@ public class TibTextUtils implements THDLWylieConstants {
             
             if (null != dc_v)
                 l.add(dc_v);
-            else throw new IllegalArgumentException("dropping vowels is bad");
+            else throw new IllegalArgumentException("dropping vowels is bad3");
 
             return;
         }
@@ -676,7 +676,7 @@ public class TibTextUtils implements THDLWylieConstants {
             
             if (null != dc_v)
                 l.add(dc_v);
-            else throw new IllegalArgumentException("dropping vowels is bad");
+            else throw new IllegalArgumentException("dropping vowels is bad4");
 
             return;
         }
@@ -699,7 +699,7 @@ public class TibTextUtils implements THDLWylieConstants {
 
             if (null != dc_v)
                 l.add(dc_v);
-            else throw new IllegalArgumentException("dropping vowels is bad");
+            else throw new IllegalArgumentException("dropping vowels is bad5");
 
             return;
         }
@@ -728,7 +728,7 @@ public class TibTextUtils implements THDLWylieConstants {
             
             if (null != dc_v)
                 l.add(dc_v);
-            else throw new IllegalArgumentException("dropping vowels is bad");
+            else throw new IllegalArgumentException("dropping vowels is bad6");
 
             return;
         }
@@ -751,7 +751,7 @@ public class TibTextUtils implements THDLWylieConstants {
             
             if (null != dc_v)
                 l.add(dc_v);
-            else throw new IllegalArgumentException("dropping vowels is bad");            
+            else throw new IllegalArgumentException("dropping vowels is bad7");            
 
             return;
         }
@@ -774,7 +774,7 @@ public class TibTextUtils implements THDLWylieConstants {
             
             if (null != dc_v && !TibetanMachineWeb.isTopVowel(context_2))
                 l.add(dc_v);
-            else throw new IllegalArgumentException("dropping vowels is bad");
+            else throw new IllegalArgumentException("dropping vowels is bad8");
 
             return;
         }
@@ -804,7 +804,7 @@ public class TibTextUtils implements THDLWylieConstants {
             if (null != dc_v_sub && null != dc_v_sup) {
                 l.add(dc_v_sub);
                 l.add(dc_v_sup);
-            } else throw new IllegalArgumentException("dropping vowels is bad");
+            } else throw new IllegalArgumentException("dropping vowels is bad9");
 
             return;
         }
@@ -830,7 +830,7 @@ public class TibTextUtils implements THDLWylieConstants {
             if (null != dc_v_sub && null != dc_v_sup) {
                 l.add(dc_v_sub);
                 l.add(dc_v_sup);
-            } else throw new IllegalArgumentException("dropping vowels is bad");
+            } else throw new IllegalArgumentException("dropping vowels is bad10");
 
             return;
         }
@@ -1240,6 +1240,7 @@ public class TibTextUtils implements THDLWylieConstants {
             }
             lastPair = tp;
         }
+        if (null == candidateType) candidateType = "invalid";
         if (candidateType.startsWith("maybe-appendaged-")) {
             if (null != warnings)
                 warnings.append("Found a tsheg bar that has an extra achung (" + ACHUNG + ") tacked on\n");
