@@ -581,30 +581,6 @@ public class TibetanDocument extends DefaultStyledDocument {
                              numAttemptedReplacements);
     }
 
-    /** For debugging only.  Start with an empty document, and call
-        this on it.  You'll get all the TibetanMachine glyphs
-        inserted, in order, into your document. */
-    private void insertAllTMGlyphs() {
-        int font;
-        int ord;
-        DuffData[] equivalent = new DuffData[1];
-        equivalent[0] = new DuffData();
-
-        int count = 0;
-        for (font = 0; font < 5; font++) {
-            for (ord = 32; ord < 255; ord++) {
-                if (TibetanMachineWeb.mapTMtoTMW(font, ord, 0) != null) {
-                    equivalent[0].setData((char)ord, font + 1);
-                    try {
-                        insertDuff(tibetanFontSize, count++, equivalent, false);
-                    } catch (NullPointerException e) {
-                        System.err.println("nullpointerexception happened: font is " + font + " ord is " + ord);
-                    }
-                }
-            }
-        }
-    }
-
     /** This setting determines whether the formatting is preserved,
         but with infinite loops in it, or is not preserved, but works
         well.  Inserting + removing must be used rather than replacing
@@ -781,7 +757,6 @@ public class TibetanDocument extends DefaultStyledDocument {
                You'll see it coming (TM->TMW) and going (if you do
                TMW->TM again).  I wonder if finalEndPos isn't one shy
                of where you'd think it would be.  FIXME */
-            ThdlDebug.noteIffyCode();
         }
         return ceh.errorReturn;
     }
@@ -1130,6 +1105,76 @@ public class TibetanDocument extends DefaultStyledDocument {
         return (Element[])v.toArray(arrayType);
     }
 
+    /** For debugging only.  Start with an empty document, and call
+        this on it.  You'll get all the TibetanMachine glyphs
+        inserted, in order, into your document. */
+    private void insertAllTMGlyphs() {
+        int font;
+        int ord;
+        DuffData[] equivalent = new DuffData[1];
+        equivalent[0] = new DuffData();
+
+        int count = 0;
+        for (font = 0; font < 5; font++) {
+            for (ord = 32; ord < 255; ord++) {
+                if (TibetanMachineWeb.mapTMtoTMW(font, ord, 0) != null) {
+                    equivalent[0].setData((char)ord, font + 1);
+                    try {
+                        insertDuff(tibetanFontSize, count++, equivalent, false);
+                    } catch (NullPointerException e) {
+                        System.err.println("nullpointerexception happened: font is " + font + " ord is " + ord);
+                    }
+                }
+            }
+        }
+    }
+
+    /** I used this to create a document that helped me validate the
+        TM->TMW conversion. */
+    private void insertAllTMGlyphs2(MutableAttributeSet roman) {
+        int font;
+        int ord;
+        DuffData[] equivalent = new DuffData[1];
+        equivalent[0] = new DuffData();
+        DuffData[] tmwEquivalent = new DuffData[1];
+        tmwEquivalent[0] = new DuffData();
+        DuffData[] achen = new DuffData[1];
+        achen[0] = new DuffData();
+        achen[0].setData((char)62, 1);
+        DuffData[] newline = new DuffData[1];
+        newline[0] = new DuffData();
+        newline[0].setData((char)10, 1);
+        DuffData[] space = new DuffData[1];
+        space[0] = new DuffData();
+        space[0].setData((char)32, 1);
+
+        int count = 0;
+        for (font = 0; font < 5; font++) {
+            for (ord = 32; ord < 255; ord++) {
+                DuffCode tmw;
+                if ((tmw = TibetanMachineWeb.mapTMtoTMW(font, ord, 0)) != null) {
+                    equivalent[0].setData((char)ord, font + 1);
+                    tmwEquivalent[0].setData(tmw.getCharacter(), tmw.getFontNum());
+                    try {
+                        insertDuff(72, count++, achen, false);
+                        insertDuff(72, count++, equivalent, false);
+                        insertDuff(72, count++, achen, false);
+                        insertDuff(72, count++, tmwEquivalent, true);
+
+                    } catch (NullPointerException e) {
+                        System.err.println("nullpointerexception happened: font is " + font + " ord is " + ord);
+                    }
+                    try {
+                        String s = " font " + (font+1) + "; ord " + ord + "\n";
+                        insertString(count, s, roman);
+                        count += s.length();
+                    } catch (BadLocationException e) {
+                        throw new Error("badness");
+                    }
+                }
+            }
+        }
+    }
 }
 
 /** A helper class used by TibetanDocument.convertHelper(..). */

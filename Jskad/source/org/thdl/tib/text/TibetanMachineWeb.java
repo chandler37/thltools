@@ -1043,6 +1043,12 @@ public static DuffCode mapTMtoTMW(int font, int ordinal, int suggestedFont) {
             return null;
         }
     }
+    // We map TibetanMachineSkt1.45, TibetanMachineSkt1.45,
+    // TibetanMachineSkt1.45, and TibetanMachineSkt1.45 to
+    // TibetanMachineWeb*.45, even though they're actually just
+    // garbage, since TibetanMachine.45 is the only tsheg in TM.  We
+    // assume that a machine goofed along the way.  (FIXME: optionally
+    // warn.)
     if ((0 != suggestedFont) && (32 == ordinal || 45 == ordinal)) {
         return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it wastes heap
     }
@@ -1096,7 +1102,12 @@ public static DuffCode mapTMWtoTM(int font, int ordinal, int suggestedFont) {
             return null;
         }
     }
-    if ((0 != suggestedFont) && (32 == ordinal || 45 == ordinal)) {
+    if (45 == ordinal) {
+        // TibetanMachine.45 is a tsheg, but TibetanMachineSkt2.45
+        // etc. are not tshegs.
+        return new DuffCode(1, (char)ordinal);
+    }
+    if ((0 != suggestedFont) && (32 == ordinal)) {
         return new DuffCode(suggestedFont, (char)ordinal); // FIXME: don't create a new one each time; it wastes heap
     }
     DuffCode ans = TMWtoTM[font][ordinal-32];
