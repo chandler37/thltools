@@ -7348,7 +7348,7 @@ tstHelper("ZUR");
     }
     private static void uhelp(String acip, String expectedUnicode) {
         StringBuffer errors = new StringBuffer();
-        String unicode = ACIPConverter.convertToUnicode(acip, errors, null, true, "Most");
+        String unicode = ACIPConverter.convertToUnicodeText(acip, errors, null, true, "Most");
         if (null == unicode) {
             if (null != expectedUnicode && "none" != expectedUnicode) {
                 System.out.println("No unicode exists for " + acip + " but you expected " + org.thdl.tib.text.tshegbar.UnicodeUtils.unicodeStringToPrettyString(expectedUnicode));

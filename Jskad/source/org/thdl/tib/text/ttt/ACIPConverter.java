@@ -154,6 +154,7 @@ public class ACIPConverter {
         return rv;
     }
 
+    /** DLC DOC */
     public static boolean convertToTMW(ArrayList scan,
                                        TibetanDocument tdoc,
                                        StringBuffer errors,
@@ -164,7 +165,7 @@ public class ACIPConverter {
                                        int loc)
         throws IOException
     {
-        return convertTo(false, scan, null, tdoc, errors, warnings,
+        return convertTo(false, true, scan, null, tdoc, errors, warnings,
                          writeWarningsToResult, warningLevel, colors,
                          loc, loc == tdoc.getLength());
     }
@@ -180,18 +181,18 @@ public class ACIPConverter {
      *  conversion upon perfect success or if there were merely
      *  warnings, null if errors occurred.
      */
-    public static String convertToUnicode(String acip,
-                                          StringBuffer errors,
-                                          StringBuffer warnings,
-                                          boolean writeWarningsToResult,
-                                          String warningLevel) {
+    public static String convertToUnicodeText(String acip,
+                                              StringBuffer errors,
+                                              StringBuffer warnings,
+                                              boolean writeWarningsToResult,
+                                              String warningLevel) {
         ByteArrayOutputStream sw = new ByteArrayOutputStream();
         ArrayList al = ACIPTshegBarScanner.scan(acip, errors, -1);
         try {
             if (null != al) {
-                convertToUnicode(al, sw, errors,
-                                 warnings, writeWarningsToResult,
-                                 warningLevel);
+                convertToUnicodeText(al, sw, errors,
+                                     warnings, writeWarningsToResult,
+                                     warningLevel);
                 return sw.toString("UTF-8");
             } else {
                 return null;
@@ -219,15 +220,15 @@ public class ACIPConverter {
      *  are written to out in the appropriate places
      *  @throws IOException if we cannot write to out
      */
-    public static boolean convertToUnicode(ArrayList scan,
-                                           OutputStream out,
-                                           StringBuffer errors,
-                                           StringBuffer warnings,
-                                           boolean writeWarningsToOut,
-                                           String warningLevel)
+    public static boolean convertToUnicodeText(ArrayList scan,
+                                               OutputStream out,
+                                               StringBuffer errors,
+                                               StringBuffer warnings,
+                                               boolean writeWarningsToOut,
+                                               String warningLevel)
         throws IOException
     {
-        return convertTo(true, scan, out, null, errors, warnings,
+        return convertTo(true, false, scan, out, null, errors, warnings,
                          writeWarningsToOut, warningLevel, false, -1, true);
     }
 
@@ -250,9 +251,10 @@ public class ACIPConverter {
     }
 
     private static boolean convertTo(boolean toUnicode, // else to TMW
+                                     boolean toRTF, // else to UTF-8-encoded text
                                      ArrayList scan,
-                                     OutputStream out, // for toUnicode mode
-                                     TibetanDocument tdoc, // for !toUnicode mode
+                                     OutputStream out, // for (toUnicode && !toRTF) mode
+                                     TibetanDocument tdoc, // for !toUnicode mode or (toUnicode && toRTF) mode
                                      StringBuffer errors,
                                      StringBuffer warnings,
                                      boolean writeWarningsToOut,
@@ -263,6 +265,14 @@ public class ACIPConverter {
         throws IOException
     {
         try {
+        if (toUnicode && toRTF)
+            throw new Error("DLC NOW FIXME: support this ACIP->Unicode.rtf mode so that KA (GA) shows up in two different font sizes.");
+        if (!toUnicode && !toRTF)
+            throw new IllegalArgumentException("ACIP->Uni.rtf, ACIP->Uni.txt, and ACIP->TMW.rtf are supported, but not ACIP->TMW.txt");
+        if (toUnicode && toRTF && null == tdoc)
+            throw new IllegalArgumentException("ACIP->Uni.rtf requires a TibetanDocument");
+        if (null != out && !(toUnicode && !toRTF))
+            throw new IllegalArgumentException("That stream is only used in ACIP->Uni.txt mode");
         int smallFontSize = -1;
         int regularFontSize = -1;
         if (null != tdoc) {
@@ -278,16 +288,16 @@ public class ACIPConverter {
             smallFontSize = (int)(0.75*regularFontSize);
             if (smallFontSize >= regularFontSize)
                 smallFontSize = regularFontSize - 1;
+            if (colors)
+                tdoc.enableColors();
+            else
+                tdoc.disableColors();
         }
 
-        if (colors)
-            tdoc.enableColors();
-        else
-            tdoc.disableColors();
         int sz = scan.size();
         boolean hasErrors = false;
         BufferedWriter writer = null;
-        if (toUnicode)
+        if (toUnicode && !toRTF)
             writer
                 = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
         boolean lastGuyWasNonPunct = false;
@@ -548,10 +558,13 @@ public class ACIPConverter {
                                        && null != lastGuy
                                        && (lpl = lastGuy.get(lastGuy.size() - 1)).size() == 1
                                        && lpl.get(0).getLeft().equals("NG")) {
-                                DuffCode tshegDuff = TibetanMachineWeb.getGlyph(" ");
-                                if (null == tshegDuff) throw new Error("tsheg duff");
-                                tdoc.appendDuffCode(tdocstart++,
-                                                    tshegDuff, lastColor);
+                                if (null != writer) unicode = ACIPRules.getUnicodeFor(" ", false);
+                                if (null != tdoc) {
+                                    DuffCode tshegDuff = TibetanMachineWeb.getGlyph(" ");
+                                    if (null == tshegDuff) throw new Error("tsheg duff");
+                                    tdoc.appendDuffCode(tdocstart++,
+                                                        tshegDuff, lastColor);
+                                }
                             }
 
                             if (!done) {
@@ -627,8 +640,8 @@ public class ACIPConverter {
         if (isCleanDoc && null != tdoc && tdocstart != tdoc.getLength())
             throw new Error("Oops -- we dropped something from the output!  tdocstart++; and tdocstart+=xyz; are not being used correctly.");
         return !hasErrors;
-    } catch (javax.swing.text.BadLocationException e) {
-        throw new IllegalArgumentException("tdocstart is no good: " + tdocstart);
-    }
+        } catch (javax.swing.text.BadLocationException e) {
+            throw new IllegalArgumentException("tdocstart is no good: " + tdocstart);
+        }
     }
 }

@@ -267,9 +267,10 @@ public class TibetanConverter implements FontConverterConstants {
                 StringBuffer warnings = new StringBuffer();
                 boolean embeddedWarnings = (warningLevel != "None");
                 if (ACIP_TO_UNI_TEXT == ct) {
-                    if (!ACIPConverter.convertToUnicode(al, out, null, warnings,
-                                                        embeddedWarnings,
-                                                        warningLevel))
+                    if (!ACIPConverter.convertToUnicodeText(al, out, null,
+                                                            warnings,
+                                                            embeddedWarnings,
+                                                            warningLevel))
                         return 46;
                 } else {
                     if (ct != ACIP_TO_TMW) throw new Error("badness");
