@@ -201,7 +201,7 @@ public class Jskad extends JPanel implements DocumentListener {
         recentlyOpenedFiles.add(fileChosen);
 
         int ic = fileMenu.getItemCount();
-        System.err.println("DLC ic is " ic);
+        //        System.err.println("DLC ic is " + ic);
 
         // DLC update the menus.
     }
