@@ -167,6 +167,9 @@ public abstract class ScannerPanel extends Panel implements ActionListener
 		}
 	}
 	
+	/* FIXME: what happens if this throws an exception?  We'll just
+       see it on the console--it won't terminate the program.  And the
+       user may not see the console! See ThdlActionListener. -DC */
     public void actionPerformed(ActionEvent e)	
     {
         translate();

@@ -27,49 +27,43 @@ import java.awt.event.*;
 import javax.swing.text.*;
 import javax.swing.text.rtf.*;
 
-import org.thdl.util.TeeStream;
+import org.thdl.util.ThdlDebug;
+import org.thdl.util.ThdlActionListener;
 
 public class QDShell extends JFrame {
 	ResourceBundle messages = null;
 	QD qd = null;
 
-public static void main(String[] args) {
+	public static void main(String[] args) {
 		try {
-			PrintStream psOut
-				= new TeeStream(System.out,
-								new PrintStream(new FileOutputStream("qd.log")));
-			PrintStream psErr
-				= new TeeStream(System.err,
-								new PrintStream(new FileOutputStream("qd.log")));
-			System.setErr(psErr);
-			System.setOut(psOut);
-		}
-		catch (Exception e) {
-		}
+			ThdlDebug.attemptToSetUpLogFile("qd.log");
 
-	Locale locale;
+			Locale locale;
 
-	if (args.length == 2) {
-		locale = new Locale(new String(args[0]), new String(args[1]));
-		Locale[] locales = Locale.getAvailableLocales();
-		for (int k=0; k<locales.length; k++)
-			if (locales[k].equals(locale)) {
-				JComponent.setDefaultLocale(locale);
-				break;
+			if (args.length == 2) {
+				locale = new Locale(new String(args[0]), new String(args[1]));
+				Locale[] locales = Locale.getAvailableLocales();
+				for (int k=0; k<locales.length; k++)
+					if (locales[k].equals(locale)) {
+						JComponent.setDefaultLocale(locale);
+						break;
+					}
 			}
+			else
+				locale = Locale.getDefault();
+
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			}
+			catch (Exception e) {
+			}
+
+			QDShell qdsh = new QDShell(locale);
+			qdsh.setVisible(true);
+		} catch (NoClassDefFoundError err) {
+			ThdlDebug.handleClasspathError("QuillDriver's CLASSPATH", err);
+		}
 	}
-	else
-		locale = Locale.getDefault();
-
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		}
-		catch (Exception e) {
-		}
-
-	QDShell qdsh = new QDShell(locale);
-	qdsh.setVisible(true);
-}
 
 	public QDShell(Locale locale) {
 		setTitle("QuillDriver");
@@ -109,21 +103,21 @@ public static void main(String[] args) {
 		JMenu projectMenu = new JMenu(messages.getString("Project"));
 		JMenuItem newItem = new JMenuItem(messages.getString("New"));
 		JMenuItem openItem = new JMenuItem(messages.getString("Open"));
-		openItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		openItem.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e) {
 				qd.getOpen();
 			}
 		});
 		JMenuItem closeItem = new JMenuItem(messages.getString("Close"));
 		JMenuItem saveItem = new JMenuItem(messages.getString("Save"));
-		saveItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		saveItem.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e) {
 				qd.getSave();
 			}
 		});
 		JMenuItem quitItem = new JMenuItem(messages.getString("Quit"));
-		quitItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		quitItem.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e) {
 				qd.getSave();
 //should only system exit if no cancel!!
 				System.exit(0);
@@ -175,8 +169,8 @@ public static void main(String[] args) {
 		return bar;
 	}
 
-class RadioListener implements ActionListener {
-	public void actionPerformed(ActionEvent e) {
+class RadioListener extends ThdlActionListener {
+	public void theRealActionPerformed(ActionEvent e) {
 		qd.changeKeyboard(e);
 	}
 }

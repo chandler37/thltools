@@ -23,6 +23,8 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.text.*;
 
+import org.thdl.util.ThdlDebug;
+
 public class TextPlayer extends JPanel implements AnnotationPlayer
 {
 	private JTextComponent text;
@@ -97,6 +99,7 @@ public class TextPlayer extends JPanel implements AnnotationPlayer
 		catch (BadLocationException ble)
 		{
 			ble.printStackTrace();
+			ThdlDebug.noteIffyCode();
 		}
 	}
 

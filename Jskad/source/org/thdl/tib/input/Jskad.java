@@ -32,7 +32,9 @@ import javax.swing.text.*;
 import javax.swing.text.rtf.*;
 
 import org.thdl.tib.text.*;
-import org.thdl.util.TeeStream;
+import org.thdl.util.ThdlDebug;
+import org.thdl.util.ThdlActionListener;
+
 
 /**
 * A simple Tibetan text editor. Jskad editors lack most of the
@@ -97,8 +99,8 @@ public class Jskad extends JPanel implements DocumentListener {
 
 			JMenuItem newItem = new JMenuItem("New");
 //			newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,2)); //Ctrl-n
-			newItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+			newItem.addActionListener(new ThdlActionListener() {
+				public void theRealActionPerformed(ActionEvent e) {
 					newFile();
 				}
 			});
@@ -106,8 +108,8 @@ public class Jskad extends JPanel implements DocumentListener {
 
 			JMenuItem openItem = new JMenuItem("Open");
 //			openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,2)); //Ctrl-o
-			openItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+			openItem.addActionListener(new ThdlActionListener() {
+				public void theRealActionPerformed(ActionEvent e) {
 					openFile();
 				}
 			});
@@ -115,8 +117,8 @@ public class Jskad extends JPanel implements DocumentListener {
 
 			if (parentObject instanceof JFrame) {
 				JMenuItem closeItem = new JMenuItem("Close");	
-				closeItem.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
+				closeItem.addActionListener(new ThdlActionListener() {
+					public void theRealActionPerformed(ActionEvent e) {
 						if (!hasChanged || hasChanged && checkSave()) {
 							numberOfTibsRTFOpen--;
 
@@ -134,8 +136,8 @@ public class Jskad extends JPanel implements DocumentListener {
 
 			JMenuItem saveItem = new JMenuItem("Save");
 //			saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,2)); //Ctrl-s
-			saveItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+			saveItem.addActionListener(new ThdlActionListener() {
+				public void theRealActionPerformed(ActionEvent e) {
 					if (fileName == null)
 						saveAsFile();
 					else
@@ -147,8 +149,8 @@ public class Jskad extends JPanel implements DocumentListener {
 			fileMenu.add(saveItem);
 
 			JMenuItem saveAsItem = new JMenuItem("Save as");
-			saveAsItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+			saveAsItem.addActionListener(new ThdlActionListener() {
+				public void theRealActionPerformed(ActionEvent e) {
 					saveAsFile();
 				}
 			});
@@ -162,8 +164,8 @@ public class Jskad extends JPanel implements DocumentListener {
 		if (parentObject instanceof JFrame || parentObject instanceof JInternalFrame) {
 			JMenuItem cutItem = new JMenuItem("Cut");
 			cutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,2)); //Ctrl-x
-			cutItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+			cutItem.addActionListener(new ThdlActionListener() {
+				public void theRealActionPerformed(ActionEvent e) {
 					cutSelection();					
 				}
 			});
@@ -171,8 +173,8 @@ public class Jskad extends JPanel implements DocumentListener {
 
 			JMenuItem copyItem = new JMenuItem("Copy");
 			copyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,2)); //Ctrl-c
-			copyItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+			copyItem.addActionListener(new ThdlActionListener() {
+				public void theRealActionPerformed(ActionEvent e) {
 					copySelection();
 				}
 			});
@@ -180,8 +182,8 @@ public class Jskad extends JPanel implements DocumentListener {
 
 			JMenuItem pasteItem = new JMenuItem("Paste");
 			pasteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,2)); //Ctrl-v
-			pasteItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+			pasteItem.addActionListener(new ThdlActionListener() {
+				public void theRealActionPerformed(ActionEvent e) {
 					pasteSelection();
 				}
 			});
@@ -190,8 +192,8 @@ public class Jskad extends JPanel implements DocumentListener {
 
 			JMenuItem selectallItem = new JMenuItem("Select All");
 			selectallItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A,2)); //Ctrl-a
-			selectallItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+			selectallItem.addActionListener(new ThdlActionListener() {
+				public void theRealActionPerformed(ActionEvent e) {
 					dp.setSelectionStart(0);
 					dp.setSelectionEnd(dp.getDocument().getLength());
 				}
@@ -200,8 +202,8 @@ public class Jskad extends JPanel implements DocumentListener {
 		}
 
 		JMenuItem preferencesItem = new JMenuItem("Preferences");
-		preferencesItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		preferencesItem.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e) {
 				getPreferences();
 			}
 		});
@@ -213,16 +215,16 @@ public class Jskad extends JPanel implements DocumentListener {
 		JMenu toolsMenu = new JMenu("Tools");
 
 		JMenuItem TMWWylieItem = new JMenuItem("Convert Tibetan to Wylie");
-		TMWWylieItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		TMWWylieItem.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e) {
 				toWylie();
 			}
 		});
 		toolsMenu.add(TMWWylieItem);
 
 		JMenuItem wylieTMWItem = new JMenuItem("Convert Wylie to Tibetan");
-		wylieTMWItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		wylieTMWItem.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e) {
 				toTibetan();
 			}
 		});
@@ -230,8 +232,8 @@ public class Jskad extends JPanel implements DocumentListener {
 
 		if (parentObject instanceof JFrame || parentObject instanceof JInternalFrame) {
 			JMenuItem importItem = new JMenuItem("Import Wylie as Tibetan");
-			importItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+			importItem.addActionListener(new ThdlActionListener() {
+				public void theRealActionPerformed(ActionEvent e) {
 					importWylie();
 				}
 			});
@@ -244,8 +246,8 @@ public class Jskad extends JPanel implements DocumentListener {
 		JMenu infoMenu = new JMenu("Info");
 
 		JMenuItem aboutItem = new JMenuItem("About");
-		aboutItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		aboutItem.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(Jskad.this,
 					"Copyright 2001 Tibetan and Himalayan Digital Library\n"+
 					"Programmed by Edward Garrett\n\n"+
@@ -275,8 +277,8 @@ public class Jskad extends JPanel implements DocumentListener {
 
 		String[] input_modes = {"Tibetan","Roman"};
 		final JComboBox inputmethods = new JComboBox(input_modes);
-		inputmethods.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		inputmethods.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e) {
 				switch (inputmethods.getSelectedIndex()) {
 					case 0: //Tibetan
 						if (dp.isRomanMode())
@@ -300,8 +302,8 @@ public class Jskad extends JPanel implements DocumentListener {
 
 		String[] keyboard_options = {"Extended Wylie","TCC Keyboard #1","TCC Keyboard #2","Sambhota Keymap One"};
 		final JComboBox keyboards = new JComboBox(keyboard_options);
-		keyboards.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		keyboards.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e) {
 				switch (keyboards.getSelectedIndex()) {
 					case 0: //Extended Wylie
 						installKeyboard("wylie");
@@ -599,9 +601,11 @@ public class Jskad extends JPanel implements DocumentListener {
 			hasChanged = false;
 		} catch (IOException exception) {
 			exception.printStackTrace();
+			ThdlDebug.noteIffyCode();
 			return null;
 		} catch (BadLocationException ble) {
 			ble.printStackTrace();
+			ThdlDebug.noteIffyCode();
 		}
 		return f_name;
 	}
@@ -899,26 +903,12 @@ public class Jskad extends JPanel implements DocumentListener {
 	}
 
 /**
-* Runs Jskad.
-* System output, including errors, is redirected to jskad.log.
-* If you discover a bug, please send us an email, making sure
-* to include the jskad.log file as an attachment.
-*/
+* Runs Jskad.  System output, including errors, is redirected to
+* jskad.log in addition to appearing on the console as per usual.  If
+* you discover a bug, please send us an email, making sure to include
+* the jskad.log file as an attachment.  */
 	public static void main(String[] args) {
-
-		try {
-			PrintStream psOut
-				= new TeeStream(System.out,
-								new PrintStream(new FileOutputStream("jskad.log")));
-			PrintStream psErr
-				= new TeeStream(System.err,
-								new PrintStream(new FileOutputStream("jskad.log")));
-			System.setErr(psErr);
-			System.setOut(psOut);
-		}
-		catch (Exception e) {
-		}	
-
+		ThdlDebug.attemptToSetUpLogFile("jskad.log");
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

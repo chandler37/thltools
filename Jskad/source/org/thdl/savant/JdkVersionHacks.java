@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Toolkit;
 
@@ -49,7 +50,7 @@ import org.thdl.util.ThdlLazyException;
  * deconstruct the mechanism.
  *
  * This class is not instantiable.  */
-final class JdkVersionHacks {
+public final class JdkVersionHacks {
 	/** Don't instantiate this class. */
 	private JdkVersionHacks() { }
 
@@ -182,14 +183,33 @@ final class JdkVersionHacks {
 		}
 	}
 
+	public static Object getJSpinner(Dimension dim,
+									  Object spinnerValue,
+									  int value, int minimum,
+									  int maximum, int stepSize) {
+		/* In Java 1.4, do the following:
+
+		   SpinnerNumberModel snm1
+		     = new SpinnerNumberModel(value, minimum, maximum, stepSize);
+           JSpinner spinner = new JSpinner(snm1);
+           spinner.setPreferredSize(dim);
+           spinner.setValue(spinnerValue);
+           return spinner;
+		*/
+		/* FIXME; */
+		return null;
+	}
+
+		
+
 
 	/** Coming soon: Does what the user desires (via the options he or
-        she has set) with this SecurityException, one encountered
-        during the process of reflection.
+			she has set) with this SecurityException, one encountered
+			during the process of reflection.
 
-		Currently: does nothing.
+			Currently: does nothing.
 
-		FIXME */
+			FIXME */
 	private static void handleSecurityException(SecurityException ex)
 		throws SecurityException
 	{
@@ -198,10 +218,10 @@ final class JdkVersionHacks {
 	}
 
 	/** Returns the value of Frame.MAXIMIZED_BOTH, wrapped in an
-		Integer.
+			Integer.
 
-		@throws NoSuchFieldException the field does not exist or
-		cannot be accessed because security settings are too limiting */
+			@throws NoSuchFieldException the field does not exist or
+			cannot be accessed because security settings are too limiting */
 	private static Object maximizedBothOption()
 		throws NoSuchFieldException
 	{
@@ -209,7 +229,7 @@ final class JdkVersionHacks {
 		try {
 			maxBothOptionField = Frame.class.getField("MAXIMIZED_BOTH");
 
-		/* Don't catch NoSuchFieldException */
+			/* Don't catch NoSuchFieldException */
 		} catch (SecurityException ex) {
 			/* We'll never know if we're using JDK 1.4 or later. */
 			handleSecurityException(ex);
@@ -229,3 +249,4 @@ final class JdkVersionHacks {
 		}
 	}
 };
+

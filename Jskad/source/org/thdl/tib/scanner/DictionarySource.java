@@ -28,7 +28,7 @@ public class DictionarySource
 {
 	private int dicts;
 
-	/** Last bit of word. 1 if there are more brothers.*/
+	/** Last bit of word; 1 if there are more brothers.*/
 	private static final int lastBit=32768;
 	private static final int allDicts=lastBit-1;
 

@@ -41,8 +41,16 @@ import org.jdom.transform.JDOMSource;
 import javax.xml.transform.stream.*;
 import javax.xml.transform.*;
 
+import org.thdl.util.ThdlDebug;
+import org.thdl.util.ThdlActionListener;
+import org.thdl.util.ThdlAbstractAction;
+
 
 public class QD extends JDesktopPane {
+    /** When opening a file, this is the only extension QuillDriver
+        cares about.  This is case-insensitive. */
+    protected final static String dotQuillDriver = ".xml";
+
 	//project related data
 	protected Project project;
 
@@ -97,16 +105,16 @@ public QD(ResourceBundle messages) {
 	fileChooser = new JFileChooser();
 	fileChooser.addChoosableFileFilter(new XMLFilter());
 
-	Action insert1TimeAction = new AbstractAction("insert1Time", null) {
-		public void actionPerformed(ActionEvent e) {
+	Action insert1TimeAction = new ThdlAbstractAction("insert1Time", null) {
+		public void theRealActionPerformed(ActionEvent e) {
 			new TimePoint(pane, clockIcon, tcp.getOutTime());
 			tcp.setInTime(tcp.getOutTime().intValue());
 			tcp.setOutTime(player.getLastTime());
 		}
 	};
 
-	Action insert2TimesAction = new AbstractAction("insert2Times", null) {
-		public void actionPerformed(ActionEvent e) {
+	Action insert2TimesAction = new ThdlAbstractAction("insert2Times", null) {
+		public void theRealActionPerformed(ActionEvent e) {
 			int p1 = pane.getSelectionStart();
 			int p2 = pane.getSelectionEnd();
 			pane.setCaretPosition(p1);
@@ -120,8 +128,8 @@ public QD(ResourceBundle messages) {
 		}
 	};
 
-	Action saveAction = new AbstractAction("saveTranscript", null) {
-		public void actionPerformed(ActionEvent e) {
+	Action saveAction = new ThdlAbstractAction("saveTranscript", null) {
+		public void theRealActionPerformed(ActionEvent e) {
 			getSave();
 		}
 	};
@@ -282,6 +290,7 @@ class TimePoint extends JLabel implements DragGestureListener, DragSourceListene
 			pos = doc.createPosition(tp.getCaretPosition()-1);
 		} catch (BadLocationException ble) {
 			ble.printStackTrace();
+			ThdlDebug.noteIffyCode();
 		}
 	}
 	public void setTime(Integer t) {
@@ -315,6 +324,7 @@ class TimePoint extends JLabel implements DragGestureListener, DragSourceListene
 			dge.startDrag(null, transferable, this);
 		} catch (InvalidDnDOperationException idoe) {
 			idoe.printStackTrace();
+			ThdlDebug.noteIffyCode();
 		}
 	}
 	public void dragEnter(DragSourceDragEvent dsde) {
@@ -332,6 +342,7 @@ class TimePoint extends JLabel implements DragGestureListener, DragSourceListene
 					doc.remove(pos.getOffset(), 1);
 				} catch (BadLocationException ble) {
 					ble.printStackTrace();
+					ThdlDebug.noteIffyCode();
 				}
 			}
 		}
@@ -400,9 +411,11 @@ public class TimePointDropTarget implements DropTargetListener {
 			new TimePoint(pane, clockIcon, time);
 		} catch (UnsupportedFlavorException ufe) {
 			ufe.printStackTrace();
+			ThdlDebug.noteIffyCode();
 			return false;
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
+			ThdlDebug.noteIffyCode();
 			return false;
 		}
 		return true;
@@ -423,8 +436,8 @@ class TimeCodeManager extends JPanel {
 		inPanel.add(inButton);
 		inPanel.add(inSpinner);
 
-		inButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		inButton.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e) {
 				int k = player.when();
 				if (k != -1)
 					setInTime(k);
@@ -441,8 +454,8 @@ class TimeCodeManager extends JPanel {
 		outPanel.add(outButton);
 		outPanel.add(outSpinner);
 
-		outButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		outButton.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e) {
 				int k = player.when();
 				if (k != -1) {
 					setOutTime(k);
@@ -453,8 +466,8 @@ class TimeCodeManager extends JPanel {
 
 
 		JButton playSegButton = new JButton(messages.getString("PlaySegment"));
-		playSegButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		playSegButton.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e) {
 				Integer in = getInTime();
 				Integer out = getOutTime();
 				if (out.intValue() > in.intValue())
@@ -468,14 +481,14 @@ class TimeCodeManager extends JPanel {
 		JButton playButton = new JButton(messages.getString("Play"));
 		JButton pauseButton = new JButton(messages.getString("Pause"));
 
-		playButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		playButton.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e) {
 				if (player != null)
 					player.cmd_play();
 			}
 		});
-		pauseButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		pauseButton.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e) {
 				if (player != null)
 					player.cmd_stop();
 			}
@@ -593,6 +606,7 @@ public void setMedia(File f) {
 			startTimer();
 		} catch (MalformedURLException murle) {
 			murle.printStackTrace();
+			ThdlDebug.noteIffyCode();
 		}
 	}
 }
@@ -696,7 +710,7 @@ public boolean getSave() {
 			fileChooser.setSelectedFile(null);
 		else {
 			String path = project.getMedia().getPath();
-			path = path.substring(0, path.lastIndexOf('.')) + ".xml";
+			path = path.substring(0, path.lastIndexOf('.')) + QD.dotQuillDriver;
 			fileChooser.setSelectedFile(new File(path));
 		}
 		if (fileChooser.showSaveDialog(QD.this) == JFileChooser.APPROVE_OPTION) {
@@ -838,12 +852,15 @@ if (keyboard_url != null) {
 		return true;
 	} catch (FileNotFoundException fnfe) {
 		fnfe.printStackTrace();
+		ThdlDebug.noteIffyCode();
 		return false;
 	} catch (IOException ioe) {
 		ioe.printStackTrace();
+		ThdlDebug.noteIffyCode();
 		return false;
 	} catch (TransformerException e) {
 		e.printStackTrace();
+		ThdlDebug.noteIffyCode();
 		return false;
 	}
 }
@@ -950,6 +967,7 @@ if (keyboard_url != null) {
 							tDoc.insertString(tDoc.getLength(), "\n", null);
 						} catch (BadLocationException ble) {
 							ble.printStackTrace();
+							ThdlDebug.noteIffyCode();
 						}
 */
 					new TimePoint(dp, clockIcon, Integer.valueOf(e.getAttributeValue("t")));
@@ -961,6 +979,7 @@ if (keyboard_url != null) {
 							tDoc.insertString(tDoc.getLength(), "\n", null);
 						} catch (BadLocationException ble) {
 							ble.printStackTrace();
+							ThdlDebug.noteIffyCode();
 						}
 */
 					dp.insertComponent(new JLabel("  ", icons[Integer.parseInt(e.getAttributeValue("id"))], SwingConstants.LEFT));
@@ -984,6 +1003,7 @@ project.setTranscript(t);
 		return true;
 	} catch (JDOMException jdome) {
 		jdome.printStackTrace();
+		ThdlDebug.noteIffyCode();
 		return false;
 	}
 }
@@ -999,8 +1019,8 @@ SpeakerManager(final SpeakerTable sTable) {
 	setLayout(new BorderLayout());
 
 	JButton addButton = new JButton(messages.getString("Add"));
-	addButton.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
+	addButton.addActionListener(new ThdlActionListener() {
+		public void theRealActionPerformed(ActionEvent e) {
 			SpeakerData sd = (SpeakerData)sTable.getModel();
 			JPanel p0 = new JPanel(new GridLayout(0,1));
 			JPanel p1 = new JPanel();
@@ -1021,8 +1041,8 @@ SpeakerManager(final SpeakerTable sTable) {
 		}
 	});
 	JButton editButton = new JButton(messages.getString("Edit"));
-	editButton.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
+	editButton.addActionListener(new ThdlActionListener() {
+		public void theRealActionPerformed(ActionEvent e) {
 			int row = sTable.getSelectedRow();
 			if (row == -1)
 				return;
@@ -1062,6 +1082,7 @@ SpeakerManager(final SpeakerTable sTable) {
 										doc2.remove(i,1);
 									} catch (BadLocationException ble) {
 										ble.printStackTrace();
+										ThdlDebug.noteIffyCode();
 									}
 									pane.setCaretPosition(i);
 									pane.insertComponent(new JLabel("  ", icons[combo.getSelectedIndex()], SwingConstants.LEFT));
@@ -1075,8 +1096,8 @@ SpeakerManager(final SpeakerTable sTable) {
 		}
 	});
 	JButton deleteButton = new JButton(messages.getString("Remove"));
-	deleteButton.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
+	deleteButton.addActionListener(new ThdlActionListener() {
+		public void theRealActionPerformed(ActionEvent e) {
 			int row = sTable.getSelectedRow();
 			if (row > -1 && JOptionPane.showConfirmDialog(SpeakerManager.this, messages.getString("SureDeleteSpeaker"), messages.getString("Warning"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
 				SpeakerData sd = (SpeakerData)sTable.getModel();
@@ -1096,6 +1117,7 @@ SpeakerManager(final SpeakerTable sTable) {
 									k2--;
 								} catch (BadLocationException ble) {
 									ble.printStackTrace();
+									ThdlDebug.noteIffyCode();
 								}
 							}
 						}
@@ -1187,8 +1209,8 @@ class SpeakerData extends AbstractTableModel
 		for (int k=0; k<speaker.length; k++)
 			addSpeaker(speaker[k]);
 
-		Action insertSpeakerAction = new AbstractAction("insertSpeaker", null) {
-			public void actionPerformed(ActionEvent e) {
+		Action insertSpeakerAction = new ThdlAbstractAction("insertSpeaker", null) {
+			public void theRealActionPerformed(ActionEvent e) {
 				if (speakers.size() == 0)
 					return;
 				JTextPane tp = (JTextPane)e.getSource();
@@ -1213,6 +1235,7 @@ class SpeakerData extends AbstractTableModel
 									return;
 								} catch (BadLocationException ble) {
 									ble.printStackTrace();
+									ThdlDebug.noteIffyCode();
 								}
 							}
 						}
@@ -1286,6 +1309,7 @@ class SpeakerData extends AbstractTableModel
 			return TibetanDocument.getTibetanMachineWeb(sp.getName().trim());
 		} catch (InvalidWylieException iwe) {
 			iwe.printStackTrace();
+			ThdlDebug.noteIffyCode();
 			return null;
 		}
 	}
@@ -1367,15 +1391,15 @@ public JMenuBar getTextMenuBar() {
 
 	JMenu searchMenu = new JMenu(messages.getString("Search"));
 	JMenuItem findTextItem = new JMenuItem(messages.getString("FindText"));
-	findTextItem.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
+	findTextItem.addActionListener(new ThdlActionListener() {
+		public void theRealActionPerformed(ActionEvent e) {
 			findText();
 		}
 	});
 
 	JMenuItem replaceTextItem = new JMenuItem(messages.getString("ReplaceText"));
-	replaceTextItem.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
+	replaceTextItem.addActionListener(new ThdlActionListener() {
+		public void theRealActionPerformed(ActionEvent e) {
 			replaceText();
 		}
 	});
@@ -1446,6 +1470,7 @@ try {
 	}
 	} catch (BadLocationException ble) {
 		ble.printStackTrace();
+		ThdlDebug.noteIffyCode();
 	}
 
 	return -1; //not found
@@ -1495,6 +1520,7 @@ public void findText() {
 		}
 	} catch (BadLocationException ble) {
 		ble.printStackTrace();
+		ThdlDebug.noteIffyCode();
 	}
 
 	}
@@ -1582,13 +1608,14 @@ public void replaceText() {
 		}
 	} catch (BadLocationException ble) {
 		ble.printStackTrace();
+		ThdlDebug.noteIffyCode();
 	}
 
 	}
 }
 
-class RadioListener implements ActionListener {
-	public void actionPerformed(ActionEvent e) {
+class RadioListener extends ThdlActionListener {
+	public void theRealActionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("edit")) {
 			//make the text pane editable
 			pane.setEditable(true);
@@ -1644,26 +1671,12 @@ class RadioListener implements ActionListener {
 			if (f.isDirectory()) {
 				return true;
 			}
-
-			String fName = f.getName();
-			int i = fName.lastIndexOf('.');
-
-			if (i < 0)
-				return false;
-
-			else {
-				String ext = fName.substring(i+1).toLowerCase();
-
-				if (ext.equals("xml"))
-					return true;
-				else
-					return false;
-			}
+			return f.getName().toLowerCase().endsWith(QD.dotQuillDriver);
 		}
     
 		//the description of this filter
 		public String getDescription() {
-			return "Extensible Markup Language (.xml)";
+			return "Extensible Markup Language (" + QD.dotQuillDriver + ")";
 		}
 	}
 }

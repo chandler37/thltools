@@ -42,7 +42,7 @@ import org.thdl.tib.text.TibetanDocument;
 
     @author Andr&eacute;s Montano Pellegrini
     @see RemoteScannerFilter
-    @see ScannerPannel
+    @see ScannerPanel
 */
 public class AppletScannerFilter extends JApplet implements ActionListener, FocusListener, ItemListener
 {
@@ -154,6 +154,9 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
 	    /* mnuEdit.setEnabled(false);
 	    objModified=null;*/
 	}
+	/* FIXME: what happens if this throws an exception?  We'll just
+       see it on the console--it won't terminate the program.  And the
+       user may not see the console! See ThdlActionListener. -DC */
     public void actionPerformed(ActionEvent e)	
     {
 		Object clicked = e.getSource();

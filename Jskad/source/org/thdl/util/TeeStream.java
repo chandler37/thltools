@@ -22,7 +22,9 @@ import java.io.PrintStream;
 
 /**
  * All writes to this print stream are copied to two print streams of
- * your choice.  */
+ * your choice.
+ * @author David Chandler
+ */
 public class TeeStream extends PrintStream {
 	private PrintStream out;
 	public TeeStream(PrintStream out1, PrintStream out2) {

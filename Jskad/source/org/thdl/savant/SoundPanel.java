@@ -26,6 +26,8 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import org.thdl.util.ThdlDebug;
+
 /*-----------------------------------------------------------------------*/
 public class SoundPanel extends Panel implements ControllerListener
 {
@@ -346,10 +348,12 @@ System.out.println("soundpanel - "+sound.toString());
 		} catch (javax.media.NoPlayerException e) {
 			System.err.println("noplayer exception");
 			e.printStackTrace();
+			ThdlDebug.noteIffyCode();
 			return;
 		} catch (java.io.IOException ex) {
 			System.err.println("IO exception");
 			ex.printStackTrace();
+			ThdlDebug.noteIffyCode();
 			return;
 		}
 		if (player != null)

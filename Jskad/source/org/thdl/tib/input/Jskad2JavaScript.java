@@ -22,8 +22,10 @@ import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import org.thdl.tib.text.*;
 import netscape.javascript.JSObject;
+
+import org.thdl.tib.text.*;
+import org.thdl.util.ThdlActionListener;
 
 /**
 * A version of Jskad which can be embedded into
@@ -54,9 +56,9 @@ public class Jskad2JavaScript extends JApplet {
 		jskad = new Jskad(this);
 		panel.add("Center", jskad);
 		JButton submit = new JButton("Submit");
-		submit.addActionListener(new ActionListener()
+		submit.addActionListener(new ThdlActionListener()
 		{
-			public void actionPerformed(ActionEvent e)
+			public void theRealActionPerformed(ActionEvent e)
 			{
 				try {
 					TibetanDocument t_doc = (TibetanDocument)jskad.dp.getDocument();

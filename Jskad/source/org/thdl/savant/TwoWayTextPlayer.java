@@ -30,6 +30,8 @@ import java.util.Enumeration;
 import java.util.NoSuchElementException;
 import javax.swing.text.JTextComponent;
 
+import org.thdl.util.ThdlDebug;
+
 public class TwoWayTextPlayer extends TextHighlightPlayer
 {
 	protected TreeMap orderedOffsets = null;
@@ -106,6 +108,7 @@ public class TwoWayTextPlayer extends TextHighlightPlayer
 				catch (NoSuchElementException nsee)
 				{
 					nsee.printStackTrace();
+					ThdlDebug.noteIffyCode();
 				}
 			}
 		});

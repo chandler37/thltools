@@ -59,6 +59,9 @@ import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.text.rtf.RTFEditorKit;
 
+import org.thdl.util.ThdlDebug;
+import org.thdl.util.ThdlActionListener;
+
 public class Savant extends JDesktopPane
 {
 	protected SoundPanel sp = null;
@@ -142,6 +145,7 @@ public class Savant extends JDesktopPane
 				open(views, new URL(video), new URL(vocabulary));
 		} catch (MalformedURLException murle) {
 			murle.printStackTrace();
+			ThdlDebug.noteIffyCode();
 		}
 	}
 
@@ -159,8 +163,8 @@ public class Savant extends JDesktopPane
 			viewNames[i] = new String(views[i].getTitle());
 
 		JComboBox viewOptions = new JComboBox(viewNames);
-		viewOptions.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e)
+		viewOptions.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e)
 			{
 				JComboBox jcb = (JComboBox)e.getSource();
 				setTranscriptView(views[jcb.getSelectedIndex()]);
@@ -201,8 +205,10 @@ public class Savant extends JDesktopPane
 							vocabPane.getCaret().setDot(0);
 						} catch (IOException ioe) {
 							ioe.printStackTrace();
+							ThdlDebug.noteIffyCode();
 						} catch (BadLocationException ble) {
 							ble.printStackTrace();
+							ThdlDebug.noteIffyCode();
 						}
 						vocabFrame = new JInternalFrame("About the Video", false, false, false, true);
 						vocabFrame.setContentPane(vocabPanel);

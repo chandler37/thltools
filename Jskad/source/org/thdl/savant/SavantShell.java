@@ -30,6 +30,8 @@ import javax.swing.text.rtf.*;
 import org.thdl.savant.ucuchi.*;
 import org.thdl.savant.tib.*;
 import org.thdl.util.TeeStream;
+import org.thdl.util.ThdlDebug;
+import org.thdl.util.ThdlActionListener;
 
 public class SavantShell extends JFrame
 {
@@ -44,56 +46,49 @@ public class SavantShell extends JFrame
 
 	public static void main(String[] args) {
 		try {
-			PrintStream psOut
-				= new TeeStream(System.out,
-								new PrintStream(new FileOutputStream("savant.log")));
-			PrintStream psErr
-				= new TeeStream(System.err,
-								new PrintStream(new FileOutputStream("savant.log")));
-			System.setErr(psErr);
-			System.setOut(psOut);
-		}
-		catch (Exception e) {
-		}
+			ThdlDebug.attemptToSetUpLogFile("savant.log");
 
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {}
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} catch (Exception e) {}
 
-		RTFEditorKit rtf = new RTFEditorKit();
-		InputStream in1 = SavantShell.class.getResourceAsStream("savanthelp.rtf");
-		InputStream in2 = SavantShell.class.getResourceAsStream("aboutsavant.rtf");
-		if (in1 == null) {
-			System.out.println("Can't find savanthelp.rtf.");
-			System.exit(1);
+			RTFEditorKit rtf = new RTFEditorKit();
+			InputStream in1 = SavantShell.class.getResourceAsStream("savanthelp.rtf");
+			InputStream in2 = SavantShell.class.getResourceAsStream("aboutsavant.rtf");
+			if (in1 == null) {
+				System.out.println("Can't find savanthelp.rtf.");
+				System.exit(1);
+			}
+			if (in2 == null) {
+				System.out.println("Can't find aboutsavant.rtf.");
+				System.exit(1);
+			}
+			DefaultStyledDocument doc1 = new DefaultStyledDocument();
+			DefaultStyledDocument doc2 = new DefaultStyledDocument();
+			try {
+				rtf.read(in1, doc1, 0);
+				rtf.read(in2, doc2, 0);
+			} catch (BadLocationException ioe) {
+				return;
+			} catch (IOException ioe) {
+				System.out.println("Can't find one of savanthelp.rtf or aboutsavant.rtf.");
+				System.exit(1);
+			}
+
+			JTextPane pane1 = new JTextPane(doc1);
+			JTextPane pane2 = new JTextPane(doc2);
+			pane1.setEditable(false);
+			pane2.setEditable(false);
+
+			helpPane = new JScrollPane(pane1);
+			aboutPane = new JScrollPane(pane2);
+
+			SavantShell ssh = new SavantShell();
+			ssh.setVisible(true);
+			ssh.initFileChooser();
+		} catch (NoClassDefFoundError err) {
+			ThdlDebug.handleClasspathError("Savant's CLASSPATH", err);
 		}
-		if (in2 == null) {
-			System.out.println("Can't find aboutsavant.rtf.");
-			System.exit(1);
-		}
-		DefaultStyledDocument doc1 = new DefaultStyledDocument();
-		DefaultStyledDocument doc2 = new DefaultStyledDocument();
-		try {
-			rtf.read(in1, doc1, 0);
-			rtf.read(in2, doc2, 0);
-		} catch (BadLocationException ioe) {
-			return;
-		} catch (IOException ioe) {
-			System.out.println("Can't find one of savanthelp.rtf or aboutsavant.rtf.");
-			System.exit(1);
-		}
-
-		JTextPane pane1 = new JTextPane(doc1);
-		JTextPane pane2 = new JTextPane(doc2);
-		pane1.setEditable(false);
-		pane2.setEditable(false);
-
-		helpPane = new JScrollPane(pane1);
-		aboutPane = new JScrollPane(pane2);
-
-		SavantShell ssh = new SavantShell();
-		ssh.setVisible(true);
-		ssh.initFileChooser();
 	}
 
 	public void initFileChooser() {
@@ -114,26 +109,39 @@ public class SavantShell extends JFrame
 			if (f.isDirectory()) {
 				return true;
 			}
-
-			String fName = f.getName();
-			int i = fName.lastIndexOf('.');
-
-			if (i < 0)
-				return false;
-
-			else {
-				String ext = fName.substring(i+1).toLowerCase();
-
-				if (ext.equals("savant"))
-					return true;
-				else
-					return false;
-			}
+			return f.getName().toLowerCase().endsWith(SavantFileView.dotSavant);
 		}
     
 		//the description of this filter
 		public String getDescription() {
 			return "Savant data (.savant)";
+		}
+	}
+
+	/** Closes one open title, if there is one open. Returns true if
+        one was closed, or false if no titles are open. */
+	private boolean closeOneSavantTitle() {
+		if (savant != null) {
+			ThdlDebug.verify("There should be one or more Savant titles open: ",
+							 numberOfSavantsOpen >= 1);
+			if (numberOfSavantsOpen < 2) {
+				savant.close();
+				savant = null;
+				getContentPane().removeAll();
+				setTitle("Savant");
+				invalidate();
+				validate();
+				repaint();
+			} else {
+				savant.close();
+				dispose();
+			}
+			numberOfSavantsOpen--;
+			return true;
+		} else {
+			ThdlDebug.verify("There should be zero Savant titles open: ",
+							 numberOfSavantsOpen == 0);
+			return false;
 		}
 	}
 
@@ -146,8 +154,8 @@ public class SavantShell extends JFrame
 
 		JMenuItem openItem = new JMenuItem("Open");
 		openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,2));
-		openItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		openItem.addActionListener(new ThdlActionListener() {
+			public void theRealActionPerformed(ActionEvent e) {
 				if (fileChooser.showOpenDialog(SavantShell.this) != JFileChooser.APPROVE_OPTION)
 					return;
 				Properties p = new Properties();
@@ -158,48 +166,66 @@ public class SavantShell extends JFrame
 					newSavantWindow(p.getProperty("PROJECT"), p.getProperty("TITLE"), new URL(path + p.getProperty("TRANSCRIPT")), new URL(path + p.getProperty("MEDIA")), null);
 				} catch (MalformedURLException murle) {
 					murle.printStackTrace();
+					ThdlDebug.noteIffyCode();
 				} catch (FileNotFoundException fnfe) {
 					fnfe.printStackTrace();
+					ThdlDebug.noteIffyCode();
 				} catch (IOException ioe) {
 					ioe.printStackTrace();
+					ThdlDebug.noteIffyCode();
 				}
 			}
 		});
 
 		JMenuItem closeItem = new JMenuItem("Close");
 		closeItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,2));
-		closeItem.addActionListener(new ActionListener()
+		closeItem.addActionListener(new ThdlActionListener()
 		{
-			public void actionPerformed(ActionEvent e)
+			public void theRealActionPerformed(ActionEvent e)
 			{
-				if (savant != null)
-				{
-					if (numberOfSavantsOpen < 2)
-					{
-						savant.close();
-						savant = null;
-						getContentPane().removeAll();
-						setTitle("Savant");
-						invalidate();
-						validate();
-						repaint();
-					} else {
-						savant.close();
-						dispose();
-					}
-					numberOfSavantsOpen--;
-				}		
+				// Return value doesn't matter:
+				closeOneSavantTitle();
+			}
+		});
+
+		JMenuItem quitItem = new JMenuItem("Quit");
+		quitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,2));
+		quitItem.addActionListener(new ThdlActionListener()
+		{
+			public void theRealActionPerformed(ActionEvent e)
+			{
+				// Close all Savant titles:
+				while (closeOneSavantTitle())
+					;
+
+				// Exit normally:
+				System.exit(0);
 			}
 		});	
 
+		/* Hey developers: To test ThdlActionListener, use this:
+
+		   JMenuItem errorThrowerItem = new JMenuItem("ErrorThrower");
+		   errorThrowerItem.addActionListener(new ThdlActionListener()
+		   {
+		   public void theRealActionPerformed(ActionEvent e)
+		   {
+		   throw new Error("Testing ThdlActionListener");
+		   }
+		   });
+		   fileMenu.add(errorThrowerItem);
+		*/
+
 		fileMenu.add(openItem);
 		fileMenu.add(closeItem);
+		fileMenu.addSeparator();
+		fileMenu.add(quitItem);
 
 		JMenu infoMenu = new JMenu("Information");
 		JMenuItem helpItem = new JMenuItem("Help");
-		helpItem.addActionListener(new ActionListener()
+		helpItem.addActionListener(new ThdlActionListener()
 		{
-			public void actionPerformed(ActionEvent e)
+			public void theRealActionPerformed(ActionEvent e)
 			{
 				JFrame h = new JFrame("Help");
 				h.setSize(500,400);
@@ -218,9 +244,9 @@ public class SavantShell extends JFrame
 			}
 		});
 		JMenuItem aboutItem = new JMenuItem("About");
-		aboutItem.addActionListener(new ActionListener()
+		aboutItem.addActionListener(new ThdlActionListener()
 		{
-			public void actionPerformed(ActionEvent e)
+			public void theRealActionPerformed(ActionEvent e)
 			{
 				JFrame h = new JFrame("About");
 				h.setSize(500,400);
@@ -286,15 +312,19 @@ public class SavantShell extends JFrame
 
 	public void newSavantWindow(String project, String titleName, URL trn, URL vid, URL abt)
 	{
-		if (numberOfSavantsOpen == 0)
-			openSavant(project, titleName, trn, vid, abt);
-		else {
-			SavantShell scp = new SavantShell();
-			scp.setVisible(true);
-			scp.openSavant(project, titleName, trn, vid, abt);
-			scp.setFileChooser(fileChooser);
+		try {
+			if (numberOfSavantsOpen == 0)
+				openSavant(project, titleName, trn, vid, abt);
+			else {
+				SavantShell scp = new SavantShell();
+				scp.setVisible(true);
+				scp.openSavant(project, titleName, trn, vid, abt);
+				scp.setFileChooser(fileChooser);
+			}
+			numberOfSavantsOpen++;
+		} catch (NoClassDefFoundError err) {
+			ThdlDebug.handleClasspathError("Savant's CLASSPATH", err);
 		}
-		numberOfSavantsOpen++;
 	}
 
 	public void openSavant(String project, String titleName, URL trn, URL vid, URL abt)

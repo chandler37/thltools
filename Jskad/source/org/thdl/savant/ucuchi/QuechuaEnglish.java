@@ -29,6 +29,8 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.thdl.savant.*;
 
+import org.thdl.util.ThdlDebug;
+
 public class QuechuaEnglish implements TranscriptView
 {
 	private JTextPane text = null;
@@ -57,6 +59,7 @@ public class QuechuaEnglish implements TranscriptView
 		catch (JDOMException jdome)
 		{
 			jdome.printStackTrace();
+			ThdlDebug.noteIffyCode();
 		}
 	}
 
@@ -195,6 +198,7 @@ public class QuechuaEnglish implements TranscriptView
 		catch (BadLocationException ble)
 		{
 			ble.printStackTrace();
+			ThdlDebug.noteIffyCode();
 		}
 	}
 

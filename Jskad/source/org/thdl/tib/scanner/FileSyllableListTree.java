@@ -19,16 +19,16 @@ package org.thdl.tib.scanner;
 
 import java.io.*;
 
-/** Searches the words directly in a file; not the prefered
+/** Searches the words directly in a file; not the preferred
 	implementation. The search is too slow!
-	The prefered implementation is the CachedSyllableList.
+	The preferred implementation is the CachedSyllableListTree.
 		
 	<p>The words must be stored in a binary file tree structure format.
 	This can be done using the BinaryFileGenerator.</p>
 
     @author Andr&eacute;s Montano Pellegrini
     @see TibetanScanner
-    @see CachedSyllableList
+    @see CachedSyllableListTree
     @see BinaryFileGenerator
 */
 

@@ -32,6 +32,8 @@ import org.thdl.tib.text.*;
 import org.thdl.tib.input.*;
 import org.thdl.savant.*;
 
+import org.thdl.util.ThdlDebug;
+
 public class Wylie implements TranscriptView
 {
 	private JTextPane text = null;
@@ -60,6 +62,7 @@ public class Wylie implements TranscriptView
 		catch (JDOMException jdome)
 		{
 			jdome.printStackTrace();
+			ThdlDebug.noteIffyCode();
 		}
 	}
 
@@ -174,6 +177,7 @@ public class Wylie implements TranscriptView
 		catch (BadLocationException ble)
 		{
 			ble.printStackTrace();
+			ThdlDebug.noteIffyCode();
 		}
 	}
 

@@ -24,6 +24,8 @@ import javax.swing.text.*;
 import javax.swing.text.rtf.RTFEditorKit;
 import java.io.*;
 
+import org.thdl.util.ThdlDebug;
+
 /**
 * Provides methods for converting back and forth between
 * Extended Wylie and TibetanMachineWeb, and for inserting Tibetan
@@ -1108,6 +1110,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 		}
 		catch (BadLocationException ble) {
 			ble.printStackTrace();
+			ThdlDebug.noteIffyCode();
 		}
 
 		return "";

@@ -24,6 +24,8 @@ import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.event.MouseListener;
 
+import org.thdl.util.ThdlDebug;
+
 public class TextHighlightPlayer extends JPanel implements AnnotationPlayer
 {
 	protected JTextComponent text;
@@ -108,6 +110,7 @@ public class TextHighlightPlayer extends JPanel implements AnnotationPlayer
 		catch (BadLocationException ble)
 		{
 			ble.printStackTrace();
+			ThdlDebug.noteIffyCode();
 		}
 	}
 

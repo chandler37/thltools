@@ -29,6 +29,8 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.thdl.savant.*;
 
+import org.thdl.util.ThdlDebug;
+
 public class All implements TranscriptView
 {
 	private JTextPane text = null;
@@ -57,6 +59,7 @@ public class All implements TranscriptView
 		catch (JDOMException jdome)
 		{
 			jdome.printStackTrace();
+			ThdlDebug.noteIffyCode();
 		}
 	}
 
@@ -203,6 +206,7 @@ public class All implements TranscriptView
 		catch (BadLocationException ble)
 		{
 			ble.printStackTrace();
+			ThdlDebug.noteIffyCode();
 		}
 	}
 

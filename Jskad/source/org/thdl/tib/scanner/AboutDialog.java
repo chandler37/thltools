@@ -36,6 +36,9 @@ class AboutDialog extends Dialog implements ActionListener, WindowListener
         setSize(240,300); // the size ipaq's window.
     }
     
+	/* FIXME: what happens if this throws an exception?  We'll just
+       see it on the console--it won't terminate the program.  And the
+       user may not see the console! See ThdlActionListener. -DC */
     public void actionPerformed(ActionEvent e)
     {
         hide();

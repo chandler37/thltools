@@ -32,6 +32,8 @@ import org.thdl.tib.text.*;
 import java.io.*;
 import javax.swing.text.rtf.*;
 
+import org.thdl.util.ThdlDebug;
+
 /**
 * Enables input of Tibetan text
 * using Tibetan Computer Company's free cross-platform TibetanMachineWeb fonts.
@@ -764,6 +766,7 @@ class RTFSelection implements ClipboardOwner, Transferable {
 					newDoc.insertString(i-offset, s, as);
 				} catch (BadLocationException ble) {
 					ble.printStackTrace();
+					ThdlDebug.noteIffyCode();
 				}
 			}
 			rtfOut = new ByteArrayOutputStream();
@@ -771,8 +774,10 @@ class RTFSelection implements ClipboardOwner, Transferable {
 			plainText = getText(offset, length);
 		} catch (BadLocationException ble) {
 			ble.printStackTrace();
+			ThdlDebug.noteIffyCode();
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
+			ThdlDebug.noteIffyCode();
 		}
 	}
 	public void lostOwnership(Clipboard clipboard, Transferable contents) {
@@ -816,6 +821,7 @@ class RTFSelection implements ClipboardOwner, Transferable {
 				rtfBoard.setContents(rtfSelection, rtfSelection);
 			} catch (IllegalStateException ise) {
 				ise.printStackTrace();
+				ThdlDebug.noteIffyCode();
 			}
 		}
 		if (remove)
@@ -823,6 +829,7 @@ class RTFSelection implements ClipboardOwner, Transferable {
 				getDocument().remove(p1, p2-p1);
 			} catch (BadLocationException ble) {
 				ble.printStackTrace();
+				ThdlDebug.noteIffyCode();
 			}
 	}
 
@@ -853,6 +860,7 @@ public void paste(int offset) {
 					doc.insertString(p1+i, s, as);
 				} catch (BadLocationException ble) {
 					ble.printStackTrace();
+					ThdlDebug.noteIffyCode();
 				}
 			}
 		} else if (contents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
@@ -861,12 +869,16 @@ public void paste(int offset) {
 		}
 	} catch (UnsupportedFlavorException ufe) {
 		ufe.printStackTrace();
+		ThdlDebug.noteIffyCode();
 	} catch (IOException ioe) {
 		ioe.printStackTrace();
+		ThdlDebug.noteIffyCode();
 	} catch (IllegalStateException ise) {
 		ise.printStackTrace();
+		ThdlDebug.noteIffyCode();
 	} catch (BadLocationException ble) {
 		ble.printStackTrace();
+		ThdlDebug.noteIffyCode();
 	}
 }
 
@@ -1347,6 +1359,7 @@ public void paste(int offset) {
 		}
 		catch (BadLocationException ble) {
 			ble.printStackTrace();
+			ThdlDebug.noteIffyCode();
 		}
 	}
 
@@ -1368,6 +1381,7 @@ public void paste(int offset) {
 						offset++;
 					} catch (BadLocationException ble) {
 						ble.printStackTrace();
+						ThdlDebug.noteIffyCode();
 					}
 				} else {
 					TibetanDocument.DuffData[] dd = TibetanDocument.getTibetanMachineWeb(next);
@@ -1444,6 +1458,7 @@ public void paste(int offset) {
 		}
 		catch (BadLocationException ble) {
 			ble.printStackTrace();
+			ThdlDebug.noteIffyCode();
 		}
 	}
 
