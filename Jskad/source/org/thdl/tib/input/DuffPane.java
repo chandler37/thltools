@@ -1018,6 +1018,9 @@ class RTFSelection implements ClipboardOwner, Transferable {
 	}
 
 public void paste() {
+    /* added by AM. If we are pasting over selected text, such text
+    such be substituted by the text to be pasted. */
+    deleteCurrentSelection();
 	paste(getSelectionStart());
 }
 
