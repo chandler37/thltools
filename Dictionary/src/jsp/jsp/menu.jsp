@@ -7,7 +7,7 @@
 <c:if test="${ ! sessionScope.user.guest }">
 	<c:set var="editMode" value="${ true }" />
 </c:if>
-<div id="label"><p>THDL Dictionary Server: Main Menu</p></div><!--END label-->
+<div id="label"><p>THDL Tibetan Collaborative Dictionaries: Main Menu</p></div><!--END label-->
 
 <div id="message">
 <p>

@@ -70,8 +70,8 @@ public class LexLogger
 		LOGGER.debug( "Query Entry: " + query.getEntry() );
 		LOGGER.debug( "Query QueryComponent: " + query.getQueryComponent() );
 		LOGGER.debug( "Query UpdateComponent: " + query.getUpdateComponent() );
-
 		LOGGER.debug( "Query Results, " + query.getResults() + "\n" );
+		debugComponent( UserSessionManager.getInstance().getSessionUser( ses ) );
 	}
 
 
@@ -113,16 +113,17 @@ public class LexLogger
 	 *
 	 * @param  component  Description of the Parameter
 	 */
-	public static void debugComponent( ILexComponent component )
+	public static void debugComponent( Object component )
 	{
 		try
 		{
 			LOGGER.debug( "Describing: " + component );
+			String label = component instanceof ILexComponent ? ( (ILexComponent) component ).getLabel() : component.toString();
 			Iterator it = BeanUtils.describe( component ).entrySet().iterator();
 			while ( it.hasNext() )
 			{
 				Map.Entry entry = (Map.Entry) it.next();
-				LOGGER.debug( component.getLabel() + " property: " + entry.getKey() + " = '" + entry.getValue() + "'" );
+				LOGGER.debug( label + " property: " + entry.getKey() + " = '" + entry.getValue() + "'" );
 			}
 		}
 		catch ( Exception e )

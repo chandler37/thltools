@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core"%>
 <jsp:include page="jsp/header.jsf" flush="false" />
 <div id="label">
-Please login to use Lex the Dictionary Server
+Please login to use the THDL Tibetan Collaborative Dictionaries
 </div><!--END label-->
 <div id="message">Message</div><!--END Message-->
 <div id="columnSingle">
@@ -25,7 +25,7 @@ Password: <input type='password' name='password' size='20' value=''>
 </form>
 <form action='/lex/public' method="post">
 <p>
-If you are not a dictionary contributor please proceed here.
+If you would just like to browse the dictionary without contributing please proceed here.
 <input type="submit" value="Proceed" />
 </p>
 </form>
