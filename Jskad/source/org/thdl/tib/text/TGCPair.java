@@ -37,6 +37,23 @@ public class TGCPair {
     public static final int SANSKRIT_WITHOUT_VOWEL = 5;
     public static final int SANSKRIT_WITH_VOWEL = 6;
 
+    /** Returns a human-readable (well, programmer-readable)
+        representation of one of the public enumerations in this
+        class. */
+    public static final String enumToString(int cls) {
+        if (OTHER == cls) return "OTHER";
+        if (LONE_VOWEL == cls) return "LONE_VOWEL";
+        if (SANSKRIT_WITH_VOWEL == cls) return "SANSKRIT_WITH_VOWEL";
+        if (SANSKRIT_WITHOUT_VOWEL == cls) return "SANSKRIT_WITHOUT_VOWEL";
+        if (CONSONANTAL_WITH_VOWEL == cls) return "CONSONANTAL_WITH_VOWEL";
+        if (CONSONANTAL_WITHOUT_VOWEL == cls) return "CONSONANTAL_WITHOUT_VOWEL";
+
+        if (TYPE_OTHER == cls) return "TYPE_OTHER";
+        if (TYPE_SANSKRIT == cls) return "TYPE_SANSKRIT";
+        if (TYPE_TIBETAN == cls) return "TYPE_TIBETAN";
+        return null;
+    }
+
     public static final int TYPE_OTHER = 31;
     public static final int TYPE_SANSKRIT = 32;
     public static final int TYPE_TIBETAN = 33;

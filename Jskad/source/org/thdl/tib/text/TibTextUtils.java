@@ -828,6 +828,9 @@ public class TibTextUtils implements THDLWylieConstants {
         return (MA.equals(wylie) || NGA.equals(wylie));
     }
 
+    // DLC FIXME: {H}, U+0F7F, is part of a grapheme cluster!
+    // David Chapman and I both need a comprehensive list of these
+    // guys.
     /** Scans the glyphs in glyphList and creates the returned list of
         grapheme clusters based on them.  A grapheme cluster is a
         consonant or consonant stack with optional adornment or a
@@ -835,12 +838,9 @@ public class TibTextUtils implements THDLWylieConstants {
         alone. */
     private static TGCList breakTshegBarIntoGraphemeClusters(java.util.List glyphList,
                                                              boolean noSuchWylie[]) {
-
         // Definition: adornment means vowels and achungs and bindus.
-
-        // DLC FIXME: {H}, U+0F7F, is part of a grapheme cluster!
-        // David Chapman and I both need a comprehensive list of these
-        // guys.
+        // It should be this, though (FIXME): any combining
+        // characters.
 
         int sz = glyphList.size();
         ThdlDebug.verify(sz > 0);
