@@ -412,6 +412,14 @@ Function iterateRange(ByVal rng)
             
         ElseIf char1.Style = "Footnote Reference,fr" Then
             outStr = outStr & "<note>" & iterateNote(char1.Footnotes(1).Range) & "</note>"
+            
+        ElseIf char1.Style = "Hyperlink,hl" Then
+            textToDis = char1.Hyperlinks(1).TextToDisplay
+            outStr = Left(outStr, Len(outStr) - (14 + Len(textToDis)))
+            outStr = outStr & "<a href=""" & char1.Hyperlinks(1).Address & """>" _
+                & textToDis & "</a>"
+            n = n + Len(textToDis)
+            
         Else:
             If char1.Style = currStyle Then
                 outStr = outStr & char1.Text
@@ -452,6 +460,13 @@ Function iterateNote(ByVal rng As Range)
                 closeTag = ""
             End If
             outStr = outStr & char1.Text
+            
+        ElseIf char1.Style = "Hyperlink,hl" Then
+            textToDis = char1.Hyperlinks(1).TextToDisplay
+            outStr = Left(outStr, Len(outStr) - 1)
+            outStr = outStr & "<a href=""" & char1.Hyperlinks(1).Address & """>" _
+                & textToDis & "</a>"
+            ct = ct + Len(textToDis) - 2
             
         Else:
             If char1.Style = currStyle Then
@@ -861,6 +876,7 @@ Function isCharStyle(ByVal rng As Range) As Boolean
 
     If StyleName = "Emphasis Weak,ew" Or _
         StyleName = "Annotations,an" Or _
+        StyleName = "Hyperlink,hl" Or _
         StyleName = "Lang Tibetan,tib" Or _
         StyleName = "Lang Sanskrit,san" Or _
         StyleName = "Lang Chinese,chi" Or _
