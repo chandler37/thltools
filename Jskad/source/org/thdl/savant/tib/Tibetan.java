@@ -36,7 +36,7 @@ import org.thdl.util.ThdlDebug;
 
 public class Tibetan implements TranscriptView
 {
-	private JTextPane text = null;
+	private DuffPane text = null;
 	private Document xmlDoc = null;
 	private StringBuffer idBuffer = null;
 	private StringBuffer t1Buffer = null;
@@ -172,7 +172,8 @@ public class Tibetan implements TranscriptView
 				t2Buffer.append(',');
 			}
 
-			text = new JTextPane(doc);
+			text = new DuffPane();
+			text.setDocument(doc);
 			idBuffer.toString();
 			t1Buffer.toString();
 			t2Buffer.toString();
