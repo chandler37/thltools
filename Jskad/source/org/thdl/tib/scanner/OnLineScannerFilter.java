@@ -77,18 +77,15 @@ public class OnLineScannerFilter extends HttpServlet {
         out.println("<form action=\"org.thdl.tib.scanner.OnLineScannerFilter\" method=POST>");
         out.println("<table border=\"0\" width=\"100%\">");
         out.println("  <tr>");
-        out.println("    <td width=\"20%\">");
+        out.println("    <td width=\"25%\">");
         out.println("      <p>Display results in:</td>");
-        out.println("    <td width=\"55%\">");
+        out.println("    <td width=\"75%\">");
         out.println("      <p><input type=\"radio\" value=\"tibetan\" ");
         if (wantsTibetan) out.println("checked ");
         out.println("name=\"script\">Tibetan script (using <a href=\"http://iris.lib.virginia.edu/tibet/tools/tmw.html\" target=\"_blank\">Tibetan Machine Web font</a>)<br>");
         out.println("      <input type=\"radio\" value=\"roman\" ");
         if (!wantsTibetan) out.println("checked ");        
         out.println("name=\"script\">Roman script</td>");
-        out.println("    <td width=\"25%\">");
-        out.println("      <p> <input type=submit value=\"Translate\"> <input type=\"reset\" value=\"Clear\"></p>");
-        out.println("    </td>");
         out.println("  </tr>");
         out.println("</table>");
 
@@ -145,7 +142,17 @@ public class OnLineScannerFilter extends HttpServlet {
 		else ds = DictionarySource.getAllDictionaries();
 //		out.println("</table>");
 		out.println("</p>");
-		out.println("<p><strong>Input text:</strong></p>");
+        out.println("<table border=\"0\" width=\"100%\">");
+        out.println("  <tr>");
+        out.println("    <td width=\"35%\">");		
+		out.println("      <p><strong>Input text:</strong></p>");
+        out.println("    </td>");
+        out.println("    <td width=\"65%\">");
+        out.println("      <p> <input type=submit value=\"Translate\"> <input type=\"reset\" value=\"Clear\"></p>");
+        out.println("    </td>");
+        out.println("  </tr>");
+        out.println("</table>");
+		
         out.println("<textarea rows=\"12\" name=\"parrafo\" cols=\"60\">");
 		if (parrafo!=null) out.print(parrafo);
 		out.println("</textarea>");
