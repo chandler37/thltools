@@ -264,7 +264,7 @@ public class ErrorsAndWarnings {
             return "" + code + ": There is a stack of three or more consonants in {" + translit + "} that uses at least one '+' but does not use a '+' between each consonant.";
 
         case 507:
-            return "" + code + ": There is a chance that the ACIP {" + translit + "} was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.";
+            return "" + code + ": There is a chance that the ACIP {" + translit + "} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too."; // TMW has glyphs for both GH+N+YA (G+H+N+YA) and GH+NYA (G+H+NYA).
 
         case 508: // see 509 also
             return "" + code + ": The ACIP {" + translit + "} has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack (because there is such a stack used in Sanskrit transliteration for this particular sequence) and forget to input it with '+' characters.";
@@ -275,10 +275,20 @@ public class ErrorsAndWarnings {
         case 510:
             return "" + code + ": A non-breaking tsheg, '" + translit + "', appeared, but not like \"...,\" or \".,\" or \".dA\" or \".DA\".";
 
+
+
         // ERROR 137 and WARNING 511 are the same:
         case 137: /* fall through */
         case 511:
             return "" + code + ": The ACIP {" + translit + "} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.";
+
+        case 512:
+            return "" + code + ": There is a chance that the ACIP {" + translit + "} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.  In fact, there are glyphs in the Tibetan Machine font for N+N+Y, N+G+H, G+N+Y, G+H+N+Y, T+N+Y, T+S+TH, T+S+N, T+S+N+Y, TS+NY, TS+N+Y, H+N+Y, M+N+Y, T+S+M, T+S+M+Y, T+S+Y, T+S+R, T+S+V, N+T+S, T+S, S+H, R+T+S, R+T+S+N, R+T+S+N+Y, and N+Y, indicating the importance of these easily mistyped stacks, so the possibility is very real.";
+
+
+
+
+
 
 
 
@@ -305,7 +315,7 @@ public class ErrorsAndWarnings {
     private static final int MAX_ERROR = 138; // inclusive
 
     private static final int MIN_WARNING = 501; // inclusive
-    private static final int MAX_WARNING = 511; // inclusive
+    private static final int MAX_WARNING = 512; // inclusive
 
     /** Call this ONLY when testing unless you think hard about it.
         Reinitializes the severities of all warnings and errors using
@@ -333,7 +343,7 @@ public class ErrorsAndWarnings {
             // 506:
             "Some",
             // 507:
-            "Most",
+            "All",
             // 508:
             "Some",
             // 509:
@@ -341,6 +351,8 @@ public class ErrorsAndWarnings {
             // 510:
             "Some",
             // 511:
+            "Some",
+            // 512:
             "Some",
         };
         for (int num = MIN_WARNING; num <= MAX_WARNING; num++) {
@@ -355,7 +367,7 @@ public class ErrorsAndWarnings {
                     opt = null;
             } else {
                 if (!ThdlOptions.getBooleanOption("thdl.acip.to.tibetan.warning.and.error.severities.are.built.in.defaults"))
-                    ThdlDebug.verify("options.txt is gone?", false);
+                    ThdlDebug.verify("options.txt is gone? thdl.acip.to.tibetan.warning.severity." + num + " was not set.", false);
             }
             ThdlDebug.verify((null == opt) || opt.intern() == opt);
             severityMap.put(new Integer(num), (null != opt) ? opt : defaultSeverities[num - 501]);

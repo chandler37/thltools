@@ -370,6 +370,7 @@ class TParseTree {
                 int type = 0;
                 int stackSize = stack.size();
                 boolean hasAmbiguousConsonant = false; // TS could be TSA or T+SA, so it's "ambiguous"
+                boolean highPriority507 = false;
                 for (int j = 0; j < stackSize; j++) {
                     TPair tp = pl.get(plnum++);
                     if (j + 1 < stack.size()) {
@@ -390,15 +391,63 @@ class TParseTree {
                         }
                     }
                     if (stackSize > 1 && tp.getLeft() != null && tp.getLeft().length() > 1) {
+                        if (null != originalACIP
+                            && (originalACIP.startsWith("NNY")
+                                || originalACIP.startsWith("NGH")
+                                || originalACIP.startsWith("GHNY")
+                                || originalACIP.startsWith("TNY")
+                                || originalACIP.startsWith("TSN") // and TSNY
+                                || originalACIP.startsWith("HNY")
+                                || originalACIP.startsWith("TSM") // and TSMY
+                                || originalACIP.startsWith("TSY")
+                                || originalACIP.startsWith("TSR")
+                                || originalACIP.startsWith("NTS")
+                                || originalACIP.startsWith("TSTH")
+                                || originalACIP.startsWith("TSV")
+                                || originalACIP.startsWith("RTS") // and RTSN and RTSNY
+
+                                // || originalACIP.startsWith("GNY") ... no, GNYA is seen as G-NYA, not G+NYA.  FIXME 946058: give warning 512 for {K-GNY}, {BAGNYE}, etc.
+                                // || originalACIP.startsWith("MNY") ... and likewise for MNY.
+
+                                )) {
+/*
+TM and TMW have glyphs for these:
+
+t+s+th
+t+s+r
+t+s+w (i.e., ACIP {T+S+V})
+r+t+s
+r+t+s+n
+r+t+s+n+y
+n+n+y
+n+g+h
+g+n+y
+g+h+n+y
+t+n+y
+t+s+n+y
+ts+ny
+ts+n+y
+h+n+y
+m+n+y
+t+s+m
+t+s+y
+t+s+r
+n+t+s
+*/
+                            highPriority507 = true;
+                        }
                         // DLC FIXME: gives a false positive warning for Rsh
                         hasAmbiguousConsonant = true;
                     }
                 }
                 if (hasAmbiguousConsonant && -1 == type) {
-                    if (ErrorsAndWarnings.isEnabled(507, warningLevel))
-                        return ErrorsAndWarnings.getMessage(507, shortMessages,
+                    int warningNum = (highPriority507) ? 512 : 507;
+                    if (ErrorsAndWarnings.isEnabled(warningNum, warningLevel))
+                        return ErrorsAndWarnings.getMessage(warningNum,
+                                                            shortMessages,
                                                             translit);
                 }
+
                 while (plnum < pl.size() && pl.get(plnum).isDisambiguator()) {
                     ++plnum;
                     if (ErrorsAndWarnings.isEnabled(505, warningLevel))

@@ -44,6 +44,8 @@ public class PackageTest extends TestCase {
         ThdlOptions.forTestingOnlyInitializeWithoutDefaultOptionsFile();
 
         ThdlOptions.setUserPreference("thdl.acip.to.tibetan.warning.and.error.severities.are.built.in.defaults", "true");
+        ThdlOptions.setUserPreference("thdl.acip.to.tibetan.warning.severity.507", "Most");
+        ErrorsAndWarnings.setupSeverityMap();
 
         // We don't want to load the TM or TMW font files ourselves:
         ThdlOptions.setUserPreference("thdl.rely.on.system.tmw.fonts", true);
@@ -7534,7 +7536,7 @@ M+NA
         uhelp("[# a [# nested comment]]",
               "[#ERROR 102: Found an open bracket, '[', within a [#COMMENT]-style comment.  Brackets may not appear in comments.][# a [# nested comment][#ERROR 103: Found a truly unmatched close bracket, ']'.][#ERROR 104: Found a closing bracket, ']', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.]");
 
-        uhelp("RTSNYA", "[#WARNING 507: There is a chance that the ACIP {RTSNYA} was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.][#WARNING 511: The ACIP {R+TS+NYA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f62\u0faa\u0f99"); // FIXME 936998
+        uhelp("RTSNYA", "[#WARNING 512: There is a chance that the ACIP {RTSNYA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.  In fact, there are glyphs in the Tibetan Machine font for N+N+Y, N+G+H, G+N+Y, G+H+N+Y, T+N+Y, T+S+TH, T+S+N, T+S+N+Y, TS+NY, TS+N+Y, H+N+Y, M+N+Y, T+S+M, T+S+M+Y, T+S+Y, T+S+R, T+S+V, N+T+S, T+S, S+H, R+T+S, R+T+S+N, R+T+S+N+Y, and N+Y, indicating the importance of these easily mistyped stacks, so the possibility is very real.][#WARNING 511: The ACIP {R+TS+NYA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f62\u0faa\u0f99"); // FIXME 936998
 
         uhelp("KO&HAm,", "\u0F40\u0F7C\u0F85\u0F67\u0F7E\u0F0D");
         uhelp("x", "[#ERROR 132: The ACIP {x} must be glued to the end of a tsheg bar, but this one was not.]");
@@ -7547,13 +7549,21 @@ M+NA
         uhelp("NA+YA", "\u0f53\u0fb1"); // FIXME: warn about the extra A
         uhelp("NE+YA", "[#ERROR 129: Cannot convert ACIP {NE+YA} because + is not an ACIP consonant.]");
         uhelp("tRAStA", "[#WARNING 511: The ACIP {t+RA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f4a\u0fb2\u0f66\u0f9a");
-        uhelp("DZHDZHA", "[#WARNING 507: There is a chance that the ACIP {DZHDZHA} was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f5b\u0fb7\u0fab\u0fb7"); // tricky because DZHDZA is not in TMW but DZHDZHA is
-        uhelp("DZHDZA", "[#WARNING 507: There is a chance that the ACIP {DZHDZA} was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.][#WARNING 511: The ACIP {DZH+DZA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f5b\u0fb7\u0fab");
+        uhelp("DZHDZHA", "[#WARNING 507: There is a chance that the ACIP {DZHDZHA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.]\u0f5b\u0fb7\u0fab\u0fb7"); // tricky because DZHDZA is not in TMW but DZHDZHA is
+        uhelp("DZHDZA", "[#WARNING 507: There is a chance that the ACIP {DZHDZA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.][#WARNING 511: The ACIP {DZH+DZA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f5b\u0fb7\u0fab");
         uhelp("P+S+N+YA", "\u0f54\u0fb6\u0fa3\u0fb1");
         uhelp("P+S+NYA", "[#WARNING 511: The ACIP {P+S+NYA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f54\u0fb6\u0f99");
-        uhelp("PSNYA", "[#WARNING 507: There is a chance that the ACIP {PSNYA} was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.][#WARNING 511: The ACIP {P+S+NYA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f54\u0fb6\u0f99"); // Is this P+S+N+YA?  No, it's P+S+NYA.  But warn!
-        uhelp("NNYA", "[#WARNING 507: There is a chance that the ACIP {NNYA} was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.][#WARNING 511: The ACIP {N+NYA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f53\u0f99");
-        uhelp("GHNYA", "[#WARNING 507: There is a chance that the ACIP {GHNYA} was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f42\u0fb7\u0f99");
+        uhelp("PSNYA", "[#WARNING 507: There is a chance that the ACIP {PSNYA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.][#WARNING 511: The ACIP {P+S+NYA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f54\u0fb6\u0f99"); // Is this P+S+N+YA?  No, it's P+S+NYA.  But warn!
+        uhelp("NNYA", "[#WARNING 512: There is a chance that the ACIP {NNYA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.  In fact, there are glyphs in the Tibetan Machine font for N+N+Y, N+G+H, G+N+Y, G+H+N+Y, T+N+Y, T+S+TH, T+S+N, T+S+N+Y, TS+NY, TS+N+Y, H+N+Y, M+N+Y, T+S+M, T+S+M+Y, T+S+Y, T+S+R, T+S+V, N+T+S, T+S, S+H, R+T+S, R+T+S+N, R+T+S+N+Y, and N+Y, indicating the importance of these easily mistyped stacks, so the possibility is very real.][#WARNING 511: The ACIP {N+NYA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f53\u0f99");
+        uhelp("GHNYA", "[#WARNING 512: There is a chance that the ACIP {GHNYA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.  In fact, there are glyphs in the Tibetan Machine font for N+N+Y, N+G+H, G+N+Y, G+H+N+Y, T+N+Y, T+S+TH, T+S+N, T+S+N+Y, TS+NY, TS+N+Y, H+N+Y, M+N+Y, T+S+M, T+S+M+Y, T+S+Y, T+S+R, T+S+V, N+T+S, T+S, S+H, R+T+S, R+T+S+N, R+T+S+N+Y, and N+Y, indicating the importance of these easily mistyped stacks, so the possibility is very real.]\u0f42\u0fb7\u0f99"); // FIXME 946043: GH is f43, not f42+fb7, you could say
+
+        // no 507; the inputter uses '+':
+        uhelp("GH+NYA", "\u0f42\u0fb7\u0f99"); // FIXME 946043: GH is f43, not f42+fb7, you could say
+        uhelp("G+H+NYA", "\u0f42\u0fb7\u0f99");
+        uhelp("G+H+N+YA", "\u0f42\u0fb7\u0fa3\u0fb1");
+        uhelp("GH+N+YA", "\u0f42\u0fb7\u0fa3\u0fb1"); // FIXME 946043: GH is f43, not f42+fb7, you could say
+
+        uhelp("NG+HA", "\u0f44\u0fb7");
 
         // TS+NYA and T+S+N+YA are both legal, so what is TSNYA?
         // Private correspondence with Robert Chilton says that it is
@@ -7703,8 +7713,8 @@ M+NA
         uhelp("G-YA", "\u0f42\u0f61");
         uhelp("GA-YA", "[#WARNING 505: There is a useless disambiguator in {GA-YA}.]\u0f42\u0f61");
         uhelp("GA-YO", "[#WARNING 505: There is a useless disambiguator in {GA-YO}.]\u0f42\u0f61\u0F7c");
-        uhelp("RTZVA", "[#WARNING 507: There is a chance that the ACIP {RTZVA} was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f62\u0fa9\u0fad");
-        uhelp("RTZWA", "[#WARNING 507: There is a chance that the ACIP {RTZWA} was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.][#WARNING 511: The ACIP {R+TZ+WA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f62\u0fa9\u0fba");
+        uhelp("RTZVA", "[#WARNING 507: There is a chance that the ACIP {RTZVA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.]\u0f62\u0fa9\u0fad");
+        uhelp("RTZWA", "[#WARNING 507: There is a chance that the ACIP {RTZWA} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.][#WARNING 511: The ACIP {R+TZ+WA} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.]\u0f62\u0fa9\u0fba");
     }
     public void testFixedFormSubjoinedConsonants() {
         // Usual subjoined RA:
@@ -7730,7 +7740,7 @@ M+NA
               + "\u0f61\u0fbb\u0f7b\u0f0b" // Y+YEE
               + "\u0f4e\u0f9c\u0fbc\u0fb1\u0f0b" // ndRYA
               + "\u0f4e\u0f9c\u0fbc\u0fb1\u0f7b\u0f0b" // n+d+R+YEE
-              + "[#WARNING 507: There is a chance that the ACIP {KshR} was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.]\u0f40\u0fb5\u0fbc\u0f0b" // KshR
+              + "[#WARNING 507: There is a chance that the ACIP {KshR} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.]\u0f40\u0fb5\u0fbc\u0f0b" // KshR
               + "\u0f40\u0fb5\u0fbc\u0f7b\u0f0b" // K+sh+REE
               + "\u0f4e\u0f9c\u0fbb\u0f0b" // ndY
               + "\u0f4e\u0f9c\u0fbb\u0f7b\u0f0d" // n+d+YEE
@@ -10215,6 +10225,41 @@ M+NA
         tstHelper("ndI");
 tstHelper("shKA");
 
+    }
+
+    public void test512And507() {
+        // Plain "GNY" is interpreted as two stacks, so no 512 warning
+        // is given.  FIXME 946058
+        uhelpShortMessages("GNY", "\u0f42\u0f49");
+        uhelpShortMessages("K-GNY", "[#WARNING 507: {K-GNY}]\u0f40\u0f42\u0f99"); // FIXME 946058
+        uhelpShortMessages("MNY", "\u0f58\u0f49");
+        uhelpShortMessages("K-MNY", "[#WARNING 507: {K-MNY}]\u0f40\u0f58\u0f99"); // FIXME 946058
+
+        uhelpShortMessages("NTSE", "[#WARNING 512: {NTSE}][#WARNING 511: {N+TSE}]\u0f53\u0faa\u0f7a");
+        uhelpShortMessages("NTSHGZWWE", "[#WARNING 512: {NTSHGZWWE}][#WARNING 511: {N+TS+H+G+Z+W+WE}]\u0f53\u0faa\u0fb7\u0f92\u0faf\u0fba\u0fba\u0f7a"); /* 512 false alarm; this should be 507 (ROOM_FOR_IMPROVEMENT) */
+        uhelpShortMessages("TSROO", "[#WARNING 512: {TSROO}]\u0f5a\u0fb2\u0f7d");
+        uhelpShortMessages("TSNO", "[#WARNING 512: {TSNO}][#WARNING 511: {TS+NO}]\u0f5a\u0fa3\u0f7c");
+        uhelpShortMessages("NNY", "[#WARNING 512: {NNY}][#WARNING 511: {N+NY}]\u0f53\u0f99");
+        uhelpShortMessages("NGH", "[#WARNING 512: {NGH}]\u0f44\u0fb7");
+        uhelpShortMessages("GHNY", "[#WARNING 512: {GHNY}]\u0f42\u0fb7\u0f99");
+        uhelpShortMessages("TNY", "[#WARNING 512: {TNY}]\u0f4f\u0f99");
+        uhelpShortMessages("TSTH", "[#WARNING 512: {TSTH}]\u0f5a\u0fa0");
+        uhelpShortMessages("TSN", "[#WARNING 512: {TSN}][#WARNING 511: {TS+N}]\u0f5a\u0fa3");
+        uhelpShortMessages("TSNY", "[#WARNING 512: {TSNY}][#WARNING 511: {TS+NY}]\u0f5a\u0f99");
+        uhelpShortMessages("TSNY", "[#WARNING 512: {TSNY}][#WARNING 511: {TS+NY}]\u0f5a\u0f99");
+        uhelpShortMessages("HNY", "[#WARNING 512: {HNY}]\u0f67\u0f99");
+        uhelpShortMessages("TSM", "[#WARNING 512: {TSM}][#WARNING 511: {TS+M}]\u0f5a\u0fa8");
+        uhelpShortMessages("TSMY", "[#WARNING 512: {TSMY}][#WARNING 511: {TS+M+Y}]\u0f5a\u0fa8\u0fb1");
+        uhelpShortMessages("TSY", "[#WARNING 512: {TSY}]\u0f5a\u0fb1");
+        uhelpShortMessages("TSR", "[#WARNING 512: {TSR}]\u0f5a\u0fb2");
+        uhelpShortMessages("TSV", "[#WARNING 512: {TSV}]\u0f5a\u0fad");
+        uhelpShortMessages("NTS", "[#WARNING 512: {NTS}][#WARNING 511: {N+TS}]\u0f53\u0faa");
+        uhelpShortMessages("RTS", "[#WARNING 512: {RTS}]\u0f62\u0faa");
+        uhelpShortMessages("RTSN", "[#WARNING 512: {RTSN}][#WARNING 511: {R+TS+N}]\u0f62\u0faa\u0fa3");
+        uhelpShortMessages("RTSNY", "[#WARNING 512: {RTSNY}][#WARNING 511: {R+TS+NY}]\u0f62\u0faa\u0f99");
+        uhelpShortMessages("NY", "\u0f49"); // no warning 512
+        uhelpShortMessages("TS", "\u0f5a"); // no warning 512
+        uhelpShortMessages("SH", "\u0f64"); // no warning 512
     }
 }
 // S0011N.ACT contains [SMON TSIG 'DI'I RTZOM MING MI GSAL,], why the brackets?  IS all this really a correction? Or were parentheses and not brackets intended?  FIXME
