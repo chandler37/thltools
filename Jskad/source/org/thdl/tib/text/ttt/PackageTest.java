@@ -7029,7 +7029,7 @@ tstHelper("ZUR");
         shelp("?", "", "[QUESTION:{?}]");
         shelp("KHAN~ BAR ", "Offset 4: Found an illegal character, ~, with ordinal 126.\n");
         shelp("[* Correction with []]",
-              "Offset 19: Found an illegal open bracket (in context, this is []]).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset 21: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
+              "Offset 5: Found an illegal character, r, with ordinal 114.\nOffset 6: Found an illegal character, r, with ordinal 114.\nOffset 7: Found an illegal character, e, with ordinal 101.\nOffset 8: Found an illegal character, c, with ordinal 99.\nOffset 14: Found an illegal character, w, with ordinal 119.\nOffset 15: Found an illegal character, i, with ordinal 105.\nOffset 19: Found an illegal open bracket (in context, this is []]).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset 21: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
 
         // DLC FIXME: the line SDIG PA'I GROGS PO'I LAG TU SON PAR 'GYUR PA is followed by a blank line.  Note that it's "PA", not "PA ", ending it.  Autocorrect to the latter.
 

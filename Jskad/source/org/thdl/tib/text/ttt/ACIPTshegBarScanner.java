@@ -845,6 +845,7 @@ public class ACIPTshegBarScanner {
             // combining punctuation, vowels:
             || ch == '%'
             || ch == 'o'
+            || ch == 'm'
             || ch == 'x'
             || ch == ':'
             || ch == '^'
@@ -852,8 +853,13 @@ public class ACIPTshegBarScanner {
 
             || ch == '-'
             || ch == '+'
-            
-            || (ch >= 'A' && ch <= 'Z')
-            || (ch >= 'a' && ch <= 'z');
+            || ((ch >= 'A' && ch <= 'Z') && ch != 'X' && ch != 'Q' && ch != 'F')
+            || ch == 'i'
+            || ch == 't'
+            || ch == 'h'
+            || ch == 'd'
+            || ch == 'n'
+            || ch == 's'
+            || ch == 'h';
     }
 }
