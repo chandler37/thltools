@@ -264,12 +264,6 @@ public class SavantShell extends JFrame
 			setSize(new Dimension(gs.width, gs.height));
 			setVisible(true);
 		}
-
-		/* Code for JDK 1.3, including Mac OS X
-			Dimension gs = g.getToolkit().getScreenSize();
-			g.setLocation(0,0);
-			g.setSize(new Dimension(gs.width, gs.height));
-		*/
 	}
 
 	public void newSavantWindow(String project, String titleName, URL trn, URL vid, URL abt)

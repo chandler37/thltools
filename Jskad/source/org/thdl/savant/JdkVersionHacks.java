@@ -183,26 +183,6 @@ public final class JdkVersionHacks {
 		}
 	}
 
-	public static Object getJSpinner(Dimension dim,
-									  Object spinnerValue,
-									  int value, int minimum,
-									  int maximum, int stepSize) {
-		/* In Java 1.4, do the following:
-
-		   SpinnerNumberModel snm1
-		     = new SpinnerNumberModel(value, minimum, maximum, stepSize);
-           JSpinner spinner = new JSpinner(snm1);
-           spinner.setPreferredSize(dim);
-           spinner.setValue(spinnerValue);
-           return spinner;
-		*/
-		/* FIXME; */
-		return null;
-	}
-
-		
-
-
 	/** Coming soon: Does what the user desires (via the options he or
 			she has set) with this SecurityException, one encountered
 			during the process of reflection.
