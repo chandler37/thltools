@@ -425,10 +425,19 @@ public class Jskad extends JPanel implements DocumentListener {
         JMenuItem TMWWylieItem = new JMenuItem("Convert Tibetan to Wylie");
         TMWWylieItem.addActionListener(new ThdlActionListener() {
             public void theRealActionPerformed(ActionEvent e) {
-                toWylie();
+                toTranslit(true);
             }
         });
         convertSelectionMenu.add(TMWWylieItem);
+        toolsMenu.add(convertSelectionMenu);
+
+        JMenuItem TMWACIPItem = new JMenuItem("Convert Tibetan to ACIP");
+        TMWACIPItem.addActionListener(new ThdlActionListener() {
+            public void theRealActionPerformed(ActionEvent e) {
+                toTranslit(false);
+            }
+        });
+        convertSelectionMenu.add(TMWACIPItem);
         toolsMenu.add(convertSelectionMenu);
 
         JMenuItem wylieTMWItem = new JMenuItem("Convert Wylie to Tibetan");
@@ -1144,13 +1153,25 @@ public class Jskad extends JPanel implements DocumentListener {
         Jskad.this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 
-    private void toWylie() {
+    private void toTranslit(boolean toWylieNotACIP) {
         Jskad.this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        if (!((TibetanDocument)dp.getDocument()).toWylie(dp.getSelectionStart(),
-                                                         dp.getSelectionEnd(),
-                                                         new long[] { 0 })) {
+        if (!(toWylieNotACIP
+              ? ((TibetanDocument)dp.getDocument()).toWylie(dp.getSelectionStart(),
+                                                            dp.getSelectionEnd(),
+                                                            new long[] { 0 })
+              : ((TibetanDocument)dp.getDocument()).toACIP(dp.getSelectionStart(),
+                                                           dp.getSelectionEnd(),
+                                                           new long[] { 0 }))) {
             JOptionPane.showMessageDialog(Jskad.this,
-                                          "Though some Extended Wylie has been produced, it\ncontains ugly error messages like\n\"<<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE:\n    Cannot convert DuffCode...\".\nPlease edit the output by hand to replace all such\ncreatures with the correct EWTS transliteration.",
+                                          "Though some "
+                                          + (toWylieNotACIP
+                                             ? "Extended Wylie"
+                                             : "ACIP")
+                                          + " has been produced, it\ncontains ugly error messages"
+                                          + (toWylieNotACIP
+                                             ? " like\n\"<<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE:\n    Cannot convert DuffCode...\"."
+                                             : ".")
+                                          + "\nPlease edit the output by hand to replace all such\ncreatures with the correct transliteration.",
                                           "Attention Required",
                                           JOptionPane.ERROR_MESSAGE);
         }
