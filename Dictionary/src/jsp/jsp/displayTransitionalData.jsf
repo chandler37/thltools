@@ -6,9 +6,9 @@
 
 <!--TRANSITIONAL DATA-->
 <c:set var="transitionalData" value="${ sessionScope.visit.helper.component }"/>
+<h1><c:out value='${transitionalData.forPublicConsumption}'/></h1>
+<c:if test="${ transitionalData.forPublicConsumption == 'true' || ! sessionScope.visit.user.guest }">
 	<p class="data">
-
-
 		<c:if test="${ editMode }">
 		<span class="compEditOptions">
 		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=transitionalData&amp;metaId=${ transitionalData.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
@@ -20,15 +20,8 @@
 		<span><c:out value="${ applicationScope.flatData.transitionalDataLabels[ transitionalData.transitionalDataLabel ] }" /></span>  <c:out value="${ pronunciation.phonetics }"  escapeXml="false"/>   <br />
 		<c:out value="${ transitionalData.transitionalDataText }"  escapeXml="false"/>   
 
-		
-		
-		
-		
 		<jsp:include page="displayMeta.jsf" />
-		 
-		
+
 		<jsp:include page="displayNotes.jsf" />
-
 	</p>
-
-
+</c:if>
