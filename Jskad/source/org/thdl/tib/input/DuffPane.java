@@ -882,13 +882,18 @@ class RTFSelection implements ClipboardOwner, Transferable {
 				ThdlDebug.noteIffyCode();
 			}
 		}
-		if (remove)
+		if (remove) {
+            // Respect setEditable(boolean):
+            if (!this.isEditable())
+                return;
+
 			try {
 				getDocument().remove(p1, p2-p1);
 			} catch (BadLocationException ble) {
 				ble.printStackTrace();
 				ThdlDebug.noteIffyCode();
 			}
+        }
 	}
 
 /**
@@ -902,6 +907,9 @@ class RTFSelection implements ClipboardOwner, Transferable {
 * @param offset the position in the document you want to paste to
 */
 public void paste(int offset) {
+    // Respect setEditable(boolean):
+    if (!this.isEditable())
+        return;
 	try {
 		Transferable contents = rtfBoard.getContents(this);
 		if (contents.isDataFlavorSupported(rtfFlavor)) {
@@ -971,9 +979,7 @@ public void paste(int offset) {
 		if (e.isActionKey())
 			initKeyboard();
 
-		int code = e.getKeyCode();
-
-		switch (code) {
+		switch (e.getKeyCode()) {
 			case KeyEvent.VK_ESCAPE:
 				e.consume();
 				initKeyboard();
@@ -1041,9 +1047,7 @@ public void paste(int offset) {
 * and init the keyboard here in key released
 * though i don't really know why...
 */
-		int code = e.getKeyCode();
-
-		if (code == KeyEvent.VK_BACK_SPACE)
+		if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
 			initKeyboard();
 	}
 
@@ -1059,6 +1063,10 @@ public void paste(int offset) {
 */
 	public void keyTyped(KeyEvent e) {
 		e.consume();
+
+        // Respect setEditable(boolean):
+        if (!this.isEditable())
+            return;
 
 		if (isTibetan)
 			processTibetan(e);

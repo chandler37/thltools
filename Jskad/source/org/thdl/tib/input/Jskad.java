@@ -277,6 +277,17 @@ public class Jskad extends JPanel implements DocumentListener {
 			toolsMenu.add(importItem);
 		}
 
+        if (ThdlOptions.getBooleanOption("thdl.add.developer.options.to.menu")) {
+            toolsMenu.addSeparator();
+            JMenuItem DevelItem = new JMenuItem("Toggle read-only");
+            DevelItem.addActionListener(new ThdlActionListener() {
+                    public void theRealActionPerformed(ActionEvent e) {
+                        dp.setEditable(!dp.isEditable());
+                    }
+                });
+            toolsMenu.add(DevelItem);
+        }
+
 		menuBar.add(toolsMenu);
 
 		JMenu infoMenu = new JMenu("Info");
