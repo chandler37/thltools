@@ -63,7 +63,9 @@ public class OnLineScannerFilter extends HttpServlet {
         out.println("<meta name=\"MSSmartTagsPreventParsing\" content=\"TRUE\">");
         out.println("<title>The Online Tibetan to English Translation/Dictionary Tool</title>");
         script = request.getParameter("script");
-        wantsTibetan = (script==null || script.equals("tibetan"));
+        
+        // script==null || makes default tibetan
+        wantsTibetan = (script!=null && script.equals("tibetan"));
         if (wantsTibetan)
         {
     		out.println("<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
@@ -90,7 +92,7 @@ public class OnLineScannerFilter extends HttpServlet {
         out.println("    <td width=\"75%\">");
         out.println("      <p><input type=\"radio\" value=\"tibetan\" ");
         if (wantsTibetan) out.println("checked ");
-        out.println("name=\"script\">Tibetan script (using <a href=\"http://iris.lib.virginia.edu/tibet/tools/tmw.html\" target=\"_blank\">Tibetan Machine Web font</a>)<br>");
+        out.println("name=\"script\">Tibetan script (CURRENTLY UNSTABLE, DO NOT USE)<br>"); //(using <a href=\"http://iris.lib.virginia.edu/tibet/tools/tmw.html\" target=\"_blank\">Tibetan Machine Web font</a>)<br>");
         out.println("      <input type=\"radio\" value=\"roman\" ");
         if (!wantsTibetan) out.println("checked ");        
         out.println("name=\"script\">Roman script</td>");
