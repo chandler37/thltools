@@ -158,8 +158,8 @@ public class LoginServlet extends HttpServlet
 		}
 		catch ( ThdlUserRepositoryException ture )
 		{
-//doLoginFailure( request, response, username );
-			throw new ServletException( ture );
+			doLoginFailure( request, response, username );
+			//throw new ServletException( ture );
 		}
 		catch ( Exception e )
 		{

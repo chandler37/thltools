@@ -164,7 +164,7 @@
 		<remove url="${url}" username="${username}" password="${password}" path="${path}"/>
 	</target>
 	
-	<target name="test" description="Run unit tests">
+	<target name="test" description="Run load and functional tests">
 		<java classname="org.thdl.lex.test.MainMenuTestCase" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>

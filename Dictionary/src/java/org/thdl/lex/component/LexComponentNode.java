@@ -20,6 +20,14 @@ public interface LexComponentNode extends ILexComponent
 	 */
 	public java.util.HashMap getChildMap();
 
-	// public java.util.List getSiblings();
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  component                  Description of the Parameter
+	 * @return                            Description of the Return Value
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public java.util.List findSiblings( ILexComponent component ) throws LexComponentException;
 }
 

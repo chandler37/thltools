@@ -108,14 +108,14 @@ public class Term extends BaseTerm implements Serializable, LexComponentNode
 		{
 			LexLogger.debug( "findSiblings returned a null list" );
 			LexLogger.debugComponent( component );
-			/*
-			    Iterator it = getDefinitions().iterator();
-			    while ( it.hasNext() )
-			    {
-			    IDefinition def = (IDefinition) it.next();
-			    list = def.findSiblings( component );
-			    }
-			  */
+
+			Iterator it = getDefinitions().iterator();
+			while ( it.hasNext() )
+			{
+				IDefinition def = (IDefinition) it.next();
+				list = def.findSiblings( component );
+			}
+
 		}
 
 		return list;

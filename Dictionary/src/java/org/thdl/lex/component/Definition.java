@@ -58,17 +58,17 @@ public class Definition extends BaseDefinition implements Serializable, Translat
 		}
 		LexComponentNode node = (LexComponentNode) component.getParent();
 		list = (List) node.getChildMap().get( component.getLabel() );
-		/*
-		    if ( null == list )
-		    {
-		    Iterator it = getSubefinitions().iterator();
-		    while ( it.hasNext() )
-		    {
-		    ISubdefinition subdef = (ISubdefinition) it.next();
-		    list = subdef.findSiblings( component );
-		    }
-		    }
-		  */
+
+		if ( null == list )
+		{
+			Iterator it = getSubdefinitions().iterator();
+			while ( it.hasNext() )
+			{
+				ISubdefinition subdef = (ISubdefinition) it.next();
+				list = subdef.findSiblings( component );
+			}
+		}
+
 		return list;
 	}
 
