@@ -100,12 +100,27 @@ public class Jskad extends JPanel implements DocumentListener {
     /** the status bar for this frame */
     private StatusBar statusBar;
 
+    /** Do not use this JPanel constructor. */
+    private Jskad() { super(); }
+    
+    /** Do not use this JPanel constructor. */
+    private Jskad(boolean isDB) { super(isDB); }
+    
+    /** Do not use this JPanel constructor. */
+    private Jskad(LayoutManager lm) { super(lm); }
+    
+    /** Do not use this JPanel constructor. */
+    private Jskad(LayoutManager lm, boolean isDB) { super(lm, isDB); }
+    
+
 /**
 * @param parent the object that embeds this instance of Jskad.
 * Supported objects include JFrames and JApplets. If the parent
 * is a JApplet then the File menu is omitted from the menu bar.
 */
 	public Jskad(final Object parent) {
+        super();
+
         if (ThdlOptions.getBooleanOption("thdl.Jskad.disable.status.bar")) {
             statusBar = null;
         } else {
@@ -753,6 +768,8 @@ public class Jskad extends JPanel implements DocumentListener {
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(txt_fileChosen));
             DuffPane dp2;
+            // FIXME: why do we need a whole DuffPane to do this?  we
+            // definitely don't need a status bar...
             if (ThdlOptions.getBooleanOption(Jskad.enableKeypressStatusProp)) {
                 dp2 = new DuffPane(statusBar);
             } else {
