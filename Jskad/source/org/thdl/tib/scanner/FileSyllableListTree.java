@@ -207,55 +207,57 @@ public class FileSyllableListTree implements SyllableListTree
 
 	public Definitions getDefs()
 	{
-		if (def==null) return null;
-        DictionarySource defSourceAvail = defSource.intersection(defSourcesWanted);
-        String defs[];
-		int i, n=0;
-        
-		if (versionNumber==2)
-		{
-		    int defsAvail[] = ((BitDictionarySource) defSourceAvail).untangleDefs(), defsFound[] = ((BitDictionarySource) defSource).untangleDefs(def.length);
+            if (def==null) return null;
+            DictionarySource defSourceAvail = defSource.intersection(defSourcesWanted);
+            String defs[];
+            int i, n=0;
 
-		    defs = new String[defsAvail.length];
-		    try
-		    {
-			    for (i=0; i<defsAvail.length; i++)
-			    {
-				    while(defsAvail[i]!=defsFound[n]) n++;
-				    defRaf.seek(def[n]);
-				    defs[i] = defRaf.readUTF();
-			    }
-		    }
-		    catch (Exception e)
-		    {
-			    System.out.println(e);
-			    return null;
-		    }
-		}
-		else
-		{
-		    ByteDictionarySource defSourceAvailBy = (ByteDictionarySource) defSourceAvail;
-		    defs = new String [defSourceAvailBy.countDefs()];
-		    
-		    try
-		    {
-			    for (i=0; i < def.length; i++)
-			    {
-				    if (!defSourceAvailBy.isEmpty(i))
-				    {
-				        defRaf.seek(def[i]);
-				        defs[n] = defRaf.readUTF();
-				        n++;
-				    }
-				}
-		    }
-		    catch (Exception e)
-		    {
-			    System.out.println(e);
-			    return null;
-		    }
-		}
-		return new Definitions(defs, defSourceAvail);
+            if (versionNumber==2)
+            {
+                int defsAvail[] = ((BitDictionarySource) defSourceAvail).untangleDefs(), defsFound[] = ((BitDictionarySource) defSource).untangleDefs(def.length);
+
+                defs = new String[defsAvail.length];
+                try
+                {
+                    for (i=0; i<defsAvail.length; i++)
+                    {
+                        while(defsAvail[i]!=defsFound[n]) n++;
+                        defRaf.seek(def[n]);
+                        defs[i] = defRaf.readUTF();
+                    }
+                }
+                catch (Exception e)
+                {
+                        System.out.println(e);
+                        e.printStackTrace();
+                        return null;
+                }
+            }
+            else
+            {
+                ByteDictionarySource defSourceAvailBy = (ByteDictionarySource) defSourceAvail;
+                defs = new String [defSourceAvailBy.countDefs()];
+
+                try
+                {
+                        for (i=0; i < def.length; i++)
+                        {
+                                if (!defSourceAvailBy.isEmpty(i))
+                                {
+                                    defRaf.seek(def[i]);
+                                    defs[n] = defRaf.readUTF();
+                                    n++;
+                                }
+                            }
+                }
+                catch (Exception e)
+                {
+                        System.out.println(e);
+                        e.printStackTrace();
+                        return null;
+                }
+            }
+            return new Definitions(defs, defSourceAvail);
 	}
 
 	public boolean hasDef()

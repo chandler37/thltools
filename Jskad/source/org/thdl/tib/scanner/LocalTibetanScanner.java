@@ -274,19 +274,19 @@ public class LocalTibetanScanner extends TibetanScanner
 				fin = in.indexOf("\n",init);
 				if (fin<0)
 				{
-					linea = in.substring(init).trim();
-					hayMasLineas=false;
+                                    linea = in.substring(init).trim();
+                                    hayMasLineas=false;
 				}
 				else
-					linea = in.substring(init, fin).trim();
+                                    linea = in.substring(init, fin).trim();
 
 				if (linea.equals(""))
 				{
 				    finishUp();
-		            wordList.addLast(new PunctuationMark('\n'));
+                                    wordList.addLast(new PunctuationMark('\n'));
 				}
 				else
-					scanLine(linea);
+                                    scanLine(linea);
 
 				init = fin+1;
 			}
@@ -304,7 +304,7 @@ public class LocalTibetanScanner extends TibetanScanner
 		{
 		    finishUp();
 		    wordList.addLast(new PunctuationMark('\n'));
-			return;
+                    return;
 		}
 
 outAHere:

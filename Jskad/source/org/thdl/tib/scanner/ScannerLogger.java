@@ -33,7 +33,7 @@ public class ScannerLogger
     
     public ScannerLogger()
     {
-		ResourceBundle rb = ResourceBundle.getBundle("dictionary");
+            ResourceBundle rb = ResourceBundle.getBundle("dictionary");
 	    fileName = rb.getString("remotescannerfilter.log-file-name");
 	    lastIP = null;
     }
@@ -53,9 +53,10 @@ public class ScannerLogger
     {	    
         PrintStream pw = getPrintStream();
         if (lastIP!=null) pw.print(lastIP);
-	    pw.println("\t" + getCurrentTime() + "\t" + s);
-	    pw.flush();
-	    pw.close();
+        else pw.print("-");
+        pw.println("\t" + getCurrentTime() + "\t" + s);
+        pw.flush();
+        pw.close();
     }
     
     private PrintStream getPrintStream()

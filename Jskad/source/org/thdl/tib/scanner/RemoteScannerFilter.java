@@ -62,8 +62,7 @@ public class RemoteScannerFilter extends GenericServlet
   		res.setContentType ("text/plain");
   		sl.setUserIP(req.getRemoteAddr());
   		
-  		Token token[] = null;  		
-  		Word word = null;
+  		Word word = null, words[] = null;
   		PrintWriter out;
   		
   		try
@@ -117,28 +116,29 @@ public class RemoteScannerFilter extends GenericServlet
 		}		
   		
   		
-  		/*  FIXME: sometimes getDef returns raises a NullPointerException.
+  		/*  FIXME: sometimes getDef raises a NullPointerException.
   		    In the meantime, I'll just keep it from crashing
   		*/
   		sl.writeLog("Translation\tRemoteScannerFilter");
   		
   		try
   		{
+                    scanner.clearTokens();
   		    while((linea = br.readLine())!= null)
   			    scanner.scanLine(linea);
       		
   		    br.close();
       		
 		    scanner.finishUp();
-		    token = scanner.getTokenArray();
+		    words = scanner.getWordArray();
     		
-		    for (i=0; i<token.length; i++)
+		    for (i=0; i<words.length; i++)
 		    {
-			    if (!(token[i] instanceof Word)) continue;
-			    word = (Word) token[i];
-			    out.println(word.getWylie());
-			    out.println(word.getDef());
-			    out.println();
+                        linea = words[i].getDef();
+                        if (linea == null) continue;
+                        out.println(words[i].getWylie());
+                        out.println(linea);
+                        out.println();
 		    }
 		}
 		catch (Exception e)

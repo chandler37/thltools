@@ -316,58 +316,56 @@ public abstract class TibetanScanner
 	    Token token;
 	    Word array[], word;
 	    int n=0;
-		SimplifiedListIterator li = wordList.listIterator();
-		SimplifiedLinkedList ll2, ll = new SimplifiedLinkedList();
-		
-		while(li.hasNext())
-		{
-		    token = (Token) li.next();
-		    
-		    if (token instanceof Word)
-		    {
-	            ll.addLast(token);
-			}
-		}
-		
-		if (includeRepeated)
-		{
-		    n = ll.size();
-    		
-	        if (n==0) return null;
-    	    
-	        array = new Word[n];
-	        li = ll.listIterator();
-    	    
-	        n=0;
-	        while (li.hasNext())
-	        {
-	            array[n++] = (Word) li.next();
-	        }
-		}
-		else
-		{
-		    ll2 = new SimplifiedLinkedList();
-		    li = ll.listIterator();
-		    
-		    while(li.hasNext())
-		    {
-		        word = (Word) li.next();
-    		    
-	            if (!ll2.contains(word)) ll2.addLast(word);
-		    }
-		    
-		    n = ll2.size();
-    		
-	        if (n==0) return null;
-    	    
-	        array = new Word[n];
-	        li = ll2.listIterator();
-    	    
-	        while (li.hasNext())
-	        {
-	            array[--n] = (Word) li.next();
-	        }   
-		}
+            SimplifiedListIterator li = wordList.listIterator();
+            SimplifiedLinkedList ll2, ll = new SimplifiedLinkedList();
+
+            while(li.hasNext())
+            {
+                token = (Token) li.next();
+
+                if (token instanceof Word)
+                {
+                    ll.addLast(token);
+                }
+            }
+
+            if (includeRepeated)
+            {
+                n = ll.size();
+                if (n==0) return null;
+
+                array = new Word[n];
+                li = ll.listIterator();
+
+                n=0;
+                while (li.hasNext())
+                {
+                    array[n++] = (Word) li.next();
+                }
+            }
+            else
+            {
+                ll2 = new SimplifiedLinkedList();
+                li = ll.listIterator();
+
+                while(li.hasNext())
+                {
+                    word = (Word) li.next();
+                    if (!ll2.contains(word)) ll2.addLast(word);
+                }
+
+                n = ll2.size();
+
+                if (n==0) return null;
+
+                array = new Word[n];
+                li = ll2.listIterator();
+
+                while (li.hasNext())
+                {
+                    array[--n] = (Word) li.next();
+                }   
+            }
 		
 		
 
