@@ -790,6 +790,7 @@ public class ACIPTshegBarScanner {
             case 'x':
             case 'o':
             case '^':
+            case '&':
 
                 boolean legalTshegBarAdornment = false;
                 // The tsheg bar ends here; new token.

@@ -7438,6 +7438,7 @@ M+NA
     }
 
     public void testACIPConversion() {
+        uhelp("KO&HAm,", "\u0F40\u0F7C\u0F85\u0F67\u0F7E\u0F0D");
         uhelp("x", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP x must be glued to the end of a tsheg bar, but this one was not]");
         uhelp("o", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP o must be glued to the end of a tsheg bar, but this one was not]");
         uhelp("%", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP % must be glued to the end of a tsheg bar, but this one was not][#WARNING CONVERTING ACIP DOCUMENT: Lexical warning: The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice]");
