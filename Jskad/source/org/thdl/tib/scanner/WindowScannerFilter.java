@@ -28,6 +28,7 @@ import java.awt.datatransfer.*;
 import javax.swing.text.JTextComponent;
 import javax.swing.JOptionPane;
 import org.thdl.tib.input.DuffPane;
+import org.thdl.util.*;
 
 /** Provides a graphical interfase to input Tibetan text (Roman or
     Tibetan script) and displays the words (Roman or Tibetan script)
@@ -44,35 +45,91 @@ import org.thdl.tib.input.DuffPane;
 */
 public class WindowScannerFilter implements WindowListener, FocusListener, ActionListener, ItemListener
 {
+	private static String defOpenOption = "thdl.scanner.default.open";
+    
 	private ScannerPanel sp;
-	private MenuItem mnuExit, mnuCut, mnuCopy, mnuPaste, mnuDelete, mnuSelectAll, mnuAbout, mnuClear;
+	private MenuItem mnuExit, mnuCut, mnuCopy, mnuPaste, mnuDelete, mnuSelectAll, mnuAbout, mnuClear, mnuOpen;
 	private CheckboxMenuItem tibScript, mnuDicts;
 	private Object objModified;
-	private Frame frame;
-	private Dialog diagAbout;
-	private boolean usingSwing;
+	private AboutDialog diagAbout;
+	private Frame mainWindow;
+	private boolean pocketpc;
+			
+	public WindowScannerFilter(boolean pocketpc)
+	{
+		String response;
+		this.pocketpc = pocketpc;
+		
+		if (!pocketpc) response = ThdlOptions.getStringOption(defOpenOption);
+		else response=null;
+		if (response==null || response.equals(""))
+		{
+		    mainWindow = new Frame("Tibetan Scanner");
+		    mainWindow.show();
+		    mainWindow.toFront();
+		    WhichDictionaryFrame wdf = new WhichDictionaryFrame(mainWindow, pocketpc);
+
+		    wdf.show();
+		    response = wdf.getResponse();
+		    if (response.equals("")) System.exit(0);
+		    else
+		    {
+		        if (!pocketpc && wdf.getDefaultOption())
+		        {
+		            ThdlOptions.setUserPreference(defOpenOption, response);
+		            try
+		            {
+		                ThdlOptions.saveUserPreferences();
+		            }
+		            catch (Exception e)
+		            {
+		            }
+		        }
+		    }
+		}
+    	makeWindow (response);
+	}
+	
+	public WindowScannerFilter()
+	{
+	    this(false);
+	}
 
 	public WindowScannerFilter(String file)
 	{
-		this (file, false);
+	    pocketpc = false;
+	    mainWindow = null;
+		makeWindow (file);
 	}
-
-	public WindowScannerFilter(String file, boolean ipaq)
+	
+	public WindowScannerFilter(String file, boolean pocketpc)
 	{
-		frame = new Frame("Tibetan Scanner");
-		frame.setLayout(new GridLayout(1,1));
-		frame.setBackground(Color.white);
+	    this.pocketpc = pocketpc;
+	    mainWindow = null;
+		makeWindow (file);
+	}	
+
+	public void makeWindow(String file)
+	{ 
+	    if (mainWindow==null) mainWindow = new Frame("Tibetan Scanner");
+	    else mainWindow.setVisible(false);
+		mainWindow.setLayout(new GridLayout(1,1));
+		mainWindow.setBackground(Color.white);
+		
 	    diagAbout = null;
-	    usingSwing=!ipaq;
+	    mnuAbout = null;
 	    Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 
-		if (usingSwing)
+		if (!pocketpc)
 			sp = new DuffScannerPanel(file);
 		else
 			sp = new SimpleScannerPanel(file, d.width >d.height);
 		
 		MenuBar mb = new MenuBar();
-		Menu m = new Menu ("File");		
+		Menu m = new Menu ("File");
+		mnuOpen = new MenuItem("Open...");
+		mnuOpen.addActionListener(this);
+		m.add(mnuOpen);
 		mnuExit = new MenuItem("Exit");
 		mnuExit.addActionListener(this);
 		m.add(mnuExit);
@@ -104,7 +161,7 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		mnuClear.addActionListener(this);
 		mb.add(m);
    		m = new Menu("View");
-		if (usingSwing)
+		if (!pocketpc)
 		{
 	    	tibScript = new CheckboxMenuItem("Tibetan Script", true);
 		    m.add(tibScript);
@@ -120,47 +177,70 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
     	}
    		mb.add(m);
     	
-		m = new Menu("Help");
-		mnuAbout = new MenuItem("About...");
-		m.add(mnuAbout);
-		mnuAbout.addActionListener(this);
-		mb.add(m);
+    	if (!pocketpc)
+   		{
+   		    m = new Menu("Help");
+        	mnuAbout = new MenuItem("About...");
+	        m.add(mnuAbout);
+   		    mnuAbout.addActionListener(this);
+        	mb.add(m);
+        }
 		
 		// disable menus
-        focusLost(null);	
+        focusLost(null);
+        
+        
 		sp.addFocusListener(this);
 		
-		frame.setMenuBar(mb);
-		frame.add(sp);
-		frame.addWindowListener(this);
-		frame.setSize(d);
-		// frame.setSize(240,320);
-		//else frame.setSize(500,600);
-		frame.show();
+		mainWindow.setMenuBar(mb);
+		mainWindow.add(sp);
+		mainWindow.addWindowListener(this);
+		mainWindow.setSize(d);
+		// mainWindow.setSize(240,320);
+		//else mainWindow.setSize(500,600);
+		mainWindow.show();
+		mainWindow.toFront();
 
-	    if (usingSwing)
+	    if (pocketpc || !ThdlOptions.getBooleanOption(AboutDialog.windowAboutOption))
 	    {
-	        //JOptionPane.showMessageDialog(frame, TibetanScanner.aboutUnicode, "About", JOptionPane.PLAIN_MESSAGE);
-   	        diagAbout = new AboutDialog(frame, true);
+   	        diagAbout = new AboutDialog(mainWindow, pocketpc);
+	        diagAbout.show();
+	        
+	        if (!pocketpc && diagAbout.omitNextTime())
+	        {
+	            ThdlOptions.setUserPreference(AboutDialog.windowAboutOption, true);
+	            try
+	            { 
+	                ThdlOptions.saveUserPreferences();
+	            }
+	            catch(Exception e)
+	            {
+	            }
+	        }
 	    }
-	    else if (diagAbout==null)
-	    {
-   	        diagAbout = new AboutDialog(frame, false);
-	    }
-	    diagAbout.show();	
 	}
-
+	
 	public static void main(String[] args)
 	{
-		if (args.length!=1 && args.length!=2)
+		switch(args.length)
 		{
+		    case 0:
+		    new WindowScannerFilter();
+		    break;
+		    case 1:
+		    if (args[0].length()>0 && args[0].charAt(0)=='-') new WindowScannerFilter(true);
+		    else new WindowScannerFilter(args[0]);
+		    break;
+		    case 2:
+		    new WindowScannerFilter(args[1], true);
+		    break;
+		    default:
+		    System.out.println("Syntax error!");
 			System.out.println("Sintaxis: java WindowScannerFilter [options] arch-dict");
 			System.out.println("Options:");
 			System.out.println("  -simple: runs the non-swing version.");
 			System.out.println(TibetanScanner.copyrightASCII);
-			return;
 		}
-		new WindowScannerFilter(args[args.length-1], args.length == 2);
 	}
 
 
@@ -288,30 +368,44 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 	/* FIXME: what happens if this throws an exception?  We'll just
        see it on the console--it won't terminate the program.  And the
        user may not see the console! See ThdlActionListener. -DC */
-    public void actionPerformed(ActionEvent e)	
+    public void actionPerformed(ActionEvent event)	
     {
-		Object clicked = e.getSource();
+		Object clicked = event.getSource();
 		StringSelection ss;
 		String s = null;
 		
 		if (clicked == mnuAbout)
 		{
-		    if (usingSwing)
-		    {
-		        //JOptionPane.showMessageDialog(frame, TibetanScanner.aboutUnicode, "About", JOptionPane.PLAIN_MESSAGE);
-    	        diagAbout = new AboutDialog(frame, true);
-		    }
-		    else if (diagAbout==null)
-		    {
-    	        diagAbout = new AboutDialog(frame, false);
-		    }
+		    if (diagAbout==null) diagAbout = new AboutDialog(mainWindow, pocketpc);
 		    diagAbout.show();
+		    if (!pocketpc)
+		    {
+		        ThdlOptions.setUserPreference(AboutDialog.windowAboutOption, diagAbout.omitNextTime());
+		        try
+	            { 
+	                ThdlOptions.saveUserPreferences();
+	            }
+    	        catch(Exception e)
+	            {
+	            }
+	        }
 		}
 		else if (clicked == mnuClear)
 		{
 		    sp.clear();
 		}
-		else
+		else if (clicked == mnuOpen)
+        {
+            mainWindow.setVisible(false);
+            mainWindow.dispose();
+            if (!pocketpc) ThdlOptions.setUserPreference(defOpenOption, "");
+            new WindowScannerFilter(pocketpc);
+        }
+        else if (clicked == mnuExit)
+        {
+            System.exit(0);
+        }
+        else
 		{
     		if (objModified==null) return;
 		
@@ -319,11 +413,7 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		    {
 		        TextArea t = (TextArea) objModified;
 		        
-		        if (clicked == mnuExit)
-		        {
-		            System.exit(0);
-		        }
-		        else if (clicked == mnuCut)
+		        if (clicked == mnuCut)
 	        	{
 	        	    ss = new StringSelection(t.getSelectedText());
 	    	        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss,ss);
@@ -387,7 +477,7 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
                 else if (clicked == mnuSelectAll)
                 {
                     t.selectAll();
-                }    
+                }
             }
         }
     }

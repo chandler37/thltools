@@ -152,11 +152,9 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 {
 	private long posHijos;
 	private String sil, def[];
-    private static String delimiter;
-    private static int delimiterType;
-    private final static int delimiterGeneric=0;
-    private final static int delimiterAcip=1;
-    private final static int delimiterDash=2;
+    public final static int delimiterGeneric=0;
+    public final static int delimiterAcip=1;
+    public final static int delimiterDash=2;
 
 	/** Number of dictionary. If 0, partial word (no definition).
 	*/
@@ -168,8 +166,6 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 	{
 		wordRaf = null;
 		defRaf = null;
-        delimiter = null;
-        delimiterType=delimiterDash;
 	}
 
 	public BinaryFileGenerator()
@@ -181,7 +177,7 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 		sourceDef = null;
 	}
 
-	public BinaryFileGenerator(String sil, String def, int numDef)
+	private BinaryFileGenerator(String sil, String def, int numDef)
 	{
 		super();
 		int marker = sil.indexOf(" ");
@@ -208,18 +204,18 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 		return sil;
 	}
 
-        private static String deleteQuotes(String s)
+    private static String deleteQuotes(String s)
+    {
+        int length = s.length();
+        if (length>2)
         {
-          int length = s.length();
-          if (length>2)
-          {
-            if ((s.charAt(0)=='\"') && (s.charAt(length-1)=='\"'))
-              return s.substring(1,length-2);
-          }
-          return s;
+        if ((s.charAt(0)=='\"') && (s.charAt(length-1)=='\"'))
+            return s.substring(1,length-1);
         }
-
-	public void addFile(String archivo, int defNum) throws Exception
+        return s;
+    }
+    
+	public void addFile(String archivo, int delimiterType, String delimiter, int defNum) throws Exception
 	{
 	    final short newDefiniendum=1, halfDefiniendum=2, definition=3;
 	    short status=newDefiniendum;
@@ -672,10 +668,29 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 		System.out.println("         to mark page numbers, comments, etc. Make sure to convert it to");
 		System.out.println("         THDL's extended Wylie scheme first using the AcipToWylie class.");
     }
+    
+    public void generateDatabase(String name) throws Exception
+    {
+        File wordF = new File(name + ".wrd"), defF = new File(name + ".def");
+        wordF.delete();
+		defF.delete();
+		wordRaf = new RandomAccessFile(wordF,"rw");
+		defRaf = new RandomAccessFile(defF,"rw");
+		print();
+		wordRaf.writeInt((int)posHijos);
+        
+    }
 
 	public static void main(String args[]) throws Exception
 	{
-		int i, n=0, a;
+	    int delimiterType;
+	    String delimiter;
+	    
+	    int i, n=0, a;
+	    
+        delimiter = null;
+        delimiterType=delimiterDash;
+
 		if (args.length==0)
 		{
 		    printSintax();
@@ -701,7 +716,7 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
                 printSintax();
                 return;
             }
-            sl.addFile(args[1] + ".txt",0);
+            sl.addFile(args[1] + ".txt",delimiterType, delimiter, 0);
             a=1;
         }
         else
@@ -709,7 +724,7 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
             a=0;
 		    if (args.length==1)
 		    {
-                sl.addFile(args[0] + ".txt",0);
+                sl.addFile(args[0] + ".txt", delimiterType, delimiter, 0);
 		    }
 		    else
             {
@@ -737,17 +752,11 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
                     {
                         delimiterType=delimiterDash;
                     }
-                    sl.addFile(args[i] + ".txt", n);
+                    sl.addFile(args[i] + ".txt", delimiterType, delimiter, n);
                     n++; i++;
                 }
             }
 		}
-        File wordF = new File(args[a] + ".wrd"), defF = new File(args[a] + ".def");
-        wordF.delete();
-		defF.delete();
-		wordRaf = new RandomAccessFile(wordF,"rw");
-		defRaf = new RandomAccessFile(defF,"rw");
-		sl.print();
-		wordRaf.writeInt((int)sl.posHijos);
+		sl.generateDatabase(args[a]);
 	}
 }
