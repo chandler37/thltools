@@ -195,20 +195,20 @@ public class Jskad extends JPanel implements DocumentListener {
         }
     }
 
+    private int numItemsOnFileMenuBeforeRecentlyOpened = 0;
     private void updateRecentlyOpenedFilesMenuItems() {
-        int ic = fileMenu.getItemCount();
-        while (fileMenu.getItemCount() > 8)
-            fileMenu.remove(7);
+        int menu_loc = numItemsOnFileMenuBeforeRecentlyOpened;
+        while (fileMenu.getItemCount() > menu_loc + 2)
+            fileMenu.remove(menu_loc + 1);
         int N = RecentlyOpenedFilesDatabase.getNumberOfFilesToShow();
         // Avoid adding duplicate entries:
-
         boolean addedSeparator = false;
         for (int i = 0; i < N; i++) {
             final File recentlyOpenedFile
                 = RecentlyOpenedFilesDatabase.getNthRecentlyOpenedFile(N-i-1);
             if (null != recentlyOpenedFile) {
                 if (!addedSeparator) {
-                    fileMenu.insertSeparator(6);
+                    fileMenu.insertSeparator(menu_loc);
                     addedSeparator = true;
                 }
                 JMenuItem item = new JMenuItem((N-i) + " "
@@ -218,7 +218,7 @@ public class Jskad extends JPanel implements DocumentListener {
                             openFile(recentlyOpenedFile);
                         }
                     });
-                fileMenu.add(item, 7);
+                fileMenu.add(item, menu_loc + 1);
             }
         }
     }
@@ -267,6 +267,8 @@ public class Jskad extends JPanel implements DocumentListener {
             fileChooser.addChoosableFileFilter(rtfFilter);
 
             fileMenu = new JMenu("File");
+            numItemsOnFileMenuBeforeRecentlyOpened = 0;
+
 
             JMenuItem newItem = new JMenuItem("New...");
 //            newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,java.awt.Event.CTRL_MASK)); //Ctrl-n
@@ -275,6 +277,7 @@ public class Jskad extends JPanel implements DocumentListener {
                     newFile();
                 }
             });
+            ++numItemsOnFileMenuBeforeRecentlyOpened;
             fileMenu.add(newItem);
 
             JMenuItem openItem = new JMenuItem("Open...");
@@ -284,6 +287,7 @@ public class Jskad extends JPanel implements DocumentListener {
                     openFile();
                 }
             });
+            ++numItemsOnFileMenuBeforeRecentlyOpened;
             fileMenu.add(openItem);
 
             if (parentObject instanceof JFrame) {
@@ -302,6 +306,7 @@ public class Jskad extends JPanel implements DocumentListener {
                         }
                     }
                 });
+                ++numItemsOnFileMenuBeforeRecentlyOpened;
                 fileMenu.add(closeItem);
             }
             JMenuItem saveItem = new JMenuItem("Save");
@@ -309,22 +314,43 @@ public class Jskad extends JPanel implements DocumentListener {
             saveItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
                     if (fileName == null)
-                        saveAsFile();
+                        saveAsFile("legacy rtf");
                     else
                         saveFile();
                 }
 
             });
+            ++numItemsOnFileMenuBeforeRecentlyOpened;
             fileMenu.addSeparator();
+            ++numItemsOnFileMenuBeforeRecentlyOpened;
             fileMenu.add(saveItem);
 
             JMenuItem saveAsItem = new JMenuItem("Save as...");
             saveAsItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
-                    saveAsFile();
+                    saveAsFile("legacy rtf");
                 }
             });
+            ++numItemsOnFileMenuBeforeRecentlyOpened;
             fileMenu.add(saveAsItem);
+
+            JMenuItem saveAsUnicodeUtf8Item = new JMenuItem("Save as Unicode UTF-8 text...");
+            saveAsUnicodeUtf8Item.addActionListener(new ThdlActionListener() {
+                public void theRealActionPerformed(ActionEvent e) {
+                    saveAsFile("unicode utf8 text");
+                }
+            });
+            ++numItemsOnFileMenuBeforeRecentlyOpened;
+            fileMenu.add(saveAsUnicodeUtf8Item);
+
+            JMenuItem saveAsUnicodeRtfItem = new JMenuItem("Save as Unicode RTF...");
+            saveAsUnicodeRtfItem.addActionListener(new ThdlActionListener() {
+                public void theRealActionPerformed(ActionEvent e) {
+                    saveAsFile("unicode rtf");
+                }
+            });
+            ++numItemsOnFileMenuBeforeRecentlyOpened;
+            fileMenu.add(saveAsUnicodeRtfItem);
 
             if (parentObject instanceof JFrame) {
                 JMenuItem exitItem = new JMenuItem("Exit");    
@@ -1024,7 +1050,7 @@ public class Jskad extends JPanel implements DocumentListener {
 
     /** Returns true iff the save was successful. */
     private boolean saveFile() {
-        String s = getSave(fileName);
+        String s = getSave("legacy rtf", fileName);
         if (null != s) {
             if (parentObject instanceof JFrame) {
                 JFrame parentFrame = (JFrame)parentObject;
@@ -1042,9 +1068,11 @@ public class Jskad extends JPanel implements DocumentListener {
         }
     }
 
-    /** Returns true iff the save was successful. */
-    private boolean saveAsFile() {
-        String s = getSaveAs();
+    /** Returns true iff the save was successful.
+     *  @param fileType either "legacy rtf", "unicode utf8 text", or
+     *  "unicode rtf" */
+    private boolean saveAsFile(String fileType) {
+        String s = getSaveAs(fileType);
         if (null != s) {
             if (parentObject instanceof JFrame) {
                 JFrame parentFrame = (JFrame)parentObject;
@@ -1084,7 +1112,7 @@ public class Jskad extends JPanel implements DocumentListener {
 
             case JOptionPane.YES_OPTION: //save and continue
                 if (fileName == null)
-                    return saveAsFile();
+                    return saveAsFile("legacy rtf");
                 else
                     return saveFile();
 
@@ -1093,14 +1121,35 @@ public class Jskad extends JPanel implements DocumentListener {
         }
     }
 
-    private String getSave(String f_name) {
+    private String getSave(String fileType, String f_name) {
         File fileChosen = new File(f_name);
 
         try {
-            BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileChosen));
-            dp.rtfEd.write(out, dp.getDocument(), 0, dp.getDocument().getLength());
-            out.flush();
-            out.close();
+            if (fileType == "legacy rtf") {
+                BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileChosen));
+                dp.rtfEd.write(out, dp.getDocument(), 0, dp.getDocument().getLength());
+                out.flush();
+                out.close();
+            } else if (fileType == "unicode utf8 text") {
+                if (!dp.saveAsUnicode(true,
+                                      new BufferedOutputStream(new FileOutputStream(fileChosen)))) {
+                    JOptionPane.showMessageDialog(Jskad.this,
+                                                  "Saving as UTF-8 Unicode text did not go perfectly.  Try using the standalone converter if you want a perfect document.",
+                                                  "Save As UTF-8 Warning",
+                                                  JOptionPane.WARNING_MESSAGE);
+                }
+            } else if (fileType == "unicode rtf") {
+                if (!dp.saveAsUnicode(false,
+                                      new BufferedOutputStream(new FileOutputStream(fileChosen)))) {
+                    JOptionPane.showMessageDialog(Jskad.this,
+                                                  "Saving as Unicode RTF did not go perfectly.  Try using the standalone converter if you want a perfect document.",
+                                                  "Save As Unicode RTF Warning",
+                                                  JOptionPane.WARNING_MESSAGE);
+                }
+            } else {
+                throw new IllegalArgumentException("fileType " + fileType
+                                                   + " is not supported");
+            }
             hasChanged = false;
         } catch (IOException exception) {
             JOptionPane.showMessageDialog(Jskad.this,
@@ -1116,9 +1165,13 @@ public class Jskad extends JPanel implements DocumentListener {
         return f_name;
     }
 
-    private String getSaveAs() {
+    private String getSaveAs(String fileType) {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
+        if (fileType == "unicode utf8 text") {
+            fileChooser.removeChoosableFileFilter(rtfFilter);
+            fileChooser.addChoosableFileFilter(txtFilter);
+        }
         if (fileName == null)
             fileChooser.setSelectedFile(null);
         else
@@ -1126,6 +1179,10 @@ public class Jskad extends JPanel implements DocumentListener {
 
         if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            if (fileType == "unicode utf8 text") {
+                fileChooser.removeChoosableFileFilter(txtFilter);
+                fileChooser.addChoosableFileFilter(rtfFilter);
+            }
             return null;
         }
 
@@ -1135,12 +1192,23 @@ public class Jskad extends JPanel implements DocumentListener {
         String fileName = fileChosen.getAbsolutePath();
         int i = fileName.lastIndexOf('.');
 
-        if (i < 0)
-            fileName += ".rtf";
-        else
-            fileName = fileName.substring(0, i) + ".rtf";
+        String ext = ((fileType == "unicode utf8 text") ? ".txt" : ".rtf");
 
-        getSave(fileName);
+        if (i < 0)
+            fileName += ext;
+        else if (!fileName.regionMatches(true, i, ext, 0, ext.length())
+                 || fileName.length() != i + ext.length()) {
+            JOptionPane.showMessageDialog(Jskad.this,
+                                          "Filename chosen does not have the extension '"
+                                          + ext + "'",
+                                          "Save As Error",
+                                          JOptionPane.ERROR_MESSAGE);
+
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            return null;
+        }
+
+        getSave(fileType, fileName);
 
         fileChooser.rescanCurrentDirectory();
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));

@@ -466,7 +466,8 @@ public class TibetanConverter implements FontConverterConstants {
                 if (TMW_TO_WYLIE_TEXT == ct || TMW_TO_ACIP_TEXT == ct) {
                     try {
                         BufferedWriter bw
-                            = new BufferedWriter(new OutputStreamWriter(out));
+                            = new BufferedWriter(new OutputStreamWriter(out,
+                                                                        "UTF-8"));
                         tdoc.writeTextOutput(bw);
                         bw.flush();
                     } catch (IOException e) {

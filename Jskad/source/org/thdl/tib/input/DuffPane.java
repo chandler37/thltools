@@ -566,6 +566,7 @@ public class DuffPane extends TibetanPane implements FocusListener {
             getTibDoc().insertString(offset, s, attr);
         }
         catch (BadLocationException ble) {
+            ThdlDebug.noteIffyCode();
         }
     }
 
@@ -1025,6 +1026,54 @@ public class DuffPane extends TibetanPane implements FocusListener {
             }
         }
     }
+    
+    /** Saves the TMW document underlying this DuffPane as Unicode.  Has to copy 
+        @param utf8_text true if you want to save as UTF-8-encoded
+        Unicode text, false if you want to save as Unicode in RTF
+        @param out an OutputStream that will be closed when we're done
+        in every case
+        @returns true on perfect success, false otherwise */
+    public boolean saveAsUnicode(boolean utf8_text, OutputStream out)
+        throws IOException
+    {
+        boolean retval = true;
+        ThdlDebug.verify(getDocument() == getTibDoc());
+        // construct new document so that we can use
+        // TibetanDocument.convertToUnicode(..).
+        TibetanDocument newDoc = new TibetanDocument();
+        try {
+            for (int i = 0; i < getTibDoc().getLength(); i++) {
+                String s = getTibDoc().getText(i,1);
+                AttributeSet as
+                    = getTibDoc().getCharacterElement(i).getAttributes();
+                String fontName = StyleConstants.getFontFamily(as);
+                if (0 != TibetanMachineWeb.getTMFontNumber(fontName))
+                    retval = false;
+                newDoc.insertString(i, s, as);
+            }
+        } catch (BadLocationException ble) {
+            throw new Error("this cannot happen");
+        }
+        if (newDoc.convertToUnicode(0, newDoc.getLength(), null,
+                                    ThdlOptions.getStringOption("thdl.tmw.to.unicode.font").intern(),
+                                    new long[] { 0 })) {
+            retval = false;
+        }
+        if (utf8_text) {
+            BufferedWriter bw
+                = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+            newDoc.writeTextOutput(bw);
+            bw.close();
+        } else {
+            try {
+                rtfEd.write(out, newDoc, 0, newDoc.getLength());
+            } catch (BadLocationException ble) {
+                throw new Error("this cannot happen either");
+            }
+            out.close();
+        }
+        return retval;
+    }
 
     /** Adds to the clipboard the Unicode you'd get if you used a
         TMW->Unicode conversion on the specified portion of the
@@ -1038,8 +1087,8 @@ public class DuffPane extends TibetanPane implements FocusListener {
             // TibetanDocument.convertToUnicode(..).
             TibetanDocument newDoc = new TibetanDocument();
             boolean warn_about_tm = false;
-            for (int i = start; i < end; i++) {
-                try {
+            try {
+                for (int i = start; i < end; i++) {
                     String s = getTibDoc().getText(i,1);
                     AttributeSet as
                         = getTibDoc().getCharacterElement(i).getAttributes();
@@ -1047,10 +1096,10 @@ public class DuffPane extends TibetanPane implements FocusListener {
                     if (0 != TibetanMachineWeb.getTMFontNumber(fontName))
                         warn_about_tm = true;
                     newDoc.insertString(i - start, s, as);
-                } catch (BadLocationException ble) {
-                    ble.printStackTrace();
-                    ThdlDebug.noteIffyCode();
                 }
+            } catch (BadLocationException ble) {
+                ble.printStackTrace();
+                ThdlDebug.noteIffyCode();
             }
             String unicode = "[Jskad: Converting to Unicode failed.]";
             if (newDoc.convertToUnicode(0, newDoc.getLength(), null, null,
@@ -1766,3 +1815,6 @@ class RTFSelection implements ClipboardOwner, Transferable {
 } // inner class DuffPane.RTFSelection
 
 } // class DuffPane
+
+// TODO(dchandler): search for 'catch (Throwable' and 'catch
+// (Exception' and 'catch (Error'.  These are rarely a good idea.
