@@ -117,10 +117,9 @@ span.tmw8 {font: 24pt TibetanMachineWeb8 !important; text-transform: none;  }
 span.tmw9 {font: 24pt TibetanMachineWeb9 !important; text-transform: none;  }
 
 /* The following child selectors hide this css from IE 6 and lower which can't re-position without screwing up the drawing of the fonts*/
-.tmw-block>span.tmw-roman
+span.tmw-roman
 {
-	vertical-align: sub;
-	color: green;
+	/* vertical-align: sub; */
 }
 
 a.tmw-link:hover
