@@ -609,8 +609,9 @@ name="buildingfonts"></a></h3>
     <code>thdltools.sourceforge.net</code>.&nbsp; Now change directory
     (<code>cd</code>) to
     <code>/home/groups/t/th/thdltools/htdocs</code> and run <code>'cvs
-    -f update -d -P'</code>.&nbsp; You'll see your changes being made
-    to the "real" website.&nbsp; Surf to <a
+    -d :ext:YourSourceForgeUserId@cvs1:/cvsroot/thdltools -f update -d
+    -P'</code>.&nbsp; You'll see your changes being made to the "real"
+    website.&nbsp; Surf to <a
     href="http://thdltools.sourceforge.net/"> the website</a> and see
     for yourself.
   </li>
@@ -680,11 +681,10 @@ module<a name="updateapidocs"></a></h4>
     </li>
 
     <li>
-      While you're here, do a <code>'cvs -f update -d -P'</code> --
-      just in case some developer made changes to the web pages but
-      forgot to update (don't worry about setting the CVSROOT--cvs is
-      smart enough to determine everything (but your password)
-      automatically).
+      While you're here, do a <code>'cvs -d
+      :ext:YourSourceForgeUserId@cvs1:/cvsroot/thdltools -f update -d
+      -P'</code> -- just in case some developer made changes to the
+      web pages but forgot to update.
     </li>
 
     <li>
