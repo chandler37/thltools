@@ -13,33 +13,35 @@
  * 
  * Copyright 2001 Tashi Tsering All Rights Reserved
  * 
- * Contributor(s): ______________________________________.
- */
-/*
- * //************************************************************************** // //
- * This is the java version of the class of TibetanSyllable // represented by
- * Wylie translateration system. Use the class, Tibetan // syllables can be
- * compared. And also one can sort Tibetan syllables, words, // phrases and
- * sentences by comparison of two syllables. The order of the // consonants and
- * the order of the vowels are based on "tshig mdzod chen mo" // (The Big
- * Dictionary). // // // Author: Tashi Tsering // Date: 11/27/2002 // Written
- * at: University of Virginia //
- * //***********************************************************************************
- * //The interface of the class of TibetanSyllable: // //class name:
- * TibetanSyllable // //constructor: TibetanSyllable ( String S ) // String S is
- * the representation of a Tibetan syllable by string. // //method: // int
- * CompareWith( TibetanSyllable thatSyllable ) // // return: 0 if this syllable
- * is the same with thatSyllable; // 1 if this syllable is bigger than
- * thatSyllable, // i.e. this syllable goes after thatSyllable in the order of a
- * dictionary; // -1 if this syllable is less than thatSyllable, // i.e. this
- * syllable goes before thatSyllable in the order of a dictionary; // Those
- * invalid syllables will be treated as the biggest syllable, that they are
- * always // bigger than valid syllables.;
- * //************************************************************************************ //
+ * Contributor(s): Andres Montano. 
  */
 
 package org.thdl.tib.text;
 
+/** This is the java version of the class of TibetanSyllable represented by
+* Wylie translateration system. Use the class, Tibetan syllables can be
+* compared. And also one can sort Tibetan syllables, words, phrases and
+* sentences by comparison of two syllables. The order of the consonants and
+* the order of the vowels are based on "tshig mdzod chen mo" (The Big
+* Dictionary).
+
+* The interface of the class of TibetanSyllable:
+* 
+* class name: TibetanSyllable 
+* constructor: TibetanSyllable ( String S )
+* String S is the representation of a Tibetan syllable by string.
+* 
+* method: 
+* int compareTo(Object thatSyllable)
+* return: 0 if this syllable is the same with thatSyllable; 
+* 1 if this syllable is bigger than thatSyllable,
+* i.e. this syllable goes after thatSyllable in the order of a
+* dictionary;
+* -1 if this syllable is less than thatSyllable,
+* i.e. this syllable goes before thatSyllable in the order of a dictionary;
+* Those invalid syllables will be treated as the biggest syllable, that
+* they are always bigger than valid syllables.
+*/
 public class TibetanSyllable implements Comparable
 {
 
