@@ -20,6 +20,7 @@ package org.thdl.util;
 
 import java.io.PrintStream;
 import java.io.FileOutputStream;
+import java.io.File;
 
 import org.thdl.util.TeeStream;
 
@@ -119,11 +120,68 @@ public class ThdlDebug {
 
 	/** Sets it up so that a call to System.out or System.err prints
      *  to standard output/error but ALSO prints to the log file named
-     *  logFile. */
-	public static void attemptToSetUpLogFile(String logFile) {
+     *  (prefix + suffix).  Be sure the log file name is a relative
+     *  path, because we may put this file into an arbitrary
+     *  directory. */
+	public static void attemptToSetUpLogFile(String prefix, String suffix) {
+        final String tempDirProp = "thdl.use.temp.file.directory.for.log";
+        final String logDirProp = "thdl.log.directory";
+        File logFile = null;
+
+        if (Boolean.getBoolean(tempDirProp)) {
+            /* The log file won't be named 'jskad.log', it'll be named
+               'jskad-SAKFJDS3134.log', and they'll all just pile up,
+               because we don't deleteOnExit. */
+
+            /* First, ensure that the user hasn't set conflicting options. */
+            try {
+                if (null != System.getProperty("thdl.log.directory"))
+                    throw new Error("You cannot set the property "
+                                    + tempDirProp + " and the property "
+                                    + logDirProp
+                                    + " at the same time because they both affect the same thing, the location of the log file.");
+            } catch (Exception e) {
+                /* SecurityExceptions, e.g., will trigger this. */
+
+                /* Leave logDir null. */
+            } catch (Error e) {
+                throw e;
+            }
+
+            /* Now, create the temporary file. */
+            try {
+                logFile = File.createTempFile(prefix, suffix);
+            } catch (Exception e) {
+                noteIffyCode();
+            }
+        } else {
+            /* If the user has set the system property
+               thdl.log.directory, respect their choice. */
+            String logDir = null;
+            try {
+                logDir = System.getProperty(logDirProp);
+            } catch (Exception e) {
+                /* SecurityExceptions, e.g., will trigger this.  We
+                   leave logDir null. */
+                noteIffyCode();
+            }
+            if (null != logDir) {
+                logFile = new File(logDir, prefix + suffix);
+            } else {
+                /* Create the log file in the current directory.  For
+                   Windows users, this is often the desktop.
+
+                   FIXME: by default, put the log file in a smarter place.
+                */
+                logFile = new File(prefix + suffix);
+            }
+        }
 		try {
 			PrintStream logFilePrintStream
 				= new PrintStream(new FileOutputStream(logFile));
+            System.out.println("Logging to "
+                               + logFile.getAbsolutePath().toString()
+                               + "; please include the contents of this file in any bug reports.");
 			PrintStream psOut = new TeeStream(System.out, logFilePrintStream);
 			PrintStream psErr = new TeeStream(System.err, logFilePrintStream);
 			System.setErr(psErr);
