@@ -30,9 +30,9 @@ jmeterhome=../jmeter
   <!-- Configure the context path for this application -->
 	<property name="path" value="/lex"/>
 
-    <property file="${user.home}/.${ant.project.name}-build.properties"/>
+<!--    <property file="${user.home}/.${ant.project.name}-build.properties"/>
 	<property file="${user.home}/.build.properties"/>
-	<property file="build.properties"/> 
+-->	<property file="build.properties"/> 
 
   <!-- Configure the custom Ant tasks for the Manager application 
   			These tasks require catalina-ant.jar in $ANT_HOME/lib-->
@@ -136,6 +136,11 @@ jmeterhome=../jmeter
 
 	<target name="compile" description="Compile web application" depends="copy">
 		<mkdir dir="${build}/WEB-INF/classes"/>
+		<javac srcdir="${thdluser.home}/src/java"
+				 destdir="${build}/WEB-INF/classes"
+				 deprecation="on"
+				 classpathref="classpath"
+				 debug="on"/>
 		<javac  destdir="${build}/WEB-INF/classes" classpathref="classpath" debug="on" listfiles="no">
 		<src path="${source}/java"/>
 		<include name="org/thdl/lex/**"/>
@@ -161,11 +166,11 @@ jmeterhome=../jmeter
 		</javadoc>
 	</target>
 	
-	<target name="install" description="Install web application" depends="compile, move-log">
+	<target name="install" description="Install web application" depends="compile">
 		<install url="${url}" username="${username}" password="${password}" path="${path}" config="file://${basedir}/${lex.context.config}" war="file://${build}"/>
 	</target>
 	
-	<target name="move-log" description="move old log file">
+	<!-- <target name="move-log" description="move old log file">
 		<mkdir dir="logs"/>
 		<mkdir dir="logs/old"/>
 		<tstamp prefix="now"/>
@@ -173,7 +178,7 @@ jmeterhome=../jmeter
 		<move file="${basedir}/logs/hibernate.log" tofile="${basedir}/logs/old/${now.DSTAMP}_${now.TSTAMP}_hibernate.log" overwrite="true"/>
 		<touch file="${basedir}/logs/lex.log"/>
 		<move file="${basedir}/logs/lex.log" tofile="${basedir}/logs/old/${now.DSTAMP}_${now.TSTAMP}_lex.log" overwrite="true"/>
-	</target>
+	</target> -->
 	
 	<target name="reinstall" description="Remove and Re-install web application" depends="remove">
 		<antcall target="install"/>

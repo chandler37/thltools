@@ -55,7 +55,7 @@
         <!-- DBCP database connection settings -->
 		<parameter>
 			<name>url</name>
-			<value>jdbc:mysql://localhost/ThdlUsers</value>
+			<value>jdbc:mysql://localhost/ThdlUser</value>
 		</parameter>
 		<parameter>
 			<name>driverClassName</name>
