@@ -58,7 +58,6 @@ public class LexComponentRepository
 
 
 
-
 	/**
 	 *  Sets the start attribute of the LexComponentRepository object
 	 *
@@ -218,17 +217,17 @@ public class LexComponentRepository
 		String termForQuery = null;
 		if ( lexQuery.getFindMode().equals( LexComponentRepository.EXACT ) )
 		{
-			termForQuery = "'" + term.getTerm() + "'";
+			termForQuery = term.getTerm();
 		}
 		else if ( lexQuery.getFindMode().equals( LexComponentRepository.STARTS_WITH ) )
 		{
-			termForQuery = "'" + term.getTerm() + "%'";
+			termForQuery = term.getTerm() + "%";
 		}
 		else if ( lexQuery.getFindMode().equals( LexComponentRepository.ANYWHERE ) )
 		{
-			termForQuery = "'%" + term.getTerm() + "%'";
+			termForQuery = "%" + term.getTerm() + "%";
 		}
-		String queryString = " FROM org.thdl.lex.component.ITerm as term WHERE term.term like '" + term.getTerm() + "%' AND term.deleted=0 ORDER BY term.term";
+		String queryString = " FROM org.thdl.lex.component.ITerm as term WHERE term.term like '" + termForQuery + "' AND term.deleted=0 ORDER BY term.term";
 		try
 		{
 			query = getSession().createQuery( queryString );
