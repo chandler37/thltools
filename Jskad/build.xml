@@ -208,10 +208,17 @@
       <param name="mybin" value="${savantbin}"/>
     </antcall>
 
-    <!-- Copy the .rtf files; they're needed resources: -->
+    <!-- Copy over Savant-specific resources: -->
     <copy todir="${savantbin}/org/thdl/savant">
       <fileset dir="${source}">
         <include name="*savant*"/>
+      </fileset>
+    </copy>
+
+    <!-- Copy over Savant-specific resources: -->
+    <copy todir="${savantbin}">
+      <fileset dir="${source}">
+        <include name="MessageBundle*"/>
       </fileset>
     </copy>
 
@@ -341,7 +348,6 @@
       <param name="my.included.source.file"
              value="org/thdl/tib/text/TibetanHTML.java"/>
     </antcall>
-
     <antcall target="compile-classes-accessed-by-reflection">
       <param name="mybin" value="${qdbin}"/>
     </antcall>
@@ -1052,6 +1058,16 @@
     </antcall>
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${qdbin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/media/SmartQT4JPlayer.java"/>
+    </antcall>
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${savantbin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/media/SmartJMFPlayer.java"/>
+    </antcall>
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${savantbin}"/>
       <param name="my.included.source.file"
              value="org/thdl/media/SmartQT4JPlayer.java"/>
     </antcall>
