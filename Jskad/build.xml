@@ -10,9 +10,12 @@
 
 
   <!-- set global properties for this build -->
+  <!-- FIXME: don't do javac -g for releases -->
+  <property name="javacdashg" value="yes"/>
   <property name="source" location="source"/>
   <property name="bin" location="bin"/>
   <property name="jskadbin" location="bin/jskad"/>
+  <property name="savantbin" location="bin/savant"/>
   <property name="docs" location="docs"/>
   <property name="dist"  location="dist"/>
   <property name="ext"  location="extensions"/>
@@ -41,6 +44,7 @@
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${bin}"/>
     <mkdir dir="${jskadbin}"/>
+    <mkdir dir="${savantbin}"/>
     <mkdir dir="${publicjavadocs}"/>
     <mkdir dir="${privatejavadocs}"/>
   </target>
@@ -77,10 +81,11 @@
   <target name="jskad-compile" depends="init"
           description="compiles Jskad" >
     <!-- Compile the java code from ${source} into ${bin} -->
-    <javac destdir="${jskadbin}">
+    <javac destdir="${jskadbin}"  debug="${javacdashg}">
       <classpath refid="entire.class.path"/>
       <src path="${source}"/>
-      <include name="org/thdl/tib/**" />
+      <include name="org/thdl/tib/text/**" />
+      <include name="org/thdl/tib/input/**" />
       <include name="org/thdl/util/**" />
       <exclude name="**/*.ini" />
 	  <exclude name="**/*.html" />
@@ -90,15 +95,17 @@
     </javac>
   </target>
 
+  <!-- FIXME: create targets for the Translation tool. -->
 
   <target name="savant-compile" depends="init"
           description="compiles Savant" >
     <!-- Compile the java code from ${source} into ${bin} -->
-    <javac destdir="${bin}">
+    <javac destdir="${savantbin}" debug="${javacdashg}">
       <classpath refid="entire.class.path"/>
       <src path="${source}"/>
       <include name="org/thdl/savant/**" />
       <include name="org/thdl/util/**" />
+      <include name="org/thdl/tib/text/**" />
       <exclude name="**/*.ini" />
 	  <exclude name="**/*.html" />
       <!-- Exclude JUnit tests: -->
@@ -111,7 +118,7 @@
   <target name="qd-compile" depends="init"
           description="compiles QuillDriver" >
     <!-- Compile the java code from ${source} into ${bin} -->
-    <javac destdir="${bin}">
+    <javac destdir="${bin}" debug="${javacdashg}">
       <classpath refid="entire.class.path"/>
       <src path="${source}"/>
       <include name="org/thdl/quilldriver/**" />
@@ -135,7 +142,7 @@
     <!-- Put everything necessary into the zip file -->
     <zip destfile="${dist}/source/Jskad-src-${DSTAMP}.zip">
       <zipfileset dir="${source}"
-                  includes="org/thdl/tib/**,org/thdl/util/**"
+                  includes="org/thdl/tib/text/**,org/thdl/tib/input/**,org/thdl/util/**"
                   prefix="source"/>
       <zipfileset dir="license"
                   includes="*.txt,*.html"
@@ -222,6 +229,7 @@
     <!-- Delete the ${bin} and ${dist} directory trees -->
     <delete dir="${bin}"/>
     <delete dir="${jskadbin}"/>
+    <delete dir="${savantbin}"/>
     <delete dir="${dist}"/>
   </target>
 
