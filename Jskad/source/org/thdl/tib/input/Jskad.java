@@ -31,6 +31,8 @@ import javax.swing.event.*;
 import javax.swing.text.*;
 import javax.swing.text.rtf.*;
 
+import java.util.Vector;
+
 import org.thdl.tib.text.*;
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlOptions;
@@ -68,18 +70,24 @@ public class Jskad extends JPanel implements DocumentListener {
 
     /* The .rtf files named below better be included in the jar in the
        same directory as 'Jskad.class'. */
-    private final String keybd1Description = "Extended Wylie Keyboard";
-    private final String keybd1HelpFile = "Wylie_keyboard.rtf";
-
-    private final String keybd2Description = "TCC Keyboard #1";
-    private final String keybd2HelpFile = "TCC_keyboard_1.rtf";
-
-    private final String keybd3Description = "TCC Keyboard #2";
-    private final String keybd3HelpFile = "TCC_keyboard_2.rtf";
-
-    private final String keybd4Description = "Sambhota Keymap One";
-    private final String keybd4HelpFile = "Sambhota_keymap_one.rtf";
-
+    private final static JskadKeyboardManager keybdMgr
+        = new JskadKeyboardManager(new JskadKeyboard[] {
+            new JskadKeyboard("Extended Wylie Keyboard",
+                              null,
+                              "Wylie_keyboard.rtf"),
+            new JskadKeyboard("TCC Keyboard #1",
+                              "tcc_keyboard_1.ini",
+                              "TCC_keyboard_1.rtf"),
+            new JskadKeyboard("TCC Keyboard #2",
+                              "tcc_keyboard_2.ini",
+                              "TCC_keyboard_2.rtf"),
+            new JskadKeyboard("Sambhota Keymap One",
+                              "sambhota_keyboard_1.ini",
+                              "Sambhota_keymap_one.rtf"),
+            new JskadKeyboard("Asian Classics Input Project (ACIP) Keyboard",
+                              "acip_keyboard.ini",
+                              null)
+                });
 
 	private JComboBox fontFamilies, fontSizes;
 	private JFileChooser fileChooser;
@@ -311,44 +319,18 @@ public class Jskad extends JPanel implements DocumentListener {
 			}
 		});
 
-        {
-            JMenuItem keybd1Item = new JMenuItem(keybd1Description);
-            keybd1Item.addActionListener(new ThdlActionListener() {
-                    public void theRealActionPerformed(ActionEvent e) {
-                        new SimpleFrame(keybd1Description, getKeybd1RTFPane());
-                    }
-                });
-            infoMenu.add(keybd1Item);
-        }
-
-        {
-            JMenuItem keybd2Item = new JMenuItem(keybd2Description);
-            keybd2Item.addActionListener(new ThdlActionListener() {
-                    public void theRealActionPerformed(ActionEvent e) {
-                        new SimpleFrame(keybd2Description, getKeybd2RTFPane());
-                    }
-                });
-            infoMenu.add(keybd2Item);
-        }
-
-        {
-            JMenuItem keybd3Item = new JMenuItem(keybd3Description);
-            keybd3Item.addActionListener(new ThdlActionListener() {
-                    public void theRealActionPerformed(ActionEvent e) {
-                        new SimpleFrame(keybd3Description, getKeybd3RTFPane());
-                    }
-                });
-            infoMenu.add(keybd3Item);
-        }
-
-        {
-            JMenuItem keybd4Item = new JMenuItem(keybd4Description);
-            keybd4Item.addActionListener(new ThdlActionListener() {
-                    public void theRealActionPerformed(ActionEvent e) {
-                        new SimpleFrame(keybd4Description, getKeybd4RTFPane());
-                    }
-                });
-            infoMenu.add(keybd4Item);
+        for (int i = 0; i < keybdMgr.size(); i++) {
+            final JskadKeyboard kbd = keybdMgr.elementAt(i);
+            if (kbd.hasQuickRefFile()) {
+                JMenuItem keybdItem = new JMenuItem(kbd.getIdentifyingString());
+                keybdItem.addActionListener(new ThdlActionListener() {
+                        public void theRealActionPerformed(ActionEvent e) {
+                            new SimpleFrame(kbd.getIdentifyingString(),
+                                            kbd.getQuickRefPane());
+                        }
+                    });
+                infoMenu.add(keybdItem);
+            }
         }
 
 		infoMenu.addSeparator();
@@ -398,11 +380,8 @@ public class Jskad extends JPanel implements DocumentListener {
         }
 
 
-		String[] keyboard_options = {keybd1Description,
-                                     keybd2Description,
-                                     keybd3Description,
-                                     keybd4Description};
-		final JComboBox keyboards = new JComboBox(keyboard_options);
+		final JComboBox keyboards
+            = new JComboBox(keybdMgr.getIdentifyingStrings());
         int initialKeyboard
             = ThdlOptions.getIntegerOption("thdl.default.tibetan.keyboard", 0);
         try {
@@ -810,7 +789,7 @@ public class Jskad extends JPanel implements DocumentListener {
 		}
 	}
 
-	private TibetanKeyboard sambhota1Keyboard = null, duff1Keyboard = null, duff2Keyboard = null;
+	private TibetanKeyboard sambhota1Keyboard = null, duff1Keyboard = null, duff2Keyboard = null, acipKeyboard = null;
 	private void installKeyboard(int keyboardIndex) {
         switch (keyboardIndex) {
         case 1: //TCC 1
@@ -833,6 +812,12 @@ public class Jskad extends JPanel implements DocumentListener {
             else
                 dp.registerKeyboard(sambhota1Keyboard);
             break;
+        case 4: //ACIP
+            if (acipKeyboard == null)
+                acipKeyboard = installKeyboard("acip");
+            else
+                dp.registerKeyboard(acipKeyboard);
+            break;
         default: //Extended Wylie
             if (0 != keyboardIndex
                 && ThdlOptions.getBooleanOption("thdl.debug")) {
@@ -849,6 +834,9 @@ public class Jskad extends JPanel implements DocumentListener {
 
 		if (!name.equalsIgnoreCase("wylie")) {
 			URL keyboard_url = null;
+
+			if (name.equalsIgnoreCase("acip"))
+				keyboard_url = TibetanMachineWeb.class.getResource("acip_keyboard.ini");
 
 			if (name.equalsIgnoreCase("sambhota1"))
 				keyboard_url = TibetanMachineWeb.class.getResource("sambhota_keyboard_1.ini");
@@ -1028,78 +1016,6 @@ public class Jskad extends JPanel implements DocumentListener {
 		}
 	}
 
-    /** Cached RTFPane displaying the contents of the .rtf file
-        associated with keyboard 1. */
-    private static RTFPane keybd1RTFPane = null;
-
-    /** Returns an RTFPane displaying the contents of the .rtf file
-        associated with keyboard 1. */
-    private RTFPane getKeybd1RTFPane() {
-        if (keybd1RTFPane == null) {
-            try {
-                keybd1RTFPane = new RTFPane(Jskad.class, keybd1HelpFile);
-            } catch (Exception e) {
-                e.printStackTrace(System.err);
-                throw new ThdlLazyException(e); /* FIXME--handle this better. */
-            }
-        }
-        return keybd1RTFPane;
-    }
-
-    /** Cached RTFPane displaying the contents of the .rtf file
-        associated with keyboard 2. */
-    private static RTFPane keybd2RTFPane = null;
-
-    /** Returns an RTFPane displaying the contents of the .rtf file
-        associated with keyboard 2. */
-    private RTFPane getKeybd2RTFPane() {
-        if (keybd2RTFPane == null) {
-            try {
-                keybd2RTFPane = new RTFPane(Jskad.class, keybd2HelpFile);
-            } catch (Exception e) {
-                e.printStackTrace(System.err);
-                throw new ThdlLazyException(e); /* FIXME--handle this better. */
-            }
-        }
-        return keybd2RTFPane;
-    }
-
-    /** Cached RTFPane displaying the contents of the .rtf file
-        associated with keyboard 3. */
-    private static RTFPane keybd3RTFPane = null;
-
-    /** Returns an RTFPane displaying the contents of the .rtf file
-        associated with keyboard 3. */
-    private RTFPane getKeybd3RTFPane() {
-        if (keybd3RTFPane == null) {
-            try {
-                keybd3RTFPane = new RTFPane(Jskad.class, keybd3HelpFile);
-            } catch (Exception e) {
-                e.printStackTrace(System.err);
-                throw new ThdlLazyException(e); /* FIXME--handle this better. */
-            }
-        }
-        return keybd3RTFPane;
-    }
-
-    /** Cached RTFPane displaying the contents of the .rtf file
-        associated with keyboard 4. */
-    private static RTFPane keybd4RTFPane = null;
-
-    /** Returns an RTFPane displaying the contents of the .rtf file
-        associated with keyboard 4. */
-    private RTFPane getKeybd4RTFPane() {
-        if (keybd4RTFPane == null) {
-            try {
-                keybd4RTFPane = new RTFPane(Jskad.class, keybd4HelpFile);
-            } catch (Exception e) {
-                e.printStackTrace(System.err);
-                throw new ThdlLazyException(e); /* FIXME--handle this better. */
-            }
-        }
-        return keybd4RTFPane;
-    }
-
 
 
 /**
@@ -1132,3 +1048,146 @@ public class Jskad extends JPanel implements DocumentListener {
 	}
 }
 
+/** A JskadKeyboard is the high-level view of a Tibetan-input keyboard
+    that Jskad has.  Each keyboard is associated with a .ini file
+    (except for the built-in, extended Wylie keyboard), an RTF
+    document for end users, and a short identifying string. */
+class JskadKeyboard {
+    /** Cached RTFPane displaying the contents of the .rtf "quick
+        reference" file associated with this keyboard. */
+    private RTFPane keybdRTFPane = null;
+
+    /* the .rtf file named here better be included in the jar in the
+       same directory as 'Jskad.class': */
+    /** an optional RTF document */
+    private String keybdQuickRefFile;
+
+    /** a short identifying string */
+    private String keybdId;
+
+    /** the name of the .ini file for this keyboard */
+    private String keybdIniFile;
+
+    /** the associated TibetanKeyboard, which is initialized only when
+        needed */
+    private TibetanKeyboard tibKeybd = null;
+
+    /** Creates a new JskadKeyboard. 
+     *  @param identifyingString a short string used in the GUI to
+     *  identify this keyboard
+     *  @param dotIniResourceName the name of the .ini file used to
+     *  initialize this keyboard, or null for the built-in extended
+     *  Wylie keyboard
+     *  @param RTFResourceName the optional name of the .rtf file that
+     *  gives users a quick reference to this keyboard (null if no
+     *  such file is available) */
+    public JskadKeyboard(String identifyingString,
+                         String dotIniResourceName,
+                         String RTFResourceName) {
+        keybdId = identifyingString;
+        keybdIniFile = dotIniResourceName;
+        keybdQuickRefFile = RTFResourceName;
+    }
+
+    /** Returns an RTFPane displaying the contents of the "Quick
+     *  Reference" .rtf file associated with this keyboard, or null if
+     *  no such file is associated with this keyboard. */
+    public RTFPane getQuickRefPane() {
+        if (!hasQuickRefFile())
+            return null;
+        if (keybdRTFPane == null) {
+            try {
+                keybdRTFPane = new RTFPane(Jskad.class, keybdQuickRefFile);
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+                throw new ThdlLazyException(e); /* FIXME--handle this better. */
+            }
+        }
+        return keybdRTFPane;
+    }
+    
+    /** Returns true iff there is a "Quick Reference" document
+        associated with this keyboard. */
+    public boolean hasQuickRefFile() {
+        return (keybdQuickRefFile != null);
+    }
+
+    /** Returns the short identifying string associated with this
+     *  keyboard. */
+    public String getIdentifyingString() {
+        return keybdId;
+    }
+
+    /** Activates this keyboard for the given DuffPane.
+     *  @param dp the DuffPane for which this keyboard will be made
+     *  the active keyboard */
+    public void activate(DuffPane dp) {
+        URL tibKeybdURL = null;
+        if (null == tibKeybd && keybdIniFile != null) {
+            tibKeybdURL = TibetanMachineWeb.class.getResource(keybdIniFile);
+            if (null == tibKeybd)
+                throw new Error("Cannot load the keyboard initialization resource "
+                                + keybdIniFile);
+        }
+        dp.registerKeyboard(tibKeybdURL);
+    }
+}
+
+
+/** A JskadKeyboardManager maintains a list of JskadKeyboards. */
+class JskadKeyboardManager {
+    /** A Vector of JskadKeyboards.  Users will see the first
+     *  keyboards most prominently. */
+    private Vector keybds;
+
+    /** Creates a manager without any keyboards in it, even the
+     *  built-in extended Wylie keyboard. */
+    JskadKeyboardManager() {
+        keybds = new Vector(5);
+    }
+
+    /** Creates a manager with the specified keyboards in it.  The
+     *  keyboard at index 0 will be the most prominent in the user's
+     *  eyes. */
+    JskadKeyboardManager(JskadKeyboard keyboards[])
+        throws NullPointerException
+    {
+        this();
+        for (int i = 0; i < keyboards.length; i++) {
+            addKeyboard(keyboards[i]);
+        }
+    }
+
+    /** Adds a JskadKeyboard to this manager.  It will be the least
+     *  prominent in the user's eyes of any yet added. */
+    void addKeyboard(JskadKeyboard keybd)
+        throws NullPointerException
+    {
+        if (null == keybd)
+            throw new NullPointerException();
+        keybds.add((Object)keybd);
+    }
+    
+    /** Returns the JskadKeyboard at the zero-based index. */
+    JskadKeyboard elementAt(int index)
+        throws ArrayIndexOutOfBoundsException
+    {
+        return (JskadKeyboard)keybds.elementAt(index);
+    }
+
+    /** Returns the number of JskadKeyboards being managed. */
+    int size() {
+        return keybds.size();
+    }
+
+    /** Returns an array of the identifying strings associated with
+     *  all managed keyboards. */
+    
+    String[] getIdentifyingStrings() {
+        String x[] = new String[size()];
+        for (int i = 0; i < size(); i++) {
+            x[i] = elementAt(i).getIdentifyingString();
+        }
+        return x;
+    }
+}
