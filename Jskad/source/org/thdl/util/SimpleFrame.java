@@ -32,7 +32,7 @@ public class SimpleFrame extends JFrame {
      *  component comp.
      *
      *  @param frameTitle the title (on the title bar) of the window
-     *  @param rtfPane the */
+     *  @param comp the component to be placed within this frame */
     public SimpleFrame(String frameTitle, final Component comp)
     {
         super(frameTitle);

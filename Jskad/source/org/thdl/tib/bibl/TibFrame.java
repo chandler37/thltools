@@ -291,7 +291,7 @@ public class TibFrame extends JFrame implements CaretListener, TibConstants
 	* instantiation of the main {@link TiblEdit} program.
 	* </p>
 	*
-	* @param TiblEdit - the controller of the program.
+	* @param jt TiblEdit - the controller of the program.
 	*/
 	public void setController (TiblEdit jt)
 	{
@@ -315,7 +315,7 @@ public class TibFrame extends JFrame implements CaretListener, TibConstants
 	* This method sets the list of recent files in the file menu.
 	* </p>
 	*
-	* @param recent - A Vector of the recent files from the controller.
+	* @param recent Vector - A Vector of the recent files from the controller.
 	*/
 	public void setRecentFiles(Vector recent)
 	{
@@ -554,7 +554,7 @@ public class TibFrame extends JFrame implements CaretListener, TibConstants
 	* JPanel} that has a table with an apparatus' info and control buttons.
 	* </p>
 	*
-	* @param TibTable the TibTable object that contains the tabular information to be displayed.
+	* @param tt TibTable - the TibTable object that contains the tabular information to be displayed.
 	*/
 	public void showTable(TibTable tt)
 	{
@@ -613,7 +613,7 @@ public class TibFrame extends JFrame implements CaretListener, TibConstants
 	* can find the associated element and make the appropriate options available.
 	* </p>
 	*
-	* @param TitleFactory - The TibDocs TitleFactory object for retrieving title information
+	* @param tf TitleFactory - The TibDocs TitleFactory object for retrieving title information
 	*
 	* @return ElementList - The ElementList returned by the TextPane once its document is set.
 	*
@@ -747,7 +747,7 @@ public class TibFrame extends JFrame implements CaretListener, TibConstants
 	* index in the vector.
 	* </p>
 	*
-	* @param org.jdom.Element - the selected element.
+	* @param el org.jdom.Element - the selected element.
 	*
 	* @return int - that element's index in the ElementStyle Vector.
 	*/
@@ -784,7 +784,7 @@ public class TibFrame extends JFrame implements CaretListener, TibConstants
 	* This constructor simply takes a title as the corresponding JFrame contructor.
 	* </p>
 	*
-	* @param String - the frame's title.
+	* @param title String - the frame's title.
 	*/
 	public TibFrame(String title)
 	{
@@ -821,7 +821,7 @@ public class TibFrame extends JFrame implements CaretListener, TibConstants
 	* menu item. If not, that item is turned off.
 	* </p>
 	*
-	* @param CaretEvent - the required parameter of this abstract method. It is not used here.
+	* @param ce CaretEvent - the required parameter of this abstract method. It is not used here.
 	*/
 	public void caretUpdate(CaretEvent ce)
 	{
@@ -859,7 +859,7 @@ public class TibFrame extends JFrame implements CaretListener, TibConstants
 
 		/** See class comment.
 		 *
-		 * @param WindowEvent - the required parameter for this abstract method.
+		 * @param e WindowEvent - the required parameter for this abstract method.
 		 */
 		public void windowClosing(WindowEvent e)
 		{

@@ -1622,7 +1622,7 @@ public static String getAVowel() {
 
 /**
 * Returns true iff this glyph is a top (superscript) vowel.
-* @param a DuffCode representing a TibetanMachineWeb glyph
+* @param dc a DuffCode representing a TibetanMachineWeb glyph
 * @return true if the glyph is a top-hanging (superscript) vowel (i,
 * u, e, o, ai, or ao) and false if not */
 public static boolean isTopVowel(DuffCode dc) {

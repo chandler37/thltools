@@ -82,7 +82,7 @@ public class DuffData {
     }
 
 /** Changes the text and font this DuffData represents.
-* @param c a String of TibetanMachineWeb or TibetanMachine text
+* @param s a String of TibetanMachineWeb or TibetanMachine text
 * @param i a TibetanMachineWeb or TibetanMachine font number
 */
     public void setData(String s, int i) {

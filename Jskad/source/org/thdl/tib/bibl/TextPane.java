@@ -98,8 +98,8 @@ public class TextPane extends JTextPane implements TibConstants
 	* this <code>TextPane</code>'s document.
 	* </p>
 	*
-	* @param <code>String[]</code> - The array of text phrases to be added to the document
-	* @param <code>String[]</code> - The array of styles associated with the respective text phrases.
+	* @param phrases <code>String[]</code> - The array of text phrases to be added to the document
+	* @param styles <code>String[]</code> - The array of styles associated with the respective text phrases.
 	*/
 	public void setTextPane(String[] phrases, String[] styles)
 	{
@@ -193,9 +193,6 @@ public class TextPane extends JTextPane implements TibConstants
     * types of annotations. Green = addition; yellow = alternative reading or variant;
     * red = omission/deletion.
     * </p>
-    *
-    * @param <code>JTextPane</code> to which the new styles are added.
-    *
     */
 	protected void initStyles() {
 

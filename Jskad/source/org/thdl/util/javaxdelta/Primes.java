@@ -95,7 +95,7 @@ public class Primes
         } // end above
 
     /**
-      * @param return first prime less than candidate
+      * @return first prime less than candidate
       */
     public int below (int candidate)
     {
@@ -110,7 +110,7 @@ public class Primes
     /**
       * calc all primes in the range 1..n,
       * not the first n primes.
-      * @param n, highest candidate, not necessarily prime.
+      * @param n highest candidate, not necessarily prime.
       * @return list of primes 1..n in an array
       */
     public final int[] getPrimes(int n)

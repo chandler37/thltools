@@ -224,7 +224,7 @@ public class IDFactory extends GenericTibFactory implements TibConstants
 	* set the text's number within the category but it leaves a last Tibid empty ready for that information.
 	* </p>
 	*
-	* @param String - the master ID string
+	* @param masterID String - masterID the master ID string
 	*
 	* @return String - the new file name based on the master ID
 	*/

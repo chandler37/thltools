@@ -139,9 +139,9 @@ public class TibDoc extends XMLDoc
 	* the editor's full name and his/her responsibility regarding the document.
 	* </p>
 	*
-	* @param String - the editor's (preferrably) three initials, such as snw or dfg.
-	* @param String - the editor's full name to be recorded in the metadata.
-	* @param String - the present date.
+	* @param initials String - the editor's (preferably) three initials, such as snw or dfg.
+	* @param fullName String - the editor's full name to be recorded in the metadata.
+	* @param today String - the present date.
 	*/
 	public void addEditor(String initials, String fullName, String today)
 	{
@@ -294,10 +294,10 @@ public class TibDoc extends XMLDoc
 	* editor who is the source of this critical title.
 	* </p>
 	*
-	* @param org.jdom.Element - the Title element that is to serve as the basis of the critical title. This is
+	* @param el org.jdom.Element - the Title element that is to serve as the basis of the critical title. This is
 	* the element that is cloned to create the critical version.
 	*
-	* @param initials - the initials of the editor creating the critical title.
+	* @param initials String - the initials of the editor creating the critical title.
 	*/
 	public org.jdom.Element createCriticalTitle(org.jdom.Element el, String initials)
 	{
@@ -377,9 +377,9 @@ public class TibDoc extends XMLDoc
 	* containing the English translation of it.
 	* </p>
 	*
-	* @param String - the Tibetan doxographical statement
+	* @param tibDox String - the Tibetan doxographical statement
 	*
-	* @param String - the English doxographical statement.
+	* @param engDox String - the English doxographical statement.
 	*/
 	public void setDoxography(String tibDox, String engDox)
 	{
@@ -433,7 +433,7 @@ public class TibDoc extends XMLDoc
 	* the nested Tibid mark-up.
 	* </p>
 	*
-	* @param String - the new ID string delimited by periods.
+	* @param idString String - the new ID string delimited by periods.
 	*/
 	public void setMasterID(String idString)
 	{
@@ -465,7 +465,7 @@ public class TibDoc extends XMLDoc
 	*
 	* </p>
 	*
-	* @param org.jdom.Element - the title list's titledecl.
+	* @param tdecl org.jdom.Element - the title list's titledecl.
 	*
 	* @return String - the sigla of the edition that is the source for the title, derrived from the first titleitem element.
 	*/
@@ -487,8 +487,8 @@ public class TibDoc extends XMLDoc
 	* its Lang=eng, and putting the text in its content.
 	* </p>
 	*
-	* @param String - the text of the translation
-	* @param org.jdom.Element - the Title element (lang=tib) that contains the title being translated.
+	* @param text String - the text of the translation
+	* @param el org.jdom.Element - the Title element (lang=tib) that contains the title being translated.
 	*/
 	public void addTranslation(String text, org.jdom.Element el)
 	{
@@ -525,9 +525,9 @@ public class TibDoc extends XMLDoc
 	*
 	* </p>
 	*
-	* @param org.jdom.Element - the title element to be cloned.
-	* @param String - the sigla of the new title element.
-	* @param String - the pagination of the new title.
+	* @param elem org.jdom.Element - the title element to be cloned.
+	* @param sigla String - the sigla of the new title element.
+	* @param pagination String - the pagination of the new title.
 	*
 	* @return org.jdom.Element - the new edition title with corresp=sigla that is a sibling of the originally given title element.
 	*/
@@ -613,7 +613,7 @@ public class TibDoc extends XMLDoc
 	* the Lem child (i.e., the main reading).
 	* </p>
 	*
-	* @param org.jdom.Element - the title whose text is desired.
+	* @param title org.jdom.Element - the title whose text is desired.
 	*
 	* @return String - the display text for that title element.
 	*/
@@ -632,9 +632,9 @@ public class TibDoc extends XMLDoc
 	* and adds the app element. If all succeeds, the app element is then returned.
 	* </p>
 	*
-	* @param org.jdom.Element - the title in which the app is to be inserted.
-	* @param String - the text selected in the {@link TextPane} that indicates where the app is to be inserted.
-	* @param int - the offset from the beginning of the text's display title, where the insertion point is.
+	* @param title org.jdom.Element - the title in which the app is to be inserted.
+	* @param selText String - the text selected in the {@link TextPane} that indicates where the app is to be inserted.
+	* @param offset int - the offset from the beginning of the text's display title, where the insertion point is.
 	*
 	* @return org.jdom.Element - the app element that has been successfully inserted or null if unsuccessfull.
 	*/
@@ -699,7 +699,7 @@ System.out.println("TExt at title offset is: " + text);
 	* This method removes an existing App element, replacing it with the text of its lemma or main reading child.
 	* </p>
 	*
-	* @param org.jdom.Element - the app to be removed.
+	* @param appToRemove org.jdom.Element - the app to be removed.
 	*/
 	public void removeApp(org.jdom.Element appToRemove)
 	{
@@ -766,7 +766,7 @@ System.out.println("TExt at title offset is: " + text);
 	* is sent to this method, it returns an empty String.
 	* </p>
 	*
-	* @param String - the text to be cleaned.
+	* @param text String - the text to be cleaned.
 	*
 	* @return String - the clean text.
 	*/
@@ -796,7 +796,7 @@ System.out.println("TExt at title offset is: " + text);
 	* back to an Element. This method returns a fixed array of Elements that do not require such casting.
 	* </p>
 	*
-	* @param java.util.List - the list of content or children of an element.
+	* @param childs java.util.List - the list of content or children of an element.
 	*
 	* @return org.jdom.Element[] - the array of element children derrived from the list.
 	*/
@@ -816,8 +816,8 @@ System.out.println("TExt at title offset is: " + text);
 * element with the first child being this lem element and one empty rdg (reading) element for non-main-readings.
 * </p>
 *
-* @param String - the sigla of the lemma's witness.
-* @param String - the text of the lemma's reading.
+* @param mainWit String - the sigla of the lemma's witness.
+* @param lemma String - the text of the lemma's reading.
 *
 * @return org.jdom.Element - the app element created.
 */
@@ -856,7 +856,7 @@ System.out.println("TExt at title offset is: " + text);
 * TibDoc has a single constructor that takes a root element for the document.
 * </p>
 *
-* @param org.jdom.Element - the new TibDoc's root element.
+* @param rootElement org.jdom.Element - the new TibDoc's root element.
 */
 	public TibDoc(org.jdom.Element rootElement)
 	{

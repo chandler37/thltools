@@ -392,8 +392,6 @@ System.out.println("in getEditorINfo!");
 	* the variables {@link #editorsName} and {@link #editorsInitials} are set.
 	* </p>
 	*
-	* @param tdia - the {@link TibDialog} which has gathered the information.
-	*
 	*/
 	public void setEditor()
 	{
@@ -492,7 +490,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	*  Sets the current directory to the given path.
 	* </p>
 	*
-	* @param A <code>File</code> object that represents the path of the current directory.
+	* @param cd A <code>File</code> object that represents the path of the current directory.
 	*/
 	public void setCurrentDirectory(File cd)
 	{
@@ -533,7 +531,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* </ol>
 	* </p>
 	*
-	* @param int m - the value that sets the mode as above.
+	* @param m int - the value that sets the mode as above.
 	*/
 	public void setMode(int m)
 	{
@@ -583,7 +581,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* Sets the {@link #selected_element} variable to the presently selected element.
 	* </p>
 	*
-	* @param org.jdom.Element - the selected element.
+	* @param e org.jdom.Element - the selected element.
 	*/
 	public void setSelectedElement(org.jdom.Element e)
 	{
@@ -663,7 +661,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* when the Master ID is set so that the name of the file reflects the master ID.
 	* </p>
 	*
-	* @param String - the Master ID string that serves as the base of the file name
+	* @param masterID String - the Master ID string that serves as the base of the file name
 	*
 	*
 	*/
@@ -709,9 +707,9 @@ System.out.println("EdInits given: " + editorsInitials);
 * the end of the name until a unique name is arrived at.
 * </p>
 *
-* @param File outDirectory - this is the directory to which processed files are written.
+* @param outDirectory File - this is the directory to which processed files are written.
 *
-* @param String masterName - the is the master name for the file, e.g. Ng3.1.5.gsang_ba_'dus
+* @param masterName String - the is the master name for the file, e.g. Ng3.1.5.gsang_ba_'dus
 *
 * @return File - the uniquely named file created by combining the two above and checking for conflicts.
 */
@@ -770,7 +768,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* to the {@link TibFrame} using its {@link TibFrame#fileOpened} method.
 	* </p>
 	*
-	* @param <code>File</code> the file to be opened, sent by the file chooser.
+	* @param file <code>File</code> the file to be opened, sent by the file chooser.
 	*/
 
 	public void openFile(File file)
@@ -806,7 +804,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* If it is not, then it adds it to the list.
 	* </p>
 	*
-	* @param File - the file to be added to the recent list.
+	* @param newFile File - the file to be added to the recent list.
 	*
 	*/
 	public void addToRecent(File newFile)
@@ -901,7 +899,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* from the {@link #saveAs} method.
 	* </p>
 	*
-	* @param File - the file to be saved
+	* @param outFile File - the file to be saved
 	*/
 	public void save(File outFile)
 	{
@@ -939,7 +937,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* the overwrite option is chosen, or it is cancelled.
 	* </p>
 	*
-	* @param File - the file
+	* @param outFile File - the file
 	*
 	* @return boolean - whether the save operation was successful.
 	*/
@@ -1074,7 +1072,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* to display a place to enter the new title.
 	* </p>
 	*
-	* @param TibDialog - The TibDialog with the information of the new title's sigla and pagination.
+	* @param tdia TibDialog - The TibDialog with the information of the new title's sigla and pagination.
 	*/
 	public void insertNewEdTitle(TibDialog tdia)
 	{
@@ -1104,7 +1102,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* This displays an entry place for the new title in the {@link TextPane}.
 	* </p>
 	*
-	* @param TibDialog - the TibDialog with the information concerning the new edition.
+	* @param tdia TibDialog - the TibDialog with the information concerning the new edition.
 	*/
 	public void insertNewEdAndTitle(TibDialog tdia)
 	{
@@ -1373,12 +1371,12 @@ System.out.println("EdInits given: " + editorsInitials);
 	/**
 	* <p>
 	* This method inserts a particular type of discussion depending on the setting of the
-	* type parameter. When type equals {@link TibConstants#TITLE TITLE}, a discussion will be inserted
+	* type parameter (FIXME: this routine no longer takes this parameter). When type equals {@link TibConstants#TITLE TITLE}, a discussion will be inserted
 	* for the title at the cursor position of the {@link TextPane}. When type equals {@link TibConstants#GEN GEN}
 	* the user will be prompted with a list of options to choose from.
 	* </p>
 	*
-	* @param type - the string indicating which typeof discussion to insert.
+	* The parameter type is the string indicating which typeof discussion to insert.
 	*/
 	public void insertDiscussion()
 	{
@@ -1849,7 +1847,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* to {@link TibDoc#setMasterID(String) setMasterID}.
 	* </p>
 	*
-	* @param DoxWindow - the doxography selection window that supplies the users input.
+	* @param dw DoxWindow - the doxography selection window that supplies the users input.
 	*/
 	public void enterDox(DoxWindow dw)
 	{
@@ -1870,7 +1868,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* The latter spec is converted to an integer.
 	* </p>
 	*
-	* @param String[] - the specifications for the confirm dialog.
+	* @param specs String[] - the specifications for the confirm dialog.
 	*/
 
 	public void doMessage(String[] specs)
@@ -1901,7 +1899,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* </ol>
 	* The latter spec is converted to an integer.
 	*
-	* @param String[] specs - the specifications for the confirm dialog.
+	* @param specs String[] - the specifications for the confirm dialog.
 	*
 	* @return int - the response
 	* </p>
@@ -2071,7 +2069,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* The latter spec is converted to an integer. It returns the <code>String</code>
 	* that was inputed.
 	* </p>
-	* @param String[] - the specifications for the input dialog
+	* @param specs String[] - the specifications for the input dialog
 	*
 	* @return String - the string entered by the user.
 	*
@@ -2086,7 +2084,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* A public static method that converts a <code>Vector</code> into an array of <code>Strings</code>.
 	* </p>
 	*
-	* @param <code>Vector</code> The vector to be converted.
+	* @param v <code>Vector</code> The vector to be converted.
 	*
 	* @return <code>String[]</code> The resulting array of <code>Strings</code>.
 	*/
@@ -2104,7 +2102,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* A public static method that converts an <code>Object</code> array into an array of <code>Strings</code>.
 	* </p>
 	*
-	* @param <code>Object[]</code> The object array to be converted.
+	* @param objs <code>Object[]</code> The object array to be converted.
 	*
 	* @return <code>String[]</code> The resulting array of <code>Strings</code>.
 	*/
@@ -2124,7 +2122,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* This is a public, static method that can be called from anywhere with this classes prefix.
 	* </p>
 	*
-	* @param <code>org.jdom.Element</code> The element to be turned into a string.
+	* @param e <code>org.jdom.Element</code> The element to be turned into a string.
 	*
 	* @return <code>String</code> The resulting string version of the element.
 	*/
@@ -2197,7 +2195,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* {@link #showApp}.
 	* </p>
 	*
-	* @param MouseEvent - the required parameter for this abstract method.
+	* @param me MouseEvent - the required parameter for this abstract method.
 	*/
 	public void mouseClicked(MouseEvent me)
 	{
@@ -2255,7 +2253,7 @@ System.out.println("EdInits given: " + editorsInitials);
 	* If the mode is {@link #NEW_TITLE}, it calls {@link #insertNewTitleAndTranslation}.
 	* </p>
 	*
-	* @param KeyEvent - the required parameter for this abstract method.
+	* @param ke KeyEvent - the required parameter for this abstract method.
 	*/
 	public void keyPressed(KeyEvent ke) {
 		if(ke.getKeyCode() == KeyEvent.VK_ENTER) {

@@ -332,7 +332,7 @@ public class TibetanKeyboard {
 * parameter, assuming it is in fact a character
 * in this keyboard; if not, returns null.
 *
-* @param the possible character
+* @param s the possible character
 */
 	public String getWylieForChar(String s) {
 		if (!charMap.containsKey(s))
@@ -391,7 +391,7 @@ public class TibetanKeyboard {
 * parameter, assuming it is in fact a vowel
 * in this keyboard; if not, returns null.
 *
-* @param the possible vowel
+* @param s the possible vowel
 */
 	public String getWylieForVowel(String s) {
 		if (!vowelMap.containsKey(s))
