@@ -26,7 +26,7 @@ import javax.swing.JOptionPane;
 
 /** DLC FIXMEDOC
  *  @author David Chandler */
-public class ConverterGUI implements FontConversion {
+public class ConverterGUI implements FontConversion, FontConverterConstants {
     /** Default constructor; does nothing */
     ConverterGUI() { }
 
@@ -92,14 +92,14 @@ public class ConverterGUI implements FontConversion {
                                         // for these, because they're
                                         // used in
                                         // TibetanConverter.java too.
-                                        "TM to TMW",
-                                        "TMW to Unicode",
-                                        "TMW to Wylie",
-                                        "TMW to TM",
-                                        "Find some non-TMW",
-                                        "Find some non-TM",
-                                        "Find all non-TMW",
-                                        "Find all non-TM"
+                                        TM_TO_TMW,
+                                        TMW_TO_UNI,
+                                        TMW_TO_WYLIE,
+                                        TMW_TO_TM,
+                                        FIND_SOME_NON_TMW,
+                                        FIND_SOME_NON_TM,
+                                        FIND_ALL_NON_TMW,
+                                        FIND_ALL_NON_TM
                                     },
                                     true);
 

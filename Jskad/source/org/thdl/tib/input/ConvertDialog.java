@@ -48,7 +48,7 @@ class ConvertDialog extends JDialog
 
     JTextField oldTextField, newTextField;
 
-    JButton browseOld, browseNew, convert, cancel, openDoc;
+    JButton browseOld, browseNew, convert, cancel, openDoc, about;
 
     JLabel type, oldLabel, newLabel;
 
@@ -63,7 +63,8 @@ class ConvertDialog extends JDialog
     final String BROWSENEW     = "Browse";
     final String BROWSEOLD     = BROWSENEW;
     final String CONVERT     = "Convert";
-    final String CANCEL       = "Cancel";
+    final String CANCEL       = "Close";
+    final String ABOUT       = "About";
 
     private final ThdlActionListener tal = new ThdlActionListener() {
             public void theRealActionPerformed(ActionEvent e) {
@@ -117,12 +118,11 @@ class ConvertDialog extends JDialog
         tfTemp.add(newTextField);
         temp.add(tfTemp);
 
-        if (true) { // DLC
+        if (true) {
             browseNew = new JButton(BROWSENEW);
             browseNew.addActionListener(tal);
         }
         temp.add(browseNew);
-        // DLC        temp.add(new JLabel("      "));
         content.add(temp);
 
         buttonBox = Box.createHorizontalBox();
@@ -142,6 +142,11 @@ class ConvertDialog extends JDialog
         buttonBox.add(openDoc);
         buttonBox.add(Box.createHorizontalGlue());
         openDoc.setVisible(false);
+
+        about = new JButton(ABOUT);
+        about.addActionListener(tal);
+        buttonBox.add(about);
+        buttonBox.add(Box.createHorizontalGlue());
 
         content.add(buttonBox);
         setContentPane(content);
@@ -199,7 +204,9 @@ class ConvertDialog extends JDialog
         return newFile;
     }
 
-    public ConvertDialog(FontConversion controller, String[] choices, boolean modal)
+    public ConvertDialog(FontConversion controller,
+                         String[] choices,
+                         boolean modal)
     {
         super(new JDialog(),PROGRAM_TITLE,modal);
         setController(controller);
@@ -225,11 +232,13 @@ class ConvertDialog extends JDialog
                 oldTextField.setText(fileName);
                 updateNewFileGuess();
                 oldFieldChanged = false;
-                oldFile = jfc.getSelectedFile();
+                oldFile = chosenFile;
+                ThdlOptions.setUserPreference("thdl.Jskad.working.directory",
+                                              chosenFile.getParentFile().getAbsolutePath());
             } else if(src.equals(browseNew)) {
                 newTextField.setText(chosenFile.getPath());
                 newFieldChanged = false;
-                newFile = jfc.getSelectedFile();
+                newFile = chosenFile;
                 openDoc.setVisible(false);
             }
         } else if(cmd.equals(CONVERT)) {
@@ -238,12 +247,12 @@ class ConvertDialog extends JDialog
 
             if(oldFieldChanged || getOldFile() == null) {
                 if (debug)
-                    System.out.println("DLC: old field changed");
+                    System.out.println("old field changed");
                 setOldFile(updateFile(oldFile,oldTextField));
             }
             if(newFieldChanged || getNewFile() == null) {
                 if (debug)
-                    System.out.println("DLC: new field changed");
+                    System.out.println("new field changed");
                 setNewFile(updateFile(newFile,newTextField));
             }
 
@@ -317,6 +326,11 @@ class ConvertDialog extends JDialog
             System.runFinalization();
             this.dispose();
             System.exit(0);
+        } else if(cmd.equals(ABOUT)) {
+            JOptionPane.showMessageDialog(this,
+                                          "This Tibetan Converter is Copyright 2003\nTibetan and Himalayan Digital Library and\nis protected by the THDL Open Community\nLicense Version 1.0.\n\nCompiled " + ThdlVersion.getTimeOfCompilation(),
+                                          "About",
+                                          JOptionPane.PLAIN_MESSAGE);
         } else if (cmd.equals("comboBoxChanged")) {
             updateNewFileGuess();
         }
@@ -357,22 +371,22 @@ class ConvertDialog extends JDialog
         String ct = (String)choices.getSelectedItem();
         if ("Find all non-TMW" == ct) {
             newFileNamePrefix = "FindAllNonTMW__";
-        } else if ("Find some non-TMW" == ct) {
+        } else if (FIND_SOME_NON_TMW == ct) {
             newFileNamePrefix = "FindSomeNonTMW__";
-        } else if ("Find some non-TM" == ct) {
+        } else if (FIND_SOME_NON_TM == ct) {
             newFileNamePrefix = "FindSomeNonTM__";
-        } else if ("Find all non-TM" == ct) {
+        } else if (FIND_ALL_NON_TM == ct) {
             newFileNamePrefix = "FindAllNonTM__";
         } else { // conversion {to Wylie or TM} mode
-            if ("TMW to Wylie" == ct) {
-                newFileNamePrefix = "THDL_Wylie_";
-            } else if ("TMW to Unicode" == ct) {
-                newFileNamePrefix = "Uni_";
-            } else if ("TM to TMW" == ct) {
-                newFileNamePrefix = "TMW_";
+            if (TMW_TO_WYLIE == ct) {
+                newFileNamePrefix = suggested_WYLIE_prefix;
+            } else if (TMW_TO_UNI == ct) {
+                newFileNamePrefix = suggested_TO_UNI_prefix;
+            } else if (TM_TO_TMW == ct) {
+                newFileNamePrefix = suggested_TO_TMW_prefix;
             } else {
-                ThdlDebug.verify("TMW to TM" == ct);
-                newFileNamePrefix = "TM_";
+                ThdlDebug.verify(TMW_TO_TM == ct);
+                newFileNamePrefix = suggested_TO_TM_prefix;
             }
         }
         newTextField.setText(oldFileDirName

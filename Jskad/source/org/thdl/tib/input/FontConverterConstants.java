@@ -26,35 +26,21 @@ import java.awt.*;
     @author Nathaniel Garson, Tibetan and Himalayan Digital Library */
 interface FontConverterConstants
 {
+    final String TM_TO_TMW = "TM to TMW";
+    final String TMW_TO_UNI = "TMW to Unicode";
+    final String TMW_TO_WYLIE = "TMW to Wylie";
+    final String TMW_TO_TM = "TMW to TM";
+    final String FIND_SOME_NON_TMW = "Find some non-TMW";
+    final String FIND_SOME_NON_TM = "Find some non-TM";
+    final String FIND_ALL_NON_TMW = "Find all non-TMW";
+    final String FIND_ALL_NON_TM = "Find all non-TM";
+
+    final String suggested_WYLIE_prefix = "THDL_Wylie_";
+    final String suggested_TO_TMW_prefix = "TMW_";
+    final String suggested_TO_UNI_prefix = "Uni_";
+    final String suggested_TO_TM_prefix = "TM_";
+
     // DLC prune
-
-    // File Constants
-    String HOME_PATH = System.getProperties().getProperty("user.dir");
-    File HOME_FOLDER = new File(HOME_PATH);
-
-    // GUI Constants
-    // Sizes
-    Dimension WIN_SIZE = new Dimension(600,400);
-
-
-    // Colors
-    Color BG_COLOR = Color.white;
-
-    // Data Delimiters
-    String COMMENT_DELIM = "////";
-    String HEADER_DELIM = "<?";
-    String DATA_DELIM = "=";
-    String FONT_NUM_DELIM = ",";
-
-    // Data File Headers
-    String OLD_FONT_HEADER = "old_fonts";
-    String NEW_FONT_HEADER = "new_fonts";
-    String CORRESP_HEADER = "correspondences";
-    String END_OF_SECTION = "EOS";
-
-    // Type Constants
-    public final int TIB_TO_TIB = 0;
-    public final int DIA_TO_UNICODE = 1;
 
     // String Constants
     public final String PROGRAM_TITLE = "THDL Font Conversion (with Jskad Technology)";
