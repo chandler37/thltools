@@ -210,6 +210,17 @@ public final class ThdlOptions {
     /** to avoid initializing twice */
     private static boolean isInitialized = false;
 
+    /** Call this when you're testing some code that uses the
+     *  preferences mechanism provided by this class, and you don't
+     *  want to use options.txt etc. with that code.  You'll be
+     *  relying on the defaults encoded in the calls to
+     *  getBooleanOption etc.  If you call this twice, it will wipe
+     *  out preferences stored programmatically on each call. */
+    public static void forTestingOnlyInitializeWithoutDefaultOptionsFile() {
+        userProperties = new Properties(); // empty
+        isInitialized = true;
+    }
+
     /** Sets userProperties so that it represents the entire, chained
         preferences hierarchy.
 

@@ -26,6 +26,7 @@ import java.awt.font.*;
 import java.awt.event.*;
 import javax.swing.*; 
 import javax.swing.text.*;
+import javax.swing.event.*;
 import javax.swing.text.rtf.*;
 
 import org.thdl.tib.text.*;
@@ -49,7 +50,6 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * Are we expecting a vowel? a subscript? et cetera.
 */
     private StatusBar statBar = null;
-
 
 /**
 * A central part of the Tibetan keyboard. As keys are typed, they are
@@ -236,6 +236,20 @@ public class DuffPane extends TibetanPane implements FocusListener {
         initialize(null, null, keyboardURL);
 	}
 
+    /** For testing purposes, it's useful to create a DuffPane and not
+     *  hook it up to the UI. If this is true, this DuffPane will
+     *  manage its document's caret rather than having the UI do
+     *  it. */
+    private boolean manageCaret = false;
+
+    /** For testing purposes, it's useful to create a DuffPane and not
+     *  hook it up to the UI. If you call htis, then this DuffPane
+     *  will manage its document's caret rather than having the UI do
+     *  it. */
+    void enableCaretManaging() {
+        manageCaret = true;
+    }
+
     /** Sets the status bar to update with mode information.  If sb is
         null, no status bar will be updated. */
     public void setStatusBar(StatusBar sb) {
@@ -288,7 +302,7 @@ public class DuffPane extends TibetanPane implements FocusListener {
 		newDocument();
 
 		romanFontFamily = ThdlOptions.getStringOption("thdl.default.roman.font.face",
-                                                      "Serif"); // FIXME write out this preference.
+                                                      "Serif");
 		romanFontSize = defaultRomanFontSize();
 		setRomanAttributeSet(romanFontFamily, romanFontSize);
 
@@ -305,6 +319,32 @@ public class DuffPane extends TibetanPane implements FocusListener {
 		setupKeymap(); 
 	}
 
+    /** Performs the keystroke key with selected ActionEvent-style
+     *  modifiers modifiers. */
+    void performKeyStroke(int modifiers, String key) {
+        // FIXME: do this assertion: assert(key.length() == 1);
+        if (!isEditable()) return;
+        if (((modifiers & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) || 
+            ((modifiers & ActionEvent.ALT_MASK) == ActionEvent.ALT_MASK) ||
+            ((modifiers & ActionEvent.META_MASK) == ActionEvent.META_MASK)) {
+            initKeyboard();
+            return;
+        }
+        if (key != null) {
+            if (getSelectionStart() < getSelectionEnd())
+                replaceSelection("");
+            if (isTibetan) {
+                processTibetanChar(key.charAt(0));
+            } else {
+                processRomanChar(key, romanAttributeSet);
+            }
+            if (manageCaret) {
+                caret.setDot(getTibDoc().getLength());
+            }
+        }
+    }
+
+
 /**
 * This method sets up the keymap used by DuffPane editors.
 * The keymap defines a default behavior for key presses
@@ -313,30 +353,12 @@ public class DuffPane extends TibetanPane implements FocusListener {
 	private void setupKeymap() {
 		Action defaultAction = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				if (!DuffPane.this.isEditable()) return;
-				if (	((e.getModifiers() & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) || 
-						((e.getModifiers() & ActionEvent.ALT_MASK) == ActionEvent.ALT_MASK) ||
-						((e.getModifiers() & ActionEvent.META_MASK) == ActionEvent.META_MASK)) {
-							DuffPane.this.initKeyboard();
-							return;
-				}
-				if (e.getActionCommand() != null) { 
-					String key = e.getActionCommand();
-					if (DuffPane.this.getSelectionStart() < DuffPane.this.getSelectionEnd())
-						DuffPane.this.replaceSelection("");
-					if (key != null) {
-						if (isTibetan) processTibetanChar(key.charAt(0));
-						else {
-							//MutableAttributeSet inputAtts = DuffPane.this.getInputAttributes();
-							//inputAtts.addAttributes(romanAttributeSet);
-							processRomanChar(key, romanAttributeSet);//, inputAtts);
-						}
-					}
-				}
+                DuffPane.this.performKeyStroke(e.getModifiers(),
+                                               e.getActionCommand());
 			}
 		};
 		createActionTable(this);
-		Keymap keymap = addKeymap("DuffBindings", getKeymap());				
+		Keymap keymap = addKeymap("DuffBindings", getKeymap());
 		keymap.setDefaultAction(defaultAction);
 		setKeymap(keymap);
 	}
@@ -373,7 +395,7 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * respect to stacking, and concerning the differences between
 * Tibetan and Sanskrit; and then it initializes the input method.
 */
-	public void setupKeyboard() {
+	private void setupKeyboard() {
 		if (TibetanMachineWeb.hasTibetanStackingKey()) {
 			if (TibetanMachineWeb.hasSanskritStackingKey()) {
 				isDefinitelyTibetan_default = false;
@@ -459,10 +481,14 @@ public class DuffPane extends TibetanPane implements FocusListener {
         // a small cursor, though most everything else will be normal,
         // if you call setDocument(doc) at the end of this method.
 		setDocument(doc);
+        ThdlDebug.verify(getTibDoc() == doc);
 
 		Style defaultStyle = styleContext.getStyle(StyleContext.DEFAULT_STYLE);
 		StyleConstants.setFontFamily(defaultStyle, "TibetanMachineWeb");
 		StyleConstants.setFontSize(defaultStyle, defaultTibFontSize());
+
+		newGlyphList.clear();
+        initKeyboard();
 	}
 
 /**
@@ -474,10 +500,10 @@ public class DuffPane extends TibetanPane implements FocusListener {
 * backspacing, redrawing, etc.
 */
 	private void initKeyboard() {
-        updateStatus("Jskad is in its basic input mode");
 		charList.clear();
 		oldGlyphList.clear();
 		holdCurrent = new StringBuffer();
+        updateStatus("Jskad is in its basic input mode");
 		isTopHypothesis = false;
 		isTypingVowel = false;
 
@@ -636,9 +662,13 @@ public class DuffPane extends TibetanPane implements FocusListener {
 */
 	private void backSpace(int k) {
 		try {
-			getTibDoc().remove(caret.getDot()-k, k);
-		}
-		catch (BadLocationException ble) {
+            int newEnd = caret.getDot()-k;
+            if (newEnd >= 0) {
+                getTibDoc().remove(newEnd, k);
+                if (manageCaret) caret.setDot(newEnd);
+            }
+		} catch (BadLocationException ble) {
+            ThdlDebug.noteIffyCode();
 		}
 	}
 
@@ -894,66 +924,6 @@ public class DuffPane extends TibetanPane implements FocusListener {
         appendStatus(" (because the window focus was lost)");
 	}
 
-    // FIXMEDOC
-class RTFSelection implements ClipboardOwner, Transferable {
-	private DataFlavor[] supportedFlavor;
-	private ByteArrayOutputStream rtfOut;
-	private String plainText;
-
-	// FIXMEDOC
-	RTFSelection(StyledDocument sdoc, int offset, int length) {
-		supportedFlavor = new DataFlavor[2];
-		supportedFlavor[0] = rtfFlavor;
-		supportedFlavor[1] = DataFlavor.stringFlavor;
-		try {
-			//construct new document that contains only portion of text you want to copy
-			//this workaround is due to bug 4129911, which will not be fixed (see below after source code)
-			StyledDocument newDoc = new DefaultStyledDocument();
-			for (int i=offset; i<offset+length; i++) {
-				try {
-					String s = sdoc.getText(i,1);
-					AttributeSet as = sdoc.getCharacterElement(i).getAttributes();
-					newDoc.insertString(i-offset, s, as);
-				} catch (BadLocationException ble) {
-					ble.printStackTrace();
-					ThdlDebug.noteIffyCode();
-				}
-			}
-			rtfOut = new ByteArrayOutputStream();
-			rtfEd.write(rtfOut, newDoc, 0, newDoc.getLength()); //last two parameters ignored, see bug below
-			plainText = getText(offset, length);
-		} catch (BadLocationException ble) {
-			ble.printStackTrace();
-			ThdlDebug.noteIffyCode();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-			ThdlDebug.noteIffyCode();
-		}
-	}
-	// FIXMEDOC
-	public void lostOwnership(Clipboard clipboard, Transferable contents) {
-	}
-	// FIXMEDOC
-	public Object getTransferData(DataFlavor flavor) {
-		if (flavor.equals(rtfFlavor))
-			return new ByteArrayInputStream(rtfOut.toByteArray());
-		if (flavor.equals(DataFlavor.stringFlavor))
-			return plainText;
-		return null;
-	}
-	// FIXMEDOC
-	public DataFlavor[] getTransferDataFlavors() {
-		return supportedFlavor; 
-	}
-	// FIXMEDOC
-	public boolean isDataFlavorSupported(DataFlavor flavor) {
-		for (int i=0; i<supportedFlavor.length; i++)
-			if (flavor.equals(supportedFlavor[i]))
-				return true;
-		return false;
-	}
-} // class RTFSelection
-
     /** Copies the current selection to the system clipboard, unless
         cut-and-paste operations are disabled. */
 	public void copy() {
@@ -973,8 +943,8 @@ class RTFSelection implements ClipboardOwner, Transferable {
         
         if (!this.isEditable())
             return;
-        try
-        {
+        try {
+            ThdlDebug.verify(getDocument() == getTibDoc());
             getDocument().remove(start, end-start);
         } catch (BadLocationException ble) {
             ble.printStackTrace();
@@ -1000,6 +970,7 @@ class RTFSelection implements ClipboardOwner, Transferable {
 		int p1 = start;
 		int p2 = end;
 		if (p1 != p2) {
+            ThdlDebug.verify(getDocument() == getTibDoc());
 			RTFSelection rtfSelection = new RTFSelection((StyledDocument)getDocument(), p1, p2-p1);
 			try {
 				rtfBoard.setContents(rtfSelection, rtfSelection);
@@ -1014,6 +985,7 @@ class RTFSelection implements ClipboardOwner, Transferable {
                 return;
 
 			try {
+                ThdlDebug.verify(getDocument() == getTibDoc());
 				getDocument().remove(p1, p2-p1);
 			} catch (BadLocationException ble) {
 				ble.printStackTrace();
@@ -1287,7 +1259,7 @@ public void paste(int offset) {
 					initKeyboard();
                     changedStatus = true;
                     appendStatus(" (because you typed punctuation)");
-					break key_block; /* DLC is this right? */
+					break key_block;
 				}
 
 				if (charList.size()==0) { //add current character to charList if possible
@@ -1676,5 +1648,68 @@ public void paste(int offset) {
     public String getWylie() {
         return getTibDoc().getWylie();
     }
+
+
+
+
+    // FIXMEDOC
+class RTFSelection implements ClipboardOwner, Transferable {
+	private DataFlavor[] supportedFlavor;
+	private ByteArrayOutputStream rtfOut;
+	private String plainText;
+
+	// FIXMEDOC
+	RTFSelection(StyledDocument sdoc, int offset, int length) {
+		supportedFlavor = new DataFlavor[2];
+		supportedFlavor[0] = rtfFlavor;
+		supportedFlavor[1] = DataFlavor.stringFlavor;
+		try {
+			//construct new document that contains only portion of text you want to copy
+			//this workaround is due to bug 4129911, which will not be fixed (see below after source code)
+			StyledDocument newDoc = new DefaultStyledDocument();
+			for (int i=offset; i<offset+length; i++) {
+				try {
+					String s = sdoc.getText(i,1);
+					AttributeSet as = sdoc.getCharacterElement(i).getAttributes();
+					newDoc.insertString(i-offset, s, as);
+				} catch (BadLocationException ble) {
+					ble.printStackTrace();
+					ThdlDebug.noteIffyCode();
+				}
+			}
+			rtfOut = new ByteArrayOutputStream();
+			rtfEd.write(rtfOut, newDoc, 0, newDoc.getLength()); //last two parameters ignored, see bug below
+			plainText = getText(offset, length);
+		} catch (BadLocationException ble) {
+			ble.printStackTrace();
+			ThdlDebug.noteIffyCode();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+			ThdlDebug.noteIffyCode();
+		}
+	}
+	// FIXMEDOC
+	public void lostOwnership(Clipboard clipboard, Transferable contents) {
+	}
+	// FIXMEDOC
+	public Object getTransferData(DataFlavor flavor) {
+		if (flavor.equals(rtfFlavor))
+			return new ByteArrayInputStream(rtfOut.toByteArray());
+		if (flavor.equals(DataFlavor.stringFlavor))
+			return plainText;
+		return null;
+	}
+	// FIXMEDOC
+	public DataFlavor[] getTransferDataFlavors() {
+		return supportedFlavor; 
+	}
+	// FIXMEDOC
+	public boolean isDataFlavorSupported(DataFlavor flavor) {
+		for (int i=0; i<supportedFlavor.length; i++)
+			if (flavor.equals(supportedFlavor[i]))
+				return true;
+		return false;
+	}
+} // class RTFSelection
 
 }

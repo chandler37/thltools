@@ -493,7 +493,10 @@ public class Jskad extends JPanel implements DocumentListener {
 		toolBar.add(keyboards);
 		toolBar.add(Box.createHorizontalGlue());
 
-		JScrollPane sp = new JScrollPane(dp, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		JScrollPane sp
+            = new JScrollPane(dp,
+                              JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                              JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		dp.getDocument().addDocumentListener(this);
 
 		if (parentObject instanceof JFrame) {
@@ -867,14 +870,8 @@ public class Jskad extends JPanel implements DocumentListener {
 
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(txt_fileChosen));
-            DuffPane dp2;
-            // FIXME: why do we need a whole DuffPane to do this?  we
-            // definitely don't need a status bar...
-            if (ThdlOptions.getBooleanOption(Jskad.enableKeypressStatusProp)) {
-                dp2 = new DuffPane(statusBar);
-            } else {
-                dp2 = new DuffPane();
-            }
+            // FIXME: why do we need a whole DuffPane to do this?
+            DuffPane dp2 = new DuffPane();
 
 			try {
 				String val = in.readLine();
@@ -886,14 +883,12 @@ public class Jskad extends JPanel implements DocumentListener {
 
 				TibetanDocument t_doc = (TibetanDocument)dp2.getDocument();
 				t_doc.writeRTFOutputStream(new FileOutputStream(new File(rtf_fileName)));
-			}
-			catch (IOException ioe) {
+			} catch (IOException ioe) {
                 ThdlDebug.noteIffyCode();
 				System.out.println("problem reading or writing file");
 			}
-		}
-		catch (FileNotFoundException fnfe) {
-                ThdlDebug.noteIffyCode();
+		} catch (FileNotFoundException fnfe) {
+            ThdlDebug.noteIffyCode();
 			System.out.println("problem reading file");
 		}
 	}

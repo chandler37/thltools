@@ -612,10 +612,15 @@ public static boolean isVowel(String s) {
 */
 public static boolean isAmbiguousWylie(String x, String y) {
     // What about ambiguity between wa-zur and wa? dwa vs. d.wa, e.g.?
-    // Doesn't matter, because that's illegal.  wa doesn't take any
-    // prefixes.
+    // Some would say it doesn't matter, because that's illegal.  wa
+    // doesn't take any prefixes.  But I want even illegal stuff to
+    // work well end-to-end (i.e., converting tibetan X to wylie Y to
+    // tibetan Z should get you X==Z in a perfect world), and it
+    // doesn't confuse the legal stuff.
 
 	return (("g".equals(x) && "y".equals(y))
+            || ("g".equals(x) && "w".equals(y))
+            || ("d".equals(x) && "w".equals(y))
             || ("b".equals(x) && "l".equals(y))
             || ("b".equals(x) && "r".equals(y)));
 }

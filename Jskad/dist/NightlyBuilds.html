@@ -21,7 +21,11 @@
 <ul>
   <li>
     See <a href="junit-noframes.html">here</a> for results of the
-    nightly JUnit tests.
+    nightly JUnit tests.&nbsp; Note that an error on DuffPaneTest is
+    quite normal; this test runs only when an X11 display can be
+    opened, and I'm too lazy to run the tests with a framebuffer X
+    display.&nbsp; Run 'ant clean check' manually and DuffPaneTest
+    should pass with flying colors.
   </li>
   <li>
     Today's Javadocs: [<a href="docs/public">public</a> <a href="docs/public-javadocs-today.zip">(zip file)</a>]
