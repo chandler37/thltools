@@ -1,0 +1,6 @@
+WylieWord uses the same tibwn.ini file as Jskad.
+
+The Jskad version is canonical, so tibwn.ini does not appear here.
+
+You need to get it from the Jskad SF repository and include it in
+WylieWord builds.

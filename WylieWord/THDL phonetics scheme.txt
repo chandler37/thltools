@@ -1,0 +1,133 @@
+; THDL Phonetics rules for WylieWord.
+
+; File format: there are two sections, for rules and exceptions.
+;
+; There is one rule per line.  Typically a rule has two parts,
+; separated by a space.  The first part is a sequence of letters
+; that, if it appears in a Wylie transliteration, is to be replaced
+; by the second part in the phonetic transcription.  The second
+; part can be missing, in which case the first part is simply 
+; deleted from transcriptions when found.  
+;
+; A semicolon precedes a comment.  Blank lines are OK.
+;
+; The rules are applied in the order they appear in this file.
+; Each rule is applied as many times as possible, but we never
+; go back to a previous rule.  (This simple rewrite-rule grammar is
+; not sufficient to implement all phonetic schemes, at least not
+; compactly.  For example, it would be difficult to capture the
+; effects of preinitial consonants on tone (as in the scheme used
+; in Joe Wilson's book, for instance).)  Also note that not even the
+; whole of the present scheme is implemented using these rules.  In
+; particular, the deletion of prefix and superscript consonants, 
+; and of wa-zur, are done in program code, not using the rules here.
+
+; Miscellaneous prefix transformations
+g.      ; delete this (representing g prefix, used before root y only)
+dby y   ; must come before db->w, for dbyang
+dbr r   ; must come before db->w, for dbral
+db w    ; must come before by->j
+
+; c and ch are both transcribed ch.  To get this we need a kludge
+; (involving x), because the rule c -> ch would apply recursively.
+ch c
+c x
+x ch
+
+; Bad behavior from Y
+py ch
+phy ch
+by j
+my ny
+
+; Retroflexes
+kr tr
+khr thr
+gr dr
+pr tr
+phr thr
+br dr
+
+; Other bad behavior from R
+mr m
+sr s
+
+; Uniquely random case
+zl d
+
+; Umlaut of a, o, u followed by d, n, l, s 
+; Note: this must be done before suffix-stripping.
+; Before actually doing the umlaut, we "hide" the n in ng, so that ng doesn't
+;   induce umlaut.  This is gross; if we had a real grammar engine it wouldn't
+;   be necessary.
+ng x
+ad e
+an en
+al el
+as e
+od ö
+on ön
+ol öl
+os ö
+ud ü
+un ün
+ul ül
+us ü
+; restore ng
+x ng
+
+; Stripping of suffix d,  s, and ' from i and e
+; Note: this has already been done by the umlaut rules for some cases, 
+;       which don't need to be repeated here.
+id i
+ed e
+is i
+es e
+a' a
+e' e
+i' i
+o' o
+u' u
+
+; Remove doubled vowels (e.g. pa'ang -> pang, not paang)
+aa a
+ee e
+ii i
+oo o
+uu u
+
+; Devoicing of suffix g, b
+ag ak
+eg ek
+ig ik
+og ok
+ug uk
+ab ap
+eb ep
+ib ip
+ob op
+ub up
+
+<?Exceptions?>
+
+; There is one exception per line.  Each exception consists of
+; the transliteration (which may be several syllables separated
+; by spaces), followed by a space, a colon, a space, and the
+; pronunciation (which may also contain spaces).  A semicolon 
+; precedes a comment.  Blank lines are OK.
+
+ba : wa                 ; mind you, ba (pronounced ba) means cow.  But that's much rarer than wa.
+bo : wo
+ba'i : wai
+bo'i : woi
+bar : ?bar/war?         ; bar = "middle"; could be either, so supply both and let user sort it out
+bor : ?bor/wor?         ; bor = "cast away"; could be either, so supply both and let user sort it out
+rdo rje : dorje
+mkha' 'gro : khandro
+sprul sku : tulku
+rta mgrin: tamdrin
+dga' ldan : ganden
+dge 'dun  : gendün
+a mdo : amdo
+blo bzang : lobzang
+sbra nag zhol : banakzhöl

@@ -1,0 +1,45 @@
+		      WylieWord Build Procedure
+
+This explains how to make a new version of WylieWord.
+
+The program source file is called "WylieWord developement copy.dot".
+This is what you edit with the VBA editor.
+
+When you have finished modifying it:
+
+Do a search for, and remove, all debugging MsgBox calls.
+
+I use "!!!" in comments to note known bugs that should be dealt with.
+Search for "!!!" and make sure anything left in that state is
+acceptable in the release.
+
+Re-test everything that has changed since the last release, and
+anything that might be affected by those changes.
+
+Increment the version number in AboutWylieWord.
+
+Do PrepareDistribution in immediate window.
+  This runs automated tests.  Verify that the results are OK.
+  It also unbinds all the WylieWord keys.  
+    This is critical to having WylieWord work correctly on
+      non-English keyboards.
+    After making the distribution, you will want to restore
+      the keybindings in the develoment copy by calling 
+      WylieWordBindKeys.
+
+Save "WylieWord developement copy.dot"
+
+Copy it to the build folder.
+Rename it Setup.doc.
+
+The WylieWord installer is created using the program "SEAU",
+available for $49 on the web.  The .INP file is its configuration.
+
+In SEAU:
+
+  Update the Files folder to be the WylieWord build folder.
+  Update the Archive output file location to be in that folder also.
+  Save the SEAU configuration (.INP file) if you have changed it.
+  Run the SEAU builder.
+
+Test the resulting "WylieWord Setup.exe" file.

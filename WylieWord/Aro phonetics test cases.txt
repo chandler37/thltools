@@ -1,0 +1,76 @@
+;
+; These examples come from the draft (8/21/03) THDL Phonetics document
+;
+lha sa > lhasa
+sa skya pa > sakyapa
+; blo bzang > lobzang -- THDL exception not included in Aro exception dictionary
+rnying ma pa > nyingmapa
+rdo rje > dorjé
+dge lugs pa > gélugpa
+gzhis ka rtse > zhikatsé
+mar me > marmé
+bcu >  chu
+lce > ché
+rin chen bzang po > rinchènzangpo
+nag chu > nagchu
+bka' rgyud pa > kagyüdpa
+bsod nams> södnam
+thub bstan > thubtèn
+'jam dpal dbyangs > jampèlyang
+dge legs > gélèg
+kha btags > khatag
+bka' shag > kashag
+; sbra nag zhol > banakzhöl -- THDL exception not included in Aro exception dictionary
+thabs > thab
+lha sa ba  > lhasawa
+jo bo > jowo
+dpa' bo > pawo
+spyan ras gzig > chènrèzig
+sbyin bdag > jindag
+smyong > nyong
+sgrol ma > drölma
+rten 'brel > tèndrél
+'bras spungs  > drèpung
+'phrin las > thrinlè
+dbang > wang
+dbral > rèl
+dbyar kha > yarkha
+zla ba > dawa
+klad pa > lèdpa
+glog > log
+le'u > lé'u
+pa'ang > pa'ang
+ba'i > wa'i
+rta mgrin > tamdrin
+
+; Other tests, to exercise particular rules in the grammar that aren't covered in the rules above
+g.yon > yön
+phyag > chag
+bkra shis > trashi
+khros ma > thröma
+sprul > trül
+mri tam ga > mitamga
+srid pa > sipa
+pad ma > pèma
+pan chen > pènchèn
+ral pa can > rèlpachèn
+thun > thün
+dus gsum > düsum
+sbed > béd
+ces > ché
+pa'i > pa'i
+che'i > ché'i
+gri'i > dri'i
+po'i > po'i
+le'u'i > lé'u'i
+rdzogs > dzog
+thug pa > thugpa
+'debs > déb
+sib sib > sibsib
+lobs pa > lobpa
+grub > drub
+kla col > lachöl
+
+; Aro-specific exceptions
+mtsho rgyal > tsogyèl
+

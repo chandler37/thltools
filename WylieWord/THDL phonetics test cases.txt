@@ -1,0 +1,72 @@
+;
+; These examples come from the draft (8/21/03) THDL Phonetics document
+;
+lha sa > lhasa
+sa skya pa > sakyapa
+blo bzang > lobzang
+rnying ma pa > nyingmapa
+rdo rje > dorje
+dge lugs pa > gelukpa
+gzhis ka rtse > zhikatse
+mar me > marme
+bcu >  chu
+lce > che
+rin chen bzang po > rinchenzangpo
+nag chu > nakchu
+bka' rgyud pa > kagyüpa
+bsod nams> sönam
+thub bstan > thupten
+'jam dpal dbyangs > jampelyang
+dge legs > gelek
+kha btags > khatak
+bka' shag > kashak
+sbra nag zhol > banakzhöl
+thabs > thap
+lha sa ba  > lhasawa
+jo bo > jowo
+dpa' bo > pawo
+spyan ras gzig > chenrezik 
+sbyin bdag > jindak
+smyong > nyong
+sgrol ma > drölma
+rten 'brel > tendrel
+'bras spungs  > drepung
+'phrin las > thrinle
+dbang > wang
+dbral > rel
+dbyar kha > yarkha
+zla ba > dawa
+klad pa > lepa
+glog > lok
+le'u > leu
+pa'ang > pang
+ba'i > wai
+rta mgrin > tamdrin
+
+; Other tests, to exercise particular rules in the grammar that aren't covered in the rules above
+g.yon > yön
+phyag > chak
+bkra shis > trashi
+khros ma > thröma
+sprul > trül
+mri tam ga > mitamga
+srid pa > sipa
+pad ma > pema
+pan chen > penchen
+ral pa can > relpachen
+thun > thün
+dus gsum > düsum
+sbed > be
+ces > che
+pa'i > pai
+che'i > chei
+gri'i > dri
+po'i > poi
+le'u'i > leui
+rdzogs > dzok
+thug pa > thukpa
+'debs > dep
+sib sib > sipsip
+lobs pa > loppa
+grub > drup
+kla col > lachöl

@@ -1,0 +1,4 @@
+The TMW font files need to be included in a WylieWord distribution.
+(They are referenced in the SEAU .INP file.)
+They are not included in this repository because they are not really
+part of the WylieWord project as such.
