@@ -76,6 +76,9 @@
 
   <ul>
     <li>
+      <a href="#updatefeb2005">February 2005 Update</a>
+    </li>
+    <li>
       <a href="#glossary">Glossary</a>
     </li>
     <li>
@@ -129,6 +132,30 @@
   </ul>
 
 
+<h3>February 2005 Update<a name="updatefeb2005"></a></h3>
+
+<p>
+  As of February 20, 2005, this document is probably still pretty much
+  up to date, but a couple of things need to be said or emphasized and
+  that will be done in this section.  David Chandler added this
+  section quickly rather than integrating it seamlessly into the
+  document because he's pressed for time.
+</p>
+<p>
+  The main thing to know is that we have nightly builds for the
+  'Jskad' CVS module (which contains more than just Jskad) running on
+  UVA servers.  (We have nightly builds for <a
+  href="http://fieldling.sf.net">fieldling.sf.net</a> too.)  If you
+  break those builds, then our users won't be able to try the latest
+  versions of the software.
+</p>
+<p><a name="oom"></a>
+  Another thing to note is that you probably need to tell Ant to use
+  more memory than it does by default.  If you ever get a
+  <code>java.lang.OutOfMemory</code>, then try setting the environment
+  variable <code>ANT_OPTS</code> to include <code>-Xmx256m</code> (or
+  even 512).
+</p>
 
 <h3>Glossary<a name="glossary"></a></h3>
 
