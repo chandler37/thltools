@@ -55,12 +55,10 @@
   <property name="jskadbin" location="bin/jskad"/>
   <property name="tibbiblbin" location="bin/tibbibl"/>
   <property name="junitbin" location="bin/for-junit"/>
-  <property name="qdbin" location="bin/qd"/>
   <property name="ttstandalonebin" location="bin/tt-standalone"/>
   <property name="ttappletjwsbin" location="bin/tt-applet-and-java-web-start"/>
   <property name="tthandheldbin" location="bin/tt-handheld"/>
   <property name="ttservletbin" location="bin/tt-servlet"/>
-  <property name="savantbin" location="bin/savant"/>
 
   <property name="docs" location="docs"/>
   <property name="dist"  location="dist"/>
@@ -271,15 +269,15 @@
 
   <!-- DLC FIXME: add tibbibl-all-in-one-dist -->
   <target name="self-contained-dist"
-          depends="jskad-all-in-one-dist,savant-all-in-one-dist,qd-all-in-one-dist"
+          depends="jskad-all-in-one-dist"
           description="JARs up everything into self-contained JARs for double-click, classpath-worry-free joy" />
 
   <target name="dist"
-          depends="jskad-dist,savant-dist,qd-dist,tt-handheld-dist,tt-standalone-dist,tt-applet-plus-jws-dist,tt-servlet-dist,tibbibl-dist"
+          depends="jskad-dist,tt-handheld-dist,tt-standalone-dist,tt-applet-plus-jws-dist,tt-servlet-dist,tibbibl-dist"
           description="JARs up everything" />
 
   <target name="compile"
-          depends="jskad-compile,savant-compile,qd-compile,tt-standalone-compile,tt-handheld-compile,tt-applet-plus-jws-compile,tt-servlet-compile,tibbibl-compile"
+          depends="jskad-compile,tt-standalone-compile,tt-handheld-compile,tt-applet-plus-jws-compile,tt-servlet-compile,tibbibl-compile"
           description="compiles all programs" />
 
 
@@ -367,46 +365,6 @@
              value="org/thdl/util/TrieTest.java"/>
     </antcall>
   </target>
-
-  <target name="savant-compile" depends="init"
-          description="compiles Savant" >
-    <mkdir dir="${savantbin}"/>
-    <antcall target="copy-tmw-fonts-to-bin-dir">
-      <param name="my.bin" value="${savantbin}"/>
-    </antcall>
-    <antcall target="create-timestamp-source-code"/>
-    <antcall target="our-internal-javac-task">
-      <param name="mybin" value="${savantbin}"/>
-      <param name="my.included.source.file"
-             value="org/thdl/savant/SavantShell.java"/>
-    </antcall>
-
-    <antcall target="compile-classes-accessed-by-reflection">
-      <param name="mybin" value="${savantbin}"/>
-    </antcall>
-
-    <!-- Copy over Savant-specific resources: -->
-    <copy todir="${savantbin}/org/thdl/savant">
-      <fileset dir="${source}">
-        <include name="*savant*"/>
-      </fileset>
-    </copy>
-
-    <!-- Copy over Savant-specific resources: -->
-    <copy todir="${savantbin}">
-      <fileset dir="${source}">
-        <include name="MessageBundle*"/>
-      </fileset>
-    </copy>
-
-    <antcall target="copy-ini-files-to-bin-dir-for-jarring">
-      <param name="mybin" value="${savantbin}"/>
-    </antcall>
-    <antcall target="copy-license-etc-to-bin-dir-for-jarring">
-      <param name="mybin" value="${savantbin}"/>
-    </antcall>
-  </target>
-
 
   <!-- Builds the standalone translation tool: -->
   <target name="tt-standalone-compile" depends="init"
@@ -542,51 +500,9 @@
     </antcall>
   </target>
 
-
-  <target name="qd-compile" depends="init"
-          description="compiles QuillDriver" >
-    <!-- Compile the java code from ${source} into ${qdbin} -->
-    <mkdir dir="${qdbin}"/>
-    <antcall target="copy-tmw-fonts-to-bin-dir">
-      <param name="my.bin" value="${qdbin}"/>
-    </antcall>
-    <antcall target="create-timestamp-source-code"/>
-    <antcall target="our-internal-javac-task">
-      <param name="mybin" value="${qdbin}"/>
-      <param name="my.included.source.file"
-             value="org/thdl/quilldriver/QDShell.java"/>
-    </antcall>
-    <antcall target="our-internal-javac-task">
-      <param name="mybin" value="${qdbin}"/>
-      <param name="my.included.source.file"
-             value="org/thdl/tib/text/TibetanHTML.java"/>
-    </antcall>
-    <antcall target="compile-classes-accessed-by-reflection">
-      <param name="mybin" value="${qdbin}"/>
-    </antcall>
-
-    <!-- Copy over QuillDriver-specific resources: -->
-    <copy todir="${qdbin}">
-      <fileset dir="${source}">
-        <include name="MessageBundle*"/>
-        <include name="**/*.gif"/>
-        <include name="**/*.jpg"/>
-        <include name="**/QDtoHTML.xsl"/>
-      </fileset>
-    </copy>
-
-    <antcall target="copy-ini-files-to-bin-dir-for-jarring">
-      <param name="mybin" value="${qdbin}"/>
-    </antcall>
-    <antcall target="copy-license-etc-to-bin-dir-for-jarring">
-      <param name="mybin" value="${qdbin}"/>
-    </antcall>
-  </target>
-
-
   <!-- DLC FIXME: add tibbibl-jws -->
   <target name="web-start-releases"
-          depends="jskad-jws,savant-jws,qd-jws,tt-jws"
+          depends="jskad-jws,tt-jws"
           description="Builds the Java Web Start versions of all applications"/>
 
 
@@ -600,31 +516,6 @@
       <param name="lib" value="${jwslib}"/>
     </antcall>
   </target>
-
-
-  <target name="savant-jws"
-          depends="init"
-          description="Builds the Java Web Start version of Savant">
-    <antcall target="compile-from-scratch-and-call-jws-subbuild">
-      <param name="my.app" value="Savant"/>
-      <param name="jwsjarsuffix" value="-self-contained"/>
-      <param name="my.prereq" value="savant-all-in-one-dist"/>
-      <param name="lib" value="${jwslib}"/>
-    </antcall>
-  </target>
-
-
-  <target name="qd-jws"
-          depends="init"
-          description="Builds the Java Web Start version of QuillDriver">
-    <antcall target="compile-from-scratch-and-call-jws-subbuild">
-      <param name="my.app" value="QuillDriver"/>
-      <param name="jwsjarsuffix" value="-self-contained"/>
-      <param name="my.prereq" value="qd-all-in-one-dist"/>
-      <param name="lib" value="${jwslib}"/>
-    </antcall>
-  </target>
-
 
   <target name="tt-jws"
           depends="init"
@@ -742,32 +633,6 @@
     </jar>
   </target>
 
-
-  <target name="savant-dist" depends="savant-compile"
-          description="generates the bare Savant binary distribution" >
-    <!-- Put everything in ${savantbin} into the JAR file -->
-    <jar jarfile="${lib}/Savant${my.jar.suffix}.jar"
-         basedir="${savantbin}">
-      <manifest>
-        <attribute name="Main-Class" value="org.thdl.savant.SavantShell"/>
-      </manifest>
-    </jar>
-  </target>
-
-
-  <target name="qd-dist" depends="qd-compile"
-          description="generates the bare QuillDriver binary distribution" >
-    <!-- Put everything in ${qdbin} into the JAR file -->
-    <jar jarfile="${lib}/QuillDriver${my.jar.suffix}.jar"
-         basedir="${qdbin}">
-      <manifest>
-        <attribute name="Main-Class" value="org.thdl.quilldriver.QDShell"/>
-      </manifest>
-    </jar>
-  </target>
-
-
-
 <!-- DLC FIXME: This used to include Jskad2Javascript.class, etc.  But it no longer does.  Compile those extra files if Edward hasn't removed them! -->
   <target name="jskad-all-in-one-dist" depends="jskad-compile"
           description="generates the self-contained binary distribution for Jskad" >
@@ -785,41 +650,6 @@
     </jar>
   </target>
 
-
-  <target name="savant-all-in-one-dist" depends="savant-compile"
-          description="generates the self-contained binary distribution for Savant" >
-    <!-- Put everything in ${savantbin} into the JAR file after unpacking the
-         JARs/ZIPs we need to ${savantbin}. -->
-    <antcall target="copy-SQD-jars">
-      <param name="unjardest" value="${savantbin}"/>
-    </antcall>
-    <jar jarfile="${lib}/Savant-self-contained${my.jar.suffix}.jar"
-         basedir="${savantbin}">
-      <manifest>
-        <attribute name="Main-Class" value="org.thdl.savant.SavantShell"/>
-      </manifest>
-    </jar>
-    <delete dir="${savantbin}"/>
-  </target>
-
-
-  <target name="qd-all-in-one-dist" depends="qd-compile"
-          description="generates the self-contained QuillDriver binary distribution" >
-    <!-- Put everything in ${savantbin} into the JAR file after unpacking the
-         JARs/ZIPs we need to ${savantbin}. -->
-    <antcall target="copy-SQD-jars">
-      <param name="unjardest" value="${qdbin}"/>
-    </antcall>
-    <jar jarfile="${lib}/QuillDriver-self-contained${my.jar.suffix}.jar"
-         basedir="${qdbin}">
-      <manifest>
-        <attribute name="Main-Class" value="org.thdl.quilldriver.QDShell"/>
-      </manifest>
-    </jar>
-    <delete dir="${qdbin}"/>
-  </target>
-
-
   <target name="clean"
           description="cleans up a few things, but not all (not the Javadocs or the JWS releases, e.g.)" >
     <!-- Delete the ${bin} and ${dist} directory trees -->
@@ -834,7 +664,6 @@
     <delete dir="${dist}/source"/>
     <delete file="${dist}/DictionarySearchAppletAndJavaWebStart.jnlp"/>
     <delete file="${dist}/Savant.jnlp"/>
-    <delete file="${dist}/QuillDriver.jnlp"/>
     <delete file="${dist}/Jskad.jnlp"/>
     <delete file="${source}/org/thdl/util/ThdlVersion.java"/>
     <delete>
@@ -902,27 +731,6 @@
       <param name="access" value="private"/>
       <param name="our-javadocs-destdir" value="${privatejavadocs}"/>
     </antcall>
-  </target>
-
-
-  <target name="qd-run" depends="qd-dist" description="runs QuillDriver">
-    <java classname="org.thdl.quilldriver.QDShell" fork="yes">
-      <classpath>
-        <pathelement location="${lib}/QuillDriver${my.jar.suffix}.jar"/>
-        <path refid="entire.class.path"/>
-      </classpath>
-      <jvmarg value="-Dthdl.debug=${thdl.debug}"/>
-    </java>
-  </target>
-
-  <target name="savant-run" depends="savant-dist" description="runs Savant">
-    <java classname="org.thdl.savant.SavantShell" fork="yes">
-      <classpath>
-        <pathelement location="${lib}/Savant${my.jar.suffix}.jar"/>
-        <path refid="entire.class.path"/>
-      </classpath>
-      <jvmarg value="-Dthdl.debug=${thdl.debug}"/>
-    </java>
   </target>
 
   <target name="jskad-run" depends="jskad-dist" description="runs Jskad">
@@ -1249,95 +1057,6 @@
 
   </target>
 
-
-
-  <target name="create-Savant-jnlp-file"
-          depends="init"
-          description="Creates Savant's JNLP file based on a template hard-coded into this build file and your choice of the jnlp.codebase property.">
-
-    <!-- Write the head of the .jnlp file: -->
-    <echo file="${dist}/Savant.jnlp"
-          append="false"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="1.0+"]]></echo>
-
-    <!-- Write the middle of the .jnlp file: -->
-    <echo file="${dist}/Savant.jnlp"
-          append="true">
-<![CDATA[      codebase="]]>${jnlp.codebase}<![CDATA["]]></echo>
-
-    <!-- Write the tail of the .jnlp file: -->
-    <echo file="${dist}/Savant.jnlp"
-          append="true">
-<![CDATA[      href="Savant.jnlp">
-<information>
-  <title>Savant</title>
-  <vendor>THDL</vendor>
-  <homepage href="http://iris.lib.virginia.edu/tibet/tools/savant/" />
-
-  <description>
-    Savant displays foreign-language text, audio, and video
-    side-by-side to help you learn foreign languages or just study.
-  </description>
-
-  <offline-allowed/>
-</information>
-<security>
-  <all-permissions/>
-</security>
-<resources>
-  <j2se version="1.2+"/>
-  <jar href="Savant-self-contained.jar" />
-</resources>
-<application-desc />
-</jnlp>
-]]></echo>
-
-  </target>
-
-
-  <target name="create-QuillDriver-jnlp-file"
-          depends="init"
-          description="Creates QuillDriver's JNLP file based on a template hard-coded into this build file and your choice of the jnlp.codebase property.">
-
-    <!-- Write the head of the .jnlp file: -->
-    <echo file="${dist}/QuillDriver.jnlp"
-          append="false"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="1.0+"]]></echo>
-
-    <!-- Write the middle of the .jnlp file: -->
-    <echo file="${dist}/QuillDriver.jnlp"
-          append="true">
-<![CDATA[      codebase="]]>${jnlp.codebase}<![CDATA["]]></echo>
-
-    <!-- Write the tail of the .jnlp file: -->
-    <echo file="${dist}/QuillDriver.jnlp"
-          append="true">
-<![CDATA[      href="QuillDriver.jnlp">
-<information>
-  <title>QuillDriver</title>
-  <vendor>THDL</vendor>
-  <homepage href="http://iris.lib.virginia.edu/tibet/tools/quilldriver/" />
-
-  <description>
-    QuillDriver helps you develop content for Savant, another THDL tool.
-  </description>
-
-  <offline-allowed/>
-</information>
-<security>
-  <all-permissions/>
-</security>
-<resources>
-  <j2se version="1.2+"/>
-  <jar href="QuillDriver-self-contained.jar" />
-</resources>
-<application-desc />
-</jnlp>
-]]></echo>
-
-  </target>
-
-
   <target name="create-DictionarySearchAppletAndJavaWebStart-jnlp-file"
           depends="init"
           description="Creates the translation tool's JNLP file based on a template hard-coded into this build file and your choice of the jnlp.codebase property.">
@@ -1380,51 +1099,6 @@
 </jnlp>
 ]]></echo>
 
-  </target>
-
-  <target name="compile-QT4J-classes-accessed-by-reflection"
-          if="found.QT4J"
-          description="If QT4J is available, this compiles QT4J integration.">
-    <antcall target="our-internal-javac-task">
-      <param name="mybin" value="${qdbin}"/>
-      <param name="my.included.source.file"
-             value="org/thdl/media/SmartQT4JPlayer.java"/>
-    </antcall>
-    <antcall target="our-internal-javac-task">
-      <param name="mybin" value="${savantbin}"/>
-      <param name="my.included.source.file"
-             value="org/thdl/media/SmartQT4JPlayer.java"/>
-    </antcall>
-  </target>
-
-  <target name="compile-JMF-classes-accessed-by-reflection"
-          if="found.JMF"
-          description="If JMF is available, this compiles JMF integration.">
-    <antcall target="our-internal-javac-task">
-      <param name="mybin" value="${qdbin}"/>
-      <param name="my.included.source.file"
-             value="org/thdl/media/SmartJMFPlayer.java"/>
-    </antcall>
-    <antcall target="our-internal-javac-task">
-      <param name="mybin" value="${savantbin}"/>
-      <param name="my.included.source.file"
-             value="org/thdl/media/SmartJMFPlayer.java"/>
-    </antcall>
-  </target>
-
-
-  <!-- If JMF is not available, we don't compile SmartJMFPlayer.
-       Similarly for QT4J. -->
-  <target name="compile-classes-accessed-by-reflection"
-          description="Compiles classes that we access these via reflection (thus, compiling SavantShell and QDShell will not include them)">
-    <available classname="javax.media.NoPlayerException"
-               classpathref="${our.javac.classpathref}"
-               property="found.JMF"/>
-    <available classname="quicktime.std.clocks.TimeCallBack"
-               classpathref="${our.javac.classpathref}"
-               property="found.QT4J"/>
-    <antcall target="compile-JMF-classes-accessed-by-reflection"/>
-    <antcall target="compile-QT4J-classes-accessed-by-reflection"/>
   </target>
 
   <target name="create-timestamp-source-code"
@@ -1492,8 +1166,7 @@ public class ThdlVersion {
          want theirs to overwrite our own, so we delete it. -->
     <delete dir="${unjardest}/META-INF"/>
   </target>
-
-
+  
   <target name="copy-tmw-fonts-to-bin-dir"
           description="Unpacks the JARs/WARs/ZIP files that Savant and QuillDriver use to the chosen bin/ directory">
     <available file="Fonts/TibetanMachineWeb"

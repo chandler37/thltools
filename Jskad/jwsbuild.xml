@@ -10,7 +10,7 @@
 
   <description>
     This Jakarta Ant buildfile is used to build the Java Web Start
-    releases of Jskad, Savant, QuillDriver, and the Translation Tool.
+    releases of Jskad and the Translation Tool.
     This is separate from build.xml because to use this build file,
     you must have installed the Venus Application Publisher's (Vamp's)
     Ant tasks.  Read the comments of this buildfile to learn more, or
