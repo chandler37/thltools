@@ -252,7 +252,11 @@ public class ErrorsAndWarnings {
             ThdlDebug.verify(translit.length() == 1);
             return "" + code + ": While waiting for a closing bracket, an opening bracket, '" + translit + "', was found instead.  Nesting of bracketed expressions is not permitted.";
 
+        case 142: // this number is referenced in error 143's message
+            return "" + code + ": Because you requested conversion to a Unicode text file, there is no way to indicate that the font size is supposed to decrease starting here and continuing until error 143.  That is, this is the beginning of a region in YIG CHUNG.";
 
+        case 143: // this number is referenced in error 142's message
+            return "" + code + ": Because you requested conversion to a Unicode text file, there is no way to indicate that the font size is supposed to increase (go back to the size it was before the last error 142, that is) starting here.  That is, this is the end of a region in YIG CHUNG.";
 
 
 
@@ -326,7 +330,7 @@ public class ErrorsAndWarnings {
     }
 
     private static final int MIN_ERROR = 101; // inclusive
-    private static final int MAX_ERROR = 141; // inclusive
+    private static final int MAX_ERROR = 143; // inclusive
 
     private static final int MIN_WARNING = 501; // inclusive
     private static final int MAX_WARNING = 512; // inclusive

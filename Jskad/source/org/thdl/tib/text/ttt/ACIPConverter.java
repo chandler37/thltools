@@ -675,11 +675,21 @@ public class ACIPConverter {
                                 }
                             }
                         } else if (stype == TString.START_PAREN) {
+                            if (null != writer)
+                                writer.write("[ERROR "
+                                             + ErrorsAndWarnings.getMessage(142,
+                                                                            shortMessages,
+                                                                            "(" /* hard-coded ACIP value */) + "]");
                             if (null != tdoc) {
                                 tdoc.setTibetanFontSize(smallFontSize);
                             }
                             continue;
                         } else if (stype == TString.END_PAREN) {
+                            if (null != writer)
+                                writer.write("[ERROR "
+                                             + ErrorsAndWarnings.getMessage(143,
+                                                                            shortMessages,
+                                                                            ")" /* hard-coded ACIP value */) + "]");
                             if (null != tdoc) {
                                 tdoc.setTibetanFontSize(regularFontSize);
                             }

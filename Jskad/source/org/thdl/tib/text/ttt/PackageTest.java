@@ -10323,6 +10323,11 @@ tstHelper("shKA");
     }
 
     public void testBrackets() {
+        uhelp("GA (GA )KHA ",
+              "\u0f42\u0f0b[ERROR 142: Because you requested conversion to a Unicode text file, there is no way to indicate that the font size is supposed to decrease starting here and continuing until error 143.  That is, this is the beginning of a region in YIG CHUNG.]\u0f42\u0f0b[ERROR 143: Because you requested conversion to a Unicode text file, there is no way to indicate that the font size is supposed to increase (go back to the size it was before the last error 142, that is) starting here.  That is, this is the end of a region in YIG CHUNG.]\u0f41\u0f0b");
+        uhelp("(GA (GA )KHA )",
+              "[ERROR 142: Because you requested conversion to a Unicode text file, there is no way to indicate that the font size is supposed to decrease starting here and continuing until error 143.  That is, this is the beginning of a region in YIG CHUNG.]\u0f42\u0f0b[#ERROR 111: Found an illegal open parenthesis, '('.  Nesting of parentheses is not allowed.]\u0f42\u0f0b[ERROR 143: Because you requested conversion to a Unicode text file, there is no way to indicate that the font size is supposed to increase (go back to the size it was before the last error 142, that is) starting here.  That is, this is the end of a region in YIG CHUNG.]\u0f41\u0f0b[#ERROR 112: Unexpected closing parenthesis, ')', found.]");
+
         if (ACIPTshegBarScanner.BRACKETED_SECTIONS_PASS_THROUGH_UNMODIFIED) {
             uhelpShortMessages("{ DD }", " DD ");
             uhelpShortMessages("{D X}", "D X");
