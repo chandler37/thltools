@@ -266,7 +266,7 @@ public class LexSourceRepository
 	 */
 	private LexSourceRepository() throws Exception
 	{
-		SimpleDataStore dataStore = new SimpleDataStore( "/Users/travis/webapps/lex/dlese-oai/scheduled-harvester", true );
+/*		SimpleDataStore dataStore = new SimpleDataStore( "/Users/travis/webapps/lex/dlese-oai/scheduled-harvester", true );
 		File initialHarvestDir = new File( "/Users/travis/webapps/lex/dlese-oai/datastore.lib.virginia.edu" );
 		SimpleLuceneIndex harvestLogIndex = new SimpleLuceneIndex( "/Users/travis/webapps/lex/dlese-oai/lucene-index" );
 		ScheduledHarvestManager manager = new ScheduledHarvestManager( dataStore, initialHarvestDir, harvestLogIndex );
@@ -284,7 +284,7 @@ public class LexSourceRepository
 		setHarvest( harvest );
 
 		getHarvestManager().addScheduledHarvest( getHarvest() );
-	}
+*/	}
 //main
 
 	/**
