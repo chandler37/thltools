@@ -102,6 +102,8 @@ if (MAIL) {
 #
 open(IN, "-");
 while (<IN>) {
+  ## Make hot links to ViewCVS:
+	s/\/cvsroot\/thdltools\/([^ \n\r\t]*)/\/cvsroot\/thdltools\/\1 [http:\/\/cvs.sourceforge.net\/cgi-bin\/viewcvs.cgi\/thdltools\/\1]/;
 	print OUT $_;
 	if (MAIL) {
 		print MAIL $_;
