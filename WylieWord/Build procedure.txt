@@ -13,26 +13,26 @@ I use "!!!" in comments to note known bugs that should be dealt with.
 Search for "!!!" and make sure anything left in that state is
 acceptable in the release.
 
+Increment the version number in AboutWylieWord.
+
 Do "Debug > Compile" in the F11 window.  Verify there are no
 compilation errors.
 
 Re-test everything that has changed since the last release, and
 anything that might be affected by those changes.
 
-Increment the version number in AboutWylieWord.
-
 Run PrepareDistribution in immediate window.
-  This runs automated tests.  The third set of tests may take ten minutes or so.
+  This runs automated tests.  For these to work, you need to have the test case 
+    files (from CVS/SourceForge) in your running WylieWord folder.
+    The third set of tests may take ten minutes or so.
     Verify that the results are OK.
   It also unbinds all the WylieWord keys.  
     This is critical to having WylieWord work correctly on non-English keyboards.
-    (After making the distribution, you will want to restore the keybindings
+    (After making the distribution, you may want to restore the keybindings
      in the development copy by calling WylieWordBindKeys.)
 
 Save "WylieWord development copy.dot"
-
-Copy it to the build folder.
-Rename it Setup.doc.
+Make a copy and rename it Setup.doc.
 
 If the manual has changed, update its revision date.
 
