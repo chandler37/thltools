@@ -209,7 +209,7 @@ public class Jskad extends JPanel implements DocumentListener {
 				JMenuItem closeItem = new JMenuItem("Close");	
 				closeItem.addActionListener(new ThdlActionListener() {
 					public void theRealActionPerformed(ActionEvent e) {
-						if (!hasChanged || hasChanged && checkSave()) {
+						if (!hasChanged || hasChanged && checkSave(JOptionPane.YES_NO_CANCEL_OPTION)) {
                             Jskad.this.realCloseAction(true);
 						}
 					}
@@ -351,6 +351,16 @@ public class Jskad extends JPanel implements DocumentListener {
 		toolsMenu.add(wylieTMWItem);
 
 		if (parentObject instanceof JFrame || parentObject instanceof JInternalFrame) {
+			JMenuItem openWithItem = new JMenuItem("Open With External Viewer...");
+			openWithItem.addActionListener(new ThdlActionListener() {
+				public void theRealActionPerformed(ActionEvent e) {
+                    openWithExternalViewer();
+				}
+			});
+			toolsMenu.addSeparator();
+			toolsMenu.add(openWithItem);
+
+
 			JMenuItem importItem = new JMenuItem("Import Wylie as Tibetan");
 			importItem.addActionListener(new ThdlActionListener() {
 				public void theRealActionPerformed(ActionEvent e) {
@@ -650,7 +660,7 @@ public class Jskad extends JPanel implements DocumentListener {
 			parentFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 			parentFrame.addWindowListener(new WindowAdapter () {
 				public void windowClosing (WindowEvent e) {
-					if (!hasChanged || hasChanged && checkSave()) {
+					if (!hasChanged || hasChanged && checkSave(JOptionPane.YES_NO_CANCEL_OPTION)) {
 						numberOfTibsRTFOpen--;
 						if (numberOfTibsRTFOpen == 0)
 							System.exit(0);
@@ -917,8 +927,12 @@ public class Jskad extends JPanel implements DocumentListener {
 	}
 
     /** Returns true iff the user says (possibly after a successful
-        save) that it is OK to destroy this Jskad widget. */
-	private boolean checkSave() {
+        save) that it is OK to destroy this Jskad widget.
+        @param dialogType either JOptionPane.YES_NO_CANCEL_OPTION or
+        JOptionPane.YES_NO_OPTION, depending on whether canceling is
+        different than saying no.
+    */
+	private boolean checkSave(int dialogType) {
 		if (ThdlOptions.getBooleanOption("thdl.Jskad.do.not.confirm.quit")) {
 			return true;
 		}
@@ -927,7 +941,7 @@ public class Jskad extends JPanel implements DocumentListener {
 			= JOptionPane.showConfirmDialog(this,
 											"Do you want to save your changes?",
 											"Please select",
-											JOptionPane.YES_NO_CANCEL_OPTION);
+                                            dialogType);
 
 		switch (saveFirst) {
 			case JOptionPane.NO_OPTION: //don't save but do continue
@@ -1270,7 +1284,7 @@ public class Jskad extends JPanel implements DocumentListener {
         int sz = jskads.size();
         for (int i = 0; i < sz; i++) {
             Jskad j = (Jskad)jskads.elementAt(i);
-            if (j.hasChanged && !j.checkSave()) {
+            if (j.hasChanged && !j.checkSave(JOptionPane.YES_NO_CANCEL_OPTION)) {
                 return;
             }
         }
@@ -1281,6 +1295,31 @@ public class Jskad extends JPanel implements DocumentListener {
     }
 
 
+    /** Checks if the current buffer has been modified or is not yet
+        saved.  If so, the user is prompted to save.  After that, the
+        current buffer is opened with a user-selected external viewer,
+        which defaults to Microsoft Word if we can find it with our
+        naive, "I bet it lives on everybody's machine where it lives
+        on mine" mechanism. */
+    private void openWithExternalViewer() {
+        if ((hasChanged && !checkSave(JOptionPane.YES_NO_OPTION)) || null == fileName) {
+            if (null == fileName) {
+                JOptionPane.showMessageDialog(Jskad.this,
+                                              "You must save the file before opening it with an external viewer.",
+                                              "Cannot View Unsaved File",
+                                              JOptionPane.ERROR_MESSAGE);
+                return;
+            } else {
+                if (JOptionPane.YES_OPTION
+                    != JOptionPane.showConfirmDialog(Jskad.this,
+                                                     "Do you want to view the file as it exists on disk anyway?",
+                                                     "Proceed Anyway?",
+                                                     JOptionPane.YES_NO_OPTION))
+                    return;
+            }
+        }
+        ConvertDialog.openWithExternalViewer(this, fileName);
+    }
 
 /**
 * Runs Jskad.  System output, including errors, is redirected to

@@ -56,20 +56,22 @@ class ConvertDialog extends JDialog
 
     JFileChooser jfc;
 
-    final String BROWSENEW     = "Browse...";
-    final String BROWSEOLD     = BROWSENEW;
-    final String CONVERT     = "Convert";
-    final String CANCEL       = "Close";
-    final String ABOUT       = "About";
-    final String OPEN_WITH       = "Open With...";
+    private static final String BROWSENEW     = "Browse...";
+    private static final String BROWSEOLD     = BROWSENEW;
+    private static final String CONVERT     = "Convert";
+    private static final String CANCEL       = "Close";
+    private static final String ABOUT       = "About";
+    private static final String OPEN_WITH       = "Open With...";
+    private static final String LOCATE_FILE       = "Locate File";
 
     private final ThdlActionListener tal = new ThdlActionListener() {
             public void theRealActionPerformed(ActionEvent e) {
                 ConvertDialog.this.theRealActionPerformed(e);
             }};
-    public void init()
+    private void init()
     {
         jfc = new JFileChooser(controller.getDefaultDirectory());
+        jfc.setDialogTitle(LOCATE_FILE);
         jfc.setFileFilter(new RTFFileFilter());
 
         content = new JPanel(new GridLayout(0,1));
@@ -138,7 +140,7 @@ class ConvertDialog extends JDialog
         setSize(new Dimension(620,200));
     }
 
-    public void setChoices(String[] choices)
+    private void setChoices(String[] choices)
     {
         choiceNames = choices;
         this.choices = new JComboBox(choiceNames);
@@ -146,32 +148,27 @@ class ConvertDialog extends JDialog
     }
 
     // Accessors
-    public void setController(FontConversion fc)
+    private void setController(FontConversion fc)
     {
         controller = fc;
     }
 
-    public FontConversion getController()
-    {
-        return controller;
-    }
-
-    public String getType()
-    {
-        return (String)choices.getSelectedItem();
-    }
-
-    public void setCurrentDirectory(String dir)
-    {
-        jfc.setCurrentDirectory(new File(dir));
-    }
-
+    /** This constructor takes an owner; the other doesn't. */
     public ConvertDialog(Frame owner,
                          FontConversion controller,
                          String[] choices,
                          boolean modal)
     {
         super(owner,PROGRAM_TITLE,modal);
+        initConvertDialog(controller, choices, modal);
+    }
+
+    /** This constructor does not take an owner; the other does. */
+    public ConvertDialog(FontConversion controller,
+                         String[] choices,
+                         boolean modal)
+    {
+        super(new JDialog(),PROGRAM_TITLE,modal);
         initConvertDialog(controller, choices, modal);
     }
 
@@ -184,14 +181,6 @@ class ConvertDialog extends JDialog
         if (debug)
             System.out.println("Default close operation: "
                                + getDefaultCloseOperation());
-    }
-
-    public ConvertDialog(FontConversion controller,
-                         String[] choices,
-                         boolean modal)
-    {
-        super(new JDialog(),PROGRAM_TITLE,modal);
-        initConvertDialog(controller, choices, modal);
     }
 
     void theRealActionPerformed(ActionEvent ae)
@@ -267,10 +256,17 @@ class ConvertDialog extends JDialog
                 }
             }
 
-            controller.doConversion(this,
-                                    origFile,
-                                    convertedFile,
-                                    (String)choices.getSelectedItem());
+            try {
+                controller.doConversion(this,
+                                        origFile,
+                                        convertedFile,
+                                        (String)choices.getSelectedItem());
+            } catch (OutOfMemoryError e) {
+                JOptionPane.showMessageDialog(this,
+                                              "The converter ran out of memory.  Please give the\nJVM more memory by using java -XmxYYYm where YYY\nis the amount of memory your system has, or\nsomething close to it.  E.g., try\n'java -Xmx512m -jar Jskad.jar'.",
+                                              "Out of Memory",
+                                              JOptionPane.ERROR_MESSAGE);
+            }
         } else if(cmd.equals(OPEN_WITH)) {
             try {
                 JButton src = (JButton)ae.getSource();
@@ -304,29 +300,7 @@ class ConvertDialog extends JDialog
                     return;
                 }
 
-                boolean done = false;
-                File prog
-                    = new File(ThdlOptions.getStringOption("thdl.external.rtf.reader",
-                                                           "C:\\Program Files\\Microsoft Office\\Office\\WINWORD.EXE"));
-                while (!done) {
-                    String[] cmdArray = {prog.getPath(),fileToOpen};
-                    Runtime rtime = Runtime.getRuntime();
-                    try {
-                        Process proc = rtime.exec(cmdArray);
-                        proc = null;
-                        done = true;
-                    } catch (IOException ioe) {
-                        JFileChooser jfc = new JFileChooser("C:\\Program Files\\");
-                        jfc.setDialogTitle("Locate Program to Read RTF");
-                        if(jfc.showOpenDialog(this) == jfc.APPROVE_OPTION) {
-                            prog = jfc.getSelectedFile();
-                            ThdlOptions.setUserPreference("thdl.external.rtf.reader",
-                                                          prog.getAbsolutePath());
-                        } else {
-                            done = true;
-                        }
-                    }
-                }
+                openWithExternalViewer(this, fileToOpen);
             } catch (SecurityException se) {
                 JOptionPane.showMessageDialog(this,
                                               "Cannot proceed because your security policy interfered.",
@@ -345,6 +319,42 @@ class ConvertDialog extends JDialog
             updateNewFileGuess();
         }
     }
+
+    /** Invokes a user-specified external viewer (one that takes a
+        single command-line argument, the path to view) on the file
+        with path fileToOpen.
+        @param parent the owner of any dialogs that come up
+        @param fileToOpen the path to open in the external viewer */
+    static void openWithExternalViewer(Component parent, String fileToOpen) {
+
+        boolean done = false;
+        File prog
+            = new File(ThdlOptions.getStringOption("thdl.external.rtf.reader",
+                                                   "C:\\Program Files\\Microsoft Office\\Office\\WINWORD.EXE"));
+        while (!done) {
+            String[] cmdArray = {prog.getPath(),fileToOpen};
+            Runtime rtime = Runtime.getRuntime();
+            try {
+                Process proc = rtime.exec(cmdArray);
+                proc = null;
+                done = true;
+            } catch (IOException ioe) {
+                JFileChooser jfc = new JFileChooser("C:\\Program Files\\");
+                jfc.setDialogTitle("Locate Program to Read RTF");
+                if(jfc.showOpenDialog(parent) == jfc.APPROVE_OPTION) {
+                    prog = jfc.getSelectedFile();
+                    ThdlOptions.setUserPreference("thdl.external.rtf.reader",
+                                                  prog.getAbsolutePath());
+                } else {
+                    done = true;
+                }
+                jfc.setDialogTitle(LOCATE_FILE);
+            }
+        }
+    }
+
+    /** Looks at the name of the original file and creates a name for
+        the converted file based on that. */
     private void updateNewFileGuess() {
         String oldFileName = oldTextField.getText();
         if (oldFileName == null || oldFileName.equals(""))
