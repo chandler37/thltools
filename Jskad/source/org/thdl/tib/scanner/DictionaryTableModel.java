@@ -89,7 +89,7 @@ public class DictionaryTableModel extends AbstractTableModel
 		    try
 		    {
     		    for (i=0; i<array.length; i++)
-	    	        arrayTibetan[i]=TibTextUtils.getTibetanMachineWeb(array[i].getWylie());
+	    	        arrayTibetan[i]=TibTextUtils.getTibetanMachineWebForEWTS(array[i].getWylie());
 	    	}
 	    	catch (Exception e)
 	    	{
