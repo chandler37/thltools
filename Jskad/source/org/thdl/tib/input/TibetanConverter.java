@@ -19,6 +19,7 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.input;
 
 import java.io.*;
+import javax.swing.text.rtf.RTFEditorKit;
 
 import org.thdl.util.*;
 import org.thdl.tib.text.*;
@@ -180,13 +181,13 @@ public class TibetanConverter implements FontConverterConstants {
         return code so that TibetanConverter's usage message is
         honored. */
     static int reallyConvert(InputStream in, PrintStream out, String ct) {
-        DuffPane dp = new DuffPane();
+        TibetanDocument tdoc = new TibetanDocument();
         try {
             // Read in the rtf file.
             if (debug) System.err.println("Start: reading in old RTF file");
             if (!ThdlOptions.getBooleanOption("thdl.do.not.fix.rtf.hex.escapes"))
                 in = new RTFFixerInputStream(in);
-            dp.rtfEd.read(in, dp.getDocument(), 0);
+            (new RTFEditorKit()).read(in, tdoc, 0);
             if (debug) System.err.println("End  : reading in old RTF file");
         } catch (Exception e) {
             out.println("TibetanConverter:\n"
@@ -205,28 +206,28 @@ public class TibetanConverter implements FontConverterConstants {
         if (FIND_ALL_NON_TMW == ct) {
             // 0, -1 is the entire document.
             int exitCode
-                = ((TibetanDocument)dp.getDocument()).findAllNonTMWCharacters(0, -1, out);
+                = tdoc.findAllNonTMWCharacters(0, -1, out);
             if (out.checkError())
                 exitCode = 41;
             return exitCode;
         } else if (FIND_SOME_NON_TMW == ct) {
             // 0, -1 is the entire document.
             int exitCode
-                = ((TibetanDocument)dp.getDocument()).findSomeNonTMWCharacters(0, -1, out);
+                = tdoc.findSomeNonTMWCharacters(0, -1, out);
             if (out.checkError())
                 exitCode = 41;
             return exitCode;
         } else if (FIND_SOME_NON_TM == ct) {
             // 0, -1 is the entire document.
             int exitCode
-                = ((TibetanDocument)dp.getDocument()).findSomeNonTMCharacters(0, -1, out);
+                = tdoc.findSomeNonTMCharacters(0, -1, out);
             if (out.checkError())
                 exitCode = 41;
             return exitCode;
         } else if (FIND_ALL_NON_TM == ct) {
             // 0, -1 is the entire document.
             int exitCode
-                = ((TibetanDocument)dp.getDocument()).findAllNonTMCharacters(0, -1, out);
+                = tdoc.findAllNonTMCharacters(0, -1, out);
             if (out.checkError())
                 exitCode = 41;
             return exitCode;
@@ -235,7 +236,7 @@ public class TibetanConverter implements FontConverterConstants {
             if (TM_TO_TMW != ct) {
                 // DLC make me optional
                 if (debug) System.err.println("Start: solving curly brace problem");
-                ((TibetanDocument)dp.getDocument()).replaceTahomaCurlyBracesAndBackslashes(0, -1);
+                tdoc.replaceTahomaCurlyBracesAndBackslashes(0, -1);
                 if (debug) System.err.println("End  : solving curly brace problem");
             }
 
@@ -248,24 +249,25 @@ public class TibetanConverter implements FontConverterConstants {
             long numAttemptedReplacements[] = new long[] { 0 };
             if (TMW_TO_WYLIE == ct) {
                 // Convert to THDL Wylie:
-                dp.toWylie(0, dp.getDocument().getLength(),
-                           numAttemptedReplacements);
+                tdoc.toWylie(0,
+                             tdoc.getLength(),
+                             numAttemptedReplacements);
             } else if (TMW_TO_UNI == ct) {
                 StringBuffer errors = new StringBuffer();
                 // Convert to Unicode:
-                if (((TibetanDocument)dp.getDocument()).convertToUnicode(0,
-                                                                         dp.getDocument().getLength(),
-                                                                         errors,
-                                                                         ThdlOptions.getStringOption("thdl.tmw.to.unicode.font").intern(),
-                                                                         numAttemptedReplacements)) {
+                if (tdoc.convertToUnicode(0,
+                                          tdoc.getLength(),
+                                          errors,
+                                          ThdlOptions.getStringOption("thdl.tmw.to.unicode.font").intern(),
+                                          numAttemptedReplacements)) {
                     System.err.println(errors);
                     exitCode = 42;
                 }
             } else if (TM_TO_TMW == ct) {
                 StringBuffer errors = new StringBuffer();
                 // Convert to TibetanMachineWeb:
-                if (((TibetanDocument)dp.getDocument()).convertToTMW(0, dp.getDocument().getLength(), errors,
-                                                                     numAttemptedReplacements)) {
+                if (tdoc.convertToTMW(0, tdoc.getLength(), errors,
+                                      numAttemptedReplacements)) {
                     System.err.println(errors);
                     exitCode = 42;
                 }
@@ -273,8 +275,8 @@ public class TibetanConverter implements FontConverterConstants {
                 ThdlDebug.verify(TMW_TO_TM == ct);
                 StringBuffer errors = new StringBuffer();
                 // Convert to TibetanMachine:
-                if (((TibetanDocument)dp.getDocument()).convertToTM(0, dp.getDocument().getLength(), errors,
-                                                                    numAttemptedReplacements)) {
+                if (tdoc.convertToTM(0, tdoc.getLength(), errors,
+                                     numAttemptedReplacements)) {
                     System.err.println(errors);
                     exitCode = 42;
                 }
@@ -282,7 +284,7 @@ public class TibetanConverter implements FontConverterConstants {
 
             // Write to standard output the result:
             try {
-                ((TibetanDocument)dp.getDocument()).writeRTFOutputStream(out);
+                tdoc.writeRTFOutputStream(out);
             } catch (IOException e) {
                 exitCode = 40;
             }

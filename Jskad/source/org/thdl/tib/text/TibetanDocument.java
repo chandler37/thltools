@@ -1076,6 +1076,73 @@ public class TibetanDocument extends DefaultStyledDocument {
             ThdlDebug.noteIffyCode();
         }
     }
+    
+    /** the attribute set applied to Roman text in this
+        document */
+    private AttributeSet romanAttributeSet = null;
+    
+    /** Gets the attribute set applied to Roman text in this
+        document. */
+    public AttributeSet getRomanAttributeSet() {
+        return romanAttributeSet;
+    }
+
+    /** Sets the attribute set applied to Roman text in this
+        document. */
+    public void setRomanAttributeSet(AttributeSet ras) {
+        romanAttributeSet = ras;
+    }
+
+/**
+* Converts the specified portion of this document to THDL Extended
+* Wylie.
+*
+* @param start the point from which to begin converting to Wylie
+* @param end the point at which to stop converting to Wylie
+* @param numAttemptedReplacements an array that contains one element;
+* this first element will be, upon exit, incremented by the number of
+* TMW glyphs that we encountered and attempted to convert to Wylie */
+    public void toWylie(int start, int end,
+                        long numAttemptedReplacements[]) {
+        if (start >= end)
+            return;
+
+        try {
+            DuffCode[] any_dc_array = new DuffCode[0];
+            DuffCode[] dc_array;
+            Position endPos = createPosition(end);
+            int i = start;
+            java.util.List dcs = new ArrayList();
+
+            while (i < endPos.getOffset()+1) {
+                AttributeSet attr
+                    = getCharacterElement(i).getAttributes();
+                String fontName = StyleConstants.getFontFamily(attr);
+                int fontNum;
+
+                if ((0 == (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName))) || i==endPos.getOffset()) {
+                    if (i != start) {
+                        dc_array = (DuffCode[])dcs.toArray(any_dc_array);
+                        remove(start, i-start);
+                        insertString(start,
+                                     TibTextUtils.getWylie(dc_array),
+                                     getRomanAttributeSet());
+                        dcs.clear();
+                    }
+                    start = i+1;
+                } else {
+                    char ch = getText(i,1).charAt(0);
+                    dcs.add(new DuffCode(fontNum, ch));
+                    ++numAttemptedReplacements[0];
+                }
+
+                i++;
+            }
+        } catch (BadLocationException ble) {
+            ble.printStackTrace();
+            ThdlDebug.noteIffyCode();
+        }
+    }
 
     /** Returns all the paragraph elements in this document that
      *  contain glyphs with offsets in the range [start, end) where

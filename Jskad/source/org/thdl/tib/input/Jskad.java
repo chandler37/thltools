@@ -1076,8 +1076,9 @@ public class Jskad extends JPanel implements DocumentListener {
 
 	private void toWylie() {
 		Jskad.this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        long n[] = new long[] { 0 };
-		dp.toWylie(dp.getSelectionStart(), dp.getSelectionEnd(), n);
+		((TibetanDocument)dp.getDocument()).toWylie(dp.getSelectionStart(),
+                                                    dp.getSelectionEnd(),
+                                                    new long[] { 0 });
 		Jskad.this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 
