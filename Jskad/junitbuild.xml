@@ -41,6 +41,7 @@
       </classpath>
       <formatter type="xml"/><!-- If not XML, then 'ant -buildfile
                                   build.xml check-report' will fail. -->
+      <test name="org.thdl.util.RTFFixerInputStreamTest"/>
       <test name="org.thdl.tib.input.DuffPaneTest"/>
       <test name="org.thdl.util.ThdlLazyExceptionTest"/>
       <test name="org.thdl.util.TrieTest"/>
