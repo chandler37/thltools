@@ -68,7 +68,7 @@
        java.api.loc.url, will do the trick: -->
   <property name="link.offline" value="false"/>
   <property name="java.api.loc.url"
-            location="http://java.sun.com/j2se/1.4/docs/api/"/>
+            value="http://java.sun.com/j2se/1.4/docs/api/"/>
 
 
   <property name="jnlp.codebase"
