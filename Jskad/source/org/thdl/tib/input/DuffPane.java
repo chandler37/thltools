@@ -1027,12 +1027,13 @@ public class DuffPane extends TibetanPane implements FocusListener {
         }
     }
     
-    /** Saves the TMW document underlying this DuffPane as Unicode.  Has to copy 
+    /** Saves the TMW document underlying this DuffPane as Unicode.
         @param utf8_text true if you want to save as UTF-8-encoded
         Unicode text, false if you want to save as Unicode in RTF
         @param out an OutputStream that will be closed when we're done
         in every case
-        @returns true on perfect success, false otherwise */
+        @returns true on perfect success, false otherwise -- for finer
+        grain, use the standalone TMW->Unicode converter. */
     public boolean saveAsUnicode(boolean utf8_text, OutputStream out)
         throws IOException
     {
