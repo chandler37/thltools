@@ -23,8 +23,121 @@ import java.io.*;
 	into a binary file tree structure format, to be used
 	by some implementations of the SyllableListTree.
 
-	<p>The text files must be in the format used by the
-	The Rangjung Yeshe Tibetan-English Dictionary of Buddhist Culture.</p>
+<p>Syntax (Dictionary files are assumed to be .txt. Don't include extensions!):<ul>
+	<li><b>For one dictionary</b>, to read the definitions stored in <i>
+    dic-name.txt</i> and organize them into <i>dic-name.wrd</i> and <i>
+    dic-name.def</i>:<pre>java -cp DictionarySearchStandalone.jar org.thdl.tib.scanner.BinaryFileGenerator [-delimiter] dict-name</pre>
+	</li>
+	<li><b>For multiple dictionaries</b>, to read the definitions stored in <i>
+    dict-name1.txt</i>, <i>dict-name2.txt</i>, etc.and organize them into <i>
+    dest-file-name.wrd</i> and <i>dest-file-name.def</i>:<pre>java -cp DictionarySearchStandalone.jar org.thdl.tib.scanner.BinaryFileGenerator dest-file-name [-delimiter1] dict-name1 [[-delimiter2] dict-name2 ...]</pre>
+	</li>
+</ul>
+<p>-delimiter<ul>
+<li><b>If this option is omitted</b>, it is assumed that each line is an entry 
+(no multiple-line entries) and the definition and definiendum are separated 
+by '-' (a dash). Even though it is not 
+required, it is highly recommended to include a space before and afterwards 
+(to eliminate any possible ambiguity with regards to the transliteration of 
+reverse vowels in <a href="http://iris.lib.virginia.edu/tibet/tools/ewts.pdf" target="_blank">
+    Extended Wylie</a>). A sample entry for the dictionary is:
+    <hr>
+    <pre>bkra shis - 1) auspiciousness, good luck, good fortune, goodness, prosperity, happiness. 2) auspicious, favorable, fortunate, successful, felicitous, lucky. 3) verse of auspiciousness; benediction, blessing. 4) a personal name.
+bde legs - 1) goodness, happiness, well-being, wellfare, auspiciousness, good fortune. 2) well, fine.</pre>
+<hr>
+    <p>If this were the content of a file called &quot;<i>my-glossary.txt</i>&quot; the 
+    binary tree file would be generated with the command:</p>
+    <pre>java -cp DictionarySearchStandalone.jar org.thdl.tib.scanner.BinaryFileGenerator my-glossary</pre>
+    </li>
+<li>-<b>tab</b>: it is assumed that each line is an entry (no multiple-line 
+entries) and the definition and definiendum are separated by '\t' (horizontal tabulation). 
+One tabulation is enough; don't feel the need to &quot;align&quot; the definitions in your 
+word-processor. A sample entry for the dictionary is:<hr>
+    <pre>bkra shis	1) auspiciousness, good luck, good fortune, goodness, prosperity, happiness. 2) auspicious, favorable, fortunate, successful, felicitous, lucky. 3) verse of auspiciousness; benediction, blessing. 4) a personal name.
+bde legs	1) goodness, happiness, well-being, wellfare, auspiciousness, good fortune. 2) well, fine.</pre>
+<hr>
+    <p>Here, the 
+    binary tree file would be generated with the command:</p>
+    <pre>java -cp DictionarySearchStandalone.jar org.thdl.tib.scanner.BinaryFileGenerator -tab my-glossary</pre>
+</li>
+<li>
+<b>-<i>string</i></b>: it is assumed that each line is an entry (no multiple-line 
+entries) and the definition and definiendum are separated by the character or 
+string of characters specified by the user. A sample entry for the dictionary 
+is:<hr>
+    <pre>bkra shis ** 1) auspiciousness, good luck, good fortune, goodness, prosperity, happiness. 2) auspicious, favorable, fortunate, successful, felicitous, lucky. 3) verse of auspiciousness; benediction, blessing. 4) a personal name.
+bde legs ** 1) goodness, happiness, well-being, wellfare, auspiciousness, good fortune. 2) well, fine.</pre>
+<hr>
+    <p>Here, the 
+    binary tree file would be generated with the command:</p>
+    <pre>java -cp DictionarySearchStandalone.jar org.thdl.tib.scanner.BinaryFileGenerator -** my-glossary</pre>
+</li>
+<li>-<b>acip</b>: it is assumed that the electronic file is a transliteration of 
+a Tibetan dictionary. It is called &quot;acip&quot; because it accepts Acip's comment 
+codes ('@' to mark page numbers, brackets to mark comments, etc). Nevertheless, 
+it still requires the files to be in <a href="http://iris.lib.virginia.edu/tibet/tools/ewts.pdf" target="_blank">
+    Extended Wylie</a>, so if your file is in Acip's transliteration scheme make 
+sure to run <i><a href="#org.thdl.tib.scanner.AcipToWylie">org.thdl.tib.scanner.AcipToWylie</a></i> first. Definitions here can 
+be of multiple lines, but with no blank lines in between. It is assumed that the 
+definiendum starts after a blank line (except at the beginning of a new page 
+where it could start with the last part of the previous definition) up to the <i>
+shad</i> (except when the <i>shad</i> is omitted because of grammar rules as for 
+instance no shad after a &quot;ga&quot; suffix without a secondary suffix). Each 
+time a new letter starts, it should be clearly marked in brackets ('[', ']'), 
+parenthesis ('(', ')') or llaves ('{','}'). A sample entry for the dictionary is:
+<hr>
+<pre>@1
+
+(ka)
+
+ka ba/ gdung 'degs don byed nus pa/
+
+rkyen/ grogs byed
+
+@2
+
+(kha)
+
+khyod dngos po dang de byung 'brel/  khyod dngos po las byung
+zhing/ dngos po ldog stops kyis khyod ldog pa/
+
+khyod dngos po dang bdag gcig 'brel/ khyod ngos po dang bdag
+nyid gcig pa'i sgo nas tha dad gang zhig/ dngos po ldog
+stops kyis khyod ldog pa/
+
+khyod dngos po dang 'brel pa/ khyod dngos po dang tha dad gang
+
+@3
+
+zhig/ ngos po ldog stobs kyis khyod ldog pa/
+
+kha dog  mdog du rung ba'am/ sngo ser dkar dmar sogs mdog tu
+rung ba'i gzugs/</pre>
+<hr>
+    <p>Here the 
+    binary tree file would be generated with the command:</p>
+    <pre>java -cp DictionarySearchStandalone.jar org.thdl.tib.scanner.BinaryFileGenerator -acip my-glossary</pre>
+<p><i>Comments:</i>&nbsp; Notice in the sample text that at the beginning of page 2, &quot;<i>zhig</i>&quot; is not a 
+new definiendum, but still is part of the definition of &quot;<i>khyod dngos po dang 'brel 
+pa</i>&quot;. Also the definiendum of the last entry&nbsp; is &quot;<i>kha dog</i>&quot; 
+(the <i>shad</i> was omitted after &quot;<i>ga</i>&quot; suffix) and not &quot;<i>kha dog mdog du rung ba'am</i>&quot;. 
+Nevertheless the definiendum of the second term is not &quot;<i>khyod dngos po dang bdag</i>&quot; 
+since there is no omitted <i>shad</i> after that &quot;<i>ga</i>&quot; suffix; the 
+definiedum is &quot;<i>khyod dngos po dang bdag gcig 'brel</i>&quot;. As is clear from the 
+sample text, the tool has to make a series of &quot;smart guesses&quot; to try to figure 
+out where each definiendum end and it's definition start.&nbsp; Such process is 
+not 100% full-proof, so expect some mistakes.<br>
+&nbsp;</p>
+</li>
+  <li>
+<p>Dictionaries in different formats can be processed together. For instance the 
+command:
+<pre>java -cp DictionarySearchStandalone.jar org.thdl.tib.scanner.BinaryFileGenerator alldicts ry-dic99 -acip myglossary_uma -tab myglossary_rdzogs-chen</pre>
+<p>would generate <i>alldicts.def</i> and <i>alldicts.wrd</i> processing <i>ry-dic99.txt</i> 
+as dash-separated, <i>myglossary_rdzogs-chen.txt</i> as tab-separated and <i>
+myglossary_uma.txt</i> in the transliteration format explained above.<br>
+&nbsp;</li>
+</ul>
 
     @author Andr&eacute;s Montano Pellegrini
     @see SyllableListTree

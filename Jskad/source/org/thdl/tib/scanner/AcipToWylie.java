@@ -21,8 +21,20 @@ package org.thdl.tib.scanner;
 import java.net.*;
 import java.io.*;
 
-/** Provides interfase to convert from tibetan text transliterated in
-    the Acip scheme to THDL's extended wylie scheme.
+/** Provides an interfase to convert from tibetan text transliterated in the Acip scheme to THDL's <a href="http://iris.lib.virginia.edu/tibet/tools/ewts.pdf" target="_blank">Extended Wylie</a> scheme.
+
+<p>If no arguments are sent, it takes the Acip text from the standard input and sends the 
+Wylie text to the standard output. If one argument is sent, it interprets it as the
+file name for the input. If two arguments are sent, it interprets the first one as the file name for the input and
+the second one as the file name for the output. For example, the following 
+command converts the <i>lam-rim-chen-mo.act</i> storing the results in <i>
+lam-rim-chen-mo.txt</i>:</p>
+<pre>java -cp DictionarySearchStandalone.jar org.thdl.tib.scanner.AcipToWylie lam-rim-chen-mo.act lam-rim-chen-mo.txt</pre>
+<p>Alternatively by redirecting the standard input/output you perform the same 
+job:</p>
+<pre>java -cp DictionarySearchStandalone.jar org.thdl.tib.scanner.AcipToWylie &lt; lam-rim-chen-mo.act &gt; lam-rim-chen-mo.txt</pre>
+<p>If you only want to display the results to the screen, you can run:</p>
+<pre>java -cp DictionarySearchStandalone.jar org.thdl.tib.scanner.AcipToWylie lam-rim-chen-mo.act | more</pre>
     
     @author Andr&eacute;s Montano Pellegrini
 	@see WindowScannerFilter

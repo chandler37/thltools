@@ -23,7 +23,12 @@ import java.util.*;
 
 /** Inputs a Tibetan text and displays the words with their
     definitions through the console over a shell. Use when no
-    graphical interfase is supported or for batch processes.
+    graphical interfase is supported or for batch processes. For instance:</p>
+    <pre>java -cp DictionarySearchStandalone.jar org.thdl.tib.scanner.ConsoleScannerFilter ry-dic99</pre>
+    <p>It reads from the standard input and prints the results to the
+    standard output. For example if you want to parse a text stored in <i>puja.txt</i>
+    and save the results in <i>puja_words.txt</i>, you can run the command:</p>
+    <pre>java -cp DictionarySearchStandalone.jar org.thdl.tib.scanner.ConsoleScannerFilter ry-dic99 &lt; puja.txt &gt; puja_words.txt</pre>
 
     @author Andr&eacute;s Montano Pellegrini
 */

@@ -33,7 +33,12 @@ import org.thdl.tib.input.DuffPane;
     Tibetan script) and displays the words (Roman or Tibetan script)
     with their definitions. Works without Tibetan script in
     platforms that don't support Swing. Can access dictionaries stored
-    locally or remotely.
+    locally or remotely. For example, to access the public dictionary database run the command:</p>
+    <pre>java -jar DictionarySearchStandalone.jar http://iris.lib.virginia.edu/tibetan/servlet/org.thdl.tib.scanner.RemoteScannerFilter</pre>
+  <p>If the JRE you installed does not support <i> Swing</i> classes but supports
+    <i>
+    AWT</i> (as the JRE for handhelds), run the command: </p>
+    <pre>java -jar DictionarySearchHandheld.jar -simple ry-dic99</pre>
 
     @author Andr&eacute;s Montano Pellegrini
 */
