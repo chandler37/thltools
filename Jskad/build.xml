@@ -25,7 +25,9 @@
      extensions/jmf.jar
 
      See the developers site, linked to from http://thdltools.sf.net/,
-     for info on where to find these.
+     for info on where to find these.  (You may be able to use Ant's
+     copies of some of them, if you really can't wait to get started.
+     Examine the contents of '$ANT_HOME/lib'.)
 
 -->
 
@@ -47,6 +49,7 @@
   <property name="license" location="license"/>
   <property name="bin" location="bin"/>
   <property name="jskadbin" location="bin/jskad"/>
+  <property name="junitbin" location="bin/for-junit"/>
   <property name="qdbin" location="bin/qd"/>
   <property name="ttstandalonebin" location="bin/tt-standalone"/>
   <property name="ttappletjwsbin" location="bin/tt-applet-and-java-web-start"/>
@@ -156,6 +159,7 @@
     <mkdir dir="${dist}/source"/>
     <mkdir dir="${bin}"/>
     <mkdir dir="${jskadbin}"/>
+    <mkdir dir="${junitbin}"/>
     <mkdir dir="${qdbin}"/>
     <mkdir dir="${ttstandalonebin}"/>
     <mkdir dir="${tthandheldbin}"/>
@@ -167,8 +171,30 @@
   </target>
 
 
-  <target name="test-all"
-          depends="clean,distclean,compile,dist,src-dist,self-contained-dist,public-javadocs-dist,private-javadocs-dist,releases,web-start-releases,nightly-build"
+  <!--
+       See http://thdltools.sourceforge.net/BuildSystems.html for full
+       details on unit testing our software.  If you're eager enough
+       to get started, just read
+       extensions/to-be-installed-with-ant/README.TXT.
+
+       Just as with 'ant dist', it is wise to 'ant clean' before
+       running 'ant check'.
+  -->
+  <target name="check"
+          description="Compiles and runs all JUnit tests (that can be run given the present extension JARs) for the entire project.  Our coverage is currently quite low."
+          depends="compile-junit-tests">
+    <ant antfile="junitbuild.xml" target="run-all-junit-tests"
+         inheritAll="false" inheritRefs="false">
+       <reference refid="entire.class.path"/>
+       <property name="junitbin" value="${junitbin}"/>
+    </ant>
+    <echo message=""/>
+    <echo message="You may now examine the files TEST-* for more details."/>
+  </target>
+
+  <!-- Use 'ant check' for testing the software, and this merely for putting the build system through its paces: -->
+  <target name="test-all-ant-targets"
+          depends="clean,distclean,compile,dist,src-dist,self-contained-dist,public-javadocs-dist,private-javadocs-dist,releases,web-start-releases,check,nightly-build"
           description="runs every target in this buildfile in a smart order; useful for testing the buildfile and your build environment" />
 
 
@@ -253,6 +279,20 @@
 
       </fileset>
     </copy>
+  </target>
+
+  <target name="compile-junit-tests" depends="init"
+          description="compiles all JUnit test cases that can be compiled in the present CLASSPATH (NB that this distinction is just wishful thinking for now becuase we have such weak test coverage at this point)" >
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${junitbin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/util/ThdlLazyExceptionTest.java"/>
+    </antcall>
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${junitbin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/util/TrieTest.java"/>
+    </antcall>
   </target>
 
   <target name="savant-compile" depends="init"
@@ -529,7 +569,7 @@
                   includes="*"
                   prefix="."/>
       <zipfileset dir="."
-                  includes="build.xml"
+                  includes="*build.xml"
                   prefix="."/>
       <zipfileset dir="."
                   includes="docs/*package-list/**"
@@ -636,7 +676,7 @@
 
 
 
-<!-- DLC FIXME: This used to inlude Jskad2Javascript.class, etc.  But it no longer does.  Compile those extra files, if Edward hasn't removed them! -->
+<!-- DLC FIXME: This used to include Jskad2Javascript.class, etc.  But it no longer does.  Compile those extra files if Edward hasn't removed them! -->
   <target name="jskad-all-in-one-dist" depends="jskad-compile"
           description="generates the self-contained binary distribution for Jskad" >
     <!-- Now put everything in ${bin} and ${ext}/netscape, plus
@@ -706,6 +746,9 @@
     <delete file="${dist}/QuillDriver.jnlp"/>
     <delete file="${dist}/Jskad.jnlp"/>
     <delete file="${source}/org/thdl/util/ThdlVersion.java"/>
+    <delete>
+      <fileset dir="." includes="TEST-org.thdl*"/>
+    </delete>
   </target>
 
 
@@ -801,7 +844,7 @@
     </java>
   </target>
 
-<!-- DLC NOW -->
+<!-- DLC NOW convert to junit tests. -->
   <target name="test-tsheg-bar" depends="jskad-dist" description="runs tsheg bar tests">
     <java classname="org.thdl.tib.text.tshegbar.test" fork="yes">
       <classpath>
@@ -959,10 +1002,6 @@
       <classpath refid="${our.javac.classpathref}"/>
       <src path="${source}"/>
       <include name="${my.included.source.file}" />
-
-      <!-- Exclude JUnit tests: -->
-      <exclude name="**/*Test.java" />
-      <exclude name="**/*AllTests.java" />
 
       <!-- Don't compile these resources (we could leave this out, but
            Ant's debugging output would confuse us, and having this
@@ -1278,7 +1317,11 @@ public class ThdlVersion {
 ]]></echo>
   </target>
 
-<!-- DLC TODO: jardiffs for the JWS stuff. -->
+  <!--
+       Note that jardiffs for the JWS stuff are done by the JWS system
+       itself when appropriate and when the server is configured
+       correctly.  We have no work to do on that front.
+  -->
   <target name="copy-SQD-jars"
           description="Unpacks the JARs/WARs/ZIP files that Savant and QuillDriver use to the chosen bin/ directory">
     <unjar src="${ext}/jdom.jar" dest="${unjardest}"/>
@@ -1297,6 +1340,7 @@ public class ThdlVersion {
       <fileset dir="Fonts/TibetanMachineWeb"/>
     </copy>
   </target>
+
 </project>
 
 <!-- My TO-DO list: -->

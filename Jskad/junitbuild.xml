@@ -1,0 +1,44 @@
+<!-- @author David Chandler, dchandler@users.sourceforge.net
+
+     We have a document,
+     http://thdltools.sourceforge.net/BuildSystems.html, that you
+     probably should read.
+-->
+
+<project name="THDLTools" default="fail-nicely" basedir=".">
+
+  <description>
+    This Jakarta Ant buildfile is used to do the low-level work of
+    unit testing our system.  This is separate from build.xml because
+    to use this build file, you must have installed JUnit and the
+    JUnit Ant tasks (i.e., $ANT_HOME/lib/junit.jar and
+    $ANT_HOME/lib/optional.jar).  Thus, this buildfile contains only
+    targets that must interact with JUnit.
+
+    Read the comments of this buildfile to learn more, or see
+    'http://thdltools.sourceforge.net/BuildSystems.html'.
+  </description>
+
+  <taskdef name="junit"
+           classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask"/>
+
+  <target name="fail-nicely"
+          description="Tells the user to use build.xml, not this subbuildfile.">
+    <fail message="Do not use this file directly; use build.xml file instead, which then uses this file."/>
+  </target>
+
+
+  <!-- This creates output files TEST* in the Jskad/ directory. -->
+  <target name="run-all-junit-tests"
+          description="Assuming that compilation of appropriate classes has been done, this target runs all the JUnit tests in the project.">
+    <junit fork="no" printsummary="yes" haltonfailure="yes" haltonerror="yes">
+      <classpath>
+        <pathelement location="${junitbin}"/>
+        <path refid="entire.class.path"/>
+      </classpath>
+      <formatter type="plain"/>
+      <test name="org.thdl.util.ThdlLazyExceptionTest"/>
+      <test name="org.thdl.util.TrieTest"/>
+    </junit>
+  </target>
+</project>

@@ -2,9 +2,7 @@
 
      We have a document,
      http://thdltools.sourceforge.net/BuildSystems.html, that you
-     probably should read.  FIXME: update this document to describe
-     the two-buildfile system.
-
+     probably should read.
 -->
 
 <project name="THDLTools" default="fail-nicely" basedir=".">
@@ -16,7 +14,7 @@
     This is separate from build.xml because to use this build file,
     you must have installed the Venus Application Publisher's (Vamp's)
     Ant tasks.  Read the comments of this buildfile to learn more, or
-    see http://thdltools.sourceforge.net/BuildSystems.html.
+    see 'http://thdltools.sourceforge.net/BuildSystems.html'.
   </description>
 
 
