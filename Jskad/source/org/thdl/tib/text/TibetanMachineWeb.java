@@ -435,13 +435,17 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 									break;
 
 								case 10: //Unicode: ignore for now
-                                    ThdlDebug.verify(val.length() == 4);
-                                    try {
-                                        int x;
-                                        ThdlDebug.verify((x = Integer.parseInt(val, 16)) >= 0x0F00
-                                                         && x <= 0x0FFF);
-                                    } catch (NumberFormatException e) {
-                                        ThdlDebug.verify(false);
+                                    StringTokenizer uTok = new StringTokenizer(val, ",");
+                                    while (uTok.hasMoreTokens()) {
+                                        String subval = uTok.nextToken();
+                                        ThdlDebug.verify(subval.length() == 4);
+                                        try {
+                                            int x;
+                                            ThdlDebug.verify((x = Integer.parseInt(subval, 16)) >= 0x0F00
+                                                             && x <= 0x0FFF);
+                                        } catch (NumberFormatException e) {
+                                            ThdlDebug.verify(false);
+                                        }
                                     }
 									break;
 
@@ -1092,10 +1096,11 @@ public static String getHashKeyForGlyph(int font, int code) {
 }
 
 /**
-* Gets the hash key associated with this glyph.
+* Gets the hash key associated with this glyph, or null if there is
+* none (probably because this glyph has no THDL Extended Wylie
+* transcription).
 * @param dc a DuffCode denoting a TibetanMachineWeb glyph
-* @return the hashKey corresponding to the character at dc
-*/
+* @return the hashKey corresponding to the character at dc */
 public static String getHashKeyForGlyph(DuffCode dc) {
 	int font = dc.getFontNum();
 	int code = dc.getCharNum()-32;
@@ -1128,6 +1133,16 @@ public static String wylieForGlyph(String hashKey) {
 	return sb.toString();
 }
 
+/** Error that appears in a document when some TMW cannot be
+ *  transcribed in THDL Extended Wylie.  This error message is
+ *  documented in www/htdocs/TMW_RTF_TO_THDL_WYLIE.html, so change
+ *  them both when you change this. */
+private static String getTMWToWylieErrorString(DuffCode dc) {
+    return "<<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert DuffCode "
+        + dc.toString(true)
+        + " to THDL Extended Wylie.  Please see the documentation for the TMW font and transcribe this yourself.]]>>";
+}
+
 /**
 * Gets the Extended Wylie value for this glyph.
 * @param font the font of the TibetanMachineWeb
@@ -1139,6 +1154,9 @@ public static String wylieForGlyph(String hashKey) {
 */
 public static String getWylieForGlyph(int font, int code) {
 	String hashKey = getHashKeyForGlyph(font, code);
+    if (hashKey == null) {
+        return getTMWToWylieErrorString(new DuffCode(font, (char)code));
+    }
 	return wylieForGlyph(hashKey);
 }
 
@@ -1152,10 +1170,7 @@ public static String getWylieForGlyph(int font, int code) {
 public static String getWylieForGlyph(DuffCode dc) {
 	String hashKey = getHashKeyForGlyph(dc);
     if (hashKey == null) {
-        // This error message is documented in
-        // www/htdocs/TMW_RTF_TO_THDL_WYLIE.html, so change them both
-        // when you change this.
-        return "<<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert DuffCode " + dc.toString(true) + " to THDL Extended Wylie.  Please see the documentation for the TMW font and transcribe this yourself.]]>>";
+        return getTMWToWylieErrorString(dc);
     }
 	return wylieForGlyph(hashKey);
 }
