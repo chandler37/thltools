@@ -1609,12 +1609,12 @@ public void paste(int offset) {
                             DuffData[] duffdata = null;
                             if (fromACIP) {
                                 getTibDoc().remove(start, i-start);
-                                TibTextUtils.insertTibetanMachineWebForACIP(sb.toString(),
-                                                                            getTibDoc(),
-                                                                            start,
-                                                                            withWarnings);
-                            }
-                            else
+                                i += -1 /* because i++ will occur */
+                                    + TibTextUtils.insertTibetanMachineWebForACIP(sb.toString(),
+                                                                                  getTibDoc(),
+                                                                                  start,
+                                                                                  withWarnings);
+                            } else
                                 duffdata = TibTextUtils.getTibetanMachineWebForEWTS(sb.toString());
                             if (!fromACIP) {
                                 getTibDoc().remove(start, i-start);

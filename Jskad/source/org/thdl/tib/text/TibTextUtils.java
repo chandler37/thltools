@@ -324,11 +324,12 @@ public class TibTextUtils implements THDLWylieConstants {
 * it does not conform to the ACIP transcription rules (those in the
 * official document and the subtler rules pieced together by David
 * Chandler through study and private correspondence with Robert
-* Chilton) */
-    public static void insertTibetanMachineWebForACIP(String acip,
-                                                      TibetanDocument tdoc,
-                                                      int loc,
-                                                      boolean withWarnings)
+* Chilton)
+* @return the number of characters inserted into tdoc */
+    public static int insertTibetanMachineWebForACIP(String acip,
+                                                     TibetanDocument tdoc,
+                                                     int loc,
+                                                     boolean withWarnings)
         throws InvalidACIPException
     {
         StringBuffer errors = new StringBuffer();
@@ -346,8 +347,11 @@ public class TibTextUtils implements THDLWylieConstants {
             putWarningsInOutput = true;
         }
         try {
+            int tloc[] = new int[] { loc };
             ACIPConverter.convertToTMW(al, tdoc, null, null,
-                                       putWarningsInOutput, warningLevel, colors, loc);
+                                       putWarningsInOutput, warningLevel,
+                                       colors, tloc);
+            return tloc[0] - loc;
         } catch (IOException e) {
             throw new Error("Can't happen: " + e);
         }
