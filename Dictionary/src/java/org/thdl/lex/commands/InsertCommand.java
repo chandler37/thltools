@@ -60,6 +60,7 @@ public class InsertCommand extends LexCommand implements Command
 		String msg = null;
 		String next = getNext();
 		DisplayHelper displayHelper = getSessionManager().getDisplayHelper( req.getSession( true ) );
+		Global global = (Global) req.getServletContext().getAttribute( "global" );
 		try
 		{
 			HttpSession ses = req.getSession( false );
@@ -124,7 +125,7 @@ public class InsertCommand extends LexCommand implements Command
 				LexLogger.debugComponent( term );
 
 				LexComponentRepository.saveOrUpdate( term );
-
+				global.setRequiresRefresh( true );
 				msg = "Successful Update";
 				getSessionManager().setDisplayMode( req.getSession( true ), "edit" );
 			}

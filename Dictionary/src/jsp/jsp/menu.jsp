@@ -79,7 +79,19 @@
 	Message: <c:out value="${ message }" />
 	</p>
 	</c:if>
-
+	
+	<h2>Recently Updated Terms</h2>
+	<c:forEach var="term" items="${applicationScope.global.recentUpdates }">
+		<h3><c:out value="${ term.term }"/></h3>
+		<p>
+		<span class="label">Created by </span><c:out value="${ applicationScope.flatData.users[ term.meta.createdBy ] }"   escapeXml="false"/>		
+		<span class="label">on </span><c:out value="${  term.meta.createdOn }"  default="unknown"  escapeXml="false"/>		
+		<br/>
+		<span class="label">Modified by </span><c:out value="${ applicationScope.flatData.users[ term.meta.modifiedBy ] }"  default="unknown"  escapeXml="false"/>
+		<span class="label">on </span><c:out value="${ term.meta.modifiedOn }"  default="unknown"  escapeXml="false"/>
+		</p>
+	</c:forEach>
+	
 </div><!--END COLUMN CENTER-->
 
 <jsp:include page="footer.jsf" flush="false" />

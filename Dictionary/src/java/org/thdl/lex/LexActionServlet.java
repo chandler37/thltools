@@ -92,6 +92,13 @@ public class LexActionServlet extends HttpServlet
 		super.init( config );
 		initCommands();
 		config.getServletContext().setAttribute( "flatData", new LexFlatDataRepository() );
+		String delay = config.getInitParameter( "globalDataRefreshDelay" );
+		long refreshDelay = Long.parseLong( delay ) * 1000 * 60;
+		String recent = config.getInitParameter( "recentItems" );
+		int recentItems = Integer.parseInt( recent );
+		Global global = new Global( recentItems, refreshDelay );
+		config.getServletContext().setAttribute( "global", global );
+		LexLogger.debugComponent( global );
 	}
 
 

@@ -328,6 +328,30 @@ public class LexComponentRepository
 	}
 
 
+	/**
+	 *  Gets the recentTerms attribute of the LexComponentRepository class
+	 *
+	 * @param  limit                       Description of the Parameter
+	 * @return                             The recentTerms value
+	 * @exception  LexRepositoryException  Description of the Exception
+	 */
+	public static List getRecentTerms( int limit ) throws LexRepositoryException
+	{
+		Query query = null;
+		List results = null;
+		String queryString = " FROM org.thdl.lex.component.ITerm ORDER BY modifiedOn DESC LIMIT " + limit;
+		try
+		{
+			query = getSession().createQuery( queryString );
+			results = query.list();
+		}
+		catch ( HibernateException he )
+		{
+			throw new LexRepositoryException( he );
+		}
+		return results;
+	}
+
 
 	/**
 	 *  Description of the Method

@@ -64,20 +64,22 @@
 <servlet>
 	<servlet-name>action</servlet-name>
 	<servlet-class>org.thdl.lex.LexActionServlet</servlet-class>
-</servlet>
-
-<servlet>
-	<servlet-name>public</servlet-name>
-	<servlet-class>org.thdl.lex.LexActionServlet</servlet-class>
+	<init-param>
+		<param-name>globalDataRefreshDelay</param-name>
+		<!--delay in minutes-->
+		<param-value>6</param-value>
+	</init-param>
+	<init-param>
+		<param-name>recentItems</param-name>
+		<!--number of recently modified terms to store in the global object-->
+		<param-value>6</param-value>
+	</init-param>
 </servlet>
 
  <servlet>
 	<servlet-name>login</servlet-name>
 	<servlet-class>org.thdl.lex.LoginServlet</servlet-class>
-	<!-- <init-param>
-		<param-name>userDataManager</param-name>
-		<param-value>org.thdl.lex.LexUserDataManager</param-value>
-	</init-param> -->
+
 	<init-param>
 		<param-name>loginPage</param-name>
 		<param-value>/login.jsp</param-value>
@@ -97,17 +99,7 @@
 	</init-param>
 </servlet>
  
-   <servlet>
-	<servlet-name>test</servlet-name>
-	<servlet-class>org.thdl.lex.HibernateTestServlet</servlet-class>
-	</servlet>
-	
 <!--SERVLET MAPPPINGS-->
-
-  <servlet-mapping>
-	<servlet-name>test</servlet-name>
-	<url-pattern>/test</url-pattern>
-</servlet-mapping>
 
 <servlet-mapping>
 	<servlet-name>action</servlet-name>
@@ -115,7 +107,7 @@
 </servlet-mapping>
 
 <servlet-mapping>
-	<servlet-name>public</servlet-name>
+	<servlet-name>action</servlet-name>
 	<url-pattern>/public</url-pattern>
 </servlet-mapping>
 
