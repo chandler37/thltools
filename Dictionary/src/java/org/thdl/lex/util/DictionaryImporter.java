@@ -10,6 +10,13 @@ import java.sql.*;
 
 public class DictionaryImporter
 {
+	private static final String INSERT_META =  "INSERT INTO meta (createdby, modifiedby, createdbyprojsub, modifiedbyprojsub, createdon,"
+																	+ "modifiedon, source, language, dialect, script, note) VALUES ( ?, ? , ?, ?, NOW(), NOW(), 0, 0, 0, 1, ?)";
+	private static final String SELECT_META = "SELECT metaid FROM terms WHERE term = ?";
+	private static final String INSERT_TERM = "INSERT INTO terms (metaid, term) VALUES (?,?)";
+	private static final String UPDATE_TRANS = "UPDATE transitionaldata SET transitionaldatatext = ? WHERE metaid = ?";
+	private static final String INSERT_TRANS = "INSERT INTO transitionaldata (metaid, parentid, precedence, transitionaldatalabel, forpublicconsumption, "
+																	+"transitionaldatatext) VALUES (?, ?, ?, ?, ?, ? )";
     private static PrintWriter out;
     private static BufferedReader in;
     private static String delimiter;
@@ -21,7 +28,12 @@ public class DictionaryImporter
     private static Integer label;
     private static Statement sqlStatement;
     private static Connection conn;
-    
+    private static PreparedStatement insertMetaStmt;
+    private static PreparedStatement selectMetaStmt;
+    private static PreparedStatement insertTermStmt;
+    private static PreparedStatement updateTransStmt;
+    private static PreparedStatement insertTransStmt;
+	
     public final static int delimiterGeneric=0;
     public final static int delimiterAcip=1;
     public final static int delimiterDash=2;
@@ -93,8 +105,15 @@ public class DictionaryImporter
 	    Boolean result;
 	    ResultSet set;
 	    int metaID, metaIDTrans, prec;
-	    String currentDef, insertMeta = "INSERT INTO meta (createdby, modifiedby, createdbyprojsub, modifiedbyprojsub, createdon, modifiedon, source, language, dialect, script, note) VALUES (" + creator.toString() + ", " + creator.toString() + ", " + proj.toString() + ", " + proj.toString() + ", NOW(), NOW(), 0, 0, 0, 1, \"" + note + "\")";
+	    String currentDef;
 
+		insertMetaStmt.setString( 1, creator.toString() );
+		insertMetaStmt.setString( 2, creator.toString() );
+		insertMetaStmt.setString( 3, proj.toString() );
+		insertMetaStmt.setString( 4, proj.toString() );
+		insertMetaStmt.setString( 5, note );
+		
+		
 	    definition = Manipulate.replace(definition, "\\", "@@@@");
 	    definition = Manipulate.replace(definition, "@@@@", "\\\\");
 	    
@@ -105,18 +124,21 @@ public class DictionaryImporter
         // System.out.println(term);
         
 	    // Check to see if term is already there
-	    sqlStatement.execute("SELECT metaid FROM terms WHERE term = \"" + term + "\"");
-	    set = sqlStatement.getResultSet();
+	    selectMetaStmt.setString( 1 , term );
+	    set = selectMetaStmt.getResultSet();
 	    
 	    // if it is get its metaID, else add it
 	    if (!set.first())
 	    {
-	        sqlStatement.execute(insertMeta);
+	        insertMetaStmt.execute();
 	        sqlStatement.execute("SELECT MAX(metaid) FROM META");
 	        set = sqlStatement.getResultSet();
 	        set.first();
 	        metaID = set.getInt(1);
-	        sqlStatement.execute("INSERT INTO terms (metaid, term) VALUES (" + metaID + ", \"" + term + "\")");
+			
+			insertTermStmt.setInt( 1, metaID );
+			insertTermStmt.setString(2, term );
+	        insertTermStmt.execute();
 	    }
 	    else metaID = set.getInt(1);
 	    
@@ -139,7 +161,9 @@ public class DictionaryImporter
 	        {
 	            if (!currentDef.equals("")) definition = currentDef + ". " + definition;
 	            metaIDTrans = set.getInt(2);
-   	            sqlStatement.execute("UPDATE transitionaldata SET transitionaldatatext = \"" + definition + "\" WHERE metaid = " + metaIDTrans);
+				updateTransStmt.setString( 1, currentDef );
+				updateTransStmt.setInt( 1, metaIDTrans );
+   	            updateTransStmt.execute();
 	        }
 	    }
 	    else
@@ -153,7 +177,14 @@ public class DictionaryImporter
 	        set = sqlStatement.getResultSet();
 	        if (set.first()) prec = set.getInt(1)+1;
 	        else prec = 0;
-	        sqlStatement.execute("INSERT INTO transitionaldata (metaid, parentid, precedence, transitionaldatalabel, forpublicconsumption, transitionaldatatext) VALUES ("+ metaIDTrans +", " + metaID +", " + prec + ", " + label + ", \"" + publicCons + "\", \"" + definition + "\")");
+			
+			insertTransStmt.setInt( 1, metaIDTrans );
+			insertTransStmt.setInt( 2, metaID );
+			insertTransStmt.setInt( 3, prec );
+			insertTransStmt.setInt( 4, label );
+			insertTransStmt.setInt( 5, publicCons );
+			insertTransStmt.setString( 6, definition );
+	        insertTransStmt.execute();
 	    }
 	}
 	
@@ -292,16 +323,12 @@ public class DictionaryImporter
 	}
 	
 	/** Used only if the database is being accessed manually instead of through Hibernate */
-	private static Statement getStatement()
+	private static void initConnections()
 	{
 		ResourceBundle rb = ResourceBundle.getBundle("dictionary-importer");
-		Statement s = null;
 		
 		// Loading driver
 		try { 
-            // The newInstance() call is a work around for some 
-            // broken Java implementations
-
             Class.forName(rb.getString("dictionaryimporter.driverclassname")).newInstance(); 
         } catch (Exception ex) { 
             System.out.println("Mysql driver couldn't be loaded!");
@@ -311,18 +338,34 @@ public class DictionaryImporter
 	    // Connecting to database
         try {
             conn = DriverManager.getConnection(rb.getString("dictionaryimporter.url"));
-            s = conn.createStatement();
-          
-            // Do something with the Connection 
-          
+            conn2 = DriverManager.getConnection(rb.getString("dictionaryimporter.url"));
+            conn3 = DriverManager.getConnection(rb.getString("dictionaryimporter.url"));
+            conn4 = DriverManager.getConnection(rb.getString("dictionaryimporter.url"));
+            conn5 = DriverManager.getConnection(rb.getString("dictionaryimporter.url"));
         } catch (Exception ex) {
             // handle any errors 
             System.out.println("Could not connect to database!"); 
+			ex.printStackTrace();
             System.exit(0);
         }
-        
-        return s;
 	}
+	
+	private static void initStatements()
+	{
+        try {
+            sqlStatement = conn.createStatement();
+			insertMetaStmt = conn.prepareStatement( INSERT_META );
+			selectMetaStmt = conn.prepareStatement( SELECT_META );
+			insertTermStmt = conn.prepareStatement( INSERT_TERM );
+			updateTransStmt = conn.prepareStatement( UPDATE_TRANS );
+			insertTransStmt = conn.prepareStatement( INSERT_TRANS );
+        } catch (Exception ex) {
+            // handle any errors 
+            System.out.println("Could not create statement!"); 
+			ex.printStackTrace();
+            System.exit(0);
+        }
+	}		
 	
 	public DictionaryImporter()
 	{
@@ -363,7 +406,8 @@ public class DictionaryImporter
 		    currentArg++;
 		    if (option.equals("manual"))
 		    {
-		        sqlStatement = getStatement();
+		        initConnections();
+		        initStatements();
 		    } else if (option.equals("format"))
 		    {
 		        if (argNum<=currentArg)
