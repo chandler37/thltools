@@ -33,6 +33,7 @@ import org.thdl.tib.text.*;
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlOptions;
 import org.thdl.util.StatusBar;
+import org.thdl.util.RTFFixerInputStream;
 
 /**
 * Enables input of Tibetan text
@@ -1036,6 +1037,8 @@ public void paste(int offset) {
             boolean errorReading = false;
 
             try {
+                if (!ThdlOptions.getBooleanOption("thdl.do.not.fix.rtf.hex.escapes"))
+                    in = new RTFFixerInputStream(in);
                 rtfEd.read(in, sd, 0);
             } catch (Exception e) {
                 errorReading = true;
@@ -1047,7 +1050,7 @@ public void paste(int offset) {
                 /** Added by AM, to fix copy-paste issues for
                     Translation Tool.  Assumes that if roman is
                     disabled and you are pasting something in RTF but
-                    is not TibetanMachineWeb it most be wylie.  */
+                    it is not TibetanMachineWeb then it must be wylie.  */
                 if (!sd.getFont((sd.getCharacterElement(0).getAttributes())).getFamily().startsWith("TibetanMachineWeb")
                     && !isRomanEnabled
                     && contents.isDataFlavorSupported(DataFlavor.stringFlavor))

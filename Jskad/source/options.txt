@@ -122,3 +122,8 @@ thdl.add.developer.options.to.menu = false
 # you about the messy details of how Jskad decides when and where to
 # break lines for display.
 thdl.log.line.breaking.algorithm = false
+
+# Java Swing's RTF support is buggy.  The hex escape sequence \'97
+# disappears from the input.  We turn these guys into Unicode escapes
+# when this is false.  We leave it buggy when this is true.
+thdl.do.not.fix.rtf.hex.escapes = false

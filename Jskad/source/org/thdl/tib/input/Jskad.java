@@ -35,6 +35,7 @@ import java.util.Vector;
 
 import org.thdl.tib.text.*;
 import org.thdl.util.ThdlDebug;
+import org.thdl.util.RTFFixerInputStream;
 import org.thdl.util.ThdlOptions;
 import org.thdl.util.ThdlVersion;
 import org.thdl.util.StatusBar;
@@ -437,6 +438,19 @@ public class Jskad extends JPanel implements DocumentListener {
 
         if (ThdlOptions.getBooleanOption("thdl.add.developer.options.to.menu")) {
             toolsMenu.addSeparator();
+            JMenuItem DevelItem = new JMenuItem("Debug dump to standard output");
+            DevelItem.addActionListener(new ThdlActionListener() {
+                    public void theRealActionPerformed(ActionEvent e) {
+                        StringBuffer buf = new StringBuffer();
+                        ((TibetanDocument)dp.getDocument()).getTextRepresentation(0, -1, buf);
+                        System.out.println("The text representation of the document, for debugging, is this:\n" + buf);
+                    }
+                });
+            toolsMenu.add(DevelItem);
+        }
+
+        if (ThdlOptions.getBooleanOption("thdl.add.developer.options.to.menu")) {
+            toolsMenu.addSeparator();
             JMenuItem DevelItem = new JMenuItem("Check for non-TMW characters"); // FIXME: do it just in the selection?
             DevelItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
@@ -764,6 +778,8 @@ public class Jskad extends JPanel implements DocumentListener {
             if (dp.getDocument().getLength()>0 && parentObject instanceof JFrame) {
                 JFrame parentFrame = (JFrame)parentObject;
                 InputStream in = new FileInputStream(fileChosen);
+                if (!ThdlOptions.getBooleanOption("thdl.do.not.fix.rtf.hex.escapes"))
+                    in = new RTFFixerInputStream(in);
                 ThdlOptions.setUserPreference("thdl.Jskad.working.directory",
                                               fileChosen.getParentFile().getAbsolutePath());
                 JFrame newFrame = new JFrame(f_name);
@@ -798,6 +814,8 @@ public class Jskad extends JPanel implements DocumentListener {
                 }
             } else {
                 InputStream in = new FileInputStream(fileChosen);
+                if (!ThdlOptions.getBooleanOption("thdl.do.not.fix.rtf.hex.escapes"))
+                    in = new RTFFixerInputStream(in);
                 ThdlOptions.setUserPreference("thdl.Jskad.working.directory",
                                               fileChosen.getParentFile().getAbsolutePath());
                 dp.newDocument();
@@ -1229,9 +1247,11 @@ public class Jskad extends JPanel implements DocumentListener {
     /** Stores all open Jskad sessions. */
     private static Vector jskads = new Vector();
 
-    /** Closes all Jskad windows after asking "Do you want to save?"
-        for the modified windows.  If you don't cancel for any unsaved
-        session, then all sessions are closed. */
+    /** Closes all Jskad windows if user confirms.  After asking "Do
+        you want to save?"  for the modified windows, this closes them
+        all.  If you don't cancel for any unsaved session, then all
+        sessions are closed.  If you do cancel for any one, even the
+        last one, then all sessions remain open. */
     private static void exitAction() {
         int sz = jskads.size();
         for (int i = 0; i < sz; i++) {

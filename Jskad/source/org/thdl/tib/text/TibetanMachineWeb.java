@@ -1015,8 +1015,12 @@ private static final DuffCode TMW_tab = new DuffCode(1, '\t');
 public static DuffCode mapTMtoTMW(int font, int ordinal, int suggestedFont) {
     if (font < 0 || font > 4)
         return null;
-    if (ordinal >= 255)
-        return getUnusualTMtoTMW(font, ordinal);
+    if (ordinal >= 255) {
+        DuffCode rv = getUnusualTMtoTMW(font, ordinal);
+        if (null != rv && !ThdlOptions.getBooleanOption("thdl.do.not.fix.rtf.hex.escapes"))
+            throw new Error("oddballs still found after fixing RTF hex escapes");
+        return rv;
+    }
     if (ordinal < 32) {
         if (ordinal == (int)'\r') {
             if (0 == suggestedFont)

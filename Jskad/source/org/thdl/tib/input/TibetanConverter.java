@@ -183,6 +183,8 @@ public class TibetanConverter implements FontConverterConstants {
         try {
             // Read in the rtf file.
             if (debug) System.err.println("Start: reading in old RTF file");
+            if (!ThdlOptions.getBooleanOption("thdl.do.not.fix.rtf.hex.escapes"))
+                in = new RTFFixerInputStream(in);
             dp.rtfEd.read(in, dp.getDocument(), 0);
             if (debug) System.err.println("End  : reading in old RTF file");
         } catch (Exception e) {
