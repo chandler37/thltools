@@ -1,14 +1,22 @@
 package org.thdl.lex;
 
+import org.thdl.users.ThdlUserRepository;
 import java.util.HashMap;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
+
+/**
+ *  Description of the Class
+ *
+ * @author     travis
+ * @created    December 15, 2003
+ */
 public class LexFlatDataRepository
 {
 //attributes
-	int displayLanguage=1; //this should default to the id for english from Languages table
+	int displayLanguage = 1;//this should default to the id for english from Languages table
 	private static LexFlatDataRepository instance;
 
 	HashMap users;
@@ -20,7 +28,7 @@ public class LexFlatDataRepository
 	HashMap literarySources;
 	HashMap transitionalDataLabels;
 
-	HashMap dialects; //represents merge table
+	HashMap dialects;//represents merge table
 	HashMap majorDialectFamilies;
 	HashMap specificDialects;
 
@@ -35,206 +43,635 @@ public class LexFlatDataRepository
 	HashMap commentTypes;
 
 //accessors
+	/**
+	 *  Gets the instance attribute of the LexFlatDataRepository class
+	 *
+	 * @return    The instance value
+	 */
 	public static LexFlatDataRepository getInstance()
 	{
-		if (null == instance)
+		if ( null == instance )
+		{
 			instance = new LexFlatDataRepository();
+		}
 		return instance;
 	}
+
+
+	/**
+	 *  Sets the transitionalDataLabels attribute of the LexFlatDataRepository object
+	 */
 	public void setTransitionalDataLabels()
 	{
 		String sql = "SELECT id, transitionalDataLabel FROM TransitionalDataLabels";
 		setTransitionalDataLabels( createMap( sql ) );
 	}
-	public void setTransitionalDataLabels(HashMap transitionalDataLabels) {
+
+
+	/**
+	 *  Sets the transitionalDataLabels attribute of the LexFlatDataRepository object
+	 *
+	 * @param  transitionalDataLabels  The new transitionalDataLabels value
+	 */
+	public void setTransitionalDataLabels( HashMap transitionalDataLabels )
+	{
 		this.transitionalDataLabels = transitionalDataLabels;
 	}
-	public HashMap getTransitionalDataLabels() {
+
+
+	/**
+	 *  Gets the transitionalDataLabels attribute of the LexFlatDataRepository object
+	 *
+	 * @return    The transitionalDataLabels value
+	 */
+	public HashMap getTransitionalDataLabels()
+	{
 		return transitionalDataLabels;
 	}
-	public void setLiterarySources(HashMap literarySources) {
+
+
+	/**
+	 *  Sets the literarySources attribute of the LexFlatDataRepository object
+	 *
+	 * @param  literarySources  The new literarySources value
+	 */
+	public void setLiterarySources( HashMap literarySources )
+	{
 		this.literarySources = literarySources;
 	}
+
+
+	/**
+	 *  Sets the literarySources attribute of the LexFlatDataRepository object
+	 */
 	public void setLiterarySources()
 	{
-		String sql="SELECT id, sourceNormalizedTitle FROM LiterarySources";
+		String sql = "SELECT id, sourceNormalizedTitle FROM LiterarySources";
 		setLiterarySources( createMap( sql ) );
 	}
-	public HashMap getLiterarySources() {
+
+
+	/**
+	 *  Gets the literarySources attribute of the LexFlatDataRepository object
+	 *
+	 * @return    The literarySources value
+	 */
+	public HashMap getLiterarySources()
+	{
 		return literarySources;
 	}
-	public void setUsers(HashMap users) {
+
+
+	/**
+	 *  Sets the users attribute of the LexFlatDataRepository object
+	 *
+	 * @param  users  The new users value
+	 */
+	public void setUsers( HashMap users )
+	{
 		this.users = users;
 	}
-	public void setUsers() {
-		String sql="SELECT id, firstName, lastName FROM Users";
-		setUsers( createMap(sql) );
-	}	
-	public void setProjectSubjects(HashMap projectSubjects) {
+
+
+	/**
+	 *  Sets the users attribute of the LexFlatDataRepository object
+	 *
+	 * @exception  LexRepositoryException  Description of the Exception
+	 */
+	public void setUsers() throws LexRepositoryException
+	{
+		try
+		{
+			ThdlUserRepository tr = ThdlUserRepository.getInstance();
+			setUsers( tr.getUsernameMap() );
+		}
+		catch ( Exception e )
+		{
+			throw new LexRepositoryException( e );
+		}
+	}
+
+
+	/**
+	 *  Sets the projectSubjects attribute of the LexFlatDataRepository object
+	 *
+	 * @param  projectSubjects  The new projectSubjects value
+	 */
+	public void setProjectSubjects( HashMap projectSubjects )
+	{
 		this.projectSubjects = projectSubjects;
 	}
-	public void setProjectSubjects() {
-		String sql="SELECT id, projectSubject FROM projectSubjects";
-		setProjectSubjects( createMap(sql) );
+
+
+	/**
+	 *  Sets the projectSubjects attribute of the LexFlatDataRepository object
+	 */
+	public void setProjectSubjects()
+	{
+		String sql = "SELECT id, projectSubject FROM projectSubjects";
+		setProjectSubjects( createMap( sql ) );
 	}
-	public void setSources(HashMap sources) {
+
+
+	/**
+	 *  Sets the sources attribute of the LexFlatDataRepository object
+	 *
+	 * @param  sources  The new sources value
+	 */
+	public void setSources( HashMap sources )
+	{
 		this.sources = sources;
 	}
-	public void setSources() {
-		String sql ="SELECT id, sourceTitle FROM Sources";
-		setSources( createMap(sql) );
+
+
+	/**
+	 *  Sets the sources attribute of the LexFlatDataRepository object
+	 */
+	public void setSources()
+	{
+		String sql = "SELECT id, sourceTitle FROM Sources";
+		setSources( createMap( sql ) );
 	}
-	public void setLanguages(HashMap languages) {
+
+
+	/**
+	 *  Sets the languages attribute of the LexFlatDataRepository object
+	 *
+	 * @param  languages  The new languages value
+	 */
+	public void setLanguages( HashMap languages )
+	{
 		this.languages = languages;
 	}
-	public void setLanguages() {
-		String sql="SELECT id,Language FROM Languages";
-		setLanguages( createMap(sql) );
+
+
+	/**
+	 *  Sets the languages attribute of the LexFlatDataRepository object
+	 */
+	public void setLanguages()
+	{
+		String sql = "SELECT id,Language FROM Languages";
+		setLanguages( createMap( sql ) );
 	}
-	public void setScripts(HashMap scripts) {
+
+
+	/**
+	 *  Sets the scripts attribute of the LexFlatDataRepository object
+	 *
+	 * @param  scripts  The new scripts value
+	 */
+	public void setScripts( HashMap scripts )
+	{
 		this.scripts = scripts;
 	}
-	public void setScripts() {
-		String sql="SELECT id,script FROM scripts";
-		setScripts( createMap(sql) );
+
+
+	/**
+	 *  Sets the scripts attribute of the LexFlatDataRepository object
+	 */
+	public void setScripts()
+	{
+		String sql = "SELECT id,script FROM scripts";
+		setScripts( createMap( sql ) );
 	}
-	public HashMap getUsers() {
+
+
+	/**
+	 *  Gets the users attribute of the LexFlatDataRepository object
+	 *
+	 * @return                             The users value
+	 * @exception  LexRepositoryException  Description of the Exception
+	 */
+	public HashMap getUsers() throws LexRepositoryException
+	{
+		if ( null == users )
+		{
+			setUsers();
+		}
 		return users;
 	}
-	public HashMap getProjectSubjects() {
+
+
+	/**
+	 *  Gets the projectSubjects attribute of the LexFlatDataRepository object
+	 *
+	 * @return    The projectSubjects value
+	 */
+	public HashMap getProjectSubjects()
+	{
 		return projectSubjects;
 	}
-	public HashMap getSources() {
+
+
+	/**
+	 *  Gets the sources attribute of the LexFlatDataRepository object
+	 *
+	 * @return    The sources value
+	 */
+	public HashMap getSources()
+	{
 		return sources;
 	}
-	public HashMap getLanguages() {
+
+
+	/**
+	 *  Gets the languages attribute of the LexFlatDataRepository object
+	 *
+	 * @return    The languages value
+	 */
+	public HashMap getLanguages()
+	{
 		return languages;
 	}
-	public HashMap getScripts() {
+
+
+	/**
+	 *  Gets the scripts attribute of the LexFlatDataRepository object
+	 *
+	 * @return    The scripts value
+	 */
+	public HashMap getScripts()
+	{
 		return scripts;
 	}
-	public void setEtymologyTypes(HashMap etymologyTypes) {
+
+
+	/**
+	 *  Sets the etymologyTypes attribute of the LexFlatDataRepository object
+	 *
+	 * @param  etymologyTypes  The new etymologyTypes value
+	 */
+	public void setEtymologyTypes( HashMap etymologyTypes )
+	{
 		this.etymologyTypes = etymologyTypes;
 	}
-	public void setEtymologyTypes() {
-		String sql="SELECT id, etymologyType FROM EtymologyTypes";
-		setEtymologyTypes( createMap( sql ) );	
+
+
+	/**
+	 *  Sets the etymologyTypes attribute of the LexFlatDataRepository object
+	 */
+	public void setEtymologyTypes()
+	{
+		String sql = "SELECT id, etymologyType FROM EtymologyTypes";
+		setEtymologyTypes( createMap( sql ) );
 	}
-	public HashMap getEtymologyTypes() {
+
+
+	/**
+	 *  Gets the etymologyTypes attribute of the LexFlatDataRepository object
+	 *
+	 * @return    The etymologyTypes value
+	 */
+	public HashMap getEtymologyTypes()
+	{
 		return etymologyTypes;
 	}
-	public void setSpellingTypes() {
-		String sql="SELECT id, spellingType FROM SpellingTypes";
-		setSpellingTypes( createMap( sql ) );	
+
+
+	/**
+	 *  Sets the spellingTypes attribute of the LexFlatDataRepository object
+	 */
+	public void setSpellingTypes()
+	{
+		String sql = "SELECT id, spellingType FROM SpellingTypes";
+		setSpellingTypes( createMap( sql ) );
 	}
-	public void setSpellingTypes(HashMap spellingTypes) {
+
+
+	/**
+	 *  Sets the spellingTypes attribute of the LexFlatDataRepository object
+	 *
+	 * @param  spellingTypes  The new spellingTypes value
+	 */
+	public void setSpellingTypes( HashMap spellingTypes )
+	{
 		this.spellingTypes = spellingTypes;
 	}
-	public HashMap getSpellingTypes() {
+
+
+	/**
+	 *  Gets the spellingTypes attribute of the LexFlatDataRepository object
+	 *
+	 * @return    The spellingTypes value
+	 */
+	public HashMap getSpellingTypes()
+	{
 		return spellingTypes;
 	}
-	public void setPhoneticsTypes() {
-		String sql="SELECT id, phoneticsType FROM PhoneticsTypes";
-		setPhoneticsTypes( createMap( sql ) );	
+
+
+	/**
+	 *  Sets the phoneticsTypes attribute of the LexFlatDataRepository object
+	 */
+	public void setPhoneticsTypes()
+	{
+		String sql = "SELECT id, phoneticsType FROM PhoneticsTypes";
+		setPhoneticsTypes( createMap( sql ) );
 	}
-	public void setPhoneticsTypes(HashMap phoneticsTypes) {
+
+
+	/**
+	 *  Sets the phoneticsTypes attribute of the LexFlatDataRepository object
+	 *
+	 * @param  phoneticsTypes  The new phoneticsTypes value
+	 */
+	public void setPhoneticsTypes( HashMap phoneticsTypes )
+	{
 		this.phoneticsTypes = phoneticsTypes;
 	}
-	public HashMap getPhoneticsTypes() {
+
+
+	/**
+	 *  Gets the phoneticsTypes attribute of the LexFlatDataRepository object
+	 *
+	 * @return    The phoneticsTypes value
+	 */
+	public HashMap getPhoneticsTypes()
+	{
 		return phoneticsTypes;
 	}
-	public void setRelatedTermTypes() {
-		String sql="SELECT id, relatedTermType FROM RelatedTermTypes";
-		setRelatedTermTypes( createMap( sql ) );	
+
+
+	/**
+	 *  Sets the relatedTermTypes attribute of the LexFlatDataRepository object
+	 */
+	public void setRelatedTermTypes()
+	{
+		String sql = "SELECT id, relatedTermType FROM RelatedTermTypes";
+		setRelatedTermTypes( createMap( sql ) );
 	}
-	public void setRelatedTermTypes(HashMap relatedTermTypes) {
+
+
+	/**
+	 *  Sets the relatedTermTypes attribute of the LexFlatDataRepository object
+	 *
+	 * @param  relatedTermTypes  The new relatedTermTypes value
+	 */
+	public void setRelatedTermTypes( HashMap relatedTermTypes )
+	{
 		this.relatedTermTypes = relatedTermTypes;
 	}
-	public HashMap getRelatedTermTypes() {
+
+
+	/**
+	 *  Gets the relatedTermTypes attribute of the LexFlatDataRepository object
+	 *
+	 * @return    The relatedTermTypes value
+	 */
+	public HashMap getRelatedTermTypes()
+	{
 		return relatedTermTypes;
 	}
-	public void setRegisters() {
-		String sql="SELECT id, register FROM Registers";
-		setRegisters( createMap( sql ) );		
+
+
+	/**
+	 *  Sets the registers attribute of the LexFlatDataRepository object
+	 */
+	public void setRegisters()
+	{
+		String sql = "SELECT id, register FROM Registers";
+		setRegisters( createMap( sql ) );
 	}
-	public void setRegisters(HashMap registers) {
+
+
+	/**
+	 *  Sets the registers attribute of the LexFlatDataRepository object
+	 *
+	 * @param  registers  The new registers value
+	 */
+	public void setRegisters( HashMap registers )
+	{
 		this.registers = registers;
 	}
-	public HashMap getRegisters() {
+
+
+	/**
+	 *  Gets the registers attribute of the LexFlatDataRepository object
+	 *
+	 * @return    The registers value
+	 */
+	public HashMap getRegisters()
+	{
 		return registers;
 	}
-	public void setFunctionsGeneral() {
-		String sql="SELECT id, functionGeneral FROM FunctionsGeneral";
+
+
+	/**
+	 *  Sets the functionsGeneral attribute of the LexFlatDataRepository object
+	 */
+	public void setFunctionsGeneral()
+	{
+		String sql = "SELECT id, functionGeneral FROM FunctionsGeneral";
 		setFunctionsGeneral( createMap( sql ) );
 	}
-	public void setFunctionsGeneral(HashMap functionsGeneral) {
+
+
+	/**
+	 *  Sets the functionsGeneral attribute of the LexFlatDataRepository object
+	 *
+	 * @param  functionsGeneral  The new functionsGeneral value
+	 */
+	public void setFunctionsGeneral( HashMap functionsGeneral )
+	{
 		this.functionsGeneral = functionsGeneral;
 	}
-	public HashMap getFunctionsGeneral() {
+
+
+	/**
+	 *  Gets the functionsGeneral attribute of the LexFlatDataRepository object
+	 *
+	 * @return    The functionsGeneral value
+	 */
+	public HashMap getFunctionsGeneral()
+	{
 		return functionsGeneral;
 	}
+
+
+	/**
+	 *  Sets the majorDialectFamilies attribute of the LexFlatDataRepository object
+	 */
 	public void setMajorDialectFamilies()
 	{
 		String sql = "SELECT id, majorDialectFamily FROM MajorDialectFamilies";
 		setMajorDialectFamilies( createMap( sql ) );
 	}
-	public void setMajorDialectFamilies(HashMap majorDialectFamilies) {
+
+
+	/**
+	 *  Sets the majorDialectFamilies attribute of the LexFlatDataRepository object
+	 *
+	 * @param  majorDialectFamilies  The new majorDialectFamilies value
+	 */
+	public void setMajorDialectFamilies( HashMap majorDialectFamilies )
+	{
 		this.majorDialectFamilies = majorDialectFamilies;
 	}
-	public HashMap getMajorDialectFamilies() {
+
+
+	/**
+	 *  Gets the majorDialectFamilies attribute of the LexFlatDataRepository object
+	 *
+	 * @return    The majorDialectFamilies value
+	 */
+	public HashMap getMajorDialectFamilies()
+	{
 		return majorDialectFamilies;
 	}
 // accessor methods for HashMap items
-	public String getUser(int userId)
+
+	/**
+	 *  Gets the user attribute of the LexFlatDataRepository object
+	 *
+	 * @param  userId                      Description of the Parameter
+	 * @return                             The user value
+	 * @exception  LexRepositoryException  Description of the Exception
+	 */
+	public String getUser( int userId ) throws LexRepositoryException
 	{
 		return (String) getUsers().get( new Integer( userId ) );
 	}
-	public String getProjectSubject(int projSubId)
+
+
+	/**
+	 *  Gets the projectSubject attribute of the LexFlatDataRepository object
+	 *
+	 * @param  projSubId  Description of the Parameter
+	 * @return            The projectSubject value
+	 */
+	public String getProjectSubject( int projSubId )
 	{
 		return (String) getProjectSubjects().get( new Integer( projSubId ) );
 	}
-	public String getSource(int sourceId)
+
+
+	/**
+	 *  Gets the source attribute of the LexFlatDataRepository object
+	 *
+	 * @param  sourceId  Description of the Parameter
+	 * @return           The source value
+	 */
+	public String getSource( int sourceId )
 	{
 		return (String) getSources().get( new Integer( sourceId ) );
 	}
-	public String getLanguage(int langId)
+
+
+	/**
+	 *  Gets the language attribute of the LexFlatDataRepository object
+	 *
+	 * @param  langId  Description of the Parameter
+	 * @return         The language value
+	 */
+	public String getLanguage( int langId )
 	{
 		return (String) getLanguages().get( new Integer( langId ) );
 	}
-	public String getScript(int scriptId)
+
+
+	/**
+	 *  Gets the script attribute of the LexFlatDataRepository object
+	 *
+	 * @param  scriptId  Description of the Parameter
+	 * @return           The script value
+	 */
+	public String getScript( int scriptId )
 	{
 		return (String) getScripts().get( new Integer( scriptId ) );
 	}
-	public String getLiterarySource(int litSourceId)
+
+
+	/**
+	 *  Gets the literarySource attribute of the LexFlatDataRepository object
+	 *
+	 * @param  litSourceId  Description of the Parameter
+	 * @return              The literarySource value
+	 */
+	public String getLiterarySource( int litSourceId )
 	{
 		return (String) getLiterarySources().get( new Integer( litSourceId ) );
 	}
-	public String getEtymologyType(int etymType) 
+
+
+	/**
+	 *  Gets the etymologyType attribute of the LexFlatDataRepository object
+	 *
+	 * @param  etymType  Description of the Parameter
+	 * @return           The etymologyType value
+	 */
+	public String getEtymologyType( int etymType )
 	{
 		return (String) getEtymologyTypes().get( new Integer( etymType ) );
 	}
-	public String getSpellingType(int varType) 
+
+
+	/**
+	 *  Gets the spellingType attribute of the LexFlatDataRepository object
+	 *
+	 * @param  varType  Description of the Parameter
+	 * @return          The spellingType value
+	 */
+	public String getSpellingType( int varType )
 	{
 		return (String) getSpellingTypes().get( new Integer( varType ) );
 	}
-	public String getRegister( int reg ) 
+
+
+	/**
+	 *  Gets the register attribute of the LexFlatDataRepository object
+	 *
+	 * @param  reg  Description of the Parameter
+	 * @return      The register value
+	 */
+	public String getRegister( int reg )
 	{
 		return (String) getRegisters().get( new Integer( reg ) );
 	}
-	public String getFunctionGeneral( int funcGen ) 
+
+
+	/**
+	 *  Gets the functionGeneral attribute of the LexFlatDataRepository object
+	 *
+	 * @param  funcGen  Description of the Parameter
+	 * @return          The functionGeneral value
+	 */
+	public String getFunctionGeneral( int funcGen )
 	{
 		return (String) getFunctionsGeneral().get( new Integer( funcGen ) );
 	}
+
+
+	/**
+	 *  Gets the majorDialectFamily attribute of the LexFlatDataRepository object
+	 *
+	 * @param  dial  Description of the Parameter
+	 * @return       The majorDialectFamily value
+	 */
 	public String getMajorDialectFamily( int dial )
 	{
-		return (String)getMajorDialectFamilies().get( new Integer( dial ) );
+		return (String) getMajorDialectFamilies().get( new Integer( dial ) );
 	}
+
+
+	/**
+	 *  Gets the transitionalDataLabel attribute of the LexFlatDataRepository object
+	 *
+	 * @param  label  Description of the Parameter
+	 * @return        The transitionalDataLabel value
+	 */
 	public String getTransitionalDataLabel( int label )
 	{
-		return (String)getTransitionalDataLabels().get( new Integer( label ) );
+		return (String) getTransitionalDataLabels().get( new Integer( label ) );
 	}
 //helpers
-	public HashMap createMap(String sql)
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  sql  Description of the Parameter
+	 * @return      Description of the Return Value
+	 */
+	public HashMap createMap( String sql )
 	{
 		ResultSet rs = null;
 		HashMap map = new HashMap();
@@ -242,37 +679,45 @@ public class LexFlatDataRepository
 		{
 			LexRepository lr = LexRepository.getInstance();
 			rs = lr.getQueryStatement().executeQuery( sql );
-			if (null != rs)
+			if ( null != rs )
 			{
 				int i = 0;
-				Integer key=null;
-				String value="";
+				Integer key = null;
+				String value = "";
 				while ( rs.next() )
 				{
-					i = rs.getInt(1);
+					i = rs.getInt( 1 );
 					key = new Integer( i );
-					value = rs.getString(2);
+					value = rs.getString( 2 );
 					ResultSetMetaData rsmd = rs.getMetaData();
 					int columnCount = rsmd.getColumnCount();
-					for (int x=3; x <= columnCount; x++)
-						value = value + " " + rs.getString(x);
-					map.put( key , value );
+					for ( int x = 3; x <= columnCount; x++ )
+					{
+						value = value + " " + rs.getString( x );
+					}
+					map.put( key, value );
 				}
 			}
-		} catch (LexRepositoryException lre)
+		}
+		catch ( LexRepositoryException lre )
 		{
 			lre.printStackTrace();
-		} catch (SQLException sqle)
+		}
+		catch ( SQLException sqle )
 		{
 			sqle.printStackTrace();
 		}
 		return map;
 	}
-	
+
+
+
 //constructors
+	/**
+	 *Constructor for the LexFlatDataRepository object
+	 */
 	public LexFlatDataRepository()
 	{
-		setUsers();
 		setProjectSubjects();
 		setSources();
 		setLanguages();
@@ -288,13 +733,20 @@ public class LexFlatDataRepository
 		setTransitionalDataLabels();
 	}
 //main
-	public static void main(String[] args)
+
+	/**
+	 *  The main program for the LexFlatDataRepository class
+	 *
+	 * @param  args  The command line arguments
+	 */
+	public static void main( String[] args )
 	{
 		LexFlatDataRepository lfdr = new LexFlatDataRepository();
-		System.out.println( lfdr.getUser(1) );
-		System.out.println( lfdr.getProjectSubject(6) );
-		System.out.println( lfdr.getSource(1) );
-		System.out.println( lfdr.getLanguage(1) );
-		System.out.println( lfdr.getEtymologyType(1) );
+		//System.out.println( lfdr.getUser( 1 ) );
+		System.out.println( lfdr.getProjectSubject( 6 ) );
+		System.out.println( lfdr.getSource( 1 ) );
+		System.out.println( lfdr.getLanguage( 1 ) );
+		System.out.println( lfdr.getEtymologyType( 1 ) );
 	}
 }
+
