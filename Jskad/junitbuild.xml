@@ -49,6 +49,7 @@
   <target name="run-headless-junit-tests"
           description="Assuming that compilation of appropriate classes has been done, this target runs all the JUnit tests in the project.">
     <junit fork="no" printsummary="yes" haltonfailure="yes" haltonerror="yes">
+      <sysproperty key="java.awt.headless" value="true"/>
       <classpath>
         <pathelement location="${junitbin}"/>
         <path refid="entire.class.path"/>
