@@ -130,7 +130,7 @@ Contributor(s): ______________________________________.
   <property name="tt.debug.path"
             location="C:\Documents and Settings\Andres Montano\My Documents\docs-misc\java\DictionarySearch\tibetan\WEB-INF\lib"/>    
   <property name="tt.debug.url"
-            value="http://localhost:8084/tibetan/"/>            
+            value="http://localhost:8080/tibetan/"/>            
   <property name="tt.debug.jpda.host"
             value="localhost"/>
             
@@ -140,9 +140,13 @@ Contributor(s): ______________________________________.
   <property name="tt.debug.jpda.transport"
             value="dt_shmem"/>-->
 
-<!-- If debugging by socket -->
+<!-- If debugging by socket. In order for this to work add the following options to
+the jvm starting tomcat:
+-Xdebug
+-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n -->
+
   <property name="tt.debug.jpda.address"
-            value="11555"/>
+            value="8000"/>
   <property name="tt.debug.jpda.transport"
             value="dt_socket"/>
                         
