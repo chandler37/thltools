@@ -6,9 +6,6 @@
    <!-- Configure the directory containing the source files -->
 	<property name="source" value="${basedir}/src"/>
 	
-  <!-- Configure the directory containing the config files 
-   			This files from this directory should not go in the CVS hierarchy. -->
-	<property name="config" value="${basedir}/lcl-cfg"/>
 
   <!-- Configure the context path for this application -->
 	<property name="path" value="/lex"/>
@@ -145,7 +142,7 @@
 	</target>
 	
 	<target name="install" description="Install web application" depends="compile, move-log">
-		<install url="${url}" username="${username}" password="${password}" path="${path}" config="file://${config}/lex-context-config.xml" war="file://${build}"/>
+		<install url="${url}" username="${username}" password="${password}" path="${path}" config="file://${basedir}/${lex.context.config}" war="file://${build}"/>
 	</target>
 	
 	<target name="move-log" description="move old log file">
