@@ -277,6 +277,10 @@ public class TibetanMachineWeb {
 
 		try {
 			URL url = TibetanMachineWeb.class.getResource(fileName);
+			if (url == null) {
+				System.err.println("Cannot find " + fileName + "; aborting.");
+				System.exit(1);
+			}
 			InputStreamReader isr = new InputStreamReader(url.openStream());
 			BufferedReader in = new BufferedReader(isr);
 
