@@ -86,6 +86,9 @@ od
 bem a ra
 lnga
 lang
+mkha'i
+mkhe'i
+khe'i
 
 // A-chung as root
 'a
