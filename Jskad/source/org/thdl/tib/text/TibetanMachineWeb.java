@@ -249,8 +249,13 @@ public class TibetanMachineWeb {
 	private static final String lefts = "g,d,b,m,'";
     /** suffixes */
 	private static final String rights = "g,ng,d,n,b,m,r,l,s,',T";
-    /** postsuffixes */
-	private static final String farrights = "d,s"; // DLC FIXME: why was nga here in past revisions?
+    /** postsuffixes.  nga was here in the past, according to Edward,
+     *  to handle cases like ya'ng.  pa'am wasn't considered, but had
+     *  it been, ma probably would've gone here too.  We now handle
+     *  'am, 'ang, etc. specially, so now this set is now just the
+     *  postsuffixes.
+     */
+	private static final String farrights = "d,s"; 
 
 	static {
 
@@ -711,10 +716,6 @@ public static boolean isWylieVowel(String s) {
 * @return true if s is a possible leftmost character in a Tibetan
 * syllable, false if not.  */
 public static boolean isWylieLeft(String s) {
-	if (useReallyIffyCode) {
-        if (keyboard != null)
-            s = keyboard.getWylieForChar(s);
-    }
 	return leftSet.contains(s);
 }
 
@@ -727,10 +728,6 @@ public static boolean isWylieLeft(String s) {
 * @return true if s is a possible right character in a Tibetan
 * syllable, false if not.  */
 public static boolean isWylieRight(String s) {
-	if (useReallyIffyCode) {
-        if (keyboard != null)
-            s = keyboard.getWylieForChar(s);
-    }
 	return rightSet.contains(s);
 }
 
@@ -741,18 +738,8 @@ public static boolean isWylieRight(String s) {
 * @return true if s is a possible postsuffix in a Tibetan
 * syllable, false if not.  */
 public static boolean isWylieFarRight(String s) {
-	if (useReallyIffyCode) {
-        if (keyboard != null)
-            s = keyboard.getWylieForChar(s);
-    }
 	return farRightSet.contains(s);
 }
-
-    /** DLC FIXME: what is the point of this code?  TibTextUtils
-        doesn't work for TCC#1 and the like, does it?  I bet this
-        explains why TMW=>Wylie conversion fails when the Wylie
-        keyboard isn't in use. */
-    private static final boolean useReallyIffyCode = false;
 
 /**
 * Returns true iff this Wylie is valid as a head letter in a Tibetan
@@ -761,10 +748,6 @@ public static boolean isWylieFarRight(String s) {
 * @return true if s is a possible superscribed letter in a Tibetan
 * syllable, false if not.  */
 public static boolean isWylieTop(String s) {
-	if (useReallyIffyCode) {
-        if (keyboard != null)
-            s = keyboard.getWylieForChar(s);
-    }
 	return topSet.contains(s);
 }
 
