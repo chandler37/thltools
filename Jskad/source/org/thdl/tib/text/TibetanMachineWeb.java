@@ -1138,10 +1138,31 @@ public static boolean isTopVowel(DuffCode dc) {
 
         @return true iff this is a tsheg or whitespace or the like */
     public static boolean isTMWFontCharBreakable(char ch) {
+        //<?Input:Punctuation?>
+        int ord = (int)ch;
+
+        // FIXME: why did 94 appear twice in tibwn.ini's punctuation section?
+        if (32 == ord) return true;
+        if (45 == ord) return true;
+        if (107 == ord) return true;
+        if (103 == ord) return true;
+        if (104 == ord) return true;
+        if (105 == ord) return true;
+        if (43 == ord) return true;
+        if (40 == ord) return true;
+        if (41 == ord) return true;
+        if (38 == ord) return true;
+        if (39 == ord) return true;
+        if (93 == ord) return true;
+        if (94 == ord) return true;
+        if (92 == ord) return true;
+        if (91 == ord) return true;
+
         return ('-' == ch /* FIXME: this is the tsheg (i.e., the Wylie is ' '), but we have no constant for it. */
                 || ' ' == ch /* FIXME: this is space (i.e., the Wylie is '_'), but we have no constant for it. */
                 || '\t' == ch /* FIXME: this is some sort of whitespace */
                 || '\n' == ch /* FIXME: this is some sort of whitespace */
+                || '/' == ch /* a shad */
                 );
 
         // FIXME: am I missing anything?  tabs etc.?
