@@ -1649,7 +1649,9 @@ public class TibTextUtils implements THDLWylieConstants {
         if (!TibetanMachineWeb.isKnownHashKey(root)) {
             root = root.replace('+', '-');
             if (!TibetanMachineWeb.isKnownHashKey(root)) {
-                throw new Error("root is, now, " + root); // FIXME: make this an assertion
+                // If the glyph isn't even in TibetanMachine, then
+                // it's not able to take any prefix.
+                return false;
             }
         }
         String ru = TibetanMachineWeb.getUnicodeForWylieForGlyph(root);

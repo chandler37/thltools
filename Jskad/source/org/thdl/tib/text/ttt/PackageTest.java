@@ -465,6 +465,9 @@ tstHelper("KA'", "[(K . A), (' . )]",
         tstHelper("DAM'O", null, null, null, "{DA}{M}{'O}", 2);
         tstHelper("D-M'O", null, null, null, "{D}{M'O}", -1);
 
+        tstHelper("GTZAN", "{G}{TZA}{N}", null, null, "{G}{TZA}{N}", -1);
+        tstHelper("GTZHAN", "{G}{TZ}{HA}{N}", null, null, "{G+TZ+HA}{N}", -1);
+
         tstHelper("SHR'I", "{SH}{R'I}",
                   null,
                   null,
