@@ -1,251 +1,36 @@
-<!-- 
-This build file requires a build.properties file with the following properties:
-
-#Configure properties to access the Manager application user/pass combo should be in $TOMCAT_HOME/conf/tomcat-users.xml with manager role.
-catalina.home=/usr/local/tomcat
-catalina.base=/usr/local/tomcat
-url=http://localhost:2020/manager
-username=c
-password=
-
-#provide location of working copy of lex-context-config.xml
-lex.context.config=lex-context-config-working.xml
-
-#These properties need to be set to run the unit tests. They are your login to the dictionary
-lex.username=
-lex.password=
-jmeterhome=../jmeter
-
- -->
-
 <project name="Lex" default="compile" basedir=".">
 
-	<!-- Configure the directory into which the web application is built -->
-	<property name="build" value="${basedir}/build"/>
-
-   <!-- Configure the directory containing the source files -->
-	<property name="source" value="${basedir}/src"/>
-	
-
-  <!-- Configure the context path for this application -->
-	<property name="path" value="/lex"/>
-
-<!--    <property file="${user.home}/.${ant.project.name}-build.properties"/>
-	<property file="${user.home}/.build.properties"/>
--->
-	<property file="build.properties"/> 
-
-  <!-- Configure the custom Ant tasks for the Manager application 
-  			These tasks require catalina-ant.jar in $ANT_HOME/lib-->
-	<taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask"/>
-	<taskdef name="install" classname="org.apache.catalina.ant.InstallTask"/>
-	<taskdef name="list" classname="org.apache.catalina.ant.ListTask"/>
-	<taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask"/>
-	<taskdef name="remove" classname="org.apache.catalina.ant.RemoveTask"/>
-	<taskdef name="resources" classname="org.apache.catalina.ant.ResourcesTask"/>
-	<taskdef name="roles" classname="org.apache.catalina.ant.RolesTask"/>
-	<taskdef name="start" classname="org.apache.catalina.ant.StartTask"/>
-	<taskdef name="stop" classname="org.apache.catalina.ant.StopTask"/>
-	<taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask"/>
-
-  <!-- Configure the classpath -->
 	<path id="classpath">
-		<fileset dir="${basedir}/lib">
+		<fileset dir="webroot/WEB-INF/lib">
 			<include name="**/*.jar"/>
 		</fileset>
-		<fileset dir="${catalina.home}/common/lib">
+		<fileset dir="C:/Program Files/Apache Software Foundation/Tomcat 5.5/common/lib">
 			<include name="servlet-api.jar"/>
 			<include name="*.jar"/>
-			<include name="mysql-connector-java-3.0.8-stable-bin.jar"/>
+			<include name="mysql-connector-java-3.0.15-ga-bin.jar"/>
 		</fileset>
-		<!--point to org/thdl/users-->
-		<pathelement location="${build}/WEB-INF/classes"/>
-		<pathelement location="${build}/WEB-INF/tld"/>
+		<pathelement location="webroot/WEB-INF/classes"/>
+		<pathelement location="webroot/WEB-INF/tld"/>
 	</path>
 
-   <!-- Executable Targets -->
-	<target name="copy" description="copy jsp, html, css, js, and other files into the build directory">
-		
-		<copy todir="${build}">
-			<fileset dir="${basedir}/web">
-				<include name="**/*.jsp"/>
-				<include name="**/*.jsf"/>
-				<include name="**/*.css"/>
-				<include name="**/*.js"/>
-			</fileset>
-		</copy>
-
-		<copy todir="${build}/images">
-			<fileset dir="${basedir}/images"></fileset>
-		</copy>
-		
-		<copy todir="${build}/WEB-INF">
-			<fileset dir="${basedir}/web/WEB-INF">
-				
-			</fileset>
-		</copy>
-		
-		<copy todir="${build}/WEB-INF/classes">
-			<fileset dir="${source}/java">
-				<include name="**/*.xml"/>
-				<include name="**/*.properties"/>
-			</fileset>
-		</copy>
-		
-		<copy todir="${build}/WEB-INF/tld">
-			<fileset dir="${basedir}/tld">
-				<include name="*.tld"/>
-			</fileset>
-		</copy>
-		
-		<copy todir="${build}/WEB-INF/lib">
-			<fileset dir="${basedir}/lib/jstl">
-				<include name="*.jar"/>
-			</fileset>
-			
-			<fileset dir="${basedir}/lib/hibernate">
-				<include name="*.jar"/>
-				<exclude name="commons-dbcp.jar"/>
-			</fileset>
-			
-			<fileset dir="${basedir}/lib/thdl">
-				<include name="*.jar"/>
-			</fileset>
-			
-			<fileset dir="${basedir}/lib/commons">
-				<include name="*.jar"/>
-			</fileset>
-			
-			<fileset dir="${basedir}/lib/jwebunit">
-				<include name="*.jar"/>
-			</fileset>
-
-			<fileset dir="${basedir}/lib/log4j">
-				<include name="*.jar"/>
-			</fileset>
-			<!--<fileset dir="${basedir}/lib/dlese-oai">
-				<include name="*.jar"/>
-			</fileset>
-			<fileset dir="${basedir}/lib/oai-xmlbeans">
-				<include name="*.jar"/>
-			</fileset>-->
-		</copy>
-	
+	<target name="clean">
+		<delete dir="webroot/WEB-INF/classes"/>
+		<mkdir dir="webroot/WEB-INF/classes"/>		
 	</target>
 	
-	<target name="compile" description="Compile web application" depends="copy">
-		<mkdir dir="${build}/WEB-INF/classes"/>
-		<javac srcdir="${thdluser.home}/src/java" destdir="${build}/WEB-INF/classes" deprecation="on" classpathref="classpath" debug="on"></javac>
-		<javac destdir="${build}/WEB-INF/classes" classpathref="classpath" debug="on" listfiles="no">
-			<src path="${source}/java"/>
-			<exclude name="**/old/**"/>
-			<exclude name="**/test/**"/>
-			<exclude name="**/util/**"/>
-			<exclude name="**/LexSourceRepository.java/**"/>
+	<target name="compile" description="Compile web application">
+		<delete dir="webroot/WEB-INF/classes"/>
+		<mkdir dir="webroot/WEB-INF/classes"/>
+		<copy todir="webroot/WEB-INF/classes">
+			<fileset dir="src/java">
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
+		<javac srcdir="src/java" destdir="webroot/WEB-INF/classes" classpathref="classpath">
+			<exclude name="org/thdl/lex/commands/RefreshSourcesCommand.java" />
+			<exclude name="org/thdl/lex/LexSourceRepository.java" />
+			<exclude name="org/thdl/lex/test/**" />
 		</javac>
-	</target>
-	
-	<target name="compile-jsp">
-	<mkdir dir="${basedir}/src/jspc"/>
-	<jspc srcdir="${basedir}/web"
-      destdir="${basedir}/src/jspc"
-      package="org.thdl.lex.jsp"
-	  classpathref="classpath"
-	  webinc="${basedir}/web/webinc.include"
-      compiler="jasper41"
-      verbose="9">
-		  <include name="**/*.jsp" />
-		  <include name="**/*.jsf" />
-	</jspc> 
-</target>
-
-	<target name="build" depends="compile, compile-jsp"/>
-	
-	<target name="compile-util" description="Compile util classes" depends="compile">
-		<mkdir dir="${build}/WEB-INF/classes"/>
-		<javac srcdir="${thdluser.home}/src/java" destdir="${build}/WEB-INF/classes" deprecation="on" classpathref="classpath" debug="on"></javac>
-		<javac destdir="${build}/WEB-INF/classes" classpathref="classpath" debug="on" listfiles="no">
-			<src path="${source}/java/org/thdl/lex/util"/>
-		</javac>
-	</target>
-	
-	<target name="javadoc" description="Create Javadocs">
-		<javadoc destdir="${build}/apidocs/" classpathref="classpath" author="true" version="true" use="true" windowtitle="THDL Tibetan Collaborative Dictionary API">
-			
-			<fileset dir="${source}/java" defaultexcludes="yes">
-				<include name="org/thdl/**/*.java"/>
-			</fileset>
-			
-			<doctitle><![CDATA[<h1>THDL Tibetan Collaborative Dictionary Javadocs</h1>]]></doctitle>
-			<bottom><![CDATA[<i>Copyright &#169; 2003 THDL. All Rights Reserved.</i>]]></bottom>
-			<tag name="todo" scope="all" description="To do:"/>
-			<group title="Lex Basics" packages="org.thdl.lex"/>
-			<group title="Lex Commands" packages="org.thdl.lex.commands"/>
-			<group title="Lex Components" packages="org.thdl.lex.component"/>
-			<group title="Lex Sub-components" packages="org.thdl.lex.component.child"/>
-			<link href="http://developer.java.sun.com/developer/products/xml/docs/api/"/>
-		</javadoc>
-	</target>
-	
-	<target name="install" description="Install web application" depends="build">
-		<install url="${url}" username="${username}" password="${password}" path="${path}" config="file://${basedir}/${lex.context.config}" war="file://${build}"/>
-	</target>
-	
-	<!-- <target name="move-log" description="move old log file">
-		<mkdir dir="logs"/>
-		<mkdir dir="logs/old"/>
-		<tstamp prefix="now"/>
-		<touch file="${basedir}/logs/hibernate.log"/>
-		<move file="${basedir}/logs/hibernate.log" tofile="${basedir}/logs/old/${now.DSTAMP}_${now.TSTAMP}_hibernate.log" overwrite="true"/>
-		<touch file="${basedir}/logs/lex.log"/>
-		<move file="${basedir}/logs/lex.log" tofile="${basedir}/logs/old/${now.DSTAMP}_${now.TSTAMP}_lex.log" overwrite="true"/>
-	</target> -->
-	
-	<target name="reinstall" description="Remove and Re-install web application" depends="remove">
-		<antcall target="install"/>
-	</target>
-	
-	<target name="reload" description="Reload web application" depends="build">
-		<reload url="${url}" username="${username}" password="${password}" path="${path}"/>
-	</target>
-	
-	<target name="remove" description="Remove web application">
-		<remove url="${url}" username="${username}" password="${password}" path="${path}"/>
-	</target>
-	
-	<target name="compile-test" description="Run load and functional tests" depends="compile">
-		<javac srcdir="${source}/java/test/org/thdl/lex" destdir="${build}/WEB-INF/classes" deprecation="on" classpathref="classpath" debug="on"></javac>
-	</target>
-	<target name="test" description="Run load and functional tests" depends="compile-test">
-
-		
-		<java classname="org.thdl.lex.TestAll" classpathref="classpath" fork="yes">
-			<!-- <classpath>
-				<pathelement location="${build}/WEB-INF/classes"/>
-			</classpath>
-			<jvmarg  value="-Djava.naming.factory.initial=org.apache.naming.ResourceFactory"/> --></java>
-	</target>
-	
-	<target name="reload-test" description="Remove and Re-install web application" depends="reload">
-		<antcall target="test"/>
-	</target>
-	
-	<target name="install-test" description="Remove and Re-install web application" depends="install">
-		<antcall target="test"/>
-	</target>
-
-
-	<target name="jmeter">
-		<taskdef name="jmeter" classname="org.programmerplanet.ant.taskdefs.jmeter.JMeterTask"/>
-		<echo message="${jmeterhome}"/>
-		<jmeter jmeterhome="../jmeter" testplan="${basedir}/loadtests/LoadTest.jmx" resultlog="${basedir}/loadtests/JMeterResults.jtl"/> 
-
-<!--
-For the following task to work, jmeter.properties needs to have the following properties set thusly:
-jmeter.save.saveservice.assertion_results=all 
-jmeter.save.saveservice.output_format=xml 
--->
-		<xslt in="${basedir}/loadtests/JMeterResults.jtl" out="${basedir}/loadtests/JMeterResults.html" style="${jmeterhome}/extras/jmeter-results-report.xsl"/>
 	</target>
 	
 	<target name="hbm2java" description="generate source code">
@@ -330,7 +115,7 @@ jmeter.save.saveservice.output_format=xml
 		</schemaupdate>
 	</target>
 		
-	<target name="convert-to-new-mapping" description="convert old data to a new db mapping" depends="compile-util">
+	<target name="convert-to-new-mapping" description="convert old data to a new db mapping" depends="compile">
 		<java classname="org.thdl.lex.utilConvertDataToNewMapping" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
@@ -339,10 +124,10 @@ jmeter.save.saveservice.output_format=xml
 		</java>
 	</target>
 
-	<target name="import-dm" description="Imports Dan Martin's dictionary into database. " depends="compile-util">
+	<target name="import-dm" description="Imports Dan Martin's dictionary into database.">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
-				<pathelement location="${build}/WEB-INF/classes"/>
+				<pathelement location="webroot/WEB-INF/classes"/>
 			</classpath>
 			<arg value="-manual"/>
 			<arg value="-format"/><arg value="UTF-16"/>
@@ -350,11 +135,11 @@ jmeter.save.saveservice.output_format=xml
 			<arg value="-creator"/><arg value="9"/>
 			<arg value="-proj"/><arg value="18"/>
 			<arg value="-label"/><arg value="3"/>
-			<arg value="-note"/><arg value="This entry comes from Dan Martin's Tibetan Vocabulary."/>
+			<arg value="-note"/><arg value=""/>
 			<arg value="dicts/DanMartin.txt"/>
 		</java>
 	</target>
-	<target name="import-jh" description="Imports Jeffrey Hopkins' dictionary into database. " depends="compile-util">
+	<target name="import-jh" description="Imports Jeffrey Hopkins' dictionary into database. ">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
@@ -365,11 +150,11 @@ jmeter.save.saveservice.output_format=xml
 			<arg value="-creator"/><arg value="95"/>
 			<arg value="-proj"/><arg value="19"/>
 			<arg value="-label"/><arg value="4"/>
-			<arg value="-note"/><arg value="This entry comes from Jeffrey Hopkins' Tibetan-Sanskrit-English Dictionary."/>
+			<arg value="-note"/><arg value=""/>
 			<arg value="dicts/JHTabUnicode.txt"/>
 		</java>
 	</target>
-	<target name="import-tc" description="Imports The Great Tibetan-Chinese Dictionary into database. " depends="compile-util">
+	<target name="import-tc" description="Imports The Great Tibetan-Chinese Dictionary into database. ">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
@@ -377,14 +162,14 @@ jmeter.save.saveservice.output_format=xml
 			<arg value="-manual"/>
 			<arg value="-tab"/>
 			<arg value="-creator"/><arg value="80"/>
-			<arg value="-proj"/><arg value="20"/>
-			<arg value="-pub-cons"/><arg value="true"/>
+			<arg value="-proj"/><arg value="23"/>
+			<arg value="-pub-cons"/><arg value="false"/>
 			<arg value="-label"/><arg value="2"/>
-			<arg value="-note"/><arg value="This entry comes from Great Tibetan-Chinese Dictionary, tshig mdzod chen mo."/>
+			<arg value="-note"/><arg value=""/>
 			<arg value="dicts/tshig.tab"/>
 		</java>
 	</target>
-	<target name="import-ry" description="Imports Rangjung Yeshe's dictionary into database. " depends="compile-util">
+	<target name="import-ry" description="Imports Rangjung Yeshe's dictionary into database. ">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
@@ -393,48 +178,48 @@ jmeter.save.saveservice.output_format=xml
 			<arg value="-creator"/><arg value="4"/>
 			<arg value="-proj"/><arg value="16"/>
 			<arg value="-label"/><arg value="1"/>
-			<arg value="-note"/><arg value="This entry comes from The Rangjung Yeshe Tibetan-English Dictionary of Buddhist Culture 3.0 (www.rangjung.com)."/>
+			<arg value="-note"/><arg value=""/>
 			<arg value="dicts/ry-dic2003-prop.txt"/>
 		</java>
 	</target>
-	<target name="import-jv" description="Imports Jim Valby's dictionary into database. " depends="compile-util">
+	<target name="import-jv" description="Imports Jim Valby's dictionary into database. ">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
 			</classpath>
 			<arg value="-manual"/>
 			<arg value="-creator"/><arg value="96"/>
-			<arg value="-proj"/><arg value="21"/>
+			<arg value="-proj"/><arg value="20"/>
 			<arg value="-label"/><arg value="5"/>
-			<arg value="-note"/><arg value="This entry comes from Jim Valby's Tibetan English Dictionary included in The Rangjung Yeshe Tibetan-English Dictionary of Buddhist Culture 3.0 (www.rangjung.com)."/>
+			<arg value="-note"/><arg value=""/>
 			<arg value="dicts/JimValby2002-trimmed.txt"/>
 		</java>
 	</target>
 
-	<target name="import-rb" description="Imports Richard Barron's dictionary into database. " depends="compile-util">
+	<target name="import-rb" description="Imports Richard Barron's dictionary into database. ">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
 			</classpath>
 			<arg value="-manual"/>
 			<arg value="-creator"/><arg value="97"/>
-			<arg value="-proj"/><arg value="22"/>
+			<arg value="-proj"/><arg value="21"/>
 			<arg value="-label"/><arg value="6"/>
-			<arg value="-note"/><arg value="This entry comes from Richard Barron's Tibetan English Dictionary included in The Rangjung Yeshe Tibetan-English Dictionary of Buddhist Culture 3.0 (www.rangjung.com)."/>
+			<arg value="-note"/><arg value=""/>
 			<arg value="dicts/RichardBarron.txt"/>
 		</java>
 	</target>
 
-	<target name="import-iw" description="Imports Ives Waldo's dictionary into database. " depends="compile-util">
+	<target name="import-iw" description="Imports Ives Waldo's dictionary into database. ">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
 			</classpath>
 			<arg value="-manual"/>
 			<arg value="-creator"/><arg value="98"/>
-			<arg value="-proj"/><arg value="23"/>
+			<arg value="-proj"/><arg value="22"/>
 			<arg value="-label"/><arg value="7"/>
-			<arg value="-note"/><arg value="This entry comes from Ives Waldo's Tibetan English Dictionary included in The Rangjung Yeshe Tibetan-English Dictionary of Buddhist Culture 3.0 (www.rangjung.com)."/>
+			<arg value="-note"/><arg value=""/>
 			<arg value="dicts/IvesWaldo.txt"/>
 		</java>
 	</target>
