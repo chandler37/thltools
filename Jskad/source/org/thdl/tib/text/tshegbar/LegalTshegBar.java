@@ -35,7 +35,7 @@ import org.thdl.util.ThdlDebug;
  *  <li>It contains no vocalic modifications</li>
  *
  *  <li>It may or may not contain an a-chung
- *  (<code>\u0F71</code>)</li>
+ *  (<code>&#92;u0F71</code>)</li>
  *
  *  <li>It contains at most one vowel from the set {EWV_a, EWV_i,
  *  EWV_e, EWV_u}, and that vowel is on the root stack.  The one
@@ -44,7 +44,7 @@ import org.thdl.util.ThdlDebug;
  *
  *  <li>It has at most one suffix, which is a single consonant or the
  *  special connective case marker 'i (i.e.,
- *  <code>"\u0F60\u0F72"</code>).</li>
+ *  <code>"&#92;u0F60&#92;u0F72"</code>).</li>
  *
  *
 DLC FIXME: we must allow many suffixes.  See Andres' e-mail below:
@@ -70,7 +70,7 @@ And also there are cases where they combine. For ex you can have
  *
  *  <li>It may contain a EWC_sa or EWC_da postsuffix iff there exists
  *  a suffix (and a suffix that is not the special connective case
- *  marker 'i (i.e., <code>"\u0F60\u0F72"</code>) (DLC FIXME: 'o and
+ *  marker 'i (i.e., <code>"&#92;u0F60&#92;u0F72"</code>) (DLC FIXME: 'o and
  *  'am maybe?  I asked in the "Embarrasing error in wylie conversion"
  *  bug report.).</li>
  *
@@ -236,7 +236,7 @@ public class LegalTshegBar
     }
 
     /** Returns null if there is no suffix, or a string containing the
-     *  one consonant or a string <code>"\u0F60\u0F72"</code>
+     *  one consonant or a string <code>"&#92;u0F60&#92;u0F72"</code>
      *  containing two characters in the special case that the suffix
      *  is that connective case marker {@link
      *  #getConnectiveCaseSuffix()}. */
@@ -335,8 +335,8 @@ public class LegalTshegBar
 
         // DLC unit test that each EWC is a nominal form of a consonant
 
-        // you could use either \u0F62 or \u0F6A, but we won't confuse
-        // this ra for a ra-mgo, so we use \u0F62, EWC_ra, not
+        // you could use either &#92;u0F62 or &#92;u0F6A, but we won't confuse
+        // this ra for a ra-mgo, so we use &#92;u0F62, EWC_ra, not
         // EWSUB_ra_btags.
     }
 
@@ -694,7 +694,7 @@ public class LegalTshegBar
     {
         if (!isNominalRepresentationOfConsonant(rootLetter))
             return internalThrowThing(throwIfIllegal,
-                                      "The root letter must be one of the standard thirty Tibetan consonants, and must be represented nominally, not, for example, by FIXED-FORM RA (\\u0F6A)");
+                                      "The root letter must be one of the standard thirty Tibetan consonants, and must be represented nominally, not, for example, by FIXED-FORM RA (&#92;u0F6A)");
 
         if (EW_ABSENT != prefix) {
             // Ensure that this prefix is one of the five prefixes,
@@ -780,7 +780,7 @@ public class LegalTshegBar
                                               "The head letter sa cannot be used with that root letter.");
                 }
             } else {
-                // '\u0F6A' is not a valid head letter, even for
+                // '&#92;u0F6A' is not a valid head letter, even for
                 // "rnya".  Use EWC_ra instead.
                 return internalThrowThing(throwIfIllegal,
                                           "The head letter given is not valid.");
@@ -950,7 +950,7 @@ public class LegalTshegBar
                    ? "hasAChungOnRootLetter=\"true\""
                    : "")
 
-                // DLC NOW: what about the root letter a, i.e. \u0F68 ?  do we want the EWTS to be 'aa' ?
+                // DLC NOW: what about the root letter a, i.e. &#92;u0F68 ?  do we want the EWTS to be 'aa' ?
                 + ("vowel=\""
                    + (hasExplicitVowel()
                       ? UnicodeCharToExtendedWylie.getExtendedWylieForUnicodeChar(getVowel())

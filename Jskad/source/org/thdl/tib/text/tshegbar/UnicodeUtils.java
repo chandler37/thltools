@@ -30,11 +30,11 @@ public class UnicodeUtils {
     /** Returns true iff x is a Unicode character that represents a
         consonant or two-consonant stack that has a Unicode code
         point.  Returns true only for the usual suspects (like
-        <code>\u0F40</code>) and for Sanskrit consonants (like
-        <code>\u0F71</code>) and the simple two-consonant stacks in
-        Unicode (like <code>\u0F43</code>).  Returns false for, among
+        <code>&#92;u0F40</code>) and for Sanskrit consonants (like
+        <code>&#92;u0F71</code>) and the simple two-consonant stacks in
+        Unicode (like <code>&#92;u0F43</code>).  Returns false for, among
         other things, subjoined consonants like
-        <code>\u0F90</code>. */
+        <code>&#92;u0F90</code>. */
     public static boolean isNonSubjoinedConsonant(char x) {
         return ((x != '\u0F48' /* reserved in Unicode 3.2, but not in use */)
                 && (x >= '\u0F40' && x <= '\u0F6A'));
@@ -43,11 +43,11 @@ public class UnicodeUtils {
     /** Returns true iff x is a Unicode character that represents a
         subjoined consonant or subjoined two-consonant stack that has
         a Unicode code point.  Returns true only for the usual
-        suspects (like <code>\u0F90</code>) and for Sanskrit
-        consonants (like <code>\u0F9C</code>) and the simple
-        two-consonant stacks in Unicode (like <code>\u0FAC</code>).
+        suspects (like <code>&#92;u0F90</code>) and for Sanskrit
+        consonants (like <code>&#92;u0F9C</code>) and the simple
+        two-consonant stacks in Unicode (like <code>&#92;u0FAC</code>).
         Returns false for, among other things, non-subjoined
-        consonants like <code>\u0F40</code>. */
+        consonants like <code>&#92;u0F40</code>. */
     public static boolean isSubjoinedConsonant(char x) {
         return ((x != '\u0F98' /* reserved in Unicode 3.2, but not in use */)
                 && (x >= '\u0F90' && x <= '\u0FBC'));
@@ -56,11 +56,11 @@ public class UnicodeUtils {
     /** Returns true iff x is the preferred representation of a
         Tibetan or Sanskrit consonant and cannot be broken down any
         further.  Returns false for, among other things, subjoined
-        consonants like <code>\u0F90</code>, two-component consonants
-        like <code>\u0F43</code>, and fixed-form consonants like
-        '\u0F6A'.  The new consonants (for transcribing Chinese, I
-        believe) "\u0F55\u0F39" (which EWTS calls "fa"),
-        "\u0F56\u0F39" ("va"), and "\u0F5F\u0F39" ("Dza") are
+        consonants like <code>&#92;u0F90</code>, two-component consonants
+        like <code>&#92;u0F43</code>, and fixed-form consonants like
+        '&#92;u0F6A'.  The new consonants (for transcribing Chinese, I
+        believe) "&#92;u0F55&#92;u0F39" (which EWTS calls "fa"),
+        "&#92;u0F56&#92;u0F39" ("va"), and "&#92;u0F5F&#92;u0F39" ("Dza") are
         two-character sequences, but you should be aware of them
         also. */
     public static boolean isPreferredFormOfConsonant(char x) {
@@ -177,9 +177,9 @@ public class UnicodeUtils {
     /** Returns true iff ch corresponds to the Tibetan letter ra.
         Several Unicode characters correspond to the Tibetan letter ra
         (in its subscribed form or otherwise).  Oftentimes,
-        <code>\u0F62</code> is thought of as the nominal
+        <code>&#92;u0F62</code> is thought of as the nominal
         representation.  Returns false for some characters that
-        contain ra but are not merely ra, such as <code>\u0F77</code> */
+        contain ra but are not merely ra, such as <code>&#92;u0F77</code> */
     public static boolean isRa(char ch) {
         return ('\u0F62' == ch
                 || '\u0F6A' == ch
@@ -189,7 +189,7 @@ public class UnicodeUtils {
 
     /** Returns true iff ch corresponds to the Tibetan letter wa.
         Several Unicode characters correspond to the Tibetan letter
-        wa.  Oftentimes, <code>\u0F5D</code> is thought of as the
+        wa.  Oftentimes, <code>&#92;u0F5D</code> is thought of as the
         nominal representation. */
     public static boolean isWa(char ch) {
         return ('\u0F5D' == ch
@@ -199,7 +199,7 @@ public class UnicodeUtils {
 
     /** Returns true iff ch corresponds to the Tibetan letter ya.
         Several Unicode characters correspond to the Tibetan letter
-        ya.  Oftentimes, <code>\u0F61</code> is thought of as the
+        ya.  Oftentimes, <code>&#92;u0F61</code> is thought of as the
         nominal representation. */
     public static boolean isYa(char ch) {
         return ('\u0F61' == ch
@@ -209,7 +209,7 @@ public class UnicodeUtils {
 
     /** Returns true iff there exists at least one character ch in
         unicodeString such that ch {@link #isRa(char) is ra} or contains
-        ra (like <code>\u0F77</code>).  This method is not implemented
+        ra (like <code>&#92;u0F77</code>).  This method is not implemented
         as fast as it could be.  It calls on the canonicalization code
         in order to maximize reuse and minimize the possibility of
         coder error. */
