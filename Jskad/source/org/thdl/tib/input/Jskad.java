@@ -257,6 +257,9 @@ public class Jskad extends JPanel implements DocumentListener {
                 // This weirdness happens to me when I edit .java
                 // files in the midst of an 'ant clean jskad-run':
                 System.err.println("Jskad was not cleanly compiled; please rebuild!");
+                System.err.println("Messy details:");
+                System.err.println("");
+                e.printStackTrace(System.err);
                 System.exit(1);
             }
             rtfFilter = new RTFFilter();
