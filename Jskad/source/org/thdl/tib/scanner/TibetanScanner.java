@@ -56,7 +56,7 @@ public abstract class TibetanScanner
 	"Yeshe Publications. See http://www.rangjung.com/ry-dic.htm for details.\n\n" + 
 	"About Jeffrey Hopkins' Tibetan-Sanskrit-English Dictionary Version 2.0.0:\n\n" + 
 	"Formulator and Editor: Jeffrey Hopkins\n" + 
-	"Contributors: Joe Wilson, Craig Preston, John Powers, Nathanial Garson, " + 
+	"Contributors: Joe Wilson, Craig Preston, John Powers, Nathaniel Garson, " + 
 	"Paul Hackett, Andres Montano\n\n" + 
 	"A project of the Tibetan Studies Institute, Boonesville, Virginia, and the " + 
 	"University of Virginia Tibetan Studies Program\n\n" + 
