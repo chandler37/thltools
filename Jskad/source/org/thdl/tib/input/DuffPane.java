@@ -217,23 +217,23 @@ public class DuffPane extends TibetanPane implements FocusListener {
         with messages about how the users' keypresses are being
         interpreted. */
 	public DuffPane(StatusBar sb) {
-        super();
-        initialize(sb, null, null);
-    }
+		super();
+		initialize(sb, null, null);
+	}
 
 	public DuffPane() {
-        super();
-        initialize(null, null, null);
+		super();
+		initialize(null, null, null);
 	}
 
 	public DuffPane(TibetanKeyboard keyboard) {
-        super();
-        initialize(null, keyboard, null);
+		super();
+		initialize(null, keyboard, null);
 	}
 
 	public DuffPane(java.net.URL keyboardURL) {
-        super();
-        initialize(null, null, keyboardURL);
+		super();
+		initialize(null, null, keyboardURL);
 	}
 
     /** For testing purposes, it's useful to create a DuffPane and not
@@ -365,27 +365,14 @@ public class DuffPane extends TibetanPane implements FocusListener {
 	
 	private void createActionTable(JTextComponent textComponent) {
 	    actions = new Hashtable();
-
 	    Action[] actionsArray = textComponent.getActions();
-
 	    for (int i = 0; i < actionsArray.length; i++) {
-
 		Action a = actionsArray[i];
-
 		actions.put(a.getValue(Action.NAME), a);
-
-		//System.out.println(a.getValue(Action.NAME));
-
 	    }
-
 	}
-
-	
-
 	private Action getActionByName(String name) {
-
 	    return (Action)(actions.get(name));
-
 	}
 	
 /**
@@ -478,7 +465,7 @@ public class DuffPane extends TibetanPane implements FocusListener {
         // a small cursor, though most everything else will be normal,
         // if you call setDocument(doc) at the end of this method.
 		setDocument(doc);
-        ThdlDebug.verify(getTibDoc() == doc);
+		ThdlDebug.verify(getTibDoc() == doc);
 
 		Style defaultStyle = styleContext.getStyle(StyleContext.DEFAULT_STYLE);
 		StyleConstants.setFontFamily(defaultStyle, "TibetanMachineWeb");
@@ -500,7 +487,7 @@ public class DuffPane extends TibetanPane implements FocusListener {
 		charList.clear();
 		oldGlyphList.clear();
 		holdCurrent = new StringBuffer();
-        updateStatus("Jskad is in its basic input mode");
+		updateStatus("Jskad is in its basic input mode");
 		isTopHypothesis = false;
 		isTypingVowel = false;
 
@@ -599,8 +586,8 @@ public class DuffPane extends TibetanPane implements FocusListener {
      * @param size a point size
      */
 	public void setByUserTibetanFontSize(int size) {
-        ThdlOptions.setUserPreference("thdl.default.tibetan.font.size", size);
-        setTibetanFontSize(size);
+		ThdlOptions.setUserPreference("thdl.default.tibetan.font.size", size);
+		setTibetanFontSize(size);
 	}
 
 /**
@@ -1116,6 +1103,7 @@ public void paste(int offset) {
 			case KeyEvent.VK_TAB:
 			case KeyEvent.VK_ENTER:
 			case KeyEvent.VK_ESCAPE:
+			case KeyEvent.VK_DELETE:
 			case KeyEvent.VK_BACK_SPACE:
 				break;
 			default:
