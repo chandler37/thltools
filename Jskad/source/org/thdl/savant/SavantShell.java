@@ -57,6 +57,14 @@ public class SavantShell extends JFrame
 		RTFEditorKit rtf = new RTFEditorKit();
 		InputStream in1 = SavantShell.class.getResourceAsStream("savanthelp.rtf");
 		InputStream in2 = SavantShell.class.getResourceAsStream("aboutsavant.rtf");
+		if (in1 == null) {
+			System.out.println("Can't find savanthelp.rtf.");
+			System.exit(1);
+		}
+		if (in2 == null) {
+			System.out.println("Can't find aboutsavant.rtf.");
+			System.exit(1);
+		}
 		DefaultStyledDocument doc1 = new DefaultStyledDocument();
 		DefaultStyledDocument doc2 = new DefaultStyledDocument();
 		try {
@@ -65,8 +73,8 @@ public class SavantShell extends JFrame
 		} catch (BadLocationException ioe) {
 			return;
 		} catch (IOException ioe) {
-			System.out.println("can't find savanthelp or aboutsavant");
-			return;
+			System.out.println("Can't find one of savanthelp.rtf or aboutsavant.rtf.");
+			System.exit(1);
 		}
 
 		JTextPane pane1 = new JTextPane(doc1);
