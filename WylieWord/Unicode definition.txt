@@ -174,7 +174,7 @@
 0FAD +w	Tibetan_subjoined_consonant
 0FAE +zh	Tibetan_subjoined_consonant
 0FAF +z	Tibetan_subjoined_consonant
-0FB0 +'	Tibetan_subjoined_consonant
+0FB0 +'	foreign_subjoined_consonant
 0FB1 +y	Tibetan_subjoined_consonant
 0FB2 +r	Tibetan_subjoined_consonant
 0FB3 +l	Tibetan_subjoined_consonant
