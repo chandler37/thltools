@@ -298,6 +298,16 @@ public class UnicodeUtils implements UnicodeConstants {
         characters will appear as themselves. */
     public static String unicodeCodepointToString(char cp,
                                                   boolean shortenIfPossible) {
+        return unicodeCodepointToString(cp, shortenIfPossible, "\\u");
+    }
+
+    /** Like {@link #unicodeCodepointToString(char, boolean)} if you
+        pass in <code>"\\u"</code> as prefix.  If you pass in the
+        empty string as prefix, then U+0F55 will print as
+        <code>0F55</code>. */
+    public static String unicodeCodepointToString(char cp,
+                                                  boolean shortenIfPossible,
+                                                  String prefix) {
         if (shortenIfPossible) {
             if ((cp >= 'a' && cp <= 'z')
                 || (cp >= 'A' && cp <= 'Z')
@@ -327,22 +337,22 @@ public class UnicodeUtils implements UnicodeConstants {
                 || cp == '{'
                 || cp == '}')
                 return new String(new char[] { cp });
+            if ('\t' == cp)
+                return "\\t";
+            if ('\n' == cp)
+                return "\\n";
+            if ('\r' == cp)
+                return "\\r";
         }
-        if ('\t' == cp)
-            return "\\t";
-        if ('\n' == cp)
-            return "\\n";
-        if ('\r' == cp)
-            return "\\r";
 
         if (cp < '\u0010')
-            return "\\u000" + Integer.toHexString((int)cp);
+            return prefix + "000" + Integer.toHexString((int)cp);
         else if (cp < '\u0100')
-            return "\\u00" + Integer.toHexString((int)cp);
+            return prefix + "00" + Integer.toHexString((int)cp);
         else if (cp < '\u1000')
-            return "\\u0" + Integer.toHexString((int)cp);
+            return prefix + "0" + Integer.toHexString((int)cp);
         else
-            return "\\u" + Integer.toHexString((int)cp);
+            return prefix + Integer.toHexString((int)cp);
     }
 
     /**
