@@ -7563,6 +7563,9 @@ M+NA
         uhelp("K:", "\u0f40\u0f7f");
         uhelp("KA:", "\u0f40\u0f7f");
 
+        uhelp("*", "\u0f04\u0f05");
+        uhelp("#", "\u0f04\u0f05\u0f05");
+
         uhelp("/NY'EE/", "\u0f3C\u0f49\u0F71\u0F7B\u0f3D");
         uhelp("*#HUm: G+DHOO GRO`;.,",
               "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b\u0f42\u0fa1\u0fb7\u0f7d\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
