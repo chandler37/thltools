@@ -323,14 +323,110 @@ jmeter.save.saveservice.output_format=xml
 		</java>
 	</target>
 
-	<target name="importer" description="run the dictionary importer. " depends="copy, compile">
+	<target name="importer-dm" description="Imports Dan Martin's dictionary into database. " depends="copy, compile">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
 			</classpath>
-			<!-- Pass Command-line arguments to the Dictionary Importer. The first argument must always be the Hibernate config file. -->
-			<arg value="${source}/java/hibernate.cfg.xml"/>
+			<!-- Pass Command-line arguments to the Dictionary Importer. The first argument must always be the Hibernate config file.
+			<arg value="${source}/java/hibernate.cfg.xml"/>-->
+			<arg value="-format"/><arg value="UTF-16"/>
+			<arg value="-tab"/>
+			<arg value="-creator"/><arg value="80"/>
+			<arg value="-proj"/><arg value="18"/>
+			<arg value="-label"/><arg value="3"/>
+			<arg value="-note"/><arg value="This entry comes from Dan Martin's Tibetan Vocabulary."/>
+			<arg value="dicts/DanMartin.txt"/>
 		</java>
 	</target>
-	
+	<target name="importer-jh" description="Imports Jeffrey Hopkins' dictionary into database. " depends="copy, compile">
+		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
+			<classpath>
+				<pathelement location="${build}/WEB-INF/classes"/>
+			</classpath>
+			<!-- Pass Command-line arguments to the Dictionary Importer. The first argument must always be the Hibernate config file.
+			<arg value="${source}/java/hibernate.cfg.xml"/>-->
+			<arg value="-format"/><arg value="UTF-16"/>
+			<arg value="-tab"/>
+			<arg value="-creator"/><arg value="80"/>
+			<arg value="-proj"/><arg value="19"/>
+			<arg value="-label"/><arg value="4"/>
+			<arg value="-note"/><arg value="This entry comes from Jeffrey Hopkins' Tibetan-Sanskrit-English Dictionary."/>
+			<arg value="dicts/JHTabUnicode.txt"/>
+		</java>
+	</target>
+	<target name="importer-tc" description="Imports The Great Tibetan-Chinese Dictionary into database. " depends="copy, compile">
+		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
+			<classpath>
+				<pathelement location="${build}/WEB-INF/classes"/>
+			</classpath>
+			<!-- Pass Command-line arguments to the Dictionary Importer. The first argument must always be the Hibernate config file.
+			<arg value="${source}/java/hibernate.cfg.xml"/>-->
+			<arg value="-tab"/>
+			<arg value="-creator"/><arg value="80"/>
+			<arg value="-proj"/><arg value="20"/>
+			<arg value="-pub-cons"/><arg value="true"/>
+			<arg value="-label"/><arg value="2"/>
+			<arg value="-note"/><arg value="This entry comes from Great Tibetan-Chinese Dictionary, tshig mdzod chen mo."/>
+			<arg value="dicts/tshig.tab"/>
+		</java>
+	</target>
+	<target name="importer-ry" description="Imports Rangjung Yeshe's dictionary into database. " depends="copy, compile">
+		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
+			<classpath>
+				<pathelement location="${build}/WEB-INF/classes"/>
+			</classpath>
+			<!-- Pass Command-line arguments to the Dictionary Importer. The first argument must always be the Hibernate config file.
+			<arg value="${source}/java/hibernate.cfg.xml"/>-->
+			<arg value="-creator"/><arg value="80"/>
+			<arg value="-proj"/><arg value="16"/>
+			<arg value="-label"/><arg value="1"/>
+			<arg value="-note"/><arg value="This entry comes from The Rangjung Yeshe Tibetan-English Dictionary of Buddhist Culture 3.0 (www.rangjung.com)."/>
+			<arg value="dicts/ry-dic2003-prop.txt"/>
+		</java>
+	</target>
+	<target name="importer-jv" description="Imports Jim Valby's dictionary into database. " depends="copy, compile">
+		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
+			<classpath>
+				<pathelement location="${build}/WEB-INF/classes"/>
+			</classpath>
+			<!-- Pass Command-line arguments to the Dictionary Importer. The first argument must always be the Hibernate config file.
+			<arg value="${source}/java/hibernate.cfg.xml"/>-->
+			<arg value="-creator"/><arg value="80"/>
+			<arg value="-proj"/><arg value="21"/>
+			<arg value="-label"/><arg value="5"/>
+			<arg value="-note"/><arg value="This entry comes from Jim Valby's Tibetan English Dictionary included in The Rangjung Yeshe Tibetan-English Dictionary of Buddhist Culture 3.0 (www.rangjung.com)."/>
+			<arg value="dicts/JimValby2002-trimmed.txt"/>
+		</java>
+	</target>
+
+	<target name="importer-rb" description="Imports Richard Barron's dictionary into database. " depends="copy, compile">
+		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
+			<classpath>
+				<pathelement location="${build}/WEB-INF/classes"/>
+			</classpath>
+			<!-- Pass Command-line arguments to the Dictionary Importer. The first argument must always be the Hibernate config file.
+			<arg value="${source}/java/hibernate.cfg.xml"/>-->
+			<arg value="-creator"/><arg value="80"/>
+			<arg value="-proj"/><arg value="22"/>
+			<arg value="-label"/><arg value="6"/>
+			<arg value="-note"/><arg value="This entry comes from Richard Barron's Tibetan English Dictionary included in The Rangjung Yeshe Tibetan-English Dictionary of Buddhist Culture 3.0 (www.rangjung.com)."/>
+			<arg value="dicts/RichardBarron.txt"/>
+		</java>
+	</target>
+
+	<target name="importer-iw" description="Imports Ives Waldo's dictionary into database. " depends="copy, compile">
+		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
+			<classpath>
+				<pathelement location="${build}/WEB-INF/classes"/>
+			</classpath>
+			<!-- Pass Command-line arguments to the Dictionary Importer. The first argument must always be the Hibernate config file.
+			<arg value="${source}/java/hibernate.cfg.xml"/>-->
+			<arg value="-creator"/><arg value="80"/>
+			<arg value="-proj"/><arg value="23"/>
+			<arg value="-label"/><arg value="7"/>
+			<arg value="-note"/><arg value="This entry comes from Ives Waldo's Tibetan English Dictionary included in The Rangjung Yeshe Tibetan-English Dictionary of Buddhist Culture 3.0 (www.rangjung.com)."/>
+			<arg value="dicts/IvesWaldo.txt"/>
+		</java>
+	</target>
 </project>
