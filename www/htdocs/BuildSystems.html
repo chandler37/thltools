@@ -2,7 +2,7 @@
 <html>
 
 <!-- @author David Chandler -->
-<!-- @date October 20, 2002 -->
+<!-- @date-created October 20, 2002 -->
 <!-- @editor Emacs, baby! -->
 
 <head>
@@ -24,7 +24,9 @@
   clear, repeatable procedures that software developers go by to
   compile, run, test, create documentation, and cut releases.  Our
   build systems are fully automated, which provides a good basis for
-  collaborative development.
+  collaborative development.  Even for individual development, a good
+  build system gives you the confidence to make big organizational
+  changes and saves you time in the long run.
 </p>
 
 <h3>Table of Contents</h3>
@@ -144,60 +146,111 @@
     classpath-related headaches disappear (after clearing initial
     hurdles), and you can be sure that the build will work the same on
     Linux and the Mac as it does on Windows XP, because Ant itself is
-    a Java program.
+    a Java program.  I compile, test, run, and build releases using
+    Ant, and really like it.
   </p>
 
   <p>
-    Although Ant is for Java programs, it has enough features to make
-    it a viable choice of build system for non-Java stuff like our
-    Tibetan Machine Web fonts.
+    Although Ant is mainly intended for building Java programs, it has
+    enough features to make it a viable choice of build system for
+    things non-Java, things like the Tibetan Machine Web font.
   </p>
+
 
 <h3>Installing Apache Ant<a name="installant"></a></h3>
 
 <p>
   To install Apache's Jakarta Ant (or "Apache Ant" or simply "Ant"),
-  see the <a href="http://jakarta.apache.org/ant/"> Apache Ant</a>
-  website.  Their instructions for installation are pretty good, but
-  you may have trouble if you're on Windows and you don't know how to
-  set environment variables (try Control
-  Panel-&gt;System-&gt;Advanced-&gt;Environment Variables) and the like.
+  you'll first need a JDK installed.  I recommend getting Sun's latest
+  1.4 JDK (yes, it's available for Linux too).  Next, see the <a
+  href="http://jakarta.apache.org/ant/"> Apache Ant</a> website.
+  Their instructions for installation are pretty good, but you may
+  have trouble if you're on Windows and you don't know how to set
+  environment variables (try Control
+  Panel-&gt;System-&gt;Advanced-&gt;Environment Variables) and the
+  like.  One thing they don't tell you is that their binary
+  distribution ships with a ton of documentation in
+  <code>$ANT_HOME/docs/</code> that can all safely be deleted if you
+  care about disk space.
 </p>
 
 <p>
-  To test your installation, use cvs to checkout the
-  <code>Fonts</code> module.  It has a simpler Ant build file
+  I recommend installing Ant yourself, and not using a package manager
+  such as apt-get or rpm.  This is because the ordinary installation
+  has a well-known <code>$ANT_HOME/lib</code> directory in which we'll
+  wish to place a couple of JARs (<a href="#testingjskad">
+  <code>junit.jar</code></a> and Vamp), as described below.  I've had
+  personal experience with an RPM that made it impossible for me to
+  make Ant aware of extra JARs, so stay away from RPMs and other
+  packages.
+</p>
+
+<p>
+  To test your installation, use cvs to checkout either the
+  <code>Fonts</code> module or the <code>Jskad</code> module.  The
+  <code>Fonts</code> module has a simpler Ant build file
   (<code>Fonts/build.xml</code>) than the <code>Jskad</code> module
-  has, so it's better for testing.  Change directory to
-  <code>Fonts</code> and run the following command:
+  has, so perhaps it's better for testing.  The <code>Jskad</code>
+  module should be good to go as well, though, because we have a
+  multi-buildfile system that delegates less common build activities
+  (ones that require tweaking of your Ant installation) to supporting
+  buildfiles and keeps the main buildfile,
+  <code>Jskad/build.xml</code>, free of nonstandard constructs.
+  Change directory to whichever module you choose and run the
+  following command:
 </p>
     <blockquote>
-      <code>ant clean dist</code>
+      <code>ant clean</code>
     </blockquote>
 
 <p>
-  If you have any trouble, see Ant's FAQs and then e-mail David
-  Chandler.
+  The output shouldn't alarm you, and it should conclude with "BUILD
+  SUCCESSFUL".  If you have any trouble, see Ant's FAQs and then
+  e-mail David Chandler.
 </p>
 
 <p>
-  Now that you have a good installation of Ant itself, you may want
-  to install the <a href="http://www.vamphq.com/ant.html"> Vamp Ant
-  task</a> provided by the <a href="http://www.vamphq.com/"> Venus
-  Application Publisher</a>.  You need this to cut <a
-  href="http://java.sun.com/products/javawebstart/"> Java Web
-  Start</a> releases of Jskad, Savant, QuillDriver, and the
-  translation tool.  You <b>do not</b> need it otherwise.
+  Now that you have a good installation of Ant itself, you probably
+  will want to install both JUnit and Vamp.  These steps can wait
+  until later if you're not sure you'll be testing our software or
+  packaging our software for release.  Here are the steps to install
+  them:
 </p>
+
+<ul>
+  <li>
+    To install JUnit, first do a cvs checkout of the
+    <code>Jskad</code> module (see <a href="#cvs"> below</a> for info
+    on how to use CVS). Now, to make Ant aware of JUnit, simply copy
+    <code>Jskad/extensions/to-be-installed-with-ant/junit.jar</code>
+    to the <code>$ANT_HOME/lib/</code> directory (and, if you're on
+    UNIX/Linux, make the file world-readable).
+  </li>
+
+  <li>
+    It isn't much trouble to install the <a
+    href="http://www.vamphq.com/ant.html"> Vamp Ant task</a> provided
+    by the <a href="http://www.vamphq.com/"> Venus Application
+    Publisher</a>.  You need this to cut <a
+    href="http://java.sun.com/products/javawebstart/"> Java Web
+    Start</a> releases of Jskad, Savant, QuillDriver, and the
+    translation tool.  You <b>do not</b> need it otherwise.
+
+    <p>
+      Installing Vamp's Ant task is simple enough, and is in fact
+      simpler than Vamp's web pages of October 1, 2002 imply.  That
+      is, if you have installed Ant 1.5.1 or later, then you can
+      simply drop <code>vamp.jar</code> into Ant's <code>lib</code>
+      directory (i.e., <code>$ANT_HOME/lib/</code>) and forget about
+      changing your classpath (but do be sure, Linux/UNIX users, that
+      the file is world-readable).
+    </p>
+  </li>
+</ul>
 
 <p>
-  Installing Vamp's Ant task is simple enough, and is in fact simpler
-  than Vamp's web pages of October 1, 2002 imply.  That is, if you
-  have installed Ant 1.5.1 or later, then you can simply drop
-  <code>vamp.jar</code> into Ant's <code>lib</code> directory and
-  forget about changing your classpath.
+  Your build environment is good to go!
 </p>
-
 
 <h3>Setting things up to use CVS <a
 name="cvs"></a></h3>
@@ -301,14 +354,14 @@ name="buildingfonts"></a></h3>
         </blockquote>
     </li>
     <li>
-      after being sure that your Fonts directory is a mirror of the
-      one in the repository, use cvs to tag this revision that you
-      wish to release with a name that another developer, years down
-      the road, will recognize as referring to this release.  To do
-      this, you can run <code>'cvs -f rtag <i>tag-name</i>
-      Fonts'</code> or (and this is preferred) you can run <code>'cvs
-      -f tag -c <i>tag-name</i>'</code>.  Good tag names are like the
-      following:
+      after being sure that your <code>Fonts</code> directory is a
+      mirror of the one in the repository, use cvs to tag this
+      revision that you wish to release with a name that another
+      developer, years down the road, will recognize as referring to
+      this release.  To do this, you can run <code>'cvs -f rtag
+      <i>tag-name</i> Fonts'</code> or (and this is preferred) you can
+      run <code>'cvs -f tag -c <i>tag-name</i>'</code>.  Good tag
+      names are like the following:
       <ul>
         <li>
           <code>Fonts_1_0</code> (referring to the 1.0 release of the
@@ -320,7 +373,7 @@ name="buildingfonts"></a></h3>
         </li>
       </ul>
       Note that tagging for a release of just the Tibetan Machine Web
-      fonts and not the Tibetan Machine fonts is <i>no different</i>
+      font and not the Tibetan Machine font is <i>no different</i>
       than tagging for a simulaneous release of both.
     </li>
     <li>
@@ -564,7 +617,7 @@ module<a name="jskadsetup"></a></h4>
 <p>
   You'll also need to checkout the <code>Fonts</code> module
   underneath the directory where you checked out the
-  <code>Jskad</code> directory.  We put the TMW fonts into some JAR
+  <code>Jskad</code> directory.  We put the TMW font into some JAR
   files, so the <code>'Jskad/Fonts/TibetanMachineWeb/'</code>
   directory must exist.
 </p>
@@ -726,22 +779,67 @@ module<a name="daytoday"></a></h4>
 <h5>Testing<a name="testingjskad"></a></h5>
 
 <p>
-  We will soon use <a href="http://junit.org/"> JUnit</a> to provide
-  automated unit tests.  Running them will be as simple as making Ant
-  aware of JUnit and then running <code>'ant check'</code>.  <!-- DLC
-  FIXME -->
+  Testing is an underappreciated part of software development.
+  Software without a good test suite costs more money and time to
+  maintain, and it can eventually become downright demoralizing when
+  you can't seem to make a simple change without breaking part of the
+  code.  If you see the break immediately, it's no big deal.  When you
+  have a solid test suite, you're much more likely to make changes
+  with confidence.
 </p>
 
 <p>
-  To make testing easy, you should use interfaces rather than
+  But testing isn't just for us, the developers.  It's mainly to give
+  the user confidence (though hearing from us about our extensive,
+  automated test suite is the direct method whereby the user gains
+  this confidence).  For key parts of our system, parts that we hope
+  others will trust with their most precious data, we need excellent
+  testing, design, and documentation.  For other parts of the system,
+  where failure is obvious (like GUI interfaces), testing can slide
+  more easily.
+</p>
+
+<p>
+  The core modules dealing with Tibetan text are thus going to be
+  heavily tested, mainly by unit tests and end-to-end regression tests
+  that ensure that the software still does what we verified by hand it
+  should do.  If we don't do this, can you imagine someone entrusting
+  us to convert their Kangyur, in its Roman transliteration, into
+  Unicode?  Don't imagine they will just glance at the first and last
+  page of the converted text and sign off on our fine tool.
+</p>
+
+<p>
+  In short, the test suite determines whether our software is
+  well-receieved or merely well-intentioned.
+</p>
+
+<p>
+  We use <a href="http://junit.org/"> JUnit</a> to provide automated
+  unit tests.  Running them is as simple as making Ant aware of JUnit
+  (see below) and then running <code>'ant clean check'</code>.  If
+  there are any failures, you should examine the files
+  <code>Jskad/TEST-*</code> and track them down.
+</p>
+
+<p>
+  To make Ant aware of JUnit, simply copy
+  <code>Jskad/extensions/to-be-installed-with-ant/junit.jar</code> to
+  the <code>$ANT_HOME/lib/</code> directory (and, if you're on
+  UNIX/Linux, make the file world-readable).  More details are provide
+  <a href="#installant"> above</a>.
+</p>
+
+<p>
+  To make future testing easy, you should use interfaces rather than
   hard-wiring in calls to classes that are difficult to instantiate.
   For example, if we were to make use of a database class in our
   DuffPane class, doing so directly would mean that the database
   software would have to be properly installed and up and running in
   order to test DuffPane individually.  If you create an interface and
   use the database only through that interface, then creating a <a
-  href="http://mockobjects.com"> mock object</a> that pretends to
-  be that database but returns canned answers is a simple matter.
+  href="http://mockobjects.com/"> mock object</a> that pretends to be
+  that database but returns canned answers is a simple matter.
 </p>
 
 
@@ -821,7 +919,9 @@ module<a name="daytoday"></a></h4>
 
 <p>
   First, be sure you've installed Vamp's Ant task as described <a
-  href="#installant"> above</a>.
+  href="#installant"> above</a>.  You can do many day-to-day
+  development activities without performing this step, so don't assume
+  that you must have already done it.
 </p>
 
 <p>
@@ -850,8 +950,9 @@ module<a name="daytoday"></a></h4>
     Jskad module)
   </li>
   <li>
-    <code>September_23_2002_release</code> (referring to the
-    release of all programs in Fonts module made on September 23, 2002
+    <code>September_23_2002_release</code> (referring to the release
+    of all programs in <code>Fonts</code> module made on September 23,
+    2002
   </li>
 </ul>
 
@@ -940,8 +1041,10 @@ module<a name="daytoday"></a></h4>
   QuillDriver, like Jskad, requires all-permissions security.  That
   means that <code>xalan.jar</code>, <code>xercesImpl.jar</code>, and
   <code>xml-apis.jar</code> need to be jar-signed by the same
-  certificate as Savant.  We don't yet do this automatically <!-- DLC
-  FIXME -->, but here's how to do this manually:
+  certificate as QuillDriver.  We do this automatically via <code>'ant
+  self-contained-dist'</code> or <code>'ant
+  web-start-releases'</code>, but here's how to do this manually:<!--
+  DLC FIXME: automate this further. -->
 </p>
 
 <ol>
