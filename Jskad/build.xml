@@ -286,6 +286,11 @@
     <antcall target="copy-tmw-fonts-to-bin-dir">
       <param name="my.bin" value="${jskadbin}"/>
     </antcall>
+<!-- DLC FIMXE: put these in Jskad
+    <antcall target="copy-tm-fonts-to-bin-dir">
+      <param name="my.bin" value="${jskadbin}"/>
+    </antcall>
+-->
     <antcall target="create-timestamp-source-code"/> <!-- DLC NOW! The -run targets are mucking with this! It isn't fatal, but it should be fixed. -->
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${jskadbin}"/>
@@ -1189,6 +1194,17 @@ public class ThdlVersion {
           unless="found.the.fonts"/>
     <copy todir="${my.bin}/Fonts/TibetanMachineWeb">
       <fileset dir="Fonts/TibetanMachineWeb"/>
+    </copy>
+  </target>
+
+  <target name="copy-tm-fonts-to-bin-dir"
+          description="Copies the TM font files to the current build's bin/ directory.">
+    <available file="Fonts/TibetanMachine"
+               property="found.the.fonts"/>
+    <fail message="Can't find the Fonts module at Jskad/Fonts/TibetanMachine.  Did you do 'cvs -f checkout -P Fonts' from inside the Jskad directory?"
+          unless="found.the.fonts"/>
+    <copy todir="${my.bin}/Fonts/TibetanMachine">
+      <fileset dir="Fonts/TibetanMachine"/>
     </copy>
   </target>
 
