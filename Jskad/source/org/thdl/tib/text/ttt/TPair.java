@@ -213,12 +213,14 @@ class TPair {
     void getUnicode(StringBuffer sb, boolean subscribed) {
         if (null != getLeft()) {
             String x = ACIPRules.getUnicodeFor(getLeft(), subscribed);
-            if (null != x) sb.append(x);
+            if (null == x) throw new Error("TPair: " + getLeft() + " has no Uni");
+            sb.append(x);
         }
         if (null != getRight()
-            && !("-".equals(getRight()) || "A".equals(getRight()))) {
+            && !("-".equals(getRight()) || "+".equals(getRight()) || "A".equals(getRight()))) {
             String x = ACIPRules.getUnicodeFor(getRight(), subscribed);
-            if (null != x) sb.append(x);
+            if (null == x) throw new Error("TPair: " + getRight() + " has no Uni");
+            sb.append(x);
         }
     }
 

@@ -328,7 +328,7 @@ public class ACIPConverter {
                             hasErrors = true;
                             uni = err;
                         }
-                        if (null != writer) writer.write(uni);
+                        writer.write(uni);
                     }
                     if (null != tdoc) {
                         String wylie

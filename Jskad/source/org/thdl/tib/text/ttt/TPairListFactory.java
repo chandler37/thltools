@@ -95,7 +95,7 @@ class TPairListFactory {
      *  'ANG" circumstances
      *  @param weHaveSeenVowelAlready true if and only if, in our
      *  recursion, we've already found one vowel (not a disambiguator,
-     *  but a vowel like "A", "E", "Um:", "'U", etc.) */
+     *  but a vowel like "A", "E", "Um:", "m", "'U", etc.) */
     private static TPairList breakHelper(String acip, boolean tickIsVowel, boolean weHaveSeenVowelAlready) {
 
         // base case for our recursion:
@@ -212,7 +212,11 @@ class TPairListFactory {
         }
         for (i = Math.min(ACIPRules.MAX_VOWEL_LENGTH, xl - ll); i >= 1; i--) {
             String t = null;
-            if (ACIPRules.isVowel(t = acip.substring(ll, ll + i))) {
+            if (ACIPRules.isVowel(t = acip.substring(ll, ll + i))
+                // Or these, which we massage into "Am", "Am:", and
+                // "A:" because I didn't think {Pm} should be treated
+                // like {PAm} originally:
+                || "m".equals(t) || "m:".equals(t) || ":".equals(t)) {
                 r = t;
                 break;
             }
@@ -227,6 +231,14 @@ class TPairListFactory {
             return new TPair(l, "+");
         }
 
+        // Allow Pm to mean PAm, P: to mean PA:, Pm: to mean PAm:.
+        int mod = 0;
+        if ("m".equals(r)) { r = "Am"; mod = -1; }
+        if (":".equals(r)) { r = "A:"; mod = -1; }
+        if ("m:".equals(r)) { r = "Am:"; mod = -1; }
+        if (":m".equals(r)) { r = "A:m"; mod = -1; } // not seen, though...
+
+
         // what if we see a character that's not part of any vowel or
         // consonant?  We return it.
         if (null == l && null == r) {
@@ -236,7 +248,8 @@ class TPairListFactory {
         }
 
         howMuch[0] = (((l == null) ? 0 : l.length())
-                      + ((r == null) ? 0 : r.length()));
+                      + ((r == null) ? 0 : r.length())
+                      + mod);
         return new TPair(l, r);
     }
 }

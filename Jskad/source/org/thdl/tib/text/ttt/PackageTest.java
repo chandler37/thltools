@@ -656,13 +656,13 @@ tstHelper("KA'", "[(K . A), (' . )]",
                       "{S+P+YO}{M+S}",
                       "{S+P+YO}{M}{S}",
                   });
-        tstHelper(":'AO", "[(: . -), (' . ), (A . O)]");
-        tstHelper("m'AO", "[(m . -), (' . ), (A . O)]");
-        tstHelper("m:'AO", "[(m . -), (: . -), (' . ), (A . O)]");
+        tstHelper(":'AO", "[( . A:), (' . ), (A . O)]");
+        tstHelper("m'AO", "[( . Am), (' . ), (A . O)]");
+        tstHelper("m:'AO", "[( . Am:), (' . ), (A . O)]");
         tstHelper("AA:", "[(A . A:)]", new String[] { "{AA:}" });
         tstHelper("KE:", "[(K . E:)]");
-        tstHelper("K:", "[(K . ), (: . )]",
-                  new String[] { /* No parses exist. "K:" is illegal. */ });
+        tstHelper("K:", "[(K . A:)]",
+                  new String[] { "{KA:}" });
         tstHelper("'AO", "[(' . ), (A . O)]");
         tstHelper("'AOM", "[(' . ), (A . O), (M . )]");
 
@@ -717,8 +717,8 @@ tstHelper("KA'", "[(K . A), (' . )]",
 
         tstHelper("TAA", "[(T . ), (A . A)]");
         tstHelper("DAA", "[(D . ), (A . A)]");
-        tstHelper("DAAm", "[(D . ), (A . Am)]");
-        tstHelper("DAAm:", "[(D . ), (A . Am:)]");
+        tstHelper("DAAm", "[(D . A), (A . Am)]");
+        tstHelper("DAAm:", "[(D . A), (A . Am:)]");
         tstHelper("DA'im:", "[(D . A), (' . im:)]");
 
         tstHelper("NA+YA", "[(N . +), (Y . A)]");
@@ -7196,6 +7196,8 @@ tstHelper("ZUR");
 
     /** Tests {@link ACIPTshegBarScanner#scan(String, StringBuffer, int)}. */
     public void testScanner() {
+        shelp("Pm KA", "", "[TIBETAN_NON_PUNCTUATION:{Pm}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{KA}]");
+
         shelp("KA (KHA\nGA)", "", "[TIBETAN_NON_PUNCTUATION:{KA}, TIBETAN_PUNCTUATION:{ }, START_PAREN:{(}, TIBETAN_NON_PUNCTUATION:{KHA}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{GA}, END_PAREN:{)}]");
 
         shelp("LA...SGRUB",
@@ -7416,6 +7418,7 @@ G+NA
 MNA'
 M+NA
 */
+        uhelp("B+NA", "\u0f56\u0fa3");
         uhelp("BNA", "[#WARNING CONVERTING ACIP DOCUMENT: Warning: We're going with {B+NA}, but only because our knowledge of prefix rules says that {B}{NA} is not a legal Tibetan tsheg bar (\"syllable\")]\u0f56\u0fa3");
         uhelp("^GONG SA", "\u0f38\u0f42\u0f7c\u0f44\u0f0b\u0f66");
         uhelp("^ GONG SA", "\u0f38\u0f42\u0f7c\u0f44\u0f0b\u0f66");
@@ -7438,9 +7441,10 @@ M+NA
         uhelp("x", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP x must be glued to the end of a tsheg bar, but this one was not]");
         uhelp("o", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP o must be glued to the end of a tsheg bar, but this one was not]");
         uhelp("%", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP % must be glued to the end of a tsheg bar, but this one was not][#WARNING CONVERTING ACIP DOCUMENT: Lexical warning: The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice]");
-        uhelp(":", "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") : HAS THESE ERRORS: Cannot convert ACIP : because : is not an ACIP consonant]");
-        uhelp("m", "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") m HAS THESE ERRORS: Cannot convert ACIP m because m is not an ACIP consonant]");
+        uhelp(":", "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") : HAS THESE ERRORS: Cannot convert ACIP A: because A: is a \"vowel\" without an associated consonant]");
+        uhelp("m", "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") m HAS THESE ERRORS: Cannot convert ACIP Am because Am is a \"vowel\" without an associated consonant]");
 
+        uhelp("N+YA", "\u0f53\u0fb1");
         uhelp("NA+YA", "\u0f53\u0fb1"); // FIXME: warn about the extra A
         uhelp("NE+YA", "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") NE+YA HAS THESE ERRORS: Cannot convert ACIP NE+-YA because + is not an ACIP consonant]");
         uhelp("tRAStA", "\u0f4a\u0fb2\u0f66\u0f9a");
@@ -7502,6 +7506,17 @@ M+NA
 
         uhelp("WWA", "\u0f5d\u0fba");
         uhelp("W+WA", "\u0f5d\u0fba");
+
+        tstHelper("Km:", "{KAm:}",
+                  new String[] { "{KAm:}" },
+                  new String[] { },
+                  "{KAm:}");
+        uhelp("Km:", "\u0f40\u0f7e\u0f7f");
+        uhelp("KAm:", "\u0f40\u0f7e\u0f7f");
+        uhelp("Km", "\u0f40\u0f7e");
+        uhelp("KAm", "\u0f40\u0f7e");
+        uhelp("K:", "\u0f40\u0f7f");
+        uhelp("KA:", "\u0f40\u0f7f");
 
         uhelp("/NY'EE/", "\u0f3C\u0f49\u0F71\u0F7B\u0f3D");
         uhelp("*#HUm: G+DHOO GRO`;.,",

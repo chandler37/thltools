@@ -83,6 +83,9 @@ public class ACIPRules {
                 
                 // Keep this code in sync with getWylieForACIPVowel.
             }
+            // {Pm} is treated just like {PAm}; {P:} is treated just
+            // like {PA:}; {Pm:} is treated just like {PAm:}.  But
+            // that happens thanks to
         }
         return (acipVowels.contains(s));
     }
@@ -276,6 +279,10 @@ public class ACIPRules {
                 putMapping(acipVowel2wylie, baseVowels[i][0] + "m:", baseVowels[i][1] + "MH");
                 putMapping(acipVowel2wylie, '\'' + baseVowels[i][0] + "m:", baseVowels[i][2] + "MH");
             }
+            // {Pm} is treated just like {PAm}; {P:} is treated just
+            // like {PA:}; {Pm:} is treated just like {PAm:}.  But
+            // that happens thanks to
+            // TPairListFactory.getFirstConsonantAndVowel(StringBuffer,int[]).
         }
         return (String)acipVowel2wylie.get(acip);
     }
@@ -475,12 +482,13 @@ public class ACIPRules {
             superACIP2unicode.put("'im:", "\u0F71\u0F80\u0F7E\u0F7F");
             // :m does not appear, though you'd think it's as valid as m:.
 
-            // I doubt these will occur alone:
             superACIP2unicode.put("m", "\u0F7E");
             superACIP2unicode.put(":", "\u0F7F");
+            superACIP2unicode.put("m:", "\u0F7E\u0F7F");
 
             superACIP2unicode.put("Am", "\u0F7E");
             superACIP2unicode.put("A:", "\u0F7F");
+            superACIP2unicode.put("Am:", "\u0F7E\u0F7F");
 
             superACIP2unicode.put("0", "\u0F20");
             superACIP2unicode.put("1", "\u0F21");
@@ -567,12 +575,11 @@ public class ACIPRules {
 
         if (vowel.indexOf('m') >= 0) {
             DuffCode last = (DuffCode)duff.get(duff.size() - 1);
-            duff.remove(duff.size() - 1);
+            duff.remove(duff.size() - 1); // getBindu will add it back...
             TibTextUtils.getBindu(duff, last);
         }
         if (vowel.indexOf(':') >= 0)
             duff.add(TibetanMachineWeb.getGlyph("H"));
-
     }
 
     /** Returns true if and only if l is the ACIP representation of a
