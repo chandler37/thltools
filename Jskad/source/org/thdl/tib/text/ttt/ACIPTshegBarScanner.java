@@ -160,7 +160,7 @@ public class ACIPTshegBarScanner {
                 continue;
             }
             switch (ch) {
-            case '}':
+            case '}': // fall through...
             case ']':
                 if (bracketTypeStack.empty()) {
                     // Error.
@@ -218,6 +218,8 @@ public class ACIPTshegBarScanner {
             case '{': // NOTE WELL: KX0016I.ACT, KD0095M.ACT, and a
                       // host of other ACIP files use {} brackets like
                       // [] brackets.  I treat both the same.
+                
+                // fall through...
             case '[':
                 // This definitely indicates a new token.
                 if (startOfString < i) {
@@ -823,6 +825,10 @@ public class ACIPTshegBarScanner {
                                                 : TString.TIBETAN_PUNCTUATION)));
                         }
                     }
+                }
+                if ('%' == ch) {
+                    al.add(new TString("The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice",
+                                       TString.WARNING));
                 }
                 startOfString = i+1;
                 currentType = TString.ERROR;

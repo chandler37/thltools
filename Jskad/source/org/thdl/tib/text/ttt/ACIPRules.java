@@ -501,7 +501,8 @@ public class ACIPRules {
             superACIP2unicode.put("`", "\u0F08");
             superACIP2unicode.put("*", "\u0F04\u0F05");
             superACIP2unicode.put("#", "\u0F04\u0F05\u0F05");
-            superACIP2unicode.put("%", "\u0F35"); // FIXME: could be U+0F37 or U+0F35 according to RC if I understand correctly.
+            superACIP2unicode.put("%", "\u0F35"); // but might be U+0F14, so we warn.
+            superACIP2unicode.put("o", "\u0F37");
             superACIP2unicode.put(";", "\u0F11");
             superACIP2unicode.put("\r", "\r");
             superACIP2unicode.put("\t", "\t");
@@ -511,7 +512,7 @@ public class ACIPRules {
             superACIP2unicode.put("^", "\u0F38");
 
             // DLC FIXME: "^ GONG" is "^GONG", right?
-            // DLC FIXME: what's the Unicode for x? for o? RC said there is none in plain-text Unicode for x.  But what about in RTF Unicode?
+            // DLC FIXME: what's the Unicode for x? RC said there is none in plain-text Unicode for x.  But what about in RTF Unicode?
         }
         if (subscribed) {
             String u = (String)subACIP2unicode.get(acip);
