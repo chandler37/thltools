@@ -47,7 +47,7 @@ public class TibetanConverter implements FontConverterConstants {
     static {
         // No need for the TM or TMW fonts.
         System.setProperty("thdl.rely.on.system.tmw.fonts", "true");
-        System.setProperty("thdl.do.not.rely.on.system.tmw.fonts", "false");
+        System.setProperty("thdl.do.not.rely.on.system.tm.fonts", "false");
     }
 
     /**

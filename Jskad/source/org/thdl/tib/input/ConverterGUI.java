@@ -37,7 +37,7 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
 	public static void main(String[] args) {
         // No need for the TM or TMW fonts.
         System.setProperty("thdl.rely.on.system.tmw.fonts", "true");
-        System.setProperty("thdl.do.not.rely.on.system.tmw.fonts", "false");
+        System.setProperty("thdl.do.not.rely.on.system.tm.fonts", "false");
 
         System.exit(realMain(args, System.out, null));
     }

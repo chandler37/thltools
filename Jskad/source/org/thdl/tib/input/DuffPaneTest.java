@@ -40,8 +40,9 @@ public class DuffPaneTest extends TestCase {
         // We don't want to use options.txt:
         ThdlOptions.forTestingOnlyInitializeWithoutDefaultOptionsFile();
 
-        // We don't want to load the TMW font files ourselves:
+        // We don't want to load the TM or TMW font files ourselves:
         ThdlOptions.setUserPreference("thdl.rely.on.system.tmw.fonts", true);
+        ThdlOptions.setUserPreference("thdl.do.not.rely.on.system.tm.fonts", false);
         ThdlOptions.setUserPreference("thdl.debug", true);
 
         dp = new DuffPane();
@@ -87,10 +88,10 @@ public class DuffPaneTest extends TestCase {
     private void ensureKeysGiveCorrectWylie(String keys, String wylie) {
         dp.newDocument(); // initialize to a blank canvas.
         fireKeysWithoutModifiers(keys);
-        boolean passes = wylie.equals(dp.getWylie());
+        boolean passes = wylie.equals(dp.getWylie(new boolean[] { false }));
         if (!passes) {
             System.out.println("Congrats! These keys, \"" + keys
-                               + "\", give this wylie, \"" + dp.getWylie()
+                               + "\", give this wylie, \"" + dp.getWylie(new boolean[] { false })
                                + "\", not the expected \"" + wylie + "\"");
         }
         assertTrue(passes);
