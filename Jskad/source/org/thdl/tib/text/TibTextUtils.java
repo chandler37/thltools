@@ -1436,11 +1436,10 @@ public class TibTextUtils implements THDLWylieConstants {
     }
 }
 
-/** An ordered pair consisting of a Tibetan grapheme cluster's {@link
-    org.thdl.tib.text.tshegbar#UnicodeGraphemeCluster see
-    UnicodeGraphemeCluster for a definition of the term}
-    classification and its context-insensitive THDL Extended Wylie
-    representation. */
+/** An ordered pair consisting of a Tibetan grapheme cluster's (see
+    {@link org.thdl.tib.text.tshegbar.UnicodeGraphemeCluster} for a
+    definition of the term}) classification and its
+    context-insensitive THDL Extended Wylie representation. */
 class TGCPair {
     static final int OTHER = 1;
     // a standalone achen would fall into this category:
