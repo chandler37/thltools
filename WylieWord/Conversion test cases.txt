@@ -37,8 +37,19 @@ mnags
 gdams
 'gams
 
-// All the compound native-Tibetan stacks
-rka rga rnga rja rnya rta rda rna rba rma rtsa rdza lka lga lnga lca lja lta lda lpa lba lha ska sga snga snya sta sda sna spa sba sma stsa kwa khwa gwa cwa nywa twa dwa tswa tshwa zhwa zwa rwa shwa swa hwa kya khya gya pya phya bya mya kra khra gra tra thra dra pra phra bra mra shra sra hra kla gla bla zla rla sla rkya rgya rmya rgwa rtswa skya sgya spya sbya smya skra sgra snra spra sbra smra grwa drwa phywa
+// All the compound native-Tibetan stacks; list taken from http://iris.lib.virginia.edu/tibet/collections/langling/tibstacks.html
+rka	rga	rnga	rja	rnya	rta	rda	rna	rba	rma	rtsa	rdza
+lka	lga	lnga	lca	lja	lta	lda	lpa	lba	lha
+ska	sga	snga	snya	sta	sda	sna	spa	sba	sma	stsa
+kwa	khwa	gwa	cwa	nywa	twa	dwa	tswa	tshwa	zhwa	zwa
+rwa	shwa	swa	hwa
+kya	khya	gya	pya	phya	bya	mya
+kra	khra	gra	tra	thra	dra	pra	phra	bra	mra	shra	sra	hra
+kla	gla	bla	zla	rla	sla
+rkya	rgya	rmya	rgwa	rtswa
+skya	sgya	spya	sbya	smya
+skra	sgra	snra	spra	sbra	smra
+grwa	drwa	phywa
 
 // Random things known to be hard
 
