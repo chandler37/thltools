@@ -51,7 +51,8 @@ public class ACIPTshegBarScanner {
         StringBuffer errors = new StringBuffer();
         int maxErrors = 1000;
         ArrayList al = scanFile(args[0], errors, maxErrors - 1,
-                                "true".equals(System.getProperty("org.thdl.tib.text.ttt.ACIPTshegBarScanner.shortMessages")));
+                                "true".equals(System.getProperty("org.thdl.tib.text.ttt.ACIPTshegBarScanner.shortMessages")),
+                                "All" /* memory hog */);
 
         if (null == al) {
             System.out.println(maxErrors + " or more errors occurred while scanning ACIP input file; is this");
@@ -82,29 +83,38 @@ public class ACIPTshegBarScanner {
      *  <p>FIXME: not so efficient; copies the whole file into memory
      *  first.
      *
+     *  @param warningLevel controls which lexical warnings you will
+     *  encounter
+     *
      *  @throws IOException if we cannot read in the ACIP input file
      *  */
     public static ArrayList scanFile(String fname, StringBuffer errors,
-                                     int maxErrors, boolean shortMessages)
+                                     int maxErrors, boolean shortMessages,
+                                     String warningLevel)
         throws IOException
     {
         return scanStream(new FileInputStream(fname),
-                          errors, maxErrors, shortMessages);
+                          errors, maxErrors, shortMessages, warningLevel);
     }
 
     /** Scans a stream of ACIP into tsheg bars.  If errors is
      *  non-null, error messages will be appended to it.  You can
-     *  recover both errors and warnings (modulo offset information)
-     *  from the result, though.  They will be short messages iff
-     *  shortMessages is true.  Returns a list of TStrings that is the
-     *  scan, or null if more than maxErrors occur.
+     *  recover both errors and (optionally) warnings (modulo offset
+     *  information) from the result, though.  They will be short
+     *  messages iff shortMessages is true.  Returns a list of
+     *  TStrings that is the scan, or null if more than maxErrors
+     *  occur.
      *
      *  <p>FIXME: not so efficient; copies the whole file into memory
      *  first.
      *
+     *  @param warningLevel controls which lexical warnings you will
+     *  encounter
+     *
      *  @throws IOException if we cannot read the whole ACIP stream */
     public static ArrayList scanStream(InputStream stream, StringBuffer errors,
-                                       int maxErrors, boolean shortMessages)
+                                       int maxErrors, boolean shortMessages,
+                                       String warningLevel)
         throws IOException
     {
         StringBuffer s = new StringBuffer();
@@ -117,7 +127,8 @@ public class ACIPTshegBarScanner {
             s.append(ch, 0, amt);
         }
         in.close();
-        return scan(s.toString(), errors, maxErrors, shortMessages);
+        return scan(s.toString(), errors, maxErrors, shortMessages,
+                    warningLevel);
     }
 
     /** Helper.  Here because ACIP {MTHAR%\nKHA} should be treated the
@@ -196,7 +207,7 @@ public class ACIPTshegBarScanner {
      *  @return null if more than maxErrors errors occur, or the scan
      *  otherwise */
     public static ArrayList scan(String s, StringBuffer errors, int maxErrors,
-                                 boolean shortMessages) {
+                                 boolean shortMessages, String warningLevel) {
         // FIXME: Use less memory and time by not adding in the
         // warnings that are below threshold.
 
@@ -787,11 +798,12 @@ public class ACIPTshegBarScanner {
                 // or ., or [A-Za-z] follows '.'.
                 al.add(new TString("ACIP", s.substring(i, i+1),
                                    TString.TIBETAN_PUNCTUATION));
-                if (!(i + 1 < sl
-                      && (s.charAt(i+1) == '.' || s.charAt(i+1) == ','
-                          || (s.charAt(i+1) == '\r' || s.charAt(i+1) == '\n')
-                          || (s.charAt(i+1) >= 'a' && s.charAt(i+1) <= 'z')
-                          || (s.charAt(i+1) >= 'A' && s.charAt(i+1) <= 'Z')))) {
+                if (ErrorsAndWarnings.isEnabled(510, warningLevel)
+                    && (!(i + 1 < sl
+                          && (s.charAt(i+1) == '.' || s.charAt(i+1) == ','
+                              || (s.charAt(i+1) == '\r' || s.charAt(i+1) == '\n')
+                              || (s.charAt(i+1) >= 'a' && s.charAt(i+1) <= 'z')
+                              || (s.charAt(i+1) >= 'A' && s.charAt(i+1) <= 'Z'))))) {
                     al.add(new TString("ACIP",
                                        ErrorsAndWarnings.getMessage(510,
                                                                     shortMessages,
@@ -900,7 +912,8 @@ public class ACIPTshegBarScanner {
                             }
                         }
                     }
-                    if ('%' == ch) {
+                    if ('%' == ch
+                        && ErrorsAndWarnings.isEnabled(504, warningLevel)) {
                         al.add(new TString("ACIP",
                                            ErrorsAndWarnings.getMessage(504,
                                                                         shortMessages,

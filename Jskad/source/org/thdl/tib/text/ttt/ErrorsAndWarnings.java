@@ -46,15 +46,16 @@ public class ErrorsAndWarnings {
     private static HashMap severityMap = new HashMap();
 
     static {
-        setupSeverityMapFromBuiltinDefaults();
+        setupSeverityMap();
     }
 
     /** Returns higher numbers for higher severity. */
     private static int severityStringToInteger(String sev) {
         if (sev == "ERROR") return Integer.MAX_VALUE;
-        if (sev == "Some") return Integer.MAX_VALUE - 1;
-        if (sev == "Most") return Integer.MAX_VALUE - 2;
-        if (sev == "All") return Integer.MAX_VALUE - 3;
+        if (sev == "None") return Integer.MAX_VALUE - 1;
+        if (sev == "Some") return Integer.MAX_VALUE - 2;
+        if (sev == "Most") return Integer.MAX_VALUE - 3;
+        if (sev == "All") return Integer.MAX_VALUE - 4;
         return 0;
     }
     /** Returns true if and only if sev1 is at least as severe as
@@ -306,7 +307,12 @@ public class ErrorsAndWarnings {
     private static final int MIN_WARNING = 501; // inclusive
     private static final int MAX_WARNING = 511; // inclusive
 
-    private static void setupSeverityMapFromBuiltinDefaults() {
+    /** Call this ONLY when testing unless you think hard about it.
+        Reinitializes the severities of all warnings and errors using
+        user preferences and falling back on built-in defaults if
+        necessary (which it shouldn't be -- options.txt should be in
+        the JAR with this class file. */
+    static void setupSeverityMap() {
         // errors:
         for (int i = MIN_ERROR; i <= MAX_ERROR; i++) {
             severityMap.put(new Integer(i), "ERROR");
@@ -356,7 +362,6 @@ public class ErrorsAndWarnings {
         }
 
  // DLC FIXME: make 506 an error?  or a new, super-high priority class of warning?
- // DLC FIXME: you can't turn 504 or 510 down (e.g., to an "All"-level warning)
     }
 
     /** Prints out the long forms of the error messages, which will

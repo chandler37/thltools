@@ -66,7 +66,11 @@ public class ACIPConverter {
         StringBuffer errors = new StringBuffer();
         int maxErrors = 1000; // FIXME: make this PER CAPITA or else large ACIP Tibetan files are not converted for fear that they are English
         boolean shortMessages = false;
-        ArrayList al = ACIPTshegBarScanner.scanFile(args[0], errors, maxErrors - 1, shortMessages);
+        String warningLevel = "Most";
+        ArrayList al
+            = ACIPTshegBarScanner.scanFile(args[0], errors,
+                                           maxErrors - 1, shortMessages,
+                                           warningLevel);
 
         if (null == al) {
             System.err.println(maxErrors + " or more lexical errors occurred while scanning ACIP input file; is this");
@@ -90,7 +94,6 @@ public class ACIPConverter {
             }
         }
 
-        String warningLevel = "Most";
         boolean colors = true;
         StringBuffer warnings = null;
         boolean putWarningsInOutput = false;
@@ -200,7 +203,8 @@ public class ACIPConverter {
                                               String warningLevel,
                                               boolean shortMessages) {
         ByteArrayOutputStream sw = new ByteArrayOutputStream();
-        ArrayList al = ACIPTshegBarScanner.scan(acip, errors, -1, shortMessages);
+        ArrayList al = ACIPTshegBarScanner.scan(acip, errors, -1, shortMessages,
+                                                warningLevel);
         try {
             if (null != al) {
                 convertToUnicodeText(al, sw, errors,

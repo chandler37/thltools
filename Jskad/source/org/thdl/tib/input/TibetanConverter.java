@@ -292,7 +292,8 @@ public class TibetanConverter implements FontConverterConstants {
                     = ACIPTshegBarScanner.scanStream(in, null,
                                                      ThdlOptions.getIntegerOption("thdl.most.errors.a.tibetan.acip.document.can.have",
                                                                                   1000 - 1),
-                                                     shortMessages);
+                                                     shortMessages,
+                                                     warningLevel);
                 if (null == al)
                     return 47;
                 boolean embeddedWarnings = (warningLevel != "None");

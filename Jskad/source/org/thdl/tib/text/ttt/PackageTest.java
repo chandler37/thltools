@@ -59,7 +59,7 @@ public class PackageTest extends TestCase {
         which may be an error message. */
     static String ACIP2TMW2ACIP(String ACIP) {
         StringBuffer errors = new StringBuffer();
-        ArrayList al = ACIPTshegBarScanner.scan(ACIP, errors, -1, false);
+        ArrayList al = ACIPTshegBarScanner.scan(ACIP, errors, -1, false, "None");
         if (null == al || errors.length() > 0)
             return null;
         org.thdl.tib.text.TibetanDocument tdoc
@@ -7207,8 +7207,12 @@ tstHelper("ZUR");
     }
 
     private static void shelp(String s, String expectedErrors, String expectedScan) {
+        shelp(s, expectedErrors, expectedScan, "All");
+    }
+
+    private static void shelp(String s, String expectedErrors, String expectedScan, String warningLevel) {
         StringBuffer errors = new StringBuffer();
-        ArrayList al = ACIPTshegBarScanner.scan(s, errors, -1, false);
+        ArrayList al = ACIPTshegBarScanner.scan(s, errors, -1, false, warningLevel);
         if (null != expectedScan) {
             if (!al.toString().equals(expectedScan)) {
                 System.out.println("Scanning " + s + " into tsheg bars was expected to cause the following scan:");
@@ -7346,7 +7350,15 @@ tstHelper("ZUR");
               "[TIBETAN_NON_PUNCTUATION:{K}, ERROR:{115: Found a backslash, \\, which the ACIP Tibetan Input Code standard says represents a Sanskrit virama.  In practice, though, this is so often misused (to represent U+0F3D) that {\\} always generates this error.  If you want a Sanskrit virama, change the input document to use {\\u0F84} instead of {\\}.  If you want U+0F3D, use {/NYA/} or {/NYA\\u0F3D}.}, TIBETAN_PUNCTUATION:{,}]");
 
 
-        shelp("MTHAR%", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TSHEG_BAR_ADORNMENT:{%}, WARNING:{504: The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice.  To avoid seeing this warning again, change the input to use {\\u0F35} instead of {%}.}]");
+        shelp("MTHAR%", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TSHEG_BAR_ADORNMENT:{%}, WARNING:{504: The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice.  To avoid seeing this warning again, change the input to use {\\u0F35} instead of {%}.}]", "Some");
+        shelp("MTHAR%", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TSHEG_BAR_ADORNMENT:{%}]", "None");
+        ThdlOptions.setUserPreference("thdl.acip.to.tibetan.warning.severity.504", "All");
+        ErrorsAndWarnings.setupSeverityMap();
+        shelp("MTHAR%", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TSHEG_BAR_ADORNMENT:{%}]", "Most");
+        shelp("MTHAR%", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TSHEG_BAR_ADORNMENT:{%}, WARNING:{504: The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice.  To avoid seeing this warning again, change the input to use {\\u0F35} instead of {%}.}]", "All");
+        ThdlOptions.setUserPreference("thdl.acip.to.tibetan.warning.severity.504", "Some"); // back to the default value
+        ErrorsAndWarnings.setupSeverityMap();
+
         shelp("MTHARo", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TSHEG_BAR_ADORNMENT:{o}]");
         shelp("MTHARx", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TSHEG_BAR_ADORNMENT:{x}]");
 

@@ -333,14 +333,15 @@ public class TibTextUtils implements THDLWylieConstants {
         throws InvalidACIPException
     {
         StringBuffer errors = new StringBuffer();
-        ArrayList al = ACIPTshegBarScanner.scan(acip, errors, 500, false);
+        String warningLevel = withWarnings ? "All" : "None";
+        ArrayList al = ACIPTshegBarScanner.scan(acip, errors, 500, false,
+                                                warningLevel);
         if (null == al || errors.length() > 0) {
             if (errors.length() > 0)
                 throw new InvalidACIPException(errors.toString());
             else
                 throw new InvalidACIPException("Fatal error converting ACIP to TMW.");
         }
-        String warningLevel = withWarnings ? "All" : "None";
         boolean colors = withWarnings;
         boolean putWarningsInOutput = false;
         if ("None" != warningLevel) {

@@ -149,8 +149,7 @@ thdl.do.not.fix.rtf.hex.escapes = false
 # see warning 501 even at the "Some" level, just change the option
 # thdl.acip.to.tibetan.warning.severity.501 to Some.  You cannot make
 # a warning into an error, and you cannot make an error into a
-# warning.  504 and 510 cannot be downgraded; they are always
-# "Some"-level.
+# warning.
 thdl.acip.to.tibetan.warning.severity.501 = Most
 thdl.acip.to.tibetan.warning.severity.502 = All
 thdl.acip.to.tibetan.warning.severity.503 = All
