@@ -72,7 +72,7 @@ public class TMW_RTF_TO_THDL_WYLIE {
                              = args[0].equals("--to-wylie"))
                          || (findSomeNonTMWMode
                              = args[0].equals("--find-some-non-tmw"))))) {
-                out.println("TMW_RTF_TO_THDL_WYLIE [--find-all-non-tmw | --find-some-non-tmw | --to-tibetan-machine | --to-wylie] RTF_file |");
+                out.println("TMW_RTF_TO_THDL_WYLIE [--find-all-non-tmw | --find-some-non-tmw | --to-tibetan-machine | --to-tibetan-machine-web | --to-wylie] RTF_file |");
                 out.println("TMW_RTF_TO_THDL_WYLIE [--version | -v | --help | -h]");
                 out.println("");
                 out.println("Distributed under the terms of the THDL Open Community License Version 1.0.");
