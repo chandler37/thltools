@@ -50,7 +50,6 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
 	
 	private JMenu mnuEdit;
 	private Object objModified;
-	private Dialog diagAbout;
 	ScannerPanel sp;
 	
 	public void init()
@@ -69,6 +68,7 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
 
 		// sp = new SimpleScannerPanel(url);
 		sp = new DuffScannerPanel(url);
+		
 		sp.addFocusListener(this);
 		
 		setContentPane(sp);
@@ -118,6 +118,11 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
 		setJMenuBar(mb);
 
         //mnuEdit.setEnabled(false);
+	
+		//{{REGISTER_LISTENERS
+		SymComponent aSymComponent = new SymComponent();
+		this.addComponentListener(aSymComponent);
+		//}}
 	}
 	
 	/** Added to update the Edit menu in dependence upon
@@ -260,4 +265,19 @@ public class AppletScannerFilter extends JApplet implements ActionListener, Focu
     {
         sp.setEnableTibetanScript(e.getStateChange()==ItemEvent.SELECTED);
     }
+
+	class SymComponent extends java.awt.event.ComponentAdapter
+	{
+		public void componentMoved(java.awt.event.ComponentEvent event)
+		{
+			Object object = event.getSource();
+			if (object == AppletScannerFilter.this)
+				AppletScannerFilter_componentMoved(event);
+		}
+	}
+
+	void AppletScannerFilter_componentMoved(java.awt.event.ComponentEvent event)
+	{
+		// to do: code goes here.
+	}
 }
