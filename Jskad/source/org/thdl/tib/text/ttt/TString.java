@@ -36,7 +36,17 @@ import java.io.*;
 public class TString {
     private int type;
     private String text;
+    // "EWTS" or "ACIP", interned (for quick, '==' equality checking:
+    private String encoding;
 
+    /** Returns "EWTS" if this TString is encoded in EWTS, or,
+        otherwise, "ACIP" if this TString is encoded in ACIP.  Returns
+        an interned string for quick equality checking via the
+        <code>==</code> operator. */
+    public String getEncoding() {
+	return encoding;
+    }
+	
     /** Returns true if and only if an TString with type <i>type</i>
      *  is to be converted to something other than Tibetan text.
      *  (Chinese Unicode, Latin, etc. all qualify as non-Tibetan.) */
@@ -130,15 +140,20 @@ public class TString {
     /** Don't instantiate using this constructor. */
     private TString() { }
 
-    /** Creates a new TString with source text <i>text</i> and type
+    /** Creates a new TString with source text <i>text</i>, encoded
+     *  using the Roman transliteration system specified by
+     *  <i>encoding</i> (see {@link getEncoding()}) and type
      *  <i>type</i> being a characterization like {@link #DD}. */
-    public TString(String text, int type) {
+    public TString(String encoding, String text, int type) {
+	this.encoding = encoding;
         setType(type);
         String ftext = (TIBETAN_NON_PUNCTUATION == type)
             ? MidLexSubstitution.getFinalValueForTibetanNonPunctuationToken(text)
             : text;
-        // FIXME: assert this
+        // FIXME: assert these
         ThdlDebug.verify(type != UNICODE_CHARACTER || text.length() == 1);
+        ThdlDebug.verify("EWTS" == encoding || "ACIP" == encoding);
+	type != UNICODE_CHARACTER || text.length() == 1);
         setText(ftext);
         if ((outputAllTshegBars || outputUniqueTshegBars) && TIBETAN_NON_PUNCTUATION == type)
             outputTshegBar(ftext);
