@@ -81,6 +81,23 @@ public class Link
 		return new Link(obj);
 	}
 
+ 	public Link sort()
+ 	{
+ 		Link newCabeza = (Link) clone(), next = next(), newLink;
+ 		while (next!=null)
+ 		{
+ 			newLink = (Link) next.clone();
+ 			if (newLink.toString().compareTo(newCabeza.toString())<=0)
+ 			{
+ 				newLink.siguiente = newCabeza;
+ 				newCabeza = newLink;
+ 			}
+ 			else newCabeza.insertSorted(newLink);
+                         next = next.next();
+ 		}
+ 		return newCabeza;
+ 	}
+
 	public void insertSorted(Link link)
 	{
 		if (siguiente==null)
@@ -94,20 +111,4 @@ public class Link
 			else siguiente.insertSorted(link);
 	}
 
-	public Link sort()
-	{
-		Link newCabeza = (Link) clone(), next = next(), newLink;
-		while (next!=null)
-		{
-			newLink = (Link) next.clone();
-			if (newLink.toString().compareTo(newCabeza.toString())<=0)
-			{
-				newLink.siguiente = newCabeza;
-				newCabeza = newLink;
-			}
-			else newCabeza.insertSorted(newLink);
-                        next = next.next();
-		}
-		return newCabeza;
-	}
 }
