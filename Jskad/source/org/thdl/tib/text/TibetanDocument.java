@@ -10,7 +10,7 @@ License for the specific terms governing rights and limitations under the
 License. 
 
 The Initial Developer of this software is the Tibetan and Himalayan Digital
-Library (THDL). Portions created by the THDL are Copyright 2001 THDL.
+Library (THDL). Portions created by the THDL are Copyright 2001-2003 THDL.
 All Rights Reserved. 
 
 Contributor(s): ______________________________________.
@@ -523,9 +523,15 @@ public class TibetanDocument extends DefaultStyledDocument {
         was encountered
         @param errors if non-null, then notes about all exceptional
         cases will be appended to this StringBuffer
+        @param numAttemptedReplacements an array that contains one
+        element; this first element will be, upon exit, incremented by
+        the number of TMW glyphs that we encountered and attempted to
+        convert to TM
     */
-    public boolean convertToTM(int begin, int end, StringBuffer errors) {
-        return convertHelper(begin, end, true, false, errors, null);
+    public boolean convertToTM(int begin, int end, StringBuffer errors,
+                               long numAttemptedReplacements[]) {
+        return convertHelper(begin, end, true, false, errors, null,
+                             numAttemptedReplacements);
     }
 
     /** Converts all TibetanMachine glyphs in the document to
@@ -539,9 +545,15 @@ public class TibetanDocument extends DefaultStyledDocument {
         was encountered
         @param errors if non-null, then notes about all exceptional
         cases will be appended to this StringBuffer
+        @param numAttemptedReplacements an array that contains one
+        element; this first element will be, upon exit, incremented by
+        the number of TM glyphs that we encountered and attempted to
+        convert to TMW
     */
-    public boolean convertToTMW(int begin, int end, StringBuffer errors) {
-        return convertHelper(begin, end, false, false, errors, null);
+    public boolean convertToTMW(int begin, int end, StringBuffer errors,
+                                long numAttemptedReplacements[]) {
+        return convertHelper(begin, end, false, false, errors, null,
+                             numAttemptedReplacements);
     }
 
     /** Converts all TibetanMachineWeb glyphs in the document to
@@ -557,10 +569,16 @@ public class TibetanDocument extends DefaultStyledDocument {
         cases will be appended to this StringBuffer
         @param unicodeFont the name of the Unicode font to use;
         defaults to Ximalaya if null
+        @param numAttemptedReplacements an array that contains one
+        element; this first element will be, upon exit, incremented by
+        the number of TMW glyphs that we encountered and attempted to
+        convert to Unicode
     */
     public boolean convertToUnicode(int begin, int end, StringBuffer errors,
-                                    String unicodeFont) {
-        return convertHelper(begin, end, false, true, errors, unicodeFont);
+                                    String unicodeFont,
+                                    long numAttemptedReplacements[]) {
+        return convertHelper(begin, end, false, true, errors, unicodeFont,
+                             numAttemptedReplacements);
     }
 
     /** For debugging only.  Start with an empty document, and call
@@ -708,7 +726,8 @@ public class TibetanDocument extends DefaultStyledDocument {
         @see #convertToTM(int,int,StringBuffer) */
     private boolean convertHelper(int begin, int end, boolean toTM,
                                   boolean toUnicode, StringBuffer errors,
-                                  String unicodeFont) {
+                                  String unicodeFont,
+                                  long numAttemptedReplacements[]) {
         // To preserve formatting, we go paragraph by paragraph.
 
         // Use positions, not offsets, because our work on paragraph K
@@ -730,6 +749,7 @@ public class TibetanDocument extends DefaultStyledDocument {
         boolean warn = false;
         int lastTimeWeExamined = -1; // must be -1
         boolean noMore = false;
+        
         while (!noMore
                && lastTimeWeExamined != ceh.lastOffsetExamined) {
             lastTimeWeExamined = ceh.lastOffsetExamined;
@@ -745,7 +765,8 @@ public class TibetanDocument extends DefaultStyledDocument {
                                  ? finalEndPos.getOffset()
                                  : p_end),
                                 toTM, toUnicode, errors, ceh,
-                                unicodeFont);
+                                unicodeFont,
+                                numAttemptedReplacements);
         }
         if (!ceh.errorReturn
             && pl != getParagraphs(begin, finalEndPos.getOffset()).length) {
@@ -829,7 +850,8 @@ public class TibetanDocument extends DefaultStyledDocument {
     private void convertHelperHelper(int begin, int end, boolean toTM,
                                      boolean toUnicode, StringBuffer errors,
                                      ConversionErrorHelper ceh,
-                                     String unicodeFont) {
+                                     String unicodeFont,
+                                     long numAttemptedReplacements[]) {
         final boolean debug = false;
         if (debug)
             System.out.println("cHH: [" + begin + ", " + end + ")");
@@ -880,6 +902,7 @@ public class TibetanDocument extends DefaultStyledDocument {
                        : TibetanMachineWeb.getTMFontNumber(fontName));
 
                 if (0 != fontNum) {
+                    ++numAttemptedReplacements[0];
 
                     // SPEED_FIXME: determining font size might be slow, allow an override.
                     int fontSize = tibetanFontSize;

@@ -117,13 +117,14 @@ public class TibetanConverter implements FontConverterConstants {
                 out.println(" result to standard output (after dealing with the curly brace problem if");
                 out.println(" the input is TibetanMachineWeb).  Exit code is zero on success, 42 if some");
                 out.println(" glyphs couldn't be converted (in which case the output is just those glyphs),");
+                out.println(" 43 if not even one glyph found was eligible for this conversion, which means");
+                out.println(" that you probably selected the wrong conversion or the wrong document, or ");
                 out.println(" nonzero otherwise.");
                 out.println("");
                 out.println(" You may find it helpful to use `--find-some-non-tmw' mode (or");
                 out.println(" `--find-some-non-tm' mode for Tibetan Machine input) before doing a");
                 out.println(" conversion so that you have confidence in the conversion's correctness.");
                 // DLC add Wylie->TMW mode.
-                // DLC give error if you have a TM file and try TMW->Unicode.
                 return 77;
             }
             if (args[0].equals("--version") || args[0].equals("-v")) {
@@ -237,30 +238,34 @@ public class TibetanConverter implements FontConverterConstants {
                 ((TibetanDocument)dp.getDocument()).replaceTahomaCurlyBracesAndBackslashes(0, -1);
                 if (debug) System.err.println("End  : solving curly brace problem");
             }
-                
+
             int exitCode = 0;
             ThdlDebug.verify(((TMW_TO_TM == ct) ? 1 : 0)
                              + ((TMW_TO_UNI == ct) ? 1 : 0)
                              + ((TM_TO_TMW == ct) ? 1 : 0)
                              + ((TMW_TO_WYLIE == ct) ? 1 : 0)
                              == 1);
+            long numAttemptedReplacements[] = new long[] { 0 };
             if (TMW_TO_WYLIE == ct) {
                 // Convert to THDL Wylie:
-                dp.toWylie(0, dp.getDocument().getLength());
+                dp.toWylie(0, dp.getDocument().getLength(),
+                           numAttemptedReplacements);
             } else if (TMW_TO_UNI == ct) {
                 StringBuffer errors = new StringBuffer();
                 // Convert to Unicode:
                 if (((TibetanDocument)dp.getDocument()).convertToUnicode(0,
                                                                          dp.getDocument().getLength(),
                                                                          errors,
-                                                                         ThdlOptions.getStringOption("thdl.tmw.to.unicode.font").intern())) {
+                                                                         ThdlOptions.getStringOption("thdl.tmw.to.unicode.font").intern(),
+                                                                         numAttemptedReplacements)) {
                     System.err.println(errors);
                     exitCode = 42;
                 }
             } else if (TM_TO_TMW == ct) {
                 StringBuffer errors = new StringBuffer();
                 // Convert to TibetanMachineWeb:
-                if (((TibetanDocument)dp.getDocument()).convertToTMW(0, dp.getDocument().getLength(), errors)) {
+                if (((TibetanDocument)dp.getDocument()).convertToTMW(0, dp.getDocument().getLength(), errors,
+                                                                     numAttemptedReplacements)) {
                     System.err.println(errors);
                     exitCode = 42;
                 }
@@ -268,7 +273,8 @@ public class TibetanConverter implements FontConverterConstants {
                 ThdlDebug.verify(TMW_TO_TM == ct);
                 StringBuffer errors = new StringBuffer();
                 // Convert to TibetanMachine:
-                if (((TibetanDocument)dp.getDocument()).convertToTM(0, dp.getDocument().getLength(), errors)) {
+                if (((TibetanDocument)dp.getDocument()).convertToTM(0, dp.getDocument().getLength(), errors,
+                                                                    numAttemptedReplacements)) {
                     System.err.println(errors);
                     exitCode = 42;
                 }
@@ -282,6 +288,8 @@ public class TibetanConverter implements FontConverterConstants {
             }
             if (out.checkError())
                 exitCode = 41;
+            if (numAttemptedReplacements[0] < 1)
+                exitCode = 43;
 
             return exitCode;
         }

@@ -374,8 +374,10 @@ public class Jskad extends JPanel implements DocumentListener {
             toTMItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
                         StringBuffer errors = new StringBuffer();
+                        long numAttemptedReplacements[] = new long[] { 0 };
                         boolean errorReturn
-                            = ((TibetanDocument)dp.getDocument()).convertToTM(0, -1, errors); // entire document
+                            = ((TibetanDocument)dp.getDocument()).convertToTM(0, -1, errors,
+                                                                              numAttemptedReplacements); // entire document
                         if (errorReturn) {
                             JOptionPane.showMessageDialog(Jskad.this,
                                                           "At least one error occurred while converting Tibetan Machine Web\nto Tibetan Machine.  Your document is mostly converted,\nexcept for the following glyphs, which you should replace manually\nbefore retrying:\n"
@@ -383,9 +385,17 @@ public class Jskad extends JPanel implements DocumentListener {
                                                           "TMW to TM Errors",
                                                           JOptionPane.PLAIN_MESSAGE);
                         } else {
-                            JOptionPane.showMessageDialog(Jskad.this,
-                                                          "Converting Tibetan Machine Web to Tibetan Machine met with perfect success.",
-                                                          "Success", JOptionPane.PLAIN_MESSAGE);
+                            if (numAttemptedReplacements[0] > 0) {
+                                JOptionPane.showMessageDialog(Jskad.this,
+                                                              "Converting Tibetan Machine Web to Tibetan Machine met with perfect success.",
+                                                              "Success",
+                                                              JOptionPane.PLAIN_MESSAGE);
+                            } else {
+                                JOptionPane.showMessageDialog(Jskad.this,
+                                                              "No Tibetan Machine Web was found, so nothing was converted.",
+                                                              "Nothing to do",
+                                                              JOptionPane.ERROR_MESSAGE);
+                            }
                         }
                     }
                 });
@@ -394,17 +404,27 @@ public class Jskad extends JPanel implements DocumentListener {
             toTMWItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
                         StringBuffer errors = new StringBuffer();
+                        long numAttemptedReplacements[] = new long[] { 0 };
                         boolean errorReturn
-                            = ((TibetanDocument)dp.getDocument()).convertToTMW(0, -1, errors); // entire document
+                            = ((TibetanDocument)dp.getDocument()).convertToTMW(0, -1, errors,
+                                                                               numAttemptedReplacements); // entire document
                         if (errorReturn) {
                             JOptionPane.showMessageDialog(Jskad.this,
                                                           "At least one error occurred while converting Tibetan Machine\nto Tibetan Machine Web.  Your document is mostly converted,\nexcept for the following glyphs, which you should replace manually\nbefore retrying:\n"
                                                           + errors.toString(),
                                                           "TM to TMW Errors", JOptionPane.PLAIN_MESSAGE);
                         } else {
-                            JOptionPane.showMessageDialog(Jskad.this,
-                                                          "Converting Tibetan Machine to Tibetan Machine Web met with perfect success.",
-                                                          "Success", JOptionPane.PLAIN_MESSAGE);
+                            if (numAttemptedReplacements[0] > 0) {
+                                JOptionPane.showMessageDialog(Jskad.this,
+                                                              "Converting Tibetan Machine to Tibetan Machine Web met with perfect success.",
+                                                              "Success",
+                                                              JOptionPane.PLAIN_MESSAGE);
+                            } else {
+                                JOptionPane.showMessageDialog(Jskad.this,
+                                                              "No Tibetan Machine was found, so nothing was converted.",
+                                                              "Nothing to do",
+                                                              JOptionPane.ERROR_MESSAGE);
+                            }
                         }
                     }
                 });
@@ -413,18 +433,28 @@ public class Jskad extends JPanel implements DocumentListener {
             toUnicodeItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
                         StringBuffer errors = new StringBuffer();
+                        long numAttemptedReplacements[] = new long[] { 0 };
                         boolean errorReturn
                             = ((TibetanDocument)dp.getDocument()).convertToUnicode(0, -1, errors,
-                                                                                   ThdlOptions.getStringOption("thdl.tmw.to.unicode.font").intern()); // entire document
+                                                                                   ThdlOptions.getStringOption("thdl.tmw.to.unicode.font").intern(),
+                                                                                   numAttemptedReplacements); // entire document
                         if (errorReturn) {
                             JOptionPane.showMessageDialog(Jskad.this,
                                                           "At least one error occurred while converting Tibetan Machine Web\nto Unicode.  Your document is mostly converted,\nexcept for the following glyphs, which you should replace manually\nbefore retrying:\n"
                                                           + errors.toString(),
                                                           "TMW to Unicode Errors", JOptionPane.PLAIN_MESSAGE);
                         } else {
-                            JOptionPane.showMessageDialog(Jskad.this,
-                                                          "Converting Tibetan Machine Web to Unicode met with perfect success.",
-                                                          "Success", JOptionPane.PLAIN_MESSAGE);
+                            if (numAttemptedReplacements[0] > 0) {
+                                JOptionPane.showMessageDialog(Jskad.this,
+                                                              "Converting Tibetan Machine Web to Unicode met with perfect success.",
+                                                              "Success",
+                                                              JOptionPane.PLAIN_MESSAGE);
+                            } else {
+                                JOptionPane.showMessageDialog(Jskad.this,
+                                                              "No Tibetan Machine Web was found, so nothing was converted.",
+                                                              "Nothing to do",
+                                                              JOptionPane.ERROR_MESSAGE);
+                            }
                         }
                     }
                 });
@@ -1032,7 +1062,8 @@ public class Jskad extends JPanel implements DocumentListener {
 
 	private void toWylie() {
 		Jskad.this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		dp.toWylie(dp.getSelectionStart(), dp.getSelectionEnd());
+        long n[] = new long[] { 0 };
+		dp.toWylie(dp.getSelectionStart(), dp.getSelectionEnd(), n);
 		Jskad.this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 

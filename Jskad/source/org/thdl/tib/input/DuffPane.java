@@ -1489,8 +1489,8 @@ public void paste(int offset) {
 	public void toWylie() {
 		int start = getSelectionStart();
 		int end = getSelectionEnd();
-
-		toWylie(start, end);
+        long n[] = new long[] { 0 };
+		toWylie(start, end, n);
 	}
 
 /**
@@ -1499,8 +1499,11 @@ public void paste(int offset) {
 *
 * @param start the point from which to begin converting to Wylie
 * @param end the point at which to stop converting to Wylie
-*/
-    public void toWylie(int start, int end) {
+* @param numAttemptedReplacements an array that contains one element;
+* this first element will be, upon exit, incremented by the number of
+* TMW glyphs that we encountered and attempted to convert to Wylie */
+    public void toWylie(int start, int end,
+                        long numAttemptedReplacements[]) {
         if (start == end)
             return;
 
@@ -1529,6 +1532,7 @@ public void paste(int offset) {
                 } else {
                     char ch = getTibDoc().getText(i,1).charAt(0);
                     dcs.add(new DuffCode(fontNum, ch));
+                    ++numAttemptedReplacements[0];
                 }
 
                 i++;

@@ -67,6 +67,12 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
                                           "Conversion failed",
                                           JOptionPane.ERROR_MESSAGE);
             return false;
+        } else if (43 == returnCode) {
+            JOptionPane.showMessageDialog(cd,
+                                          "Though an output file has been created, this conversion did nothing.\nDid you choose the correct original file?\nDid you choose the correct type of conversion?",
+                                          "Nothing to do",
+                                          JOptionPane.ERROR_MESSAGE);
+            return false;
         } else if (0 != returnCode) {
             JOptionPane.showMessageDialog(cd,
                                           "The conversion failed with code " + returnCode + "; please e-mail\ndchandler@users.sourceforge.net to learn what that means if\nyou can't find out from the output.",
