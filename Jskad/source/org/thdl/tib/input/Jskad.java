@@ -65,7 +65,7 @@ import org.thdl.util.ThdlLazyException;
 public class Jskad extends JPanel implements DocumentListener {
     /** Sets the focus to the DuffPane if possible. */
     private void focusToDuffPane() {
-        if (null != dp) dp.requestFocus();
+        if (null != dp && !dp.hasFocus()) dp.grabFocus();
     }
 
     /** the name of the property a developer should set to see
@@ -769,7 +769,11 @@ public class Jskad extends JPanel implements DocumentListener {
                     // program and whenever Jskad gets the focus, on
                     // the DuffPane.
                     public void windowActivated (WindowEvent e) {
-                        focusToDuffPane();
+                        SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    focusToDuffPane();
+                                }
+                            });
                     }
                     public void windowClosing (WindowEvent e) {
                         if (!hasChanged || hasChanged && checkSave(JOptionPane.YES_NO_CANCEL_OPTION)) {
