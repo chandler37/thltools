@@ -775,12 +775,25 @@ info on where to find these.
 
     <!-- Now use the Venus Application Publisher's (Vamp's) Ant task
          to create a .war file.  We don't use Tomcat or the like to
-         distribute our apps at this point, so once we don't need the
-         WAR file.  Thus, we'll run 'jar xf ${my.app}-web-start.war
-         ${my.app}-JWS.jar ${my.app}.jnlp' and copy the .jar and the .jnlp
-         file to the web server.  (Be sure that the web server has its
-         MIME types configured correctly so that the .jnlp file is
+         distribute our apps at this point, so we don't need the full
+         WAR file.  We in fact need only the JAR file inside it.
+         There is a ${my.app}.jnlp file inside it, too, but that file
+         uses macros like $$name and $$codebase, which are only
+         appropriate to Tomcat-type environments.
+
+         Thus, we'll run 'jar xf ${my.app}-web-start.war
+         ${my.app}-JWS.jar' to extract the signed JAR file and copy
+         the .jar and the ${dist}/${my.app}.jnlp file (NOT the one in
+         the WAR) to the web server.  (Be sure that the web server has
+         its MIME types configured correctly so that the .jnlp file is
          served as an application/jnlp or the like, not text/xml.)
+
+         YES, THIS MEANS WE'RE NOT MAKING FULL USE OF THE VAMP
+         PACKAGE.  Yes, it means that we're requiring anyone who
+         wishes to cut a JWS release to install vamp.jar, when we
+         could use the built-in SignJar task instead.  BUT, this
+         method means that we're ready for a J2EE application server
+         framework.
 
          If you change web servers or the location on the web server
          where the JAR and jnlp file are located, you have to edit
@@ -810,6 +823,16 @@ info on where to find these.
           keypass = "${dgkey.password}"
           alias     = "David Germano"/>
     </vampwar>
+
+    <!-- Extract the JAR file and delete the WAR file: -->
+    <unwar src="${dist}/java-web-start/${my.app}-web-start.war"
+           dest="${dist}/java-web-start/">
+      <patternset>
+        <include name="${my.app}-JWS.jar"/>
+        <exclude name="**/*"/>
+      </patternset>
+    </unwar>
+    <delete file="${dist}/java-web-start/${my.app}-web-start.war"/>
   </target>
 
 </project>
