@@ -77,6 +77,7 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 	private static String[][] TMWtoUnicode = new String[10][127-32]; // ordinal 127 doesn't occur in TMW
 	private static String fileName = "tibwn.ini";
 	private static final String DELIMITER = "~";
+    /** vowels that appear over the glyph: */
 	private static Set top_vowels;
     /** the font we use when we convert TMW->Unicode: */
 	private static SimpleAttributeSet defaultUnicodeFontAttributeSet = null;
@@ -176,18 +177,44 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 */
 	public static final int HALF_C = 10;
 
-    /** head letters, superscribed letters */
+
+
+    // NOTE WELL: if you delete from consonants, numbers, vowels, or
+    // others, you'll change the way Jskad's Extended Wylie keyboard
+    // works, yes, but you'll also change TMW->Wylie.
+
+    /** comma-delimited list of supported consonants (Tibetan and
+        Tibetanized Sanskrit): */
+	private static final String consonants
+        = "k,kh,g,ng,c,ch,j,ny,t,th,d,n,p,ph,b,m,ts,tsh,dz,w,zh,z,',y,r,l,sh,s,h,a,T,Th,D,N,Sh,v,f,Dz";
+
+    /** comma-delimited list of supported numbers (superscribed,
+        subscribed, normal, half-numerals): */
+	private static final String numbers
+        = "0,1,2,3,4,5,6,7,8,9,>0,>1,>2,>3,>4,>5,>6,>7,>8,>9,<0,<1,<2,<3,<4,<5,<6,<7,<8,<9";
+
+    /** comma-delimited list of supported punctuation and
+        miscellaneous characters: */
+	private static final String others
+        = "_, ,/,|,!,:,;,@,#,$,%,(,),H,M,`,&,@#,?,=,[,],{,},*";
+
+    /** comma-delimited list of supported vowels: */
+	private static final String vowels
+        = "a,i,u,e,o,I,U,ai,au,A,-i,-I";
+
+
+
+    /** comma-delimited list of head letters (superscribed letters) */
 	private static final String tops = "r,s,l";
-    /** prefixes */
+    /** comma-delimited list of prefixes */
 	private static final String lefts = "g,d,b,m,'";
-    /** suffixes */
+    /** comma-delimited list of suffixes */
 	private static final String rights = "g,ng,d,n,b,m,r,l,s,',T";
-    /** postsuffixes.  nga was here in the past, according to Edward,
-     *  to handle cases like ya'ng.  pa'am wasn't considered, but had
-     *  it been, ma probably would've gone here too.  We now handle
-     *  'am, 'ang, etc. specially, so now this set is now just the
-     *  postsuffixes.
-     */
+    /** comma-delimited list of postsuffixes.  nga was here in the
+     *  past, according to Edward, to handle cases like ya'ng.  pa'am
+     *  wasn't considered, but had it been, ma probably would've gone
+     *  here too.  We now handle 'am, 'ang, etc. specially, so now
+     *  this set is now just the postsuffixes.  */
 	private static final String farrights = "d,s"; 
 
 	static {
@@ -305,34 +332,77 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 		}
 
 		StringTokenizer sTok;
-		topSet = new HashSet();
-		leftSet = new HashSet();
-		rightSet = new HashSet();
-		farRightSet = new HashSet();
 
+		topSet = new HashSet();
 		sTok = new StringTokenizer(tops, ",");
 		while (sTok.hasMoreTokens())
 			topSet.add(sTok.nextToken());
 
+		leftSet = new HashSet();
 		sTok = new StringTokenizer(lefts, ",");
 		while (sTok.hasMoreTokens())
 			leftSet.add(sTok.nextToken());
 
+		rightSet = new HashSet();
 		sTok = new StringTokenizer(rights, ",");
 		while (sTok.hasMoreTokens())
 			rightSet.add(sTok.nextToken());
 
+		farRightSet = new HashSet();
 		sTok = new StringTokenizer(farrights, ",");
 		while (sTok.hasMoreTokens())
 			farRightSet.add(sTok.nextToken());
 
+        vowelSet = new HashSet();
+		sTok = new StringTokenizer(vowels, ",");
+		while (sTok.hasMoreTokens()) {
+            String ntk;
+			vowelSet.add(ntk = sTok.nextToken());
+            validInputSequences.put(ntk, anyOldObjectWillDo);
+        }
+
+        puncSet = new HashSet();
+		sTok = new StringTokenizer(others, ",");
+		while (sTok.hasMoreTokens()) {
+            String ntk;
+			puncSet.add(ntk = sTok.nextToken());
+            validInputSequences.put(ntk, anyOldObjectWillDo);
+        }
+
+        charSet = new HashSet();
+
+        tibSet = new HashSet();
+		sTok = new StringTokenizer(consonants, ",");
+		while (sTok.hasMoreTokens()) {
+            String ntk;
+			charSet.add(ntk = sTok.nextToken());
+            tibSet.add(ntk);
+            validInputSequences.put(ntk, anyOldObjectWillDo);
+        }
+
+        numberSet = new HashSet();
+		sTok = new StringTokenizer(numbers, ",");
+		while (sTok.hasMoreTokens()) {
+            // DLC FIXME: don't add it to numberSet and charSet here;
+            // do it in <?Input:Numbers?> so that Jskad has the same
+            // TMW->Wylie conversion regardless of whether or not it
+            // chooses to support inputting numbers.  Likewise for
+            // consonants, others, and vowels.
+            String ntk;
+			charSet.add(ntk = sTok.nextToken());
+            numberSet.add(ntk);
+            validInputSequences.put(ntk, anyOldObjectWillDo);
+        }
+
+        sTok = null;
+
 		top_vowels = new HashSet();
-		top_vowels.add(TibetanMachineWeb.i_VOWEL);
-		top_vowels.add(TibetanMachineWeb.e_VOWEL);
-		top_vowels.add(TibetanMachineWeb.o_VOWEL);
-		top_vowels.add(TibetanMachineWeb.ai_VOWEL);
-		top_vowels.add(TibetanMachineWeb.au_VOWEL);
-		top_vowels.add(TibetanMachineWeb.reverse_i_VOWEL);
+		top_vowels.add(i_VOWEL);
+		top_vowels.add(e_VOWEL);
+		top_vowels.add(o_VOWEL);
+		top_vowels.add(ai_VOWEL);
+		top_vowels.add(au_VOWEL);
+		top_vowels.add(reverse_i_VOWEL);
 
 		try {
 			URL url = TibetanMachineWeb.class.getResource(fileName);
@@ -358,7 +428,6 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 
 			boolean ignore = false;
 
-            tibSet = new HashSet();
             sanskritStackSet = new HashSet();
 
 			while ((line = in.readLine()) != null) {
@@ -368,16 +437,11 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 						isTibetan = true;
 						hashOn = false;
                         ignore = false;
-						line = in.readLine();
-						if (null == charSet) charSet = new HashSet();
-						StringTokenizer st = new StringTokenizer(line,",");
-						while (st.hasMoreTokens()) {
-                            String ntk;
-							charSet.add(ntk = st.nextToken());
-							tibSet.add(ntk);
-                            validInputSequences.put(ntk, anyOldObjectWillDo);
-                        }
-					}
+                        do {
+                            line = in.readLine();
+                        } while (line.startsWith("//") || line.equals(""));
+                        // use tibSet or charSet; ignore this.
+                    }
 					else if (line.equalsIgnoreCase("<?Numbers?>")) {
                         // FIXME: for historical reasons, numbers go
                         // in both charSet and numberSet.
@@ -385,50 +449,30 @@ public class TibetanMachineWeb implements THDLWylieConstants {
 						isTibetan = false;
 						hashOn = false;
                         ignore = false;
-						line = in.readLine();
-                        if (null == charSet) charSet = new HashSet();
-						numberSet = new HashSet();
-						StringTokenizer st = new StringTokenizer(line,",");
-						while (st.hasMoreTokens()) {
-                            String ntk;
-                            // DLC FIXME: don't add it to numberSet
-                            // and charSet here; do it in
-                            // <?Input:Numbers?> so that Jskad has the
-                            // same TMW->Wylie conversion regardless
-                            // of whether or not it chooses to support
-                            // inputting numbers.
-							numberSet.add(ntk = st.nextToken());
-							charSet.add(ntk);
-                            validInputSequences.put(ntk, anyOldObjectWillDo);
-                        }
+                        do {
+                            line = in.readLine();
+                        } while (line.startsWith("//") || line.equals(""));
+                        // use numberSet or charSet; ignore this.
                     }
 					else if (line.equalsIgnoreCase("<?Vowels?>")) {
 						isSanskrit = false;
 						isTibetan = false;
 						hashOn = false;
                         ignore = false;
-						line = in.readLine();
-						vowelSet = new HashSet();
-						StringTokenizer st = new StringTokenizer(line,",");
-						while (st.hasMoreTokens()) {
-                            String ntk;
-							vowelSet.add(ntk = st.nextToken());
-                            validInputSequences.put(ntk, anyOldObjectWillDo);
-                        }
+                        do {
+                            line = in.readLine();
+                        } while (line.startsWith("//") || line.equals(""));
+                        // use vowelSet; ignore this.
 					}
 					else if (line.equalsIgnoreCase("<?Other?>")) {
 						isSanskrit = false;
 						isTibetan = false;
 						hashOn = false;
                         ignore = false;
-						line = in.readLine();
-						puncSet = new HashSet();
-						StringTokenizer st = new StringTokenizer(line,",");
-						while (st.hasMoreTokens()) {
-                            String ntk;
-							puncSet.add(ntk = st.nextToken());
-                            validInputSequences.put(ntk, anyOldObjectWillDo);
-                        }
+                        do {
+                            line = in.readLine();
+                        } while (line.startsWith("//") || line.equals(""));
+                        // use puncSet; ignore this.
 					}
 
 					else if (line.equalsIgnoreCase("<?Input:Punctuation?>")
