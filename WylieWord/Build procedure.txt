@@ -3,7 +3,8 @@
 This explains how to make a new version of WylieWord.
 
 The program source file is called "WylieWord development copy.dot".
-This is what you edit with the VBA editor.
+This is what you edit with the VBA editor.  To make it functional, you
+may need to call WylieWordBindKeys.
 
 When you have finished modifying it:
 
@@ -18,6 +19,8 @@ Increment the version number in AboutWylieWord.
 Do "Debug > Compile" in the F11 window.  Verify there are no
 compilation errors.
 
+Update the Testing.doc document to reflect functionality changes.
+
 Re-test everything that has changed since the last release, and
 anything that might be affected by those changes.
 
@@ -28,11 +31,10 @@ Run PrepareDistribution in immediate window.
     Verify that the results are OK.
   It also unbinds all the WylieWord keys.
     This is critical to having WylieWord work correctly on non-English keyboards.
-    (After making the distribution, you may want to restore the keybindings
-     in the development copy by calling WylieWordBindKeys.)
 
 Save "WylieWord development copy.dot"
-Make a copy and rename it Setup.doc.
+
+Make a copy and rename it Setup.doc.  This is the input to the build process.
 
 If the manual has changed, update its revision date.
 
