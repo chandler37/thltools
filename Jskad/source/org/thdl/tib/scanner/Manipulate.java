@@ -108,8 +108,8 @@ public class Manipulate
 		nuevaLinea = new String(caract);
 		
 		/* ahora hacer los cambios de Michael Roach ts -> tsh, tz -> ts, v -> w,
-		TH -> Th, SH -> Sh, : -> H, dh -> d+h, gh -> g+h, bh -> b+h, dzh -> dz+h,
-		kSH -> k+Sh, aa -> a, a'a -> A, ai->i, aee ->ai, au->u, aoo->au, ae->e,
+		TH -> Th, kSH, kaSH -> k+Sh, SH -> Sh, : -> H, dh -> d+h, gh -> g+h, bh -> b+h, dzh -> dz+h,
+	    aa -> a, a'a -> A, ai->i, aee ->ai, au->u, aoo->au, ae->e,
 		ao->o, ee->ai, oo->au, 'I->-I I->-i,  a'i->I, a'u->U, a'e->E, a'o->O,
 		a'i->I, a'u->U, a'e->E, a'o->O, ,->/, # -> @##, * -> @#, \ -> ?, ` -> !,
 		/-/ -> (-), ga-y -> g.y, g-y -> g.y */
@@ -119,13 +119,14 @@ public class Manipulate
 		nuevaLinea = replace(nuevaLinea, "tq", "tsh");
 		nuevaLinea = replace(nuevaLinea, "v", "w");
 		nuevaLinea = replace(nuevaLinea, "TH", "Th");
+		nuevaLinea = replace(nuevaLinea, "kSH", "k+Sh");
+		nuevaLinea = replace(nuevaLinea, "kaSH", "k+Sh");
 		nuevaLinea = replace(nuevaLinea, "SH", "Sh");
 		nuevaLinea = replace(nuevaLinea, ":", "H");
 		nuevaLinea = replace(nuevaLinea, "dh", "d+h");
 		nuevaLinea = replace(nuevaLinea, "gh", "g+h");
 		nuevaLinea = replace(nuevaLinea, "bh", "b+h");
 		nuevaLinea = replace(nuevaLinea, "dzh", "dz+h");
-		nuevaLinea = replace(nuevaLinea, "kSH", "k+Sh");
 		nuevaLinea = replace(nuevaLinea, "aa", "a");
 		nuevaLinea = replace(nuevaLinea, "ai", "i");
 		nuevaLinea = replace(nuevaLinea, "aee", "ai");

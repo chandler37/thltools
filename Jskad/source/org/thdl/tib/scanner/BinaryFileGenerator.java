@@ -101,19 +101,15 @@ public class BinaryFileGenerator extends LinkedList
 	{
 	    final short newDefiniendum=1, halfDefiniendum=2, definition=3;
 	    short status=newDefiniendum;
-	    int marker, len, marker2, n=0, total=0, currentPage=0, currentLine=0;
+	    int marker, len, marker2, n=0, total=0, currentPage=0, currentLine=1;
 	    char ch;	    
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(archivo)));
-		String entrada="", s1, s2, previous="", currentLetter="", temp="";
+		String entrada="", s1="", s2="", currentLetter="", temp="";
 		boolean markerNotFound;
-
-        currentLine=1;
         
         // used for acip dict 
         if (delimiter==' ')
         {
-            s1="";
-            s2="";
 		    outAHere:
 		    while (true)
 		    {
@@ -143,7 +139,7 @@ public class BinaryFileGenerator extends LinkedList
 		        }
 
 	            // get current letter
-	            if ((entrada.charAt(0)=='(' || entrada.charAt(0)=='{' || entrada.charAt(0)=='?') && previous.trim().equals(""))
+	            if (entrada.charAt(0)=='(' || entrada.charAt(0)=='{' || entrada.charAt(0)=='?')
 	            {
 	                currentLetter = entrada.substring(1, entrada.length()-2);		            
 	                /*out.println(currentPage + ": " + currentLetter);
@@ -215,7 +211,7 @@ public class BinaryFileGenerator extends LinkedList
    	                    status because it will be updated below. */
    	                    if (status==definition)
    	                    {
-                            add(s1, s2, defNum);	                        
+                            add(s1, s2, defNum);
 		                    s1=""; s2="";
    	                    }
    	                    
@@ -231,11 +227,18 @@ public class BinaryFileGenerator extends LinkedList
    	                                markerNotFound=false;
    	                                marker2=marker+1;
    	                            break;
-   	                            case '(':
+   	                            case '(': case '<':
    	                                markerNotFound=false;
    	                                marker2=marker;
    	                            break;
-   	                            case 'g': case ' ': // verify "g " and "  "
+   	                            case 'g': // verify "g "
+       	                            if (marker+1<len && Manipulate.isVowel(entrada.charAt(marker-1)) && entrada.charAt(marker+1)==' ')
+       	                            {
+   	                                    markerNotFound=false;
+   	                                    marker2=++marker;
+   	                                }
+   	                            break;
+   	                            case ' ': // verify "  "
        	                            if (marker+1<len && entrada.charAt(marker+1)==' ')
        	                            {
    	                                    markerNotFound=false;
@@ -270,7 +273,7 @@ public class BinaryFileGenerator extends LinkedList
    	                    }
        	                else
    	                    {
-   	                        s1 = s1 + entrada.substring(0,marker);
+   	                        s1 = s1 + entrada.substring(0,marker).trim();
    	                        s2 = "[" + currentPage + "] " + entrada.substring(marker2).trim();
    	                        status=definition;
    	                        
@@ -563,7 +566,7 @@ public class BinaryFileGenerator extends LinkedList
                       {
                         if (args[i].equals("-tab"))
                           delimiter='\t';
-                        else if (args[1].equals("-acip"))
+                        else if (args[i].equals("-acip"))
                           delimiter=' ';
                         else
                           delimiter=args[i].charAt(1);
