@@ -953,16 +953,28 @@ public void paste(int offset) {
             ThdlDebug.verify(null != in);
 
 			rtfEd.read(in, sd, 0);
-
-			for (int i=0; i<sd.getLength()-1; i++) { //getLength()-1 so that final newline is not included in paste
-				try {
-					String s = sd.getText(i,1);
-					AttributeSet as = sd.getCharacterElement(i).getAttributes();
-					doc.insertString(p1+i, s, as);
-				} catch (BadLocationException ble) {
-					ble.printStackTrace();
-					ThdlDebug.noteIffyCode();
-				}
+			
+			/** Added by AM, to fix copy-paste issues for Translation Tool.
+			    Assumes that if roman is disabled and you are pasting something
+			    in RTF but is not TibetanMachineWeb it most be wylie.
+			*/
+			if (!sd.getFont((sd.getCharacterElement(0).getAttributes())).getFamily().equals("TibetanMachineWeb") && !isRomanEnabled && contents.isDataFlavorSupported(DataFlavor.stringFlavor))
+			{
+				String data = (String)contents.getTransferData(DataFlavor.stringFlavor);
+				toTibetanMachineWeb(data, offset);			    
+			}
+			else
+			{
+			    for (int i=0; i<sd.getLength()-1; i++) { //getLength()-1 so that final newline is not included in paste
+				    try {
+					    String s = sd.getText(i,1);
+					    AttributeSet as = sd.getCharacterElement(i).getAttributes();
+					    doc.insertString(p1+i, s, as);
+				    } catch (BadLocationException ble) {
+					    ble.printStackTrace();
+					    ThdlDebug.noteIffyCode();
+				    }
+			    }
 			}
 		} else if (contents.isDataFlavorSupported(DataFlavor.stringFlavor))
 		{
