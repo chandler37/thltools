@@ -1,193 +1,55 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 
 <!-- @author David Chandler -->
 <!-- @date-created October 20, 2002 -->
 <!-- @editor Emacs, baby! -->
 
-<!--
-==============
-INSERT KEYWORDS AND DESCRIPTION HERE
-==============
--->
+<head>
+   <title>tibwn.ini File Format</title>
 
-
-<meta name="keywords" content="tibetan fonts, tibetan software, digital ethnography">
-
-<meta name="description" content="This presents intellectual and electronic tools for using Tibetan language in a digital medium and for viewing the THDL site.">
-
-<!--
-==============
-INSERT PAGE TITLE HERE
-==============
- In order to facilitate the use of the unicode character set the charset declaration will be set equal to utf-8 
- Always incorporate Tibetan and Himalayan
--->
-
-<title>tibwn.ini File Format</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-utf-8">
-
-<!--
-==============
-THIS IS THE STYLE FOR THE BODY; IT'S WHAT CALLS ON THE BANNER AS A BACKGROUND IMAGE AND SETS UP THE BACKGROUND COLOR. MAKE SURE TO LINK TO THE BANNER HERE.
-==============
--->
-
-<style type="text/css">
-<!--
-body {background-attachment: scroll; background-image: url(http://iris.lib.virginia.edu/tibet/images/bannerTools.gif); background-repeat: no-repeat; background-position: left top; backgroud-color: white}
--->
-</style>
-
-<!--
-==============
-THE STYLE FOR THE TEXT, ETC. IT GOES TO THE TOP-LEVEL STYLE PAGE. IS THERE A NEED FOR EACH COLLECTION TO HAVE INDIVIDUAL STYLE PAGES?
-==============
--->
-
-<link rel="stylesheet" href="http://iris.lib.virginia.edu/tibet/style/tools.css">
-
-<!--
-==============
-MAKES NETSCAPE RELOAD IF THE WINDOW IS RESIZED
-==============
--->
-
-<script language="JavaScript">
-<!--
-function MM_reloadPage(init) {  //reloads the window if Nav4 resized
-  if (init==true) with (navigator) {if ((appName=="Netscape")&&(parseInt(appVersion)==4)) {
-    document.MM_pgW=innerWidth; document.MM_pgH=innerHeight; onresize=MM_reloadPage; }}
-  else if (innerWidth!=document.MM_pgW || innerHeight!=document.MM_pgH) location.reload();
-}
-MM_reloadPage(true);
-// -->
-</script>
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+   <script type="text/javascript" src="/tibet/scripts/thdl_scripts.js"></script>
+   <link rel="stylesheet" type="text/css" href="/tibet/style/thdl-styles.css"/>
 </head>
 
-<!--
-==============
-SETS THE PAGE MARGINS TO "0" SO THE MENU DOESN'T GET SCREWED UP
-==============
--->
+<body>
 
-<body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+<div id="banner">
+   <a id="logo" href="/tibet/index.html"><img id="test" alt="THDL Logo" src="/tibet/images/logo.png"/></a>
+   <h1>The Tibetan &amp; Himalayan Digital Library</h1>
 
+   <div id="menubar">
+   <script type='text/javascript'>function Go(){return}</script>
+   <script type='text/javascript' src='/tibet/scripts/new/thdl_menu_config.js'></script>
 
-<!--
-==============
-THE JAVASCRIPT MENUS
-==============
--->
+   <script type='text/javascript' src='/tibet/scripts/new/menu_new.js'></script>
+   <script type='text/javascript' src='/tibet/scripts/new/menu9_com.js'></script>
+   <noscript><p>Your browser does not support javascript.</p></noscript>
+   <div id='MenuPos' >Menu Loading...  </div>
+	</div><!--END menubar-->
 
-<script type='text/javascript'>
-//HV Menu v5- by Ger Versluis (http://www.burmees.nl/)
-//Submitted to Dynamic Drive (http://www.dynamicdrive.com)
-//Visit http://www.dynamicdrive.com for this script and more
+</div><!--END banner-->
 
-function Go(){return}
+<div id="sub_banner">
+	<div id="search">
+		<form  method="get" action="http://www.google.com/u/thdl">
+			<p>
+				<input type="text" name="q" id="q" size="15" maxlength="255" value="" />
+				<input type="submit" name="sa" id="sa" value="Search"/>
+				<input type="hidden" name="hq" id="hq"  value="inurl:iris.lib.virginia.edu"/>
+			</p>
+		</form>
 
-//==============
-// --CALL UP THE MENU. THE 1ST OF THE CHOICES HAS THE VARIABLES 
-// AND NEEDS TO BE UPDATED FOR EACH SECTION. 
-// MENU_LOADER.JS WILL ALWAYS BE THE SAME.
-//==============
-
-
-</script>
-        <script type='text/javascript' src='http://iris.lib.virginia.edu/tibet/scripts/menu_tools.js'></script>
-        <script type='text/javascript' src='http://iris.lib.virginia.edu//tibet/scripts/menu_loader.js'></script>
-<script type="text/javascript" src="http://iris.lib.virginia.edu//tibet/scripts/thdl_scripts.js"></script>
-<noscript> Your browser does not support Javascript menus. Please utilize the 
-Site Map for navigation.</noscript> 
-
-
-<div align="left" style="position:absolute; left:0px; top:0px; width:100px; height:50px; z-index:7">
-<a href="http://iris.lib.virginia.edu/tibet/index.html">
-<img src="http://iris.lib.virginia.edu/tibet/images/spacer.gif" style="border-width:0" width="100" height="50">
-</a>
-</div>
-<div id="Layer1" style="position:absolute; left:100px; top:28px; width:708px; height:20px; z-index:1">
-
-<!--
-==============
-INSERT THE BREADCRUMBS
-==============
- A HREF tags should not be applied to current page, e.g. THDL and Collections get link, Literature and Home do not. If you were on a subpage of Literature, then Literature would link to the Literature home page.
- -->
-
-	<div align="right"><font color="#000000"><A HREF="http://iris.lib.virginia.edu/tibet/index.html">THDL</A> : <A HREF="http://iris.lib.virginia.edu/tibet/tools/index.html">Tools</A> : <a href="http://iris.lib.virginia.edu/tibet/tools/software.html">Software</a> : tibwn.ini File Format</a></font>
 	</div>
-</div>
-
-<!--
-==============
-INSERT THE MENU
-==============
--->
-
-<div id='MenuPos' style="text-size:9px; layer-background-color:#CCCCCC; background-color: #CCCCCC; position:absolute; left:0px; top:50px; width:808px"><table width="808" cellpadding="0" cellspacing="0" height="19"><tr><td><p style="font-size:9px">Menu loading...</p></td></tr></table></div>
+	<div id="breadcrumbs">
+		<a href="/tibet/index.html">Home</a> &gt; <a href="index.html">Tools</a> &gt; <a href="/tibet/tools/software.html">Software</a> &gt; Nightly Builds
+	</div>
+</div><!--END banner-->
 
 
- <!--
-==============
-MAKE THE LAYER THAT WILL HOLD THE CONTENT OF THE PAGE - THE TEXT, IMAGES, WHATEVER. THIS LAYER WILL BE CLOSED AT THE END OF THIS HTML DOCUMENT
-==============
- Maximum table width not to exceed 750
-All images must have borders of 1 pixel
-No image will exceed 325 X 325 height and width measurements
-Position attribute on layer3 may need to be changed to absolute to accomodate Netscape
- -->
+<div id="main">
 
-<div id="Layer3" style="position:relative; left:7px; top:80px; width:801px; height:396px; z-index:1; overflow: visible; background-color: #FFFFFF; layer-background-color: #FFFFFF; border: 1px none #000000" > 
-
-  <table width="750" border="0" cellspacing="0" cellpadding="10">
-    <tr>
-      <td valign="top" align="left"> 
-
-<!--
-=============
-FOR EVERY "ADMINISTRATIVELY DISTINCT" PROJECT, THERE SHOULD BE A CREDIT FOR THE PROVIDER OF THE INFO
-=============
--->
-
-<script langauge="JavaScript">
-function openWin(url, name) { popupWin = window.open(url, name,"resizable=1,scrollbars=1,toolbar=0,width=400 ,height=450")
-}
-</script>
-
-
-<!--
-============
-THIS LINK WILL OPEN A SEPARATE WINDOW THAT WILL PROVIDE INFORMATION REGARDING THE ADVISORY BOARD MEMBERS. ALSO PROVIDED IN THE PAGE WILL BE PARTICIPATION AND DONATION INFORMATION.
-============
--->
-
-
-<!--
-==============
-SETS THE BODY TEXT TO JUSTIFIED
-==============
--->
-  
-	<div align=justify>
-
-
-<!--
-=============
-INSERT LINK TO GUIDED TOUR HERE -uncomment when ready.
-=============
--->
-
-
-<!--
-==============
-INSERT BODY TEXT HERE
-
-The first section of text is the short "introduction" about the Theme and the various discplines that have a vested interest in them.
- Design principle: Bold the first few words of this text section.
-==============
--->
 <h2>tibwn.ini File Format</h2>
 
 <p>
@@ -557,7 +419,7 @@ __TILDE__^~91,5~~9,89~~~~~~~0F82
 
 <p>
 The
-<a target="_blank" href="http://www.sourceforge.net/projects/thdltools">
+<a href="http://www.sourceforge.net/projects/thdltools">
   THDL Tools</a>
 project is generously hosted by:
 <!--
@@ -573,16 +435,12 @@ project web pages unless we put this link in.  To track hits, see
 "http://sourceforge.net/project/stats/index.php?report=months&group_id=61934".
 
 -->
-<a target="_blank" href="http://sourceforge.net/">
+<a href="http://sourceforge.net/">
   <img src="http://sourceforge.net/sflogo.php?group_id=61934&amp;type=1"
-       width="88" height="31" border="0" alt="SourceForge Logo">
+       width="88" height="31" alt="SourceForge Logo" />
 </a>
 <!-- AGAIN, DO NOT DELETE THE SF.NET LOGO. -->
 </p>
-	</div>
-      </td>
-    </tr>
-  </table>
 </div>
 
 
