@@ -396,13 +396,15 @@ public class Jskad extends JPanel implements DocumentListener {
 
 		JMenu toolsMenu = new JMenu("Tools");
 
+        JMenu convertSelectionMenu = new JMenu("Convert Selection");
 		JMenuItem TMWWylieItem = new JMenuItem("Convert Tibetan to Wylie");
 		TMWWylieItem.addActionListener(new ThdlActionListener() {
 			public void theRealActionPerformed(ActionEvent e) {
 				toWylie();
 			}
 		});
-		toolsMenu.add(TMWWylieItem);
+		convertSelectionMenu.add(TMWWylieItem);
+        toolsMenu.add(convertSelectionMenu);
 
 		JMenuItem wylieTMWItem = new JMenuItem("Convert Wylie to Tibetan");
 		wylieTMWItem.addActionListener(new ThdlActionListener() {
@@ -410,117 +412,104 @@ public class Jskad extends JPanel implements DocumentListener {
 				toTibetan();
 			}
 		});
-		toolsMenu.add(wylieTMWItem);
+		convertSelectionMenu.add(wylieTMWItem);
 
-		if (parentObject instanceof JFrame || parentObject instanceof JInternalFrame) {
-			JMenuItem openWithItem = new JMenuItem("Open With External Viewer...");
-			openWithItem.addActionListener(new ThdlActionListener() {
-				public void theRealActionPerformed(ActionEvent e) {
-                    openWithExternalViewer();
-				}
-			});
-			toolsMenu.addSeparator();
-			toolsMenu.add(openWithItem);
+        JMenu convertAllMenu = new JMenu("Convert All");
 
-
-			JMenuItem importItem = new JMenuItem("Import Wylie as Tibetan");
-			importItem.addActionListener(new ThdlActionListener() {
-				public void theRealActionPerformed(ActionEvent e) {
-					importWylie();
-				}
-			});
-			toolsMenu.addSeparator();
-			toolsMenu.add(importItem);
-
-            JMenuItem toTMItem = new JMenuItem("Convert TMW to TM"); // DLC FIXME: do it just in the selection?
-            toTMItem.addActionListener(new ThdlActionListener() {
-                    public void theRealActionPerformed(ActionEvent e) {
-                        StringBuffer errors = new StringBuffer();
-                        long numAttemptedReplacements[] = new long[] { 0 };
-                        boolean errorReturn
-                            = ((TibetanDocument)dp.getDocument()).convertToTM(0, -1, errors,
-                                                                              numAttemptedReplacements); // entire document
-                        if (errorReturn) {
+        JMenuItem toTMItem = new JMenuItem("Convert Tibetan to TM"); // DLC FIXME: do it just in the selection?
+        toTMItem.addActionListener(new ThdlActionListener() {
+                public void theRealActionPerformed(ActionEvent e) {
+                    StringBuffer errors = new StringBuffer();
+                    long numAttemptedReplacements[] = new long[] { 0 };
+                    boolean errorReturn
+                        = ((TibetanDocument)dp.getDocument()).convertToTM(0, -1, errors,
+                                                                          numAttemptedReplacements); // entire document
+                    if (errorReturn) {
+                        JOptionPane.showMessageDialog(Jskad.this,
+                                                      "At least one error occurred while converting Tibetan Machine Web\nto Tibetan Machine.  Your document is mostly converted,\nexcept for the following glyphs, which you should replace manually\nbefore retrying:\n"
+                                                      + errors.toString(),
+                                                      "Tibetan to TM Errors",
+                                                      JOptionPane.PLAIN_MESSAGE);
+                    } else {
+                        if (numAttemptedReplacements[0] > 0) {
                             JOptionPane.showMessageDialog(Jskad.this,
-                                                          "At least one error occurred while converting Tibetan Machine Web\nto Tibetan Machine.  Your document is mostly converted,\nexcept for the following glyphs, which you should replace manually\nbefore retrying:\n"
-                                                          + errors.toString(),
-                                                          "TMW to TM Errors",
+                                                          "Converting Tibetan Machine Web to Tibetan Machine met with perfect success.",
+                                                          "Success",
                                                           JOptionPane.PLAIN_MESSAGE);
                         } else {
-                            if (numAttemptedReplacements[0] > 0) {
-                                JOptionPane.showMessageDialog(Jskad.this,
-                                                              "Converting Tibetan Machine Web to Tibetan Machine met with perfect success.",
-                                                              "Success",
-                                                              JOptionPane.PLAIN_MESSAGE);
-                            } else {
-                                JOptionPane.showMessageDialog(Jskad.this,
-                                                              "No Tibetan Machine Web was found, so nothing was converted.",
-                                                              "Nothing to do",
-                                                              JOptionPane.ERROR_MESSAGE);
-                            }
+                            JOptionPane.showMessageDialog(Jskad.this,
+                                                          "No Tibetan Machine Web was found, so nothing was converted.",
+                                                          "Nothing to do",
+                                                          JOptionPane.ERROR_MESSAGE);
                         }
                     }
-                });
+                }
+            });
 
-            JMenuItem toTMWItem = new JMenuItem("Convert TM to TMW"); // DLC FIXME: do it just in the selection?
-            toTMWItem.addActionListener(new ThdlActionListener() {
-                    public void theRealActionPerformed(ActionEvent e) {
-                        StringBuffer errors = new StringBuffer();
-                        long numAttemptedReplacements[] = new long[] { 0 };
-                        boolean errorReturn
-                            = ((TibetanDocument)dp.getDocument()).convertToTMW(0, -1, errors,
+        JMenuItem toTMWItem = new JMenuItem("Convert TM to Tibetan"); // DLC FIXME: do it just in the selection?
+        toTMWItem.addActionListener(new ThdlActionListener() {
+                public void theRealActionPerformed(ActionEvent e) {
+                    StringBuffer errors = new StringBuffer();
+                    long numAttemptedReplacements[] = new long[] { 0 };
+                    boolean errorReturn
+                        = ((TibetanDocument)dp.getDocument()).convertToTMW(0, -1, errors,
+                                                                           numAttemptedReplacements); // entire document
+                    if (errorReturn) {
+                        JOptionPane.showMessageDialog(Jskad.this,
+                                                      "At least one error occurred while converting Tibetan Machine\nto Tibetan Machine Web.  Your document is mostly converted,\nexcept for the following glyphs, which you should replace manually\nbefore retrying:\n"
+                                                      + errors.toString(),
+                                                      "TM to Tibetan Errors", JOptionPane.PLAIN_MESSAGE);
+                    } else {
+                        if (numAttemptedReplacements[0] > 0) {
+                            JOptionPane.showMessageDialog(Jskad.this,
+                                                          "Converting Tibetan Machine to Tibetan Machine Web met with perfect success.",
+                                                          "Success",
+                                                          JOptionPane.PLAIN_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(Jskad.this,
+                                                          "No Tibetan Machine was found, so nothing was converted.",
+                                                          "Nothing to do",
+                                                          JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                }
+            });
+
+        JMenuItem toUnicodeItem = new JMenuItem("Convert Tibetan to Unicode (not perfect yet)"); // DLC FIXME: do it just in the selection?
+        toUnicodeItem.addActionListener(new ThdlActionListener() {
+                public void theRealActionPerformed(ActionEvent e) {
+                    StringBuffer errors = new StringBuffer();
+                    long numAttemptedReplacements[] = new long[] { 0 };
+                    boolean errorReturn
+                        = ((TibetanDocument)dp.getDocument()).convertToUnicode(0, -1, errors,
+                                                                               ThdlOptions.getStringOption("thdl.tmw.to.unicode.font").intern(),
                                                                                numAttemptedReplacements); // entire document
-                        if (errorReturn) {
+                    if (errorReturn) {
+                        JOptionPane.showMessageDialog(Jskad.this,
+                                                      "At least one error occurred while converting Tibetan Machine Web\nto Unicode.  Your document is mostly converted,\nexcept for the following glyphs, which you should replace manually\nbefore retrying:\n"
+                                                      + errors.toString(),
+                                                      "Tibetan to Unicode Errors", JOptionPane.PLAIN_MESSAGE);
+                    } else {
+                        if (numAttemptedReplacements[0] > 0) {
                             JOptionPane.showMessageDialog(Jskad.this,
-                                                          "At least one error occurred while converting Tibetan Machine\nto Tibetan Machine Web.  Your document is mostly converted,\nexcept for the following glyphs, which you should replace manually\nbefore retrying:\n"
-                                                          + errors.toString(),
-                                                          "TM to TMW Errors", JOptionPane.PLAIN_MESSAGE);
+                                                          "Converting Tibetan Machine Web to Unicode met with perfect success.",
+                                                          "Success",
+                                                          JOptionPane.PLAIN_MESSAGE);
                         } else {
-                            if (numAttemptedReplacements[0] > 0) {
-                                JOptionPane.showMessageDialog(Jskad.this,
-                                                              "Converting Tibetan Machine to Tibetan Machine Web met with perfect success.",
-                                                              "Success",
-                                                              JOptionPane.PLAIN_MESSAGE);
-                            } else {
-                                JOptionPane.showMessageDialog(Jskad.this,
-                                                              "No Tibetan Machine was found, so nothing was converted.",
-                                                              "Nothing to do",
-                                                              JOptionPane.ERROR_MESSAGE);
-                            }
+                            JOptionPane.showMessageDialog(Jskad.this,
+                                                          "No Tibetan Machine Web was found, so nothing was converted.",
+                                                          "Nothing to do",
+                                                          JOptionPane.ERROR_MESSAGE);
                         }
                     }
-                });
+                }
+            });
+        convertAllMenu.add(toTMItem);
+        convertAllMenu.add(toTMWItem);
+        convertAllMenu.add(toUnicodeItem);
+        toolsMenu.add(convertAllMenu);
 
-            JMenuItem toUnicodeItem = new JMenuItem("Convert TMW to Unicode"); // DLC FIXME: do it just in the selection?
-            toUnicodeItem.addActionListener(new ThdlActionListener() {
-                    public void theRealActionPerformed(ActionEvent e) {
-                        StringBuffer errors = new StringBuffer();
-                        long numAttemptedReplacements[] = new long[] { 0 };
-                        boolean errorReturn
-                            = ((TibetanDocument)dp.getDocument()).convertToUnicode(0, -1, errors,
-                                                                                   ThdlOptions.getStringOption("thdl.tmw.to.unicode.font").intern(),
-                                                                                   numAttemptedReplacements); // entire document
-                        if (errorReturn) {
-                            JOptionPane.showMessageDialog(Jskad.this,
-                                                          "At least one error occurred while converting Tibetan Machine Web\nto Unicode.  Your document is mostly converted,\nexcept for the following glyphs, which you should replace manually\nbefore retrying:\n"
-                                                          + errors.toString(),
-                                                          "TMW to Unicode Errors", JOptionPane.PLAIN_MESSAGE);
-                        } else {
-                            if (numAttemptedReplacements[0] > 0) {
-                                JOptionPane.showMessageDialog(Jskad.this,
-                                                              "Converting Tibetan Machine Web to Unicode met with perfect success.",
-                                                              "Success",
-                                                              JOptionPane.PLAIN_MESSAGE);
-                            } else {
-                                JOptionPane.showMessageDialog(Jskad.this,
-                                                              "No Tibetan Machine Web was found, so nothing was converted.",
-                                                              "Nothing to do",
-                                                              JOptionPane.ERROR_MESSAGE);
-                            }
-                        }
-                    }
-                });
-
+		if (parentObject instanceof JFrame || parentObject instanceof JInternalFrame) {
             JMenuItem converterItem = new JMenuItem("Launch Converter...");
             converterItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
@@ -532,12 +521,27 @@ public class Jskad extends JPanel implements DocumentListener {
                                                : null));
                     }
                 });
-            toolsMenu.addSeparator();
-            toolsMenu.add(toTMItem);
-            toolsMenu.add(toTMWItem);
-            toolsMenu.add(toUnicodeItem);
-            toolsMenu.addSeparator();
             toolsMenu.add(converterItem);
+
+
+			JMenuItem importItem = new JMenuItem("Import Wylie as Tibetan...");
+			importItem.addActionListener(new ThdlActionListener() {
+				public void theRealActionPerformed(ActionEvent e) {
+					importWylie();
+				}
+			});
+			toolsMenu.addSeparator();
+			toolsMenu.add(importItem);
+
+			JMenuItem openWithItem = new JMenuItem("Open With External Viewer...");
+			openWithItem.addActionListener(new ThdlActionListener() {
+				public void theRealActionPerformed(ActionEvent e) {
+                    openWithExternalViewer();
+				}
+			});
+			toolsMenu.addSeparator();
+			toolsMenu.add(openWithItem);
+
         }
 
 

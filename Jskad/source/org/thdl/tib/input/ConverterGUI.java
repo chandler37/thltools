@@ -89,6 +89,21 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
                                           "Errors in Conversion",
                                           JOptionPane.ERROR_MESSAGE);
             return false;
+        } else if (1 == returnCode) {
+            if (FIND_SOME_NON_TMW == whichConversion
+                || FIND_ALL_NON_TMW == whichConversion) {
+                JOptionPane.showMessageDialog(cd,
+                                              "Something besides TibetanMachineWeb was found; see output file.",
+                                              "Not entirely TMW",
+                                              JOptionPane.PLAIN_MESSAGE);
+            } else if (FIND_SOME_NON_TM == whichConversion
+                       || FIND_ALL_NON_TM == whichConversion) {
+                JOptionPane.showMessageDialog(cd,
+                                              "Something besides TibetanMachine was found; see output file.",
+                                              "Not entirely TM",
+                                              JOptionPane.PLAIN_MESSAGE);
+            }
+            return false;
         } else if (0 != returnCode) {
             JOptionPane.showMessageDialog(cd,
                                           "The conversion failed with code " + returnCode + "; please e-mail\ndchandler@users.sourceforge.net to learn what that means if\nyou can't find out from the output.",
@@ -96,11 +111,26 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
                                           JOptionPane.ERROR_MESSAGE);
             return false;
         } else {
-            if (!ThdlOptions.getBooleanOption("thdl.skip.conversion.success.message"))
-                JOptionPane.showMessageDialog(cd,
-                                              "The conversion went perfectly.",
-                                              "Conversion succeeded",
-                                              JOptionPane.PLAIN_MESSAGE);
+            if (!ThdlOptions.getBooleanOption("thdl.skip.conversion.success.message")) {
+                if (FIND_SOME_NON_TMW == whichConversion
+                    || FIND_ALL_NON_TMW == whichConversion) {
+                    JOptionPane.showMessageDialog(cd,
+                                                  "Nothing except TibetanMachineWeb was found.",
+                                                  "All TMW",
+                                                  JOptionPane.PLAIN_MESSAGE);
+                } else if (FIND_SOME_NON_TM == whichConversion
+                           || FIND_ALL_NON_TM == whichConversion) {
+                    JOptionPane.showMessageDialog(cd,
+                                                  "Nothing except TibetanMachine was found.",
+                                                  "All TM",
+                                                  JOptionPane.PLAIN_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(cd,
+                                                  "The conversion went perfectly.",
+                                                  "Conversion succeeded",
+                                                  JOptionPane.PLAIN_MESSAGE);
+                }
+            }
             return true;
         }
     }
