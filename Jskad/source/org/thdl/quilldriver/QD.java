@@ -28,22 +28,15 @@ import javax.swing.text.*;
 import javax.swing.plaf.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.dnd.*;
-import java.awt.datatransfer.*;
 import java.lang.reflect.*;
 
-import org.thdl.tib.input.*;
-import org.thdl.tib.text.*;
+import org.thdl.media.SmartMoviePanel;
+import org.thdl.media.SmartMoviePanelException;
 import org.thdl.savant.JdkVersionHacks;
-import org.thdl.media.*;
-
-import org.jdom.*;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.XMLOutputter;
-import org.jdom.transform.JDOMSource;
-import javax.xml.transform.stream.*;
-import javax.xml.transform.*;
-
+import org.thdl.savant.TextHighlightPlayer;
+import org.thdl.quilldriver.XMLView;
+import org.thdl.quilldriver.XMLEditor;
+import org.thdl.quilldriver.XMLUtilities;
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlActionListener;
 import org.thdl.util.ThdlAbstractAction;
@@ -51,189 +44,133 @@ import org.thdl.util.ThdlOptions;
 import org.thdl.util.SimpleSpinner;
 import org.thdl.util.ThdlI18n;
 
+import org.jdom.DocType;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.Text;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.jdom.input.DOMBuilder;
+import org.jdom.output.XMLOutputter;
+import org.jdom.output.DOMOutputter;
+import org.jdom.transform.JDOMSource;
+import org.jdom.transform.JDOMResult;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import javax.swing.JTextPane;
+import javax.swing.JTextField;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.StyledDocument;
+import javax.swing.text.StyleConstants;
+import java.util.List;
+import java.util.Enumeration;
+import java.util.StringTokenizer;
+import java.awt.Color;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowAdapter;
+
+import java.io.File;
+import java.net.URL;
+import java.net.MalformedURLException;
+
 public class QD extends JDesktopPane {
-    private final static JskadKeyboardManager keybdMgr
-		= new JskadKeyboardManager(JskadKeyboardFactory.getAllAvailableJskadKeyboards());
-
-	//project related data
-	protected Project project;
-
-	//speaker related
-	protected SpeakerTable speakerTable;
-
-	//video related
 	protected SmartMoviePanel player = null;
-
-	//frame related
+	protected XMLEditor editor = null;
 	protected JInternalFrame videoFrame = null;
 	protected JInternalFrame textFrame = null;
 	protected JInternalFrame actionFrame = null;
-
-	//miscellaneous stuff
-	public JTabbedPane jtp;
-	public TimeCodeManager tcp = null;
-	public SpeakerManager spm = null;
-	public JTextPane pane;
-	public Hashtable actions;
-	public ImageIcon clockIcon;
-	public static final String componentStyleName = "Component";
-	public Style componentStyle;
-	public DataFlavor timeFlavor;
-
-	//class fields because they are affected depending on whether we're
-	//in read-only or edit mode
-	protected JMenu editMenu, searchMenu;
-	protected JMenuItem replaceTextItem;
-
 	protected ResourceBundle messages;
-
-	protected java.util.List work;
-	protected Work currentWork;
-
-	protected DuffPane sharedDP = new DuffPane();
-	protected DuffPane sharedDP2 = new DuffPane();
-
-	protected StyledDocument findDoc = null;
-	protected StyledDocument replaceDoc = null;
-
-	protected KeyStroke cutKey, copyKey, pasteKey, selectAllKey;
-	protected KeyStroke insert1TimeKey, insert2TimesKey, insertSpeakerKey;
-	protected KeyStroke findKey, replaceKey;
-
-	protected JskadKeyboard activeKeyboard = null;
-	protected JskadKeyboard wylieKeyboard;
-
-
-public QD() {
-	messages = ThdlI18n.getResourceBundle();
+	protected TimeCodeManager tcp = null;
+	protected Hashtable actions;
+	protected Properties config; //xpath based properties
+	protected Properties textConfig; //unchangeable properties
+	protected JMenu[] configMenus;
+	protected XMLView view;
+	protected TextHighlightPlayer hp;
+	protected DocumentBuilder docBuilder;
+	protected File transcriptFile = null;
+	protected XMLTagInfo tagInfo = null;
+	protected String configURL, newURL, editURL, dtdURL, rootElement;
 	
-	setBackground(new JFrame().getBackground());
-	setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
-
-	clockIcon = new ImageIcon(QD.class.getResource("clock.gif"));
-	timeFlavor = new DataFlavor(Integer.class, "time");
-
-	Action insert1TimeAction = new ThdlAbstractAction("insert1Time", null) {
-		public void theRealActionPerformed(ActionEvent e) {
-			new TimePoint(pane, clockIcon, tcp.getOutTime());
-			tcp.setInTime(tcp.getOutTime().intValue());
-			tcp.setOutTime(player.getEndTime());
+	public QD(String configURL, String editURL, String newURL, String dtdURL) {
+		messages = ThdlI18n.getResourceBundle();
+		
+		this.configURL = configURL;
+		this.newURL = newURL;
+		this.editURL = editURL;
+		this.dtdURL = dtdURL;
+		
+		configure(configURL);
+		
+		setBackground(new JFrame().getBackground());
+		setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+	
+		//(String title, boolean resizable, boolean closable, boolean maximizable, boolean iconifiable)
+		videoFrame = new JInternalFrame(null, false, false, false, false);
+		videoFrame.setVisible(true);
+		videoFrame.setLocation(0,0);
+		videoFrame.setSize(0,0);
+		add(videoFrame, JLayeredPane.POPUP_LAYER);
+		invalidate();
+		validate();
+		repaint();
+	
+		textFrame = new JInternalFrame(null, false, false, false, true);
+		textFrame.setVisible(true);
+		textFrame.setLocation(0,0);
+		textFrame.setSize(0,0);
+		add(textFrame, JLayeredPane.DEFAULT_LAYER);
+		invalidate();
+		validate();
+		repaint();
+	
+		actionFrame = new JInternalFrame(null, false, false, false, true);
+		actionFrame.setVisible(true);
+		actionFrame.setLocation(0,0);
+		actionFrame.setSize(0,0);
+		add(actionFrame, JLayeredPane.DEFAULT_LAYER);
+		invalidate();
+		validate();
+		repaint();
+		
+		addComponentListener(new ComponentAdapter() {
+			public void componentResized(ComponentEvent ce) {
+				Dimension d = videoFrame.getSize();
+				if (d.width == 0 && d.height == 0)
+					videoFrame.setSize(getSize().width / 2, 0);
+				textFrame.setLocation(videoFrame.getSize().width, 0);
+				textFrame.setSize(getSize().width - videoFrame.getSize().width, getSize().height);
+				actionFrame.setLocation(0, videoFrame.getSize().height);
+				actionFrame.setSize(videoFrame.getSize().width, getSize().height - videoFrame.getSize().height);
+			}
+		});
+		
+		try {
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			docBuilder = dbf.newDocumentBuilder();
+		} catch (ParserConfigurationException pce) {
+			pce.printStackTrace();
 		}
-	};
+	}
 
-	Action insert2TimesAction = new ThdlAbstractAction("insert2Times", null) {
-		public void theRealActionPerformed(ActionEvent e) {
-			int p1 = pane.getSelectionStart();
-			int p2 = pane.getSelectionEnd();
-			pane.setCaretPosition(p1);
-			new TimePoint(pane, clockIcon, tcp.getInTime());
-			pane.setCaretPosition(p2+1);
-			new TimePoint(pane, clockIcon, tcp.getOutTime());
-			if (p1 == p2)
-				pane.setCaretPosition(pane.getCaretPosition()-1);
-			tcp.setInTime(tcp.getOutTime().intValue());
-			tcp.setOutTime(player.getEndTime());
-		}
-	};
-
-/*
-	Action saveAction = new ThdlAbstractAction("saveTranscript", null) {
-		public void theRealActionPerformed(ActionEvent e) {
-			getSave();
-		}
-	};
-*/
-
-	JTextPane tp = new JTextPane();
-	Keymap keymap = tp.addKeymap("QDBindings", tp.getKeymap());
-
-	insert1TimeKey = KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, Event.CTRL_MASK);
-	insert2TimesKey = KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, Event.CTRL_MASK);
-	insertSpeakerKey = KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.ALT_MASK);
-	findKey = KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK);
-	replaceKey = KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK);
-	cutKey = KeyStroke.getKeyStroke(KeyEvent.VK_X, Event.CTRL_MASK);
-	pasteKey = KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.CTRL_MASK);
-	copyKey = KeyStroke.getKeyStroke(KeyEvent.VK_C, Event.CTRL_MASK);
-	selectAllKey = KeyStroke.getKeyStroke(KeyEvent.VK_A, Event.CTRL_MASK);
-
-//	KeyStroke saveKey = KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK);
-
-	keymap.addActionForKeyStroke(insert1TimeKey, insert1TimeAction);
-	keymap.addActionForKeyStroke(insert2TimesKey, insert2TimesAction);
-//	keymap.addActionForKeyStroke(saveKey, saveAction);
-
-	Speaker[] speakers = new Speaker[0];
-	SpeakerData speakerData = new SpeakerData(speakers, keymap);
-	speakerTable = new SpeakerTable(speakerData);
-
-//FIXME when save/load bug is fixed
-	JskadKeyboard[] allKeyboards = JskadKeyboardFactory.getAllAvailableJskadKeyboards();
-	wylieKeyboard = allKeyboards[0];
-
-	pane = new DuffPane();
-	pane.setKeymap(keymap);
-	new TimePointDropTarget(pane);
-
-	work = new ArrayList();
-	currentWork = new Work();
-	work.add(currentWork);
-
-	JPanel textPanel = new JPanel(new BorderLayout());
-	textPanel.add("Center", new JScrollPane(pane));
-
-	JPanel actionPanel = new JPanel(new BorderLayout());
-	jtp = new JTabbedPane();
-	project = null;
-	spm = new SpeakerManager(speakerTable);
-	jtp.addTab(messages.getString("Speakers"), spm);
-	actionPanel.add("Center", jtp);
-
-	//(String title, boolean resizable, boolean closable, boolean maximizable, boolean iconifiable)
-	videoFrame = new JInternalFrame(null, false, false, false, false);
-	videoFrame.setVisible(true);
-	videoFrame.setLocation(0,0);
-	videoFrame.setSize(0,0);
-	add(videoFrame, JLayeredPane.POPUP_LAYER);
-	invalidate();
-	validate();
-	repaint();
-
-	textFrame = new JInternalFrame(null, false, false, false, true);
-	textFrame.setVisible(true);
-	textFrame.setContentPane(textPanel);
-	textFrame.setLocation(0,0);
-	textFrame.setSize(0,0);
-	textFrame.setJMenuBar(getTextMenuBar());
-	add(textFrame, JLayeredPane.DEFAULT_LAYER);
-	invalidate();
-	validate();
-	repaint();
-
-	actionFrame = new JInternalFrame(null, false, false, false, true);
-	actionFrame.setVisible(true);
-	actionFrame.setContentPane(actionPanel);
-	actionFrame.setLocation(0,0);
-	actionFrame.setSize(0,0);
-	add(actionFrame, JLayeredPane.DEFAULT_LAYER);
-	invalidate();
-	validate();
-	repaint();
-
-	addComponentListener(new ComponentAdapter() {
-		public void componentResized(ComponentEvent ce) {
-			Dimension d = videoFrame.getSize();
-			if (d.width == 0 && d.height == 0)
-				videoFrame.setSize(getSize().width / 2, 0);
-			textFrame.setLocation(videoFrame.getSize().width, 0);
-			textFrame.setSize(getSize().width - videoFrame.getSize().width, getSize().height);
-			actionFrame.setLocation(0, videoFrame.getSize().height);
-			actionFrame.setSize(videoFrame.getSize().width, getSize().height - videoFrame.getSize().height);
-		}
-	});
-}
-
-private void startTimer() {
+	private void startTimer() {
 		final java.util.Timer timer = new java.util.Timer(true);
 		timer.schedule(new TimerTask() {
 			public void run()
@@ -241,200 +178,184 @@ private void startTimer() {
 				if (player.isInitialized())
 				{
 					timer.cancel();
-
-					if (tcp != null)
-						jtp.remove(tcp);
 					tcp = new TimeCodeManager();
-					jtp.addTab(messages.getString("TimeCoding"), tcp);
-
+					actionFrame.setContentPane(tcp);
+					actionFrame.pack();
+					invalidate();
+					validate();
+					repaint();
 					videoFrame.setContentPane(player);
 					videoFrame.pack();
 					videoFrame.setMaximumSize(videoFrame.getSize());
-				invalidate();
-				validate();
-				repaint();
+					invalidate();
+					validate();
+					repaint();
 					textFrame.setLocation(videoFrame.getSize().width, 0);
 					textFrame.setSize(getSize().width - videoFrame.getSize().width, getSize().height);
-				invalidate();
-				validate();
-				repaint();
+					invalidate();
+					validate();
+					repaint();
 					actionFrame.setLocation(0, videoFrame.getSize().height);
 					actionFrame.setSize(videoFrame.getSize().width, getSize().height - videoFrame.getSize().height);
-				invalidate();
-				validate();
-				repaint();
+					invalidate();
+					validate();
+					repaint();
 				}
 			}}, 0, 50);
-}
+	}
 
-private void createActionTable(JTextComponent textComponent) {
-    actions = new Hashtable();
-    Action[] actionsArray = textComponent.getActions();
-    for (int i = 0; i < actionsArray.length; i++) {
-        Action a = actionsArray[i];
-        actions.put(a.getValue(Action.NAME), a);
-    }
-}    
+	private void createActionTable(JTextComponent textComponent) {
+	    actions = new Hashtable();
+	    Action[] actionsArray = textComponent.getActions();
+	    for (int i = 0; i < actionsArray.length; i++) {
+		Action a = actionsArray[i];
+		actions.put(a.getValue(Action.NAME), a);
+	    }
+	}    
+	
+	private Action getActionByName(String name) {
+	    return (Action)(actions.get(name));
+	}
 
-private Action getActionByName(String name) {
-    return (Action)(actions.get(name));
-}
-
-class TimePoint extends JLabel implements DragGestureListener, DragSourceListener {
-	StyledDocument doc;
-	Position pos;
-	Integer time;
-
-	TimePoint(final JTextPane tp, Icon icon, Integer time) {
-		super(icon);
-		this.time = time;
-		setCursor(new Cursor(Cursor.HAND_CURSOR));
-		setToolTipText(getTimeAsString());
-		DragSource dragSource = DragSource.getDefaultDragSource();
-		dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
-		addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON1)
-					playSegment();
-				else {
-					SimpleSpinner spinner = new SimpleSpinner();
-					spinner.setPreferredSize(new Dimension(100, 40));
-					spinner.setValue(getTime());
-					if (JOptionPane.showOptionDialog(tp, spinner, messages.getString("AdjustTimeCode"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null) == JOptionPane.OK_OPTION)
-						setTime((Integer)spinner.getValue());
+	class TimeCodeManager extends JPanel {
+		SimpleSpinner inSpinner, outSpinner;
+	
+		TimeCodeManager() {
+			setLayout(new BorderLayout());
+			JPanel inPanel = new JPanel();
+			JButton inButton = new JButton(messages.getString("In"));
+			inSpinner = new SimpleSpinner();
+			inSpinner.setValue(new Integer(0));
+			inSpinner.setPreferredSize(new Dimension(100, inButton.getPreferredSize().height));
+			inPanel.add(inButton);
+			inPanel.add(inSpinner);
+	
+			inButton.addActionListener(new ThdlActionListener() {
+				public void theRealActionPerformed(ActionEvent e) {
+					int k = player.getCurrentTime();
+					if (k != -1)
+						setInTime(k);
 				}
-			}
-		});
-		doc = tp.getStyledDocument();
-		tp.insertComponent(this);
-		try { //insertions occur prior to position, so position should be right before icon after icon is inserted
-			pos = doc.createPosition(tp.getCaretPosition()-1);
-		} catch (BadLocationException ble) {
-			ble.printStackTrace();
-			ThdlDebug.noteIffyCode();
-		}
-	}
-	public void setTime(Integer t) {
-		time = t;
-		setToolTipText(getTimeAsString());
-	}
-	public Integer getTime() {
-		return time;
-	}
-	public String getTimeAsString() {
-		return String.valueOf(time);
-	}
-	public void playSegment() {
-		try {
-			for (int i=pos.getOffset()+1; i<doc.getLength(); i++) {
-				AttributeSet attr = doc.getCharacterElement(i).getAttributes();
-				Component comp;
-				if (null != (comp = StyleConstants.getComponent(attr)))
-					if (comp instanceof TimePoint) {
-						TimePoint t2 = (TimePoint)comp;
-						player.cmd_playSegment(time, t2.time);
-						return;
+			});
+	
+	
+			JPanel outPanel = new JPanel();
+			JButton outButton = new JButton(messages.getString("Out"));
+			outSpinner = new SimpleSpinner();
+			outSpinner.setValue(new Integer(player.getEndTime()));
+			outSpinner.setPreferredSize(new Dimension(100, inButton.getPreferredSize().height));
+			outPanel.add(outButton);
+			outPanel.add(outSpinner);
+	
+			outButton.addActionListener(new ThdlActionListener() {
+				public void theRealActionPerformed(ActionEvent e) {
+					int k = player.getCurrentTime();
+					if (k != -1) {
+						setOutTime(k);
+						try {
+							player.cmd_stop();
+						} catch (SmartMoviePanelException smpe) {
+							smpe.printStackTrace();
+							ThdlDebug.noteIffyCode();
+						}
 					}
-			}
-			player.cmd_playSegment(time, null);
-		} catch (SmartMoviePanelException smpe) {
-			smpe.printStackTrace();
-			ThdlDebug.noteIffyCode();
-		}
-	}
-	public void dragGestureRecognized(DragGestureEvent dge) {
-		Transferable transferable = new TimePointTransferable(this);
-		try {
-			dge.startDrag(null, transferable, this);
-		} catch (InvalidDnDOperationException idoe) {
-			idoe.printStackTrace();
-			ThdlDebug.noteIffyCode();
-		}
-	}
-	public void dragEnter(DragSourceDragEvent dsde) {
-	}
-	public void dragOver(DragSourceDragEvent dsde) {
-	}
-	public void dragExit(DragSourceEvent dse) {
-	}
-	public void dropActionChanged(DragSourceDragEvent dsde) {
-	}
-	public void dragDropEnd(DragSourceDropEvent dsde) {
-		if (dsde.getDropSuccess()) {
-			if (dsde.getDropAction() == DnDConstants.ACTION_MOVE) {
-				try {
-					doc.remove(pos.getOffset(), 1);
-				} catch (BadLocationException ble) {
-					ble.printStackTrace();
-					ThdlDebug.noteIffyCode();
 				}
-			}
+			});
+	
+	
+			JButton playSegButton = new JButton(messages.getString("PlaySegment"));
+			playSegButton.addActionListener(new ThdlActionListener() {
+				public void theRealActionPerformed(ActionEvent e) {
+					Integer in = getInTime();
+					Integer out = getOutTime();
+					if (out.intValue() > in.intValue()) {
+						try {
+							player.cmd_playSegment(in, out);
+						} catch (SmartMoviePanelException smpe) {
+							smpe.printStackTrace();
+							ThdlDebug.noteIffyCode();
+						}
+					}
+				}
+			});
+			JPanel ps = new JPanel();
+			ps.add(playSegButton);
+	
+			JButton playPauseButton = new JButton(messages.getString("PlayPause"));
+			playPauseButton.addActionListener(new ThdlActionListener() {
+				public void theRealActionPerformed(ActionEvent e) {
+					if (player != null && player.getMediaURL() != null) {
+						try {
+							if (player.isPlaying())
+								player.cmd_stop();
+							else
+								player.cmd_playOn();
+						} catch (SmartMoviePanelException smpe) {
+							smpe.printStackTrace();
+							ThdlDebug.noteIffyCode();
+						}
+					}
+				}
+			});
+	
+			JPanel playPausePanel = new JPanel();
+			playPausePanel.add(playPauseButton);
+	
+			Box box = Box.createVerticalBox();
+			box.add(inPanel);
+			box.add(outPanel);
+			box.add(ps);
+			box.add(playPausePanel);
+	
+			add("North", box);
+		}
+		public Integer getInTime() {
+			return inSpinner.getValue();
+		}
+		public Integer getOutTime() {
+			return outSpinner.getValue();
+		}
+		public void setInTime(int k) {
+			inSpinner.setValue(new Integer(k));
+		}
+		public void setOutTime(int k) {
+			outSpinner.setValue(new Integer(k));
+		}
+		public void setTimes(Object node) {
+			Object playableparent = XMLUtilities.findSingleNode(node, config.getProperty("qd.nearestplayableparent"));
+			if (playableparent == null) return;
+			String t1 = XMLUtilities.getTextForNode(XMLUtilities.findSingleNode(playableparent, config.getProperty("qd.nodebegins")));
+			String t2 = XMLUtilities.getTextForNode(XMLUtilities.findSingleNode(playableparent, config.getProperty("qd.nodeends")));
+			float f1 = new Float(t1).floatValue()*1000;
+			float f2 = new Float(t2).floatValue()*1000;
+			setInTime(new Float(f1).intValue());
+			setOutTime(new Float(f2).intValue());
 		}
 	}
-}
-
-class TimePointTransferable implements Transferable {
-	DataFlavor[] flavors = new DataFlavor[1];
-	public Integer time;
-
-	public TimePointTransferable(TimePoint timePoint) {
-		time = timePoint.getTime();
-		flavors[0] = timeFlavor;
-	}
-	public DataFlavor[] getTransferDataFlavors() {
-		return flavors;
-	}
-	public boolean isDataFlavorSupported(DataFlavor flavor) {
-		if (flavor.equals(flavors[0]))
-			return true;
-		else
-			return false;
-	}
-	public Object getTransferData(DataFlavor flavor) {
-		return time;
-	}
-}
-
-public class TimePointDropTarget implements DropTargetListener {
-	JTextPane pane;
-	DropTarget dropTarget;
-
-	public TimePointDropTarget(JTextPane pane) {
-		this.pane = pane;
-		dropTarget = new DropTarget(pane, DnDConstants.ACTION_COPY_OR_MOVE, this, true, null);
-	}
-	public void dragEnter(DropTargetDragEvent dtde) {
-		acceptOrRejectDrag(dtde);
-		pane.requestFocus();
-	}
-	public void dragExit(DropTargetEvent dte) {
-	}
-	public void dragOver(DropTargetDragEvent dtde) {
-		acceptOrRejectDrag(dtde);
-		Point p = dtde.getLocation();
-		pane.setCaretPosition(pane.viewToModel(p));
-	}
-	public void dropActionChanged(DropTargetDragEvent dtde) {
-		acceptOrRejectDrag(dtde);
-	}
-	public void drop(DropTargetDropEvent dtde) {
-		if ((dtde.getDropAction() & DnDConstants.ACTION_COPY_OR_MOVE) != 0) {
-			dtde.acceptDrop(dtde.getDropAction());
-			dtde.dropComplete(dropTimePoint(dtde.getTransferable()));
+	
+	public void setMediaPlayer(SmartMoviePanel smp) {
+		if (smp == null)
+			player = null;
+		else if (player == null || !player.equals(smp)) {
+			player = smp;
+			player.setParentContainer(QD.this);
 		}
 	}
-	public boolean acceptOrRejectDrag(DropTargetDragEvent dtde) {
-		if (dtde.isDataFlavorSupported(timeFlavor))
-			return true;
-		else
-			return false;
+	public SmartMoviePanel getMediaPlayer() {
+		return player;
 	}
-	public boolean dropTimePoint(Transferable transferable) {
+
+	public boolean saveTranscript() {
+		if (transcriptFile == null)
+			return true;
+		
+		XMLOutputter xmlOut = new XMLOutputter();
 		try {
-			Integer time = (Integer)transferable.getTransferData(timeFlavor);
-			new TimePoint(pane, clockIcon, time);
-		} catch (UnsupportedFlavorException ufe) {
-			ufe.printStackTrace();
+			FileOutputStream fous = new FileOutputStream(transcriptFile);
+			xmlOut.output(editor.getXMLDocument(), fous);
+			return true;
+		} catch (FileNotFoundException fnfe) {
+			fnfe.printStackTrace();
 			ThdlDebug.noteIffyCode();
 			return false;
 		} catch (IOException ioe) {
@@ -442,306 +363,478 @@ public class TimePointDropTarget implements DropTargetListener {
 			ThdlDebug.noteIffyCode();
 			return false;
 		}
-		return true;
 	}
-}
-
-class TimeCodeManager extends JPanel {
-	SimpleSpinner inSpinner, outSpinner;
-
-	TimeCodeManager() {
-		setLayout(new BorderLayout());
-		JPanel inPanel = new JPanel();
-		JButton inButton = new JButton(messages.getString("In"));
-		inSpinner = new SimpleSpinner();
-		inSpinner.setValue(new Integer(0));
-		inSpinner.setPreferredSize(new Dimension(100, inButton.getPreferredSize().height));
-		inPanel.add(inButton);
-		inPanel.add(inSpinner);
-
-		inButton.addActionListener(new ThdlActionListener() {
-			public void theRealActionPerformed(ActionEvent e) {
-				int k = player.getCurrentTime();
-				if (k != -1)
-					setInTime(k);
+	
+	public boolean newTranscript(File file, String mediaURL) {
+			try {
+				if (newURL == null) return false;
+				StreamSource gg = new StreamSource(newURL);
+				System.out.println(gg.getSystemId());
+				final Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(newURL));
+				transformer.setParameter("qd.mediaURL", mediaURL);
+				transformer.transform(new StreamSource(newURL), new StreamResult(file)); //no args constructor implies default tree with empty root
+				transformer.clearParameters();
+				if (loadTranscript(file)) {	
+					if (dtdURL != null && rootElement != null) editor.getXMLDocument().setDocType(new DocType(rootElement,dtdURL));
+					return true;
+				}
+			} catch (TransformerException tre) {
+				tre.printStackTrace();
 			}
-		});
+			return false;
+	}
+	
+	public boolean loadTranscript(File file) {
+			if (!file.exists())
+				return false;
+		
+			if (player == null) {
+				JOptionPane.showConfirmDialog(QD.this, messages.getString("SupportedMediaError"), null, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+				return false;
+			}
+				
+			try {
+				final SAXBuilder builder = new SAXBuilder();
+				final JTextPane t = new JTextPane();
+				editor = new XMLEditor(builder.build(file), t, tagInfo);
+				/*final JTextField xpathField = new JTextField();
+				JButton goXPath = new JButton("Find XPATH");
+				goXPath.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						
+					}
+				});
+				
+				final JTextField taskField = new JTextField();
+				JButton goTask = new JButton("Execute Task");				
+				*/
+				
+				view = new XMLView(editor, editor.getXMLDocument(), config.getProperty("qd.timealignednodes"), config.getProperty("qd.nodebegins"), config.getProperty("qd.nodeends"));
+				hp = new TextHighlightPlayer(view, Color.cyan);
+				/*
+				JPanel top = new JPanel(new BorderLayout());
+				JPanel top1 = new JPanel(new BorderLayout());
+				top1.add("Center", xpathField);
+				top1.add("East", goXPath);
+				JPanel top2 = new JPanel(new BorderLayout());
+				top2.add("Center", taskField);
+				top2.add("East", goTask);
+				top.add("North", top1);
+				top.add("South", top2);
+				*/
+				JPanel p = new JPanel(new BorderLayout());
+				//p.add("North", top);
+				p.add("Center", hp);
 
-
-		JPanel outPanel = new JPanel();
-		JButton outButton = new JButton(messages.getString("Out"));
-		outSpinner = new SimpleSpinner();
-		outSpinner.setValue(new Integer(player.getEndTime()));
-		outSpinner.setPreferredSize(new Dimension(100, inButton.getPreferredSize().height));
-		outPanel.add(outButton);
-		outPanel.add(outSpinner);
-
-		outButton.addActionListener(new ThdlActionListener() {
-			public void theRealActionPerformed(ActionEvent e) {
-				int k = player.getCurrentTime();
-				if (k != -1) {
-					setOutTime(k);
+				if (player.getMediaURL() != null) {
 					try {
 						player.cmd_stop();
+						player.destroy();
 					} catch (SmartMoviePanelException smpe) {
 						smpe.printStackTrace();
 						ThdlDebug.noteIffyCode();
+						return false;
 					}
+					videoFrame.getContentPane().remove(player);
+					videoFrame.getContentPane().invalidate();
+					videoFrame.getContentPane().validate();
+					videoFrame.getContentPane().repaint();
+					videoFrame.setSize(new Dimension(QD.this.getSize().width / 2, 0));
+					actionFrame.setLocation(0,0);
+					actionFrame.setSize(new Dimension(actionFrame.getSize().width, QD.this.getSize().height));
 				}
-			}
-		});
 
-
-		JButton playSegButton = new JButton(messages.getString("PlaySegment"));
-		playSegButton.addActionListener(new ThdlActionListener() {
-			public void theRealActionPerformed(ActionEvent e) {
-				Integer in = getInTime();
-				Integer out = getOutTime();
-				if (out.intValue() > in.intValue()) {
-					try {
-						player.cmd_playSegment(in, out);
-					} catch (SmartMoviePanelException smpe) {
-						smpe.printStackTrace();
-						ThdlDebug.noteIffyCode();
+				Object mediaURL = XMLUtilities.findSingleNode(editor.getXMLDocument(), config.getProperty("qd.mediaurl"));
+				String value = XMLUtilities.getTextForNode(mediaURL);
+				if (value == null)
+					return false;
+				player.loadMovie(new URL(value));
+				player.addAnnotationPlayer(hp);
+				player.initForSavant(convertTimesForSmartMoviePanel(view.getT1s()), convertTimesForSmartMoviePanel(view.getT2s()), view.getIDs());
+				videoFrame.addMouseListener(new MouseAdapter() {
+					public void mouseClicked(MouseEvent e) {
+						System.out.println("mouse clicked on player");
+						//SmartMoviePanel smp = (SmartMoviePanel)e.getSource();
+						videoFrame.requestFocus();
 					}
-				}
-			}
-		});
-		JPanel ps = new JPanel();
-		ps.add(playSegButton);
-
-		JButton playPauseButton = new JButton(messages.getString("PlayPause"));
-		playPauseButton.addActionListener(new ThdlActionListener() {
-			public void theRealActionPerformed(ActionEvent e) {
-				if (player != null && player.getMediaURL() != null) {
-					try {
-						if (player.isPlaying())
-							player.cmd_stop();
-						else
-							player.cmd_playOn();
-					} catch (SmartMoviePanelException smpe) {
-						smpe.printStackTrace();
-						ThdlDebug.noteIffyCode();
-					}
-				}
-			}
-		});
-
-		JPanel playPausePanel = new JPanel();
-		playPausePanel.add(playPauseButton);
-
-		Box box = Box.createVerticalBox();
-		box.add(inPanel);
-		box.add(outPanel);
-		box.add(ps);
-		box.add(playPausePanel);
-
-		add("North", box);
-	}
-	public Integer getInTime() {
-		return inSpinner.getValue();
-	}
-	public Integer getOutTime() {
-		return outSpinner.getValue();
-	}
-	public void setInTime(int k) {
-		inSpinner.setValue(new Integer(k));
-	}
-	public void setOutTime(int k) {
-		outSpinner.setValue(new Integer(k));
-	}
-}
-
-class Work {
-	public String name;
-	public String task;
-	public String startDate;
-	public String duration;
-	public Date beginTime;
-
-	Work() {
-		beginTime = new Date();
-		startDate = beginTime.toString();
-	}
-	public void stopWork() {
-		Date stopTime = new Date();
-		long milliseconds = stopTime.getTime() - beginTime.getTime();
-		int minutes = new Long(milliseconds / 1000 / 60).intValue();
-		duration = String.valueOf(minutes);
-		name = project.getTranscriberName();
-		task = project.getTranscriberTask();
-	}
-}
-
-public void setMediaPlayer(SmartMoviePanel smp) {
-	if (smp == null)
-		player = null;
-	else if (player == null || !player.equals(smp)) {
-		player = smp;
-		player.setParentContainer(QD.this);
-		if (project != null) {
-			URL url = project.getMedia();
-			if (url != null) {
-				project.setMedia(null);
-				project.setMedia(url);
-			}
-		}
-	}
-}
-public SmartMoviePanel getMediaPlayer() {
-	return player;
-}
-
-class Project extends JPanel {
-	JTextField titleField, mediaField, transcriptField, nameField, taskField;
-	File transcript = null;
-	URL media = null;
-
-public String getTitle() {
-	return titleField.getText();
-}
-public void setTitle(String s) {
-	titleField.setText(s);
-}
-public String getTranscriberName() {
-	return nameField.getText();
-}
-public void setTranscriberName(String s) {
-	nameField.setText(s);
-}
-public String getTranscriberTask() {
-	return taskField.getText();
-}
-public void setTranscriberTask(String s) {
-	taskField.setText(s);
-}
-public File getTranscript() {
-	return transcript;
-}
-public void setTranscript(File f) { //doesn't actually load or save transcript, just changes changeTranscript label
-	transcript = f;
-	if (transcript == null)
-		transcriptField.setText("");
-	else
-		transcriptField.setText(transcript.getPath());
-}
-public URL getMedia() {
-	return media;
-}
-public void setMedia(URL url) {
-	if (player == null) {
-		JOptionPane.showConfirmDialog(QD.this, messages.getString("SupportedMediaError"), null, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-		return;
-	}
-	if (url == null) {
-		media = url;
-		mediaField.setText("");
-		if (player.getMediaURL() != null) {
-			try {
-				player.cmd_stop();
-				player.destroy();
-			} catch (SmartMoviePanelException smpe) {
-				smpe.printStackTrace();
-				ThdlDebug.noteIffyCode();
-			}
-			videoFrame.getContentPane().remove(player);
-			videoFrame.getContentPane().invalidate();
-			videoFrame.getContentPane().validate();
-			videoFrame.getContentPane().repaint();
-			videoFrame.setSize(new Dimension(QD.this.getSize().width / 2, 0));
-			jtp.remove(tcp);
-			tcp = null;
-			actionFrame.setLocation(0,0);
-			actionFrame.setSize(new Dimension(actionFrame.getSize().width, QD.this.getSize().height));
-		}
-	} else {
-			if (player.getMediaURL() != null) {
-				try {
-					player.cmd_stop();
-					player.destroy();
-				} catch (SmartMoviePanelException smpe) {
-					smpe.printStackTrace();
-					ThdlDebug.noteIffyCode();
-				}
-			}
-
-			try {
-				player.loadMovie(url);
-				media = url;
-				mediaField.setText(media.getPath());
+				});
 				startTimer();
+				
+				textFrame.setContentPane(p);
+				textFrame.setSize(textFrame.getSize().width, getSize().height);
+				textFrame.invalidate();
+				textFrame.validate();
+				textFrame.repaint();
+				
+				editor.addNodeEditListener(new XMLEditor.NodeEditListener() {
+					public void nodeEditPerformed(XMLEditor.NodeEditEvent ned) {
+						if (ned instanceof XMLEditor.StartEditEvent) { 
+							//stop the automatic highlighting and scrolling
+							//since it would interfere with editing
+							player.cancelAnnotationTimer();
+							player.setAutoScrolling(false);
+							if (tcp != null) tcp.setTimes(ned.getNode());
+						} else if (ned instanceof XMLEditor.EndEditEvent) {
+							//turn auto-scrolling and highlighting back on
+							XMLEditor.EndEditEvent eee = (XMLEditor.EndEditEvent)ned;
+							if (eee.hasBeenEdited()) {
+								view.refresh();
+								hp.refresh();
+							}
+							player.setAutoScrolling(true);
+						} else if (ned instanceof XMLEditor.CantEditEvent) {
+							//if this node can't be edited, maybe it can be played!
+							System.out.println(ned.getNode().toString());
+							Object node = ned.getNode();
+							if (node != null) {
+								editor.getTextPane().setCaretPosition(editor.getStartOffsetForNode(node));
+								playNode(node);
+								if (tcp != null) tcp.setTimes(node);
+							}
+						}
+					}
+				});
+				editor.setEditabilityTracker(true);
+	
+				transcriptFile = file;
+				return true;
+			} catch (JDOMException jdome) {
+				jdome.printStackTrace();
+				transcriptFile = null;
+				return false;
+			} catch (MalformedURLException murle) {
+				murle.printStackTrace();
+				transcriptFile = null;
+				return false;
 			} catch (SmartMoviePanelException smpe) {
 				smpe.printStackTrace();
-				ThdlDebug.noteIffyCode();
+				transcriptFile = null;
+				return false;
 			}
+	}
+
+	public void playNode(Object node) {
+		Object playableparent = XMLUtilities.findSingleNode(node, config.getProperty("qd.nearestplayableparent"));
+		if (playableparent == null) return;
+		String nodeid = String.valueOf(playableparent.hashCode());
+		if (player.cmd_isID(nodeid)) {
+			editor.getTextPane().transferFocus();
+			player.cmd_playS(nodeid);
+		}
+	}
+	public void setEditable(boolean bool) {
+	}
+
+    /* FIXME: needs better error handling */
+    /** Creates an object via reflection.
+     *  @return nonnull on success, null on error */
+	public static Object createObject(Constructor constructor, Object[] arguments) {
+		System.out.println ("Constructor: " + constructor.toString());
+		Object object = null;
+		try {
+			object = constructor.newInstance(arguments);
+			System.out.println ("Object: " + object.toString());
+			return object;
+		} catch (InstantiationException e) {
+			System.out.println(e);
+			ThdlDebug.noteIffyCode();
+		} catch (IllegalAccessException e) {
+			System.out.println(e);
+			ThdlDebug.noteIffyCode();
+		} catch (IllegalArgumentException e) {
+			System.out.println(e);
+			ThdlDebug.noteIffyCode();
+		} catch (InvocationTargetException e) {
+			System.out.println(e);
+			System.out.println(e.getTargetException());
+			ThdlDebug.noteIffyCode();
+		}
+		return object;
+	}
+	
+  	public static String convertTimesForSmartMoviePanel(String s) {
+		StringBuffer sBuff = new StringBuffer();
+		StringTokenizer sTok = new StringTokenizer(s, ",");
+		while (sTok.hasMoreTokens()) {
+			sBuff.append(String.valueOf(new Float(Float.parseFloat(sTok.nextToken()) * 1000).intValue()));
+			sBuff.append(',');
+		}
+		return sBuff.toString();
+	}
+
+	public void configure(String url) {
+		try {
+			SAXBuilder builder = new SAXBuilder();
+			Document cDoc = builder.build(new URL(url));
+			Element cRoot = cDoc.getRootElement();
+			Iterator it;
+			List tagOptions = cRoot.getChildren("tag");
+			if (tagOptions.size() > 0) {
+				tagInfo = new XMLTagInfo();
+				it = tagOptions.iterator();
+				while (it.hasNext()) {
+					Element e = (Element)it.next();
+					tagInfo.addTag(e.getAttributeValue("name"), new Boolean(e.getAttributeValue("visible")), 
+						new Boolean(e.getAttributeValue("visiblecontents")), e.getAttributeValue("displayas"));
+					List atts = e.getChildren("attribute");
+					Iterator it2 = atts.iterator();
+					while (it2.hasNext()) {
+						Element eAtt = (Element)it2.next();
+						tagInfo.addAttribute(eAtt.getAttributeValue("name"), e.getAttributeValue("name"),
+							new Boolean(eAtt.getAttributeValue("visible")), eAtt.getAttributeValue("displayas"));
+					}
+				}
+			}	
+			List parameters = cRoot.getChildren("parameter");
+			textConfig = new Properties();
+			config = new Properties();
+			it = parameters.iterator();
+			while (it.hasNext()) {
+				Element e = (Element)it.next();
+				String type = e.getAttributeValue("type");
+				if (type == null || type.equals("xpath"))
+					config.put(e.getAttributeValue("name"), e.getAttributeValue("val"));
+				else if (type.equals("text"))
+					textConfig.put(e.getAttributeValue("name"), e.getAttributeValue("val"));
+			}
+			rootElement = textConfig.getProperty("qd.root.element");
+			List navigations = cRoot.getChildren("navigation");
+			final String[] navigXPath = new String[navigations.size()];
+			configMenus = new JMenu[2];
+			configMenus[1] = new JMenu(messages.getString("View"));
+			it = navigations.iterator();
+			while (it.hasNext()) {
+				Element e = (Element)it.next();
+				final JMenuItem mItem = new JMenuItem(e.getAttributeValue("name"));
+				final String xpathExpression = e.getAttributeValue("val");
+				final String command = e.getAttributeValue("command");
+				mItem.setToolTipText(e.getChildTextNormalize("desc"));
+				mItem.setAccelerator(KeyStroke.getKeyStroke(e.getAttributeValue("keystroke")));
+				mItem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						if (xpathExpression != null) {
+							editor.fireEndEditEvent();
+							boolean keepSearching;
+							JTextPane t = editor.getTextPane();
+							int offset = t.getCaret().getMark();
+							Object context = editor.getNodeForOffset(offset);
+							System.out.println("xpath--"+String.valueOf(offset)+": "+context.toString());
+							do {
+								keepSearching = false;
+								if (context != null) {
+									Object moveTo = XMLUtilities.findSingleNode(context, xpathExpression);
+									int newStartOffset = editor.getStartOffsetForNode(moveTo);
+									if (newStartOffset > -1) {
+										t.requestFocus();
+										t.setCaretPosition(newStartOffset);
+									} else {
+										keepSearching = true; //search again
+										context = moveTo;
+									}
+								}
+							} while (keepSearching);
+							if (command.equals("playNode")) {
+								Object nearestParent = XMLUtilities.findSingleNode(editor.getNodeForOffset(t.getCaret().getMark()), config.getProperty("qd.nearestplayableparent"));
+								playNode(nearestParent);
+							}
+						}
+					}
+				});
+				configMenus[1].add(mItem);
+			}
+			configMenus[0] = new JMenu(messages.getString("Edit"));
+			if (editURL != null) try {
+				final Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(editURL));				
+				List transformations = cRoot.getChildren("transformation");
+				it = transformations.iterator();
+				while (it.hasNext()) {
+					Element e = (Element)it.next();
+					final JMenuItem mItem = new JMenuItem(e.getAttributeValue("name"));
+					final String tasks = e.getAttributeValue("tasks");
+					final String nodeSelector = e.getAttributeValue("node");
+					final DOMOutputter domOut = new DOMOutputter();
+					final DOMBuilder jdomBuild = new DOMBuilder();
+					mItem.setToolTipText(e.getChildTextNormalize("desc"));
+					mItem.setAccelerator(KeyStroke.getKeyStroke(e.getAttributeValue("keystroke")));
+					mItem.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							try {
+								editor.fireEndEditEvent();
+								editor.setEditabilityTracker(false);
+								int offset = editor.getTextPane().getCaret().getMark();
+								Object context = editor.getNodeForOffset(offset);
+								Object transformNode = XMLUtilities.findSingleNode(context, nodeSelector);
+								if (!(transformNode instanceof Element)) return;
+								Element jdomEl = (Element)transformNode;
+								Element clone = (Element)jdomEl.clone();
+								Element cloneOwner = new Element("CloneOwner");
+								cloneOwner.addContent(clone);
+								org.w3c.dom.Element transformElement = domOut.output((Element)cloneOwner);
+								//String refreshID = XMLUtilities.getTextForNode(XMLUtilities.findSingleNode(context, config.getProperty("qd.refreshid")));
+								Enumeration enum = config.propertyNames();
+								while (enum.hasMoreElements()) {
+									String key = (String)enum.nextElement();
+									String val = config.getProperty(key);
+									if (!key.startsWith("qd.")) {
+										Object obj = XMLUtilities.findSingleNode(context, val);
+										if (obj != null) {
+											String id = XMLUtilities.getTextForNode(obj);
+											transformer.setParameter(key, id);
+											System.out.println("key="+key+" & id="+id);
+										}
+									}
+								}
+								enum = textConfig.propertyNames();
+								while (enum.hasMoreElements()) {
+									String key = (String)enum.nextElement();
+									transformer.setParameter(key, textConfig.getProperty(key));
+								}
+								float inSeconds = tcp.getInTime().floatValue() / 1000; //convert from milliseconds
+								float outSeconds = tcp.getOutTime().floatValue() / 1000; //convert from milliseconds
+								if (outSeconds >= inSeconds) { //time parameters will not be passed if out precedes in
+									transformer.setParameter("qd.start", String.valueOf(inSeconds));
+									transformer.setParameter("qd.end", String.valueOf(outSeconds));
+									System.out.println("Start="+String.valueOf(inSeconds)+" & End="+String.valueOf(outSeconds));
+								} else {
+									transformer.setParameter("qd.start", "");
+									transformer.setParameter("qd.end", "");
+								}
+								transformer.setParameter("qd.task", tasks);
+								
+								JDOMResult jdomResult = new JDOMResult();
+								//DOMSource domSource = new DOMSource(docBuilder.newDocument());
+								//domSource.getNode().appendChild(transformElement);
+								//if (transformElement.getParentNode() == null)
+								//	System.out.println("null parent");
+								DOMSource domSource = new DOMSource(transformElement);
+								//if (domSource == null)
+								//	System.out.println("dom source is null");
+								transformer.transform(domSource, jdomResult);
+								Element transformedRoot = jdomResult.getDocument().getRootElement();
+								List replaceNodeWith = transformedRoot.getContent();
+								
+								XMLOutputter xmlOut = new XMLOutputter();
+								try {
+									Element ee = (Element)cloneOwner;
+									xmlOut.output(ee, System.out);
+									xmlOut.output(jdomResult.getDocument(), System.out);
+								} catch (IOException ioe) {}
+								
+								int start = editor.getStartOffsetForNode(transformNode);
+								int end = editor.getEndOffsetForNode(transformNode);
+								StyledDocument tDoc = editor.getTextPane().getStyledDocument();
+								AttributeSet attSet = tDoc.getCharacterElement(start).getAttributes();
+								float indent = StyleConstants.getLeftIndent(attSet);
+								try {
+									tDoc.insertString(end, "\n", null);
+									tDoc.remove(start, end-start);
+									//tDoc.insertString(PUT A CARRIAGE RETURN HERE... FOR TEXT)
+								} catch (BadLocationException ble) {
+									ble.printStackTrace();
+									return;
+								}
+								
+								int insertPos = start;
+								Element el = (Element)transformNode;
+								if (el.isRootElement()) {
+									Iterator replaceIter = replaceNodeWith.iterator();
+									while (replaceIter.hasNext()) {
+										Object o = replaceIter.next();
+										if (o instanceof Element) {
+											replaceIter.remove();
+											Document d = el.getDocument();
+											d.detachRootElement();
+											Element er = (Element)o;
+											d.setRootElement(er);
+											editor.removeNode(er);
+											insertPos = editor.renderElement(er, indent, insertPos);
+											break;
+										}
+									}
+								} else {
+									List parentContent = el.getParent().getContent(); //this is a live list
+									int elPos = parentContent.indexOf(el);
+									parentContent.remove(elPos);
+									editor.removeNode(transformNode);
+									Iterator replaceIter = replaceNodeWith.iterator();
+									while (replaceIter.hasNext()) {
+										Object next = replaceIter.next();
+										replaceIter.remove();
+										if (next instanceof Element) {
+											Element elem = (Element)next;
+											insertPos = editor.renderElement(elem, indent, insertPos);
+										} else if (next instanceof Text) {
+											Text text = (Text)next;
+											if (text.getTextTrim().length() > 0)
+												insertPos = editor.renderText(text, indent, insertPos);
+										}
+										parentContent.add(elPos, next);
+										elPos++;
+									}
+								}
+
+								try {
+									tDoc.remove(insertPos, 1); //removes extra dummy new line inserted above to protect indentation
+									String s = tDoc.getText(insertPos-1, 2);
+									if (s.charAt(1)=='\n') {
+										if (s.charAt(0)=='\n') {
+											tDoc.remove(insertPos-1, 1); //if two newlines, delete first
+											AttributeSet attSet2 = tDoc.getCharacterElement(insertPos-2).getAttributes();
+											tDoc.setCharacterAttributes(insertPos-1, 1, attSet2, false);
+										} else {
+											AttributeSet attSet2 = tDoc.getCharacterElement(insertPos-1).getAttributes();
+											tDoc.setCharacterAttributes(insertPos, 1, attSet2, false);
+										}
+										System.out.println("carriage return detected");
+									}
+								} catch (BadLocationException ble) {
+									ble.printStackTrace();
+									return;
+								}
+								
+								editor.fixOffsets();
+								view.refresh();
+								hp.refresh();
+								player.initForSavant(convertTimesForSmartMoviePanel(view.getT1s()), convertTimesForSmartMoviePanel(view.getT2s()), view.getIDs());
+								
+								transformer.clearParameters();
+								
+								editor.setEditabilityTracker(true);
+							} catch (TransformerException tre) {
+								tre.printStackTrace();
+							} catch (JDOMException jdome) {
+								jdome.printStackTrace();
+							}
+						}
+					});
+					configMenus[0].add(mItem);
+				}
+			} catch (TransformerException tre) {
+				tre.printStackTrace();
+			}
+		} catch (JDOMException jdome) {
+			jdome.printStackTrace();
+		} catch (MalformedURLException murle) {
+			murle.printStackTrace();
+		}
+	}
+	
+	public JMenu[] getConfiguredMenus() {
+		return configMenus;
 	}
 }
 
-public Project() {
-	JPanel p = new JPanel(new GridLayout(2,2)); //FIXME: is this used?
-	titleField = new JTextField();
-	int preferredHeight = titleField.getPreferredSize().height;
-	titleField.setPreferredSize(new Dimension(300, preferredHeight));
-	mediaField = new JTextField();
-	mediaField.setPreferredSize(new Dimension(300, preferredHeight));
-	mediaField.setEditable(false);
-	transcriptField = new JTextField();
-	transcriptField.setPreferredSize(new Dimension(300, preferredHeight));
-	transcriptField.setEditable(false);
-	nameField = new JTextField();
-	nameField.setPreferredSize(new Dimension(300, preferredHeight));
-	taskField = new JTextField();
-	taskField.setPreferredSize(new Dimension(300, preferredHeight));
+/*
+	private final static JskadKeyboardManager keybdMgr
+		= new JskadKeyboardManager(JskadKeyboardFactory.getAllAvailableJskadKeyboards());
+	protected JskadKeyboard activeKeyboard = null;
+	protected JskadKeyboard wylieKeyboard;
 
-	Box box = Box.createVerticalBox();
-	JPanel p1 = new JPanel();
-	p1.add(new JLabel(messages.getString("TitleColon")));
-	p1.add(titleField);
-	JPanel p1b = new JPanel(new BorderLayout());
-	p1b.add("East", p1);
-	p1b.setAlignmentX(Component.RIGHT_ALIGNMENT);
+import org.jdom.output.XMLOutputter;
+import org.jdom.transform.JDOMSource;
+import javax.xml.transform.stream.*;
+import javax.xml.transform.*;
 
-	JPanel p2 = new JPanel();
-	p2.add(new JLabel(messages.getString("MediaColon")));
-	p2.add(mediaField);
-	JPanel p2b = new JPanel(new BorderLayout());
-	p2b.add("East", p2);
-	p2b.setAlignmentX(Component.RIGHT_ALIGNMENT);
-
-	JPanel p3 = new JPanel();
-	p3.add(new JLabel(messages.getString("TranscriptColon")));
-	p3.add(transcriptField);
-	JPanel p3b = new JPanel(new BorderLayout());
-	p3b.add("East", p3);
-	p3b.setAlignmentX(Component.RIGHT_ALIGNMENT);
-
-	JPanel p4 = new JPanel();
-	p4.add(new JLabel(messages.getString("TranscriberName")));
-	p4.add(nameField);
-	JPanel p4b = new JPanel(new BorderLayout());
-	p4b.add("East", p4);
-	p4b.setAlignmentX(Component.RIGHT_ALIGNMENT);
-
-	JPanel p5 = new JPanel();
-	p5.add(new JLabel(messages.getString("TranscriberTask")));
-	p5.add(taskField);
-	JPanel p5b = new JPanel(new BorderLayout());
-	p5b.add("East", p5);
-	p5b.setAlignmentX(Component.RIGHT_ALIGNMENT);
-
-	box.add(p1b);
-	box.add(p2b);
-	box.add(p3b);
-	box.add(p4b);
-	box.add(p5b);
-
-	JPanel pBig = new JPanel(new BorderLayout());
-	pBig.add("West", box);
-
-	setLayout(new BorderLayout());
-	add("North", pBig);
-}
-}
 
 public void changeKeyboard(JskadKeyboard kbd) {
 	activeKeyboard = kbd;
@@ -749,763 +842,6 @@ public void changeKeyboard(JskadKeyboard kbd) {
 	activeKeyboard.activate(dp);
 	activeKeyboard.activate(sharedDP);
 	activeKeyboard.activate(sharedDP2);
-}
-
-public boolean saveTranscript() {
-	currentWork.stopWork();
-
-//FIXME this should be replaced once the relevant bug in TibetanDocument is fixed
-//FIXME: grep for URGENT and fix or Fix or FIX
-
-	DuffPane dp = (DuffPane)pane;
-
-	if (activeKeyboard != null) {
-		wylieKeyboard.activate(dp);
-		wylieKeyboard.activate(sharedDP);
-		wylieKeyboard.activate(sharedDP2);
-	}	
-
-	org.jdom.Element title = new org.jdom.Element("title");
-	title.setText(project.getTitle().trim());
-
-	org.jdom.Element media = new org.jdom.Element("mediafile");
-	if (project.getMedia() == null)
-		media.setText("");
-	else {
-		String tPath = project.getTranscript().getPath();
-		String mPath = project.getMedia().getFile();
-		if (mPath == null)
-			media.setText(project.getMedia().toString());
-		else {
-			if (tPath.substring(0, tPath.lastIndexOf(File.separatorChar)).equals(mPath.substring(0, mPath.lastIndexOf(File.separatorChar))))
-				media.setText("file:" + mPath.substring(mPath.lastIndexOf(File.separatorChar)+1));
-			else
-				media.setText(project.getMedia().toString());
-		}
-	}
-
-	org.jdom.Element speakers = new org.jdom.Element("speakers");
-	SpeakerData sd = (SpeakerData)speakerTable.getModel();
-	java.util.List allSpeakers = sd.getSpeakers();
-	Iterator spIter = allSpeakers.iterator();
-	while (spIter.hasNext()) {
-		Speaker sp = (Speaker)spIter.next();
-		org.jdom.Element speaker = new org.jdom.Element("speaker");
-		speaker.setAttribute("iconid", String.valueOf(sp.getIconID()));
-		speaker.setText(sp.getName());
-		speakers.addContent(speaker);
-	}
-
-	org.jdom.Element works = new org.jdom.Element("workhistory");
-	Iterator wkIter = work.iterator();
-	while (wkIter.hasNext()) {
-		Work wkUnit = (Work)wkIter.next();
-		org.jdom.Element wk = new org.jdom.Element("work");
-		org.jdom.Element name = new org.jdom.Element("name");
-		name.setText(wkUnit.name);
-		org.jdom.Element task = new org.jdom.Element("task");
-		task.setText(wkUnit.task);
-		org.jdom.Element date = new org.jdom.Element("start");
-		date.setText(wkUnit.startDate);
-		org.jdom.Element duration = new org.jdom.Element("duration");
-		duration.setText(wkUnit.duration);
-		wk.addContent(name);
-		wk.addContent(task);
-		wk.addContent(date);
-		wk.addContent(duration);
-		works.addContent(wk);
-	}
-
-	org.jdom.Element meta = new org.jdom.Element("metadata");
-	meta.addContent(title);
-	meta.addContent(media);
-	meta.addContent(speakers);
-	meta.addContent(works);
-
-	org.jdom.Element text = new org.jdom.Element("text");
-	TibetanDocument doc = (TibetanDocument)pane.getDocument();
-	int lastPoint = 0;
-	int k;
-	for (k=0; k<doc.getLength(); k++) {
-		AttributeSet attr = doc.getCharacterElement(k).getAttributes();
-		Component comp;
-		if (null != (comp = StyleConstants.getComponent(attr))) {
-			if (comp instanceof TimePoint) {
-				TimePoint t = (TimePoint)comp;
-				String wylie = doc.getWylie(lastPoint, k).trim();
-				if (!wylie.equals(""))
-					text.addContent(wylie);
-				org.jdom.Element time = new org.jdom.Element("time");
-				time.setAttribute("t", t.getTimeAsString());
-				text.addContent(time);
-				lastPoint = k+1;
-			}
-			else if (comp instanceof JLabel) {
-				String wylie = doc.getWylie(lastPoint, k);
-				if (!wylie.equals(""))
-					text.addContent(wylie);
-				JLabel l = (JLabel)comp;
-				Speaker sp = sd.getSpeakerForIcon(l.getIcon());
-				org.jdom.Element spkr = new org.jdom.Element("who");
-				if (sp == null)
-					spkr.setAttribute("id", "-1");
-				else
-					spkr.setAttribute("id", String.valueOf(sp.getIconID()));
-				text.addContent(spkr);
-				lastPoint = k+1;
-			}
-		}	
-	}
-	if (lastPoint < k) {
-		String wylie = doc.getWylie(lastPoint, k);
-		if (!wylie.equals(""))
-			text.addContent(wylie);
-	}
-
-	org.jdom.Element qd = new org.jdom.Element("qd");
-	qd.addContent(meta);
-	qd.addContent(text);
-
-	org.jdom.Document qdDoc = new org.jdom.Document(qd);
-	XMLOutputter xmlOut = new XMLOutputter();
-	try {
-		FileOutputStream fous = new FileOutputStream(project.getTranscript());
-		xmlOut.output(qdDoc, fous);
-		Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(QD.class.getResource("QDtoHTML.xsl").openStream()));
-		String f = project.getTranscript().getPath();
-		File htmlOut = new File(f.substring(0, f.lastIndexOf('.')) + ".html");
-		transformer.transform(new JDOMSource(qdDoc), new StreamResult(new FileOutputStream(htmlOut)));	
-
-//FIXME this should be replaced once the relevant bug in TibetanDocument is fixed
-//FIXME: grep for URGENT and fix or Fix or FIX
-	if (activeKeyboard != null) {
-		activeKeyboard.activate(dp);
-		activeKeyboard.activate(sharedDP);
-		activeKeyboard.activate(sharedDP2);
-	}
-
-
-		return true;
-	} catch (FileNotFoundException fnfe) {
-		fnfe.printStackTrace();
-		ThdlDebug.noteIffyCode();
-		return false;
-	} catch (IOException ioe) {
-		ioe.printStackTrace();
-		ThdlDebug.noteIffyCode();
-		return false;
-	} catch (TransformerException e) {
-		e.printStackTrace();
-		ThdlDebug.noteIffyCode();
-		return false;
-	}
-}
-
-protected void clearProject() {
-	if (project != null) {
-		project.setMedia(null); //do this first to properly dispose of media player
-		jtp.remove(project);
-		project = null;
-	}
-
-	if (tcp != null) {
-		tcp = null;
-		jtp.remove(tcp);
-	}
-
-	SpeakerData sd = (SpeakerData)speakerTable.getModel();
-	sd.removeAllSpeakers();
-	speakerTable.invalidate();
-	speakerTable.validate();
-	speakerTable.repaint();
-
-	jtp.invalidate();
-	jtp.validate();
-	jtp.repaint();
-
-	pane.setText("");	
-}
-
-public void newProject(URL mediaUrl) {
-	clearProject();
-	project = new Project();
-	jtp.addTab(messages.getString("ProjectDetails"), project);
-	project.setMedia(mediaUrl);
-}
-
-public boolean loadTranscript(File t) {
-	if (!t.exists())
-		return false;
-	SAXBuilder builder = new SAXBuilder();
-
-	try {
-
-		clearProject();
-		project = new Project();
-
-//FIXME this should be replaced once the relevant bug in TibetanDocument is fixed
-//FIXME: grep for URGENT and fix or Fix or FIX
-		DuffPane dp = (DuffPane)pane;
-
-	if (activeKeyboard != null) {
-		wylieKeyboard.activate(dp);
-		wylieKeyboard.activate(sharedDP);
-		wylieKeyboard.activate(sharedDP2);
-	}
-
-		org.jdom.Document doc = builder.build(t);
-		org.jdom.Element qd = doc.getRootElement();
-		org.jdom.Element meta = qd.getChild("metadata");
-		project.setTitle(meta.getChild("title").getText());
-
-		String mediaString = meta.getChild("mediafile").getText().trim();
-
-		if (!mediaString.equals("")) {
-			if (mediaString.startsWith("file:")) {
-				try {
-					String mPath = mediaString.substring(5);
-					String tPath = t.getPath().substring(0, t.getPath().lastIndexOf(File.separatorChar)+1);
-					if (new File(tPath + mPath).exists())
-						project.setMedia(new URL("file:" + tPath + mPath));
-					else if (new File(mPath).exists())
-						project.setMedia(new URL("file:" + mPath));
-					else
-						project.setMedia(null);
-				} catch (MalformedURLException murle) {
-					murle.printStackTrace();
-					ThdlDebug.noteIffyCode();
-				}
-			}
-		} else
-			project.setMedia(null);
-
-		work = new ArrayList();
-		java.util.List wkUnit = meta.getChild("workhistory").getChildren("work");
-		Iterator wkIter = wkUnit.iterator();
-		while (wkIter.hasNext()) {
-			org.jdom.Element wk = (org.jdom.Element)wkIter.next();
-			Work wk2 = new Work();
-			wk2.name = wk.getChild("name").getText();
-			wk2.task = wk.getChild("task").getText();
-			wk2.startDate = wk.getChild("start").getText();
-			wk2.duration = wk.getChild("duration").getText();
-			work.add(wk2);
-		}
-		project.setTranscriberName("");
-		project.setTranscriberTask("");
-
-		SpeakerData sd = (SpeakerData)speakerTable.getModel();
-		sd.removeAllSpeakers();
-		java.util.List newSpkrs = meta.getChild("speakers").getChildren("speaker");
-		Iterator spIter = newSpkrs.iterator();
-		while (spIter.hasNext()) {
-			org.jdom.Element speaker = (org.jdom.Element)spIter.next();
-			Speaker sp = new Speaker(Integer.parseInt(speaker.getAttributeValue("iconid")), speaker.getText());
-			sd.addSpeaker(sp);
-		}
-
-		org.jdom.Element text = qd.getChild("text");
-		TibetanDocument tDoc = (TibetanDocument)dp.getDocument();
-		if (tDoc.getLength() > 0)
-			dp.setText("");
-		java.util.List textContent = text.getContent();
-		ImageIcon[] icons = sd.getSpeakerIcons();
-		Iterator textIter = textContent.iterator();
-//		boolean wasLastComponent = true;
-		while (textIter.hasNext()) {
-			Object nextContent = textIter.next();
-			if (nextContent instanceof org.jdom.Text) {
-				String wylie = ((org.jdom.Text)nextContent).getText();
-				dp.toTibetanMachineWeb(wylie, tDoc.getLength());
-//				wasLastComponent = false;
-			}
-			else if (nextContent instanceof org.jdom.Element) {
-				org.jdom.Element e = (org.jdom.Element)nextContent;
-				dp.setCaretPosition(tDoc.getLength());
-				if (e.getName().equals("time")) {
-/*					if (!wasLastComponent)
-						try {
-							tDoc.insertString(tDoc.getLength(), "\n", null);
-						} catch (BadLocationException ble) {
-							ble.printStackTrace();
-							ThdlDebug.noteIffyCode();
-						}
-*/
-					new TimePoint(dp, clockIcon, Integer.valueOf(e.getAttributeValue("t")));
-//					wasLastComponent = true;
-				}
-				else if (e.getName().equals("who")) {
-/*					if (!wasLastComponent)
-						try {
-							tDoc.insertString(tDoc.getLength(), "\n", null);
-						} catch (BadLocationException ble) {
-							ble.printStackTrace();
-							ThdlDebug.noteIffyCode();
-						}
-*/
-					dp.insertComponent(new JLabel("  ", icons[Integer.parseInt(e.getAttributeValue("id"))], SwingConstants.LEFT));
-//					wasLastComponent = true;
-				}
-			}
-		}
-		currentWork = new Work();
-		work.add(currentWork);
-
-//FIXME this should be replaced once the relevant bug in TibetanDocument is fixed
-//FIXME: grep for URGENT and fix or Fix or FIX
-	if (activeKeyboard != null) {
-		activeKeyboard.activate(dp);
-		activeKeyboard.activate(sharedDP);
-		activeKeyboard.activate(sharedDP2);
-	}
-
-project.setTranscript(t);
-jtp.addTab(messages.getString("ProjectDetails"), project);
-		return true;
-	} catch (JDOMException jdome) {
-		jdome.printStackTrace();
-		ThdlDebug.noteIffyCode();
-		return false;
-	}
-}
-
-class SpeakerManager extends JPanel {
-	JPanel top;
-	boolean isEditable;
-
-//public JPanel getSpeakerManager(final SpeakerTable sTable) {
-
-SpeakerManager(final SpeakerTable sTable) {
-
-	setLayout(new BorderLayout());
-
-	JButton addButton = new JButton(messages.getString("Add"));
-	addButton.addActionListener(new ThdlActionListener() {
-		public void theRealActionPerformed(ActionEvent e) {
-			SpeakerData sd = (SpeakerData)sTable.getModel();
-			JPanel p0 = new JPanel(new GridLayout(0,1));
-			JPanel p1 = new JPanel();
-			p1.add(new JLabel(messages.getString("FaceColon") + " "));
-			JComboBox combo = new JComboBox(sd.getSpeakerIcons());
-			p1.add(combo);
-			JPanel p2 = new JPanel();
-			p2.add(new JLabel(messages.getString("NameColon") + " "));
-			sharedDP.setText("");
-			sharedDP.setPreferredSize(new Dimension(250,50));
-			p2.add(sharedDP);
-			p0.add(p1);
-			p0.add(p2);
-			if (JOptionPane.showConfirmDialog(SpeakerManager.this, p0, messages.getString("EnterNewSpeakerInfo"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null) == JOptionPane.OK_OPTION) {
-				TibetanDocument doc = (TibetanDocument)sharedDP.getDocument();
-				sd.addSpeaker(new Speaker(combo.getSelectedIndex(), doc.getWylie()));
-			}
-		}
-	});
-	JButton editButton = new JButton(messages.getString("Edit"));
-	editButton.addActionListener(new ThdlActionListener() {
-		public void theRealActionPerformed(ActionEvent e) {
-			int row = sTable.getSelectedRow();
-			if (row == -1)
-				return;
-			SpeakerData sd = (SpeakerData)sTable.getModel();
-			Speaker sp = sd.getSpeakerAt(row);
-			JPanel p0 = new JPanel(new GridLayout(0,1));
-			JPanel p1 = new JPanel();
-			p1.add(new JLabel(messages.getString("FaceColon") + " "));
-			JComboBox combo = new JComboBox(sd.getSpeakerIcons());
-			combo.setSelectedIndex(sp.getIconID());
-			ImageIcon[] icons = sd.getSpeakerIcons();
-			ImageIcon oldIcon = icons[sp.getIconID()];
-			p1.add(combo);
-			JPanel p2 = new JPanel();
-			p2.add(new JLabel(messages.getString("NameColon") + " "));
-			sharedDP.setText("");
-			sharedDP.setPreferredSize(new Dimension(250,50));
-			sharedDP.toTibetanMachineWeb(sp.getName(), 0);
-			p2.add(sharedDP);
-			p0.add(p1);
-			p0.add(p2);
-			if (JOptionPane.showConfirmDialog(SpeakerManager.this, p0, messages.getString("EditSpeakerInfo"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null) == JOptionPane.OK_OPTION) {
-				sd.setValueAt(new Integer(combo.getSelectedIndex()), row, 0);
-				TibetanDocument doc = (TibetanDocument)sharedDP.getDocument();
-				sd.setValueAt(doc.getWylie(), row, 1);
-				if (!oldIcon.equals(icons[combo.getSelectedIndex()])) {
-					DefaultStyledDocument doc2 = (DefaultStyledDocument)pane.getDocument();
-					int k = pane.getCaretPosition();
-					for (int i=0; i<doc2.getLength(); i++) {
-						AttributeSet attr = doc2.getCharacterElement(i).getAttributes();
-						Component comp;
-						if (null != (comp = StyleConstants.getComponent(attr))) {
-							if (comp instanceof JLabel) {
-								JLabel l = (JLabel)comp;
-								if (oldIcon.equals(l.getIcon())) {
-									try {
-										doc2.remove(i,1);
-									} catch (BadLocationException ble) {
-										ble.printStackTrace();
-										ThdlDebug.noteIffyCode();
-									}
-									pane.setCaretPosition(i);
-									pane.insertComponent(new JLabel("  ", icons[combo.getSelectedIndex()], SwingConstants.LEFT));
-								}
-							}
-						}
-					}
-					pane.setCaretPosition(k);
-				}
-			}
-		}
-	});
-	JButton deleteButton = new JButton(messages.getString("Remove"));
-	deleteButton.addActionListener(new ThdlActionListener() {
-		public void theRealActionPerformed(ActionEvent e) {
-			int row = sTable.getSelectedRow();
-			if (row > -1 && JOptionPane.showConfirmDialog(SpeakerManager.this, messages.getString("SureDeleteSpeaker"), messages.getString("Warning"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
-				SpeakerData sd = (SpeakerData)sTable.getModel();
-				Speaker sp = sd.getSpeakerAt(row);
-				ImageIcon[] icons = sd.getSpeakerIcons();
-				DefaultStyledDocument doc = (DefaultStyledDocument)pane.getDocument();
-				int k2 = doc.getLength();
-				for (int i=0; i<k2; i++) {
-					AttributeSet attr = doc.getCharacterElement(i).getAttributes();
-					Component comp;
-					if (null != (comp = StyleConstants.getComponent(attr))) {
-						if (comp instanceof JLabel) {
-							JLabel l = (JLabel)comp;
-							if (icons[sp.getIconID()].equals(l.getIcon())) {
-								try {
-									doc.remove(i,1);
-									k2--;
-								} catch (BadLocationException ble) {
-									ble.printStackTrace();
-									ThdlDebug.noteIffyCode();
-								}
-							}
-						}
-					}
-				}
-				pane.setCaretPosition(0);
-				sd.removeSpeaker(row);
-			}
-		}
-	});
-	top = new JPanel();
-	top.add(addButton);
-	top.add(editButton);
-	top.add(deleteButton);
-	add("North", top);
-	add("Center", new JScrollPane(sTable));
-	isEditable = true;
-}
-
-public void setEditable(boolean bool) {
-	if (bool) {
-		if (!isEditable) {
-			add("North", top);
-			isEditable = true;
-			invalidate();
-			validate();
-			repaint();
-		}
-	} else {
-		if (isEditable) {
-			remove(top);
-			isEditable = false;
-			invalidate();
-			validate();
-			repaint();
-		}
-	}
-}
-
-}
-
-class Speaker {
-	private String name;
-	private int iconID;
-
-	public Speaker(int iconID, String name) {
-		setIconID(iconID);
-		setName(name);
-	}
-	public String toString() {
-		return name;
-	}
-	public String getName() {
-		return name;
-	}
-	public int getIconID() {
-		return iconID;
-	}
-	public void setName(String newName) {
-		name = new String(newName);
-	}
-	public void setIconID(int newID) {
-		iconID = newID;
-	}
-}
-
-class SpeakerData extends AbstractTableModel
-{
-	java.util.List speakers = new ArrayList();
-	ImageIcon[] spIcon = new ImageIcon[13];
-	Map iconMap = new HashMap();
-
-	public SpeakerData(Speaker[] speaker, Keymap keymap)
-	{
-		spIcon[0] = new ImageIcon(QD.class.getResource("face01a.jpg"));
-		spIcon[1] = new ImageIcon(QD.class.getResource("face02a.jpg"));
-		spIcon[2] = new ImageIcon(QD.class.getResource("face03a.jpg"));
-		spIcon[3] = new ImageIcon(QD.class.getResource("face04a.jpg"));
-		spIcon[4] = new ImageIcon(QD.class.getResource("face05a.jpg"));
-		spIcon[5] = new ImageIcon(QD.class.getResource("face06a.jpg"));
-		spIcon[6] = new ImageIcon(QD.class.getResource("face07a.jpg"));
-		spIcon[7] = new ImageIcon(QD.class.getResource("face08a.jpg"));
-		spIcon[8] = new ImageIcon(QD.class.getResource("face09a.jpg"));
-		spIcon[9] = new ImageIcon(QD.class.getResource("face10a.jpg"));
-		spIcon[10] = new ImageIcon(QD.class.getResource("face11a.jpg"));
-		spIcon[11] = new ImageIcon(QD.class.getResource("face12a.jpg"));
-		spIcon[12] = new ImageIcon(QD.class.getResource("face13a.jpg"));
-
-		for (int k=0; k<speaker.length; k++)
-			addSpeaker(speaker[k]);
-
-		Action insertSpeakerAction = new ThdlAbstractAction("insertSpeaker", null) {
-			public void theRealActionPerformed(ActionEvent e) {
-				if (speakers.size() == 0)
-					return;
-				JTextPane tp = (JTextPane)e.getSource();
-				int pos = tp.getCaretPosition();
-				if (pos > 0) {
-					DefaultStyledDocument doc = (DefaultStyledDocument)tp.getDocument();
-					AttributeSet attr = doc.getCharacterElement(pos-1).getAttributes();
-					Component comp;
-					if (null != (comp = StyleConstants.getComponent(attr)))
-						if (comp instanceof JLabel) {
-							JLabel l = (JLabel)comp;
-							ImageIcon ic = (ImageIcon)l.getIcon();
-							if (iconMap.containsKey(ic)) {
-								Speaker sp = (Speaker)iconMap.get(ic);
-								int k = speakers.indexOf(sp) + 1;
-								if (k == speakers.size())
-									k=0;
-								try {
-									tp.getDocument().remove(pos-1, 1);
-									sp = (Speaker)speakers.get(k);
-									tp.insertComponent(new JLabel("  ", spIcon[sp.getIconID()], SwingConstants.LEFT));
-									return;
-								} catch (BadLocationException ble) {
-									ble.printStackTrace();
-									ThdlDebug.noteIffyCode();
-								}
-							}
-						}
-				}
-				Speaker sp = (Speaker)speakers.get(0);
-				tp.insertComponent(new JLabel("  ", spIcon[sp.getIconID()], SwingConstants.LEFT));
-			}
-		};
-		keymap.addActionForKeyStroke(insertSpeakerKey, insertSpeakerAction);
-	}
-	public boolean addSpeaker(Speaker speaker) {
-		if (iconMap.containsKey(spIcon[speaker.getIconID()]))
-			return false;
-		else {
-			iconMap.put(spIcon[speaker.getIconID()], speaker);
-			speakers.add(speaker);
-			fireTableRowsInserted(speakers.size()-1, speakers.size()-1);
-			return true;
-		}
-	}
-	public Speaker getSpeakerAt(int row) {
-		if (row > -1 && row < speakers.size())
-			return ((Speaker)speakers.get(row));
-		return null;
-	}
-	public java.util.List getSpeakers() {
-		return speakers;
-	}
-	public ImageIcon[] getSpeakerIcons() {
-		return spIcon;
-	}
-	public Speaker getSpeakerForIcon(Icon icon) {
-		if (iconMap.containsKey(icon))
-			return (Speaker)iconMap.get(icon);
-		else
-			return null;
-	}
-	public void removeAllSpeakers() {
-		speakers.clear();
-		iconMap.clear();		
-	}
-	public void removeSpeaker(int row)
-	{
-		if (row > -1 && row < speakers.size())
-		{
-			Speaker sp = getSpeakerAt(row);
-			iconMap.remove(spIcon[sp.getIconID()]);
-			speakers.remove(row);
-			fireTableRowsDeleted(row,row);
-		}
-	}
-	public int getRowCount()
-	{
-		return speakers.size();
-	}	
-	public int getColumnCount()
-	{
-		return 2;
-	}
-	public Class getColumnClass(int c)
-	{
-		return getValueAt(0, c).getClass();
-	}
-	public Object getValueAt(int row, int column)
-	{
-		Speaker sp = (Speaker)speakers.get(row);
-		if (column == 0)
-			return spIcon[sp.getIconID()];
-		try { //otherwise column 1, the speaker name
-			return TibTextUtils.getTibetanMachineWeb(sp.getName().trim());
-		} catch (InvalidWylieException iwe) {
-			iwe.printStackTrace();
-			ThdlDebug.noteIffyCode();
-			return null;
-		}
-	}
-	public void setValueAt(Object object, int row, int column) {
-		Speaker sp = (Speaker)speakers.get(row);
-		if (column == 0 && object instanceof Integer) {
-			Integer bigInt = (Integer)object;
-			int k = bigInt.intValue();
-			if (!iconMap.containsKey(spIcon[k])) {
-				iconMap.remove(spIcon[sp.getIconID()]);
-				iconMap.put(spIcon[k], sp);
-				sp.setIconID(k);
-			}
-		} else if (object instanceof String) {
-			String wylie = (String)object;
-			sp.setName(wylie);
-		}
-		fireTableCellUpdated(row, column);
-	}
-}
-
-class SpeakerTable extends JTable
-{
-	private TableCellRenderer duffRenderer, normalRenderer;
-	private SpeakerData speakerData;
-
-	public SpeakerTable(SpeakerData speakerData)
-	{	
-		this.speakerData = speakerData;
-		this.setModel(this.speakerData);
-		this.setRowHeight(55);
-		this.setColumnSelectionAllowed(false);
-		this.setRowSelectionAllowed(true);
-		
-		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		TableColumnModel tcm = this.getColumnModel();
-		duffRenderer = new DuffCellRenderer();
-
-		TableColumn tc = tcm.getColumn(0);
-		tc.setResizable(false);
-		tc.setMaxWidth(60);
-		tc.setMinWidth(60);
-		tc.setHeaderValue(messages.getString("Face"));
-
-		tc = tcm.getColumn(1);
-		tc.setCellRenderer(duffRenderer);
-		tc.setHeaderValue(messages.getString("Name"));
-	}
-
-}
-
-public JMenuBar getTextMenuBar() {
-	JMenu modeMenu = new JMenu(messages.getString("Mode"));
-	JMenuItem editMenuItem = new JMenuItem(messages.getString("Edit"));
-	JMenuItem viewMenuItem = new JMenuItem(messages.getString("ReadOnly"));
-	editMenuItem.setActionCommand("edit");
-	viewMenuItem.setActionCommand("view");
-	RadioListener l = new RadioListener();
-	editMenuItem.addActionListener(l);
-	viewMenuItem.addActionListener(l);
-	modeMenu.add(editMenuItem);
-	modeMenu.add(viewMenuItem);
-
-	JMenu viewMenu = new JMenu(messages.getString("View"));
-	JMenuItem previousItem = new JMenuItem(messages.getString("Previous"));
-	JMenuItem currentItem = new JMenuItem(messages.getString("Current"));
-	JMenuItem nextItem = new JMenuItem(messages.getString("Next"));
-	JMenuItem suppressTimesItem = new JMenuItem(messages.getString("SuppressTimes"));
-	viewMenu.add(previousItem);
-	viewMenu.add(currentItem);
-	viewMenu.add(nextItem);
-	viewMenu.addSeparator();
-	viewMenu.add(suppressTimesItem);
-
-	searchMenu = new JMenu(messages.getString("Search"));
-	JMenuItem findTextItem = new JMenuItem(messages.getString("FindText"));
-	findTextItem.setAccelerator(findKey);
-	findTextItem.addActionListener(new ThdlActionListener() {
-		public void theRealActionPerformed(ActionEvent e) {
-			findText();
-		}
-	});
-
-	replaceTextItem = new JMenuItem(messages.getString("ReplaceText"));
-	replaceTextItem.setAccelerator(replaceKey);
-	replaceTextItem.addActionListener(new ThdlActionListener() {
-		public void theRealActionPerformed(ActionEvent e) {
-			replaceText();
-		}
-	});
-
-	JMenuItem findspeakerItem = new JMenuItem(messages.getString("FindSpeaker"));
-	JMenuItem findtimeItem = new JMenuItem(messages.getString("FindTime"));
-	searchMenu.add(findTextItem);
-	searchMenu.add(replaceTextItem);
-	searchMenu.addSeparator();
-	searchMenu.add(findspeakerItem);
-	searchMenu.add(findtimeItem);
-
-/* this is a bit odd.
-   since all the following keys are already associated with
-   actions via the keymap, these menu items don't need to actually do anything.
-   however, i have added the accelerators so that the keyboard shortcuts
-   are shown next to the menu items. */
-
-	editMenu = new JMenu(messages.getString("Edit"));
-	JMenuItem cutItem = new JMenuItem(messages.getString("Cut"));
-	cutItem.setAccelerator(cutKey);
-	JMenuItem copyItem = new JMenuItem(messages.getString("Copy"));
-	copyItem.setAccelerator(copyKey);
-	JMenuItem pasteItem = new JMenuItem(messages.getString("Paste"));
-	pasteItem.setAccelerator(pasteKey);
-	JMenuItem selectallItem = new JMenuItem(messages.getString("SelectAll"));
-	selectallItem.setAccelerator(selectAllKey);
-	JMenuItem insertspeakerItem = new JMenuItem(messages.getString("InsertSpeaker"));
-	insertspeakerItem.setAccelerator(insertSpeakerKey);
-	JMenuItem insertonetimeItem = new JMenuItem(messages.getString("InsertOneTime"));
-	insertonetimeItem.setAccelerator(insert1TimeKey);
-	JMenuItem inserttwotimesItem = new JMenuItem(messages.getString("InsertTwoTimes"));	
-	inserttwotimesItem.setAccelerator(insert2TimesKey);
-
-	editMenu.add(cutItem);
-	editMenu.add(copyItem);
-	editMenu.add(pasteItem);
-	editMenu.add(selectallItem);
-	editMenu.addSeparator();
-	editMenu.add(insertspeakerItem);
-	editMenu.add(insertonetimeItem);
-	editMenu.add(inserttwotimesItem);
-
-	JMenuBar bar = new JMenuBar();
-	bar.add(modeMenu);
-	bar.add(viewMenu);
-	bar.add(searchMenu);
-	bar.add(editMenu);
-	return bar;
 }
 
 public int findNextText(int startPos, StyledDocument sourceDoc, StyledDocument findDoc) {
@@ -1684,86 +1020,4 @@ public void replaceText() {
 
 	}
 }
-
-class RadioListener extends ThdlActionListener {
-	public void theRealActionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("edit")) {
-			//make the text pane editable
-			pane.setEditable(true);
-
-			//reinstate the edit menu to the pane
-			textFrame.getJMenuBar().add(editMenu);
-			searchMenu.add(replaceTextItem, 1);
-			textFrame.invalidate();
-			textFrame.validate();
-			textFrame.repaint();
-
-			//add speaker-edit features
-			spm.setEditable(true);
-
-			//add the time-coding tab
-			if (tcp != null)
-				jtp.addTab(messages.getString("TimeCoding"), tcp);
-
-			//make the project details editable
-			if (project != null)
-//				project.setEditable(true);
-
-				jtp.addTab(messages.getString("ProjectDetails"), project);
-		}
-		else if (e.getActionCommand().equals("view")) {
-			//make the text pane non-editable
-			pane.setEditable(false);
-
-			//remove the edit menu from the pane
-			textFrame.getJMenuBar().remove(editMenu);
-			searchMenu.remove(replaceTextItem);
-			textFrame.invalidate();
-			textFrame.validate();
-			textFrame.repaint();
-
-			//remove speaker-edit features
-			spm.setEditable(false);
-
-			//remove the time-coding tab
-			if (tcp != null)
-				jtp.remove(tcp);
-
-			//make the project tab non-editable
-			if (project != null)
-				jtp.remove(project);
-//				project.setEditable(false);
-		}
-	}
-}
-
-    /* FIXME: needs better error handling */
-    /** Creates an object via reflection.
-     *  @return nonnull on success, null on error */
-    public static Object createObject(Constructor constructor,
-                                      Object[] arguments) {
-
-      System.out.println ("Constructor: " + constructor.toString());
-      Object object = null;
-
-      try {
-        object = constructor.newInstance(arguments);
-        System.out.println ("Object: " + object.toString());
-        return object;
-      } catch (InstantiationException e) {
-          System.out.println(e);
-          ThdlDebug.noteIffyCode();
-      } catch (IllegalAccessException e) {
-          System.out.println(e);
-          ThdlDebug.noteIffyCode();
-      } catch (IllegalArgumentException e) {
-          System.out.println(e);
-          ThdlDebug.noteIffyCode();
-      } catch (InvocationTargetException e) {
-          System.out.println(e);
-          System.out.println(e.getTargetException());
-          ThdlDebug.noteIffyCode();
-      }
-      return object;
-   }
-}
+*/
