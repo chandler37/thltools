@@ -24,6 +24,7 @@ import javax.swing.*;
 import javax.swing.filechooser.*;
 
 import org.thdl.util.ThdlDebug;
+import org.thdl.util.ThdlOptions;
 
 /**
  * The SavantFileView "sees through" a <code>*.savant</code> file and
@@ -40,7 +41,10 @@ import org.thdl.util.ThdlDebug;
 public class SavantFileView extends FileView {
     /** When opening a file, this is the only extension Savant cares
         about.  This is case-insensitive. */
-	public final static String dotSavant = ".savant";
+	public final static String getDotSavant() {
+        return ThdlOptions.getStringOption("thdl.savant.file.extension",
+                                           ".savant");
+    }
 
 	/** This loads <code>*.savant</code> files as properties files and
         returns an associated TITLE attribute.  For any other type of
@@ -56,8 +60,8 @@ public class SavantFileView extends FileView {
            unresponsive.  In addition, you'll cause the floppy drive
            to spin up every time you refresh or cd in the file
            chooser. */
-		if (!Boolean.getBoolean("THDL_TREAT_ALL_FILES_AS_DOT_SAVANT_FILES_REGARDLESS_OF_EXTENSION")) { /* FIXME */
-			if (!f.getName().toLowerCase().endsWith(dotSavant))
+		if (!ThdlOptions.getBooleanOption("thdl.treat.all.files.as.dot.savant.files.regardless.of.extension")) { /* FIXME */
+			if (!f.getName().toLowerCase().endsWith(getDotSavant()))
 				return null;
 		}
 		Properties p = new Properties();

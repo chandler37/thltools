@@ -97,7 +97,7 @@ public class SavantShell extends JFrame
 			if (f.isDirectory()) {
 				return true;
 			}
-			return f.getName().toLowerCase().endsWith(SavantFileView.dotSavant);
+			return f.getName().toLowerCase().endsWith(SavantFileView.getDotSavant());
 		}
     
 		//the description of this filter

@@ -33,6 +33,7 @@ import java.io.*;
 import javax.swing.text.rtf.*;
 
 import org.thdl.util.ThdlDebug;
+import org.thdl.util.ThdlOptions;
 import org.thdl.util.StatusBar;
 
 /**
@@ -284,6 +285,20 @@ public RTFEditorKit rtfEd = null;
 	}
 */
 
+    private static int defaultTibFontSize() {
+        // FIXME: at program exit, or when the user selects "Save
+        // preferences", or somehow, save the value the users chooses:
+        return ThdlOptions.getIntegerOption("thdl.default.tibetan.font.size",
+                                            36);
+    }
+
+    private static int defaultRomanFontSize() {
+        // FIXME: at program exit, or when the user selects "Save
+        // preferences", or somehow, save the value the users chooses:
+        return ThdlOptions.getIntegerOption("thdl.default.roman.font.size",
+                                            14);
+    }
+
 /**
 * This method sets up the editor, assigns fonts and point sizes,
 * sets the document, the caret, and adds key and focus listeners.
@@ -298,15 +313,16 @@ public RTFEditorKit rtfEd = null;
 		styleContext = new StyleContext();
 
 		doc = new TibetanDocument(styleContext);
-		doc.setTibetanFontSize(36);
+		doc.setTibetanFontSize(defaultTibFontSize());
 		setDocument(doc);
 
 		Style defaultStyle = styleContext.getStyle(StyleContext.DEFAULT_STYLE);
 		StyleConstants.setFontFamily(defaultStyle, "TibetanMachineWeb");
-		StyleConstants.setFontSize(defaultStyle, 36);
+		StyleConstants.setFontSize(defaultStyle, defaultTibFontSize()); // FIXME make pref
 
-		romanFontFamily = "Serif";
-		romanFontSize = 14;
+		romanFontFamily = ThdlOptions.getStringOption("thdl.default.roman.font.face",
+                                                      "Serif"); // FIXME write out this preference.
+		romanFontSize = defaultRomanFontSize(); // FIXME make pref
 		setRomanAttributeSet(romanFontFamily, romanFontSize);
 
 //		newDocument();
@@ -403,12 +419,12 @@ public RTFEditorKit rtfEd = null;
 		styleContext = new StyleContext();
 
 		doc = new TibetanDocument(styleContext);
-		doc.setTibetanFontSize(36);
+		doc.setTibetanFontSize(defaultTibFontSize());
 		setDocument(doc);
 
 		Style defaultStyle = styleContext.getStyle(StyleContext.DEFAULT_STYLE);
 		StyleConstants.setFontFamily(defaultStyle, "TibetanMachineWeb");
-		StyleConstants.setFontSize(defaultStyle, 36);
+		StyleConstants.setFontSize(defaultStyle, defaultTibFontSize());
 	}
 
 /**
@@ -1006,9 +1022,9 @@ public void paste(int offset) {
 				e.consume();
 				initKeyboard();
 				if (isTibetan)
-					doc.appendDuff(caret.getDot(),"\n",TibetanMachineWeb.getAttributeSet(1));
+					doc.appendDuff(caret.getDot(),"\n",TibetanMachineWeb.getAttributeSet(1)); // FIXME does this work on all platforms?
 				else
-					append("\n", romanAttributeSet);
+					append("\n", romanAttributeSet); // FIXME does this work on all platforms?
 				break;
 		}
 	}
@@ -1455,10 +1471,10 @@ public void paste(int offset) {
 */
 	public void toTibetanMachineWeb(String wylie, int offset) {
 		try {
-			StringTokenizer sTok = new StringTokenizer(wylie, "\n\t", true);
+			StringTokenizer sTok = new StringTokenizer(wylie, "\n\t", true); // FIXME does this work on all platforms?
 			while (sTok.hasMoreTokens()) {
 				String next = sTok.nextToken();
-				if (next.equals("\n") || next.equals("\t")) {
+				if (next.equals("\n") || next.equals("\t")) { // FIXME does this work on all platforms?
 					try {
 						doc.insertString(offset, next, null);
 						offset++;

@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.File;
 
 import org.thdl.util.TeeStream;
+import org.thdl.util.ThdlOptions;
 
 /**
  * This uninstantiable class provides assertions and the like in a
@@ -64,7 +65,7 @@ public class ThdlDebug {
             throw new ThdlLazyException(new Error(((msg == null)
                                                    ? "THDL Tools sanity check: "
                                                    : msg)
-                                                  + "An assertion failed.  This means that there is a bug in this software."
+                                                  + "\nAn assertion failed.  This means that there is a bug in this software."
                                                   + contactMsg));
         }
     }
@@ -73,15 +74,15 @@ public class ThdlDebug {
      *  out.  For example, if you have to catch an IOException, but
      *  you're fairly certain that it'll never be thrown, call this
      *  function if it is indeed thrown.  Developers can set the
-     *  THDL_DIE_EAGERLY property to true (using <code>'java
-     *  -DTHDL_DIE_ON_IFFY_CODE=true'</code>) in order to test the
-     *  code's robustness.
+     *  thdl.debug property to true (using <code>'java
+     *  -Dthdl.debug=true'</code> or the properties files) in order to
+     *  test the code's robustness.
      *
      *  Throws a THDL-specific exception so that you can catch these
      *  specially in case you want to ignore them.
      *
-     *  @throws ThdlLazyException if the THDL_DIE_ON_IFFY_CODE system
-     *  property is set to "true" */
+     *  @throws ThdlLazyException if the thdl.debug option is set to
+     *  "true" */
     public static void noteIffyCode()
         throws ThdlLazyException
     {
@@ -89,8 +90,8 @@ public class ThdlDebug {
 		/* FIXME: find all calls to this function and rethink or shore
            up the calling code. */
 
-        if (Boolean.getBoolean("THDL_DIE_ON_IFFY_CODE"))
-            throw new ThdlLazyException(new Error("You've reached some iffy code, some code that's not well thought-out.  Because you invoked the Java runtime environment with the property THDL_DIE_ON_IFFY_CODE set to true (developers: use 'ant -Dthdl.die.on.iffy=false' to prevent this), the program is now aborting."));
+        if (ThdlOptions.getBooleanOption("thdl.debug"))
+            throw new ThdlLazyException(new Error("You've reached some iffy code, some code that's not well thought-out.  Because you invoked the Java runtime environment with the property thdl.debug set to true (developers: use 'ant -Dthdl.debug=false' to prevent this), or because you set the thdl.debug preference to true in one of the preferences files, the program is now aborting."));
     }
 
 	/** Exits the program with a message that the CLASSPATH is not set
@@ -101,7 +102,7 @@ public class ThdlDebug {
 
         /* FIXME */
         System.err.println("Note that Savant and QuillDriver CANNOT be invoked via the");
-        System.err.println("'java -jar Savant-xyz.jar' option, because that silently ignores");
+        System.err.println("'java -jar Savant-xyz.jar' option, because that silently ignores"); // FIXME yes you can when Java Web Start is up and running
         System.err.println("the CLASSPATH.  This means that double-clicking them won't work");
         System.err.println("either, because we don't set the JARs' manifest files to contain");
         System.err.println("Class-path attributes.  See installation instructions."); /* FIXME: we don't HAVE installation instructions, do we? */
@@ -109,7 +110,7 @@ public class ThdlDebug {
 		System.err.println("Details: Missing class: "
                            + ((error == null)
                               ? "unknown!" : error.getMessage()));
-		if (Boolean.getBoolean("THDL_DEBUG")) {
+		if (ThdlOptions.getBooleanOption("thdl.debug")) {
 			System.err.println("Details: Stack trace: "
                                + ((error == null)
                                   ? "unknown!" : error.getMessage()));
@@ -124,18 +125,22 @@ public class ThdlDebug {
      *  path, because we may put this file into an arbitrary
      *  directory. */
 	public static void attemptToSetUpLogFile(String prefix, String suffix) {
+        if (ThdlOptions.getBooleanOption("thdl.disable.log.file"))
+            return;
+        // Else:
         final String tempDirProp = "thdl.use.temp.file.directory.for.log";
         final String logDirProp = "thdl.log.directory";
         File logFile = null;
 
-        if (Boolean.getBoolean(tempDirProp)) {
+        if (ThdlOptions.getBooleanOption(tempDirProp)) {
             /* The log file won't be named 'jskad.log', it'll be named
                'jskad-SAKFJDS3134.log', and they'll all just pile up,
                because we don't deleteOnExit. */
 
             /* First, ensure that the user hasn't set conflicting options. */
             try {
-                if (null != System.getProperty("thdl.log.directory"))
+                if (!("".equals(ThdlOptions.getStringOption("thdl.log.directory",
+                                                            ""))))
                     throw new Error("You cannot set the property "
                                     + tempDirProp + " and the property "
                                     + logDirProp
@@ -159,13 +164,14 @@ public class ThdlDebug {
                thdl.log.directory, respect their choice. */
             String logDir = null;
             try {
-                logDir = System.getProperty(logDirProp);
+                logDir = ThdlOptions.getStringOption(logDirProp, "");
             } catch (Exception e) {
                 /* SecurityExceptions, e.g., will trigger this.  We
                    leave logDir null. */
                 noteIffyCode();
             }
-            if (null != logDir) {
+            if (!("".equals(ThdlOptions.getStringOption("thdl.log.directory",
+                                                        "")))) {
                 logFile = new File(logDir, prefix + suffix);
             } else {
                 /* Create the log file in the current directory.  For

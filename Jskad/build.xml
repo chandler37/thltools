@@ -57,12 +57,11 @@ info on where to find these.
   <property name="privatejavadocs"  location="${docs}/private-javadocs"/>
   <property name="j2ee.sdk.home" location="F:\Program Files\j2sdkee1.3.1\lib"/>
 
-  <!-- Set to false for less output when running the tools: -->
+  <!-- Set to true for more output when running the tools and if you
+       want the code to abort when it reaches poorly thought-out
+       control flow paths (i.e., iffy code).
+    -->
   <property name="thdl.debug" value="true"/>
-
-  <!-- Set to true if you want the code to abort when it reaches
-       poorly thought-out control flow paths (i.e., iffy code). -->
-  <property name="thdl.die.on.iffy" value="true"/>
 
   <!-- Set to the name of the dictionary used by the Translation Tool: -->
   <property name="arch.dict" value="architecture_dictionary"/>
@@ -160,7 +159,7 @@ info on where to find these.
     <antcall target="copy-ini-files-to-bin-dir-for-jarring">
       <param name="mybin" value="${jskadbin}"/>
     </antcall>
-    <antcall target="copy-license-to-bin-dir-for-jarring">
+    <antcall target="copy-license-etc-to-bin-dir-for-jarring">
       <param name="mybin" value="${jskadbin}"/>
     </antcall>
     <copy todir="${jskadbin}/org/thdl/tib/input">
@@ -191,7 +190,7 @@ info on where to find these.
     <antcall target="copy-ini-files-to-bin-dir-for-jarring">
       <param name="mybin" value="${savantbin}"/>
     </antcall>
-    <antcall target="copy-license-to-bin-dir-for-jarring">
+    <antcall target="copy-license-etc-to-bin-dir-for-jarring">
       <param name="mybin" value="${savantbin}"/>
     </antcall>
   </target>
@@ -213,7 +212,7 @@ info on where to find these.
     <antcall target="copy-ini-files-to-bin-dir-for-jarring">
       <param name="mybin" value="${ttstandalonebin}"/>
     </antcall>
-    <antcall target="copy-license-to-bin-dir-for-jarring">
+    <antcall target="copy-license-etc-to-bin-dir-for-jarring">
       <param name="mybin" value="${ttstandalonebin}"/>
     </antcall>
   </target>
@@ -230,7 +229,7 @@ info on where to find these.
       <param name="my.included.source.file"
              value="org/thdl/tib/scanner/WindowScannerFilter.java"/>
     </antcall>
-    <antcall target="copy-license-to-bin-dir-for-jarring">
+    <antcall target="copy-license-etc-to-bin-dir-for-jarring">
       <param name="mybin" value="${tthandheldbin}"/>
     </antcall>
   </target>
@@ -252,7 +251,7 @@ info on where to find these.
     <antcall target="copy-ini-files-to-bin-dir-for-jarring">
       <param name="mybin" value="${ttappletjwsbin}"/>
     </antcall>
-    <antcall target="copy-license-to-bin-dir-for-jarring">
+    <antcall target="copy-license-etc-to-bin-dir-for-jarring">
       <param name="mybin" value="${ttappletjwsbin}"/>
     </antcall>
   </target>
@@ -265,7 +264,7 @@ info on where to find these.
       <param name="my.included.source.file"
              value="org/thdl/tib/scanner/ConsoleScannerFilter.java"/>
     </antcall>
-    <antcall target="copy-license-to-bin-dir-for-jarring">
+    <antcall target="copy-license-etc-to-bin-dir-for-jarring">
       <param name="mybin" value="${ttbin}"/>
     </antcall>
   </target>
@@ -292,7 +291,7 @@ info on where to find these.
     <antcall target="copy-ini-files-to-bin-dir-for-jarring">
       <param name="mybin" value="${qdbin}"/>
     </antcall>
-    <antcall target="copy-license-to-bin-dir-for-jarring">
+    <antcall target="copy-license-etc-to-bin-dir-for-jarring">
       <param name="mybin" value="${qdbin}"/>
     </antcall>
   </target>
@@ -538,8 +537,7 @@ info on where to find these.
         <pathelement location="${dist}/lib/QuillDriver-${my.jar.suffix}.jar"/>
         <path refid="entire.class.path"/>
       </classpath>
-      <jvmarg value="-DTHDL_DEBUG=${thdl.debug}"/>
-      <jvmarg value="-DTHDL_DIE_ON_IFFY_CODE=${thdl.die.on.iffy}"/>
+      <jvmarg value="-Dthdl.debug=${thdl.debug}"/>
     </java>
   </target>
 
@@ -549,8 +547,7 @@ info on where to find these.
         <pathelement location="${dist}/lib/Savant-${my.jar.suffix}.jar"/>
         <path refid="entire.class.path"/>
       </classpath>
-      <jvmarg value="-DTHDL_DEBUG=${thdl.debug}"/>
-      <jvmarg value="-DTHDL_DIE_ON_IFFY_CODE=${thdl.die.on.iffy}"/>
+      <jvmarg value="-Dthdl.debug=${thdl.debug}"/>
     </java>
   </target>
 
@@ -560,8 +557,7 @@ info on where to find these.
         <pathelement location="${dist}/lib/Jskad-${my.jar.suffix}.jar"/>
         <path refid="entire.class.path"/>
       </classpath>
-      <jvmarg value="-DTHDL_DEBUG=${thdl.debug}"/>
-      <jvmarg value="-DTHDL_DIE_ON_IFFY_CODE=${thdl.die.on.iffy}"/>
+      <jvmarg value="-Dthdl.debug=${thdl.debug}"/>
     </java>
   </target>
 
@@ -572,8 +568,7 @@ info on where to find these.
           location="${dist}/lib/DictionarySearchStandalone-${my.jar.suffix}.jar"/>
         <path refid="entire.class.path"/>
       </classpath>
-      <jvmarg value="-DTHDL_DEBUG=${thdl.debug}"/>
-      <jvmarg value="-DTHDL_DIE_ON_IFFY_CODE=${thdl.die.on.iffy}"/>
+      <jvmarg value="-Dthdl.debug=${thdl.debug}"/>
       <!-- For non-swing version: <arg value="-simple"/> -->
       <arg value="${arch.dict}"/>
     </java>
@@ -710,11 +705,18 @@ info on where to find these.
   </target>
 
 
-  <target name="copy-license-to-bin-dir-for-jarring"
+  <target name="copy-license-etc-to-bin-dir-for-jarring"
           depends="init"
-          description="INTERNAL TASK: Copies the license documents to the bin directory.  Usually not called directly.">
+          description="INTERNAL TASK: Copies the license documents and the default properties file (hence the et cetera) to the bin directory.  Usually not called directly.">
     <copy todir="${mybin}">
       <fileset dir="${license}"/>
+    </copy>
+
+    <!-- The default properties file, shared by all our tools: -->
+    <copy todir="${mybin}">
+      <fileset dir="${source}">
+        <include name="options.txt"/>
+      </fileset>
     </copy>
   </target>
 

@@ -33,6 +33,7 @@ import javax.swing.text.rtf.*;
 
 import org.thdl.tib.text.*;
 import org.thdl.util.ThdlDebug;
+import org.thdl.util.ThdlOptions;
 import org.thdl.util.StatusBar;
 import org.thdl.util.ThdlActionListener;
 import org.thdl.util.RTFPane;
@@ -80,7 +81,6 @@ public class Jskad extends JPanel implements DocumentListener {
     private final String keybd4HelpFile = "Sambhota_keymap_one.rtf";
 
 
-	private String fontName = "";
 	private JComboBox fontFamilies, fontSizes;
 	private JFileChooser fileChooser;
 	private javax.swing.filechooser.FileFilter rtfFilter;
@@ -90,7 +90,6 @@ public class Jskad extends JPanel implements DocumentListener {
 	private static int numberOfTibsRTFOpen = 0;
 	private static int x_size;
 	private static int y_size;
-	private TibetanKeyboard sambhota1Keyboard = null, duff1Keyboard = null, duff2Keyboard = null;
 
 /**
 * The text editing window which this Jskad object embeds.
@@ -115,10 +114,12 @@ public class Jskad extends JPanel implements DocumentListener {
 * is a JApplet then the File menu is omitted from the menu bar.
 */
 	public Jskad(final Object parent) {
-        if (Boolean.getBoolean("thdl.Jskad.disable.status.bar")) {
+        if (ThdlOptions.getBooleanOption("thdl.Jskad.disable.status.bar")) {
             statusBar = null;
         } else {
-            statusBar = new StatusBar("Welcome to Jskad!");
+            statusBar
+                = new StatusBar(ThdlOptions.getStringOption("thdl.Jskad.initial.status.message",
+                                                            "Welcome to Jskad!"));
         }
 		parentObject = parent;
 		numberOfTibsRTFOpen++;
@@ -378,49 +379,35 @@ public class Jskad extends JPanel implements DocumentListener {
 		toolBar.add(new JLabel("Keyboard:"));
 		toolBar.addSeparator();
 
+        /* Initialize dp before calling installKeyboard. */
+        if (ThdlOptions.getBooleanOption(Jskad.enableKeypressStatusProp)) {
+            dp = new DuffPane(statusBar);
+        } else {
+            dp = new DuffPane();
+        }
+
+
 		String[] keyboard_options = {keybd1Description,
                                      keybd2Description,
                                      keybd3Description,
                                      keybd4Description};
 		final JComboBox keyboards = new JComboBox(keyboard_options);
+        int initialKeyboard
+            = ThdlOptions.getIntegerOption("thdl.default.tibetan.keyboard", 0);
+        try {
+            keyboards.setSelectedIndex(initialKeyboard);
+        } catch (IllegalArgumentException e) {
+            keyboards.setSelectedIndex(0); // good ol' Wylie
+        }
+        installKeyboard(initialKeyboard);
 		keyboards.addActionListener(new ThdlActionListener() {
 			public void theRealActionPerformed(ActionEvent e) {
-				switch (keyboards.getSelectedIndex()) {
-					case 0: //Extended Wylie
-						installKeyboard("wylie");
-						break;
-
-					case 1: //TCC 1
-						if (duff1Keyboard == null)
-							duff1Keyboard = installKeyboard("tcc1");
-						else
-							dp.registerKeyboard(duff1Keyboard);
-						break;
-
-					case 2: //TCC 2
-						if (duff2Keyboard == null)
-							duff2Keyboard = installKeyboard("tcc2");
-						else
-							dp.registerKeyboard(duff2Keyboard);
-						break;
-
-					case 3: //Sambhota
-						if (sambhota1Keyboard == null)
-							sambhota1Keyboard = installKeyboard("sambhota1");
-						else
-							dp.registerKeyboard(sambhota1Keyboard);
-						break;
-				}
+                installKeyboard(keyboards.getSelectedIndex());
 			}
 		});
 		toolBar.add(keyboards);
 		toolBar.add(Box.createHorizontalGlue());
 
-        if (Boolean.getBoolean(Jskad.enableKeypressStatusProp)) {
-            dp = new DuffPane(statusBar);
-        } else {
-            dp = new DuffPane();
-        }
 		JScrollPane sp = new JScrollPane(dp, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		dp.getDocument().addDocumentListener(this);
 
@@ -786,7 +773,7 @@ public class Jskad extends JPanel implements DocumentListener {
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(txt_fileChosen));
             DuffPane dp2;
-            if (Boolean.getBoolean(Jskad.enableKeypressStatusProp)) {
+            if (ThdlOptions.getBooleanOption(Jskad.enableKeypressStatusProp)) {
                 dp2 = new DuffPane(statusBar);
             } else {
                 dp2 = new DuffPane();
@@ -812,7 +799,41 @@ public class Jskad extends JPanel implements DocumentListener {
 		}
 	}
 
-	private TibetanKeyboard installKeyboard(String name) {
+	private TibetanKeyboard sambhota1Keyboard = null, duff1Keyboard = null, duff2Keyboard = null;
+	private void installKeyboard(int keyboardIndex) {
+        switch (keyboardIndex) {
+        case 1: //TCC 1
+            if (duff1Keyboard == null)
+                duff1Keyboard = installKeyboard("tcc1");
+            else
+                dp.registerKeyboard(duff1Keyboard);
+            break;
+
+        case 2: //TCC 2
+            if (duff2Keyboard == null)
+                duff2Keyboard = installKeyboard("tcc2");
+            else
+                dp.registerKeyboard(duff2Keyboard);
+            break;
+
+        case 3: //Sambhota
+            if (sambhota1Keyboard == null)
+                sambhota1Keyboard = installKeyboard("sambhota1");
+            else
+                dp.registerKeyboard(sambhota1Keyboard);
+            break;
+        default: //Extended Wylie
+            if (0 != keyboardIndex
+                && ThdlOptions.getBooleanOption("thdl.debug")) {
+                throw new Error("You set thdl.default.tibetan.keyboard to an illegal value: "
+                                + keyboardIndex);
+            }
+            installKeyboard("wylie");
+            break;
+        }
+    }
+
+    private TibetanKeyboard installKeyboard(String name) {
 		TibetanKeyboard tk = null;
 
 		if (!name.equalsIgnoreCase("wylie")) {
@@ -833,6 +854,7 @@ public class Jskad extends JPanel implements DocumentListener {
 				}
 				catch (TibetanKeyboard.InvalidKeyboardException ike) {
 					System.out.println("invalid keyboard file or file not found");
+                    ThdlDebug.noteIffyCode();
 					return null;
 				}
 			}
@@ -840,6 +862,7 @@ public class Jskad extends JPanel implements DocumentListener {
 				return null;
 		}
 
+        ThdlDebug.verify("dp != null", dp != null);
 		dp.registerKeyboard(tk);
 		return tk;
 	}
@@ -1074,22 +1097,27 @@ public class Jskad extends JPanel implements DocumentListener {
 * you discover a bug, please send us an email, making sure to include
 * the jskad.log file as an attachment.  */
 	public static void main(String[] args) {
-		ThdlDebug.attemptToSetUpLogFile("jskad", ".log");
+        try {
+            ThdlDebug.attemptToSetUpLogFile("jskad", ".log");
 
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		}
-		catch (Exception e) {
-		}
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            }
+            catch (Exception e) {
+            }
 
-		JFrame f = new JFrame("Jskad");
-		Dimension d = f.getToolkit().getScreenSize();
-		x_size = d.width/4*3;
-		y_size = d.height/4*3;
-		f.setSize(x_size, y_size);
-		f.setLocation(d.width/8, d.height/8);
-		f.getContentPane().add(new Jskad(f));
-		f.setVisible(true);
+            JFrame f = new JFrame("Jskad");
+            Dimension d = f.getToolkit().getScreenSize();
+            x_size = d.width/4*3;
+            y_size = d.height/4*3;
+            f.setSize(x_size, y_size);
+            f.setLocation(d.width/8, d.height/8);
+            f.getContentPane().add(new Jskad(f));
+            f.setVisible(true);
+        } catch (ThdlLazyException e) {
+            System.err.println("Jskad has a BUG:");
+            e.getRealException().printStackTrace(System.err);
+        }
 	}
 }
 
