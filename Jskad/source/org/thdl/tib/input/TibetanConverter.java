@@ -30,14 +30,13 @@ import org.thdl.tib.text.ttt.ACIPConverter;
 import org.thdl.tib.text.ttt.ACIPTshegBarScanner;
 import java.util.ArrayList;
 
-/** TibetanConverter is a command-line utility for converting to
- *  and from Tibetan Machine Web (TMW).  It converts TMW to Wylie, to
- *  Unicode, or to Tibetan Machine (TM).  It also converts TM to TMW.
- *  It is a TibetanMachineWeb-in-RichTextFormat to your choice of
- *  TibetanMachine-in-RichTextFormat, THDL Extended
- *  Wylie-in-RichTextFormat, or Unicode-in-RichTextFormat converter,
- *  more specifically, as well as converting from TM to TMW.  Invoke
- *  it with no parameters for usage information.
+/** TibetanConverter is a command-line utility for converting to and
+ *  from Tibetan Machine Web (TMW).  It converts TMW to Wylie, ACIP,
+ *  Unicode, or to Tibetan Machine (TM).  It also converts to TMW from
+ *  TM or ACIP.  Some conversions use RTF (rich text format); some use
+ *  text.  Invoke it with no parameters for usage information.  Full
+ *  documentation is available at {@link
+ *  http://thdltools.sourceforge.net/TMW_RTF_TO_THDL_WYLIE.html}.
  *  @author David Chandler */
 public class TibetanConverter implements FontConverterConstants {
     private static final boolean debug = false;
@@ -50,7 +49,7 @@ public class TibetanConverter implements FontConverterConstants {
 
     /**
      *  Runs the converter. */
-	public static void main(String[] args) {
+    public static void main(String[] args) {
         // No need for the TM or TMW fonts.
         System.setProperty("thdl.rely.on.system.tmw.fonts", "true");
         System.setProperty("thdl.rely.on.system.tm.fonts", "true");
@@ -80,22 +79,28 @@ public class TibetanConverter implements FontConverterConstants {
             boolean findAllNonTMMode = false;
 
             boolean colors = false;
+            boolean shortMessages = false;
+
+            String warningLevel = null;
             
             // Process arguments:
-            final int numArgs = 6;
+            final int numArgs = 8;
             if ((args.length != 1 && args.length != numArgs)
                 || (args.length == 1
                     && !(args[0].equals("-v")
                          || args[0].equals("--version")))
                 || (args.length == numArgs
-                    && (!(args[numArgs - 6].equals("--colors"))
-                        || !((colors = args[numArgs - 5].equals("yes"))
-                             || args[numArgs - 5].equals("no"))
-                        || !(args[numArgs - 4].equals("--warning-level"))
-                        || !(args[numArgs - 3].equals("Most")
-                             || args[numArgs - 3].equals("Some")
-                             || args[numArgs - 3].equals("All")
-                             || args[numArgs - 3].equals("None"))
+                    && (!(args[numArgs - 8].equals("--colors"))
+                        || !((colors = args[numArgs - 7].equals("yes"))
+                             || args[numArgs - 7].equals("no"))
+                        || !(args[numArgs - 6].equals("--warning-level"))
+                        || !((warningLevel = args[numArgs - 5]).equals("Most")
+                             || warningLevel.equals("Some")
+                             || warningLevel.equals("All")
+                             || warningLevel.equals("None"))
+                        || !(args[numArgs - 4].equals("--acip-to-tibetan-warning-and-error-messages"))
+                        || !((shortMessages = args[numArgs - 3].equals("short"))
+                             || args[numArgs - 3].equals("long"))
                         || !((findAllNonTMWMode
                               = args[numArgs - 2].equals("--find-all-non-tmw"))
                              || (convertToTMMode
@@ -123,8 +128,15 @@ public class TibetanConverter implements FontConverterConstants {
                              || (findAllNonTMMode
                                  = args[numArgs - 2].equals("--find-all-non-tm"))
                              )))) {
+                if (args.length != numArgs) {
+                    out.println("");
+                    out.println("Wrong number of arguments; needs " + numArgs + " arguments.");
+                    out.println("");
+                }
+                    
                 out.println("TibetanConverter --colors yes|no");
                 out.println("                 --warning-level None|Some|Most|All");
+                out.println("                 --acip-to-tibetan-warning-and-error-messages short|long");
                 out.println("                 --find-all-non-tmw | --find-some-non-tmw");
                 out.println("                   | --to-tibetan-machine | --to-tibetan-machine-web");
                 out.println("                   | --to-unicode | --to-wylie | --to-acip");
@@ -170,29 +182,36 @@ public class TibetanConverter implements FontConverterConstants {
                 out.println("   not in Tibetan Machine fonts, exit zero if and only if none found");
                 out.println("");
                 out.println("");
-                out.println(" In --to... and --acip-to... modes, needs one argument, the name of the");
-                out.println(" TibetanMachineWeb RTF file (for --to-wylie, --to-wylie-text, --to-acip-text,");
-                out.println(" --to-acip, --to-unicode, and --to-tibetan-machine) or the name of");
-                out.println(" the TibetanMachine RTF file (for --to-tibetan-machine-web) or the name of the");
-                out.println(" ACIP text file (for --acip-to-unicode or --acip-to-tmw).  Writes the");
-                out.println(" result to standard output (after dealing with the curly brace problem if");
-                out.println(" the input is TibetanMachineWeb).  Exit code is zero on success, 42 if some");
-                out.println(" glyphs couldn't be converted (in which case the output is just those glyphs),");
-                out.println(" 44 if a TMW->Wylie conversion ran into some glyphs that couldn't be");
-                out.println(" converted, in which case ugly error messages like");
-                out.println("    \"<<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert DuffCode...\"");
-                out.println(" are in your document waiting for your personal attention,");
-                out.println(" 43 if not even one glyph found was eligible for this conversion, which means");
-                out.println(" that you probably selected the wrong conversion or the wrong document, or ");
-                out.println(" nonzero otherwise.");
+                out.println("In --to... and --acip-to... modes, needs one argument, the name of the");
+                out.println("TibetanMachineWeb RTF file (for --to-wylie, --to-wylie-text, --to-acip-text,");
+                out.println("--to-acip, --to-unicode, and --to-tibetan-machine) or the name of");
+                out.println("the TibetanMachine RTF file (for --to-tibetan-machine-web) or the name of the");
+                out.println("ACIP text file (for --acip-to-unicode or --acip-to-tmw).  Writes the");
+                out.println("result to standard output (after dealing with the curly brace problem if");
+                out.println("the input is TibetanMachineWeb).  Exit code is zero on success, 42 if some");
+                out.println("glyphs couldn't be converted (in which case the output is just those glyphs),");
+                out.println("44 if a TMW->Wylie conversion ran into some glyphs that couldn't be");
+                out.println("converted, in which case ugly error messages like");
+                out.println("   \"<<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert DuffCode...\"");
+                out.println("are in your document waiting for your personal attention,");
+                out.println("43 if not even one glyph found was eligible for this conversion, which means");
+                out.println("that you probably selected the wrong conversion or the wrong document, or ");
+                out.println("nonzero otherwise.");
                 out.println("");
-                out.println(" You may find it helpful to use `--find-some-non-tmw' mode (or");
-                out.println(" `--find-some-non-tm' mode for Tibetan Machine input) before doing a");
-                out.println(" conversion so that you have confidence in the conversion's correctness.");
+                out.println("You may find it helpful to use `--find-some-non-tmw' mode (or");
+                out.println("`--find-some-non-tm' mode for Tibetan Machine input) before doing a");
+                out.println("conversion so that you have confidence in the conversion's correctness.");
+                out.println("");
+                out.println("When using short error and warning messages for ACIP->Tibetan conversions,");
+                out.println("i.e. when '--acip-to-tibetan-warning-and-error-messages short' is given,");
+                out.println("the output will contain error and warning numbers.  The following are the");
+                out.println("long forms of each warning and error:");
+                out.println("");
+                org.thdl.tib.text.ttt.ErrorsAndWarnings.printErrorAndWarningDescriptions(out);
                 return 77;
             }
             if (args[0].equals("--version") || args[0].equals("-v")) {
-                out.println("TibetanConverter version 0.83");
+                out.println("TibetanConverter version 0.84");
                 out.println("Compiled at "
                             + ThdlVersion.getTimeOfCompilation());
                 return 77;
@@ -237,7 +256,8 @@ public class TibetanConverter implements FontConverterConstants {
                 }
             }
             return reallyConvert(in, out, conversionTag,
-                                 args[numArgs - 3].intern(), colors);
+                                 warningLevel.intern(), shortMessages,
+                                 colors);
         } catch (ThdlLazyException e) {
             out.println("TibetanConverter has a BUG:");
             e.getRealException().printStackTrace(out);
@@ -253,22 +273,26 @@ public class TibetanConverter implements FontConverterConstants {
             e.printStackTrace(System.err);
             throw e;
         }
-	}
+    }
 
     /** Reads from in, closes in, converts (or finds some/all
         non-TM/TMW), writes the result to out, does not close out.
         The action taken depends on ct, which must be one of a set
-        number of strings -- see the code.  Returns an appropriate
-        return code so that TibetanConverter's usage message is
-        honored. */
+        number of strings -- see the code.  Uses short error and
+        warning messages if shortMessages is true; gives no warnings
+        or many warnings depending on warningLevel.  Returns an
+        appropriate return code so that TibetanConverter's usage
+        message is honored. */
     static int reallyConvert(InputStream in, PrintStream out, String ct,
-                             String warningLevel, boolean colors) {
+                             String warningLevel, boolean shortMessages,
+                             boolean colors) {
         if (ACIP_TO_UNI_TEXT == ct || ACIP_TO_TMW == ct) {
             try {
-                ArrayList al = ACIPTshegBarScanner.scanStream(in, null,
-                                                              ThdlOptions.getIntegerOption("thdl.most.errors.a.tibetan.acip.document.can.have",
-                                                                                           1000 - 1)
-                                                              );
+                ArrayList al
+                    = ACIPTshegBarScanner.scanStream(in, null,
+                                                     ThdlOptions.getIntegerOption("thdl.most.errors.a.tibetan.acip.document.can.have",
+                                                                                  1000 - 1),
+                                                     shortMessages);
                 if (null == al)
                     return 47;
                 boolean embeddedWarnings = (warningLevel != "None");
@@ -277,14 +301,16 @@ public class TibetanConverter implements FontConverterConstants {
                     if (!ACIPConverter.convertToUnicodeText(al, out, null,
                                                             null, hasWarnings,
                                                             embeddedWarnings,
-                                                            warningLevel))
+                                                            warningLevel,
+                                                            shortMessages))
                         return 46;
                 } else {
                     if (ct != ACIP_TO_TMW) throw new Error("badness");
                     if (!ACIPConverter.convertToTMW(al, out, null, null,
                                                     hasWarnings,
                                                     embeddedWarnings,
-                                                    warningLevel, colors))
+                                                    warningLevel, shortMessages,
+                                                    colors))
                         return 46;
                 }
                 if (embeddedWarnings && hasWarnings[0])

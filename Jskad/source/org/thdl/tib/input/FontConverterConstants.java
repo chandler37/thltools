@@ -63,6 +63,6 @@ interface FontConverterConstants
     final String suggested_TO_TM_prefix = "TM_";
 
     // String Constants
-    public final String PROGRAM_TITLE = "THDL Font Conversion (with Jskad Technology)";
+    public final String PROGRAM_TITLE = "THDL Tibetan Converters -- featuring Jskad Technology";
 
 }

@@ -36,9 +36,12 @@ interface FontConversion
         conversion performed is specified by the interned String
         whichConversion, which must be one of the known conversions.
         If you want colors to be used in the output (which is only
-        supported by a few conversions), then colors must be true.
+        supported by a few conversions), then colors must be true.  If
+        you want short error and warning messages for ACIP to Tibetan
+        conversions, then shortMessages must be true.
         @return true on success, false otherwise */
     boolean doConversion(ConvertDialog cd, File oldFile,
                          File newFile, String whichConversion,
-                         String warningLevel, boolean colors);
+                         String warningLevel, boolean shortMessages,
+                         boolean colors);
 }

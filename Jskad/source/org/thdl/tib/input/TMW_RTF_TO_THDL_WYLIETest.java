@@ -106,6 +106,8 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
             "no",
             "--warning-level",
             "All",
+            "--acip-to-tibetan-warning-and-error-messages",
+            "long",
             mode,
             getTestFileName(testName)
         };
@@ -130,6 +132,8 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
             + "thdl" + File.separator
             + "tib" + File.separator
             + "input" + File.separator
+            // FIXME: one of the files named '.rtf' is really a text
+            // file:
             + "TMW_RTF_TO_THDL_WYLIE" + testName + ".rtf";
     }
 

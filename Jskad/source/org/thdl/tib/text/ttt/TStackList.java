@@ -183,8 +183,10 @@ class TStackList {
     boolean isClearlyIllegal() {
         // check for {D}{VA} sorts of things:
         for (int i = 0; i < size(); i++) {
-            if (get(i).getACIPError() != null) {
-                if (ddebug) System.out.println("ddebug: error is " + get(i).getACIPError());
+            if (get(i).getACIPError("THIS MAKES IT FASTER AND IS SAFE, DON'T WORRY",
+                                    true /* faster... */)
+                != null) {
+                if (ddebug) System.out.println("ddebug: error is " + get(i).getACIPError("THIS MAKES IT FASTER AND IS SAFE, DON'T WORRY", false));
                 return true;
             }
         }
@@ -237,12 +239,14 @@ class TStackList {
     /** Returns the DuffCodes and errors corresponding to this stack
         list. Each element of the array is a DuffCode or a String, the
         latter if and only if the TMW font cannot represent the
-        corresponding stack in this list. */
-    Object[] getDuff() {
+        corresponding stack in this list.  Iff shortMessages is true,
+        the String elements will be shorter messages. */
+    Object[] getDuff(boolean shortMessages,
+                     boolean noCorrespondingTMWGlyphIsError) {
         ArrayList al = new ArrayList(size()*2); // rough estimate
         int count = 0;
         for (int i = 0; i < size(); i++) {
-            get(i).getDuff(al);
+            get(i).getDuff(al, shortMessages, noCorrespondingTMWGlyphIsError);
         }
         if (size() > 0 && al.size() == 0) {
             throw new Error("But this stack list, " + this + ", contains " + size() + " stacks!  How can it not have DuffCodes associated with it?");

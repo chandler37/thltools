@@ -213,7 +213,7 @@ Contributor(s): ______________________________________.
          inheritAll="false" inheritRefs="false">
        <reference refid="entire.class.path"/>
        <property name="junitbin" value="${junitbin}"/>
-    </ant> 
+    </ant>
     <ant antfile="junitbuild.xml" target="run-headless-junit-tests"
          inheritAll="false" inheritRefs="false">
        <reference refid="entire.class.path"/>

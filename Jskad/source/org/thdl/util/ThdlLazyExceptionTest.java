@@ -87,7 +87,8 @@ public class ThdlLazyExceptionTest extends TestCase {
 	public void testThdlLazyExceptionString() {
 		String msg = "foo";
 		ThdlLazyException e = new ThdlLazyException(msg);
-		assertTrue(msg.equals(e.getMessage()));
+		assertTrue("Oops: " + e.getMessage(),
+                           "ThdlLazyException [foo] wrapping nothing".equals(e.getMessage()));
 		assertTrue(null == e.getRealException());
 	}
 
@@ -98,7 +99,8 @@ public class ThdlLazyExceptionTest extends TestCase {
 		String msg = "foo";
 		IOException ioe = new IOException("bah");
 		ThdlLazyException e = new ThdlLazyException(msg, ioe);
-		assertTrue(msg.equals(e.getMessage()));
+		assertTrue("oops: " + e.getMessage(),
+                           "ThdlLazyException [foo] wrapping bah".equals(e.getMessage()));
 		assertTrue(ioe.equals(e.getRealException()));
 		assertTrue("bah".equals(e.getRealException().getMessage()));
 	}

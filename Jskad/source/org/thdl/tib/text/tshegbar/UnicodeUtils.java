@@ -390,5 +390,18 @@ public class UnicodeUtils implements UnicodeConstants {
                 && '\u0F48' != cp
                 && '\u0F98' != cp);
     }
+
+    /** Returns true if a character is in the Tibetan range of Unicode
+        4.0 but is a reserved code in that range, not yet assigned to
+        any character. */
+    public static boolean isReservedTibetanCode(char cp) {
+        return (cp == '\u0F48'
+                || cp == '\u0F98'
+                || (cp >= '\u0F6B' && cp <= '\u0F70')
+                || (cp >= '\u0F8C' && cp <= '\u0F8F')
+                || cp == '\u0FBD'
+                || (cp >= '\u0FCD' && cp <= '\u0FCE')
+                || (cp >= '\u0FD0' && cp <= '\u0FFF'));
+    }
 }
 

@@ -40,6 +40,9 @@ class ConvertDialog extends JDialog
     private JCheckBox colors;
     private static final String colorDesc = "Color-coding (ACIP to RTF only)";
 
+    private JCheckBox shortMessages;
+    private static final String shortMessagesDesc = "Short warning and error messages (ACIP to Tibetan only)";
+
     // Attributes
     private FontConversion controller;
 
@@ -99,11 +102,17 @@ class ConvertDialog extends JDialog
         updateWarningLevels();
 
         temp.add(warningLevels);
+        content.add(temp);
+
+        temp = new JPanel(new FlowLayout(FlowLayout.CENTER,5,5));
         this.colors = new JCheckBox(colorDesc, false);
         this.colors.addActionListener(tal);
+        this.shortMessages = new JCheckBox(shortMessagesDesc, false);
+        this.shortMessages.addActionListener(tal);
         updateWarningLevels();
 
         temp.add(colors);
+        temp.add(shortMessages);
         content.add(temp);
 
         temp = new JPanel(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -160,7 +169,7 @@ class ConvertDialog extends JDialog
         content.add(buttonBox);
         setContentPane(content);
         pack();
-        setSize(new Dimension(640,235));
+        setSize(new Dimension(600,240));
     }
 
     private void setChoices(String[] choices)
@@ -301,6 +310,7 @@ class ConvertDialog extends JDialog
                                         convertedFile,
                                         (String)choices.getSelectedItem(),
                                         (String)warningLevels.getSelectedItem(),
+                                        shortMessages.isSelected(),
                                         colors.isSelected());
             } catch (OutOfMemoryError e) {
                 JOptionPane.showMessageDialog(this,

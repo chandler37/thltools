@@ -153,92 +153,56 @@ class TPairList {
      *  Returns an error message, or null if there is no error that
      *  you can find without the help of tsheg bar syntax rules. */
     // FIXME: This is needlessly ACIP specific -- rename and change text of messages
-    String getACIPError() {
+    String getACIPError(String originalACIP, boolean shortMessages) {
+        // FIXME: this returns just the first error.  List all errors
+        // at once.
         int sz = size();
-        if (0 == sz)
-            return "Warning, empty tsheg bar found while converting from ACIP!";
-        boolean first = true;
-        StringBuffer rv = null;
+        if (0 == sz) // FIXME: see if you can make this happen...
+            return ErrorsAndWarnings.getMessage(122, shortMessages,
+                                                ((null != originalACIP)
+                                                 ? originalACIP
+                                                 : ""));
+        String translit
+            = (null != originalACIP) ? originalACIP : recoverACIP();
         boolean mustBeEntirelyNumeric = get(0).isNumeric();
         for (int i = 0; i < sz; i++) {
             TPair p = get(i);
             if (mustBeEntirelyNumeric != p.isNumeric())
-                return "Cannot convert ACIP " + recoverACIP() + " because it contains a number but also a non-number.";
+                return ErrorsAndWarnings.getMessage(123, shortMessages, translit);
 
             if ((i == 0 && "V".equals(p.getLeft()))
                 || (i > 0 && "V".equals(p.getLeft())
                     && (null != get(i - 1).getRight()
                         && !"+".equals(get(i - 1).getRight())))) {
-                if (first) {
-                    first = false;
-                    rv = new StringBuffer("Cannot convert ACIP ");
-                    rv.append(recoverACIP());
-                    rv.append(" because {V}, wa-zur, appears without being subscribed to a consonant.");
-                } else {
-                    rv.append("; also, {V}, wa-zur, appears without being subscribed to a consonant");
-                }
+                return ErrorsAndWarnings.getMessage(124, shortMessages, translit);
             } else if ("A".equals(p.getLeft()) && (null == p.getRight() || "".equals(p.getRight()))) {
-                if (first) {
-                    first = false;
-                    rv = new StringBuffer("Cannot convert ACIP ");
-                    rv.append(recoverACIP());
-                    rv.append(" because we would be required to assume that {A} is a consonant, when it is not clear if it is a consonant or a vowel.");
-                } else {
-                    rv.append("; also, we would be required to assume that {A} is a consonant, when it is not clear if it is a consonant or a vowel.");
-                }
+                return ErrorsAndWarnings.getMessage(125, shortMessages, translit);
             } else if ((null == p.getLeft() && !"-".equals(p.getRight()))
                        || (null != p.getLeft()
                            && !ACIPRules.isConsonant(p.getLeft())
                            && !p.isNumeric())) {
-                if (first) {
-                    first = false;
-                    rv = new StringBuffer("Cannot convert ACIP ");
-                    rv.append(recoverACIP());
-                    rv.append(" because ");
-                    if (null == p.getLeft()) {
-                        rv.append(p.getRight());
-                        rv.append(" is a \"vowel\" without an associated consonant");
-                    } else {
-                        rv.append(p.getLeft());
-                        rv.append(" is not an ACIP consonant");
-                    }
+                // FIXME: stop handling this outside of ErrorsAndWarnings:
+                if (null == p.getLeft()) {
+                    if (shortMessages)
+                        return "128: {" + translit + "}";
+                    else
+                        return "128: Cannot convert ACIP {" + translit + "} because " + p.getRight() + " is a \"vowel\" without an associated consonant.";
                 } else {
-                    if (null == p.getLeft()) {
-                        rv.append("; also, ");
-                        rv.append(p.getRight());
-                        rv.append(" is an ACIP \"vowel\" without an associated consonant");
-                    } else {
-                        rv.append("; also, ");
-                        rv.append(p.getLeft());
-                        rv.append(" is not an ACIP consonant");
-                    }
+                    if (shortMessages)
+                        return "129: {" + translit + "}";
+                    else
+                        return "129: Cannot convert ACIP {" + translit + "} because " + p.getLeft() + " is not an ACIP consonant.";
                 }
             }
         }
         if ("+".equals(get(sz - 1).getRight())) {
-            if (first) {
-                first = false;
-                rv = new StringBuffer("Cannot convert ACIP ");
-                rv.append(recoverACIP());
-                rv.append(" because it ends with a {+}.");
-            } else {
-                rv.append("; also, it ends with a {+}.");
-            }
+            return ErrorsAndWarnings.getMessage(126, shortMessages, translit);
         }
-
         // FIXME: really this is a warning, not an error:
         if ("-".equals(get(sz - 1).getRight())) {
-            if (first) {
-                first = false;
-                rv = new StringBuffer("Cannot convert ACIP ");
-                rv.append(recoverACIP());
-                rv.append(" because it ends with a {-}.");
-            } else {
-                rv.append("; also, it ends with a {-}.");
-            }
+            return ErrorsAndWarnings.getMessage(127, shortMessages, translit);
         }
-
-        return (rv == null) ? null : rv.toString();
+        return null;
     }
 
     /** Returns true if and only if either x is an TPairList object
@@ -657,10 +621,14 @@ class TPairList {
     }
 
     /** Appends the DuffCodes that correspond to this grapheme cluster
-     *  to duffsAndErrors, or appends a String that is an error
-     *  message saying that TMW cannot represent this grapheme
-     *  cluster. */
-    void getDuff(ArrayList duffsAndErrors) {
+     *  to duffsAndErrors, or appends a String that is an error or
+     *  warning message (a short one iff shortMessages is true) saying
+     *  that TMW cannot represent this grapheme cluster.  The message
+     *  is Error 137 if noCorrespondingTMWGlyphIsError is true;
+     *  otherwise, it's Warning 511. */
+    void getDuff(ArrayList duffsAndErrors,
+                 boolean shortMessages,
+                 boolean noCorrespondingTMWGlyphIsError) {
         int previousSize = duffsAndErrors.size();
         StringBuffer wylieForConsonant = new StringBuffer();
         for (int x = 0; x + 1 < size(); x++) {
@@ -716,7 +684,11 @@ class TPairList {
         if (!TibetanMachineWeb.isKnownHashKey(hashKey)) {
             hashKey = hashKey.replace('+', '-');
             if (!TibetanMachineWeb.isKnownHashKey(hashKey)) {
-                duffsAndErrors.add("The ACIP {" + recoverACIP() + "} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.");
+                duffsAndErrors.add(ErrorsAndWarnings.getMessage(noCorrespondingTMWGlyphIsError
+                                                                ? 137
+                                                                : 511,
+                                                                shortMessages,
+                                                                recoverACIP()));
                 return;
             }
         }

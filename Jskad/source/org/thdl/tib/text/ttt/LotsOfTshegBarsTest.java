@@ -72,6 +72,8 @@ public class LotsOfTshegBarsTest extends TestCase {
         // We don't want to use options.txt:
         ThdlOptions.forTestingOnlyInitializeWithoutDefaultOptionsFile();
 
+        ThdlOptions.setUserPreference("thdl.acip.to.tibetan.warning.and.error.severities.are.built.in.defaults", "true");
+
         // We don't want to load the TM or TMW font files ourselves:
         ThdlOptions.setUserPreference("thdl.rely.on.system.tmw.fonts", true);
         ThdlOptions.setUserPreference("thdl.rely.on.system.tm.fonts", true);

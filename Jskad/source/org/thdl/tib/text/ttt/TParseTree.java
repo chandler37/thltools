@@ -18,6 +18,8 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
+import org.thdl.util.ThdlDebug;
+
 import java.util.ArrayList;
 
 /** A list of non-empty list of {@link TStackListList
@@ -266,16 +268,28 @@ class TParseTree {
      *  warnings about lacking vowels on final stacks, "Some" to see
      *  warnings about lacking vowels on non-final stacks and also
      *  warnings about when prefix rules affect you, "None" if you
-     *  like to see IllegalArgumentExceptions.
+     *  like to see IllegalArgumentExceptions thrown.  (Actually, this
+     *  refers only to the default values -- the level at which any
+     *  particular warning appears is customizable.)
      *  @param pl the pair list from which this parse tree originated
      *  @param originalACIP the original ACIP, or null if you want
-     *  this parse tree to make a best guess. */
+     *  this parse tree to make a best guess.
+     *  @param shortMessages true iff you want short error and warning
+     *  messages */
     public String getWarning(String warningLevel,
                              TPairList pl,
-                             String originalACIP) {
-        if (warningLevel != "Some"
-            && warningLevel != "Most"
-            && warningLevel != "All")
+                             String originalACIP,
+                             boolean shortMessages) {
+        // ROOM_FOR_IMPROVEMENT: Allow one tsheg bar to have multiple
+        // warnings/errors associated with it.  Make this a private
+        // subroutine, and have the public getWarning(..) call on this
+        // subroutine again and again until no new error is found.  If
+        // call N yields warning 506, then disable 506 and call again.
+        // If you get 508, call again, etc.  Finally, restore 506
+        // etc. and return the concatenation of messages 506 and 508.
+        // {DGYAM--S} should yield both 505 and 509.
+
+        if (!ErrorsAndWarnings.warningLevelIsKnown(warningLevel))
             throw new IllegalArgumentException("warning level bad: is it interned?");
 
         TStackList bestParse = getBestParse();
@@ -283,37 +297,51 @@ class TParseTree {
             TStackListList noPrefixTestsUniqueParse = getUniqueParse(true);
             if (noPrefixTestsUniqueParse.size() == 1
                 && !noPrefixTestsUniqueParse.get(0).equals(bestParse)) {
-                if (warningLevel != "Some")
-                    return "Warning: We're going with " + bestParse + ", but only because our knowledge of prefix rules says that " + noPrefixTestsUniqueParse.get(0) + " is not a legal Tibetan tsheg bar (\"syllable\")";
+                if (ErrorsAndWarnings.isEnabled(501, warningLevel))
+                    if (shortMessages)
+                        return "501: Using " + bestParse + ", not " + noPrefixTestsUniqueParse.get(0);
+                    else
+                        return "501: Using " + bestParse + ((null != originalACIP) ? (" for the ACIP {" + originalACIP + "}") : "") + ", but only because the tool's knowledge of prefix rules (see the documentation) says that " + noPrefixTestsUniqueParse.get(0) + " is not a legal Tibetan tsheg bar (\"syllable\")";
             }
         }
 
+        String translit = (null != originalACIP) ? originalACIP : recoverACIP();
         TStackListList up = getUniqueParse(false);
         if (null == up || up.size() != 1) {
-            // FIXME: code duplication
             boolean isLastStack[] = new boolean[1];
             TStackListList nip = getNonIllegalParses();
             if (nip.size() != 1) {
                 if (null == bestParse) {
-                    return "Warning: There's not even a unique, non-illegal parse for ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}";
+                    /* FIXME: Is this case possible?  We can get to it
+                       in unit testing (and we do), but is there any
+                       ACIP input file that will cause this? */
+                    // FIXME: IS 101 NOT TREATED AS AN error, BUT
+                    // INSTEAD TREATED AS A warning?
+                    //
+                    // FIXME: The caller will prepend "WARNING " to this error!
+                    if (ErrorsAndWarnings.isEnabled(101, warningLevel))
+                        return ErrorsAndWarnings.getMessage(101, shortMessages,
+                                                            translit);
                 } else {
                     if (bestParse.hasStackWithoutVowel(pl, isLastStack)) {
                         if (isLastStack[0]) {
-                            if (warningLevel == "All")
-                                return "Warning: The last stack does not have a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}; this may indicate a typo, because Sanskrit, which this is (because it's not legal Tibetan), should have a vowel after each stack.";
+                            if (ErrorsAndWarnings.isEnabled(502, warningLevel))
+                                return ErrorsAndWarnings.getMessage(502, shortMessages,
+                                                                    translit);
                         } else {
                             throw new Error("Can't happen now that we stack greedily");
                         }
                     }
-                    if ("All" == warningLevel) {
-                        return "Warning: Though the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "} is unambiguous, it would be more computer-friendly if + signs were used to stack things because there are two (or more) ways to interpret this ACIP if you're not careful.";
-                    }
+                    if (ErrorsAndWarnings.isEnabled(503, warningLevel))
+                        return ErrorsAndWarnings.getMessage(503, shortMessages,
+                                                            translit);
                 }
             } else {
                 if (nip.get(0).hasStackWithoutVowel(pl, isLastStack)) {
                     if (isLastStack[0]) {
-                        if (warningLevel == "All")
-                            return "Warning: The last stack does not have a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}; this may indicate a typo, because Sanskrit, which this is (because it's not legal Tibetan), should have a vowel after each stack.";
+                        if (ErrorsAndWarnings.isEnabled(502, warningLevel))
+                            return ErrorsAndWarnings.getMessage(502, shortMessages,
+                                                                translit);
                     } else {
                         throw new Error("Can't happen now that we stack greedily [2]");
                     }
@@ -330,14 +358,13 @@ class TParseTree {
         // Check for useless disambiguators.
         {
             int plnum = 0;
-            String swarn
-                = "There is a stack of three or more consonants in " + ((null != originalACIP) ? originalACIP : recoverACIP()) + " that uses at least one '+' but does not use a '+' between each consonant.";
-            String disamWarn
-                = "There is a useless disambiguator in " + ((null != originalACIP) ? originalACIP : recoverACIP()) + ".";
             while (plnum < pl.size() && pl.get(plnum).isDisambiguator()) {
                 ++plnum;
-                return disamWarn;
+                if (ErrorsAndWarnings.isEnabled(505, warningLevel))
+                    return ErrorsAndWarnings.getMessage(505, shortMessages,
+                                                        translit);
             }
+            plnum = 0;
             for (int stackNum = 0; stackNum < bestParse.size(); stackNum++) {
                 TPairList stack = bestParse.get(stackNum);
                 int type = 0;
@@ -350,12 +377,16 @@ class TParseTree {
                             if (type == 0)
                                 type = -1;
                             else if (type == 1)
-                                return swarn;
+                                if (ErrorsAndWarnings.isEnabled(506, warningLevel))
+                                    return ErrorsAndWarnings.getMessage(506, shortMessages,
+                                                                        translit);
                         } else {
                             if (type == 0)
                                 type = 1;
                             else if (type == -1)
-                                return swarn;
+                                if (ErrorsAndWarnings.isEnabled(506, warningLevel))
+                                    return ErrorsAndWarnings.getMessage(506, shortMessages,
+                                                                        translit);
                         }
                     }
                     if (stackSize > 1 && tp.getLeft() != null && tp.getLeft().length() > 1) {
@@ -364,12 +395,15 @@ class TParseTree {
                     }
                 }
                 if (hasAmbiguousConsonant && -1 == type) {
-                    if ("Most" == warningLevel || "All" == warningLevel)
-                        return "There is a chance that the ACIP " + ((null != originalACIP) ? originalACIP : recoverACIP()) + " was intended to represent more consonants than we parsed it as representing -- NNYA, e.g., means N+NYA, but you can imagine seeing N+N+YA and typing NNYA for it too.";
+                    if (ErrorsAndWarnings.isEnabled(507, warningLevel))
+                        return ErrorsAndWarnings.getMessage(507, shortMessages,
+                                                            translit);
                 }
                 while (plnum < pl.size() && pl.get(plnum).isDisambiguator()) {
                     ++plnum;
-                    return disamWarn;
+                    if (ErrorsAndWarnings.isEnabled(505, warningLevel))
+                        return ErrorsAndWarnings.getMessage(505, shortMessages,
+                                                            translit);
                 }
             }
         }
@@ -386,8 +420,15 @@ class TParseTree {
                 && null != left && null != right) {
                 if (("D".equals(left) && "G".equals(middle) && "R".equals(right))
                     || ("D".equals(left) && "G".equals(middle) && "Y".equals(right))) {
-                    if (pl.size() == 3 || "Some" != warningLevel)
-                        return "The ACIP " + ((null != originalACIP) ? originalACIP : recoverACIP()) + " has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.";
+                    if (pl.size() == 3) {
+                        if (ErrorsAndWarnings.isEnabled(508, warningLevel))
+                            return ErrorsAndWarnings.getMessage(508, shortMessages,
+                                                                translit);
+                    } else {
+                        if (ErrorsAndWarnings.isEnabled(509, warningLevel))
+                            return ErrorsAndWarnings.getMessage(509, shortMessages,
+                                                                translit);
+                    }
                 }
             }
         }
@@ -404,8 +445,15 @@ class TParseTree {
                     || ("G".equals(left) && "D".equals(right))
                     || ("D".equals(left) && "N".equals(right))
                     || ("M".equals(left) && "N".equals(right))) {
-                    if (pl.size() == 2 || "Some" != warningLevel)
-                        return "The ACIP " + ((null != originalACIP) ? originalACIP : recoverACIP()) + " has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.";
+                    if (pl.size() == 2) {
+                        if (ErrorsAndWarnings.isEnabled(508, warningLevel))
+                            return ErrorsAndWarnings.getMessage(508, shortMessages,
+                                                                translit);
+                    } else {
+                        if (ErrorsAndWarnings.isEnabled(509, warningLevel))
+                            return ErrorsAndWarnings.getMessage(509, shortMessages,
+                                                                translit);
+                    }
                 }
             }
         }

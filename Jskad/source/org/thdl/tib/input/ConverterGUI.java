@@ -49,7 +49,7 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
 
     public boolean doConversion(ConvertDialog cd, File oldFile, File newFile,
                                 String whichConversion, String warningLevel,
-                                boolean colors) {
+                                boolean shortMessages, boolean colors) {
         PrintStream ps;
         try {
             if (whichConversion == ACIP_TO_UNI_TEXT) {
@@ -64,6 +64,7 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
                                                                       false),
                                                  whichConversion,
                                                  warningLevel,
+                                                 shortMessages,
                                                  colors);
             ps.close();
         } catch (FileNotFoundException e) {

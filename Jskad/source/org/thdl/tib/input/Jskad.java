@@ -268,7 +268,7 @@ public class Jskad extends JPanel implements DocumentListener {
 
             fileMenu = new JMenu("File");
 
-            JMenuItem newItem = new JMenuItem("New");
+            JMenuItem newItem = new JMenuItem("New...");
 //            newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,java.awt.Event.CTRL_MASK)); //Ctrl-n
             newItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
@@ -652,7 +652,7 @@ public class Jskad extends JPanel implements DocumentListener {
         JMenu helpMenu = new JMenu("Help");
 
         {
-            JMenuItem helpItem = new JMenuItem("Help");
+            JMenuItem helpItem = new JMenuItem("Help...");
             helpItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
                         CalHTMLPane helpPane = new CalHTMLPane();
@@ -672,7 +672,7 @@ public class Jskad extends JPanel implements DocumentListener {
         }
 
         {
-            JMenuItem helpItem = new JMenuItem("Jskad on the Web");
+            JMenuItem helpItem = new JMenuItem("Jskad on the Web...");
             helpItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
                         CalHTMLPane onlineHelpPane = new CalHTMLPane();
@@ -692,7 +692,7 @@ public class Jskad extends JPanel implements DocumentListener {
         for (int i = 0; i < keybdMgr.size(); i++) {
             final JskadKeyboard kbd = keybdMgr.elementAt(i);
             if (kbd.hasQuickRefFile()) {
-                JMenuItem keybdItem = new JMenuItem(kbd.getIdentifyingString());
+                JMenuItem keybdItem = new JMenuItem(kbd.getIdentifyingString() + "...");
                 keybdItem.addActionListener(new ThdlActionListener() {
                         public void theRealActionPerformed(ActionEvent e) {
                             new SimpleFrame(kbd.getIdentifyingString(),
@@ -712,7 +712,7 @@ public class Jskad extends JPanel implements DocumentListener {
         helpMenu.addSeparator();
 
         {
-            JMenuItem aboutItem = new JMenuItem("About");
+            JMenuItem aboutItem = new JMenuItem("About...");
             aboutItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
                         JOptionPane.showMessageDialog(Jskad.this,

@@ -10,7 +10,7 @@ License for the specific terms governing rights and limitations under the
 License. 
 
 The Initial Developer of this software is the Tibetan and Himalayan Digital
-Library (THDL). Portions created by the THDL are Copyright 2003 THDL.
+Library (THDL). Portions created by the THDL are Copyright 2003-2004 THDL.
 All Rights Reserved. 
 
 Contributor(s): ______________________________________.
@@ -37,11 +37,14 @@ import org.thdl.tib.text.DuffCode;
 */
 public class ACIPConverter {
 
-    /** Command-line converter.  Gives error messages on standard
-     *  output about why we can't convert the document perfectly and
-     *  exits with non-zero return code, or is silent otherwise and
-     *  exits with code zero.  <p>FIXME: not so efficient; copies the
-     *  whole file into memory first. */
+    /** Command-line converter for testing only -- use
+     *  org.thdl.tib.input.TibetanConverter for production work.
+     *  Gives error messages on standard output about why we can't
+     *  convert the document perfectly and exits with non-zero return
+     *  code, or is silent otherwise and exits with code zero.
+     *
+     *  <p>FIXME: not so efficient; copies the whole file into memory
+     *  first. */
     public static void main(String[] args)
         throws IOException
     {
@@ -50,13 +53,20 @@ public class ACIPConverter {
         ThdlOptions.setUserPreference("thdl.rely.on.system.tm.fonts", true);
         ThdlOptions.setUserPreference("thdl.debug", true);
 
+        // Only developers should use this.
+        if (!ThdlOptions.getBooleanOption("thdl.debug")) {
+            System.err.println("Use org.thdl.tib.input.TibetanConverter for production work, not ACIPConverter.");
+            System.exit(1);
+        }
+
         boolean verbose = true;
         if (args.length != 1) {
             System.out.println("Bad args!  Need just the name of the ACIP text file.");
         }
         StringBuffer errors = new StringBuffer();
-        int maxErrors = 1000; // DLC NOW PER CAPITA
-        ArrayList al = ACIPTshegBarScanner.scanFile(args[0], errors, maxErrors - 1);
+        int maxErrors = 1000; // FIXME: make this PER CAPITA or else large ACIP Tibetan files are not converted for fear that they are English
+        boolean shortMessages = false;
+        ArrayList al = ACIPTshegBarScanner.scanFile(args[0], errors, maxErrors - 1, shortMessages);
 
         if (null == al) {
             System.err.println(maxErrors + " or more lexical errors occurred while scanning ACIP input file; is this");
@@ -89,7 +99,7 @@ public class ACIPConverter {
             putWarningsInOutput = true;
         }
         convertToTMW(al, System.out, errors, warnings, null,
-                     putWarningsInOutput, warningLevel, colors);
+                     putWarningsInOutput, warningLevel, shortMessages, colors);
         int retCode = 0;
         if (errors.length() > 0) {
             System.err.println("Errors converting ACIP input file: ");
@@ -131,13 +141,15 @@ public class ACIPConverter {
                                        boolean[] hasWarnings,
                                        boolean writeWarningsToResult,
                                        String warningLevel,
+                                       boolean shortMessages,
                                        boolean colors)
         throws IOException
     {
         TibetanDocument tdoc = new TibetanDocument();
         boolean rv
             = convertToTMW(scan, tdoc, errors, warnings, hasWarnings,
-                           writeWarningsToResult, warningLevel, colors,
+                           writeWarningsToResult, warningLevel,
+                           shortMessages, colors,
                            new int[] { tdoc.getLength() });
         tdoc.writeRTFOutputStream(out);
         return rv;
@@ -159,13 +171,15 @@ public class ACIPConverter {
                                        boolean[] hasWarnings,
                                        boolean writeWarningsToResult,
                                        String warningLevel,
+                                       boolean shortMessages,
                                        boolean colors,
                                        int[] loc)
         throws IOException
     {
         return convertTo(false, true, scan, null, tdoc, errors, warnings,
                          hasWarnings, writeWarningsToResult, warningLevel,
-                         colors, loc, loc[0] == tdoc.getLength());
+                         shortMessages, colors, loc,
+                         loc[0] == tdoc.getLength());
     }
 
     /** Returns UTF-8 encoded Unicode.  A bit indirect, so use this
@@ -175,22 +189,23 @@ public class ACIPConverter {
      *  written to the result.  If warnings occur in scanning the ACIP
      *  or in converting a tsheg bar, then they are appended to
      *  warnings if warnings is non-null, and they are written to the
-     *  result if writeWarningsToResult is true.  Returns the
-     *  conversion upon perfect success or if there were merely
-     *  warnings, null if errors occurred.
-     */
+     *  result if writeWarningsToResult is true.  Error and warning
+     *  messages are long and self-contained unless shortMessages is
+     *  true.  Returns the conversion upon perfect success or if there
+     *  were merely warnings, null if errors occurred.  */
     public static String convertToUnicodeText(String acip,
                                               StringBuffer errors,
                                               StringBuffer warnings,
                                               boolean writeWarningsToResult,
-                                              String warningLevel) {
+                                              String warningLevel,
+                                              boolean shortMessages) {
         ByteArrayOutputStream sw = new ByteArrayOutputStream();
-        ArrayList al = ACIPTshegBarScanner.scan(acip, errors, -1);
+        ArrayList al = ACIPTshegBarScanner.scan(acip, errors, -1, shortMessages);
         try {
             if (null != al) {
                 convertToUnicodeText(al, sw, errors,
                                      warnings, null, writeWarningsToResult,
-                                     warningLevel);
+                                     warningLevel, shortMessages);
                 return sw.toString("UTF-8");
             } else {
                 return null;
@@ -227,12 +242,13 @@ public class ACIPConverter {
                                                StringBuffer warnings,
                                                boolean[] hasWarnings,
                                                boolean writeWarningsToOut,
-                                               String warningLevel)
+                                               String warningLevel,
+                                               boolean shortMessages)
         throws IOException
     {
         return convertTo(true, false, scan, out, null, errors, warnings,
-                         hasWarnings, writeWarningsToOut, warningLevel, false,
-                         new int[] { -1 } , true);
+                         hasWarnings, writeWarningsToOut, warningLevel,
+                         shortMessages, false, new int[] { -1 } , true);
     }
 
     private static boolean peekaheadFindsSpacesAndComma(ArrayList /* of TString */ scan,
@@ -263,6 +279,7 @@ public class ACIPConverter {
                                      boolean[] hasWarnings,
                                      boolean writeWarningsToOut,
                                      String warningLevel,
+                                     boolean shortMessages,
                                      boolean colors,
                                      // tdocLocation[0] is an
                                      // input-output parameter.  It's
@@ -284,6 +301,10 @@ public class ACIPConverter {
             throw new IllegalArgumentException("ACIP->Uni.rtf requires a TibetanDocument");
         if (null != out && !(toUnicode && !toRTF))
             throw new IllegalArgumentException("That stream is only used in ACIP->Uni.txt mode");
+        if (null != out && null != tdoc)
+            throw new IllegalArgumentException("Errors are not treated properly yet; do one conversion and then the other.  Is performance important enough to risk improper output for you?");
+        if (null == out && null == tdoc)
+            throw new IllegalArgumentException("Why would you?");
         int smallFontSize = -1;
         int regularFontSize = -1;
         if (null != tdoc) {
@@ -325,7 +346,7 @@ public class ACIPConverter {
             if (stype == TString.ERROR) {
                 // leave lastGuyWasNonPunct and lastGuy alone; WARNINGs and ERRORs are invisible.
                 hasErrors = true;
-                String text = "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: " + s.getText() + "]";
+                String text = "[#ERROR " + s.getText() + "]";
                 if (null != writer) writer.write(text);
                 if (null != tdoc) {
                     tdoc.appendRoman(tdocLocation[0], text, Color.RED);
@@ -333,7 +354,7 @@ public class ACIPConverter {
                 }
             } else if (stype == TString.TSHEG_BAR_ADORNMENT) {
                 if (lastGuyWasNonPunct) {
-                    String err = "[#ERROR CONVERTING ACIP DOCUMENT: This converter cannot convert the ACIP {" + s.getText() + "} to Tibetan because it is unclear what the result should be.]";
+                    String err = "[#ERROR " + ErrorsAndWarnings.getMessage(133, shortMessages, s.getText()) + "]";
                     if (null != writer) {
                         String uni = ACIPRules.getUnicodeFor(s.getText(), false);
                         if (null == uni) {
@@ -363,7 +384,7 @@ public class ACIPConverter {
             } else if (stype == TString.WARNING) {
                 // leave lastGuyWasNonPunct and lastGuy alone; WARNINGs and ERRORs are invisible.
                 if (writeWarningsToOut) {
-                    String text = "[#WARNING CONVERTING ACIP DOCUMENT: Lexical warning: " + s.getText() + "]";
+                    String text = "[#WARNING " + s.getText() + "]";
                     if (null != writer) writer.write(text);
                     if (null != tdoc) {
                         tdoc.appendRoman(tdocLocation[0], text, Color.RED);
@@ -372,7 +393,7 @@ public class ACIPConverter {
                 }
                 if (null != hasWarnings) hasWarnings[0] = true;
                 if (null != warnings) {
-                    warnings.append("Warning: Lexical warning: ");
+                    warnings.append("Warning: ");
                     warnings.append(s.getText());
                     warnings.append('\n');
                 }
@@ -399,10 +420,10 @@ public class ACIPConverter {
                         TPairList pls[] = TPairListFactory.breakACIPIntoChunks(s.getText(), false);
                         String acipError;
 
-                        if ((acipError = pls[0].getACIPError()) != null
-                            && (null == pls[1] || pls[1].getACIPError() != null)) {
+                        if ((acipError = pls[0].getACIPError(s.getText(), shortMessages)) != null
+                            && (null == pls[1] || pls[1].getACIPError(s.getText(), shortMessages) != null)) {
                             hasErrors = true;
-                            String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: The tsheg bar (\"syllable\") " + s.getText() + " has these errors: " + acipError + "]";
+                            String errorMessage = "[#ERROR " + acipError + "]";
                             if (null != writer) writer.write(errorMessage);
                             if (null != tdoc) {
                                 tdoc.appendRoman(tdocLocation[0], errorMessage,
@@ -417,7 +438,10 @@ public class ACIPConverter {
                                               ? null : pls[1].getParseTree());
                             if (null == pt0 && null == pt1) {
                                 hasErrors = true;
-                                String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: The tsheg bar (\"syllable\") " + s.getText() + " is essentially nothing.]";
+                                String errorMessage
+                                    = ("[#ERROR "
+                                       + ErrorsAndWarnings.getMessage(130, shortMessages, s.getText())
+                                       + "]");
                                 if (null != writer) writer.write(errorMessage);
                                 if (null != tdoc) {
                                     tdoc.appendRoman(tdocLocation[0], errorMessage,
@@ -431,16 +455,16 @@ public class ACIPConverter {
                                 TStackList sl1 = ((null == pt1)
                                                   ? null : pt1.getBestParse());
                                 if (null == sl0 && null == sl1) {
-                                    // I don't think this can happen
-                                    // nowadays; early in the
-                                    // converter's life, parsing of
-                                    // tsheg bars was handled
-                                    // differently, but now, I think
-                                    // this is impossible.
-                                    ThdlDebug.noteIffyCode();
+                                    // {A-DZU} causes this, for example.
                                     hasErrors = true;
-                                    String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: The tsheg bar (\"syllable\") " + s.getText() + " has no legal parses.]";
-                                    if (null != writer) writer.write(errorMessage);
+                                    String errorMessage =
+                                        "[#ERROR "
+                                        + ErrorsAndWarnings.getMessage(134,
+                                                                       shortMessages,
+                                                                       s.getText())
+                                        + "]";
+                                    if (null != writer)
+                                        writer.write(errorMessage);
                                     if (null != tdoc) {
                                         tdoc.appendRoman(tdocLocation[0],
                                                          errorMessage,
@@ -474,12 +498,13 @@ public class ACIPConverter {
                                     if ("None" != warningLevel) {
                                         warning = pt.getWarning(warningLevel,
                                                                 pl,
-                                                                s.getText());
+                                                                s.getText(),
+                                                                shortMessages);
                                     }
                                     if (null != warning) {
                                         if (writeWarningsToOut) {
                                             String text
-                                                = ("[#WARNING CONVERTING ACIP DOCUMENT: "
+                                                = ("[#WARNING "
                                                    + warning + "]");
                                             if (null != writer) writer.write(text);
                                             if (null != tdoc) {
@@ -504,12 +529,16 @@ public class ACIPConverter {
                                         // in TMW.  That means there
                                         // was probably a typo in the
                                         // input.
-                                        if ("None" != warningLevel) {
-                                            Object[] trialDuff = sl.getDuff();
+                                        if (ErrorsAndWarnings.isEnabled(511, warningLevel)) {
+                                            Object[] trialDuff
+                                                = sl.getDuff(shortMessages,
+                                                             false);
                                             for (int ii = 0; ii < trialDuff.length; ii++) {
                                                 if (trialDuff[ii] instanceof String) {
+                                                    if (!((String)trialDuff[ii]).startsWith("511"))
+                                                        throw new Error("I thought 511 was the only beast like this; FIXME: make this an assertion 324xd3");
                                                     String bwarning
-                                                        = "[#WARNING CONVERTING ACIP DOCUMENT: "
+                                                        = "[#WARNING "
                                                         + (String)trialDuff[ii] + "]";
                                                     unicode = bwarning + unicode;
                                                     if (null != hasWarnings) hasWarnings[0] = true;
@@ -522,7 +551,7 @@ public class ACIPConverter {
                                         }
                                     }
                                     if (null != tdoc) {
-                                        duff = sl.getDuff();
+                                        duff = sl.getDuff(shortMessages, true);
                                         BoolTriple bt;
                                         if (colors && sl.isLegalTshegBar(true).isLegal && !sl.isLegalTshegBar(false).isLegal) {
                                             color = Color.YELLOW;
@@ -657,7 +686,24 @@ public class ACIPConverter {
                                 char ch = s.getText().charAt(0);
                                 if (ch >= '\uF021' && ch <= '\uF0FF') {
                                     hasErrors = true;
-                                    String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: The Unicode escape '" + ch + "' with ordinal " + (int)ch + " is in the private-use area (PUA) of Unicode and will thus not be written out into the output lest you think other tools will be able to understand this non-standard construction.]";
+                                    String errorMessage =
+                                        "[#ERROR "
+                                        + ErrorsAndWarnings.getMessage(135,
+                                                                       shortMessages,
+                                                                       "" + ch)
+                                        + "]";
+                                    writer.write(errorMessage);
+                                    if (null != errors)
+                                        errors.append(errorMessage + "\n");
+                                    continue; // FIXME: dropping output if null != tdoc
+                                } else if (org.thdl.tib.text.tshegbar.UnicodeUtils.isReservedTibetanCode(ch)) {
+                                    hasErrors = true;
+                                    String errorMessage =
+                                        "[#ERROR "
+                                        + ErrorsAndWarnings.getMessage(138,
+                                                                       shortMessages,
+                                                                       "" + ch)
+                                        + "]";
                                     writer.write(errorMessage);
                                     if (null != errors)
                                         errors.append(errorMessage + "\n");
@@ -669,7 +715,12 @@ public class ACIPConverter {
                                 duff = TibetanMachineWeb.mapUnicodeToTMW(s.getText().charAt(0));
                                 if (null == duff) {
                                     hasErrors = true;
-                                    String errorMessage = "[#ERROR CONVERTING ACIP DOCUMENT: The Unicode escape with ordinal " + (int)s.getText().charAt(0) + " does not match up with any TibetanMachineWeb glyph.]";
+                                    String errorMessage =
+                                        "[#ERROR "
+                                        + ErrorsAndWarnings.getMessage(136,
+                                                                       shortMessages,
+                                                                       s.getText())
+                                        + "]";
                                     tdoc.appendRoman(tdocLocation[0],
                                                      errorMessage,
                                                      Color.RED);
@@ -700,7 +751,7 @@ public class ACIPConverter {
                                 else {
                                     hasErrors = true;
                                     String emsg
-                                        = "[ERROR: " + (String)duff[j] + "]";
+                                        = "[ERROR " + (String)duff[j] + "]";
                                     if (null != errors)
                                         errors.append(emsg + "\n");
                                     tdoc.appendRoman(tdocLocation[0],

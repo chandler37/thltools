@@ -10,7 +10,7 @@ License for the specific terms governing rights and limitations under the
 License. 
 
 The Initial Developer of this software is the Tibetan and Himalayan Digital
-Library (THDL). Portions created by the THDL are Copyright 2001 THDL.
+Library (THDL). Portions created by the THDL are Copyright 2001, 2004 THDL.
 All Rights Reserved. 
 
 Contributor(s): ______________________________________.
@@ -45,50 +45,57 @@ package org.thdl.util;
  */
 public final class ThdlLazyException extends Error {
 
-	/**
-	 * the wrapped exception
-	 */
-	private Throwable wrappedException = null;
+    /**
+     * the wrapped exception
+     */
+    private Throwable wrappedException = null;
 
-	/**
-	 * Constructor for ThdlLazyException.
-	 */
-	public ThdlLazyException() {
-		super();
-	}
+    /**
+     * Constructor for ThdlLazyException.
+     */
+    public ThdlLazyException() {
+        super();
+    }
 
-	/**
-	 * Constructor for ThdlLazyException.
-	 * @param descrip description
-	 */
-	public ThdlLazyException(String descrip) {
-		super(descrip);
-	}
+    /**
+     * Constructor for ThdlLazyException.
+     * @param descrip description
+     */
+    public ThdlLazyException(String descrip) {
+        super(descrip);
+    }
 
-	/**
-	 * Constructor for ThdlLazyException.
-	 * @param descrip description
-	 * @param realException the exception the user should actually care about
-	 */
-	public ThdlLazyException(String descrip, Throwable realException) {
-		super(descrip);
-		wrappedException = realException;
-	}
+    /**
+     * Constructor for ThdlLazyException.
+     * @param descrip description
+     * @param realException the exception the user should actually care about
+     */
+    public ThdlLazyException(String descrip, Throwable realException) {
+        super(descrip);
+        wrappedException = realException;
+    }
 
-	/**
-	 * Constructor for ThdlLazyException.
-	 * @param realException the exception the user should actually care about
-	 */
-	public ThdlLazyException(Throwable realException) {
-		super();
-		wrappedException = realException;
-	}
+    /**
+     * Constructor for ThdlLazyException.
+     * @param realException the exception the user should actually care about
+     */
+    public ThdlLazyException(Throwable realException) {
+        super();
+        wrappedException = realException;
+    }
 
-	/**
-	 * Returns the wrapped exception, the one about which you should actually
-	 * be concerned.
-	 */
-	public Throwable getRealException() {
-		return wrappedException;
-	}
+    /**
+     * Returns the wrapped exception, the one about which you should actually
+     * be concerned.
+     */
+    public Throwable getRealException() {
+        return wrappedException;
+    }
+
+    public String toString() {
+        return "ThdlLazyException [" + super.toString() + "] wrapping " + ((getRealException() == null) ? "nothing" : getRealException().toString());
+    }
+    public String getMessage() {
+        return "ThdlLazyException [" + super.getMessage() + "] wrapping " + ((getRealException() == null) ? "nothing" : getRealException().getMessage());
+    }
 }

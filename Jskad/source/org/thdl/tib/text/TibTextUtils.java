@@ -333,7 +333,7 @@ public class TibTextUtils implements THDLWylieConstants {
         throws InvalidACIPException
     {
         StringBuffer errors = new StringBuffer();
-        ArrayList al = ACIPTshegBarScanner.scan(acip, errors, 500);
+        ArrayList al = ACIPTshegBarScanner.scan(acip, errors, 500, false);
         if (null == al || errors.length() > 0) {
             if (errors.length() > 0)
                 throw new InvalidACIPException(errors.toString());
@@ -350,7 +350,7 @@ public class TibTextUtils implements THDLWylieConstants {
             int tloc[] = new int[] { loc };
             ACIPConverter.convertToTMW(al, tdoc, null, null, null,
                                        putWarningsInOutput, warningLevel,
-                                       colors, tloc);
+                                       false, colors, tloc);
             return tloc[0] - loc;
         } catch (IOException e) {
             throw new Error("Can't happen: " + e);

@@ -144,3 +144,21 @@ thdl.log.line.breaking.algorithm = false
 # disappears from the input.  We turn these guys into Unicode escapes
 # when this is false.  We leave it buggy when this is true.
 thdl.do.not.fix.rtf.hex.escapes = false
+
+# ACIP->Tibetan conversions have numerous warnings.  If you want to
+# see warning 501 even at the "Some" level, just change the option
+# thdl.acip.to.tibetan.warning.severity.501 to Some.  You cannot make
+# a warning into an error, and you cannot make an error into a
+# warning.  504 and 510 cannot be downgraded; they are always
+# "Some"-level.
+thdl.acip.to.tibetan.warning.severity.501 = Most
+thdl.acip.to.tibetan.warning.severity.502 = All
+thdl.acip.to.tibetan.warning.severity.503 = All
+thdl.acip.to.tibetan.warning.severity.504 = Some
+thdl.acip.to.tibetan.warning.severity.505 = Some
+thdl.acip.to.tibetan.warning.severity.506 = Some
+thdl.acip.to.tibetan.warning.severity.507 = Most
+thdl.acip.to.tibetan.warning.severity.508 = Some
+thdl.acip.to.tibetan.warning.severity.509 = Most
+thdl.acip.to.tibetan.warning.severity.510 = Some
+thdl.acip.to.tibetan.warning.severity.511 = Some
