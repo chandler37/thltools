@@ -381,10 +381,12 @@ public class ACIPConverter {
                                         errors.append(errorMessage + "\n");
                                 } else {
                                     lastGuy = sl;
-                                    String warning
-                                        = pt.getWarning(warningLevel,
-                                                        pl,
-                                                        s.getText());
+                                    String warning = null;
+                                    if ("None" != warningLevel) {
+                                        warning = pt.getWarning(warningLevel,
+                                                                pl,
+                                                                s.getText());
+                                    }
                                     if (null != warning) {
                                         if (writeWarningsToOut) {
                                             String text
