@@ -274,7 +274,7 @@ public class Jskad extends JPanel implements DocumentListener {
 			});
 			fileMenu.add(newItem);
 
-			JMenuItem openItem = new JMenuItem("Open");
+			JMenuItem openItem = new JMenuItem("Open...");
 //			openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,java.awt.Event.CTRL_MASK)); //Ctrl-o
 			openItem.addActionListener(new ThdlActionListener() {
 				public void theRealActionPerformed(ActionEvent e) {
@@ -315,7 +315,7 @@ public class Jskad extends JPanel implements DocumentListener {
 			fileMenu.addSeparator();
 			fileMenu.add(saveItem);
 
-			JMenuItem saveAsItem = new JMenuItem("Save as");
+			JMenuItem saveAsItem = new JMenuItem("Save as...");
 			saveAsItem.addActionListener(new ThdlActionListener() {
 				public void theRealActionPerformed(ActionEvent e) {
 					saveAsFile();
