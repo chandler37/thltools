@@ -164,7 +164,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 * @see #setTibetanFontSize(int size)
 */
 	public void appendDuff(int offset, String s, MutableAttributeSet attr) {
-        appendDuff(tibetanFontSize, offset, s, attr, Color.BLACK);
+        appendDuff(tibetanFontSize, offset, s, attr, Color.black);
     }
 
 /**
@@ -223,7 +223,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 	}
 
 	public int insertDuff(int pos, DuffData[] glyphs) {
-        return insertDuff(tibetanFontSize, pos, glyphs, true, Color.BLACK);
+        return insertDuff(tibetanFontSize, pos, glyphs, true, Color.black);
 	}
 
 /**
@@ -307,7 +307,7 @@ public class TibetanDocument extends DefaultStyledDocument {
 
 
 	private int insertDuff(int fontSize, int pos, DuffData[] glyphs, boolean asTMW) {
-        return insertDuff(fontSize, pos, glyphs, asTMW, Color.BLACK);
+        return insertDuff(fontSize, pos, glyphs, asTMW, Color.black);
     }
 	private int insertDuff(int fontSize, int pos, DuffData[] glyphs, boolean asTMW, Color color) {
 		if (glyphs == null)

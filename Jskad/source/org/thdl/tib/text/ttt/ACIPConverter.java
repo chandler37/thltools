@@ -339,8 +339,8 @@ public class ACIPConverter {
                 = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
         boolean lastGuyWasNonPunct = false;
         TStackList lastGuy = null;
-        Color lastColor = Color.BLACK;
-        Color color = Color.BLACK;
+        Color lastColor = Color.black;
+        Color color = Color.black;
         boolean outputCurlyBracketsAroundFolioMarkers
             = ThdlOptions.getBooleanOption("thdl.acip.to.x.output.curly.brackets.around.folio.markers");
 
@@ -377,7 +377,7 @@ public class ACIPConverter {
                         } else {
                             tdoc.appendDuffCode(tdocLocation[0]++,
                                                 TibetanMachineWeb.getGlyph(wylie),
-                                                Color.BLACK);
+                                                Color.black);
                         }
                     }
                 } else {
@@ -413,7 +413,7 @@ public class ACIPConverter {
                                && stype == TString.FOLIO_MARKER) ? "}" : ""));
                     if (null != writer) writer.write(text);
                     if (null != tdoc) {
-                        tdoc.appendRoman(tdocLocation[0], text, Color.BLACK);
+                        tdoc.appendRoman(tdocLocation[0], text, Color.black);
                         tdocLocation[0] += text.length();
                     }
                 } else {
@@ -560,7 +560,7 @@ public class ACIPConverter {
                                         if (colors && sl.isLegalTshegBar(true).isLegal && !sl.isLegalTshegBar(false).isLegal) {
                                             color = Color.YELLOW;
                                         } else if (colors && (bt = sl.isLegalTshegBar(false)).isLegal && !bt.isLegalButSanskrit()) {
-                                            color = Color.BLACK;
+                                            color = Color.black;
                                         } else {
                                             // Sanskrit.
 
@@ -581,7 +581,7 @@ public class ACIPConverter {
                             }
                         }
                     } else {
-                        color = Color.BLACK;
+                        color = Color.black;
                         if (stype == TString.START_SLASH) {
                             if (null != writer) unicode = "\u0F3C";
                             if (null != tdoc) duff = new Object[] { TibetanMachineWeb.getGlyph("(") };
@@ -626,7 +626,7 @@ public class ACIPConverter {
                                         DuffCode spaceDuff = TibetanMachineWeb.getGlyph("_");
                                         if (null == spaceDuff) throw new Error("whitespace duff");
                                         tdoc.appendDuffCode(tdocLocation[0]++,
-                                                            spaceDuff, Color.BLACK);
+                                                            spaceDuff, Color.black);
                                         continue; // FIXME: if null != writer, output was just dropped.
                                     }
                                 }
@@ -657,7 +657,7 @@ public class ACIPConverter {
                                         || s.getText().equals("\n")
                                         || s.getText().equals("\r\n")) {
                                         tdoc.appendRoman(tdocLocation[0], s.getText(),
-                                                         Color.BLACK);
+                                                         Color.black);
                                         tdocLocation[0] += s.getText().length();
                                         continue; // FIXME: this means the unicode above doesn't go into the output if null != writer && null != tdoc?
                                     } else {
