@@ -1098,5 +1098,11 @@ public class DuffPaneTest extends TestCase {
         ensureKeysGiveCorrectWylie("don't touch my coffee/that makes me very angry/supersize my drink",
                                    "dona'ata tocha mya cofafe/thata makesa me veraya angaraya/superasize mya drinaka");
 
+        {
+            // r-w and r+w are tricky cases in tibwn.ini -- the only ones
+            // like this according to bug #800166.
+            e("rwa");
+            e("r+wa");
+        }
     }
 }
