@@ -207,21 +207,35 @@
          am lazy).  I stopped a couple from so doing, but I'm not sure
          if I got them all. -->
 
+    <!-- DLC FIXME: If you change *build.xml, then 'ant
+         dc-nightly-build' will be using the OLD build.xml, not the new
+         one.  You should update and then use a new ant process to read
+         the potentially revised buildfiles. -->
     <antcall target="cvs-update"/>
+
     <antcall target="web-start-releases"/>
+
     <antcall target="self-contained-dist"/>
+
+    <!-- vanilla JARs: -->
     <antcall target="dist"/>
+
     <antcall target="public-javadocs-dist">
       <param name="DSTAMP" value="today"/>
     </antcall>
     <unzip src="${dist}/docs/public-javadocs-today.zip" dest="${dist}/docs/public"/>
+
     <antcall target="private-javadocs-dist">
       <param name="DSTAMP" value="today"/>
     </antcall>
     <unzip src="${dist}/docs/private-javadocs-today.zip" dest="${dist}/docs/private"/>
+
     <antcall target="src-dist">
       <param name="DSTAMP" value="today"/>
     </antcall>
+
+    <antcall target="check-report"/>
+
     <echo file="${dist}/DateStampForNightlyBuilds.html"
           append="false"><![CDATA[<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
