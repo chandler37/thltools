@@ -443,16 +443,14 @@ public final class LegalTshegBar
             new String( new char[] {
                 EWC_achung, EWC_ma
             }),
-            THDLWylieConstants.ACHUNG + THDLWylieConstants.WYLIE_aVOWEL
-            + THDLWylieConstants.MA
+            THDLWylieConstants.ACHUNG + THDLWylieConstants.MA
         },
         {
             // meaning or, as opposed to and:
             new String( new char[] {
                 EWC_achung, EWC_nga
             }),
-            THDLWylieConstants.ACHUNG + THDLWylieConstants.WYLIE_aVOWEL
-            + THDLWylieConstants.NGA
+            THDLWylieConstants.ACHUNG + THDLWylieConstants.NGA
         }
     };
 

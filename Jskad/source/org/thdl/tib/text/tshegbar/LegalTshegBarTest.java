@@ -39,7 +39,7 @@ public class LegalTshegBarTest extends TestCase implements UnicodeConstants {
 	}
 
     /** Tests the getThdlWylie() method to see if we 
-        handle "le'u'i'o", "sgom pa'am", "sgom pa'ang", etc.
+        handle "le'u'i'o", "sgom pa'm", "sgom pa'ng", etc.
     */
     public void testGetThdlWylieForLongSuffixLikeThings() {
         assertTrue(new LegalTshegBar(EW_ABSENT, EW_ABSENT, EWC_la,
@@ -61,15 +61,15 @@ public class LegalTshegBarTest extends TestCase implements UnicodeConstants {
                                              EWC_achung, EWV_o,
                                              EWC_achung, EWC_ma
                                              }),
-                                     EW_ABSENT, EW_ABSENT).getThdlWylie().toString().equals("la'u'i'o'am'ang'o'am"));
+                                     EW_ABSENT, EW_ABSENT).getThdlWylie().toString().equals("la'u'i'o'm'ng'o'm"));
         assertTrue(new LegalTshegBar(EW_ABSENT, EW_ABSENT, EWC_pa,
                                      EW_ABSENT, false, false,
                                      new String(new char[] { EWC_achung, EWC_ma }),
-                                     EW_ABSENT, EW_ABSENT).getThdlWylie().toString().equals("pa'am"));
+                                     EW_ABSENT, EW_ABSENT).getThdlWylie().toString().equals("pa'm"));
         assertTrue(new LegalTshegBar(EW_ABSENT, EW_ABSENT, EWC_pa,
                                      EW_ABSENT, false, false,
                                      new String(new char[] { EWC_achung, EWC_nga }),
-                                     EW_ABSENT, EW_ABSENT).getThdlWylie().toString().equals("pa'ang"));
+                                     EW_ABSENT, EW_ABSENT).getThdlWylie().toString().equals("pa'ng"));
     }
 
     /** Tests the getThdlWylie() method and one of the constructors. */

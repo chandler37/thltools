@@ -867,7 +867,6 @@ public class TibTextUtils implements THDLWylieConstants {
                     // prepend:
                     tailEndWylie.insert(0,
                                         ACHUNG
-                                        + aVowelToUseAfter(ACHUNG)
                                         + TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(effectiveSize + 1)));
                     effectiveSize -= 2;
                 }
