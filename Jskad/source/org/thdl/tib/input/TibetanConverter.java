@@ -48,15 +48,12 @@ public class TibetanConverter implements FontConverterConstants {
     static final String rtfErrorMessage
         = "The Rich Text Format (RTF) file selected contains constructs that\nJskad cannot handle.  If you got the RTF file from saving a Word\ndocument as RTF, try saving that same document as RTF in\nWord 2000 instead of Word XP or in Word 97 instead of\nWord 2000.  Older versions of Word produce RTF that Jskad\ncan more easily deal with.  OpenOffice and StarOffice may also\nproduce better-behaved RTF.";
 
-    static {
-        // No need for the TM or TMW fonts.
-        System.setProperty("thdl.rely.on.system.tmw.fonts", "true");
-        System.setProperty("thdl.rely.on.system.tm.fonts", "true");
-    }
-
     /**
      *  Runs the converter. */
 	public static void main(String[] args) {
+        // No need for the TM or TMW fonts.
+        System.setProperty("thdl.rely.on.system.tmw.fonts", "true");
+        System.setProperty("thdl.rely.on.system.tm.fonts", "true");
 
         // Runs on Linux/Unix boxes without X11 servers:
         System.setProperty("java.awt.headless", "true");
@@ -108,31 +105,45 @@ public class TibetanConverter implements FontConverterConstants {
                          || (findAllNonTMMode
                              = args[0].equals("--find-all-non-tm"))
                 ))) {
-                out.println("TibetanConverter [--find-all-non-tmw | --find-some-non-tmw");
-                out.println("                  | --to-tibetan-machine | --to-tibetan-machine-web");
-                out.println("                  | --to-unicode | --to-wylie | --to-acip] RTF_file");
-                out.println(" | TibetanConverter --acip-to-unicode TXT_file");
+                out.println("TibetanConverter --find-all-non-tmw | --find-some-non-tmw");
+                out.println("                 | --to-tibetan-machine | --to-tibetan-machine-web");
+                out.println("                 | --to-unicode | --to-wylie | --to-acip RTF_file");
+                out.println(" | TibetanConverter --acip-to-unicode | --acip-to-tmw TXT_file");
                 out.println(" | TibetanConverter [--version | -v | --help | -h]");
                 out.println("");
                 out.println("Distributed under the terms of the THDL Open Community License Version 1.0.");
                 out.println("");
                 out.println("Usage:");
                 out.println(" -v | --version for version info");
+                out.println("");
                 out.println(" -h | --help for this message");
+                out.println("");
                 out.println(" --to-tibetan-machine to convert TibetanMachineWeb to TibetanMachine");
+                out.println("");
                 out.println(" --to-unicode to convert TibetanMachineWeb to Unicode");
+                out.println("");
                 out.println(" --to-tibetan-machine-web to convert TibetanMachine to TibetanMachineWeb");
+                out.println("");
                 out.println(" --to-wylie to convert TibetanMachineWeb to THDL Extended Wylie");
+                out.println("");
                 out.println(" --to-acip to convert TibetanMachineWeb to ACIP");
+                out.println("");
                 out.println(" --acip-to-unicode to convert ACIP text file to Unicode text file");
+                out.println("");
+                out.println(" --acip-to-tmw to convert ACIP text file to Tibetan Machine Web RTF File.");
+                out.println("");
                 out.println(" --find-all-non-tmw to locate all characters in the input document that are");
                 out.println("   not in Tibetan Machine Web fonts, exit zero if and only if none found");
+                out.println("");
                 out.println(" --find-some-non-tmw to locate all distinct characters in the input document");
                 out.println("   not in Tibetan Machine Web fonts, exit zero if and only if none found");
+                out.println("");
                 out.println(" --find-all-non-tm to locate all characters in the input document that are");
                 out.println("   not in Tibetan Machine fonts, exit zero if and only if none found");
+                out.println("");
                 out.println(" --find-some-non-tm to locate all distinct characters in the input document");
                 out.println("   not in Tibetan Machine fonts, exit zero if and only if none found");
+                out.println("");
                 out.println("");
                 out.println(" In --to... and --acip-to... modes, needs one argument, the name of the");
                 out.println(" TibetanMachineWeb RTF");

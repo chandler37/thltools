@@ -788,11 +788,14 @@ public class ACIPTshegBarScanner {
                 // Don't add in a "\r\n" or "\n" unless there's a
                 // blank line.
                 boolean rn = false;
+                boolean realNewline = false;
                 if (('\n' != ch && '\r' != ch)
-                    || ((rn = ('\n' == ch && i >= 3 && s.charAt(i-3) == '\r' && s.charAt(i-2) == '\n' && s.charAt(i-1) == '\r'))
-                        || ('\n' == ch && i >= 1 && s.charAt(i-1) == '\n'))) {
-                    al.add(new ACIPString(rn ? s.substring(i - 1, i+1) : s.substring(i, i+1),
-                                          ACIPString.TIBETAN_PUNCTUATION));
+                    || (realNewline
+                        = ((rn = ('\n' == ch && i >= 3 && s.charAt(i-3) == '\r' && s.charAt(i-2) == '\n' && s.charAt(i-1) == '\r'))
+                           || ('\n' == ch && i >= 1 && s.charAt(i-1) == '\n')))) {
+                    for (int h = 0; h < (realNewline ? 2 : 1); h++)
+                        al.add(new ACIPString(rn ? s.substring(i - 1, i+1) : s.substring(i, i+1),
+                                              ACIPString.TIBETAN_PUNCTUATION));
                 }
                 startOfString = i+1;
                 currentType = ACIPString.ERROR;

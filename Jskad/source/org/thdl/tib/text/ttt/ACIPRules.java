@@ -222,7 +222,7 @@ class ACIPRules {
      *  mark.  Returns null if there is no such EWTS. */
     static final String getWylieForACIPOther(String acip) {
         if (acipOther2wylie == null) {
-            acipOther2wylie = new HashMap(37);
+            acipOther2wylie = new HashMap(20);
 
             // DLC FIXME: check all these again.
             acipOther2wylie.put(",", "/");

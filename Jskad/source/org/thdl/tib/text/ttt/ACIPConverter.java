@@ -132,7 +132,7 @@ public class ACIPConverter {
         throws IOException
     {
         TibetanDocument tdoc = new TibetanDocument();
-		tdoc.setRomanAttributeSet("Courier", 14); // DLC make me configurable.
+		tdoc.setRomanAttributeSet("Courier", 20); // DLC make me configurable.
         boolean rv
             = convertToTMW(scan, tdoc, errors, warnings,
                            writeWarningsToResult, warningLevel);
@@ -393,11 +393,13 @@ public class ACIPConverter {
                             if (!done) {
                                 if (null != writer) unicode = ACIPRules.getUnicodeFor(s.getText(), false);
                                 if (null != tdoc) {
-                                    if (s.getText().equals("\r") || s.getText().equals("\t") || s.getText().equals("\n")) {
+                                    if (s.getText().equals("\r")
+                                        || s.getText().equals("\t")
+                                        || s.getText().equals("\n")
+                                        || s.getText().equals("\r\n")) {
                                         tdoc.appendRoman(s.getText());
                                         continue;
-                                    }
-                                    else {
+                                    } else {
                                         String wy = ACIPRules.getWylieForACIPOther(s.getText());
                                         if (null == wy) throw new Error("No wylie for ACIP " + s.getText());
                                         duff = new DuffCode[] { TibetanMachineWeb.getGlyph(wy) };
