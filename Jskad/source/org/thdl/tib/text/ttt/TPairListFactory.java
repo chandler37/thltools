@@ -25,9 +25,9 @@ class TPairListFactory {
     /** This class is not instantiable. */
     private TPairListFactory() { }
 
-    /** Returns a new TPairList instance.  Breaks an ACIP tsheg bar
-     *  (roughly a &quot;syllable&quot;) into chunks; this computes l'
-     *  (for you design doc enthusiasts).
+    /** Returns one or two new TPairList instances.  Breaks an ACIP
+     *  tsheg bar (roughly a &quot;syllable&quot;) into chunks; this
+     *  computes l' (for you design doc enthusiasts).
      *
      *  <p>Here's a rough sketch of the algorithm: run along getting
      *  the current TPair as big as you can.  If you get it very
@@ -41,16 +41,27 @@ class TPairListFactory {
      *  suboptimal", i.e. we use TPairList.hasSimpleError().</p>
      *
      *  <p>There is one case where we break things up into two pair
-     *  lists -- I found out about this case too late to do anything
-     *  clean about it.  SNYAM'AM, e.g., breaks up into [(S . ), (NY
-     *  . A), (M . 'A), (M . )], which is incorrect -- [(S . ), (NY
-     *  . A), (M . ), (' . A), (M . )] is correct.  But we don't know
-     *  which is correct without parsing, so both are returned.  The
-     *  clean treatment (low-priority FIXME) would be to lex into a
-     *  form that didn't insist 'A was either a vowel or a consonant.
-     *  Then the parser would figure it out.</p>
+     *  lists if and only if specialHandlingForAppendages is true -- I
+     *  thought the converter had a bug because I saw SNYAM'AM in
+     *  KD0003I2.ACT.  I asked Robert Chilton, though, and he said
+     *  "SNYAM'AM " was likely a typo for "SNYAM 'AM", so leave
+     *  specialHandlingForAppendages false.</p>
+     *
+     *  <p>I found out about (OK, as it turns out, imagined) this case
+     *  too late to do anything clean about it.  SNYAM'AM, e.g.,
+     *  breaks up into [(S . ), (NY . A), (M . 'A), (M . )], which is
+     *  incorrect -- [(S . ), (NY . A), (M . ), (' . A), (M . )] is
+     *  correct.  But we don't know which is correct without parsing,
+     *  so both are returned.  The clean treatment would be to lex
+     *  into a form that didn't insist 'A was either a vowel or a
+     *  consonant.  Then the parser would figure it out.  But don't
+     *  bother, because specialHandlingForAppendages should be false
+     *  always.</p>
      *
      *  @param acip a string of ACIP with no punctuation in it
+     *  @param specialHandlingForAppendages true if and only if you
+     *  want SNYAM'AM to ultimately parse as {S+NYA}{M}{'A}{M} instead
+     *  of {S+NYA}{M'A}{M}
      *  @return an array of one or two pair lists, if the former, then
      *  the second element will be null, if the latter, the second
      *  element will have (* . ), (' . *) instead of (* . '*) which
@@ -58,11 +69,16 @@ class TPairListFactory {
      *  large for us to break into chunks (we're recursive, not
      *  iterative, so the boundary can be increased a lot if you care,
      *  but you don't) */
-    static TPairList[] breakACIPIntoChunks(String acip) throws IllegalArgumentException {
+    static TPairList[] breakACIPIntoChunks(String acip,
+                                           boolean specialHandlingForAppendages)
+        throws IllegalArgumentException
+    {
         try {
             TPairList a = breakHelper(acip, true, false);
-            TPairList b = breakHelper(acip, false, false);
-            if (a.equals(b))
+            TPairList b = null;
+            if (specialHandlingForAppendages)
+                b = breakHelper(acip, false, false);
+            if (null != b && a.equals(b))
                 return new TPairList[] { a, null };
             else
                 return new TPairList[] { a, b };

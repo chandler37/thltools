@@ -371,7 +371,7 @@ public class ACIPConverter {
                     Object[] duff = null;
                     if (stype == TString.TIBETAN_NON_PUNCTUATION) {
                         lastGuyWasNonPunct = true;
-                        TPairList pls[] = TPairListFactory.breakACIPIntoChunks(s.getText());
+                        TPairList pls[] = TPairListFactory.breakACIPIntoChunks(s.getText(), false);
                         String acipError;
 
                         if ((acipError = pls[0].getACIPError()) != null
