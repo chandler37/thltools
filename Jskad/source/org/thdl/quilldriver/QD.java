@@ -49,6 +49,7 @@ import org.thdl.util.ThdlActionListener;
 import org.thdl.util.ThdlAbstractAction;
 import org.thdl.util.ThdlOptions;
 import org.thdl.util.SimpleSpinner;
+import org.thdl.util.ThdlI18n;
 
 public class QD extends JDesktopPane {
     private final static JskadKeyboardManager keybdMgr
@@ -79,10 +80,6 @@ public class QD extends JDesktopPane {
 	public Style componentStyle;
 	public DataFlavor timeFlavor;
 
-    /** Either "qt4j" or "jmf", corresponding to the thdl.media.player
-        property. */
-	protected String thdl_mediaplayer_property = null;
-
 	//class fields because they are affected depending on whether we're
 	//in read-only or edit mode
 	protected JMenu editMenu, searchMenu;
@@ -103,9 +100,12 @@ public class QD extends JDesktopPane {
 	protected KeyStroke insert1TimeKey, insert2TimesKey, insertSpeakerKey;
 	protected KeyStroke findKey, replaceKey;
 
+	protected JskadKeyboard activeKeyboard = null;
+	protected JskadKeyboard wylieKeyboard;
 
-public QD(ResourceBundle messages) {
-	this.messages = messages;
+
+public QD() {
+	messages = ThdlI18n.getResourceBundle();
 	
 	setBackground(new JFrame().getBackground());
 	setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
@@ -166,6 +166,10 @@ public QD(ResourceBundle messages) {
 	Speaker[] speakers = new Speaker[0];
 	SpeakerData speakerData = new SpeakerData(speakers, keymap);
 	speakerTable = new SpeakerTable(speakerData);
+
+//FIXME when save/load bug is fixed
+	JskadKeyboard[] allKeyboards = JskadKeyboardFactory.getAllAvailableJskadKeyboards();
+	wylieKeyboard = allKeyboards[0];
 
 	pane = new DuffPane();
 	pane.setKeymap(keymap);
@@ -321,10 +325,8 @@ class TimePoint extends JLabel implements DragGestureListener, DragSourceListene
 		return String.valueOf(time);
 	}
 	public void playSegment() {
-		int i=pos.getOffset();
-		System.out.println(String.valueOf(i));
 		try {
-			for (i++; i<doc.getLength(); i++) {
+			for (int i=pos.getOffset()+1; i<doc.getLength(); i++) {
 				AttributeSet attr = doc.getCharacterElement(i).getAttributes();
 				Component comp;
 				if (null != (comp = StyleConstants.getComponent(attr)))
@@ -511,7 +513,7 @@ class TimeCodeManager extends JPanel {
 		JButton playPauseButton = new JButton(messages.getString("PlayPause"));
 		playPauseButton.addActionListener(new ThdlActionListener() {
 			public void theRealActionPerformed(ActionEvent e) {
-				if (player != null) {
+				if (player != null && player.getMediaURL() != null) {
 					try {
 						if (player.isPlaying())
 							player.cmd_stop();
@@ -571,37 +573,23 @@ class Work {
 	}
 }
 
-public void setMediaPlayerProperty(String property) {
-	if (property.equals("org.thdl.media.SmartJMFPlayer") || property.equals("org.thdl.media.SmartQT4JPlayer"))
-		if (thdl_mediaplayer_property == null || !thdl_mediaplayer_property.equals(property)) {
-			thdl_mediaplayer_property = new String(property);
-			if (project != null) {
-				URL url = project.getMedia();
-				if (url != null) {
-					project.setMedia(null);
-					project.setMedia(url);
-				}
-			}		
+public void setMediaPlayer(SmartMoviePanel smp) {
+	if (smp == null)
+		player = null;
+	else if (player == null || !player.equals(smp)) {
+		player = smp;
+		player.setParentContainer(QD.this);
+		if (project != null) {
+			URL url = project.getMedia();
+			if (url != null) {
+				project.setMedia(null);
+				project.setMedia(url);
+			}
 		}
-}
-public String getMediaPlayerProperty() {
-	//if already set, return current media player
-	if (thdl_mediaplayer_property == null) {
-		//else get default based on system, user prefs, etc.
-        String os;
-        try {
-            os = System.getProperty("os.name").toLowerCase();
-        } catch (SecurityException e) {
-            os = "unknown";
-        }
-		if (os.indexOf("mac") != -1) //macs default to org.thdl.media.SmartQT4JPlayer
-			thdl_mediaplayer_property = ThdlOptions.getStringOption("thdl.media.player", "org.thdl.media.SmartQT4JPlayer");
-		else if (os.indexOf("windows") != -1)
-			thdl_mediaplayer_property = ThdlOptions.getStringOption("thdl.media.player", "org.thdl.media.SmartJMFPlayer");
-		else //put linux etc. here
-			thdl_mediaplayer_property = ThdlOptions.getStringOption("thdl.media.player", "org.thdl.media.SmartJMFPlayer");
 	}
-	return thdl_mediaplayer_property;
+}
+public SmartMoviePanel getMediaPlayer() {
+	return player;
 }
 
 class Project extends JPanel {
@@ -641,10 +629,14 @@ public URL getMedia() {
 	return media;
 }
 public void setMedia(URL url) {
+	if (player == null) {
+		JOptionPane.showConfirmDialog(QD.this, messages.getString("SupportedMediaError"), null, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+		return;
+	}
 	if (url == null) {
 		media = url;
 		mediaField.setText("");
-		if (player != null) {
+		if (player.getMediaURL() != null) {
 			try {
 				player.cmd_stop();
 				player.destroy();
@@ -656,7 +648,6 @@ public void setMedia(URL url) {
 			videoFrame.getContentPane().invalidate();
 			videoFrame.getContentPane().validate();
 			videoFrame.getContentPane().repaint();
-			player = null;
 			videoFrame.setSize(new Dimension(QD.this.getSize().width / 2, 0));
 			jtp.remove(tcp);
 			tcp = null;
@@ -664,11 +655,10 @@ public void setMedia(URL url) {
 			actionFrame.setSize(new Dimension(actionFrame.getSize().width, QD.this.getSize().height));
 		}
 	} else {
-			if (player != null) {
+			if (player.getMediaURL() != null) {
 				try {
 					player.cmd_stop();
 					player.destroy();
-					player = null;
 				} catch (SmartMoviePanelException smpe) {
 					smpe.printStackTrace();
 					ThdlDebug.noteIffyCode();
@@ -676,24 +666,12 @@ public void setMedia(URL url) {
 			}
 
 			try {
-				Class mediaClass = Class.forName(getMediaPlayerProperty());
-				Class[] mediaArgsClass = new Class[] {Container.class, URL.class};
-				Object[] mediaArgs = new Object[] {QD.this, url};
-				Constructor mediaConstructor = mediaClass.getConstructor(mediaArgsClass);
-				player = (SmartMoviePanel)QD.createObject(mediaConstructor, mediaArgs);
-                if (null == player) throw new ClassNotFoundException("FIXME: the constructor failed.");
+				player.loadMovie(url);
 				media = url;
 				mediaField.setText(media.getPath());
 				startTimer();
-
-//FIXME if neither media player is supported then friendly error rather than just doing nothing
-
-
-			} catch (ClassNotFoundException cnfe) {
-				cnfe.printStackTrace();
-				ThdlDebug.noteIffyCode();
-			} catch (NoSuchMethodException nsme) {
-				nsme.printStackTrace();
+			} catch (SmartMoviePanelException smpe) {
+				smpe.printStackTrace();
 				ThdlDebug.noteIffyCode();
 			}
 	}
@@ -766,16 +744,26 @@ public Project() {
 }
 
 public void changeKeyboard(JskadKeyboard kbd) {
+	activeKeyboard = kbd;
 	DuffPane dp = (DuffPane)pane;
-	kbd.activate(dp);
-	kbd.activate(sharedDP);
-	kbd.activate(sharedDP2);
+	activeKeyboard.activate(dp);
+	activeKeyboard.activate(sharedDP);
+	activeKeyboard.activate(sharedDP2);
 }
 
 public boolean saveTranscript() {
 	currentWork.stopWork();
 
-//URGENT!! fix saving problem (FIXME: grep for URGENT and fix or Fix or FIX)
+//FIXME this should be replaced once the relevant bug in TibetanDocument is fixed
+//FIXME: grep for URGENT and fix or Fix or FIX
+
+	DuffPane dp = (DuffPane)pane;
+
+	if (activeKeyboard != null) {
+		wylieKeyboard.activate(dp);
+		wylieKeyboard.activate(sharedDP);
+		wylieKeyboard.activate(sharedDP2);
+	}	
 
 	org.jdom.Element title = new org.jdom.Element("title");
 	title.setText(project.getTitle().trim());
@@ -888,7 +876,14 @@ public boolean saveTranscript() {
 		File htmlOut = new File(f.substring(0, f.lastIndexOf('.')) + ".html");
 		transformer.transform(new JDOMSource(qdDoc), new StreamResult(new FileOutputStream(htmlOut)));	
 
-//URGENT FIX SAVING PROBLEM (FIXME)
+//FIXME this should be replaced once the relevant bug in TibetanDocument is fixed
+//FIXME: grep for URGENT and fix or Fix or FIX
+	if (activeKeyboard != null) {
+		activeKeyboard.activate(dp);
+		activeKeyboard.activate(sharedDP);
+		activeKeyboard.activate(sharedDP2);
+	}
+
 
 		return true;
 	} catch (FileNotFoundException fnfe) {
@@ -948,22 +943,15 @@ public boolean loadTranscript(File t) {
 		clearProject();
 		project = new Project();
 
-//change keyboard back to wylie for a second
-		// DuffPane dp = (DuffPane)pane;
+//FIXME this should be replaced once the relevant bug in TibetanDocument is fixed
+//FIXME: grep for URGENT and fix or Fix or FIX
+		DuffPane dp = (DuffPane)pane;
 
-//URGENT FIX LOADING PROBLEM
-
-/*
-if (keyboard_url != null) {
-
-			dp.registerKeyboard();
-		//	project.tName.setupKeyboard();
-
-		//	project.tTask.setupKeyboard();
-			sharedDP.setupKeyboard();
-			sharedDP2.setupKeyboard();
-}
-*/
+	if (activeKeyboard != null) {
+		wylieKeyboard.activate(dp);
+		wylieKeyboard.activate(sharedDP);
+		wylieKeyboard.activate(sharedDP2);
+	}
 
 		org.jdom.Document doc = builder.build(t);
 		org.jdom.Element qd = doc.getRootElement();
@@ -1017,7 +1005,6 @@ if (keyboard_url != null) {
 		}
 
 		org.jdom.Element text = qd.getChild("text");
-		DuffPane dp = (DuffPane)pane;
 		TibetanDocument tDoc = (TibetanDocument)dp.getDocument();
 		if (tDoc.getLength() > 0)
 			dp.setText("");
@@ -1064,15 +1051,13 @@ if (keyboard_url != null) {
 		currentWork = new Work();
 		work.add(currentWork);
 
-/* URGENT FIX LOADING PROBLEM
-if (keyboard_url != null) {
-		dp.registerKeyboard(keyboard_url);
-	//	project.tName.setupKeyboard();
-	//	project.tTask.setupKeyboard();
-		sharedDP.setupKeyboard();
-		sharedDP2.setupKeyboard();
-}
-*/
+//FIXME this should be replaced once the relevant bug in TibetanDocument is fixed
+//FIXME: grep for URGENT and fix or Fix or FIX
+	if (activeKeyboard != null) {
+		activeKeyboard.activate(dp);
+		activeKeyboard.activate(sharedDP);
+		activeKeyboard.activate(sharedDP2);
+	}
 
 project.setTranscript(t);
 jtp.addTab(messages.getString("ProjectDetails"), project);
@@ -1438,21 +1423,15 @@ class SpeakerTable extends JTable
 
 public JMenuBar getTextMenuBar() {
 	JMenu modeMenu = new JMenu(messages.getString("Mode"));
-	JRadioButton editButton = new JRadioButton(messages.getString("Edit"));
-	JRadioButton viewButton = new JRadioButton(messages.getString("ReadOnly"));
-	editButton.setActionCommand("edit");
-	viewButton.setActionCommand("view");
+	JMenuItem editMenuItem = new JMenuItem(messages.getString("Edit"));
+	JMenuItem viewMenuItem = new JMenuItem(messages.getString("ReadOnly"));
+	editMenuItem.setActionCommand("edit");
+	viewMenuItem.setActionCommand("view");
 	RadioListener l = new RadioListener();
-	editButton.addActionListener(l);
-	viewButton.addActionListener(l);
-	editButton.setSelected(true);
-	ButtonGroup bg = new ButtonGroup();
-	bg.add(editButton);
-	bg.add(viewButton);
-	JPanel buttons = new JPanel(new GridLayout(0,1));
-	buttons.add(editButton);
-	buttons.add(viewButton);
-	modeMenu.add(buttons);
+	editMenuItem.addActionListener(l);
+	viewMenuItem.addActionListener(l);
+	modeMenu.add(editMenuItem);
+	modeMenu.add(viewMenuItem);
 
 	JMenu viewMenu = new JMenu(messages.getString("View"));
 	JMenuItem previousItem = new JMenuItem(messages.getString("Previous"));

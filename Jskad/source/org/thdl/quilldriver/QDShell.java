@@ -27,12 +27,14 @@ import java.awt.event.*;
 import javax.swing.text.*;
 import javax.swing.text.rtf.*;
 
+import org.thdl.media.*;
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlActionListener;
 import org.thdl.util.ThdlOptions;
 import org.thdl.tib.input.JskadKeyboardManager;
 import org.thdl.tib.input.JskadKeyboardFactory;
 import org.thdl.tib.input.JskadKeyboard;
+import org.thdl.util.ThdlI18n;
 
 import org.thdl.savant.JdkVersionHacks;
 
@@ -59,15 +61,8 @@ public class QDShell extends JFrame {
 
 			if (args.length == 2) {
 				locale = new Locale(new String(args[0]), new String(args[1]));
-				Locale[] locales = Locale.getAvailableLocales();
-				for (int k=0; k<locales.length; k++)
-					if (locales[k].equals(locale)) {
-						JComponent.setDefaultLocale(locale);
-						break;
-					}
+				ThdlI18n.setLocale(locale);
 			}
-			else
-				locale = Locale.getDefault();
 
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -75,15 +70,16 @@ public class QDShell extends JFrame {
 			catch (Exception e) {
 			}
 
-			QDShell qdsh = new QDShell(locale);
+			QDShell qdsh = new QDShell();
 			qdsh.setVisible(true);
 		} catch (NoClassDefFoundError err) {
 			ThdlDebug.handleClasspathError("QuillDriver's CLASSPATH", err);
 		}
 	}
 
-	public QDShell(Locale locale) {
+	public QDShell() {
 		setTitle("QuillDriver");
+		messages = ThdlI18n.getResourceBundle();
 
 		// Code for Merlin
 		if (JdkVersionHacks.maximizedBothSupported(getToolkit())) {
@@ -102,9 +98,7 @@ public class QDShell extends JFrame {
 			setVisible(true);
 		}
 
-		messages = ResourceBundle.getBundle("MessageBundle", locale);
-
-		qd = new QD(messages);
+		qd = new QD();
 		getContentPane().add(qd);
 		setJMenuBar(getQDShellMenu());
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -277,26 +271,27 @@ public class QDShell extends JFrame {
             }
         }
 
-
 		JMenu mediaPlayerMenu = new JMenu(messages.getString("MediaPlayer"));
-
-		JMenuItem jmfItem = new JMenuItem("Java Media Framework");
-		jmfItem.addActionListener(new ThdlActionListener() {
-			public void theRealActionPerformed(ActionEvent e) {
-				qd.setMediaPlayerProperty("org.thdl.media.SmartJMFPlayer");
-			}
-		});
-
-		JMenuItem qtItem = new JMenuItem("Quicktime for Java");
-		qtItem.addActionListener(new ThdlActionListener() {
-			public void theRealActionPerformed(ActionEvent e) {
-				qd.setMediaPlayerProperty("org.thdl.media.SmartQT4JPlayer");
-			}
-		});
+		java.util.List moviePlayers = SmartPlayerFactory.getAllAvailableSmartPlayers();
+		for (int i=0; i<moviePlayers.size(); i++) {
+			final SmartMoviePanel mPlayer = (SmartMoviePanel)moviePlayers.get(i);
+			JMenuItem mItem = new JMenuItem(mPlayer.getIdentifyingName());
+			mItem.addActionListener(new ThdlActionListener() {
+				public void theRealActionPerformed(ActionEvent e) {
+					qd.setMediaPlayer(mPlayer);
+				}
+			});
+			mediaPlayerMenu.add(mItem);
+		}
 
 		JMenu preferencesMenu = new JMenu(messages.getString("Preferences"));
 		preferencesMenu.add(keyboardMenu);
-		preferencesMenu.add(mediaPlayerMenu);
+		if (moviePlayers.size() > 0) {
+			SmartMoviePanel defaultPlayer = (SmartMoviePanel)moviePlayers.get(0);
+			qd.setMediaPlayer(defaultPlayer); //set qd media player to default
+			if (moviePlayers.size() > 1)
+				preferencesMenu.add(mediaPlayerMenu);
+		}
 
 		JMenuBar bar = new JMenuBar();
 		bar.add(projectMenu);
