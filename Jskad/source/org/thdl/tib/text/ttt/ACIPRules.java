@@ -167,10 +167,10 @@ public class ACIPRules {
                 else {
                     if ("w".equals(tok)) {
                         // There are only two stacks in TMW that have
-                        // U+0FBA: r+wa and w+wa.  TMW->ACIP fails for
+                        // U+0FBA: R+Wa and w+Wa.  TMW->ACIP fails for
                         // these unless we handle it here.  (FIXME:
                         // add an automated test for this).
-                        if ("r+w".equals(EWTS) || "w+w".equals(EWTS)) {
+                        if ("R+W".equals(EWTS) || "w+W".equals(EWTS)) {
                             part = "W";
                         } else {
                             part = "V";

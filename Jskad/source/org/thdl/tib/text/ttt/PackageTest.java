@@ -7387,8 +7387,11 @@ tstHelper("ZUR");
         uhelp(acip, null);
     }
     private static void uhelp(String acip, String expectedUnicode) {
+        uhelp(acip, expectedUnicode, "Most");
+    }
+    private static void uhelp(String acip, String expectedUnicode, String warningLevel) {
         StringBuffer errors = new StringBuffer();
-        String unicode = ACIPConverter.convertToUnicodeText(acip, errors, null, true, "Most");
+        String unicode = ACIPConverter.convertToUnicodeText(acip, errors, null, true, warningLevel);
         if (null == unicode) {
             if (null != expectedUnicode && "none" != expectedUnicode) {
                 System.out.println("No unicode exists for " + acip + " but you expected " + org.thdl.tib.text.tshegbar.UnicodeUtils.unicodeStringToPrettyString(expectedUnicode));
@@ -7511,10 +7514,40 @@ M+NA
         uhelp("K'EE:", "\u0f40\u0f71\u0f7b\u0f7f");
 
         uhelp("K'A:", "\u0f40\u0f71\u0f7f");
+
+        uhelp("RYA", "\u0f6a\u0fbb");
+        uhelp("R+YA", "\u0f6a\u0fbb");
+
         uhelp("RVA", "\u0f62\u0fad");
         uhelp("R+VA", "\u0f62\u0fad");
-        uhelp("RWA", "\u0f62\u0fba");
-        uhelp("R+WA", "\u0f62\u0fba");
+
+        uhelp("RWA", "\u0f6a\u0fba");
+        uhelp("R+WA", "\u0f6a\u0fba");
+
+        uhelp("RSHA", "\u0f6a\u0fb4", "None");
+        uhelp("R+SHA", "\u0f6a\u0fb4", "None");
+
+        uhelp("RSHYA", "\u0f6a\u0fb4\u0fb1", "None");
+        uhelp("R+SH+YA", "\u0f6a\u0fb4\u0fb1", "None");
+
+        uhelp("Rsh", "\u0f6a\u0fb5", "None");
+        uhelp("R+sh", "\u0f6a\u0fb5", "None");
+
+        uhelp("Rshn", "\u0f6a\u0fb5\u0f9e", "None");
+        uhelp("R+sh+n", "\u0f6a\u0fb5\u0f9e", "None");
+
+        uhelp("RshnY", "\u0f6a\u0fb5\u0f9e\u0fb1", "None");
+        uhelp("R+sh+n+Y", "\u0f6a\u0fb5\u0f9e\u0fb1", "None");
+        uhelp("R+shn+Y", "\u0f6a\u0fb5\u0f9e\u0fb1", "None");
+
+        uhelp("RshMA", "\u0f6a\u0fb5\u0fa8", "None");
+        uhelp("R+sh+M", "\u0f6a\u0fb5\u0fa8", "None");
+
+        uhelp("RshYA", "\u0f6a\u0fb5\u0fb1", "None");
+        uhelp("R+sh+Y", "\u0f6a\u0fb5\u0fb1", "None");
+        uhelp("RS", "\u0f6a\u0fb6", "None");
+        uhelp("R+S", "\u0f6a\u0fb6", "None");
+
 
         uhelp("WWA", "\u0f5d\u0fba");
         uhelp("W+WA", "\u0f5d\u0fba");
@@ -7595,13 +7628,13 @@ M+NA
         // Full-form subjoined YA:
         uhelp("n+d+Y", "\u0f4e\u0f9c\u0fbb");
         uhelp("Y+Y", "\u0f61\u0fbb");
-        uhelp("R+Y", "\u0f62\u0fbb");
+        uhelp("R+Y", "\u0f6a\u0fbb");
 
         uhelp("RVA R+VEE RWA R+WEE YYA Y+YEE ndRYA n+d+R+YEE KshR K+sh+REE ndY n+d+YEE,",
               "\u0f62\u0fad\u0f0b" // RVA
               + "\u0f62\u0fad\u0f7b\u0f0b" //R+VEE
-              + "\u0f62\u0fba\u0f0b" // RWA
-              + "\u0f62\u0fba\u0f7b\u0f0b" // R+WEE
+              + "\u0f6a\u0fba\u0f0b" // RWA
+              + "\u0f6a\u0fba\u0f7b\u0f0b" // R+WEE
               + "\u0f61\u0fbb\u0f0b" // YYA
               + "\u0f61\u0fbb\u0f7b\u0f0b" // Y+YEE
               + "\u0f4e\u0f9c\u0fbc\u0fb1\u0f0b" // ndRYA
@@ -9228,3 +9261,7 @@ tstHelper("shKA");
 // FIXME : handle ^GONG, and "^ GONG".  See Bug #838593
 
 // FIXME: the file ACIP_SHRI should be made into an ACIP->TMW automated test case
+
+// FIXME: test that RY, RW, RSH, RSHY, Rsh, Rshn, RshnY, RshM, RshY,
+// and RS have associated TMW glyphs.
+

@@ -634,7 +634,16 @@ class TPairList {
                 unicodeExceptionsMap.put("\u0f4e\u0f9c\u0fb2\u0fb1", "\u0f4e\u0f9c\u0fbc\u0fb1"); // ndRY
                 unicodeExceptionsMap.put("\u0f4e\u0f9c\u0fb1", "\u0f4e\u0f9c\u0fbb"); // ndY
                 unicodeExceptionsMap.put("\u0f61\u0fb1", "\u0f61\u0fbb"); // YY
-                unicodeExceptionsMap.put("\u0f62\u0fb1", "\u0f62\u0fbb"); // RY
+                unicodeExceptionsMap.put("\u0f62\u0fb1", "\u0f6a\u0fbb"); // RY
+                unicodeExceptionsMap.put("\u0f62\u0fba", "\u0f6a\u0fba"); // RW
+                unicodeExceptionsMap.put("\u0f62\u0fb4", "\u0f6a\u0fb4"); // RSHA
+                unicodeExceptionsMap.put("\u0f62\u0fb4\u0fb1", "\u0f6a\u0fb4\u0fb1"); // RSHYA
+                unicodeExceptionsMap.put("\u0f62\u0fb5", "\u0f6a\u0fb5"); // Rsh
+                unicodeExceptionsMap.put("\u0f62\u0fb5\u0f9e", "\u0f6a\u0fb5\u0f9e"); // Rshn
+                unicodeExceptionsMap.put("\u0f62\u0fb5\u0f9e\u0fb1", "\u0f6a\u0fb5\u0f9e\u0fb1"); // RshnY
+                unicodeExceptionsMap.put("\u0f62\u0fb5\u0fa8", "\u0f6a\u0fb5\u0fa8"); // RshM
+                unicodeExceptionsMap.put("\u0f62\u0fb5\u0fb1", "\u0f6a\u0fb5\u0fb1"); // RshY
+                unicodeExceptionsMap.put("\u0f62\u0fb6", "\u0f6a\u0fb6"); // RS
             }
             String mapEntry = (String)unicodeExceptionsMap.get(nonVowelSB.toString());
             if (null != mapEntry)
@@ -689,7 +698,20 @@ class TPairList {
             hashKey = "w+n";
         else if ("W+W".equals(hashKey))
             hashKey = "w+W";
-        // We're NOT doing it for r+W etc., on purpose.
+
+        if ("r+Y".equals(hashKey)
+            || "r+W".equals(hashKey)
+            || "r+sh".equals(hashKey)
+            || "r+sh+y".equals(hashKey)
+            || "r+Sh".equals(hashKey)
+            || "r+Sh+N".equals(hashKey)
+            || "r+Sh+N+y".equals(hashKey)
+            || "r+Sh+m".equals(hashKey)
+            || "r+Sh+y".equals(hashKey)
+            || "r+s".equals(hashKey)
+            ) {
+            hashKey = "R" + hashKey.substring(1); // r+Y => R+Y, etc.
+        }
 
         if (!TibetanMachineWeb.isKnownHashKey(hashKey)) {
             hashKey = hashKey.replace('+', '-');
