@@ -296,6 +296,7 @@ public class ACIPRules {
             putMapping(acipOther2wylie, "*", "@");
             putMapping(acipOther2wylie, "#", "@#");
             putMapping(acipOther2wylie, "%", "~X");
+            putMapping(acipOther2wylie, "o", "X");
             putMapping(acipOther2wylie, "&", "&");
 
             putMapping(acipOther2wylie, "0", "0");

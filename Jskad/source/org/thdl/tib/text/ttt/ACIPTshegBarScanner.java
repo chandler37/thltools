@@ -30,8 +30,12 @@ import org.thdl.util.ThdlDebug;
 * comments, and the like are segregated (so that consumers can ensure
 * that they remain in Latin), and Tibetan passages are broken up into
 * tsheg bars.
-* @author David Chandler
-*/
+*
+* <p><b>FIXME:</b> We should be handling {KA\n\nKHA} vs. {KA\nKHA} in
+* the parser, not here in the lexical analyzer.  That'd be cleaner,
+* and more like how you'd do things if you used lex and yacc.
+*
+* @author David Chandler */
 public class ACIPTshegBarScanner {
     /** Useful for testing.  Gives error messages on standard output
      *  about why we can't scan the document perfectly and exits with
@@ -101,6 +105,19 @@ public class ACIPTshegBarScanner {
         }
         in.close();
         return scan(s.toString(), errors, maxErrors);
+    }
+
+    /** Helper.  Here because ACIP {MTHAR%\nKHA} should be treated the
+        same w.r.t. tsheg insertion regardless of the lex errors and
+        lex warnings found. */
+    private static boolean lastNonExceptionalThingWasNonPunctish(ArrayList al) {
+        int i = al.size() - 1;
+        while (i >= 0 && (((TString)al.get(i)).getType() == TString.WARNING
+                          || ((TString)al.get(i)).getType() == TString.ERROR))
+            --i;
+        return (i >= 0 && // FIXME: or maybe i < 0 || ...
+                (((TString)al.get(i)).getType() == TString.TIBETAN_NON_PUNCTUATION
+                 || ((TString)al.get(i)).getType() == TString.TSHEG_BAR_ADORNMENT));
     }
 
     /** Returns a list of {@link TString TStrings} corresponding
@@ -771,6 +788,7 @@ public class ACIPTshegBarScanner {
             case '%':
             case 'x':
             case 'o':
+            case '^':
 
                 boolean legalTshegBarAdornment = false;
                 // The tsheg bar ends here; new token.
@@ -788,8 +806,7 @@ public class ACIPTshegBarScanner {
                 if (('\r' == ch
                      || ('\n' == ch && i > 0 && s.charAt(i - 1) != '\r'))
                     && !al.isEmpty()
-                    && (((TString)al.get(al.size() - 1)).getType() == TString.TIBETAN_NON_PUNCTUATION
-                        || ((TString)al.get(al.size() - 1)).getType() == TString.TSHEG_BAR_ADORNMENT)) {
+                    && lastNonExceptionalThingWasNonPunctish(al)) {
                     al.add(new TString(" ", TString.TIBETAN_PUNCTUATION));
                 }
 
@@ -797,8 +814,7 @@ public class ACIPTshegBarScanner {
                 if (('\r' == ch
                      || ('\n' == ch && i > 0 && s.charAt(i - 1) != '\r'))
                     && !al.isEmpty()
-                    && (((TString)al.get(al.size() - 1)).getType() == TString.TIBETAN_PUNCTUATION
-                        || ((TString)al.get(al.size() - 1)).getType() == TString.TSHEG_BAR_ADORNMENT)
+                    && lastNonExceptionalThingWasNonPunctish(al)
                     && ((TString)al.get(al.size() - 1)).getText().equals(",")
                     && s.charAt(i-1) == ','
                     && (i + (('\r' == ch) ? 2 : 1) < sl
@@ -806,33 +822,61 @@ public class ACIPTshegBarScanner {
                     al.add(new TString(" ", TString.TIBETAN_PUNCTUATION));
                 }
 
-                // Don't add in a "\r\n" or "\n" unless there's a
-                // blank line.
-                boolean rn = false;
-                boolean realNewline = false;
-                if (('\n' != ch && '\r' != ch)
-                    || (realNewline
-                        = ((rn = ('\n' == ch && i >= 3 && s.charAt(i-3) == '\r' && s.charAt(i-2) == '\n' && s.charAt(i-1) == '\r'))
-                           || ('\n' == ch && i >= 1 && s.charAt(i-1) == '\n')))) {
-                    for (int h = 0; h < (realNewline ? 2 : 1); h++) {
-                        if (isTshegBarAdornment(ch) && !legalTshegBarAdornment) {
-                            al.add(new TString("The ACIP " + ch + " must be glued to the end of a tsheg bar, but this one was not",
-                                               TString.ERROR));
-                        } else {
-                            al.add(new TString(rn ? s.substring(i - 1, i+1) : s.substring(i, i+1),
-                                               (legalTshegBarAdornment
-                                                ? TString.TSHEG_BAR_ADORNMENT
-                                                : TString.TIBETAN_PUNCTUATION)));
+                if ('^' == ch) {
+                    // "^ GONG SA" is the same as "^GONG SA" or
+                    // "^\r\nGONG SA".  But "^\n\nGONG SA" is
+                    // different -- that has a true line break in the
+                    // output between ^ and GONG.  We give an error if
+                    // ^ isn't followed by an alphabetical character.
+                    
+                    boolean bad = false;
+                    if (i + 1 < sl && isAlpha(s.charAt(i+1))) {
+                        // leave i alone
+                    } else if (i + 2 < sl && (' ' == s.charAt(i+1)
+                                              || '\r' == s.charAt(i+1)
+                                              || '\n' == s.charAt(i+1))
+                               && isAlpha(s.charAt(i+2))) {
+                        ++i;
+                    } else if (i + 3 < sl && '\r' == s.charAt(i+1)
+                               && '\n' == s.charAt(i+2)
+                               && isAlpha(s.charAt(i+3))) {
+                        i += 2;
+                    } else {
+                        bad = true;
+                    }
+                    if (!bad)
+                        al.add(new TString("^", TString.TIBETAN_PUNCTUATION));
+                    else
+                        al.add(new TString("The ACIP {^} must precede a tsheg bar.", TString.ERROR));
+                } else {
+                    // Don't add in a "\r\n" or "\n" unless there's a
+                    // blank line.
+                    boolean rn = false;
+                    boolean realNewline = false;
+                    if (('\n' != ch && '\r' != ch)
+                        || (realNewline
+                            = ((rn = ('\n' == ch && i >= 3 && s.charAt(i-3) == '\r' && s.charAt(i-2) == '\n' && s.charAt(i-1) == '\r'))
+                               || ('\n' == ch && i >= 1 && s.charAt(i-1) == '\n')))) {
+                        for (int h = 0; h < (realNewline ? 2 : 1); h++) {
+                            if (isTshegBarAdornment(ch) && !legalTshegBarAdornment) {
+                                al.add(new TString("The ACIP " + ch + " must be glued to the end of a tsheg bar, but this one was not",
+                                                   TString.ERROR));
+                            } else {
+                                al.add(new TString(rn ? s.substring(i - 1, i+1) : s.substring(i, i+1),
+                                                   (legalTshegBarAdornment
+                                                    ? TString.TSHEG_BAR_ADORNMENT
+                                                    : TString.TIBETAN_PUNCTUATION)));
+                            }
                         }
                     }
-                }
-                if ('%' == ch) {
-                    al.add(new TString("The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice",
-                                       TString.WARNING));
+                    if ('%' == ch) {
+                        al.add(new TString("The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice",
+                                           TString.WARNING));
+                    }
                 }
                 startOfString = i+1;
                 currentType = TString.ERROR;
-                break; // end TIBETAN_PUNCTUATION case
+                break; // end TIBETAN_PUNCTUATION | TSHEG_BAR_ADORNMENT case
 
             default:
                 if (!bracketTypeStack.empty()) {
@@ -843,8 +887,9 @@ public class ACIPTshegBarScanner {
                     }
                 }
                 if (i+1 == sl && 26 == (int)ch)
-                    // Silently allow the last character to be ^Z,
-                    // which just marks end of file.
+                    // Silently allow the last character to be
+                    // control-Z (sometimes printed as ^Z), which just
+                    // marks end of file.
                     break;
                 if (!(isNumeric(ch) || isAlpha(ch))) {
                     if (startOfString < i) {
@@ -935,6 +980,7 @@ public class ACIPTshegBarScanner {
     /** See implementation. */
     private static boolean isTshegBarAdornment(char ch) {
         return (ch == '%' || ch == 'o' || ch == 'x');
+        // ^ is a pre-adornment; these are post-adornments.
     }
 
     /** See implementation. */
@@ -944,7 +990,6 @@ public class ACIPTshegBarScanner {
             // combining punctuation, vowels:
             || ch == 'm'
             || ch == ':'
-            || ch == '^'
             // FIXME: we must treat this guy like a vowel, a special vowel that numerals can take on.  Until then, warn.  See bug 838588          || ch == '\\'
 
             || ch == '-'

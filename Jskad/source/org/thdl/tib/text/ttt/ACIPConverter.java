@@ -309,8 +309,7 @@ public class ACIPConverter {
             TString s = (TString)scan.get(i);
             int stype = s.getType();
             if (stype == TString.ERROR) {
-                lastGuyWasNonPunct = false;
-                lastGuy = null;
+                // leave lastGuyWasNonPunct and lastGuy alone; WARNINGs and ERRORs are invisible.
                 hasErrors = true;
                 String text = "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: " + s.getText() + "]";
                 if (null != writer) writer.write(text);
@@ -348,8 +347,7 @@ public class ACIPConverter {
                 lastGuyWasNonPunct = true; // this stuff is not really punctuation
                 lastGuy = null;
             } else if (stype == TString.WARNING) {
-                lastGuyWasNonPunct = false;
-                lastGuy = null;
+                // leave lastGuyWasNonPunct and lastGuy alone; WARNINGs and ERRORs are invisible.
                 if (writeWarningsToOut) {
                     String text = "[#WARNING CONVERTING ACIP DOCUMENT: Lexical warning: " + s.getText() + "]";
                     if (null != writer) writer.write(text);
@@ -646,3 +644,5 @@ public class ACIPConverter {
         }
     }
 }
+
+

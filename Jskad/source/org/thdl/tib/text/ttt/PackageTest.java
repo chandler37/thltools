@@ -7206,10 +7206,30 @@ tstHelper("ZUR");
               "[TIBETAN_NON_PUNCTUATION:{PAS}, TIBETAN_PUNCTUATION:{.}, TIBETAN_PUNCTUATION:{.}, TIBETAN_PUNCTUATION:{.}, WARNING:{A non-breaking tsheg, '.', appeared, but not like \"...,\" or \".,\" or \".dA\" or \".DA\".}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{LA}]");
         shelp("^GONG SA,",
               "",
-              "[TIBETAN_NON_PUNCTUATION:{^GONG}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{SA}, TIBETAN_PUNCTUATION:{,}]");
+              "[TIBETAN_PUNCTUATION:{^}, TIBETAN_NON_PUNCTUATION:{GONG}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{SA}, TIBETAN_PUNCTUATION:{,}]");
         shelp("^ GONG SA,",
               "",
-              "[TIBETAN_NON_PUNCTUATION:{^}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{GONG}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{SA}, TIBETAN_PUNCTUATION:{,}]");
+              "[TIBETAN_PUNCTUATION:{^}, TIBETAN_NON_PUNCTUATION:{GONG}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{SA}, TIBETAN_PUNCTUATION:{,}]");
+        shelp("^\nGONG SA,",
+              "",
+              "[TIBETAN_PUNCTUATION:{^}, TIBETAN_NON_PUNCTUATION:{GONG}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{SA}, TIBETAN_PUNCTUATION:{,}]");
+        shelp("^\rGONG SA,",
+              "",
+              "[TIBETAN_PUNCTUATION:{^}, TIBETAN_NON_PUNCTUATION:{GONG}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{SA}, TIBETAN_PUNCTUATION:{,}]");
+        shelp("^\r\nGONG SA,",
+              "",
+              "[TIBETAN_PUNCTUATION:{^}, TIBETAN_NON_PUNCTUATION:{GONG}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{SA}, TIBETAN_PUNCTUATION:{,}]");
+
+        // FIXME: what should this be?  We treat {^ GONG SA} like
+        // {^GONG SA}, but {^ GONG SA} isn't so obvious.  We give an
+        // error.
+        shelp("^  GONG SA,",
+              "",
+              "[ERROR:{The ACIP {^} must precede a tsheg bar.}, TIBETAN_PUNCTUATION:{ }, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{GONG}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{SA}, TIBETAN_PUNCTUATION:{,}]");
+
+        shelp("^\n\nGONG SA,",
+              "",
+              "[ERROR:{The ACIP {^} must precede a tsheg bar.}, TIBETAN_PUNCTUATION:{\n}, TIBETAN_PUNCTUATION:{\n}, TIBETAN_NON_PUNCTUATION:{GONG}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{SA}, TIBETAN_PUNCTUATION:{,}]");
         shelp("", "", "[]");
         shelp("[DD]", "");
         shelp("[",
@@ -7280,11 +7300,11 @@ tstHelper("ZUR");
               "[TIBETAN_NON_PUNCTUATION:{K}, ERROR:{Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.}, TIBETAN_PUNCTUATION:{,}]");
 
 
-        shelp("MTHAR%", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TSHEG_BAR_ADORNMENT:{%}]");
+        shelp("MTHAR%", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TSHEG_BAR_ADORNMENT:{%}, WARNING:{The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice}]");
         shelp("MTHARo", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TSHEG_BAR_ADORNMENT:{o}]");
         shelp("MTHARx", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TSHEG_BAR_ADORNMENT:{x}]");
 
-        shelp("MTHAR\n%", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TIBETAN_PUNCTUATION:{ }, ERROR:{The ACIP % must be glued to the end of a tsheg bar, but this one was not}]");
+        shelp("MTHAR\n%", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TIBETAN_PUNCTUATION:{ }, ERROR:{The ACIP % must be glued to the end of a tsheg bar, but this one was not}, WARNING:{The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice}]");
         shelp("MTHAR x", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TIBETAN_PUNCTUATION:{ }, ERROR:{The ACIP x must be glued to the end of a tsheg bar, but this one was not}]");
 
         shelp("PHYIR;", "", "[TIBETAN_NON_PUNCTUATION:{PHYIR}, TIBETAN_PUNCTUATION:{;}]");
@@ -7397,6 +7417,12 @@ MNA'
 M+NA
 */
         uhelp("BNA", "[#WARNING CONVERTING ACIP DOCUMENT: Warning: We're going with {B+NA}, but only because our knowledge of prefix rules says that {B}{NA} is not a legal Tibetan tsheg bar (\"syllable\")]\u0f56\u0fa3");
+        uhelp("^GONG SA", "\u0f38\u0f42\u0f7c\u0f44\u0f0b\u0f66");
+        uhelp("^ GONG SA", "\u0f38\u0f42\u0f7c\u0f44\u0f0b\u0f66");
+        uhelp("^\rGONG SA", "\u0f38\u0f42\u0f7c\u0f44\u0f0b\u0f66");
+        uhelp("^\r\nGONG SA", "\u0f38\u0f42\u0f7c\u0f44\u0f0b\u0f66");
+        uhelp("^\nGONG SA", "\u0f38\u0f42\u0f7c\u0f44\u0f0b\u0f66");
+        uhelp("^  GONG SA", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP {^} must precede a tsheg bar.]        \u0f42\u0f7c\u0f44\u0f0b\u0f66");
         uhelp("BGLA", "\u0f56\u0f42\u0fb3");
         uhelp("BLCAG", "\u0f56\u0f63\u0f95\u0f42");
         uhelp("DBA", "[#WARNING CONVERTING ACIP DOCUMENT: The ACIP DBA has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack and forget to input it with '+' characters.]\u0f51\u0f56");
@@ -7411,7 +7437,7 @@ M+NA
     public void testACIPConversion() {
         uhelp("x", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP x must be glued to the end of a tsheg bar, but this one was not]");
         uhelp("o", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP o must be glued to the end of a tsheg bar, but this one was not]");
-        uhelp("%", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP % must be glued to the end of a tsheg bar, but this one was not]");
+        uhelp("%", "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: The ACIP % must be glued to the end of a tsheg bar, but this one was not][#WARNING CONVERTING ACIP DOCUMENT: Lexical warning: The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice]");
         uhelp(":", "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") : HAS THESE ERRORS: Cannot convert ACIP : because : is not an ACIP consonant]");
         uhelp("m", "[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") m HAS THESE ERRORS: Cannot convert ACIP m because m is not an ACIP consonant]");
 
@@ -7432,9 +7458,13 @@ M+NA
 
         uhelp("THAG PA", "\u0f50\u0f42\u0f0b\u0f54");
         uhelp("KA \nKHA\n\nGA", "\u0f40\u0f0b\u0f41\u0f0b\n\n\u0f42");
-        uhelp("KA%\nKHA", "\u0f40\u0f35\u0f0b\u0f41");
-        uhelp("KA%", "\u0f40\u0f35");
-        uhelp("KAo", "\u0f40[#ERROR CONVERTING ACIP DOCUMENT: This converter cannot yet convert o because the converter's author is unclear what the result should be.]");
+        uhelp("KA%\nKHA", "\u0f40\u0f35[#WARNING CONVERTING ACIP DOCUMENT: Lexical warning: The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice]\u0f0b\u0f41");
+        uhelp("KA%", "\u0f40\u0f35[#WARNING CONVERTING ACIP DOCUMENT: Lexical warning: The ACIP {%} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice]");
+        uhelp("KAo", "\u0f40\u0f37");
+        uhelp("KAo\n\nKA", "\u0f40\u0f37\u0f0b\n\n\u0f40");
+        uhelp("KAo\nKHA", "\u0f40\u0f37\u0f0b\u0f41");
+        uhelp("KAo KHA", "\u0f40\u0f37\u0f0b\u0f41");
+        uhelp("KA KAo KHA", "\u0f40\u0f0b\u0f40\u0f37\u0f0b\u0f41");
         uhelp("KAx", "\u0f40[#ERROR CONVERTING ACIP DOCUMENT: This converter cannot yet convert x because the converter's author is unclear what the result should be.]");
         uhelp("G+DHA", "\u0f42\u0fa2");
         uhelp("P'EE", "\u0f54\u0f71\u0f7b");
