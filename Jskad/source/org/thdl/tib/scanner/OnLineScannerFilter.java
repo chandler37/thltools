@@ -49,7 +49,9 @@ public class OnLineScannerFilter extends HttpServlet {
                       HttpServletResponse response)
         throws IOException, ServletException
     {
+        // if this line is included in the constructor, it works on the iris server but not on wyllie!
         ThdlOptions.setUserPreference("thdl.rely.on.system.tmw.fonts", true);	    
+        
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
 		String parrafo = request.getParameter("parrafo"), checkboxName, script;
