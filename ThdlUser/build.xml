@@ -13,16 +13,16 @@
 	<property name="config" value="${basedir}/local-config"/>
 
   <!-- Configure up the classpath -->
-	<path id="classpath">
+	<!--<path id="classpath">
 		<fileset dir="${basedir}/lib">
 			<include name="**/*.jar"/>
 		</fileset>
-	</path>
+	</path>-->
  
 
 	<target name="compile" description="Compile web application">
 		<mkdir dir="${build}/WEB-INF/classes"/>
-		<javac srcdir="${source}/java" destdir="${build}/WEB-INF/classes" classpathref="classpath" debug="on" listfiles="no"/>
+		<javac srcdir="${source}/java" destdir="${build}/WEB-INF/classes" debug="on" listfiles="no"/>
 	</target>
 	
 <!-- 	<target name="test" description="Testing" depends="compile">
