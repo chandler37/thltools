@@ -1514,6 +1514,17 @@ Nativeness</h2>
 
 <ul>
   <li>
+    At present, an error in ACIP-&gt;TMW conversion is given when ACIP
+    like {RTSNY} or {NNY} is seen; this is because no glyph R+TS+NY or
+    N+NY is in the TMW font.&nbsp; For these snippets, though, there
+    is a significant possibility that R+T+S+N+Y or N+N+Y was intended
+    because TMW does have glyphs for both.&nbsp; It would be best to
+    give an error or stern warning when creating the Unicode for RTSNY
+    etc., and to give an error that is more specific when creating TMW
+    for RTSNY etc.&nbsp; See issue <a
+    href="http://sourceforge.net/tracker/index.php?func=detail&aid=936998&group_id=61934&atid=502518">936998</a>.
+  </li>
+  <li>
     It would be best to produce a warning (but not an error) when
     converting R+W, Y+Y, n+d+R+Y, K+sh+R, n+d+Y, R+Y, R+SH, R+SH+Y,
     R+sh, R+sh+n, R+sh+n+Y, R+sh+M, R+sh+Y, or R+S to Tibetan.&nbsp;
