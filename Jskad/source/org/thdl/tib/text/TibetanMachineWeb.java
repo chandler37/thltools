@@ -977,6 +977,7 @@ public static boolean isAmbiguousWylie(String x, String y) {
 	return (("g".equals(x) && y.startsWith("y"))
             || ("g".equals(x) && y.startsWith("w"))
             || ("d".equals(x) && y.startsWith("w"))
+            || ("d".equals(x) && y.startsWith("z")) // d.za, d.zha
             || ("b".equals(x) && y.startsWith("l"))
             || ("b".equals(x) && y.startsWith("r")));
 }
