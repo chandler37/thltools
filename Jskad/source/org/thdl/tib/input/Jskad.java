@@ -640,6 +640,10 @@ public class Jskad extends JPanel implements DocumentListener {
 	}
 
 	private boolean checkSave() {
+        if (ThdlOptions.getBooleanOption("thdl.Jskad.do.not.confirm.quit")) {
+            return true;
+        }
+
 		int saveFirst = JOptionPane.showConfirmDialog(this, "Do you want to save your changes?", "Please select", JOptionPane.YES_NO_CANCEL_OPTION);
 
 		switch (saveFirst) {

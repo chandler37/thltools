@@ -54,6 +54,11 @@ thdl.Jskad.disable.status.bar = false
 # with thdl.Jskad.disable.status.bar set to false:
 thdl.Jskad.initial.status.message = Welcome to Jskad!
 
+# Set this to true if you don't want Jskad to ask you "Do you really
+# want to quit?" when you try to exit the program.  (Your changes will
+# not be saved if this is true.)
+thdl.Jskad.do.not.confirm.quit = false
+
 
 ############################################################################
 #######################    Developer Preferences    ########################
