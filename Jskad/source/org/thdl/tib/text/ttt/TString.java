@@ -153,7 +153,6 @@ public class TString {
         // FIXME: assert these
         ThdlDebug.verify(type != UNICODE_CHARACTER || text.length() == 1);
         ThdlDebug.verify("EWTS" == encoding || "ACIP" == encoding);
-	type != UNICODE_CHARACTER || text.length() == 1);
         setText(ftext);
         if ((outputAllTshegBars || outputUniqueTshegBars) && TIBETAN_NON_PUNCTUATION == type)
             outputTshegBar(ftext);
