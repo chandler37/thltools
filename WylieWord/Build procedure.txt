@@ -30,10 +30,12 @@ Do PrepareDistribution in immediate window.
       the keybindings in the develoment copy by calling 
       WylieWordBindKeys.
 
-Save "WylieWord developement copy.dot"
+Save "WylieWord development copy.dot"
 
 Copy it to the build folder.
 Rename it Setup.doc.
+
+If the manual has changed, update its revision date.
 
 The WylieWord installer is created using the program "SEAU",
 available for $49 on the web.  The .INP file is its configuration.
@@ -45,4 +47,4 @@ In SEAU:
   Save the SEAU configuration (.INP file) if you have changed it.
   Run the SEAU builder.
 
-Test the resulting "WylieWord Setup.exe" file.
+Test the resulting self-extracting .exe file.
