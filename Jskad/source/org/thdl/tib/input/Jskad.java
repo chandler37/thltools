@@ -433,7 +433,7 @@ public class Jskad extends JPanel implements DocumentListener {
         JMenu toolsMenu = new JMenu("Tools");
 
         JMenu convertSelectionMenu = new JMenu("Convert Selection");
-        JMenuItem TMWWylieItem = new JMenuItem("Convert Tibetan to Wylie");
+        JMenuItem TMWWylieItem = new JMenuItem("Convert Tibetan Machine Web (non-Unicode) to Wylie");
         TMWWylieItem.addActionListener(new ThdlActionListener() {
             public void theRealActionPerformed(ActionEvent e) {
                 toTranslit(true);
@@ -442,7 +442,7 @@ public class Jskad extends JPanel implements DocumentListener {
         convertSelectionMenu.add(TMWWylieItem);
         toolsMenu.add(convertSelectionMenu);
 
-        JMenuItem TMWACIPItem = new JMenuItem("Convert Tibetan to ACIP");
+        JMenuItem TMWACIPItem = new JMenuItem("Convert Tibetan Machine Web (non-Unicode) to ACIP");
         TMWACIPItem.addActionListener(new ThdlActionListener() {
             public void theRealActionPerformed(ActionEvent e) {
                 toTranslit(false);
@@ -451,7 +451,7 @@ public class Jskad extends JPanel implements DocumentListener {
         convertSelectionMenu.add(TMWACIPItem);
         toolsMenu.add(convertSelectionMenu);
 
-        JMenuItem wylieTMWItem = new JMenuItem("(Buggy) Convert Wylie to Tibetan");
+        JMenuItem wylieTMWItem = new JMenuItem("(Buggy) Convert Wylie to Tibetan Machine Web (non-Unicode)");
         wylieTMWItem.addActionListener(new ThdlActionListener() {
             public void theRealActionPerformed(ActionEvent e) {
                 toTibetan(false, true);
@@ -459,7 +459,7 @@ public class Jskad extends JPanel implements DocumentListener {
         });
         convertSelectionMenu.add(wylieTMWItem);
 
-        JMenuItem ACIPTMWItem = new JMenuItem("Convert ACIP to Tibetan (no warnings)");
+        JMenuItem ACIPTMWItem = new JMenuItem("Convert ACIP to Tibetan Machine Web (non-Unicode) (no warnings)");
         ACIPTMWItem.addActionListener(new ThdlActionListener() {
             public void theRealActionPerformed(ActionEvent e) {
                 toTibetan(true, false);
@@ -467,7 +467,7 @@ public class Jskad extends JPanel implements DocumentListener {
         });
         convertSelectionMenu.add(ACIPTMWItem);
 
-        JMenuItem ACIPTMWWarnItem = new JMenuItem("Convert ACIP to Tibetan (with pedantic warnings)");
+        JMenuItem ACIPTMWWarnItem = new JMenuItem("Convert ACIP to Tibetan Machine Web (non-Unicode) (with pedantic warnings)");
         ACIPTMWWarnItem.addActionListener(new ThdlActionListener() {
             public void theRealActionPerformed(ActionEvent e) {
                 toTibetan(true, true);
@@ -477,7 +477,7 @@ public class Jskad extends JPanel implements DocumentListener {
 
         JMenu convertAllMenu = new JMenu("Convert All");
 
-        JMenuItem toTMItem = new JMenuItem("Convert Tibetan to TM"); // DLC FIXME: do it just in the selection?
+        JMenuItem toTMItem = new JMenuItem("Convert Tibetan Machine Web (non-Unicode) to TM"); // DLC FIXME: do it just in the selection?
         toTMItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
                     StringBuffer errors = new StringBuffer();
@@ -489,7 +489,7 @@ public class Jskad extends JPanel implements DocumentListener {
                         JOptionPane.showMessageDialog(Jskad.this,
                                                       "At least one error occurred while converting Tibetan Machine Web\nto Tibetan Machine.  Your document is mostly converted,\nexcept for the following glyphs, which you should replace manually\nbefore retrying:\n"
                                                       + errors.toString(),
-                                                      "Tibetan to TM Errors",
+                                                      "TMW to TM Errors",
                                                       JOptionPane.PLAIN_MESSAGE);
                     } else {
                         if (numAttemptedReplacements[0] > 0) {
@@ -507,7 +507,7 @@ public class Jskad extends JPanel implements DocumentListener {
                 }
             });
 
-        JMenuItem toTMWItem = new JMenuItem("Convert TM to Tibetan"); // DLC FIXME: do it just in the selection?
+        JMenuItem toTMWItem = new JMenuItem("Convert TM to Tibetan Machine Web (non-Unicode)"); // DLC FIXME: do it just in the selection?
         toTMWItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
                     StringBuffer errors = new StringBuffer();
@@ -519,7 +519,7 @@ public class Jskad extends JPanel implements DocumentListener {
                         JOptionPane.showMessageDialog(Jskad.this,
                                                       "At least one error occurred while converting Tibetan Machine\nto Tibetan Machine Web.  Your document is mostly converted,\nexcept for the following glyphs, which you should replace manually\nbefore retrying:\n"
                                                       + errors.toString(),
-                                                      "TM to Tibetan Errors", JOptionPane.PLAIN_MESSAGE);
+                                                      "TM to TMW Errors", JOptionPane.PLAIN_MESSAGE);
                     } else {
                         if (numAttemptedReplacements[0] > 0) {
                             JOptionPane.showMessageDialog(Jskad.this,
@@ -536,7 +536,7 @@ public class Jskad extends JPanel implements DocumentListener {
                 }
             });
 
-        JMenuItem toUnicodeItem = new JMenuItem("Convert Tibetan to Unicode"); // DLC FIXME: do it just in the selection?
+        JMenuItem toUnicodeItem = new JMenuItem("Convert Tibetan Machine Web (non-Unicode) to Unicode"); // DLC FIXME: do it just in the selection?
         toUnicodeItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
                     StringBuffer errors = new StringBuffer();
@@ -549,7 +549,7 @@ public class Jskad extends JPanel implements DocumentListener {
                         JOptionPane.showMessageDialog(Jskad.this,
                                                       "At least one error occurred while converting Tibetan Machine Web\nto Unicode.  Your document is mostly converted,\nexcept for the following glyphs, which you should replace manually\nbefore retrying:\n"
                                                       + errors.toString(),
-                                                      "Tibetan to Unicode Errors", JOptionPane.PLAIN_MESSAGE);
+                                                      "TMW to Unicode Errors", JOptionPane.PLAIN_MESSAGE);
                     } else {
                         if (numAttemptedReplacements[0] > 0) {
                             JOptionPane.showMessageDialog(Jskad.this,
@@ -585,7 +585,7 @@ public class Jskad extends JPanel implements DocumentListener {
             toolsMenu.add(converterItem);
 
 
-            JMenuItem importItem = new JMenuItem("(Buggy) Import Wylie as Tibetan...");
+            JMenuItem importItem = new JMenuItem("(Buggy) Import Wylie as Tibetan Machine Web (non-Unicode)...");
             importItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
                     importWylie();
@@ -1211,7 +1211,7 @@ public class Jskad extends JPanel implements DocumentListener {
         fileChooser.removeChoosableFileFilter(txtFilter);
         fileChooser.addChoosableFileFilter(rtfFilter);
 
-        if (fileChooser.showDialog(Jskad.this, "Save as Tibetan") != JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showDialog(Jskad.this, "Save as Tibetan Machine Web (non-Unicode)") != JFileChooser.APPROVE_OPTION) {
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             return;
         }
