@@ -1024,6 +1024,9 @@ private static DuffCode getUnusualTMtoTMW(int font, int code) {
         case 352: // 1=dz-wazur, 0=k-wazur
             return TMtoTMW[font][138 - 32];
 
+        case 357: // 2=b-t
+            return TMtoTMW[font][157 - 32];
+
         case 353: // 0=d-r-w
             return TMtoTMW[font][154 - 32];
 
