@@ -445,8 +445,8 @@ Function iterateRange(ByVal rng)
             
         ElseIf char1.Style = "Hyperlink,hl" Then
             textToDis = char1.Hyperlinks(1).TextToDisplay
-            leftPt = InStr(outStr, " HYPERLINK") - 1
-            outStr = Left(outStr, leftPt)
+            leftPt = InStr(outStr, "HYPERLINK") - 1
+            If leftPt > 0 Then outStr = Left(outStr, leftPt)
             outStr = outStr & "<xref n=""" & char1.Hyperlinks(1).Address & """>" _
                 & textToDis & "</xref>"
             n = n + Len(textToDis)
@@ -471,7 +471,7 @@ Function iterateRange(ByVal rng)
         End If
     Next n
     If InStr(outStr, "HYPERLINK") Then
-        sInd = InStr(outStr, " HYPERLINK")
+        sInd = InStr(outStr, "HYPERLINK")
         hind = InStr(outStr, "http")
         eInd = InStr(hind, outStr, """")
         linkURL = Mid(outStr, hind, eInd - hind)
