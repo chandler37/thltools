@@ -15,19 +15,33 @@ import javax.sql.*;
 public class ThdlUserRepository
 {
 //attributes
+
+
 	private static ThdlUserRepository instance;
-	private Connection connection;
+	private DataSource dataSource;
 
 
 	/**
-	 *  Sets the connection attribute of the ThdlUserRepository object
+	 *  Sets the dataSource attribute of the ThdlUserRepository object
 	 *
-	 * @param  connection  The new connection value
+	 * @param  dataSource  The new dataSource value
 	 */
-	private void setConnection( Connection connection )
+	public void setDataSource( DataSource dataSource )
 	{
-		this.connection = connection;
+		this.dataSource = dataSource;
 	}
+
+
+	/**
+	 *  Gets the dataSource attribute of the ThdlUserRepository object
+	 *
+	 * @return    The dataSource value
+	 */
+	public DataSource getDataSource()
+	{
+		return dataSource;
+	}
+
 //accessors
 
 	/**
@@ -45,16 +59,6 @@ public class ThdlUserRepository
 		return instance;
 	}
 
-
-	/**
-	 *  Gets the connection attribute of the ThdlUserRepository object
-	 *
-	 * @return    The connection value
-	 */
-	private Connection getConnection()
-	{
-		return connection;
-	}
 //helper methods
 
 	/**
@@ -73,8 +77,8 @@ public class ThdlUserRepository
 					 + "FROM ThdlUsers "
 					 + "WHERE ( email = '" + user.getUsername() + "' OR username = '" + user.getUsername() + "' ) "
 					 + "AND password = PASSWORD('" + user.getPassword() + "')";
-			Statement stmt = getConnection().createStatement();
-			ResultSet rs = stmt.executeQuery( sql );
+			Connection con = getDataSource().getConnection();
+			ResultSet rs = con.createStatement().executeQuery( sql );
 			if ( ThdlUtilities.getResultSetSize( rs ) < 1 )
 			{
 				throw new ThdlUserRepositoryException( "Invalid login combination" );
@@ -97,6 +101,7 @@ public class ThdlUserRepository
 				thdlUser.setPassword( rs.getString( "password" ) );
 				thdlUser.setPasswordHint( rs.getString( "passwordHint" ) );
 			}
+			con.close();
 			return thdlUser;
 		}
 		catch ( SQLException sqle )
@@ -125,14 +130,15 @@ public class ThdlUserRepository
 				 + "AND urfa.userId = " + thdlUser.getId() + " ";
 		try
 		{
-			Statement stmt = getConnection().createStatement();
-			ResultSet rs = stmt.executeQuery( sql );
+			Connection con = getDataSource().getConnection();
+			ResultSet rs = con.createStatement().executeQuery( sql );
 
 			if ( ThdlUtilities.getResultSetSize( rs ) == 1 )
 			{
 				rs.next();
 				thdlUser.setRoles( rs.getString( 1 ) );
 			}
+			con.close();
 		}
 		catch ( SQLException sqle )
 		{
@@ -171,8 +177,10 @@ public class ThdlUserRepository
 			buffer.append( thdlUser.getPasswordHint() );
 			buffer.append( "' WHERE id = " );
 			buffer.append( thdlUser.getId() );
-			Statement stmt = getConnection().createStatement();
-			int updatedRowCount = stmt.executeUpdate( buffer.toString() );
+
+			Connection con = getDataSource().getConnection();
+			int updatedRowCount = con.createStatement().executeUpdate( buffer.toString() );
+			con.close();
 		}
 		catch ( SQLException sqle )
 		{
@@ -194,7 +202,8 @@ public class ThdlUserRepository
 		try
 		{
 			String sql = "SELECT id FROM ThdlUsers WHERE email = '" + user.getEmail() + "'";
-			Statement stmt = getConnection().createStatement();
+			Connection con = getDataSource().getConnection();
+			Statement stmt = con.createStatement();
 			ResultSet rs = stmt.executeQuery( sql );
 			if ( ThdlUtilities.getResultSetSize( rs ) > 0 )
 			{
@@ -254,11 +263,12 @@ public class ThdlUserRepository
 			buffer.append( "'), '" );
 			buffer.append( thdlUser.getPasswordHint() );
 			buffer.append( "' ) " );
-			Statement stmt = getConnection().createStatement();
 
-			boolean returnVal = false;
+			Connection con = getDataSource().getConnection();
+			Statement stmt = con.createStatement();
 			int insertedRowCount = stmt.executeUpdate( buffer.toString() );
 
+			boolean returnVal = false;
 			if ( insertedRowCount > 0 )
 			{
 				ResultSet rs = stmt.executeQuery( "SELECT LAST_INSERT_ID()" );
@@ -270,6 +280,7 @@ public class ThdlUserRepository
 			{
 				throw new ThdlUserRepositoryException( "Insert affected 0 rows. Sql String was '" + buffer.toString() + "'" );
 			}
+			con.close();
 			return returnVal;
 		}
 		catch ( SQLException sqle )
@@ -302,8 +313,11 @@ public class ThdlUserRepository
 			tag.append( user.getLastname().substring( 0, 1 ) );
 		}
 		String sql = "SELECT id FROM ThdlUsers WHERE  creditAttributionTag = '" + user.getCreditAttributionTag() + "'";
-		ResultSet rs = getConnection().createStatement().executeQuery( sql );
+
+		Connection con = getDataSource().getConnection();
+		ResultSet rs = con.createStatement().executeQuery( sql );
 		int count = ThdlUtilities.getResultSetSize( rs );
+		con.close();
 		if ( count > 0 )
 		{
 			tag.append( count + 1 );
@@ -324,7 +338,8 @@ public class ThdlUserRepository
 		HashMap map = new HashMap();
 		try
 		{
-			Statement stmt = getConnection().createStatement();
+			Connection con = getDataSource().getConnection();
+			Statement stmt = con.createStatement();
 			String sql = "SELECT id, firstname, lastname FROM ThdlUsers";
 			rs = stmt.executeQuery( sql );
 			if ( null != rs )
@@ -346,6 +361,7 @@ public class ThdlUserRepository
 					map.put( key, value );
 				}
 			}
+			con.close();
 		}
 		catch ( SQLException sqle )
 		{
@@ -392,37 +408,15 @@ public class ThdlUserRepository
 	 */
 	private ThdlUserRepository() throws ThdlUserRepositoryException
 	{
-		/*
-		    try
-		    {
-		    Class.forName( ThdlUserConstants.DRIVER );
-		    }
-		    catch ( ClassNotFoundException cnfe )
-		    {
-		    throw new ThdlUserRepositoryException( "No Driver Available for: " + ThdlUserConstants.DRIVER );
-		    }
-		    Properties props = new Properties();
-		    props.setProperty( "user", ThdlUserConstants.USER );
-		    props.setProperty( "password", ThdlUserConstants.PASSWORD );
-		    props.setProperty( "useUnicode", "true" );
-		    props.setProperty( "characterEncoding", "UTF-8" );
-		  */
 		try
 		{
-			/*
-			    setConnection( DriverManager.getConnection( ThdlUserConstants.URL, props ) );
-			  */
 			Context context = new InitialContext();
 			DataSource source = (DataSource) context.lookup( ThdlUserConstants.DATASOURCE_NAME );
-			setConnection( source.getConnection() );
+			setDataSource( source );
 		}
 		catch ( NamingException ne )
 		{
 			throw new ThdlUserRepositoryException( ne );
-		}
-		catch ( SQLException se )
-		{
-			throw new ThdlUserRepositoryException( se );
 		}
 	}
 }
