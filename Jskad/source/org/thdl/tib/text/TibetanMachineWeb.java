@@ -556,7 +556,10 @@ public class TibetanMachineWeb implements THDLWylieConstants {
                                                 int x;
                                                 ThdlDebug.verify(((x = Integer.parseInt(subval, 16)) >= 0x0F00
                                                                   && x <= 0x0FFF)
-                                                                 || x == 0x0020);
+                                                                 || x == 0x5350
+                                                                 || x == 0x534D
+                                                                 || x == 0x0020
+                                                                 || x == 0x2003);
                                                 unicodeBuffer.append((char)x);
                                             } catch (NumberFormatException e) {
                                                 ThdlDebug.verify(false);
