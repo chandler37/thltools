@@ -80,8 +80,7 @@ public class DuffScannerPanel extends ScannerPanel implements ItemListener
 		/* Looks up tibcodes in directory of applet. In order
 		to work through a proxy store all the applet classes toghether
 		with tibcodes.ini in a jar file. */
-		duffInput = new DuffPane();
-		duffInput.disableRoman();
+		duffInput = new StrictDuffPane();
         f = new Font(duffInput.getRomanFontFamily(), Font.PLAIN, duffInput.getRomanFontSize());
 		
 		JPanel jpanel = new JPanel(new GridLayout(1,1));
