@@ -28,7 +28,7 @@ package org.thdl.tib.text;
     when this is U+0F7F alone.
 
     @author David Chandler */
-public class TGCPair {
+public class TGCPair implements THDLWylieConstants {
     public static final int OTHER = 1;
     // a standalone achen would fall into this category:
     public static final int CONSONANTAL_WITHOUT_VOWEL = 2;
@@ -83,6 +83,13 @@ public class TGCPair {
         @see #getACIP(String)
     */
     public String getWylie(String previousTranslitIfAppendaged) {
+        if (ACHEN.equals(consonantWylie)) {
+            // Unlike ACIP, EWTS uses e for achen with e vowel, not ae.
+            if (null == vowelWylie)
+                return ACHEN;
+            else
+                return vowelWylie;
+        }
         StringBuffer b = new StringBuffer();
         if (consonantWylie != null) {
             // Think of pa'am...  we want 'am, not 'm; 'ang, not 'ng.  But we want 'ur, not 'uar, 'is, not 'ias.

@@ -1002,8 +1002,6 @@ private static boolean isAmbHelper(String y) {
 * @return true if x + y is ambiguous in the Extended Wylie
 * transliteration, false if not */
 public static boolean isAmbiguousWylie(String x, String y) {
-    // DLC NOW: BDE vs. B+DE -- TMW->ACIP should give B+DE to be very friendly to machines.
-
     // What about ambiguity between wa-zur and wa? dwa vs. d.wa, e.g.?
     // Some would say it doesn't matter, because that's illegal.  wa
     // doesn't take any prefixes.  But I want even illegal stuff to
@@ -1016,7 +1014,7 @@ public static boolean isAmbiguousWylie(String x, String y) {
     // for the regular expressions ^d-, ^m-, ^'-, ^g-, and ^b- shows
     // you all the fellows that could be ambiguous.
 
-	return (("g".equals(x) && y.startsWith("y") && isAmbHelper(y))
+    return (("g".equals(x) && y.startsWith("y") && isAmbHelper(y))
             || ("g".equals(x) && y.startsWith("w") && isAmbHelper(y))
             || ("d".equals(x) && y.startsWith("w") && isAmbHelper(y))
             || ("d".equals(x) && y.startsWith("z") && isAmbHelper(y))
@@ -1025,7 +1023,14 @@ public static boolean isAmbiguousWylie(String x, String y) {
             || ("m".equals(x) && y.startsWith("y") && isAmbHelper(y))
             || ("b".equals(x) && y.startsWith("y") && isAmbHelper(y))
             || ("g".equals(x) && y.startsWith("rw"))
-            || ("d".equals(x) && y.startsWith("rw")));
+            || ("d".equals(x) && y.startsWith("rw"))
+
+            // Because we wouldn't want to generate de for d.e (if
+            // achen took a da prefix): [This is a HIGH-CLASS WORRY
+            // because achen doesn't take any prefixes.  But I'm
+            // thorough when I think to be.]
+            || isWylieVowel(y)
+            );
 }
 
 /**
@@ -2059,3 +2064,6 @@ public static boolean isTopVowel(DuffCode dc) {
         // FIXME: am I missing anything?  tabs etc.?
     }
 }
+
+// FIXME MAKE AUTOMATED TEST: BDE vs. B+DE -- TMW->ACIP should
+// give B+DE to be very friendly to machines.

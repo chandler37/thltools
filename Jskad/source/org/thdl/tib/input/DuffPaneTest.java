@@ -142,8 +142,10 @@ public class DuffPaneTest extends TestCase {
         e("sa"); e("s", "sa"); e("si"); e("su"); e("se"); e("so"); e("sU"); e("sM"); e("sau"); e("sai"); e("sI"); e("s-i");
         e("ha"); e("h", "ha"); e("hi"); e("hu"); e("he"); e("ho"); e("hU"); e("hM"); e("hau"); e("hai"); e("hI"); e("h-i");
 
-        // SPECIAL:
-        e("a"); /* FIXME: bug 838580: e("ai"); e("au"); */ e("ae"); e("ao"); e("aU"); e("aM"); e("aau"); e("aai"); e("aI"); e("a-i");
+        // SPECIAL CASE: achen:
+        e("a"); e("i"); e("u"); e("e"); e("o"); e("U");
+        e("aM", "M"); // DLC FIXME: which is correct? "M" gives achen plus M or "aM" gives achen plus M.
+        e("au"); e("ai"); e("I"); e("-i");
 
         e("rka"); e("rk", "rka"); e("rki"); e("rku"); e("rke"); e("rko"); e("rkU"); e("rkM"); e("rkau"); e("rkai"); e("rkI"); e("rk-i");
         e("rga"); e("rg", "rga"); e("rgi"); e("rgu"); e("rge"); e("rgo"); e("rgU"); e("rgM"); e("rgau"); e("rgai"); e("rgI"); e("rg-i");
@@ -239,8 +241,7 @@ public class DuffPaneTest extends TestCase {
         e("drwa"); e("drw", "drwa"); e("drwi"); e("drwu"); e("drwe"); e("drwo"); e("drwU"); e("drwM"); e("drwau"); e("drwai"); e("drwI"); e("drw-i");
         e("phywa"); e("phyw", "phywa"); e("phywi"); e("phywu"); e("phywe"); e("phywo"); e("phywU"); e("phywM"); e("phywau"); e("phywai"); e("phywI"); e("phyw-i");
 
-/* DLC FIXME: should l+ta be treated like lta or not?  Either way, EWTS needs a list of "native" stacks in it.
-
+        /* DLC FIXME: when bug 847460 is fixed:
         e("r+ka"); e("r+k", "r+ka"); e("r+ki"); e("r+ku"); e("r+ke"); e("r+ko"); e("r+kU"); e("r+kM"); e("r+kau"); e("r+kai"); e("r+kI"); e("r+k-i");
         e("r+ga"); e("r+g", "r+ga"); e("r+gi"); e("r+gu"); e("r+ge"); e("r+go"); e("r+gU"); e("r+gM"); e("r+gau"); e("r+gai"); e("r+gI"); e("r+g-i");
         e("r+nga"); e("r+ng", "r+nga"); e("r+ngi"); e("r+ngu"); e("r+nge"); e("r+ngo"); e("r+ngU"); e("r+ngM"); e("r+ngau"); e("r+ngai"); e("r+ngI"); e("r+ng-i");
@@ -835,6 +836,13 @@ public class DuffPaneTest extends TestCase {
      *  keyboard, turning those into our internal representation (IR),
      *  and then converting the result to Extended Wylie. */
     public void testWylieToIRToWylie() {
+        // FIXME: test achen when it's not alone -- once Jskad's
+        // keyboard supports that!  Right now, you have to type "d
+        // a<LEFTARROW><BACKSPACE><RIGHTARROW> " to get EWTS {d.a }.
+        // Test a.u, r.u.r, ra.u, g.-i, etc.
+
+        ensureKeysGiveCorrectWylie("gl-i");
+        ensureKeysGiveCorrectWylie("gr-i");
         ensureKeysGiveCorrectWylie("ts.ha",
                                    "tsaha");
         ensureKeysGiveCorrectWylie("tsha");
@@ -1106,3 +1114,5 @@ public class DuffPaneTest extends TestCase {
         }
     }
 }
+// DLC FIXME: EWTS needs a list of "native" stacks in it.
+

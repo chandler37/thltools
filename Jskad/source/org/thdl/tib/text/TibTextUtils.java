@@ -341,7 +341,7 @@ public class TibTextUtils implements THDLWylieConstants {
                 throw new InvalidACIPException("Fatal error converting ACIP to TMW.");
         }
         String warningLevel = withWarnings ? "All" : "None";
-        boolean colors = false;
+        boolean colors = withWarnings;
         boolean putWarningsInOutput = false;
         if ("None" != warningLevel) {
             putWarningsInOutput = true;
@@ -901,7 +901,7 @@ public class TibTextUtils implements THDLWylieConstants {
         is already "a". */
     private static String aVowelToUseAfter(boolean EWTSNotACIP, String wylie) {
         if (wylie.equals(ACHEN))
-            return "";
+            return ""; // it's a, not aa, for achen alone.
         else
             return (EWTSNotACIP) ? WYLIE_aVOWEL : "A";
     }
@@ -1379,6 +1379,18 @@ public class TibTextUtils implements THDLWylieConstants {
                 int cls = tp.classification;
                 String wylie = tp.getWylie();
                 String translit = (EWTSNotACIP) ? wylie : tp.getACIP();
+                if (TibetanMachineWeb.isWylieVowel(wylie) && i > 0) {
+                    // au would be achen with au vowel, so use a.u; ai
+                    // would be achen with ai vowel, so use a.i; l-i
+                    // won't happen, you'd see la-i or gla-i, not l-i
+                    // or gl-i; similarly for r-i, r-I, and l-I.
+
+                    // Even though we only need it for ka.u and ka.i
+                    // and a.u and a.i, we always do it (see Rule 10
+                    // of the September 1, 2003 draft of EWTS
+                    // standard).
+                    translitBuffer.append(WYLIE_DISAMBIGUATING_KEY);
+                }
                 translitBuffer.append(translit);
                 if (TibetanMachineWeb.isWylieTibetanConsonantOrConsonantStack(wylie)
                     || TibetanMachineWeb.isWylieSanskritConsonantStack(wylie)) {
@@ -1431,7 +1443,7 @@ public class TibTextUtils implements THDLWylieConstants {
 
                 leftover = 3;
                 /* FIXME: these constants are hard-wired here, rather
-                 * than in TibetanMachineWeb, because I'm lazy. */
+                 * than in THDLWylieConstants, because I'm lazy. */
                 String wylie1 = ((TGCPair)gcs.get(0)).getWylie();
                 String wylie2 = ((TGCPair)gcs.get(1)).getWylie();
                 String wylie3 = ((TGCPair)gcs.get(2)).getWylie();
