@@ -89,11 +89,11 @@ public class Jskad extends JPanel implements DocumentListener {
         }
     }
 
-	private JComboBox fontFamilies, fontSizes;
+	// private JComboBox fontFamilies, fontSizes;
 	private JFileChooser fileChooser;
 	private javax.swing.filechooser.FileFilter rtfFilter;
 	private javax.swing.filechooser.FileFilter txtFilter;
-	private int fontSize = 0;
+	// private int fontSize = 0;
 	private Object parentObject = null;
 	private static int numberOfTibsRTFOpen = 0;
 	private static int x_size;
@@ -112,6 +112,8 @@ public class Jskad extends JPanel implements DocumentListener {
 * The filename, if any, associated with this instance of Jskad.
 */
 	public String fileName = null;
+	
+	private PreferenceWindow prefWindow;
 
     /** the status bar for this frame */
     private StatusBar statusBar;
@@ -127,6 +129,13 @@ public class Jskad extends JPanel implements DocumentListener {
     
     /** Do not use this JPanel constructor. */
     private Jskad(LayoutManager lm, boolean isDB) { super(lm, isDB); }
+    
+    /** Invokes to window to customize fonts. */
+	private void setPreferences()
+	{
+	    if (prefWindow == null) prefWindow = new PreferenceWindow(this, dp);
+	    prefWindow.show();
+	}    
 
     /** Saves user preferences to disk if possible. */
     private void savePreferencesAction() {
@@ -380,7 +389,7 @@ public class Jskad extends JPanel implements DocumentListener {
             JMenuItem preferencesItem = new JMenuItem("Preferences");
             preferencesItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
-                        getPreferences();
+                        setPreferences();
                     }
                 });
             editMenu.addSeparator();
@@ -777,9 +786,8 @@ public class Jskad extends JPanel implements DocumentListener {
 		keyboards.addActionListener(new ThdlActionListener() {
 			public void theRealActionPerformed(ActionEvent e) {
                 int ki = keyboards.getSelectedIndex();
-                keybdMgr.elementAt(keyboards.getSelectedIndex()).activate(dp);
-                ThdlOptions.setUserPreference("thdl.default.tibetan.keyboard",
-                                              ki);
+                keybdMgr.elementAt(ki).activate(dp);
+                ThdlOptions.setUserPreference("thdl.default.tibetan.keyboard", ki);
 			}
 		});
 		toolBar.add(keyboards);
@@ -830,70 +838,6 @@ public class Jskad extends JPanel implements DocumentListener {
 		add("Center", scrollingDuffPane);
         if (statusBar != null)
             add("South", statusBar);
-	}
-
-	private void getPreferences() {
-		GraphicsEnvironment genv = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		String[] fontNames = genv.getAvailableFontFamilyNames();
-
-		JPanel tibetanPanel;
-		JComboBox tibetanFontSizes;
-
-		tibetanPanel = new JPanel();
-		tibetanPanel.setBorder(BorderFactory.createTitledBorder("Set Tibetan Font Size"));
-		tibetanFontSizes = new JComboBox(new String[] {"8","10","12","14","16","18","20","22","24","26","28","30","32","34","36","48","72"});
-		tibetanFontSizes.setMaximumSize(tibetanFontSizes.getPreferredSize());
-		tibetanFontSizes.setSelectedItem(String.valueOf(dp.getTibetanFontSize()));
-		tibetanFontSizes.setEditable(true);
-		tibetanPanel.add(tibetanFontSizes);
-
-		JPanel romanPanel;
-		JComboBox romanFontFamilies;
-		JComboBox romanFontSizes;
-
-		romanPanel = new JPanel();
-		romanPanel.setBorder(BorderFactory.createTitledBorder("Set non-Tibetan Font and Size"));
-		romanFontFamilies = new JComboBox(fontNames);
-		romanFontFamilies.setMaximumSize(romanFontFamilies.getPreferredSize());
-		romanFontFamilies.setSelectedItem(dp.getRomanFontFamily());
-		romanFontFamilies.setEditable(true);
-		romanFontSizes = new JComboBox(new String[] {"8","10","12","14","16","18","20","22","24","26","28","30","32","34","36","48","72"});
-		romanFontSizes.setMaximumSize(romanFontSizes.getPreferredSize());
-		romanFontSizes.setSelectedItem(String.valueOf(dp.getRomanFontSize()));
-		romanFontSizes.setEditable(true);
-		romanPanel.setLayout(new GridLayout(1,2));
-		romanPanel.add(romanFontFamilies);
-		romanPanel.add(romanFontSizes);
-
-		JPanel preferencesPanel = new JPanel();
-		preferencesPanel.setLayout(new GridLayout(2,1));
-		preferencesPanel.add(tibetanPanel);
-		preferencesPanel.add(romanPanel);
-
-		JOptionPane pane = new JOptionPane(preferencesPanel);
-		JDialog dialog = pane.createDialog(this, "Preferences");
-
-        // This returns only when the user has closed the dialog:
-		dialog.show();
-
-		int size;
-		try {
-			size = Integer.parseInt(tibetanFontSizes.getSelectedItem().toString());
-            dp.setByUserTibetanFontSize(size);
-		}
-		catch (NumberFormatException ne) {
-			size = dp.getTibetanFontSize();
-            dp.setTibetanFontSize(size);
-		}
-
-		String font = romanFontFamilies.getSelectedItem().toString();
-		try {
-			size = Integer.parseInt(romanFontSizes.getSelectedItem().toString());
-		}
-		catch (NumberFormatException ne) {
-			size = dp.getRomanFontSize();
-		}
-        dp.setByUserRomanAttributeSet(font, size);
 	}
 
 	private void newFile() {
@@ -1279,7 +1223,7 @@ public class Jskad extends JPanel implements DocumentListener {
 		dp.newDocument();
 		dp.toTibetanMachineWeb(wylie, 0);
 	}
-
+	
 /**
 * Enables typing of Roman (non-Tibetan) text along
 * with Tibetan.
