@@ -215,8 +215,9 @@ public class LexComponentRepository
 		Query query = null;
 		Iterator it = null;
 
-		String termForQuery = LexUtilities.hqlEscape( term.getTerm() );
-		LexLogger.debug( "Escaped term string: " + termForQuery );
+		/* String termForQuery = LexUtilities.hqlEscape( term.getTerm() );
+		LexLogger.debug( "Escaped term string: " + termForQuery ); */
+		String termForQuery = term.getTerm();
 
 		if ( lexQuery.getFindMode().equals( LexComponentRepository.STARTS_WITH ) )
 		{
