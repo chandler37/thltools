@@ -289,6 +289,23 @@
       <param name="my.included.source.file"
              value="org/thdl/tib/scanner/ConsoleScannerFilter.java"/>
     </antcall>
+    <antcall target="our-internal-javac-task">
+      <reference torefid="ttsc.class.path" refid="ttsc.class.path"/>
+      <param name="our.javac.classpathref" value="ttsc.class.path"/>
+      <param name="mybin" value="${ttservletbin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/tib/scanner/OnLineScannerFilter.java"/>
+    </antcall>
+    <antcall target="our-internal-javac-task">
+      <reference torefid="ttsc.class.path" refid="ttsc.class.path"/>
+      <param name="our.javac.classpathref" value="ttsc.class.path"/>
+      <param name="mybin" value="${ttservletbin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/tib/scanner/RemoteScannerFilter.java"/>
+    </antcall>
+    <antcall target="copy-ini-files-to-bin-dir-for-jarring">
+      <param name="mybin" value="${ttservletbin}"/>
+    </antcall>
     <antcall target="copy-license-etc-to-bin-dir-for-jarring">
       <param name="mybin" value="${ttservletbin}"/>
     </antcall>
