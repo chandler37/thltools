@@ -142,7 +142,7 @@ public class TString {
 
     /** Creates a new TString with source text <i>text</i>, encoded
      *  using the Roman transliteration system specified by
-     *  <i>encoding</i> (see {@link getEncoding()}) and type
+     *  <i>encoding</i> (see {@link #getEncoding()}) and type
      *  <i>type</i> being a characterization like {@link #DD}. */
     public TString(String encoding, String text, int type) {
 	this.encoding = encoding;

@@ -88,7 +88,7 @@ class TPairListFactory {
             throw new IllegalArgumentException("Input too large[2]: " + acip);
         }
     }
-    /** Helps {@link breakACIPIntoChunks(String)}.
+    /** Helps {@link #breakACIPIntoChunks(String,boolean)}.
      *  @param tickIsVowel true if and only if you want to treat the
      *  ACIP {'} as an U+0F71 vowel instead of the full-sized
      *  consonant in special, "this might be an appendage like 'AM or
