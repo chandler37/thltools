@@ -66,6 +66,8 @@
        Set this property to the directory containing j2ee.jar: 
     -->
   <property name="j2ee.sdk.home" location="F:\Program Files\j2sdkee1.3.1\lib"/>
+  <property name="tomcat.servlet.jar"
+            location="d:\lenguaje\jakarta-tomcat-3.2.1\lib\servlet.jar"/>
 
   <!-- Set to true for more output when running the tools and if you
        want the code to abort when it reaches poorly thought-out
@@ -273,10 +275,11 @@
 
   <target name="tt-servlet-compile"
           depends="ttsc-init"
-          if="found.j2ee.jar"
+          if="found.servlet.classes"
           description="compiles the servlet form of the Translation Tool if you've set the j2ee.sdk.home property correctly" >
     <path id="ttsc.class.path">
       <pathelement location="${j2ee.sdk.home}/j2ee.jar"/>
+      <pathelement location="${tomcat.servlet.jar}"/>
       <path refid="entire.class.path"/>
     </path>
     <antcall target="our-internal-javac-task">
@@ -402,7 +405,7 @@
 
 
   <target name="tt-servlet-dist" depends="tt-servlet-compile"
-          if="found.j2ee.jar"
+          if="found.servlet.classes"
           description="generates the servlet translation tool's binary distribution." >
     <!-- Put everything in ${ttservletbin} into the JAR file -->
     <jar jarfile="${dist}/lib/DictionarySearchServlet-${my.jar.suffix}.jar"
@@ -650,8 +653,13 @@
 
 
   <target name="ttsc-init" depends="init"
-          description="used internally to set a property when the J2EE SDK is installed in a place where we can find it.  In that case, we can build servlets.">
-    <available file="${j2ee.sdk.home}/j2ee.jar" property="found.j2ee.jar"/>
+          description="used internally to set a property when the J2EE SDK or Tomcat's servlet.jar is installed in a place where we can find it.  In that case, we can build servlets.">
+    <condition property="found.servlet.classes">
+      <or>
+        <available file="${j2ee.sdk.home}/j2ee.jar"/>
+        <available file="${tomcat.servlet.jar}"/>
+      </or>
+    </condition>
   </target>
 
 
