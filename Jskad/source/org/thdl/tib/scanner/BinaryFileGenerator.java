@@ -203,17 +203,6 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 	{
 		return sil;
 	}
-
-    private static String deleteQuotes(String s)
-    {
-        int length = s.length();
-        if (length>2)
-        {
-        if ((s.charAt(0)=='\"') && (s.charAt(length-1)=='\"'))
-            return s.substring(1,length-1);
-        }
-        return s;
-    }
     
 	public void addFile(String archivo, int delimiterType, String delimiter, int defNum) throws Exception
 	{
@@ -502,14 +491,14 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
         		        }
 	        	        else
 		                {
-		                    s1 = deleteQuotes(entrada.substring(0,marker).trim());
-		                    s2 = deleteQuotes(entrada.substring(marker+1).trim());
+		                    s1 = Manipulate.deleteQuotes(entrada.substring(0,marker).trim());
+		                    s2 = Manipulate.deleteQuotes(entrada.substring(marker+delimiter.length()).trim());
 		                    if (!s2.equals(""))
 		                    {
 		                        marker2 = s1.indexOf(';');
             		            if (marker2>0)
             		            {
-		                            alternateWords = Manipulate.parseFields(s1, ';');
+            		                alternateWords = s1.split(";");
     		                        for (marker2=0; marker2<alternateWords.length; marker2++)
 	    	                        {
 		                                add(alternateWords[marker2],s2, defNum);
@@ -701,7 +690,7 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 	    
 	    int i, n=0, a;
 	    
-        delimiter = null;
+        delimiter = "-";
         delimiterType=delimiterDash;
 
 		if (args.length==0)
