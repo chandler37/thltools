@@ -1600,7 +1600,7 @@ public void paste(int offset) {
 * corresponding to one of these glyphs, then noSuchWylie[0] will be
 * set to true
 * @return the string of Wylie corresponding to the associated document
-* @see org.thdl.tib.text.TibetanDocument#getWylie() */
+* @see org.thdl.tib.text.TibetanDocument#getWylie(boolean[]) */
     public String getWylie(boolean noSuchWylie[]) {
         return getTibDoc().getWylie(noSuchWylie);
     }

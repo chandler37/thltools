@@ -27,8 +27,8 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 
 
-/** Provides an input stream that fixes an RTF input stream so that it
-    no longer contains hexadecimal escapes that {@see
+/** Provides an input stream that fixes another RTF input stream so
+    that it no longer contains hexadecimal escapes that {@link
     javax.swing.text.rtf#RTFEditorKit} cannot understand.  Instead,
     Unicode escapes (that can be understood) are used.  This is almost
     as fast as possible.
@@ -43,14 +43,19 @@ public class RTFFixerInputStream extends FilterInputStream {
         then just the 32 "\\\'8X" and "\\\'9X" escapes are replaced. */
     private boolean replaceAllHexEscapes = false;
 
-    /** 7, as in "\\u255 ?" (KEEP THIS IN SYNC WITH addASpace) */
+    /** The number of bytes in the Unicode RTF escape sequence that we
+        will use after processing.  I.e., 7, as in "\\u255 ?" (KEEP THIS IN
+        SYNC WITH addASpace) */
     static final int bytesInNewEscape = 7;
-    /** true if you want "\\u255 ?" instead of "\\u255?" (KEEP THIS IN SYNC WITH bytesInNewEscape) */
+    /** True if you want a space in your Unicode RTF escape.  I.e.,
+        true if you want "\\u255 ?" instead of "\\u255?" (KEEP THIS IN
+        SYNC WITH bytesInNewEscape) */
     private static final boolean addASpace = true;
 
     private boolean weSubstitutedAtLeastOnce = false;
 
-    /** 4, as in "\\\'ff" */
+    /** The number of bytes in the RTF hexadecimal escape.  I.e., 4,
+        as in "\\\'ff". */
     static final int bytesInOldEscape = 4;
     /** an instance field just to avoid needless heap allocation */
     private final byte readHelper[] = new byte[bytesInNewEscape];

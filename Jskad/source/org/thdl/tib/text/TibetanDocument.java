@@ -703,9 +703,9 @@ public class TibetanDocument extends DefaultStyledDocument {
         cases will be appended to this StringBuffer
         @return false on 100% success, true if any exceptional case
         was encountered
-        @see #convertToUnicode(int,int,StringBuffer,String)
-        @see #convertToTMW(int,int,StringBuffer) 
-        @see #convertToTM(int,int,StringBuffer) */
+        @see #convertToUnicode(int,int,StringBuffer,String,long[])
+        @see #convertToTMW(int,int,StringBuffer,long[]) 
+        @see #convertToTM(int,int,StringBuffer,long[]) */
     private boolean convertHelper(int begin, int end, boolean toTM,
                                   boolean toUnicode, StringBuffer errors,
                                   String unicodeFont,
