@@ -16,13 +16,11 @@
 			</span>
 		</c:if>
 
-		<!--<span class="label">Etymology:</span>-->
-		<!--<span class="label">Etymology Type:</span>-->
 		<em><c:out value="${ applicationScope.flatData.etymologyTypes[ etymology.etymologyType ] }" /></em>; 
 		
-		<c:if test="${ ! empty etymology.loanLanguage }">
-		<!--<span class="label">Loan Language:</span>-->
-		<c:out value="${ applicationScope.flatData.languages[ etymology.loanLanguage ] }" escapeXml="false" />; 
+		<c:set var="loanLang" value="${ applicationScope.flatData.languages[ etymology.loanLanguage ] }" />
+		<c:if test="${ ! empty  loanLang }">
+		<c:out value="${ loanLang }" escapeXml="false" />; 
 		</c:if>
 
 		<c:out value="${ etymology.etymologyDescription }" escapeXml="false" />   
