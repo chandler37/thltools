@@ -27,6 +27,9 @@
 ; this in a clean way.
 <?Enable THDL final é kludge?>
 
+; Another thing that is handled kludgily.
+<?Enable nasalization before a-chung?>
+
 ; Miscellaneous prefix transformations
 g.      ; delete this (representing g prefix, used before root y only)
 dby y   ; must come before db->w, for dbyang
