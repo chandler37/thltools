@@ -29,6 +29,7 @@ import javax.swing.text.rtf.*;
 
 import org.thdl.savant.ucuchi.*;
 import org.thdl.savant.tib.*;
+import org.thdl.util.TeeStream;
 
 public class SavantShell extends JFrame
 {
@@ -43,9 +44,14 @@ public class SavantShell extends JFrame
 
 	public static void main(String[] args) {
 		try {
-			java.io.PrintStream ps = new java.io.PrintStream(new java.io.FileOutputStream("savant.log"));
-			System.setErr(ps);
-			System.setOut(ps);
+			PrintStream psOut
+				= new TeeStream(System.out,
+								new PrintStream(new FileOutputStream("savant.log")));
+			PrintStream psErr
+				= new TeeStream(System.err,
+								new PrintStream(new FileOutputStream("savant.log")));
+			System.setErr(psErr);
+			System.setOut(psOut);
 		}
 		catch (Exception e) {
 		}

@@ -27,15 +27,22 @@ import java.awt.event.*;
 import javax.swing.text.*;
 import javax.swing.text.rtf.*;
 
+import org.thdl.util.TeeStream;
+
 public class QDShell extends JFrame {
 	ResourceBundle messages = null;
 	QD qd = null;
 
 public static void main(String[] args) {
 		try {
-			PrintStream ps = new PrintStream(new FileOutputStream("qd.log"));
-			System.setErr(ps);
-			System.setOut(ps);
+			PrintStream psOut
+				= new TeeStream(System.out,
+								new PrintStream(new FileOutputStream("qd.log")));
+			PrintStream psErr
+				= new TeeStream(System.err,
+								new PrintStream(new FileOutputStream("qd.log")));
+			System.setErr(psErr);
+			System.setOut(psOut);
 		}
 		catch (Exception e) {
 		}

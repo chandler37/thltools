@@ -32,6 +32,7 @@ import javax.swing.text.*;
 import javax.swing.text.rtf.*;
 
 import org.thdl.tib.text.*;
+import org.thdl.util.TeeStream;
 
 /**
 * A simple Tibetan text editor. Jskad editors lack most of the
@@ -906,9 +907,14 @@ public class Jskad extends JPanel implements DocumentListener {
 	public static void main(String[] args) {
 
 		try {
-			PrintStream ps = new PrintStream(new FileOutputStream("jskad.log"));
-			System.setErr(ps);
-			System.setOut(ps);
+			PrintStream psOut
+				= new TeeStream(System.out,
+								new PrintStream(new FileOutputStream("jskad.log")));
+			PrintStream psErr
+				= new TeeStream(System.err,
+								new PrintStream(new FileOutputStream("jskad.log")));
+			System.setErr(psErr);
+			System.setOut(psOut);
 		}
 		catch (Exception e) {
 		}	
