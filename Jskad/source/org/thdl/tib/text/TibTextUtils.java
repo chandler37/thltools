@@ -10,7 +10,7 @@ License for the specific terms governing rights and limitations under the
 License. 
 
 The Initial Developer of this software is the Tibetan and Himalayan Digital
-Library (THDL). Portions created by the THDL are Copyright 2001 THDL.
+Library (THDL). Portions created by the THDL are Copyright 2001-2003 THDL.
 All Rights Reserved. 
 
 Contributor(s): ______________________________________.
@@ -319,7 +319,7 @@ public class TibTextUtils {
 				}
 				else { //could not convert - throw exception
 					if (start+5 < wylie.length())
-						System.out.println("Bad wylie: "+wylie.substring(start,5));
+						System.out.println("Bad wylie: "+wylie.substring(start,5)); // FIXME: we're printing to stdout!
 					else
 						System.out.println("Bad wylie: "+wylie.substring(start));
 					throw new InvalidWylieException(wylie, start);
@@ -752,6 +752,39 @@ public class TibTextUtils {
 		return null;
 	}
 
+    /**
+     * True if you want TibetanMachineWeb-to-Extended-Wylie conversion
+     * to produce Wylie that, if typed, will produce the same sequence
+     * of TibetanMachineWeb glyphs.  Without it, converting the glyphs
+     * you get from typing jskad, skaska, skaskaska, skaskaskaska,
+     * etc. will not give you Wylie, that, if typed in again, will
+     * produce the original glyphs.  Hence, if this is true, then you
+     * get working, end-to-end Wylie for syntactically illegal
+     * sequences of glyphs. */
+    private static final boolean makeIllegalTibetanGoEndToEnd = true;
+
+
+    /** Returns "a", unless wylie is already "a". */
+    private static String aVowelToUseAfter(String wylie) {
+        if (wylie.equals(TibetanMachineWeb.ACHEN))
+            return "";
+        else
+            return TibetanMachineWeb.WYLIE_aVOWEL;
+    }
+
+    private static String unambiguousPostAVowelWylie(String wylie1,
+                                                     String wylie2) {
+        String disambiguator = "";
+        // type "lard" vs. "lar.d", and you'll see the need for this
+        // disambiguation of suffix and postsuffix.  sa doesn't take
+        // any head letters, so only da needs to be considered.
+        if (TibetanMachineWeb.isWylieTop(wylie1)
+            && wylie2.equals(/* FIXME: hard-coded */ "d"))
+            disambiguator
+                = new String(new char[] { TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY });
+        return wylie1 + disambiguator + wylie2;
+    }
+
 /**
 * Scans a list of glyphs and returns an Extended Wylie string with 'a' inserted.
 * Passed a list of TibetanMachineWeb glyphs that constitute a partial
@@ -760,126 +793,256 @@ public class TibTextUtils {
 * of Wylie corresponding to this sequence. This method is used
 * heavily during TibetanMachineWeb to Extended Wylie conversion,
 * since there is no glyph corresponding to the Extended Wylie 'a' vowel.
-* @param glyphList a list of TibetanMachine glyphs, i.e. {@link org.thdl.tib.text.DuffCode DuffCodes}.
+* @param glyphList a list of TibetanMachineWeb glyphs, i.e. {@link
+* org.thdl.tib.text.DuffCode DuffCodes}.  Pass in an ArrayList if you
+* care at all for speed.
 * @return the Wylie string corresponding to this glyph list, with 'a' inserted.
 */
 	public static String withA(java.util.List glyphList) {
 		StringBuffer sb = new StringBuffer();
-		Iterator iter = glyphList.iterator();
 		int size = glyphList.size();
-		DuffCode dc;
 		String wylie;
-		String lastWylie = new String();
+		String lastWylie = "";
 
 		switch (size) {
-			case 0:
-				return "";
+        case 0:
+            return "";
 
-			case 1: //only one character: 'a' goes after it
-				dc = (DuffCode)iter.next();
-				wylie = TibetanMachineWeb.getWylieForGlyph(dc);
-				sb.append(wylie);
-				if (!wylie.equals(TibetanMachineWeb.ACHEN))
-					sb.append(TibetanMachineWeb.WYLIE_aVOWEL);
+        case 1: //only one glyph: 'a' goes after it
+            wylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(0));
+            sb.append(wylie);
+            sb.append(aVowelToUseAfter(wylie));
 
-				return sb.toString();
+            return sb.toString();
 
-			case 2: //two characters: 'a' either goes after first or after both
-				dc = (DuffCode)iter.next();
-				lastWylie = TibetanMachineWeb.getWylieForGlyph(dc);
-				sb.append(lastWylie);
-				dc = (DuffCode)iter.next();
-				wylie = TibetanMachineWeb.getWylieForGlyph(dc);
-				if (TibetanMachineWeb.isWylieRight(wylie)) {
-					if (!lastWylie.equals(TibetanMachineWeb.ACHEN))
-						sb.append(TibetanMachineWeb.WYLIE_aVOWEL);
+        case 2: //two glyphs: 'a' either goes after first or after both
+            lastWylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(0));
+            sb.append(lastWylie);
+            wylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(1));
+            if (TibetanMachineWeb.isWylieRight(wylie)) {
+                sb.append(aVowelToUseAfter(lastWylie));
+                sb.append(wylie);
+            } else {
+                /* handle illegal two-glyph combinations,
+                 * e.g., skaska */
+                if (makeIllegalTibetanGoEndToEnd
+                    && !TibetanMachineWeb.isWylieLeft(lastWylie)) {
+                    sb.append(aVowelToUseAfter(lastWylie));
+                }
 
-					sb.append(wylie);
-				}
-				else {
+                // FIXME: "g" and "y" should not be hard-coded here.
+                //	Instead, TibetanMachineWeb should introduce relevant sets
 
-//note: "g" and "y" should not be hard-coded in DuffPane
-//	instead, TibetanMachineWeb should introduce relevant sets
+                if (lastWylie.equals("g") && wylie.equals("y"))
+                    sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
 
-					if (lastWylie.equals("g") && wylie.equals("y"))
-						sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
+                if (!wylie.equals(TibetanMachineWeb.ACHEN)) {
+                    sb.append(wylie);
+                    sb.append(TibetanMachineWeb.WYLIE_aVOWEL);
+                } else {
+                    sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
+                    sb.append(wylie);
+                }
+            }
+            return sb.toString();
 
-					if (!wylie.equals(TibetanMachineWeb.ACHEN)) {
-						sb.append(wylie);
-						sb.append(TibetanMachineWeb.WYLIE_aVOWEL);
-					}
-					else {
-						sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
-						sb.append(wylie);
-					}
-				}
-				return sb.toString();
+        default:
+            /* Three or more characters: 'a' goes before last two,
+             * between last two, or in final position, unless we have
+             * something like pa'am, in which case the vowel comes
+             * before the first ACHEN. */
 
-			default: //three or more characters: 'a' goes before last two, between last two, or in final position
-				int i = 0;
+            /* First, allow for pa'am, and even pa'am'ang, and
+             * even bskyars'am'ang.  'i, 'o, 'i, 'u, etc. will not
+             * occur because this is a call to withA, so vowels
+             * aren't in the glyphList.  We will look at the end
+             * of the glyphList (and no, with an ArrayList, this
+             * is not O(glyphList.size()), it is O(1)) and work
+             * our way backward, building up tailEndWylie as we
+             * go. */
+            {
+                StringBuffer tailEndWylie = null;
+                int effectiveSize = size - 2;
+                while (effectiveSize >= 0
+                       && TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(effectiveSize)).equals(TibetanMachineWeb.ACHUNG)) {
+                    if (null == tailEndWylie) tailEndWylie = new StringBuffer();
+                    // prepend:
+                    tailEndWylie.insert(0,
+                                        TibetanMachineWeb.ACHUNG
+                                        + aVowelToUseAfter(TibetanMachineWeb.ACHUNG)
+                                        + TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(effectiveSize + 1)));
+                    effectiveSize -= 2;
+                }
+                if (null != tailEndWylie) {
+                    return (withA(glyphList.subList(0, effectiveSize + 2))
+                            + tailEndWylie.toString());
+                }
+            }
 
-				while (iter.hasNext() && i+2 < size) {
-					dc = (DuffCode)iter.next();
-					wylie = TibetanMachineWeb.getWylieForGlyph(dc);
+            if (makeIllegalTibetanGoEndToEnd
+                && (size > 4 // this is too many glyphs to be legal
+                    // this is illegal because it doesn't begin
+                    // with a prefix:
+                    || (size == 4
+                        && (!TibetanMachineWeb.isWylieLeft(TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(0)))
+                            // this is illegal because it doesn't have a
+                            // suffix in the proper place, e.g. mjskad:
+                            || !TibetanMachineWeb.isWylieRight(TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(size - 2)))
+                            // this is illegal because it doesn't have a
+                            // postsuffix in the proper place,
+                            // e.g. 'lan.g, which would otherwise become
+                            // 'lang (with nga, not na and then ga):
+                            || !TibetanMachineWeb.isWylieFarRight(TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(size - 1))))))) {
+                for (int i = 0; i < size; i++) {
+                    wylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(i));
+                    if ((lastWylie.equals("g") && wylie.equals("y"))
+                        || (i != 0 && wylie.equals(TibetanMachineWeb.ACHEN)))
+                        sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
 
-					if (lastWylie.equals("g") && wylie.equals("y")
-						|| !lastWylie.equals("") && wylie.equals(TibetanMachineWeb.ACHEN))
-							sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
+                    sb.append(wylie + aVowelToUseAfter(wylie));
+                    lastWylie = wylie;
+                }
+                return sb.toString();
+            }
 
-					sb.append(wylie);
-					lastWylie = wylie;
-					i++;
-				}
+            /* Else, chew up all the glyphs except for the last two.  Then decide. */
+            int i = 0;
+            while (i+2 < size) {
+                wylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(i));
+                if ((lastWylie.equals("g") && wylie.equals("y"))
+                    || (i != 0 && wylie.equals(TibetanMachineWeb.ACHEN)))
+                    sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
 
-				DuffCode dc1, dc2;
-				String wylie1, wylie2;
+                sb.append(wylie);
+                lastWylie = wylie;
+                i++;
+            }
 
-				dc1 = (DuffCode)iter.next();
-				wylie1 = TibetanMachineWeb.getWylieForGlyph(dc1);
-				
-				dc2 = (DuffCode)iter.next();
-				wylie2 = TibetanMachineWeb.getWylieForGlyph(dc2);
+            String wylie1
+                = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(i));
+            String wylie2
+                = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(i + 1));
 
-				if (TibetanMachineWeb.isWylieLeft(lastWylie) && TibetanMachineWeb.isWylieRight(wylie2)) {
-					if (lastWylie.equals("g") && wylie1.equals("y"))
-						sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
+            if (size == 3) {
+                String wylie0 = lastWylie;
+                // Let's see if wylie0+wylie1+wylie2 is ambiguous
+                // -- if wylie0 could be a prefix and if wylie1
+                // could be a suffix, and if wylie2 is "s".  If
+                // it's ambigous, let's look up
+                // wylie0+wylie1+wylie2 in our magic table.
+                // Otherwise, see if we have a prefix, and if we
+                // do, the "a" vowel comes after wylie1.  Else the
+                // "a" vowel comes after wylie0.
+                if (TibetanMachineWeb.isWylieLeft(wylie0)) {
+                    /* is it ambiguous? */
+                    if (TibetanMachineWeb.isWylieRight(wylie1)
+                        && TibetanMachineWeb.SA.equals(wylie2)) {
+                        /* Yes, this is ambiguous. How do we handle it?  See this from Andres:
 
-					if (!wylie1.equals(TibetanMachineWeb.ACHEN)) {
-						sb.append(wylie1);
-						sb.append(TibetanMachineWeb.WYLIE_aVOWEL);
-					}
-					else {
-						sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
-						sb.append(wylie1);
-					}
+                        I'm posting this upon David Chandler's request. According to Lobsang
+                        Thonden in Modern Tibetan Grammar Language (page 42), with regards to
+                        identifying the root letter in 3 lettered words there are only 23
+                        ambiguous cases. He writes:
 
-					sb.append(wylie2);
-				}
-				else if (TibetanMachineWeb.isWylieRight(wylie1) && TibetanMachineWeb.isWylieFarRight(wylie2)) {
-					if (!lastWylie.equals(TibetanMachineWeb.ACHEN))
-						sb.append(TibetanMachineWeb.WYLIE_aVOWEL);
+                        If the last letter is 'sa' and the first two letters are affixes, then
+                        the SECOND ONE is the root letter in the following 9 WORDS ONLY:
 
-					sb.append(wylie1);
-					sb.append(wylie2);
-				}
-				else {
-					sb.append(wylie1);
-					
-					if (wylie1.equals("g") && wylie2.equals("y"))
-						sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
+                        gdas gnas gsas dgas dmas bdas mdas 'gas 'das
 
-					if (!wylie2.equals(TibetanMachineWeb.ACHEN)) {
-						sb.append(wylie2);
-						sb.append(TibetanMachineWeb.WYLIE_aVOWEL);
-					}
-					else {
-						sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
-						sb.append(wylie2);
-					}
-				}
+                        And the FIRST is the root letter in the following 14 WORDS ONLY:
 
-				return sb.toString();
-		}	
+                        rags lags nags bags bangs gangs rangs langs nangs sangs 
+                        babs rabs rams nams
+
+                        As I mentioned before, I think that the best solution for now is to
+                        hard-wire these cases. Even if the list is not exhaustive, at least
+                        we'll have most cases covered.
+
+                        */
+
+                        /* FIXME: these constants are hard-wired here,
+                         * rather than in TibetanMachineWeb, because
+                         * I'm lazy. */
+                        if ((wylie0.equals("g") && (wylie1.equals("d") || wylie1.equals("n") || wylie1.equals("s")))
+                            || (wylie0.equals("d") && (wylie1.equals("g") || wylie1.equals("m")))
+                            || (wylie0.equals("b") && wylie1.equals("d"))
+                            || (wylie0.equals("m") && wylie1.equals("d"))
+                            || (wylie0.equals("'") && (wylie1.equals("g") || wylie1.equals("d")))) {
+                            sb.append(wylie1
+                                      + aVowelToUseAfter(wylie1)
+                                      + wylie2);
+                        } else {
+                            sb.append(aVowelToUseAfter(wylie0)
+                                      + unambiguousPostAVowelWylie(wylie1,
+                                                                   wylie2));
+                        }
+
+                        // DLC FIXME: what about ambiguity between
+                        // wa-zur and wa? dwa vs. d.wa, e.g.?
+
+                        // DLC FIXME: disambiguators are needed for
+                        // this case too, as b.lag vs. blag
+                        // illustrates.  Use something based on this,
+                        // from LegalTshegBar.java:
+                        //
+                        //             boolean disambiguatorNeeded = false;
+                        //             char prefix = getPrefix();
+                        //             sb.append(UnicodeCodepointToThdlWylie.getThdlWylieForUnicodeCodepoint(prefix));
+                        //             if (!hasHeadLetter()) {
+                        //                 if (EWC_ya == rootLetter) {
+                        //                     if (isConsonantThatTakesYaBtags(prefix))
+                        //                         disambiguatorNeeded = true;
+                        //                 } else if (EWC_ra == rootLetter) {
+                        //                     if (isConsonantThatTakesRaBtags(prefix))
+                        //                         disambiguatorNeeded = true;
+                        //                 } else if (EWC_la == rootLetter) {
+                        //                     if (isConsonantThatTakesLaBtags(prefix))
+                        //                         disambiguatorNeeded = true;
+                        //                 } else if (EWC_wa == rootLetter) {
+                        //                     if (isConsonantThatTakesWaZur(prefix))
+                        //                         disambiguatorNeeded = true;
+                        //                 }
+                        //             }
+                        //             if (disambiguatorNeeded)
+                        //                 sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
+
+                            
+                    } else {
+                        /* no ambiguity. the "a" vowel comes after
+                         * wylie1. */
+                        sb.append(wylie1
+                                  + aVowelToUseAfter(wylie1)
+                                  + wylie2);
+                    }
+                } else {
+                    if (makeIllegalTibetanGoEndToEnd
+                        && !(TibetanMachineWeb.isWylieRight(wylie1)
+                             && TibetanMachineWeb.isWylieFarRight(wylie2))) {
+                        /* handle skaskaska, e.g. */
+                        sb.append(aVowelToUseAfter(wylie0)
+                                  + wylie1
+                                  + aVowelToUseAfter(wylie1)
+                                  + wylie2
+                                  + aVowelToUseAfter(wylie2));
+                    } else {
+                        /* no ambiguity. the "a" vowel comes after
+                         * wylie0. */
+                        sb.append(aVowelToUseAfter(wylie0)
+                                  + unambiguousPostAVowelWylie(wylie1,
+                                                               wylie2));
+                    }
+                }
+            } else {
+                /* If size==4, then we assume this is legal.  If
+                 * size==5, anything will do!  So assume we have a
+                 * prefix, a root letter, a suffix, and a postsuffix.
+                 * The "a" vowel comes after the root letter. */
+                sb.append(aVowelToUseAfter(lastWylie)
+                          + unambiguousPostAVowelWylie(wylie1,
+                                                       wylie2));
+            }
+            return sb.toString();
+		}
 	}
 
 /**
@@ -891,10 +1054,10 @@ public class TibTextUtils {
 * some other vowel. If the glyph list does not already contain a vowel,
 * then this method should not be called.
 *
-* @param glyphList a list of TibetanMachine glyphs, i.e. {@link org.thdl.tib.text.DuffCode DuffCodes}
+* @param glyphList a list of TibetanMachineWeb glyphs, i.e. {@link org.thdl.tib.text.DuffCode DuffCodes}
 * @return the Wylie string corresponding to this glyph list
 */
-	public static String withoutA(java.util.List glyphList) {
+	public static String withoutA(java.util.ArrayList glyphList) {
 		StringBuffer sb = new StringBuffer();
 		Iterator iter = glyphList.iterator();
 		DuffCode dc;
@@ -908,9 +1071,10 @@ public class TibTextUtils {
 //note: "g" and "y" should not be hard-coded
 //	instead, TibetanMachineWeb should introduce relevant sets
 
-			if (lastWylie.equals("g") && currWylie.equals("y")
-				|| !lastWylie.equals("") && currWylie.equals(TibetanMachineWeb.ACHEN))
-					sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
+			if ((lastWylie.equals("g") && currWylie.equals("y"))
+				|| (!lastWylie.equals("")
+                    && currWylie.equals(TibetanMachineWeb.ACHEN)))
+                sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
 
 			sb.append(currWylie);
 
@@ -921,7 +1085,7 @@ public class TibTextUtils {
 	}
 
 /**
-* Gets the Extended Wylie for a set of glyphs.
+* Gets the Extended Wylie for a sequence of glyphs.
 * @param dcs an array of glyphs
 * @return the Extended Wylie corresponding to these glyphs
 */
@@ -932,166 +1096,165 @@ public class TibTextUtils {
 		char ch;
 		String wylie;
 
-		List glyphList = new ArrayList();
+		ArrayList glyphList = new ArrayList();
 		boolean needsVowel = true;
 		boolean isLastVowel = false;
 		int start = 0;
 		StringBuffer wylieBuffer = new StringBuffer();
 
-			for (int i=start; i<dcs.length; i++) {
-				ch = dcs[i].character;
-				int k = dcs[i].charNum;
-				// int fontNum = dcs[i].fontNum;
+        for (int i=start; i<dcs.length; i++) {
+            ch = dcs[i].character;
+            int k = dcs[i].charNum;
+            // int fontNum = dcs[i].fontNum;
 
-				if (k < 32) {
-					if (wylieBuffer.length() > 0 || !glyphList.isEmpty()) {
-						if (needsVowel)
-							wylieBuffer.append(withA(glyphList));
-						else
-							wylieBuffer.append(withoutA(glyphList));
+            if (k < 32) {
+                if (wylieBuffer.length() > 0 || !glyphList.isEmpty()) {
+                    String thisPart;
+                    if (needsVowel)
+                        thisPart = withA(glyphList);
+                    else
+                        thisPart = withoutA(glyphList);
+                    wylieBuffer.append(thisPart);
 
-						glyphList.clear();
-						needsVowel = true;
-						isLastVowel = false;
-					}
+                    glyphList.clear();
+                    needsVowel = true;
+                    isLastVowel = false;
+                }
 
-					wylieBuffer.append(ch);
-				}
-				else {
-					wylie = TibetanMachineWeb.getWylieForGlyph(dcs[i]);
+                wylieBuffer.append(ch);
+            } else {
+                wylie = TibetanMachineWeb.getWylieForGlyph(dcs[i]);
 
-					boolean containsBindu = false;
-					if (wylie.length() > 1 && wylie.charAt(wylie.length()-1) == TibetanMachineWeb.BINDU) {
-						char[] cArray = wylie.toCharArray();
-						wylie = new String(cArray, 0, wylie.length()-1);
-						containsBindu = true;
-					}
+                boolean containsBindu = false;
+                if (wylie.length() > 1 && wylie.charAt(wylie.length()-1) == TibetanMachineWeb.BINDU) {
+                    char[] cArray = wylie.toCharArray();
+                    wylie = new String(cArray, 0, wylie.length()-1);
+                    containsBindu = true;
+                }
 
-					process_block: {
-						if (TibetanMachineWeb.isWyliePunc(wylie)) {
-							isLastVowel = false;
+                process_block: {
+                    if (TibetanMachineWeb.isWyliePunc(wylie)) {
+                        isLastVowel = false;
 
-							if (glyphList.isEmpty())
-								wylieBuffer.append(wylie);
+                        if (glyphList.isEmpty()) {
+                            wylieBuffer.append(wylie);
+                        } else {
+                            String thisPart;
+                            if (needsVowel)
+                                thisPart = withA(glyphList);
+                            else
+                                thisPart = withoutA(glyphList);
+                            wylieBuffer.append(thisPart);
 
-							else {
-								if (needsVowel)
-									wylieBuffer.append(withA(glyphList));
-								else
-									wylieBuffer.append(withoutA(glyphList));
+                            wylieBuffer.append(wylie); //append the punctuation
 
-								wylieBuffer.append(wylie); //append the punctuation
-
-								glyphList.clear();
-							}
-							needsVowel = true; //next consonants are syllable onset, so we are awaiting vowel
-						}
-
+                            glyphList.clear();
+                        }
+                        needsVowel = true; //next consonants are syllable onset, so we are awaiting vowel
+                    } else if (TibetanMachineWeb.isWylieChar(wylie)) {
 						//isChar must come before isVowel because ACHEN has priority over WYLIE_aVOWEL
-						else if (TibetanMachineWeb.isWylieChar(wylie)) {
-							isLastVowel = false;
-							glyphList.add(dcs[i]);
-						}
+                        isLastVowel = false;
+                        glyphList.add(dcs[i]);
+                    } else if (TibetanMachineWeb.isWylieVowel(wylie)) {
+                        if (isLastVowel) {
+                            int len = wylieBuffer.length();
+                            int A_len = TibetanMachineWeb.A_VOWEL.length();
 
-						else if (TibetanMachineWeb.isWylieVowel(wylie)) {
-							if (isLastVowel) {
-								int len = wylieBuffer.length();
-								int A_len = TibetanMachineWeb.A_VOWEL.length();
+                            if (wylieBuffer.substring(len-A_len).equals(TibetanMachineWeb.A_VOWEL)) {
+                                try {
+                                    if (wylie.equals(TibetanMachineWeb.i_VOWEL)) {
+                                        wylieBuffer.delete(len-A_len, len);
+                                        wylieBuffer.append(TibetanMachineWeb.I_VOWEL);
+                                        isLastVowel = false;
+                                        break process_block;
+                                    } else if (wylie.equals(TibetanMachineWeb.reverse_i_VOWEL)) {
+                                        wylieBuffer.delete(len-A_len, len);
+                                        wylieBuffer.append(TibetanMachineWeb.reverse_I_VOWEL);
+                                        isLastVowel = false;
+                                        break process_block;
+                                    }
+                                }
+                                catch (StringIndexOutOfBoundsException se) {
+                                    ThdlDebug.noteIffyCode();
+                                }
 
-								if (wylieBuffer.substring(len-A_len).equals(TibetanMachineWeb.A_VOWEL)) {
-									try {
-										if (wylie.equals(TibetanMachineWeb.i_VOWEL)) {
-											wylieBuffer.delete(len-A_len, len);
-											wylieBuffer.append(TibetanMachineWeb.I_VOWEL);
-											isLastVowel = false;
-											break process_block;
-										}
-										else if (wylie.equals(TibetanMachineWeb.reverse_i_VOWEL)) {
-											wylieBuffer.delete(len-A_len, len);
-											wylieBuffer.append(TibetanMachineWeb.reverse_I_VOWEL);
-											isLastVowel = false;
-											break process_block;
-										}
-									}
-									catch (StringIndexOutOfBoundsException se) {
-                                        ThdlDebug.noteIffyCode();
-									}
+                                wylieBuffer.append(wylie); //append current vowel
+                                isLastVowel = false;
+                            } else
+                                wylieBuffer.append(wylie); //append current vowel
+                        } else {
+                            int glyphCount = glyphList.size();
+                            boolean insertDisAmbig = false;
 
-									wylieBuffer.append(wylie); //append current vowel
-									isLastVowel = false;
-								}
-								else
-									wylieBuffer.append(wylie); //append current vowel
-							}
-							else {
-									int glyphCount = glyphList.size();
-									boolean insertDisAmbig = false;
+                            if (0 != glyphCount) {
+                                DuffCode top_dc = (DuffCode)glyphList.get(glyphCount-1);
+                                String top_wylie = TibetanMachineWeb.getWylieForGlyph(top_dc);
 
-									if (0 != glyphCount) {
-										DuffCode top_dc = (DuffCode)glyphList.get(glyphCount-1);
-										String top_wylie = TibetanMachineWeb.getWylieForGlyph(top_dc);
-
-										if (top_wylie.equals(TibetanMachineWeb.ACHEN)) {
-											glyphList.remove(glyphCount-1);
+                                if (top_wylie.equals(TibetanMachineWeb.ACHEN)) {
+                                    glyphList.remove(glyphCount-1);
 										
-											if (glyphCount-1 == 0)
-												top_dc = null;
-											else {
-												insertDisAmbig = true;
-												top_dc = (DuffCode)glyphList.get(glyphCount-2);
-											}
-										}
+                                    if (glyphCount-1 == 0) {
+                                        top_dc = null;
+                                    } else {
+                                        insertDisAmbig = true;
+                                        top_dc = (DuffCode)glyphList.get(glyphCount-2);
+                                    }
+                                }
 
-										if (top_dc == null || !TibetanMachineWeb.getWylieForGlyph(top_dc).equals(TibetanMachineWeb.ACHUNG))
-											wylieBuffer.append(withoutA(glyphList)); //append consonants in glyphList
-										else {
-											glyphCount = glyphList.size();
-											glyphList.remove(glyphCount-1);
+                                if (top_dc == null || !TibetanMachineWeb.getWylieForGlyph(top_dc).equals(TibetanMachineWeb.ACHUNG)) {
+                                    String thisPart = withoutA(glyphList);
+                                    wylieBuffer.append(thisPart); //append consonants in glyphList
+                                } else {
+                                    glyphCount = glyphList.size();
+                                    glyphList.remove(glyphCount-1);
 										
-											if (glyphCount-1 != 0)
-												wylieBuffer.append(withA(glyphList));
+                                    if (glyphCount-1 != 0) {
+                                        String thisPart = withA(glyphList);
+                                        wylieBuffer.append(thisPart);
+                                    }
 
-											wylieBuffer.append(TibetanMachineWeb.ACHUNG);
-										}
-									}
+                                    wylieBuffer.append(TibetanMachineWeb.ACHUNG);
+                                }
+                            }
 
-									if (insertDisAmbig)
-										wylieBuffer.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
+                            if (insertDisAmbig)
+                                wylieBuffer.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
 
-									wylieBuffer.append(wylie); //append vowel
+                            wylieBuffer.append(wylie); //append vowel
 
-									glyphList.clear();
-									isLastVowel = true;
-									needsVowel = false;
-							}
-						}
-						else { //must be a stack
-							isLastVowel = false;
-							glyphList.add(dcs[i]);
-						}
-					}
+                            glyphList.clear();
+                            isLastVowel = true;
+                            needsVowel = false;
+                        }
+                    } else { //must be a stack
+                        isLastVowel = false;
+                        glyphList.add(dcs[i]);
+                    }
+                }
 
-					if (containsBindu) {
-						isLastVowel = false;
-						wylieBuffer.append(withoutA(glyphList));
-						wylieBuffer.append(TibetanMachineWeb.BINDU); //append the bindu
-						glyphList.clear();
-					}
-				}
-			}
+                if (containsBindu) {
+                    isLastVowel = false;
+                    wylieBuffer.append(withoutA(glyphList));
+                    wylieBuffer.append(TibetanMachineWeb.BINDU); //append the bindu
+                    glyphList.clear();
+                }
+            }
+        }
 
-			//replace TMW with Wylie
+        //replace TMW with Wylie
 
-			if (!glyphList.isEmpty()) {
-				if (needsVowel)
-					wylieBuffer.append(withA(glyphList));
-				else
-					wylieBuffer.append(withoutA(glyphList));
-			}
+        if (!glyphList.isEmpty()) {
+            String thisPart;
+            if (needsVowel)
+                thisPart = withA(glyphList);
+            else
+                thisPart = withoutA(glyphList);
+            wylieBuffer.append(thisPart);
+        }
 
-			if (wylieBuffer.length() > 0)
-				return wylieBuffer.toString();
-			else
-				return null;
+        if (wylieBuffer.length() > 0)
+            return wylieBuffer.toString();
+        else
+            return null;
 	}
 }

@@ -61,6 +61,7 @@ public class TibetanMachineWeb {
 	private static Set charSet = null;
 	private static Set vowelSet = null;
 	private static Set puncSet = null;
+	private static Set topSet = null;
 	private static Set leftSet = null;
 	private static Set rightSet = null;
 	private static Set farRightSet = null;
@@ -134,6 +135,10 @@ public class TibetanMachineWeb {
 * the Wylie for achung
 */
 	public static final String ACHUNG = "'";
+/**
+* the Wylie for the 28th of the 30 consonants, sa:
+*/
+	public static final String SA = "s";
 /**
 * the Wylie for achen
 */
@@ -238,9 +243,14 @@ public class TibetanMachineWeb {
 */
 	public static final int HALF_C = 10;
 
+    /** head letters, superscribed letters */
+	private static final String tops = "r,s,l";
+    /** prefixes */
 	private static final String lefts = "g,d,b,m,'";
+    /** suffixes */
 	private static final String rights = "g,ng,d,n,b,m,r,l,s,',T";
-	private static final String farrights = "d,s,ng";
+    /** postsuffixes */
+	private static final String farrights = "d,s"; // DLC FIXME: why was nga here in past revisions?
 
 	static {
 
@@ -324,9 +334,14 @@ public class TibetanMachineWeb {
 		}
 
 		StringTokenizer sTok;
+		topSet = new HashSet();
 		leftSet = new HashSet();
 		rightSet = new HashSet();
 		farRightSet = new HashSet();
+
+		sTok = new StringTokenizer(tops, ",");
+		while (sTok.hasMoreTokens())
+			topSet.add(sTok.nextToken());
 
 		sTok = new StringTokenizer(lefts, ",");
 		while (sTok.hasMoreTokens())
@@ -634,10 +649,7 @@ public static boolean isChar(String s) {
 * Extended Wylie transliteration, false if not
 */
 public static boolean isWylieChar(String s) {
-	if (charSet.contains(s))
-		return true;
-
-	return false;
+	return charSet.contains(s);
 }
 
 /**
@@ -648,17 +660,10 @@ public static boolean isWylieChar(String s) {
 * keyboard, false if not
 */
 public static boolean isPunc(String s) {
-	if (currentKeyboardIsExtendedWylie()) {
-		if (puncSet.contains(s))
-			return true;
-		else
-			return false;
-	}
+	if (currentKeyboardIsExtendedWylie())
+		return puncSet.contains(s);
 	else
-		if (keyboard.isPunc(s))
-			return true;
-		else
-			return false;
+		return keyboard.isPunc(s);
 }
 
 /**
@@ -669,10 +674,7 @@ public static boolean isPunc(String s) {
 * Extended Wylie transliteration, false if not
 */
 public static boolean isWyliePunc(String s) {
-	if (puncSet.contains(s))
-		return true;
-
-	return false;
+	return puncSet.contains(s);
 }
 
 /**
@@ -683,17 +685,10 @@ public static boolean isWyliePunc(String s) {
 * keyboard, false if not
 */
 public static boolean isVowel(String s) {
-	if (currentKeyboardIsExtendedWylie()) {
-		if (vowelSet.contains(s))
-			return true;
-		else
-			return false;
-	}
+	if (currentKeyboardIsExtendedWylie())
+		return vowelSet.contains(s);
 	else
-		if (keyboard.isVowel(s))
-			return true;
-		else
-			return false;
+		return keyboard.isVowel(s);
 }
 
 /**
@@ -704,28 +699,23 @@ public static boolean isVowel(String s) {
 * Extended Wylie transliteration, false if not
 */
 public static boolean isWylieVowel(String s) {
-	if (vowelSet.contains(s))
-		return true;
-
-	return false;
+	return vowelSet.contains(s);
 }
 
 /**
 * Returns true iff this Wylie is valid as a leftmost character in a
 * Tibetan syllable.  For example, in the syllable 'brgyad', 'b' is the
-* leftmost character. Valid leftmost characters include g, d, b, and
-* m.
+* leftmost character. Valid leftmost characters include g, d, b, ',
+* and m.
 * @param s the (Wylie) string to be checked
 * @return true if s is a possible leftmost character in a Tibetan
 * syllable, false if not.  */
 public static boolean isWylieLeft(String s) {
-	if (keyboard != null)
-		s = keyboard.getWylieForChar(s);
-
-	if (leftSet.contains(s))
-		return true;
-	else
-		return false;
+	if (useReallyIffyCode) {
+        if (keyboard != null)
+            s = keyboard.getWylieForChar(s);
+    }
+	return leftSet.contains(s);
 }
 
 /**
@@ -737,29 +727,45 @@ public static boolean isWylieLeft(String s) {
 * @return true if s is a possible right character in a Tibetan
 * syllable, false if not.  */
 public static boolean isWylieRight(String s) {
-	if (keyboard != null)
-		s = keyboard.getWylieForChar(s);
-
-	if (rightSet.contains(s))
-		return true;
-	else
-		return false;
+	if (useReallyIffyCode) {
+        if (keyboard != null)
+            s = keyboard.getWylieForChar(s);
+    }
+	return rightSet.contains(s);
 }
 
 /**
-* Returns true iff this Wylie is valid as a leftmost character in a
+* Returns true iff this Wylie is valid as a postsuffix in a
 * Tibetan syllable.
 * @param s the string to be checked
-* @return true if s is a possible leftmost character in a Tibetan
+* @return true if s is a possible postsuffix in a Tibetan
 * syllable, false if not.  */
 public static boolean isWylieFarRight(String s) {
-	if (keyboard != null)
-		s = keyboard.getWylieForChar(s);
+	if (useReallyIffyCode) {
+        if (keyboard != null)
+            s = keyboard.getWylieForChar(s);
+    }
+	return farRightSet.contains(s);
+}
 
-	if (farRightSet.contains(s))
-		return true;
-	else
-		return false;
+    /** DLC FIXME: what is the point of this code?  TibTextUtils
+        doesn't work for TCC#1 and the like, does it?  I bet this
+        explains why TMW=>Wylie conversion fails when the Wylie
+        keyboard isn't in use. */
+    private static final boolean useReallyIffyCode = false;
+
+/**
+* Returns true iff this Wylie is valid as a head letter in a Tibetan
+* syllable.
+* @param s the string to be checked
+* @return true if s is a possible superscribed letter in a Tibetan
+* syllable, false if not.  */
+public static boolean isWylieTop(String s) {
+	if (useReallyIffyCode) {
+        if (keyboard != null)
+            s = keyboard.getWylieForChar(s);
+    }
+	return topSet.contains(s);
 }
 
 /**
