@@ -916,6 +916,7 @@ public static boolean isWylieAchungAppendage(String s) {
             || s.equals("'u")
             || s.equals("'us")
             || s.equals("'ur")
+            || s.equals("'um")
             || s.equals("'ong") // This isn't an appendage I know of, but 'ongs is, and we need this in here or 'ongs won't work.  DLC FIXME: cludge
             || s.equals("'ongs")
             || s.equals("'os")
