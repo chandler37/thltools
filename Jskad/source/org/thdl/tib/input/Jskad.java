@@ -63,6 +63,11 @@ import org.thdl.util.ThdlLazyException;
 * @version 1.0
 */
 public class Jskad extends JPanel implements DocumentListener {
+    /** Sets the focus to the DuffPane if possible. */
+    private void focusToDuffPane() {
+        if (null != dp) dp.requestFocus();
+    }
+
     /** the name of the property a developer should set to see
         low-level info on how keypresses in "Tibetan" input mode are
         being interpreted */
@@ -124,6 +129,17 @@ public class Jskad extends JPanel implements DocumentListener {
     /** Saves user preferences to disk if possible. */
     private void savePreferencesAction() {
         try {
+            
+            int N = ThdlOptions.getIntegerOption("thdl.number.of.recently.opened.files.to.show", 4);
+            int n = 0;
+            // We store 2*N files in the preferences in case some are deleted.
+            for (int k = recentlyOpenedFiles.size(); k > 0 && n < 2*N; k--) {
+                File f = (File)recentlyOpenedFiles.elementAt(k - 1);
+                if (f.isFile())
+                    ThdlOptions.setUserPreference("thdl.recently.opened.file." + n++,
+                                                  f.getAbsolutePath());
+            }
+
             if (!ThdlOptions.saveUserPreferences()) {
                 JOptionPane.showMessageDialog(Jskad.this,
                                               "You previously cleared preferences,\nso you cannot now save them.",
@@ -156,6 +172,40 @@ public class Jskad extends JPanel implements DocumentListener {
     /** pane displaying Jskad's single HTML help file */
     private static HTMLPane helpPane;
 
+    /** Returns the <code>n</code>th most recently opened file, given
+        that we care about <code>N</code> recently opened files in
+        total.  When <code>n</code> is zero, the most recently opened
+        file is returned.  This file does exist.  Returns null if we
+        haven't kept track of enough files to say. */
+    private static File getNthRecentlyOpenedFile(int n, int N) {
+        for (int i = n; i < N*2; i++) {
+            String x = ThdlOptions.getStringOption("thdl.recently.opened.file." + i);
+            if (null == x)
+                return null;
+            File f = new File(x);
+            if (f.isFile())
+                return f;
+        }
+        return null;
+    }
+
+    private static Vector recentlyOpenedFiles = new Vector();
+    private JMenu fileMenu = null;
+    /** Updates state information now that we know that fileChosen is
+        the most recently opened file. */
+    private void noteMostRecentlyOpenedFile(File fileChosen) {
+        // the last element is the most recently opened.
+        int index = recentlyOpenedFiles.indexOf(fileChosen);
+        if (index > -1)
+            recentlyOpenedFiles.remove(index);
+        recentlyOpenedFiles.add(fileChosen);
+
+        int ic = fileMenu.getItemCount();
+        System.err.println("DLC ic is " ic);
+
+        // DLC update the menus.
+    }
+
 /**
 * @param parent the object that embeds this instance of Jskad.
 * Supported objects include JFrames and JApplets. If the parent
@@ -185,7 +235,7 @@ public class Jskad extends JPanel implements DocumentListener {
 			txtFilter = new TXTFilter();
 			fileChooser.addChoosableFileFilter(rtfFilter);
 
-			JMenu fileMenu = new JMenu("File");
+			fileMenu = new JMenu("File");
 
 			JMenuItem newItem = new JMenuItem("New");
 //			newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,java.awt.Event.CTRL_MASK)); //Ctrl-n
@@ -244,6 +294,33 @@ public class Jskad extends JPanel implements DocumentListener {
 				}
 			});
 			fileMenu.add(saveAsItem);
+
+            // Add the N most recently opened files.
+            int N = ThdlOptions.getIntegerOption("thdl.number.of.recently.opened.files.to.show", 4);
+            int maxCharsToShow
+                = ThdlOptions.getIntegerOption("thdl.max.chars.in.recently.opened.file.name", 35);
+            if (N > 0) {
+                boolean addedSeparator = false;
+                for (int i = 0; i < N; i++) {
+                    final File recentlyOpenedFile
+                        = getNthRecentlyOpenedFile(i, N);
+                    if (null != recentlyOpenedFile) {
+                        if (!addedSeparator) {
+                            fileMenu.addSeparator();
+                            addedSeparator = true;
+                        }
+                        recentlyOpenedFiles.add(recentlyOpenedFile);
+                        JMenuItem item = new JMenuItem((i+1) + " " + recentlyOpenedFile.getAbsolutePath());
+                        item.addActionListener(new ThdlActionListener() {
+                                public void theRealActionPerformed(ActionEvent e) {
+                                    openFile(recentlyOpenedFile);
+                                }
+                            });
+                        fileMenu.add(item);
+                        recentlyOpenedFilesMenuItems.add(item);
+                    }
+                }
+            }
 
 			if (parentObject instanceof JFrame) {
 				JMenuItem exitItem = new JMenuItem("Exit");	
@@ -699,7 +776,7 @@ public class Jskad extends JPanel implements DocumentListener {
 		toolBar.add(keyboards);
 		toolBar.add(Box.createHorizontalGlue());
 
-		JScrollPane sp
+        JScrollPane scrollingDuffPane
             = new JScrollPane(dp,
                               JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                               JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -710,24 +787,26 @@ public class Jskad extends JPanel implements DocumentListener {
 			parentFrame.setJMenuBar(menuBar);
 			parentFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 			parentFrame.addWindowListener(new WindowAdapter () {
-				public void windowClosing (WindowEvent e) {
-					if (!hasChanged || hasChanged && checkSave(JOptionPane.YES_NO_CANCEL_OPTION)) {
-						numberOfTibsRTFOpen--;
-						if (numberOfTibsRTFOpen == 0)
-							System.exit(0);
-						else
-							parentFrame.dispose();
-					}
-				}
-			});
-		}
-
-		else if (parentObject instanceof JInternalFrame) {
+                    // We want the focus to be, at the start of the
+                    // program and whenever Jskad gets the focus, on
+                    // the DuffPane.
+                    public void windowActivated (WindowEvent e) {
+                        focusToDuffPane();
+                    }
+                    public void windowClosing (WindowEvent e) {
+                        if (!hasChanged || hasChanged && checkSave(JOptionPane.YES_NO_CANCEL_OPTION)) {
+                            numberOfTibsRTFOpen--;
+                            if (numberOfTibsRTFOpen == 0)
+                                System.exit(0); // calls our shutdown hook
+                            else
+                                parentFrame.dispose();
+                        }
+                    }
+                });
+		} else if (parentObject instanceof JInternalFrame) {
 			final JInternalFrame parentFrame = (JInternalFrame)parentObject;
 			parentFrame.setJMenuBar(menuBar);
-		}
-
-		else if (parentObject instanceof JApplet) {
+		} else if (parentObject instanceof JApplet) {
 			JApplet parentApplet = (JApplet)parentObject;
 			parentApplet.setJMenuBar(menuBar);
 			dp.disableCutAndPaste();
@@ -735,7 +814,7 @@ public class Jskad extends JPanel implements DocumentListener {
 
 		setLayout(new BorderLayout());
 		add("North", toolBar);
-		add("Center", sp);
+		add("Center", scrollingDuffPane);
         if (statusBar != null)
             add("South", statusBar);
 	}
@@ -846,7 +925,12 @@ public class Jskad extends JPanel implements DocumentListener {
             return;
         }
 
-        final File fileChosen = fileChooser.getSelectedFile();
+        openFile(fileChooser.getSelectedFile());
+    }
+
+    /** Opens fileChosen for viewing and modifies the recently opened
+        files list. */
+    private void openFile(File fileChosen) {
         final String f_name = fileChosen.getAbsolutePath();
 
         try {
@@ -877,6 +961,7 @@ public class Jskad extends JPanel implements DocumentListener {
                     newFrame.dispose();
                     numberOfTibsRTFOpen--;
                 } else {
+                    noteMostRecentlyOpenedFile(fileChosen);
                     if (!ThdlOptions.getBooleanOption("thdl.Jskad.do.not.fix.curly.braces.in.rtf")) {
                         ((TibetanDocument)newRTF.dp.getDocument()).replaceTahomaCurlyBracesAndBackslashes(0, -1);
                     }
@@ -905,6 +990,7 @@ public class Jskad extends JPanel implements DocumentListener {
 
                 in.close();
                 if (!error) {
+                    noteMostRecentlyOpenedFile(fileChosen);
                     if (!ThdlOptions.getBooleanOption("thdl.Jskad.do.not.fix.curly.braces.in.rtf")) {
                         ((TibetanDocument)dp.getDocument()).replaceTahomaCurlyBracesAndBackslashes(0, -1);
                     }
