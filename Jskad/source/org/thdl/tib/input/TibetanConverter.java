@@ -126,17 +126,21 @@ public class TibetanConverter {
                             + ThdlVersion.getTimeOfCompilation());
                 return 77;
             }
-            String tmwRtfPath = args[args.length - 1];
+            String inputRtfPath = args[args.length - 1];
 
             DuffPane dp = new DuffPane();
             // Read in the rtf file.
             {
-                InputStream in = new FileInputStream(tmwRtfPath);
+                InputStream in;
+                if (inputRtfPath.equals("-"))
+                    in = System.in;
+                else
+                    in = new FileInputStream(inputRtfPath);
                 try {
                     dp.rtfEd.read(in, dp.getDocument(), 0);
                 } catch (Exception e) {
                     out.println("TibetanConverter:\n"
-                                       + rtfErrorMessage);
+                                + rtfErrorMessage);
                     return 3;
                 }
                 in.close();
