@@ -123,10 +123,12 @@ public class TibetanConverter implements FontConverterConstants {
                              || (findAllNonTMMode
                                  = args[numArgs - 2].equals("--find-all-non-tm"))
                              )))) {
-                out.println("TibetanConverter --find-all-non-tmw | --find-some-non-tmw");
-                out.println("                 | --to-tibetan-machine | --to-tibetan-machine-web");
-                out.println("                 | --to-unicode | --to-wylie | --to-acip");
-                out.println("                 | --to-wylie-text | --to-acip-text  RTF_file");
+                out.println("TibetanConverter --colors yes|no");
+                out.println("                 --warning-level None|Some|Most|All");
+                out.println("                 --find-all-non-tmw | --find-some-non-tmw");
+                out.println("                   | --to-tibetan-machine | --to-tibetan-machine-web");
+                out.println("                   | --to-unicode | --to-wylie | --to-acip");
+                out.println("                   | --to-wylie-text | --to-acip-text  RTF_file");
                 out.println(" | TibetanConverter --acip-to-unicode | --acip-to-tmw TXT_file");
                 out.println(" | TibetanConverter [--version | -v | --help | -h]");
                 out.println("");
