@@ -17,7 +17,8 @@ Contributor(s): ______________________________________.
 */
 
 package org.thdl.util;
-import java.util.*;
+
+import java.io.*;
 
 /** Implementation of a simple dynamic link list. Be careful with word order!
     Why not just use java.util.LinkedList? It is not supported for the
@@ -195,5 +196,12 @@ public class SimplifiedLinkedList
 			else array[n] = o.toString();
 		}
 		return array;		
-	}	
+	}
+	
+	public void write(PrintWriter pw)
+	{
+		SimplifiedListIterator li = listIterator();
+		while (li.hasNext())
+			pw.println(li.next());
+	}
 }
