@@ -323,10 +323,14 @@ public class TibTextUtils implements THDLWylieConstants {
 					isSanskrit = false;
 				}
 				else { //could not convert - throw exception
-					if (start+5 < wylie.length())
-						System.out.println("Bad wylie: "+wylie.substring(start,5)); // FIXME: we're printing to stdout!
-					else
+                    // FIXME: we're printing to stdout!
+					if (start+5 <= wylie.length()) {
+						System.out.println("Bad wylie: "
+                                           + wylie.substring(start,
+                                                             start + 5));
+                    } else {
 						System.out.println("Bad wylie: "+wylie.substring(start));
+                    }
 					throw new InvalidWylieException(wylie, start);
 				}
 			}
