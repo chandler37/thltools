@@ -18,10 +18,10 @@
    <li><a href="#wylietotmw">Converting Wylie to Tibetan</a></li>
    <li><a href="#tmwtowylie">Converting Tibetan to Wylie</a></li>
    <li><a href="#keyboards">Changing Keyboards</a></li>
-   <li><a href="#advancedkeyboards">More on Keyboards</a></li>
    <li><a href="#preferences">Preferences</a></li>
-   <li><a href="#trouble">Troubleshooting</a></li>
    <li><a href="#thanks">Thanks</a></li>
+   <li><a href="#trouble">Troubleshooting</a></li>
+   <li><a href="#advancedkeyboards">More on Keyboards</a></li>
    <li><a href="http://iris.lib.virginia.edu/tibet/tools/jskad.html">Jskad on the Web</a></li>
 </ul>
 
@@ -320,74 +320,6 @@ want to use.
 <center><font size="-1"><a href="#top">Back to top</a></font></center>
 </p>
 
-<a name="advancedkeyboards"></a>
-<h3>More on Keyboards</h3>
-
-<p>
-If you are brave, you can create your own keyboards.&nbsp; A keyboard
-file has five parts:
-
-<ol type=a>
-<li>Comments</li>
-<li>A list of parameters</li>
-<li>A list of characters</li>
-<li>A list of vowels</li>
-<li>A list of punctuation</li>
-</ol>
-
-<p>
-Sections (c)-(e) are structured in exactly the same way.&nbsp; A line consists of a value, an equals sign, and another value, for example &quot;k=K&quot;.&nbsp; This means that to get the Tibetan character associated with Wylie 'k', you must press 'K'.&nbsp; If there is no right part of the equation, then there is no way in this keyboard to get the relevant character.&nbsp; For example, if you see &quot;k=&quot;, that means that there is no way in this keyboard to get the Tibetan character associated with Wylie 'k'.&nbsp; Be careful with whitespace, which is not ignored: for example, &quot; = &quot; means [space bar] = [space bar].
-</p>
-
-<p>
-Although the three additional production-quality keyboards included in
-this installation always define only one keystroke per
-character/vowel, it is possible to define a keyboard in which multiple
-keystrokes correspond to single characters/vowels, as in the Extended
-Wylie keyboard.&nbsp; However, punctuation is only ever allowed to
-correspond to a single keystroke.  Below is a sample (partial)
-keyboard, with key parts explained, and much omitted:
-</p>
-
-<p>
-Sambhota keyboard //Everything before &lt?parameters?&gt; is taken to be a comment.
-</p>
-
-<p>
-&lt?parameters?&gt; //describes the logic of the keyboard
-<br>has sanskrit stacking=true //is there a stack key for sanskrit stacks?
-<br>has tibetan stacking=true //is there a stack key for tibetan stacks?
-<br>is stacking medial=false //is the stack key medial, ie like '+' in g+y, or not, as in +gy
-<br>stack key=f //what is the stack key? must be single character
-<br>has disambiguating key=false //is there a key to distinguish between Wylie gy and g.y?
-<br>disambiguating key= //if so, what is it?
-<br>needs a chen before vowels=true //for a-chen plus vowel, must you type a-chen first?
-<br>has 'a' vowel=false //is there a dummy 'a' vowel?
-<br>is achung consonant=true //can achung take part in consonantal stacks?
-<p>
-&lt?characters?&gt; //characters include consonants and numerals
-<br>k=k
-<br>kh=K //left value is Extended Wylie &amp; right is equivalent in Sambhota
-<br>g=g
-<br>ng=G
-<br>f= //no equivalent of 'f' in Sambhota
-<p>
-&lt?vowels?&gt;
-<br>a=a
-<br>i=i
-<br>u=u
-<br>e=e
-<br>o=o
-<p>
-&lt?punctuation?&gt;
-<br> = //read as [Space] = [Space]
-<br>/=,
-</p>
-
-<p>
-<center><font size="-1"><a href="#top">Back to top</a></font></center>
-</p>
-
 <a name="preferences"></a>
 <h3>Preferences</h3>
 
@@ -400,9 +332,32 @@ to reset your preferences, you must use 'Clear Preferences' from the
 </p>
 
 <p>
+  Jskad has a multi-level preferences mechanism available, which means
+  that system administrators can configure Jskad as desired for all
+  users on a certain computer, and then the users can have their
+  overriding preferences.&nbsp; Further, power users can override
+  their preferences' files using Java system properties.&nbsp; Contact
+  Jskad's maintainers for more information about these advanced
+  options if any of them interest you.
+</p>
+
+<p>
 <center><font size="-1"><a href="#top">Back to top</a></font></center>
 </p>
 
+
+<a name="thanks"></a>
+<h3>Thanks</h3>
+
+<p>
+  Portions of this software are copyright Andrew Moulden.&nbsp; Our
+  thanks go to him.&nbsp; Without his hard work, our users wouldn't be
+  able to browse this very document with the ease they can.
+</p>
+
+<p>
+<center><font size="-1"><a href="#top">Back to top</a></font></center>
+</p>
 
 <a name="trouble"></a>
 <h3>Troubleshooting</h3>
@@ -471,13 +426,68 @@ reinstall both.
 <center><font size="-1"><a href="#top">Back to top</a></font></center>
 </p>
 
-<a name="thanks"></a>
-<h3>Thanks</h3>
+<a name="advancedkeyboards"></a>
+<h3>More on Keyboards</h3>
 
 <p>
-  Portions of this software are copyright Andrew Moulden.&nbsp; Our
-  thanks go to him.&nbsp; Without his hard work, our users wouldn't be
-  able to browse this very document with the ease they can.
+If you are brave, you can create your own keyboards.&nbsp; A keyboard
+file has five parts:
+
+<ol type=a>
+<li>Comments</li>
+<li>A list of parameters</li>
+<li>A list of characters</li>
+<li>A list of vowels</li>
+<li>A list of punctuation</li>
+</ol>
+
+<p>
+Sections (c)-(e) are structured in exactly the same way.&nbsp; A line consists of a value, an equals sign, and another value, for example &quot;k=K&quot;.&nbsp; This means that to get the Tibetan character associated with Wylie 'k', you must press 'K'.&nbsp; If there is no right part of the equation, then there is no way in this keyboard to get the relevant character.&nbsp; For example, if you see &quot;k=&quot;, that means that there is no way in this keyboard to get the Tibetan character associated with Wylie 'k'.&nbsp; Be careful with whitespace, which is not ignored: for example, &quot; = &quot; means [space bar] = [space bar].
+</p>
+
+<p>
+Although the three additional production-quality keyboards included in
+this installation always define only one keystroke per
+character/vowel, it is possible to define a keyboard in which multiple
+keystrokes correspond to single characters/vowels, as in the Extended
+Wylie keyboard.&nbsp; However, punctuation is only ever allowed to
+correspond to a single keystroke.  Below is a sample (partial)
+keyboard, with key parts explained, and much omitted:
+</p>
+
+<p>
+Sambhota keyboard //Everything before &lt?parameters?&gt; is taken to be a comment.
+</p>
+
+<p>
+&lt?parameters?&gt; //describes the logic of the keyboard
+<br>has sanskrit stacking=true //is there a stack key for sanskrit stacks?
+<br>has tibetan stacking=true //is there a stack key for tibetan stacks?
+<br>is stacking medial=false //is the stack key medial, ie like '+' in g+y, or not, as in +gy
+<br>stack key=f //what is the stack key? must be single character
+<br>has disambiguating key=false //is there a key to distinguish between Wylie gy and g.y?
+<br>disambiguating key= //if so, what is it?
+<br>needs a chen before vowels=true //for a-chen plus vowel, must you type a-chen first?
+<br>has 'a' vowel=false //is there a dummy 'a' vowel?
+<br>is achung consonant=true //can achung take part in consonantal stacks?
+<p>
+&lt?characters?&gt; //characters include consonants and numerals
+<br>k=k
+<br>kh=K //left value is Extended Wylie &amp; right is equivalent in Sambhota
+<br>g=g
+<br>ng=G
+<br>f= //no equivalent of 'f' in Sambhota
+<p>
+&lt?vowels?&gt;
+<br>a=a
+<br>i=i
+<br>u=u
+<br>e=e
+<br>o=o
+<p>
+&lt?punctuation?&gt;
+<br> = //read as [Space] = [Space]
+<br>/=,
 </p>
 
 </body>
