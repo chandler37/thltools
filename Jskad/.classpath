@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+    <classpathentry kind="output" path="eclipse_bin"/>
+    <classpathentry kind="src" path="source"/>
+    <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
+    <classpathentry kind="lib" path="extensions/jdom.jar"/>
+    <classpathentry kind="lib" path="extensions/jmf.jar"/>
+    <classpathentry kind="lib" path="extensions/xalan.jar"/>
+    <classpathentry kind="lib" path="extensions/xercesImpl.jar"/>
+    <classpathentry kind="lib" path="extensions/xml-apis.jar"/>
+    <classpathentry kind="lib" path="extensions"/>
+    <classpathentry kind="lib" path="F:/thdl/Jskad/extensions/drop-ins/QTJava.zip"/>
+    <classpathentry kind="lib" path="F:/Program Files/Eclipse/eclipse/plugins/org.junit_3.7.0/junit.jar"/>
+    <classpathentry kind="lib" path="F:/Program Files/j2sdkee1.3.1/lib/j2ee.jar"/> <!-- or you could use Tomcat's JAR.  -DC -->
+</classpath>
