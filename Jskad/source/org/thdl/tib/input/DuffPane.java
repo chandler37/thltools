@@ -165,13 +165,6 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 */
 	private boolean isStackingRightToLeft;
 /**
-* If the character last displayed was a vowel, this is
-* how many glyphs the vowel was composed of.
-* (Some vowels, such as Wylie 'I', consist of
-* two glyphs.)
-*/
-	private int numberOfGlyphsForLastVowel;
-/**
 * used for tracking changes in Wylie to TMW conversion
 */
 	private int lastStart;
@@ -428,7 +421,6 @@ public RTFEditorKit rtfEd = null;
 		holdCurrent = new StringBuffer();
 		isTopHypothesis = false;
 		isTypingVowel = false;
-		numberOfGlyphsForLastVowel = 0;
 
 		//for keyboard
 		isStackingOn = isStackingOn_default;
@@ -569,16 +561,21 @@ public RTFEditorKit rtfEd = null;
 	}
 
 /**
-* Takes an old glyph list, which should be the currently visible set of glyphs preceding the cursor, and
-* then tries to redraw the glyphs in light of the newly acquired keyboard input (which led to a revised
-* 'new' glyph list). For example, the old glyph list might contain 'l' and 'n', because the user had typed
-* 'ln' in Extended Wylie mode. This is what you'd see on the screen. But assume that the new glyph list
-* contains the stacked glyph 'l-ng', because the user has just finished typing 'lng'. This method
-* compares the glyphs, then figures out whether or not backspacing is necessary, and draws whatever characters
-* need to be drawn.
-* For example, suppose that oldGlyphList contains the two glyphs 'l' and 'n', and newGlyphList contains a single glyph, 'lng'.
-* In this case, redrawGlyphs will be instructed to backspace over both 'l' and 'n', and then insert 'lng'.
-*/
+* Takes an old glyph list, which should be the currently visible set
+* of glyphs preceding the cursor, and then tries to redraw the glyphs
+* in light of the newly acquired keyboard input (which led to a
+* revised 'new' glyph list). For example, the old glyph list might
+* contain 'l' and 'n', because the user had typed 'ln' in Extended
+* Wylie mode. This is what you'd see on the screen. But assume that
+* the new glyph list contains the stacked glyph 'l-ng', because the
+* user has just finished typing 'lng'. This method compares the
+* glyphs, then figures out whether or not backspacing is necessary,
+* and draws whatever characters need to be drawn.
+*
+* <p> For example, suppose that oldGlyphList contains the two glyphs
+* 'l' and 'n', and newGlyphList contains a single glyph, 'lng'.  In
+* this case, redrawGlyphs will be instructed to backspace over both
+* 'l' and 'n', and then insert 'lng'.  */
 	private java.util.List redrawGlyphs(java.util.List oldGlyphList, java.util.List newGlyphList) {
 		if (newGlyphList.isEmpty())
 			return newGlyphList;
@@ -694,10 +691,18 @@ public RTFEditorKit rtfEd = null;
 
 				before_vowel.add(dc_2);
 				java.util.List after_vowel = TibTextUtils.getVowel(dc_1, dc_2, v);
+                if (after_vowel.size() >= before_vowel.size()) {
+                    setNumberOfGlyphsForLastVowel(after_vowel.size()
+                                                  - before_vowel.size());
+                } else {
+                    setNumberOfGlyphsForLastVowel(0);
+                    ThdlDebug.noteIffyCode(); // I don't think this can ever happen, but...
+                }
 				redrawGlyphs(before_vowel, after_vowel);
 			}
 			catch(BadLocationException ble) {
 				System.out.println("no--can't insert here");
+                ThdlDebug.noteIffyCode();
 			}
 		}
 		else { //0 font means not Tibetan font, so begin new Tibetan font section
@@ -705,6 +710,20 @@ public RTFEditorKit rtfEd = null;
 				printAChenWithVowel(v);
 		}
 	}
+
+
+/**
+* If the character last displayed was a vowel, this is how many glyphs
+* the vowel was composed of.  (Some vowels, such as Wylie 'I', consist
+* of two glyphs.)  We use the getter and setter for this variable and
+* never the variable itself. */
+	private int numberOfGlyphsForLastVowel;
+    private int getNumberOfGlyphsForLastVowel() {
+        return numberOfGlyphsForLastVowel;
+    }
+    private void setNumberOfGlyphsForLastVowel(int x) {
+        numberOfGlyphsForLastVowel = x;
+    }
 
 /**
 * Prints ACHEN together with the vowel v. When using the Wylie
@@ -760,6 +779,7 @@ public RTFEditorKit rtfEd = null;
 			}
 			catch(BadLocationException ble) {
 				System.out.println("no--can't do this bindu maneuver");
+                ThdlDebug.noteIffyCode();
 			}
 		}
 
@@ -788,6 +808,7 @@ public RTFEditorKit rtfEd = null;
 */
 	public void focusLost(FocusEvent e) {
 		initKeyboard();
+		setNumberOfGlyphsForLastVowel(0);
         appendStatus(" (because the window focus was lost)");
 	}
 
@@ -1319,8 +1340,10 @@ public void paste(int offset) {
 					if (TibetanMachineWeb.isVowel(s)) {
 						s = TibetanMachineWeb.getWylieForVowel(s);
 
-						if (isTypingVowel) //note: this takes care of multiple keystroke vowels like 'ai'
-							backSpace(numberOfGlyphsForLastVowel);
+						if (isTypingVowel) {
+                            //note: this takes care of multiple keystroke vowels like 'ai'
+							backSpace(getNumberOfGlyphsForLastVowel());
+                        }
 
 						putVowel(s);
 						isTypingVowel = true;
@@ -1347,8 +1370,11 @@ public void paste(int offset) {
 							oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
                             changedStatus = true;
                             updateStatus("You typed a non-vowel, Tibetan character.");
-						} else
+						} else {
 							isTopHypothesis = false;
+                            changedStatus = true;
+                            updateStatus("invalid input, I think");
+                        }
 					}
 				} else { //there is already a character in charList
 					holdCurrent.append(c);
@@ -1378,6 +1404,8 @@ public void paste(int offset) {
 							charList.set(charList.size()-1, s2);
 							newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
 							oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
+                            changedStatus = true;
+                            updateStatus("we were holding a hypothesis, and we've updated it");
 						} else {
 							if (!isStackingOn) {
 								initKeyboard();
@@ -1396,6 +1424,8 @@ public void paste(int offset) {
 							isTopHypothesis = true;
 							newGlyphList = TibTextUtils.getGlyphs(charList, isStackingRightToLeft, isDefinitelyTibetan, isDefinitelySanskrit);
 							oldGlyphList = redrawGlyphs(oldGlyphList, newGlyphList);
+                            changedStatus = true;
+                            updateStatus("we weren't holding a hypothesis, but we are now");
 						}
 					} else { //the holding string is not a character
 						if (isTopHypothesis) { //finalize top character and add new hypothesis to top
@@ -1437,7 +1467,7 @@ public void paste(int offset) {
 									holdCurrent = new StringBuffer(s);
 									isTopHypothesis = false;
                                     changedStatus = true;
-                                    updateStatus("voodoo no. 5");
+                                    updateStatus("you didn't type a 'char'; voodoo no. 5 ensues");
 								}
 							}
 						} else { //top char is just a guess! just keep it in holdCurrent
