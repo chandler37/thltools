@@ -10,6 +10,30 @@
 </c:if>
 
 <div id="columnRight">
+	<div class="highlightBox">
+		<form action="/lex/action" method="get">
+			<h2>Quick Search</h2>
+			<p>
+				<input type="hidden" name="cmd" value="find"/>
+				<input type="hidden" name="comp" value="term"/>
+				Term: 
+				<input type="text" name="term" id="term" size="20" value=""/>
+				<br/>
+					Find:
+
+				<select name="findMode">
+					<option value="exact">Exact match</option>
+					<option value="startsWith">At beginning of term</option>
+					<option value="anywhere">Anywhere in term</option>
+				</select>
+			</p>
+			
+			<p>
+				<input type="submit" value="Find Term"/>
+			</p>
+		</form>
+	</div>
+	
 	<div id="results" class="highlightBox">
 		<h2>	Search Results </h2>
 		<ol>
@@ -60,29 +84,29 @@
 				<c:set var="ckd" value="checked='checked'"/>
 			</c:if>
 			<c:out value="<input name='showMeta' type='checkbox' value='true' ${ckd}/> credits |" escapeXml="false"/>
-
-
+			
+			
 			<c:set var="ckd" value=""/>
 			<c:if test="${ sessionScope.visit.helper.showNotes }">
 				<c:set var="ckd" value="checked='checked'"/>
 			</c:if>
 			<c:out value="<input name='showNotes' type='checkbox' value='true' ${ckd}/> analysis |" escapeXml="false"/>
-
-
+			
+			
 			<c:set var="ckd" value=""/>
 			<c:if test="${ sessionScope.visit.helper.showTranslations }">
 				<c:set var="ckd" value="checked='checked'"/>
 			</c:if>
 			<c:out value="<input name='showTranslations' type='checkbox' value='true' ${ckd}/> translations" escapeXml="false"/>
-
-
+			
+			
 			<c:if test="${ ! sessionScope.visit.user.guest }">
 				<c:set var="ckd" value=""/>
 				<c:if test="${ sessionScope.visit.helper.showEditOptions }">
 					<c:set var="ckd" value="checked='checked'"/>
 				</c:if>
 				<c:out value="| <input name='showEditOptions' type='checkbox' value='true' ${ckd}/> edit options" escapeXml="false"/>
-
+			
 			</c:if>
 			
 			<c:out value="<input type='hidden' name='metaId' value='${ sessionScope.visit.query.entry.metaId }'/>" escapeXml="false"/>

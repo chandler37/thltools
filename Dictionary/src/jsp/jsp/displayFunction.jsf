@@ -9,17 +9,17 @@
 <c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=grammaticalFunction&amp;metaId=${ function.metaId }" title="Edit this component"><img alt="Edit this component" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
 </span>
 </c:if>
-<c:out value='<a name="${ function }" ></a>' escapeXml="false" />
+
 <!--<span class="label">Grammatical Function:</span>-->
 <c:out value="${ applicationScope.flatData.functionsGeneral[function.function] }" escapeXml="false" /> 
 
 
-<!--metadata--> 
+
 
 <jsp:include page="displayMeta.jsf" />
 
 
-<!--notes-->
+
 <jsp:include page="displayNotes.jsf" />
 
 </p>

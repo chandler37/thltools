@@ -7,7 +7,7 @@
 <!--SUBDEFINITION-->
 <c:set var="subdefinition" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
-<c:out value='<a name="${ subdefinition }" ></a>' escapeXml="false" />
+
 					<c:if test="${ editMode }">
 	<span class="compEditOptions">
 
@@ -28,12 +28,12 @@
 		<c:out value="${ subdefinition.subdefinition }" escapeXml="false" />  
 		
 		
-		<!--metadata--> 
+		
 		
 		<jsp:include page="displayMeta.jsf" />
 		
-		<!--translation-->
 		<c:if test="${sessionScope.visit.helper.showTranslations }">
+		<!--translation-->
  		<c:forEach var="translation" items="${ subdefinition.translations }">
 		<c:set var='href' value='#'/>
 		<c:if test="${ editMode }">
@@ -45,13 +45,13 @@
 		<c:out value="${ translation.subdefinition }" escapeXml="false" /> 	
 		 </span>
 		 </a>
-		<!--metadata--> 
+		
 		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ translation }" />
 		<jsp:include page="displayMeta.jsf" />
 		</c:forEach>
 		</c:if>
 		
-		<!--notes-->
+		
 		<jsp:include page="displayNotes.jsf" />
 
 

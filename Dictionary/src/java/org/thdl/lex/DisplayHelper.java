@@ -315,6 +315,28 @@ public class DisplayHelper
 
 
 	/**
+	 *  Gets the hashCode attribute of the DisplayHelper object
+	 *
+	 * @return    The hashCode value
+	 */
+	public int getHashCodeForComponent()
+	{
+		return getComponent().hashCode();
+	}
+
+
+	/**
+	 *  Gets the hashCodeForCollection attribute of the DisplayHelper object
+	 *
+	 * @return    The hashCodeForCollection value
+	 */
+	public int getHashCodeForCollection()
+	{
+		return getCollection().hashCode();
+	}
+
+
+	/**
 	 *Constructor for the DisplayHelper object
 	 */
 	public DisplayHelper() { }

@@ -6,7 +6,7 @@
 
 <c:set var="translationEquivalent" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
-<c:out value='<a name="${ translationEquivalent }" ></a>' escapeXml="false" />
+
 	 			<c:if test="${ editMode }">
 		<span class="compEditOptions">
 		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=translationEquivalent&amp;metaId=${ translationEquivalent.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
@@ -19,12 +19,12 @@
 
  
 		
-		<!--metadata--> 
+		
 		
 		<jsp:include page="displayMeta.jsf" />
 		
 
-		<!--notes-->
+		
 		<jsp:include page="displayNotes.jsf" />
 
 

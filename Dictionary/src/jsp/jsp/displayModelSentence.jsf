@@ -6,7 +6,7 @@
 
 	<c:set var="modelSentence" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
-<c:out value='<a name="${ modelSentence }" ></a>' escapeXml="false" />
+
 		<c:if test="${ editMode }">
 	<span class="compEditOptions">
 		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
@@ -20,13 +20,13 @@
 	
 	
 		
-		<!--metadata--> 
+		
 		
 		<jsp:include page="displayMeta.jsf" />
 		
 
-		<!--translation-->
 		<c:if test="${sessionScope.visit.helper.showTranslations }">
+		<!--translation-->
 
 		<c:set value="${modelSentence.translations}" target="${sessionScope.visit.helper}" property="collection"/>
 		<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
@@ -45,7 +45,7 @@
 		<!--<span class="label">Model Sentence:</span>-->  
 		<c:out value="${ translation.modelSentence }" escapeXml="false" />  
 		 </span> 
-		<!--metadata--> 
+		
 		<c:set var="originalComponent" value="${ modelSentence }" />
 
 		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ translation }" />
@@ -57,7 +57,7 @@
 		</c:if>
 		</c:if>
 		
-		<!--notes-->
+		
 		<jsp:include page="displayNotes.jsf" />
 
 

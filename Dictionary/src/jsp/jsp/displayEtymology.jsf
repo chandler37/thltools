@@ -7,7 +7,7 @@
 <!--ETYMOLOGY-->
 <c:set var="etymology" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
-<c:out value='<a name="${ etymology }" ></a>' escapeXml="false" />
+
 		<c:if test="${ editMode }">
 			<span class="compEditOptions">			
 			<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=etymology&amp;metaId=${etymology.metaId}" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
@@ -17,14 +17,15 @@
 		</c:if>
 
 		<!--<span class="label">Etymology:</span>-->
-		<c:out value="${ etymology.etymologyDescription }" escapeXml="false" />   <br />
 		<!--<span class="label">Etymology Type:</span>-->
-		<c:out value="${ applicationScope.flatData.etymologyTypes[ etymology.etymologyType ] }" escapeXml="false" />   <br />
+		<em><c:out value="${ applicationScope.flatData.etymologyTypes[ etymology.etymologyType ] }" /></em>; 
 		
 		<c:if test="${ ! empty etymology.loanLanguage }">
 		<!--<span class="label">Loan Language:</span>-->
-		<c:out value="${ applicationScope.flatData.languages[ etymology.loanLanguage ] }" escapeXml="false" />   <br />
+		<c:out value="${ applicationScope.flatData.languages[ etymology.loanLanguage ] }" escapeXml="false" />; 
 		</c:if>
+
+		<c:out value="${ etymology.etymologyDescription }" escapeXml="false" />   
 		
 		<c:if test="${ empty etymology.derivation != 'none'  }">
 		<%-- <span class="label">Derivation</span>: --%>
@@ -32,14 +33,11 @@
 		</span>
 		</c:if>
 		
-		<!--metadata--> 
-		
 		<jsp:include page="displayMeta.jsf" />
 		
 		
-		<!--translation-->
 		<c:if test="${sessionScope.visit.helper.showTranslations }">
-		
+		<!--translation-->		
 		<c:set value="${etymology.translations}" target="${sessionScope.visit.helper}" property="collection"/>
 		<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 		<h3>Translations</h3>
@@ -62,7 +60,7 @@
 	  <c:out value="${ applicationScope.flatData.languages[ translation.loanLanguage ] }" escapeXml="false" />   <br />
 		<!--<span class="label">Derivation:</span>-->
 		<c:out value="${ translation.derivation }" escapeXml="false" />   
-		<!--metadata--> 
+		
 		</span>
 		<c:set var="originalComponent" value="${ etymology }" />
 		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ translation }" />
@@ -74,7 +72,7 @@
 		</c:if>
 		</c:if>
 		
-		<!--notes-->
+		
 		<jsp:include page="displayNotes.jsf" />
 
 		</p>

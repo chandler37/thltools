@@ -6,7 +6,7 @@
 
 	<c:set var="passage" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
-<c:out value='<a name="${ passage }" ></a>' escapeXml="false" />
+
 		<c:if test="${ editMode }">
 	<span class="compEditOptions">
 		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=passage&amp;metaId=${ passage.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
@@ -36,21 +36,26 @@
 <c:set target="${ sessionScope.visit.helper}" property="wylie" value="${ passage.passage }"/>
 <c:catch var="exception">
 	<c:set var="tib" value="${ sessionScope.visit.helper.tibetan } " />
-	<div class="tmw-block"><c:out value="${ tib }" escapeXml="false" /></div>
+	<c:if test="${ ! empty tib }">
+		<div class="tmw-block"><c:out value="${ tib }" escapeXml="false" /></div>
+	</c:if>
 </c:catch>
+
 <c:if test="${ ! empty exception }">
-	<span class="error-info">Wylie conversion error: <c:out value="${ exception }"/></span>
+	<span class="error-info">Wylie conversion error (view source for details)</span>
+	<!-- <c:out value="${ exception }"/>  -->
+		<!--Here was the wylie: <c:out value="${ passage.passage }" /> -->
 </c:if>	
 	 
-		<div class="tmw-block"><c:out value="${ passage.passage }" /></div>
+		<div><c:out value="${ passage.passage }" /></div>
 	
-		<!--metadata--> 
+		
 		
 		<jsp:include page="displayMeta.jsf" />
 		
 
- 		<!--translation-->
 		<c:if test="${sessionScope.visit.helper.showTranslations }">
+ 		<!--translation-->
 		<c:set value="${passage.translations}" target="${sessionScope.visit.helper}" property="collection"/>
 		<c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
 		<h3>Translations</h3>
@@ -81,7 +86,7 @@
 
 		<c:out value="${ translation.passage }" />   
 		 <%-- </span> --%>
-		<!--metadata--> 
+		
 		<c:set var="originalComponent" value="${ passage }" />
 		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ translation }" />
 		<jsp:include page="displayMeta.jsf" />
@@ -94,7 +99,7 @@
 		</c:if>
 		</c:if>
 		
-		<!--notes-->
+		
 		<jsp:include page="displayNotes.jsf" />
 
 

@@ -5,7 +5,7 @@
 
 	<c:set var="relatedTerm" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
-<c:out value='<a name="${ relatedTerm }" ></a>' escapeXml="false" />
+
 		<c:if test="${ editMode }">
 		<span class="compEditOptions">
 		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=relatedTerm&amp;metaId=${ relatedTerm.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
@@ -19,12 +19,12 @@
 	<c:out value="${ applicationScope.flatData.relatedTermTypes[relatedTerm.relatedTermType] }" escapeXml="false" />  
 
 		
-		<!--metadata--> 
+		
 		
 		<jsp:include page="displayMeta.jsf" />
 		
 
-		<!--notes-->
+		
 		<jsp:include page="displayNotes.jsf" />
 
 

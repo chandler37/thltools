@@ -6,7 +6,7 @@
 
 <c:if test='${ sessionScope.visit.helper.showMeta }'>
 
-<br/>
+<%-- <br/> --%>
 
 <c:if test='${ !( isNote || isTranslation ) }'>
 <a class="meta" href="#"><img src="/lex/images/meta.gif" alt=" view metadata" />

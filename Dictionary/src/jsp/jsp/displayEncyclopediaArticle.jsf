@@ -3,7 +3,7 @@
 
 <c:set var="encyclopediaArticle" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
-<c:out value='<a name="${ encyclopediaArticle }" ></a>' escapeXml="false" />
+
 
 <c:if test="${ editMode }">
 <span class="compEditOptions">
@@ -14,11 +14,11 @@
 <!--<span class="label">Encyclopedia Article:</span>-->  
 <c:out value="${ encyclopediaArticle.articleTitle }"  escapeXml="false"/> 
 
-<!--metadata--> 
+
 
 <jsp:include page="displayMeta.jsf" />
 
-<!--notes-->
+
 <jsp:include page="displayNotes.jsf" />
 </p>
 

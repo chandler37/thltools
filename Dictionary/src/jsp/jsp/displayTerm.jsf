@@ -15,11 +15,13 @@
 <c:if test="${ ! empty exception }">
 	<span class="error-info">Wylie conversion error: <c:out value="${ exception }"/></span>
 </c:if>	
-<span class="tmw-roman"><c:out value="${ sessionScope.visit.query.entry.term }" /></span>
 </h1>
 
 <p class="data" >
-<c:out value='<a name="${ sessionScope.visit.query.entry }" ></a>' escapeXml="false" />
+<strong><c:out value="${ sessionScope.visit.query.entry.term }" /></strong>
+
+<c:set target="${ sessionScope.visit.helper }" property="component" value="${ sessionScope.visit.query.entry }" />
+<jsp:include page="displayMeta.jsf" />
 
 		<c:if test="${ editMode }">
 		<span class="compEditOptions">
@@ -34,11 +36,6 @@
 		</span>
 		</c:if>
 		
-		<!--metadata--> 
-		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ sessionScope.visit.query.entry }" />
-		<jsp:include page="displayMeta.jsf" />
-
-		<!--notes-->
 		<jsp:include page="displayNotes.jsf" />
 
 	</p>

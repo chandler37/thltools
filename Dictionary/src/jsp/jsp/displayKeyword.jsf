@@ -6,7 +6,7 @@
 
 	<c:set var="keyword" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
-<c:out value='<a name="${ keyword }" ></a>' escapeXml="false" />
+
 		<c:if test="${ editMode }">
 			<span class="compEditOptions">
 		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=keyword&amp;metaId=${ keyword.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
@@ -17,12 +17,12 @@
 	<!--<span class="label">Keyword:</span>-->
 	<c:out value="${ keyword.keyword }" escapeXml="false" />  
 		
-		<!--metadata--> 
+		
 		
 		<jsp:include page="displayMeta.jsf" />
 
 
-		<!--notes-->
+		
 		<jsp:include page="displayNotes.jsf" />
 
 

@@ -7,7 +7,7 @@
 <!--TRANSITIONAL DATA-->
 <c:set var="transitionalData" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
-<c:out value='<a name="${ transitionalData }" ></a>' escapeXml="false" />
+
 
 		<c:if test="${ editMode }">
 		<span class="compEditOptions">
@@ -21,11 +21,11 @@
 
 		
 		
-		<!--metadata--> 
+		
 		
 		<jsp:include page="displayMeta.jsf" />
-		<!--notes--> 
-		<!--notes-->
+		 
+		
 		<jsp:include page="displayNotes.jsf" />
 
 	</p>

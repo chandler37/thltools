@@ -37,7 +37,7 @@ margin-top: 2px;
 #termChildren, #defChildren, #subdefChildren
 {
 }
-#columnLeft select, #columnLeft input
+#columnLeft select, #columnLeft input, #columnRight select, #columnRight input
 {
 	width: 120px;
 }
@@ -62,7 +62,7 @@ margin: 5px 5px 5px 5px;
 ul.navLinks
 {
 	list-style-type: none;
-	margin: 0 0 0 0 !important;
+	margin: 0 0 0 6px !important;
 	padding: 0 0 0 0;
 }
 ul.navLinks li
@@ -103,9 +103,10 @@ margin-right: 0;
 margin-bottom: 0;
 }
 
-.data img
+a.meta img, .data img
 {
 margin-right: 2px;
+vertical-align: middle;
 }
 
 .metadata

@@ -10,18 +10,18 @@
 </span>
 </c:if>
 
-<c:out value='<a name="${ spelling }" ></a>' escapeXml="false" />
+
 <!--<span class="label">Spelling:</span> --> 
-<c:out value="${ spelling.spelling }" escapeXml="false" />   <br />
+<c:out value="${ spelling.spelling }" escapeXml="false" />  
 <!--<span class="label">Spelling Type:</span> --> 
 <c:out value="${ applicationScope.flatData.spellingTypes[ spelling.spellingType ] }" escapeXml="false" />   
 
-<!--metadata--> 
+
 
 <jsp:include page="displayMeta.jsf" />
 
 
-<!--notes-->
+
 <jsp:include page="displayNotes.jsf" />
 
 </p>

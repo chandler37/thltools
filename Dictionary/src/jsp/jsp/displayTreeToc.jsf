@@ -48,6 +48,9 @@
 <!--DEFINITION LOOP-->
 <c:set value="${sessionScope.visit.query.entry.definitions}" target="${sessionScope.visit.helper}" property="collection"/>
 <c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
+<li>
+<c:out value='<a href="#${sessionScope.visit.query.entry.definitions}">Definitions</a>' escapeXml='false' />					
+<ol>
 <c:forEach var="definition" items="${sessionScope.visit.query.entry.definitions}">
 <li>
 <c:out value='<a href="#${definition}">Definition ${ definition.precedence + 1}</a>' escapeXml='false' />					
@@ -80,7 +83,7 @@
 <!--TRANSLATION EQUIVALENT-->
 <c:set value="${subdefinition.translationEquivalents}" target="${sessionScope.visit.helper}" property="collection"/>
 <c:if test="${ sessionScope.visit.helper.collectionSize > 0 }">
-<c:out value='<li><a href="#${subdefinition.translationEquivalents}">Translation Equivalents</a></li>' escapeXml='false' />					
+<c:out value='<li><a href="#${subdefinition.translationEquivalents}">Translations</a></li>' escapeXml='false' />					
 <c:forEach var="translationEquivalent" items="${ subdefinition.translationEquivalents }"></c:forEach>
 </c:if> 
 
@@ -115,6 +118,8 @@
 </li>
 
 </c:forEach><!--END DEFINITIONS-->
+</ol>
+</li>
 </c:if>
 
 <!--TRANSITIONAL DATA-->

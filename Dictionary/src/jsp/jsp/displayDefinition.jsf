@@ -7,7 +7,7 @@
 <!--DEFINITION LOOP-->
 <c:set var="defintion" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
-<c:out value='<a name="${ definition }" ></a>' escapeXml="false" />
+
 		<c:if test="${ editMode }">
 		<span class="compEditOptions">
 			<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=definition&amp;metaId=${ definition.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
@@ -22,13 +22,13 @@
 	
 	
 		
-		<!--metadata--> 
+		
 		
 		<jsp:include page="displayMeta.jsf" />
 		
 
-		<!--translation-->
 		<c:if test="${sessionScope.visit.helper.showTranslations }">
+		<!--translation-->
 		<c:forEach var="translation" items="${ definition.translations }" >
 		<c:set var='href' value='#'/>
 		<c:if test="${ editMode }">
@@ -39,13 +39,13 @@
 		<!--<span class="label">Definition ${translation.precedence}:</span>--> 
 		<c:out value="${ translation.definition }" escapeXml="false"  /> 
 		</span></a>
-		<!--metadata--> 
+		
 		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ translation }" />
 		<jsp:include page="displayMeta.jsf" />
 		</c:forEach> 
 		</c:if>
 
-		<!--notes-->
+		
 		<jsp:include page="displayNotes.jsf" />
 
 

@@ -6,7 +6,7 @@
 
 	<c:set var="register" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
-		<c:out value='<a name="${ register }" ></a>' escapeXml="false" />
+		
 		<c:if test="${ editMode }">
 		<span class="compEditOptions">
 		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=speechRegister&amp;metaId=${ register.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
@@ -18,11 +18,11 @@
 
 	
 		
-		<!--metadata--> 
+		
 		
 		<jsp:include page="displayMeta.jsf" />
 
-		<!--notes-->
+		
 		<jsp:include page="displayNotes.jsf" />
 </p>
 
