@@ -735,6 +735,7 @@ public class TibetanDocument extends DefaultStyledDocument {
                         if (replaceInsteadOfInserting()) {
                             if (toUnicode) {
                                 replaceDuffWithUnicode(fontSize, i, unicode);
+                                i += unicode.length() - 1; // we do i++ below
                             } else {
                                 replaceDuff(fontSize, i, equivalent[0], !toTM);
                             }
