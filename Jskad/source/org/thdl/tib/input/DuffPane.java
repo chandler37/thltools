@@ -325,7 +325,7 @@ public class DuffPane extends TibetanPane implements FocusListener {
 					if (DuffPane.this.getSelectionStart() < DuffPane.this.getSelectionEnd())
 						DuffPane.this.replaceSelection("");
 					if (key != null) {
-						if (isTibetan) processTibetanChar(key.charAt(0), true);
+						if (isTibetan) processTibetanChar(key.charAt(0));
 						else {
 							//MutableAttributeSet inputAtts = DuffPane.this.getInputAttributes();
 							//inputAtts.addAttributes(romanAttributeSet);
@@ -1158,12 +1158,8 @@ public void paste(int offset) {
      	default behavior when the user is in Tibetan typing mode.
         @param c the character the user entered in whatever keyboard
         is in use
-        @param shouldIBackSpace false iff a press of the backspace key
-        should not backspace, such as when you've selected some text
-        and then pressed backspace ACTUALLY I DONT KNOW IF THIS IS 
-        NECESSARY ANYMORE SINCE BACKSPACE IS NOW HANDLED BY THE 
-        DEFAULT KEYMAP FOR JTEXTCOMPONENT */
-	private void processTibetanChar(char c, boolean shouldIBackSpace) {
+    */
+	private void processTibetanChar(char c) {
 
         // Have we modified the status bar?
 		boolean changedStatus = false;
@@ -1358,7 +1354,7 @@ public void paste(int offset) {
 
                                 if (prevHoldCurrent.length() != 0
                                     && !prevHoldCurrent.toString().equals(String.valueOf(c))) {
-                                    processTibetanChar(c, false);
+                                    processTibetanChar(c);
                                 }
                                 // else we'd go into an infinite loop
                             }
@@ -1493,7 +1489,7 @@ public void paste(int offset) {
 
                                 if (prevHoldCurrent.length() != 0
                                     && !prevHoldCurrent.toString().equals(String.valueOf(c))) {
-                                    processTibetanChar(c, false);
+                                    processTibetanChar(c);
                                 }
                                 // else we'd go into an infinite loop
                             }
