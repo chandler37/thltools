@@ -256,7 +256,9 @@ public RTFEditorKit rtfEd = null;
             if (newStatus.equals(statBar.currentStatus())) {
                 newStatus = newStatus + " x2";
             }
-            statBar.replaceStatus((isTopHypothesis ? "Guess: " : "Fact: ") + newStatus);
+            statBar.replaceStatus((isTopHypothesis ? "Guess: " : "Fact: ")
+                                  + "[holding \"" + holdCurrent.toString() + "\"] "
+                                  + newStatus);
         }
     }
 
@@ -1206,7 +1208,13 @@ public void paste(int offset) {
 		processTibetanChar(kev.getKeyChar(), shouldIBackSpace);
     }
 
-    /** @see #processTibetan(KeyEvent) */
+    /** Utility method used by processTibetan(keyEvent).
+        @param c the character the user entered in whatever keyboard
+        is in use
+        @param shouldIBackSpace false iff a press of the backspace key
+        should not backspace, such as when you've selected some text
+        and then pressed backspace
+        @see #processTibetan(KeyEvent) */
 	private void processTibetanChar(char c, boolean shouldIBackSpace) {
 
         // Have we modified the status bar?
@@ -1387,6 +1395,9 @@ public void paste(int offset) {
                                 changedStatus = true;
                                 updateStatus("incomplete input (like the \"S\" in Extended Wylie's \"Sh\")");
                             } else {
+                                // before we call initKeyboard, get info to prevent infinite loops:
+                                StringBuffer prevHoldCurrent = new StringBuffer(holdCurrent.toString());
+
                                 // FIXME: ring a bell here so the user knows what's up.
                                 initKeyboard();
                                 
@@ -1401,9 +1412,13 @@ public void paste(int offset) {
                                 // messages or something like Emacs's
                                 // M-x view-lossage to see a history
                                 // of status messages:
-                                appendStatus(" (because you typed something invalid [2nd way])");
+                                appendStatus(" (because you typed something invalid [1st way])");
 
-                                processTibetanChar(c, false);
+                                if (prevHoldCurrent.length() != 0
+                                    && !prevHoldCurrent.toString().equals(String.valueOf(c))) {
+                                    processTibetanChar(c, false);
+                                }
+                                // else we'd go into an infinite loop
                             }
                         }
 					}
@@ -1473,8 +1488,11 @@ public void paste(int offset) {
                                 changedStatus = true;
                                 appendStatus(" (because we put a vowel and the previous...)");
 							} else {
-								if (TibetanMachineWeb.isStackingMedial() && !isStackingRightToLeft)
+								if (TibetanMachineWeb.isStackingMedial() && !isStackingRightToLeft) {
 									initKeyboard();
+                                    changedStatus = true;
+                                    appendStatus(" (because TibetanMachineWeb.isStackingMedial() && !isStackingRightToLeft)");
+                                }
 
 								if (TibetanMachineWeb.isChar(s)) {
 									String s2 = TibetanMachineWeb.getWylieForChar(s);
@@ -1498,7 +1516,8 @@ public void paste(int offset) {
 									holdCurrent = new StringBuffer(s);
 									isTopHypothesis = false;
                                     changedStatus = true;
-                                    updateStatus("you didn't type a 'char'; voodoo no. 5 ensues");
+                                    // FIXME: ring a bell here so the user knows what's up.
+                                    updateStatus("semireset (holdCurrent was reset) because you typed something invalid");
 								}
 							}
 						} else {
@@ -1511,6 +1530,9 @@ public void paste(int offset) {
                                 changedStatus = true;
                                 updateStatus("incomplete input (like the \"S\" in Extended Wylie's \"Sh\")");
                             } else {
+                                // before we call initKeyboard, get info to prevent infinite loops:
+                                StringBuffer prevHoldCurrent = new StringBuffer(holdCurrent.toString());
+
                                 // FIXME: ring a bell here so the user knows what's up.
                                 initKeyboard();
                                 
@@ -1527,7 +1549,11 @@ public void paste(int offset) {
                                 // of status messages:
                                 appendStatus(" (because you typed something invalid [2nd way])");
 
-                                processTibetanChar(c, false);
+                                if (prevHoldCurrent.length() != 0
+                                    && !prevHoldCurrent.toString().equals(String.valueOf(c))) {
+                                    processTibetanChar(c, false);
+                                }
+                                // else we'd go into an infinite loop
                             }
 						}
 					}
