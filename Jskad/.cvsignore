@@ -2,6 +2,7 @@
 NightlyBuildStore
 TEST*
 bin
+build.properties
 jskad.log
 qd.log
 savant.log
