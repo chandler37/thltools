@@ -259,10 +259,10 @@ public class ACIPConverter {
         if (null != tdoc) {
             String latinFont
                 = ThdlOptions.getStringOption("thdl.acip.to.x.latin.font",
-                                              "Courier New");
+                                              "Times New Roman");
             int latinFontSize
                 = ThdlOptions.getIntegerOption("thdl.acip.to.x.latin.font.size",
-                                               20);
+                                               18);
             tdoc.setRomanAttributeSet(latinFont, latinFontSize);
 
             regularFontSize = tdoc.getTibetanFontSize();
@@ -404,9 +404,9 @@ public class ACIPConverter {
                                     }
                                     if (null != tdoc) {
                                         duff = sl.getDuff();
-                                        if (sl.isLegalTshegBar(true).isLegal && !sl.isLegalTshegBar(false).isLegal) {
+                                        if (colors && sl.isLegalTshegBar(true).isLegal && !sl.isLegalTshegBar(false).isLegal) {
                                             color = Color.YELLOW;
-                                        } else if (sl.isLegalTshegBar(false).isLegal) {
+                                        } else if (colors && sl.isLegalTshegBar(false).isLegal) {
                                             color = Color.BLACK;
                                         } else {
                                             // Sanskrit
