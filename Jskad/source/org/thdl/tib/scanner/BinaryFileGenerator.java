@@ -36,6 +36,10 @@ public class BinaryFileGenerator extends LinkedList
 	private long posHijos;
 	private String sil, def[];
     private static String delimiter;
+    private static int delimiterType;
+    private final static int delimiterGeneric=0;
+    private final static int delimiterAcip=1;
+    private final static int delimiterDash=2;
 
 	/** Number of dictionary. If 0, partial word (no definition).
 	*/
@@ -47,7 +51,8 @@ public class BinaryFileGenerator extends LinkedList
 	{
 		wordRaf = null;
 		defRaf = null;
-        delimiter = " - ";
+        delimiter = null;
+        delimiterType=delimiterDash;
 	}
 
 	public BinaryFileGenerator()
@@ -110,273 +115,288 @@ public class BinaryFileGenerator extends LinkedList
 		boolean markerNotFound;
         
         // used for acip dict 
-        if (delimiter==null)
+        switch(delimiterType)
         {
-		    outAHere:
-		    while (true)
-		    {
-		        entrada=br.readLine();
-		        if (entrada==null) break;
-		        currentLine++;
-    		    
-		        entrada = entrada.trim();
-		        len = entrada.length();
-		        if (len<=0) continue;
-    		    
-                // get page number
-	            if (entrada.charAt(0)=='@')
-	            {
-	                marker = 1;
-	                while(marker<len && Character.isDigit(entrada.charAt(marker)))
-	                    marker++;
-	                temp = entrada.substring(1, marker);
-	                if (temp.length()>0)
-	                currentPage=Integer.parseInt(temp);
-	                if (marker<len)
-	                {
-	                    entrada = entrada.substring(marker).trim();
-	                    len = entrada.length();
-	                }
-	                else continue;   
-		        }
-
-	            // get current letter
-	            if (entrada.charAt(0)=='(' || entrada.charAt(0)=='{' || entrada.charAt(0)=='?')
-	            {
-	                currentLetter = entrada.substring(1, entrada.length()-2);		            
-	                /*out.println(currentPage + ": " + currentLetter);
-	                n++;*/
-	                continue;
-	            }
-
-	            if (entrada.charAt(0)=='[')
-	            {
-	                marker=1;
-	                markerNotFound=true;
-	                do
-	                {
-    	                while (marker<len && markerNotFound)
-	                    {
-	                        if (entrada.charAt(marker)==']') markerNotFound=false;
-	                        else marker++;
-	                    }
-	                    if (markerNotFound)
-                        {
-            		        entrada=br.readLine();
-		                    if (entrada==null) break outAHere;
-		                    currentLine++;
-            		        len = entrada.length();
-            		        marker=0;
-                        }
-                        else break;
-	                } while (true);
-	                if (marker<len)
-	                {
-	                    entrada = entrada.substring(marker+1).trim();
-	                    len = entrada.length();
-	                    if (len<=0) continue;
-	                }
-	                else continue;
-	            }
-    		    
-		        // skip stuff. Add to previous definition.
-		        if (entrada.startsWith("..."))
+            case delimiterAcip:
+    		    outAHere:
+	    	    while (true)
 		        {
-		            entrada=entrada.substring(3);
+		            entrada=br.readLine();
+		            if (entrada==null) break;
+    		        currentLine++;
+    		    
+	    	        entrada = entrada.trim();
 		            len = entrada.length();
 		            if (len<=0) continue;
-		        }
     		    
-		        // find definiendum
-		        ch = entrada.charAt(0);
-                if (Character.isLetter(ch) || ch=='\'')
-                {
-                    /* first criteria: if it is not the root letter of section it is part of the
-                    previous definition, probably a page change, else go for it with following
-                    code: */
-                    
-                    // get first syllable to check base letter
-                    marker=1;
-                    while (marker<len)
+                    // get page number
+    	            if (entrada.charAt(0)=='@')
+	                {
+	                    marker = 1;
+	                    while(marker<len && Character.isDigit(entrada.charAt(marker)))
+	                        marker++;
+    	                temp = entrada.substring(1, marker);
+	                    if (temp.length()>0)
+	                    currentPage=Integer.parseInt(temp);
+	                    if (marker<len)
+	                    {
+	                        entrada = entrada.substring(marker).trim();
+	                        len = entrada.length();
+    	                }
+	                    else continue;   
+		            }
+
+	                // get current letter
+    	            if (entrada.charAt(0)=='(' || entrada.charAt(0)=='{' || entrada.charAt(0)=='?')
+	                {
+	                    currentLetter = entrada.substring(1, entrada.length()-2);		            
+	                    /*out.println(currentPage + ": " + currentLetter);
+	                    n++;*/
+	                    continue;
+    	            }
+
+	                if (entrada.charAt(0)=='[')
+	                {
+	                    marker=1;
+	                    markerNotFound=true;
+	                    do
+    	                {
+        	                while (marker<len && markerNotFound)
+	                        {
+	                            if (entrada.charAt(marker)==']') markerNotFound=false;
+	                            else marker++;
+	                        }
+	                        if (markerNotFound)
+                            {
+                		        entrada=br.readLine();
+		                        if (entrada==null) break outAHere;
+		                        currentLine++;
+            	    	        len = entrada.length();
+            		            marker=0;
+                            }
+                            else break;
+	                    } while (true);
+	                    if (marker<len)
+	                    {
+	                        entrada = entrada.substring(marker+1).trim();
+	                        len = entrada.length();
+	                        if (len<=0) continue;
+    	                }
+	                    else continue;
+	                }
+    		    
+    		        // skip stuff. Add to previous definition.
+	    	        if (entrada.startsWith("..."))
+		            {
+		                entrada=entrada.substring(3);
+		                len = entrada.length();
+		                if (len<=0) continue;
+    		        }
+		        
+    		        // find definiendum
+	    	        ch = entrada.charAt(0);
+                    if (Character.isLetter(ch) || ch=='\'')
                     {
-                        ch = entrada.charAt(marker);
-                        if (ch==' ' || ch=='/') break;
-                        marker++;
-                    }
+                        /* first criteria: if it is not the root letter of section it is part of the
+                        previous definition, probably a page change, else go for it with following
+                        code: */
                     
-                    if (status!=halfDefiniendum) temp = Manipulate.getBaseLetter(entrada.substring(0, marker));
+                        // get first syllable to check base letter
+                        marker=1;
+                        while (marker<len)
+                        {
+                            ch = entrada.charAt(marker);
+                            if (ch==' ' || ch=='/') break;
+                            marker++;
+                        }
                     
-                    // if line begins with current letter, probably it is a definiendum
-                    if (status==halfDefiniendum || currentLetter.equals(temp))
-   	                {
-   	                    /* Since new definiendum was found, update last and collect new. No need to update
-   	                    status because it will be updated below. */
-   	                    if (status==definition)
+                        if (status!=halfDefiniendum) temp = Manipulate.getBaseLetter(entrada.substring(0, marker));
+                        
+                        // if line begins with current letter, probably it is a definiendum
+                        if (status==halfDefiniendum || currentLetter.equals(temp))
    	                    {
-                            add(s1, s2, defNum);
-		                    s1=""; s2="";
-   	                    }
-   	                    
-       	                marker=marker2=1;
-   	                    markerNotFound=true;
-       	                
-   	                    while (marker < len)
-   	                    {
-       	                    ch = entrada.charAt(marker);
-   	                        switch(ch)
+   	                        /* Since new definiendum was found, update last and collect new. No need to update
+   	                        status because it will be updated below. */
+   	                        if (status==definition)
    	                        {
-   	                            case '/':
-   	                                markerNotFound=false;
-   	                                marker2=marker+1;
-   	                            break;
-   	                            case '(': case '<':
-   	                                markerNotFound=false;
-   	                                marker2=marker;
-   	                            break;
-   	                            case 'g': // verify "g "
-       	                            if (marker+1<len && Manipulate.isVowel(entrada.charAt(marker-1)) && entrada.charAt(marker+1)==' ')
-       	                            {
-       	                                temp = entrada.substring(0, marker+1);
-       	                                if (!lastWeirdDefiniendum.startsWith(temp))
+                                add(s1, s2, defNum);
+		                        s1=""; s2="";
+       	                    }
+   	                    
+           	                marker=marker2=1;
+   	                        markerNotFound=true;
+       	                    
+   	                        while (marker < len)
+   	                        {
+       	                        ch = entrada.charAt(marker);
+       	                        switch(ch)
+   	                            {
+   	                                case '/':
+   	                                    markerNotFound=false;
+   	                                    marker2=marker+1;
+   	                                break;
+   	                                case '(': case '<':
+   	                                    markerNotFound=false;
+       	                                marker2=marker;
+   	                                break;
+   	                                case 'g': // verify "g "
+       	                                if (marker+1<len && Manipulate.isVowel(entrada.charAt(marker-1)) && entrada.charAt(marker+1)==' ')
+       	                                {
+       	                                    temp = entrada.substring(0, marker+1);
+       	                                    if (!lastWeirdDefiniendum.startsWith(temp))
+           	                                {
+   	                                            markerNotFound=false;
+   	                                            marker2=++marker;
+                                                lastWeirdDefiniendum=temp;
+                                            }
+   	                                    }
+   	                                break;
+       	                            case ' ': // verify "  "
+           	                            if (marker+1<len && entrada.charAt(marker+1)==' ')
        	                                {
    	                                        markerNotFound=false;
    	                                        marker2=++marker;
-                                            lastWeirdDefiniendum=temp;
-                                        }
-   	                                }
-   	                            break;
-   	                            case ' ': // verify "  "
-       	                            if (marker+1<len && entrada.charAt(marker+1)==' ')
-       	                            {
-   	                                    markerNotFound=false;
-   	                                    marker2=++marker;
-   	                                }
-   	                            break;
-   	                            case '.':
-   	                                if (marker+2<len && entrada.charAt(marker+1)=='.' && entrada.charAt(marker+2)=='.')
-   	                                {
-   	                                    markerNotFound=false;
-   	                                    marker2=marker;
-   	                                }
-   	                            break;
-       	                        default:
-   	                                if (Character.isDigit(ch))
-   	                                {
-   	                                    markerNotFound=false;
-   	                                    marker2=marker;
-   	                                }
+   	                                    }
+   	                                break;
+   	                                case '.':
+       	                                if (marker+2<len && entrada.charAt(marker+1)=='.' && entrada.charAt(marker+2)=='.')
+   	                                    {
+   	                                        markerNotFound=false;
+   	                                        marker2=marker;
+   	                                    }
+   	                                break;
+       	                            default:
+   	                                    if (Character.isDigit(ch))
+   	                                    {
+   	                                        markerNotFound=false;
+   	                                        marker2=marker;
+       	                                }
+   	                            }
+   	                            if (markerNotFound) marker++;
+   	                            else break;
    	                        }
-   	                        if (markerNotFound) marker++;
-   	                        else break;
-   	                    }
-       	            
-   	                    /* either this is a definiendum that consists of several lines or
-   	                    it is part of the last definition. */
-   	                    if (markerNotFound) 
-       	                {
-   	                        /* assume that the definiendum goes on to the next line. */
-   	                        s1 = s1 + entrada + " ";
-   	                        status=halfDefiniendum;
-   	                    }
-       	                else
-   	                    {
-   	                        s1 = s1 + entrada.substring(0,marker).trim();
-   	                        s2 = "[" + currentPage + "] " + entrada.substring(marker2).trim();
-   	                        status=definition;
+       	                
+   	                        /* either this is a definiendum that consists of several lines or
+       	                    it is part of the last definition. */
+       	                    if (markerNotFound) 
+           	                {
+   	                            /* assume that the definiendum goes on to the next line. */
+   	                            s1 = s1 + entrada + " ";
+   	                            status=halfDefiniendum;
+   	                        }
+       	                    else
+   	                        {
+       	                        s1 = s1 + entrada.substring(0,marker).trim();
+   	                            s2 = "[" + currentPage + "] " + entrada.substring(marker2).trim();
+   	                            status=definition;
+   	                            
+   	                            while (true)
+   	                            {
+            		                entrada=br.readLine();
+            		                
+		                            if (entrada==null)
+    		                        {
+	    	                            add(s1, s2, defNum);
+		                                break outAHere;
+		                            }
+		                        
+                		            currentLine++;
+                		            entrada = entrada.trim();
+            		            
+                		            if (entrada.equals("")) break;
+                		            else
+                		            {
+		                                s2 = s2 + " " + entrada;
+		                            }
+		                        }
    	                        
+       	                    }   	            
+	                    }
+	                    else // last line did not start with the current letter, it must still be part of the definition
+	                    {
+                            s2 = s2 + " " + entrada;
    	                        while (true)
    	                        {
             		            entrada=br.readLine();
-            		            
-		                        if (entrada==null)
-		                        {
+            		                
+    		                    if (entrada==null)
+	    	                    {
 		                            add(s1, s2, defNum);
 		                            break outAHere;
 		                        }
-		                        
+		                            
             		            currentLine++;
             		            entrada = entrada.trim();
             		            
-            		            if (entrada.equals("")) break;
-            		            else
-            		            {
+                		        if (entrada.equals("")) break;
+                		        else
+                		        {
 		                            s2 = s2 + " " + entrada;
 		                        }
 		                    }
-   	                        
-   	                    }   	            
+    	                }
 	                }
-	                else // last line did not start with the current letter, it must still be part of the definition
-	                {
+	                else // if first character was not a letter, it must still be part of definition
+    	            {
                         s2 = s2 + " " + entrada;
    	                    while (true)
    	                    {
-            		        entrada=br.readLine();
-            		            
+            	    	    entrada=br.readLine();
+            		                
 		                    if (entrada==null)
-		                    {
-		                        add(s1, s2, defNum);
+    		                {
+	    	                    add(s1, s2, defNum);
 		                        break outAHere;
 		                    }
-		                        
+		                            
             		        currentLine++;
             		        entrada = entrada.trim();
             		            
-            		        if (entrada.equals("")) break;
-            		        else
-            		        {
+                		    if (entrada.equals("")) break;
+                		    else
+                		    {
 		                        s2 = s2 + " " + entrada;
 		                    }
 		                }
 	                }
-	            }
-	            else // if first character was not a letter, it must still be part of definition
-	            {
-                    s2 = s2 + " " + entrada;
-   	                while (true)
-   	                {
-            		    entrada=br.readLine();
-            		            
-		                if (entrada==null)
+		        }
+		    break;
+		    default:
+        		while ((entrada = br.readLine())!=null)
+	        	{
+		        	entrada = entrada.trim();
+			        if (!entrada.equals(""))
+        			{
+        			    switch(delimiterType)
+        			    {
+        			        /* this is needed to make sure that the dash used in reverse vowels with extended
+        			        wylie is not confused with the dash that separates definiendum and definition. */
+        			        case delimiterDash:
+        			            marker=entrada.indexOf('-');
+        			            len = entrada.length(); 
+        			            while (marker>=0 && marker<len-1 && Manipulate.isVowel(entrada.charAt(marker+1)) && !Character.isWhitespace(entrada.charAt(marker-1)))
+        			            {
+        			                marker = entrada.indexOf('-', marker+1);
+        			            }
+        			        break;
+        			        default:
+	        		        marker = entrada.indexOf(delimiter);
+	        		    }
+		                if (marker<0)
 		                {
-		                    add(s1, s2, defNum);
-		                    break outAHere;
-		                }
-		                        
-            		    currentLine++;
-            		    entrada = entrada.trim();
-            		            
-            		    if (entrada.equals("")) break;
-            		    else
-            		    {
-		                    s2 = s2 + " " + entrada;
-		                }
-		            }
-	            }
-		    }
-            
+		                    System.out.println("Error loading line " + currentLine + ", in file " + archivo + ":");
+		                    System.out.println(entrada);
+        		        }
+	        	        else
+		                {
+		                    s1 = deleteQuotes(entrada.substring(0,marker).trim());
+		                    s2 = deleteQuotes(entrada.substring(marker+1).trim());
+		                    add(s1, s2 , defNum);
+    		            }
+    		        }
+	    		}
+		    	currentLine++;            
         }
-        else
-		while ((entrada = br.readLine())!=null)
-		{
-			entrada = entrada.trim();
-			if (!entrada.equals(""))
-			{
-			    marker = entrada.indexOf(delimiter);
-		        if (marker<0)
-		        {
-		            System.out.println("Error loading line " + currentLine + ", in file " + archivo + ":");
-		            System.out.println(entrada);
-		        }
-		        else
-		        {
-		            s1 = deleteQuotes(entrada.substring(0,marker).trim());
-		            s2 = deleteQuotes(entrada.substring(marker+1).trim());
-		            add(s1, s2 , defNum);
-		        }
-			}
-			currentLine++;
-		}
 	}
 
 
@@ -547,11 +567,17 @@ public class BinaryFileGenerator extends LinkedList
         if (args[0].charAt(0)=='-')
         {
             if (args[0].equals("-tab"))
+            {
+                delimiterType = delimiterGeneric;
                 delimiter="\t";
+            }
             else if (args[0].equals("-acip"))
-                delimiter=null;
+                delimiterType=delimiterAcip;
             else
+            {
+                delimiterType=delimiterGeneric;
                 delimiter=args[0].substring(1);
+            }
             if (args.length>2)
             {
                 printSintax();
@@ -576,14 +602,23 @@ public class BinaryFileGenerator extends LinkedList
                     if (args[i].charAt(0)=='-')
                     {
                         if (args[i].equals("-tab"))
-                        delimiter="\t";
+                        {
+                            delimiterType=delimiterGeneric;
+                            delimiter="\t";
+                        }
                         else if (args[i].equals("-acip"))
-                            delimiter=null;
+                            delimiterType=delimiterAcip;
                         else
+                        {
+                            delimiterType=delimiterGeneric;
                             delimiter=args[i].substring(1);
+                        }
                         i++;
                     }
-                    else delimiter=" -";
+                    else 
+                    {
+                        delimiterType=delimiterDash;
+                    }
                     sl.addFile(args[i] + ".txt", n);
                     n++; i++;
                 }
