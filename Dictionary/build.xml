@@ -334,7 +334,7 @@ jmeter.save.saveservice.output_format=xml
 			<arg value="-manual"/>
 			<arg value="-format"/><arg value="UTF-16"/>
 			<arg value="-tab"/>
-			<arg value="-creator"/><arg value="6"/>
+			<arg value="-creator"/><arg value="9"/>
 			<arg value="-proj"/><arg value="18"/>
 			<arg value="-label"/><arg value="3"/>
 			<arg value="-note"/><arg value="This entry comes from Dan Martin's Tibetan Vocabulary."/>
@@ -351,7 +351,7 @@ jmeter.save.saveservice.output_format=xml
 			<arg value="-manual"/>
 			<arg value="-format"/><arg value="UTF-16"/>
 			<arg value="-tab"/>
-			<arg value="-creator"/><arg value="10"/>
+			<arg value="-creator"/><arg value="95"/>
 			<arg value="-proj"/><arg value="19"/>
 			<arg value="-label"/><arg value="4"/>
 			<arg value="-note"/><arg value="This entry comes from Jeffrey Hopkins' Tibetan-Sanskrit-English Dictionary."/>
@@ -367,7 +367,7 @@ jmeter.save.saveservice.output_format=xml
 			<arg value="${source}/java/hibernate.cfg.xml"/>-->
 			<arg value="-manual"/>
 			<arg value="-tab"/>
-			<arg value="-creator"/><arg value="13"/>
+			<arg value="-creator"/><arg value="80"/>
 			<arg value="-proj"/><arg value="20"/>
 			<arg value="-pub-cons"/><arg value="true"/>
 			<arg value="-label"/><arg value="2"/>
@@ -398,7 +398,7 @@ jmeter.save.saveservice.output_format=xml
 			<!-- Pass Command-line arguments to the Dictionary Importer. The first argument must always be the Hibernate config file.
 			<arg value="${source}/java/hibernate.cfg.xml"/>-->
 			<arg value="-manual"/>
-			<arg value="-creator"/><arg value="10"/>
+			<arg value="-creator"/><arg value="96"/>
 			<arg value="-proj"/><arg value="21"/>
 			<arg value="-label"/><arg value="5"/>
 			<arg value="-note"/><arg value="This entry comes from Jim Valby's Tibetan English Dictionary included in The Rangjung Yeshe Tibetan-English Dictionary of Buddhist Culture 3.0 (www.rangjung.com)."/>
@@ -414,7 +414,7 @@ jmeter.save.saveservice.output_format=xml
 			<!-- Pass Command-line arguments to the Dictionary Importer. The first argument must always be the Hibernate config file.
 			<arg value="${source}/java/hibernate.cfg.xml"/>-->
 			<arg value="-manual"/>
-			<arg value="-creator"/><arg value="11"/>
+			<arg value="-creator"/><arg value="97"/>
 			<arg value="-proj"/><arg value="22"/>
 			<arg value="-label"/><arg value="6"/>
 			<arg value="-note"/><arg value="This entry comes from Richard Barron's Tibetan English Dictionary included in The Rangjung Yeshe Tibetan-English Dictionary of Buddhist Culture 3.0 (www.rangjung.com)."/>
@@ -430,7 +430,7 @@ jmeter.save.saveservice.output_format=xml
 			<!-- Pass Command-line arguments to the Dictionary Importer. The first argument must always be the Hibernate config file.
 			<arg value="${source}/java/hibernate.cfg.xml"/>-->
 			<arg value="-manual"/>
-			<arg value="-creator"/><arg value="12"/>
+			<arg value="-creator"/><arg value="98"/>
 			<arg value="-proj"/><arg value="23"/>
 			<arg value="-label"/><arg value="7"/>
 			<arg value="-note"/><arg value="This entry comes from Ives Waldo's Tibetan English Dictionary included in The Rangjung Yeshe Tibetan-English Dictionary of Buddhist Culture 3.0 (www.rangjung.com)."/>
