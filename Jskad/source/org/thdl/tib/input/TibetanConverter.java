@@ -158,7 +158,7 @@ public class TibetanConverter implements FontConverterConstants {
                     conversionTag = TM_TO_TMW;
                 } else {
                     ThdlDebug.verify(convertToTMMode);
-                    conversionTag = TM_TO_TMW;
+                    conversionTag = TMW_TO_TM;
                 }
             }
             return reallyConvert(in, out, conversionTag);
@@ -237,7 +237,7 @@ public class TibetanConverter implements FontConverterConstants {
             }
                 
             int exitCode = 0;
-            ThdlDebug.verify(((TM_TO_TMW == ct) ? 1 : 0)
+            ThdlDebug.verify(((TMW_TO_TM == ct) ? 1 : 0)
                              + ((TMW_TO_UNI == ct) ? 1 : 0)
                              + ((TM_TO_TMW == ct) ? 1 : 0)
                              + ((TMW_TO_WYLIE == ct) ? 1 : 0)
@@ -263,7 +263,7 @@ public class TibetanConverter implements FontConverterConstants {
                     exitCode = 42;
                 }
             } else {
-                ThdlDebug.verify(TM_TO_TMW == ct);
+                ThdlDebug.verify(TMW_TO_TM == ct);
                 StringBuffer errors = new StringBuffer();
                 // Convert to TibetanMachine:
                 if (((TibetanDocument)dp.getDocument()).convertToTM(0, dp.getDocument().getLength(), errors)) {
