@@ -30,9 +30,10 @@ import java.io.Serializable;
 
 /** Used by DictionaryTable to display a Tibetan word or phrase
 	(in either Roman or Tibetan script) in a single cell.
+
+    This THDL version does not include DictionaryTable.
     
     @author Andr&eacute;s Montano Pellegrini
-	@see DictionaryTable
 */
 public class DuffCellRenderer extends DuffPane implements TableCellRenderer, Serializable
 {

@@ -330,12 +330,11 @@ public RTFEditorKit rtfEd = null;
 	}
 
 /**
-* Registers a keyboard, and sets it as
-* the active keyboard. * Unpredictable behavior will result
-* if you set the keyboard in {@link org.thdl.tib.text.TibetanMachineWeb TibetanMachineWeb}
-* but don't register it in here.
-* @param keyboardURL the URL of the keyboard you want to install
-*/
+* Registers a keyboard, and sets it as the active keyboard.
+* Unpredictable behavior will result if you set the keyboard in {@link
+* org.thdl.tib.text.TibetanMachineWeb TibetanMachineWeb} but don't
+* register it in here.
+* @param keyboardURL the URL of the keyboard you want to install */
 	public void registerKeyboard(java.net.URL keyboardURL) {
 		TibetanMachineWeb.setKeyboard(keyboardURL);
 		setupKeyboard();
@@ -663,7 +662,7 @@ public RTFEditorKit rtfEd = null;
 
 /**
 * Prints ACHEN together with the vowel v. When using the Wylie
-* keyboard, or any other keyboard in which {@link thdl.tibetan.text.TibetanMachineWeb#isAChenRequiredBeforeVowel() isAChenRequiredBeforeVowel()}
+* keyboard, or any other keyboard in which {@link org.thdl.tib.text.TibetanMachineWeb#isAChenRequiredBeforeVowel() isAChenRequiredBeforeVowel()}
 * is false, this method is called frequently. 
 *
 * @param v the vowel (in Wylie) which you want to print with ACHEN

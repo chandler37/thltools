@@ -624,16 +624,13 @@ public static boolean isWylieVowel(String s) {
 }
 
 /**
-* Is this Wylie valid as a leftmost character
-* in a Tibetan syllable? For example, in the
-* syllable 'brgyad', 'b' is the leftmost
-* character. Valid leftmost characters include
-* g, d, b, and m.
+* Returns true iff this Wylie is valid as a leftmost character in a
+* Tibetan syllable.  For example, in the syllable 'brgyad', 'b' is the
+* leftmost character. Valid leftmost characters include g, d, b, and
+* m.
 * @param s the (Wylie) string to be checked
-* @return true if s is a possible leftmost
-* character in a Tibetan syllable, false
-* if not.
-*/
+* @return true if s is a possible leftmost character in a Tibetan
+* syllable, false if not.  */
 public static boolean isWylieLeft(String s) {
 	if (keyboard != null)
 		s = keyboard.getWylieForChar(s);
@@ -645,16 +642,13 @@ public static boolean isWylieLeft(String s) {
 }
 
 /**
-* Is this Wylie valid as a right (post-vowel)
-* character in a Tibetan syllable? For example,
-* in the syllable 'lags', 'g' is in the right
-* character position. Valid right characters
-* include g, ng, d, n, b, m, r, l, s, ', and T.
+* Returns true iff this Wylie is valid as a right (post-vowel)
+* character in a Tibetan syllable.  For example, in the syllable
+* 'lags', 'g' is in the right character position. Valid right
+* characters include g, ng, d, n, b, m, r, l, s, ', and T.
 * @param s the (Wylie) string to be checked
-* @return true if s is a possible right
-* character in a Tibetan syllable, false
-* if not.
-*/
+* @return true if s is a possible right character in a Tibetan
+* syllable, false if not.  */
 public static boolean isWylieRight(String s) {
 	if (keyboard != null)
 		s = keyboard.getWylieForChar(s);
@@ -666,13 +660,11 @@ public static boolean isWylieRight(String s) {
 }
 
 /**
-* Is this Wylie valid as a leftmost character
-* in a Tibetan syllable?
+* Returns true iff this Wylie is valid as a leftmost character in a
+* Tibetan syllable.
 * @param s the string to be checked
-* @return true if s is a possible leftmost
-* character in a Tibetan syllable, false
-* if not.
-*/
+* @return true if s is a possible leftmost character in a Tibetan
+* syllable, false if not.  */
 public static boolean isWylieFarRight(String s) {
 	if (keyboard != null)
 		s = keyboard.getWylieForChar(s);
@@ -1008,11 +1000,10 @@ public static Map getBinduMap() {
 }
 
 /**
-* Does the keyboard have a disambiguating key?
-* @return true if the installed keyboard has a 
-* disambiguating key, false if not
-* @see TibetanKeyboard
-*/
+* Returns true iff the keyboard has a disambiguating key.
+* @return true if the installed keyboard has a disambiguating key,
+* false if not
+* @see TibetanKeyboard */
 public static boolean hasDisambiguatingKey() {
 	return hasDisambiguatingKey;
 }
@@ -1028,31 +1019,28 @@ public static char getDisambiguatingKey() {
 }
 
 /**
-* Does the keyboard have a Sanksrit stacking key?
-* @return true if a stacking key is required
-* to type Sanskrit stacks, false if not
-* @see TibetanKeyboard
-*/
+* Returns true iff the keyboard has a Sanksrit stacking key.
+* @return true if a stacking key is required to type Sanskrit stacks,
+* false if not
+* @see TibetanKeyboard */
 public static boolean hasSanskritStackingKey() {
 	return hasSanskritStackingKey;
 }
 
 /**
-* Does the keyboard have a Tibetan stacking key?
-* @return true if a stacking key is required to
-* type Tibetan stacks, false if not
-* @see TibetanKeyboard
-*/
+* Returns true iff the keyboard has a Tibetan stacking key.
+* @return true if a stacking key is required to type Tibetan stacks,
+* false if not
+* @see TibetanKeyboard */
 public static boolean hasTibetanStackingKey() {
 	return hasTibetanStackingKey;
 }
 
 /**
-* Is stacking medial?
-* @return true if the stacking key is medial,
-* false if not, or if there is no stacking key
-* @see TibetanKeyboard
-*/
+* Returns true iff stacking is medial.
+* @return true if the stacking key is medial, false if not, or if
+* there is no stacking key
+* @see TibetanKeyboard */
 public static boolean isStackingMedial() {
 	return isStackingMedial;
 }
@@ -1068,34 +1056,30 @@ public static char getStackingKey() {
 }
 
 /**
-* Is achen required before vowels?
-* @return true if you have to type achen first
-* before you can get a vowel with achen, false
-* if you can just type the vowel by itself
-* (as in Wylie)
-* @see TibetanKeyboard
-*/
+* Returns true iff achen is required before vowels.
+* @return true if you have to type achen first before you can get a
+* vowel with achen, false if you can just type the vowel by itself (as
+* in Wylie)
+* @see TibetanKeyboard */
 public static boolean isAChenRequiredBeforeVowel() {
 	return isAChenRequiredBeforeVowel;
 }
 
 /**
-* Is achung treated as a consonant?
-* @return true if a-chung is considered a consonant
-* for the purposes of stacking, false if not
-* (as in Wylie)
-* @see TibetanKeyboard
-*/
+* Returns true iff achung is treated as a consonant.
+* @return true if a-chung is considered a consonant for the purposes
+* of stacking, false if not (as in Wylie)
+* @see TibetanKeyboard */
 public static boolean isAChungConsonant() {
 	return isAChungConsonant;
 }
 
 /**
-* Is there a key for the invisible 'a' vowel in this keyboard?
-* @return true if the installed keyboard has a
-* dummy a vowel, false if not
-* @see TibetanKeyboard
-*/
+* Returns true iff there is a key for the invisible 'a' vowel in this
+* keyboard.
+* @return true if the installed keyboard has a dummy a vowel, false if
+* not
+* @see TibetanKeyboard */
 public static boolean hasAVowel() {
 	return hasAVowel;
 }
@@ -1111,13 +1095,10 @@ public static String getAVowel() {
 }
 
 /**
-* Is this glyph a top (superscript) vowel?
-* @param a DuffCode representing a TibetanMachineWeb
-* glyph
-* @return true if the glyph is a top-hanging
-* (superscript) vowel (i, u, e, o, ai, or ao)
-* and false if not
-*/
+* Returns true iff this glyph is a top (superscript) vowel.
+* @param a DuffCode representing a TibetanMachineWeb glyph
+* @return true if the glyph is a top-hanging (superscript) vowel (i,
+* u, e, o, ai, or ao) and false if not */
 public static boolean isTopVowel(DuffCode dc) {
 	String wylie = getWylieForGlyph(dc);
 	if (top_vowels.contains(wylie))
