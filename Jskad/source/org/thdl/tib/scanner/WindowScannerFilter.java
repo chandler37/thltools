@@ -321,11 +321,11 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
             
         		if (clicked == mnuCut)
 	        	{
-		    		t.copy(t.getSelectionStart(), t.getSelectionEnd(), true);
+		    		t.cutCurrentSelection();
                 }
                 else if (clicked == mnuCopy)
                 {
-		    		t.copy(t.getSelectionStart(), t.getSelectionEnd(), false);
+		    		t.copyCurrentSelection();
                 }
                 else if (clicked == mnuPaste)
                 {
