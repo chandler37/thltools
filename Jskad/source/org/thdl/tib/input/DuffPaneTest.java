@@ -31,85 +31,17 @@ import org.thdl.util.ThdlOptions;
  * Tests {@link org.thdl.tib.input.Duffpane} at the unit level to see
  * that the various keyboards work as expected.
  */
-public class DuffPaneTest extends TestCase {
-    /** A DuffPane that uses THDL's extended Wylie keyboard: */
-    private DuffPane dp;
-
-    /** Sets us up a DuffPane. */
-    protected void setUp() {
-        // We don't want to use options.txt:
-        ThdlOptions.forTestingOnlyInitializeWithoutDefaultOptionsFile();
-
-        // We don't want to load the TM or TMW font files ourselves:
-        ThdlOptions.setUserPreference("thdl.rely.on.system.tmw.fonts", true);
-        ThdlOptions.setUserPreference("thdl.rely.on.system.tm.fonts", true);
-        ThdlOptions.setUserPreference("thdl.debug", true);
-
-        dp = new DuffPane();
-        dp.enableCaretManaging();
-        dp.registerKeyboard();
+public class DuffPaneTest extends DuffPaneTestBase {
+    /**
+     * Plain vanilla constructor for DuffPaneTest.
+     * @param arg0
+     */
+    public DuffPaneTest(String arg0) {
+        super(arg0);
     }
-
-    /** Tears us down a DuffPane. */
-    protected void tearDown() {
-        // let GC do its worst with dp.  We're all set.
-        dp = null;
-    }
-
-	/**
-	 * Plain vanilla constructor for DuffPaneTest.
-	 * @param arg0
-	 */
-	public DuffPaneTest(String arg0) {
-		super(arg0);
-	}
     /** Invokes a text UI and runs all this class's tests. */
-	public static void main(String[] args) {
-		junit.textui.TestRunner.run(DuffPaneTest.class);
-	}
-
-    /** After ensuring that the caret is at the very end of the
-     *  DuffPane's text, and that nothing is selected, this tells the
-     *  DuffPane that the user has pressed key. */
-    private void fireKeypressWithoutModifiers(char key) {
-        dp.performKeyStroke(0, new String(new char[] { key }));
-    }
-
-    private void fireKeysWithoutModifiers(String x) {
-        for (int i = 0; i < x.length(); i++) {
-            fireKeypressWithoutModifiers(x.charAt(i));
-        }
-    }
-
-    private void ensureKeysGiveCorrectWylie(String wylie) {
-        ensureKeysGiveCorrectWylie(wylie, wylie);
-    }
-
-    private void e(String wylie) {
-        ensureKeysGiveCorrectWylie(wylie);
-    }
-
-    private void e(String in, String out) {
-        ensureKeysGiveCorrectWylie(in, out);
-    }
-
-    private void noExceptions(String keys) {
-        dp.newDocument(); // initialize to a blank canvas.
-        fireKeysWithoutModifiers(keys);
-        // no assertion -- if an exception happens, then and only then
-        // the test fails.
-    }
-
-    private void ensureKeysGiveCorrectWylie(String keys, String wylie) {
-        dp.newDocument(); // initialize to a blank canvas.
-        fireKeysWithoutModifiers(keys);
-        boolean passes = wylie.equals(dp.getWylie(new boolean[] { false }));
-        if (!passes) {
-            System.out.println("Congrats! These keys, \"" + keys
-                               + "\", give this wylie, \"" + dp.getWylie(new boolean[] { false })
-                               + "\", not the expected \"" + wylie + "\"");
-        }
-        assertTrue(passes);
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(DuffPaneTest.class);
     }
 
     /** Tests that we tibwn.ini is consistent.  If t+r+ne actually
@@ -1145,24 +1077,6 @@ public class DuffPaneTest extends TestCase {
             e("R+Wa");
             // e("r+wa"); should be the same as e("rwa") but is not, FIXME
         }
-    }
-
-    private void enableEWTSKeyboard() {
-        new JskadKeyboard("EWTS for DuffPaneTest",
-                          null,
-                          null).activate(dp);
-    }
-        
-    private void enableACIPKeyboard() {
-        new JskadKeyboard("Asian Classics Input Project (ACIP) FOR DuffPaneTest",
-                          "acip_keyboard.ini",
-                          null).activate(dp);
-    }
-
-    private void enableSambhotaKeyboard() {
-        new JskadKeyboard("Sambhota Keymap One FOR DuffPaneTest",
-                          "sambhota_keyboard_1.ini",
-                          null).activate(dp);
     }
 
     /** Tests performing a few keystrokes in the ACIP keyboard,

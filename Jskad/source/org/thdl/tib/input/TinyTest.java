@@ -1,0 +1,76 @@
+/*
+The contents of this file are subject to the THDL Open Community License
+Version 1.0 (the "License"); you may not use this file except in compliance
+with the License. You may obtain a copy of the License on the THDL web site 
+(http://www.thdl.org/).
+
+Software distributed under the License is distributed on an "AS IS" basis, 
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the 
+License for the specific terms governing rights and limitations under the 
+License. 
+
+The Initial Developer of this software is the Tibetan and Himalayan Digital
+Library (THDL). Portions created by the THDL are Copyright 2002-2003 THDL.
+All Rights Reserved. 
+
+Contributor(s): ______________________________________.
+*/
+
+package org.thdl.tib.input;
+
+import junit.framework.TestCase;
+
+import javax.swing.Action;
+import javax.swing.KeyStroke;
+
+import org.thdl.util.ThdlOptions;
+
+/**
+ @author David Chandler
+
+ Tests TMW->EWTS (and indirectly, the EWTS->TMW keyboard).  This test
+ is separate from DuffPaneTest for the following reasons:
+
+ <p>This JUnit test is meant to do very little.  That way you can
+ change it to do something interesting and turn the logging way up to
+ get insight.  Why JUnit?  Because our Ant build system makes this
+ very easy to run via 'ant check-one
+ -Dsoletest=org.thdl.tib.input.TinyTest.  */
+public class TinyTest extends DuffPaneTestBase {
+    public TinyTest(String a0) {
+        super(a0);
+    }
+
+    /** Tests this part of bug 998476:
+
+<pre>
+TMW -> EWTS conversion errors
+The following incorrect conversion are happening:
+
+dga'o -> dag'o
+bsad -> bas.d
+'da'i -> 'ad'i
+
+'da'i should produce 'da'i since the genitive particle 'i can
+only be appended to syllables that end with vowel or
+with a chung ('). For instance sgra + 'i = sgra'i, nam
+mkha' + 'i = nam mkha'i. The case here is 'da' + 'i = 'da'i.
+syllable 'ad can't take the genitive 'i, so 'ad'i is invalid.
+
+Of course this is a hypothetical syllable with no meaning,
+but following the rules 'ad would be correct. 'da would be
+mistaken. "In two-lettered words, the first is always the
+root letter." (losang thonden's modern tibetan language,
+pag 41).
+</pre>
+
+     */
+    public void testBug998476() {
+        enableEWTSKeyboard();
+        e("dga'o", "dag'o"); // FIXME: this is a bug
+        e("bsad", "bas.d"); // FIXME: this is a bug
+        e("'da'i", "'ad'i"); // FIXME: this is a bug
+    }
+}
+
+
