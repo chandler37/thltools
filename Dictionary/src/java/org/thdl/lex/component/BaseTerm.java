@@ -2,7 +2,6 @@ package org.thdl.lex.component;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /** @author Hibernate CodeGenerator */
@@ -57,8 +56,8 @@ abstract public class BaseTerm extends LexComponent implements org.thdl.lex.comp
     private List registers;
 
     /** full constructor */
-    public BaseTerm(java.lang.Integer translationOf, java.lang.Boolean deleted, List analyticalNotes, Set translations, org.thdl.lex.component.Meta meta, java.lang.String term, java.lang.Short precedence, List pronunciations, List etymologies, List spellings, List functions, List encyclopediaArticles, List transitionalData, List definitions, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers) {
-        super(translationOf, deleted, analyticalNotes, translations, meta);
+    public BaseTerm(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.String term, java.lang.Short precedence, List pronunciations, List etymologies, List spellings, List functions, List encyclopediaArticles, List transitionalData, List definitions, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers) {
+        super(deleted, analyticalNotes, meta);
         this.term = term;
         this.precedence = precedence;
         this.pronunciations = pronunciations;
@@ -82,8 +81,8 @@ abstract public class BaseTerm extends LexComponent implements org.thdl.lex.comp
     }
 
     /** minimal constructor */
-    public BaseTerm(java.lang.Boolean deleted, List analyticalNotes, Set translations, org.thdl.lex.component.Meta meta, java.lang.String term, List pronunciations, List etymologies, List spellings, List functions, List encyclopediaArticles, List transitionalData, List definitions, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers) {
-      super(deleted, analyticalNotes, translations, meta);
+    public BaseTerm(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.String term, List pronunciations, List etymologies, List spellings, List functions, List encyclopediaArticles, List transitionalData, List definitions, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers) {
+      super(deleted, analyticalNotes, meta);
         this.term = term;
         this.pronunciations = pronunciations;
         this.etymologies = etymologies;

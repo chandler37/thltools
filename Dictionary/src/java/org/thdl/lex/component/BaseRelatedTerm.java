@@ -2,7 +2,6 @@ package org.thdl.lex.component;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /** @author Hibernate CodeGenerator */
@@ -24,8 +23,8 @@ abstract public class BaseRelatedTerm extends LexComponent implements Serializab
     private org.thdl.lex.component.ILexComponent parent;
 
     /** full constructor */
-    public BaseRelatedTerm(java.lang.Integer translationOf, java.lang.Boolean deleted, List analyticalNotes, Set translations, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.String relatedTerm, java.lang.Short relatedTermType, org.thdl.lex.component.ILexComponent parent) {
-        super(translationOf, deleted, analyticalNotes, translations, meta);
+    public BaseRelatedTerm(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.String relatedTerm, java.lang.Short relatedTermType, org.thdl.lex.component.ILexComponent parent) {
+        super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
         this.precedence = precedence;
         this.relatedTerm = relatedTerm;
@@ -38,8 +37,8 @@ abstract public class BaseRelatedTerm extends LexComponent implements Serializab
     }
 
     /** minimal constructor */
-    public BaseRelatedTerm(java.lang.Boolean deleted, List analyticalNotes, Set translations, org.thdl.lex.component.Meta meta, java.lang.Short relatedTermType) {
-      super(deleted, analyticalNotes, translations, meta);
+    public BaseRelatedTerm(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Short relatedTermType) {
+      super(deleted, analyticalNotes, meta);
         this.relatedTermType = relatedTermType;
     }
 

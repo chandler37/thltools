@@ -61,7 +61,7 @@ The message appears below.<br />
 </p>
 </div>
 
-<jsp:include page="debug.jsf" />
+<%-- <jsp:include page="debug.jsf" /> --%>
 
 </body>
 </html>

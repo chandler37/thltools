@@ -6,7 +6,7 @@ import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /** @author Hibernate CodeGenerator */
-abstract public class BasePassage extends LexComponent implements org.thdl.lex.component.IPassage,Serializable {
+abstract public class BasePassage extends LexComponent implements org.thdl.lex.component.IPassage,Serializable,org.thdl.lex.component.Translatable {
 
     /** nullable persistent field */
     private java.lang.Integer parentId;
@@ -27,18 +27,26 @@ abstract public class BasePassage extends LexComponent implements org.thdl.lex.c
     private java.lang.String passage;
 
     /** nullable persistent field */
+    private java.lang.Integer translationOf;
+
+    /** nullable persistent field */
     private org.thdl.lex.component.ILexComponent parent;
 
+    /** persistent field */
+    private Set translations;
+
     /** full constructor */
-    public BasePassage(java.lang.Integer translationOf, java.lang.Boolean deleted, List analyticalNotes, Set translations, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.String literarySource, java.lang.String spelling, java.lang.String pagination, java.lang.String passage, org.thdl.lex.component.ILexComponent parent) {
-        super(translationOf, deleted, analyticalNotes, translations, meta);
+    public BasePassage(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.String literarySource, java.lang.String spelling, java.lang.String pagination, java.lang.String passage, java.lang.Integer translationOf, org.thdl.lex.component.ILexComponent parent, Set translations) {
+        super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
         this.precedence = precedence;
         this.literarySource = literarySource;
         this.spelling = spelling;
         this.pagination = pagination;
         this.passage = passage;
+        this.translationOf = translationOf;
         this.parent = parent;
+        this.translations = translations;
     }
 
     /** default constructor */
@@ -46,8 +54,9 @@ abstract public class BasePassage extends LexComponent implements org.thdl.lex.c
     }
 
     /** minimal constructor */
-    public BasePassage(java.lang.Boolean deleted, List analyticalNotes, Set translations, org.thdl.lex.component.Meta meta) {
-      super(deleted, analyticalNotes, translations, meta);
+    public BasePassage(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, Set translations) {
+      super(deleted, analyticalNotes, meta);
+        this.translations = translations;
     }
 
     public java.lang.Integer getParentId() {
@@ -98,12 +107,28 @@ abstract public class BasePassage extends LexComponent implements org.thdl.lex.c
         this.passage = passage;
     }
 
+    public java.lang.Integer getTranslationOf() {
+        return this.translationOf;
+    }
+
+    public void setTranslationOf(java.lang.Integer translationOf) {
+        this.translationOf = translationOf;
+    }
+
     public org.thdl.lex.component.ILexComponent getParent() {
         return this.parent;
     }
 
     public void setParent(org.thdl.lex.component.ILexComponent parent) {
         this.parent = parent;
+    }
+
+    public java.util.Set getTranslations() {
+        return this.translations;
+    }
+
+    public void setTranslations(java.util.Set translations) {
+        this.translations = translations;
     }
 
     public String toString() {

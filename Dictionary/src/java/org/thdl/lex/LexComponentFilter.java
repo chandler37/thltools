@@ -11,6 +11,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.*;
 
 import org.thdl.lex.component.*;
 
@@ -47,7 +48,7 @@ public class LexComponentFilter implements Filter
 	 * @param  sessionMgr  The new sessionMgr value
 	 * @since
 	 */
-	public void setSessionMgr( UserSessionManager sessionMgr )
+	public void setSessionManager( UserSessionManager sessionMgr )
 	{
 		this.sessionMgr = sessionMgr;
 	}
@@ -71,11 +72,11 @@ public class LexComponentFilter implements Filter
 	 * @return    The sessionMgr value
 	 * @since
 	 */
-	public UserSessionManager getSessionMgr()
+	public UserSessionManager getSessionManager()
 	{
 		if ( null == sessionMgr )
 		{
-			setSessionMgr( UserSessionManager.getInstance() );
+			setSessionManager( UserSessionManager.getInstance() );
 		}
 		return sessionMgr;
 	}
@@ -133,6 +134,7 @@ public class LexComponentFilter implements Filter
 	 */
 	public void doFilter( ServletRequest request, ServletResponse response, FilterChain chain ) throws IOException, ServletException
 	{
+		long start = System.currentTimeMillis();
 		if ( request instanceof HttpServletRequest && response instanceof HttpServletResponse )
 		{
 			HttpServletRequest req = (HttpServletRequest) request;
@@ -177,6 +179,11 @@ public class LexComponentFilter implements Filter
 			{
 				throw new ServletException( lre );
 			}
+			LexLogger.debug( "Checking Request state at end of LexComponentFilter.doFilter()" );
+			LexLogger.logRequestState( req );
+			LexLogger.logSessionState( req );
+			long dur = System.currentTimeMillis() - start;
+			LexLogger.debug( "Total Request took: " + dur / 1000 + " seconds.\n\n" );
 		}
 		else
 		{

@@ -4,19 +4,48 @@ package org.thdl.lex.component;
 /**
  *  Description of the Interface
  *
- *@author     travis
- *@created    October 1, 2003
+ * @author     travis
+ * @created    October 1, 2003
  */
-public interface IDefinition extends ILexComponent
-{	public ILexComponent getParent();
+public interface IDefinition extends Translatable
+{
+	/**
+	 *  Gets the parent attribute of the IDefinition object
+	 *
+	 * @return    The parent value
+	 */
+	public ILexComponent getParent();
+
+
+	/**
+	 *  Sets the parent attribute of the IDefinition object
+	 *
+	 * @param  comp  The new parent value
+	 */
 	public void setParent( ILexComponent comp );
+
+
+	/**
+	 *  Gets the parentId attribute of the IDefinition object
+	 *
+	 * @return    The parentId value
+	 */
 	public java.lang.Integer getParentId();
+
+
+	/**
+	 *  Sets the parentId attribute of the IDefinition object
+	 *
+	 * @param  parentId  The new parentId value
+	 */
 	public void setParentId( java.lang.Integer parentId );
+
+
 	/**
 	 *  Gets the definition attribute of the IDefinition object
 	 *
-	 *@return    The definition value
-	 *@since
+	 * @return    The definition value
+	 * @since
 	 */
 	public java.lang.String getDefinition();
 
@@ -24,8 +53,8 @@ public interface IDefinition extends ILexComponent
 	/**
 	 *  Sets the definition attribute of the IDefinition object
 	 *
-	 *@param  definition  The new definition value
-	 *@since
+	 * @param  definition  The new definition value
+	 * @since
 	 */
 	public void setDefinition( java.lang.String definition );
 
@@ -33,8 +62,8 @@ public interface IDefinition extends ILexComponent
 	/**
 	 *  Gets the precedence attribute of the IDefinition object
 	 *
-	 *@return    The precedence value
-	 *@since
+	 * @return    The precedence value
+	 * @since
 	 */
 	public java.lang.Short getPrecedence();
 
@@ -42,8 +71,8 @@ public interface IDefinition extends ILexComponent
 	/**
 	 *  Sets the precedence attribute of the IDefinition object
 	 *
-	 *@param  precedence  The new precedence value
-	 *@since
+	 * @param  precedence  The new precedence value
+	 * @since
 	 */
 	public void setPrecedence( java.lang.Short precedence );
 
@@ -51,8 +80,8 @@ public interface IDefinition extends ILexComponent
 	/**
 	 *  Gets the subdefinitions attribute of the IDefinition object
 	 *
-	 *@return    The subdefinitions value
-	 *@since
+	 * @return    The subdefinitions value
+	 * @since
 	 */
 	public java.util.List getSubdefinitions();
 
@@ -60,8 +89,8 @@ public interface IDefinition extends ILexComponent
 	/**
 	 *  Sets the subdefinitions attribute of the IDefinition object
 	 *
-	 *@param  subdefinitions  The new subdefinitions value
-	 *@since
+	 * @param  subdefinitions  The new subdefinitions value
+	 * @since
 	 */
 	public void setSubdefinitions( java.util.List subdefinitions );
 
@@ -69,8 +98,8 @@ public interface IDefinition extends ILexComponent
 	/**
 	 *  Gets the glosses attribute of the IDefinition object
 	 *
-	 *@return    The glosses value
-	 *@since
+	 * @return    The glosses value
+	 * @since
 	 */
 	public java.util.List getGlosses();
 
@@ -78,8 +107,8 @@ public interface IDefinition extends ILexComponent
 	/**
 	 *  Sets the glosses attribute of the IDefinition object
 	 *
-	 *@param  glosses  The new glosses value
-	 *@since
+	 * @param  glosses  The new glosses value
+	 * @since
 	 */
 	public void setGlosses( java.util.List glosses );
 
@@ -87,8 +116,8 @@ public interface IDefinition extends ILexComponent
 	/**
 	 *  Gets the keywords attribute of the IDefinition object
 	 *
-	 *@return    The keywords value
-	 *@since
+	 * @return    The keywords value
+	 * @since
 	 */
 	public java.util.List getKeywords();
 
@@ -96,8 +125,8 @@ public interface IDefinition extends ILexComponent
 	/**
 	 *  Sets the keywords attribute of the IDefinition object
 	 *
-	 *@param  keywords  The new keywords value
-	 *@since
+	 * @param  keywords  The new keywords value
+	 * @since
 	 */
 	public void setKeywords( java.util.List keywords );
 
@@ -105,8 +134,8 @@ public interface IDefinition extends ILexComponent
 	/**
 	 *  Gets the modelSentences attribute of the IDefinition object
 	 *
-	 *@return    The modelSentences value
-	 *@since
+	 * @return    The modelSentences value
+	 * @since
 	 */
 	public java.util.List getModelSentences();
 
@@ -114,8 +143,8 @@ public interface IDefinition extends ILexComponent
 	/**
 	 *  Sets the modelSentences attribute of the IDefinition object
 	 *
-	 *@param  modelSentences  The new modelSentences value
-	 *@since
+	 * @param  modelSentences  The new modelSentences value
+	 * @since
 	 */
 	public void setModelSentences( java.util.List modelSentences );
 
@@ -123,8 +152,8 @@ public interface IDefinition extends ILexComponent
 	/**
 	 *  Gets the translationEquivalents attribute of the IDefinition object
 	 *
-	 *@return    The translationEquivalents value
-	 *@since
+	 * @return    The translationEquivalents value
+	 * @since
 	 */
 	public java.util.List getTranslationEquivalents();
 
@@ -132,8 +161,8 @@ public interface IDefinition extends ILexComponent
 	/**
 	 *  Sets the translationEquivalents attribute of the IDefinition object
 	 *
-	 *@param  translationEquivalents  The new translationEquivalents value
-	 *@since
+	 * @param  translationEquivalents  The new translationEquivalents value
+	 * @since
 	 */
 	public void setTranslationEquivalents( java.util.List translationEquivalents );
 
@@ -141,8 +170,8 @@ public interface IDefinition extends ILexComponent
 	/**
 	 *  Gets the relatedTerms attribute of the IDefinition object
 	 *
-	 *@return    The relatedTerms value
-	 *@since
+	 * @return    The relatedTerms value
+	 * @since
 	 */
 	public java.util.List getRelatedTerms();
 
@@ -150,8 +179,8 @@ public interface IDefinition extends ILexComponent
 	/**
 	 *  Sets the relatedTerms attribute of the IDefinition object
 	 *
-	 *@param  relatedTerms  The new relatedTerms value
-	 *@since
+	 * @param  relatedTerms  The new relatedTerms value
+	 * @since
 	 */
 	public void setRelatedTerms( java.util.List relatedTerms );
 
@@ -159,8 +188,8 @@ public interface IDefinition extends ILexComponent
 	/**
 	 *  Gets the passages attribute of the IDefinition object
 	 *
-	 *@return    The passages value
-	 *@since
+	 * @return    The passages value
+	 * @since
 	 */
 	public java.util.List getPassages();
 
@@ -168,8 +197,8 @@ public interface IDefinition extends ILexComponent
 	/**
 	 *  Sets the passages attribute of the IDefinition object
 	 *
-	 *@param  passages  The new passages value
-	 *@since
+	 * @param  passages  The new passages value
+	 * @since
 	 */
 	public void setPassages( java.util.List passages );
 
@@ -177,8 +206,8 @@ public interface IDefinition extends ILexComponent
 	/**
 	 *  Gets the registers attribute of the IDefinition object
 	 *
-	 *@return    The registers value
-	 *@since
+	 * @return    The registers value
+	 * @since
 	 */
 	public java.util.List getRegisters();
 
@@ -186,9 +215,10 @@ public interface IDefinition extends ILexComponent
 	/**
 	 *  Sets the registers attribute of the IDefinition object
 	 *
-	 *@param  registers  The new registers value
-	 *@since
+	 * @param  registers  The new registers value
+	 * @since
 	 */
 	public void setRegisters( java.util.List registers );
+
 }
 

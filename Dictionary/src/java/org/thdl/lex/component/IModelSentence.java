@@ -1,6 +1,6 @@
 package org.thdl.lex.component;
 
-public interface IModelSentence  extends ILexComponent
+public interface IModelSentence  extends Translatable
 {	public ILexComponent getParent();
 	public void setParent( ILexComponent comp );
 	public java.lang.Integer getParentId();

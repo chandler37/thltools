@@ -16,6 +16,18 @@ import org.thdl.lex.component.*;
  */
 public class LexComponentRepository
 {
+	/**
+	 *  Description of the Field
+	 */
+	public final static String EXACT = "exact";
+	/**
+	 *  Description of the Field
+	 */
+	public final static String STARTS_WITH = "startsWith";
+	/**
+	 *  Description of the Field
+	 */
+	public final static String ANYWHERE = "anywhere";
 	private static long start;
 
 
@@ -84,6 +96,45 @@ public class LexComponentRepository
 	/**
 	 *  Description of the Method
 	 *
+	 * @exception  LexRepositoryException  Description of the Exception
+	 */
+	private static void beginTransaction() throws LexRepositoryException
+	{
+		try
+		{
+			HibernateTransaction.beginTransaction();
+		}
+		catch ( HibernateException he )
+		{
+			throw new LexRepositoryException( he );
+		}
+
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  commit                      Description of Parameter
+	 * @exception  LexRepositoryException  Description of the Exception
+	 * @since
+	 */
+	private static void endTransaction( boolean commit ) throws LexRepositoryException
+	{
+		try
+		{
+			HibernateTransaction.endTransaction( commit );
+		}
+		catch ( HibernateException he )
+		{
+			throw new LexRepositoryException( he );
+		}
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
 	 * @return    Description of the Returned Value
 	 * @since
 	 */
@@ -127,6 +178,7 @@ public class LexComponentRepository
 	public static void findTermsByTerm( LexQuery lexQuery ) throws LexRepositoryException
 	{
 		setStart( now() );
+		beginTransaction();
 		ITerm term = assertTerm( lexQuery.getQueryComponent() );
 		if ( null == term.getTerm() )
 		{
@@ -135,7 +187,20 @@ public class LexComponentRepository
 
 		Query query = null;
 		Iterator it = null;
-		String queryString = " FROM org.thdl.lex.component.Term as term WHERE term.term like '" + term.getTerm() + "%' AND term.deleted=0 ORDER BY term.term";
+		String termForQuery = null;
+		if ( lexQuery.getFindMode().equals( LexComponentRepository.EXACT ) )
+		{
+			termForQuery = "'" + term.getTerm() + "'";
+		}
+		else if ( lexQuery.getFindMode().equals( LexComponentRepository.STARTS_WITH ) )
+		{
+			termForQuery = "'" + term.getTerm() + "%'";
+		}
+		else if ( lexQuery.getFindMode().equals( LexComponentRepository.ANYWHERE ) )
+		{
+			termForQuery = "'%" + term.getTerm() + "%'";
+		}
+		String queryString = " FROM org.thdl.lex.component.ITerm as term WHERE term.term like '" + term.getTerm() + "%' AND term.deleted=0 ORDER BY term.term";
 		try
 		{
 			query = getSession().createQuery( queryString );
@@ -145,16 +210,6 @@ public class LexComponentRepository
 			throw new LexRepositoryException( he );
 		}
 
-		/*
-		    try
-		    {
-		    query.setProperties( lexQuery.getQueryComponent() );
-		    }
-		    catch ( HibernateException he )
-		    {
-		    throw new LexRepositoryException( he );
-		    }
-		  */
 		try
 		{
 			it = query.iterate();
@@ -176,6 +231,7 @@ public class LexComponentRepository
 			term = (ITerm) it.next();
 			lexQuery.getResults().put( term.getMetaId(), term.getTerm() );
 		}
+		endTransaction( false );
 		lexQuery.setDuration( getDuration() );
 	}
 
@@ -191,7 +247,9 @@ public class LexComponentRepository
 	{
 		try
 		{
+			beginTransaction();
 			getSession().load( term, term.getMetaId() );
+			endTransaction( false );
 		}
 		catch ( HibernateException he )
 		{
@@ -208,6 +266,7 @@ public class LexComponentRepository
 	 */
 	public static void loadTermByPk( LexQuery lexQuery ) throws LexRepositoryException
 	{
+		beginTransaction();
 		ITerm term = assertTerm( lexQuery.getQueryComponent() );
 		loadTermByPk( term );
 		lexQuery.setEntry( term );
@@ -215,6 +274,7 @@ public class LexComponentRepository
 		{
 			lexQuery.getResults().put( term.getMetaId(), term.getTerm() );
 		}
+		endTransaction( false );
 	}
 
 
@@ -229,7 +289,9 @@ public class LexComponentRepository
 
 		try
 		{
+			beginTransaction();
 			getSession().load( component, component.getMetaId() );
+			endTransaction( false );
 		}
 		catch ( HibernateException he )
 		{
@@ -244,12 +306,14 @@ public class LexComponentRepository
 	 * @param  component                   Description of the Parameter
 	 * @exception  LexRepositoryException  Description of the Exception
 	 */
-	public static void update( ILexComponent component ) throws LexRepositoryException
+	public static void saveOrUpdate( ILexComponent component ) throws LexRepositoryException
 	{
 
 		try
 		{
-			getSession().update( component );
+			beginTransaction();
+			getSession().saveOrUpdate( component );
+			endTransaction( true );
 		}
 		catch ( HibernateException he )
 		{

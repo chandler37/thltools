@@ -10,20 +10,18 @@
 		<!-- <meta attribute="finder-method">findById</meta> -->
 			<generator class="native"/>
 		</id>
+
+<!-- 		<property name="translationOf" type="java.lang.Integer" column="translationOf" length="11"/> -->
 		
-		<property name="translationOf" type="java.lang.Integer" column="translationOf" length="11"/>
-		<set name="translations" table="Meta" lazy="true" where="translationOf = 1">
-			<key column="translationOf"/>
-			<one-to-many class="org.thdl.lex.component.LexComponent"/>
-		</set>
 		<property name="deleted" type="java.lang.Boolean" column="deleted" not-null="true" length="5"/>
-		<list name="analyticalNotes" table="AnalyticalNotes" lazy="true">
+		<list name="analyticalNotes" table="AnalyticalNotes" lazy="true" cascade="all">
 			<key column="parentId"/>
 			<index column="precedence"/>
 			<one-to-many class="org.thdl.lex.component.AnalyticalNote"/>
 		</list>
 		
 		<component name="meta" class="org.thdl.lex.component.Meta">
+			<meta attribute="generated-class">org.thdl.lex.component.BaseMeta</meta>
 			<property name="createdBy" type="java.lang.Integer" column="createdBy" not-null="true" length="11"/>
 			<property name="modifiedBy" type="java.lang.Integer" column="modifiedBy" not-null="true" length="11"/>
 			<property name="createdByProjSub" type="java.lang.Integer" column="createdByProjSub" not-null="true" length="11"/>
@@ -52,72 +50,72 @@
 			<property name="term" type="java.lang.String" column="term" not-null="true" length="255">
 			<!-- <meta attribute="finder-method">findByTerm</meta> --></property>
 			<property name="precedence" type="java.lang.Short" column="precedence" length="6"/>
-			<list name="pronunciations" table="Pronunciations" lazy="true">
+			<list name="pronunciations" table="Pronunciations" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.Pronunciation"/>
 			</list>
-			<list name="etymologies" table="Etymologies" lazy="true">
+			<list name="etymologies" table="Etymologies" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.Etymology"/>
 			</list>
-			<list name="spellings" table="Spellings" lazy="true">
+			<list name="spellings" table="Spellings" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.Spelling"/>
 			</list>
-			<list name="functions" table="GrammaticalFunctions" lazy="true">
+			<list name="functions" table="GrammaticalFunctions" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.GrammaticalFunction"/>
 			</list>
-			<list name="encyclopediaArticles" table="EncyclopediaArticles" lazy="true">
+			<list name="encyclopediaArticles" table="EncyclopediaArticles" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.EncyclopediaArticle"/>
 			</list>
-			<list name="transitionalData" table="TransitionalData" lazy="true">
+			<list name="transitionalData" table="TransitionalData" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.TransitionalData"/>
 			</list>
-			<list name="definitions" table="Definitions" lazy="true">
+			<list name="definitions" table="Definitions" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.Definition"/>
 			</list>
-			<list name="glosses" table="Glosses" lazy="true">
+			<list name="glosses" table="Glosses" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.Gloss"/>
 			</list>
-			<list name="keywords" table="Keywords" lazy="true">
+			<list name="keywords" table="Keywords" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.Keyword"/>
 			</list>
-			<list name="modelSentences" table="ModelSentences" lazy="true">
+			<list name="modelSentences" table="ModelSentences" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.ModelSentence"/>
 			</list>
-			<list name="translationEquivalents" table="TranslationEquivalents" lazy="true">
+			<list name="translationEquivalents" table="TranslationEquivalents" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.TranslationEquivalent"/>
 			</list>
-			<list name="relatedTerms" table="RelatedTerms" lazy="true">
+			<list name="relatedTerms" table="RelatedTerms" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.RelatedTerm"/>
 			</list>
-			<list name="passages" table="Passages" lazy="true">
+			<list name="passages" table="Passages" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.Passage"/>
 			</list>
-			<list name="registers" table="SpeechRegisters" lazy="true">
+			<list name="registers" table="SpeechRegisters" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.SpeechRegister"/>
@@ -126,47 +124,53 @@
 		
 		<joined-subclass name="org.thdl.lex.component.Definition" proxy="org.thdl.lex.component.IDefinition" table="Definitions">
 			<meta attribute="generated-class">org.thdl.lex.component.BaseDefinition</meta>
+			<meta attribute="implements">org.thdl.lex.component.Translatable</meta>
 			<key column="metaId"/>
 			<property name="parentId" type="java.lang.Integer" column="parentId" length="11"/>
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
 			<property name="precedence" type="java.lang.Short" column="precedence" not-null="true" length="6"/>
 			<property name="definition" type="java.lang.String" column="definition" length="65535"/>
-			<list name="subdefinitions" table="Subdefinitions" lazy="true">
+			<property name="translationOf" type="java.lang.Integer" column="translationOf" length="11"/>
+			<set name="translations" table="Definitions" lazy="true" cascade="all" where="translationOf = 1">
+				<key column="translationOf"/>
+				<one-to-many class="org.thdl.lex.component.Definition"/>
+			</set>
+			<list name="subdefinitions" table="Subdefinitions" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.Subdefinition"/>
 			</list>
-			<list name="glosses" table="Glosses" lazy="true">
+			<list name="glosses" table="Glosses" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.Gloss"/>
 			</list>
-			<list name="keywords" table="Keywords" lazy="true">
+			<list name="keywords" table="Keywords" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.Keyword"/>
 			</list>
-			<list name="modelSentences" table="ModelSentences" lazy="true">
+			<list name="modelSentences" table="ModelSentences" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.ModelSentence"/>
 			</list>
-			<list name="translationEquivalents" table="TranslationEquivalents" lazy="true">
+			<list name="translationEquivalents" table="TranslationEquivalents" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.TranslationEquivalent"/>
 			</list>
-			<list name="relatedTerms" table="RelatedTerms" lazy="true">
+			<list name="relatedTerms" table="RelatedTerms" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.RelatedTerm"/>
 			</list>
-			<list name="passages" table="Passages" lazy="true">
+			<list name="passages" table="Passages" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.Passage"/>
 			</list>
-			<list name="registers" table="SpeechRegisters" lazy="true">
+			<list name="registers" table="SpeechRegisters" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.SpeechRegister"/>
@@ -175,42 +179,48 @@
 		
 		<joined-subclass name="org.thdl.lex.component.Subdefinition" proxy="org.thdl.lex.component.ISubdefinition" table="Subdefinitions">
 			<meta attribute="generated-class">org.thdl.lex.component.BaseSubdefinition</meta>
+			<meta attribute="implements">org.thdl.lex.component.Translatable</meta>
 			<key column="metaId"/>
 			<property name="parentId" type="java.lang.Integer" column="parentId" length="11"/>
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
 			<property name="precedence" type="java.lang.Short" column="precedence" length="6"/>
 			<property name="subdefinition" type="java.lang.String" column="subdefinition" length="65535"/>
-			<list name="glosses" table="Glosses" lazy="true">
+			<property name="translationOf" type="java.lang.Integer" column="translationOf" length="11"/>
+			<set name="translations" table="Subdefinitions" lazy="true" cascade="all" where="translationOf = 1">
+				<key column="translationOf"/>
+				<one-to-many class="org.thdl.lex.component.Subdefinition"/>
+			</set>
+			<list name="glosses" table="Glosses" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.Gloss"/>
 			</list>
-			<list name="keywords" table="Keywords" lazy="true">
+			<list name="keywords" table="Keywords" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.Keyword"/>
 			</list>
-			<list name="modelSentences" table="ModelSentences" lazy="true">
+			<list name="modelSentences" table="ModelSentences" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.ModelSentence"/>
 			</list>
-			<list name="translationEquivalents" table="TranslationEquivalents" lazy="true">
+			<list name="translationEquivalents" table="TranslationEquivalents" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.TranslationEquivalent"/>
 			</list>
-			<list name="relatedTerms" table="RelatedTerms" lazy="true">
+			<list name="relatedTerms" table="RelatedTerms" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.RelatedTerm"/>
 			</list>
-			<list name="passages" table="Passages" lazy="true">
+			<list name="passages" table="Passages" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.Passage"/>
 			</list>
-			<list name="registers" table="SpeechRegisters" lazy="true">
+			<list name="registers" table="SpeechRegisters" lazy="true" cascade="all">
 				<key column="parentId"/>
 				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.SpeechRegister"/>
@@ -229,6 +239,7 @@
 		
 		<joined-subclass name="org.thdl.lex.component.Etymology" proxy="org.thdl.lex.component.IEtymology" table="Etymologies">
 			<meta attribute="generated-class">org.thdl.lex.component.BaseEtymology</meta>
+			<meta attribute="implements">org.thdl.lex.component.Translatable</meta>
 			<key column="metaId"/>
 			<property name="parentId" type="java.lang.Integer" column="parentId" length="11"/>
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
@@ -237,6 +248,11 @@
 			<property name="etymologyType" type="java.lang.Short" column="etymologyType" not-null="true" length="6"/>
 			<property name="derivation" type="java.lang.String" column="derivation" not-null="true" length="255"/>
 			<property name="etymologyDescription" type="java.lang.String" column="etymologyDescription" not-null="true" length="65535"/>
+			<property name="translationOf" type="java.lang.Integer" column="translationOf" length="11"/>
+			<set name="translations" table="Etymologies" lazy="true" cascade="all" where="translationOf = 1">
+				<key column="translationOf"/>
+				<one-to-many class="org.thdl.lex.component.Etymology"/>
+			</set>
 		</joined-subclass>
 		
 		<joined-subclass name="org.thdl.lex.component.Spelling" proxy="org.thdl.lex.component.ISpelling" table="Spellings">
@@ -289,12 +305,18 @@
 		
 		<joined-subclass name="org.thdl.lex.component.ModelSentence" proxy="org.thdl.lex.component.IModelSentence" table="ModelSentences">
 			<meta attribute="generated-class">org.thdl.lex.component.BaseModelSentence</meta>
+			<meta attribute="implements">org.thdl.lex.component.Translatable</meta>
 			<key column="metaId"/>
 			<property name="parentId" type="java.lang.Integer" column="parentId" length="11"/>
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
 			<property name="precedence" type="java.lang.Short" column="precedence" length="6"/>
 			<property name="subdefinitionId" type="java.lang.Integer" column="subdefinitionId" not-null="true" length="11"/>
 			<property name="modelSentence" type="java.lang.String" column="modelSentence" length="65535"/>
+			<property name="translationOf" type="java.lang.Integer" column="translationOf" length="11"/>
+			<set name="translations" table="ModelSentences" lazy="true" cascade="all" where="translationOf = 1">
+				<key column="translationOf"/>
+				<one-to-many class="org.thdl.lex.component.ModelSentence"/>
+			</set>
 		</joined-subclass>
 		
 		<joined-subclass name="org.thdl.lex.component.TranslationEquivalent" proxy="org.thdl.lex.component.ITranslationEquivalent" table="TranslationEquivalents">
@@ -318,6 +340,7 @@
 		
 		<joined-subclass name="org.thdl.lex.component.Passage" proxy="org.thdl.lex.component.IPassage" table="LiteraryQuotations">
 			<meta attribute="generated-class">org.thdl.lex.component.BasePassage</meta>
+			<meta attribute="implements">org.thdl.lex.component.Translatable</meta>
 			<key column="metaId"/>
 			<property name="parentId" type="java.lang.Integer" column="parentId" length="11"/>
 			<many-to-one name="parent" class="org.thdl.lex.component.LexComponent" column="parentId" insert="false" update="false"/>
@@ -326,6 +349,11 @@
 			<property name="spelling" type="java.lang.String" column="spelling" length="65535"/>
 			<property name="pagination" type="java.lang.String" column="pagination" length="65535"/>
 			<property name="passage" type="java.lang.String" column="passage" length="65535"/>
+			<property name="translationOf" type="java.lang.Integer" column="translationOf" length="11"/>
+			<set name="translations" table="LiteraryQuotations" lazy="true" cascade="all" where="translationOf = 1">
+				<key column="translationOf"/>
+				<one-to-many class="org.thdl.lex.component.Passage"/>
+			</set>
 		</joined-subclass>
 		
 		<joined-subclass name="org.thdl.lex.component.SpeechRegister" proxy="org.thdl.lex.component.IRegister" table="SpeechRegisters">

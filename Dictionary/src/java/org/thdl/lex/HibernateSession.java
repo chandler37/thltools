@@ -7,22 +7,25 @@ import net.sf.hibernate.cfg.*;
 /**
  *  Description of the Class
  *
- *@author     Hibernate WIKI
- *@created    October 1, 2003
+ * @author     Hibernate WIKI
+ * @created    October 1, 2003
  */
 public class HibernateSession
 {
 
 	private static SessionFactory sessionFactory;
+	/**
+	 *  Description of the Field
+	 */
 	public final static ThreadLocal session = new ThreadLocal();
 
 
 	/**
 	 *  Description of the Method
 	 *
-	 *@return                         Description of the Returned Value
-	 *@exception  HibernateException  Description of Exception
-	 *@since
+	 * @return                         Description of the Returned Value
+	 * @exception  HibernateException  Description of Exception
+	 * @since
 	 */
 	public static Session currentSession()
 			 throws HibernateException
@@ -51,8 +54,8 @@ public class HibernateSession
 	/**
 	 *  Description of the Method
 	 *
-	 *@exception  HibernateException  Description of Exception
-	 *@since
+	 * @exception  HibernateException  Description of Exception
+	 * @since
 	 */
 	public static void closeSession()
 			 throws HibernateException

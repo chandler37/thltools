@@ -146,11 +146,12 @@
 	
 	<target name="move-log" description="move old log file">
 		<mkdir dir="logs"/>
+		<mkdir dir="logs/old"/>
 		<tstamp prefix="now"/>
 		<touch file="${basedir}/logs/hibernate.log"/>
-		<move file="${basedir}/logs/hibernate.log" tofile="${basedir}/logs/${now.DSTAMP}_${now.TSTAMP}_hibernate.log" overwrite="true"/>
+		<move file="${basedir}/logs/hibernate.log" tofile="${basedir}/logs/old/${now.DSTAMP}_${now.TSTAMP}_hibernate.log" overwrite="true"/>
 		<touch file="${basedir}/logs/lex.log"/>
-		<move file="${basedir}/logs/lex.log" tofile="${basedir}/logs/${now.DSTAMP}_${now.TSTAMP}_lex.log" overwrite="true"/>
+		<move file="${basedir}/logs/lex.log" tofile="${basedir}/logs/old/${now.DSTAMP}_${now.TSTAMP}_lex.log" overwrite="true"/>
 	</target>
 	
 	<target name="reinstall" description="Remove and Re-install web application" depends="remove">

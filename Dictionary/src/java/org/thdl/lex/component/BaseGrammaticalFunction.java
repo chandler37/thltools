@@ -2,7 +2,6 @@ package org.thdl.lex.component;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /** @author Hibernate CodeGenerator */
@@ -21,8 +20,8 @@ abstract public class BaseGrammaticalFunction extends LexComponent implements or
     private org.thdl.lex.component.ILexComponent parent;
 
     /** full constructor */
-    public BaseGrammaticalFunction(java.lang.Integer translationOf, java.lang.Boolean deleted, List analyticalNotes, Set translations, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.Short function, org.thdl.lex.component.ILexComponent parent) {
-        super(translationOf, deleted, analyticalNotes, translations, meta);
+    public BaseGrammaticalFunction(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.Short function, org.thdl.lex.component.ILexComponent parent) {
+        super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
         this.precedence = precedence;
         this.function = function;
@@ -34,8 +33,8 @@ abstract public class BaseGrammaticalFunction extends LexComponent implements or
     }
 
     /** minimal constructor */
-    public BaseGrammaticalFunction(java.lang.Boolean deleted, List analyticalNotes, Set translations, org.thdl.lex.component.Meta meta, java.lang.Short function) {
-      super(deleted, analyticalNotes, translations, meta);
+    public BaseGrammaticalFunction(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Short function) {
+      super(deleted, analyticalNotes, meta);
         this.function = function;
     }
 

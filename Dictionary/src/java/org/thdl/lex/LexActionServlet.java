@@ -106,11 +106,13 @@ public class LexActionServlet extends HttpServlet
 	 */
 	public void service( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException
 	{
+		LexLogger.debug( "Checking Request state at start of LexActionServlet.service()" );
+		LexLogger.logRequestState( req );
+		LexLogger.logSessionState( req );
+
 		String next;
 		try
 		{
-			logRequestState( req );
-			logSessionState( req.getSession( true ) );
 			setCmd( req.getParameter( LexConstants.COMMAND_REQ_PARAM ) );
 			Command command = lookupCommand( getCmd() );
 			LexComponent component = (LexComponent) req.getAttribute( LexConstants.COMPONENT_REQ_ATTR );
@@ -148,6 +150,10 @@ public class LexActionServlet extends HttpServlet
 		RequestDispatcher rd;
 		rd = getServletContext().getRequestDispatcher( LexConstants.JSP_DIR + next );
 		rd.forward( req, res );
+		LexLogger.debug( "Checking Request state at end of LexActionServlet.service()" );
+		LexLogger.logRequestState( req );
+		LexLogger.logSessionState( req );
+
 	}
 
 
@@ -176,57 +182,6 @@ public class LexActionServlet extends HttpServlet
 	}
 
 
-	/**
-	 *  Description of the Method
-	 *
-	 * @param  req  Description of the Parameter
-	 */
-	public void logRequestState( HttpServletRequest req )
-	{
-		Logger logger = Logger.getLogger( "org.thdl.lex" );
-		Iterator it;
-		Enumeration enum = req.getParameterNames();
-		while ( enum.hasMoreElements() )
-		{
-			String parm = (String) enum.nextElement();
-			logger.debug( "Request Parameter " + parm + " = " + req.getParameter( parm ) );
-		}
-		enum = req.getAttributeNames();
-		while ( enum.hasMoreElements() )
-		{
-			String att = (String) enum.nextElement();
-			logger.debug( "Request Attribute " + att + " = " + req.getAttribute( att ) );
-		}
-	}
-
-
-	/**
-	 *  Description of the Method
-	 *
-	 * @param  ses  Description of the Parameter
-	 */
-	public void logSessionState( HttpSession ses )
-	{
-		Logger logger = Logger.getLogger( "org.thdl.lex" );
-		Enumeration enum = ses.getAttributeNames();
-		while ( enum.hasMoreElements() )
-		{
-			String att = (String) enum.nextElement();
-			logger.debug( "Request Attribute " + att + " = " + ses.getAttribute( att ) );
-		}
-		LexQuery query = (LexQuery) ses.getAttribute( "query" );
-		if ( null == query )
-		{
-			return;
-		}
-		logger.debug( "Query Entry: " + query.getEntry() );
-		logger.debug( "Query QueryComponent: " + query.getQueryComponent() );
-		logger.debug( "Query UpdateComponent: " + query.getUpdateComponent() );
-		logger.debug( "Query Results, " + query.getResults() + ", contain: " + query.getResults().values() );
-		logger.debug( "Query Duration: " + query.getEntry() );
-
-	}
-
 
 	/**
 	 *  Description of the Method
@@ -236,27 +191,29 @@ public class LexActionServlet extends HttpServlet
 	private void initCommands()
 	{
 		HashMap commands = new HashMap();
+
 		commands.put( "menu", new NullCommand( "menu.jsp" ) );
-		commands.put( "abort", new AbortCommand( "menu.jsp" ) );
-		commands.put( "testing", new TestingCommand( "displayEntry.jsp" ) );
-		// commands.put( "login", new NullCommand( "login.jsp" ) );
 		commands.put( "logout", new NullCommand( "logout.jsp" ) );
-		commands.put( "new", new NewComponentCommand() );
+		commands.put( "getMetaPrefsForm", new NullCommand( "metaPrefsForm.jsp" ) );
+		commands.put( "getMetaDefaultsForm", new NullCommand( "metaDefaultsForm.jsp" ) );
 		commands.put( "find", new FindCommand() );
-		commands.put( "getInsertForm", new GetInsertFormCommand( "displayForm.jsp?formMode=insert" ) );
-		commands.put( "getUpdateForm", new GetUpdateFormCommand( "displayForm.jsp?formMode=update" ) );
-		commands.put( "getTranslationForm", new GetTranslationFormCommand( "displayForm.jsp?formMode=insert" ) );
-		commands.put( "annotate", new GetInsertFormCommand( "displayForm.jsp?formMode=insert" ) );
-		commands.put( "insert", new InsertCommand( "displayEntry.jsp" ) );
-		commands.put( "update", new UpdateCommand( "displayEntry.jsp" ) );
+		commands.put( "getInsertForm", new GetFormCommand( "displayForm.jsp?formMode=insert", Boolean.TRUE ) );
+		commands.put( "getUpdateForm", new GetFormCommand( "displayForm.jsp?formMode=update", Boolean.FALSE ) );
+		commands.put( "getInsertTermForm", new GetFormCommand( "displayForm.jsp?formMode=insert", Boolean.TRUE, Boolean.TRUE ) );
+		commands.put( "getUpdateTermForm", new GetFormCommand( "displayForm.jsp?formMode=update", Boolean.FALSE, Boolean.TRUE ) );
+		commands.put( "getTranslationForm", new GetFormCommand( "displayForm.jsp?formMode=insert", Boolean.TRUE ) );
+		commands.put( "annotate", new GetFormCommand( "displayForm.jsp?formMode=insert", Boolean.FALSE ) );
+		commands.put( "insert", new UpdateCommand( "displayEntry.jsp", Boolean.TRUE ) );
+		commands.put( "update", new UpdateCommand( "displayEntry.jsp", Boolean.FALSE ) );
 		commands.put( "display", new DisplayCommand() );
 		commands.put( "displayFull", new DisplayCommand() );
 		commands.put( "editEntry", new DisplayCommand() );
 		commands.put( "remove", new RemoveCommand() );
-		commands.put( "getMetaPrefsForm", new NullCommand( "metaPrefsForm.jsp" ) );
-		commands.put( "getMetaDefaultsForm", new NullCommand( "metaDefaultsForm.jsp" ) );
 		commands.put( "setMetaPrefs", new PreferencesCommand( "menu.jsp" ) );
 		commands.put( "setMetaDefaults", new PreferencesCommand( "menu.jsp" ) );
+		commands.put( "abort", new AbortCommand( "menu.jsp" ) );
+		commands.put( "testing", new TestingCommand( "displayEntry.jsp" ) );
+
 		setCommands( commands );
 	}
 }

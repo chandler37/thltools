@@ -29,7 +29,7 @@ Message:
 	Step 2: Choose an action <br />
 	<input type="submit" value="Find Term" onclick="setCmd('find','menu')" /> <br />
 	<c:if test="${ editMode }">
-	<input type="submit" value="New Entry" onclick="setCmd('new', 'menu')" /> <br />
+	<input type="submit" value="New Entry" onclick="setCmd('getInsertTermForm', 'menu')" /> <br />
 	Metadata Preferences <br />
 	<input type="submit" value="Defaults" onclick="setCmd('getMetaDefaultsForm','menu')"/> <br />
 	<input type="submit" value="Preferences" onclick="setCmd('getMetaPrefsForm','menu')"/> <br />

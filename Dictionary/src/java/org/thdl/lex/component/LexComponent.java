@@ -14,6 +14,41 @@ import org.apache.commons.beanutils.BeanUtils;
 // public abstract class LexComponent extends BaseLexComponent implements Serializable
 public abstract class LexComponent extends BaseLexComponent implements Serializable
 {
+	private Meta meta;
+
+
+	/*
+	    public List getTranslations()
+	    {
+	    List nullNullNullNull = null;
+	    return nullNullNullNull;
+	    }
+	  */
+	/**
+	 *  Gets the meta attribute of the LexComponent object
+	 *
+	 * @return    The meta value
+	 */
+	public Meta getMeta()
+	{
+		if ( null == this.meta )
+		{
+			setMeta( new Meta() );
+		}
+		return this.meta;
+	}
+
+
+	/**
+	 *  Sets the meta attribute of the LexComponent object
+	 *
+	 * @param  meta  The new meta value
+	 */
+	public void setMeta( Meta meta )
+	{
+		this.meta = meta;
+	}
+
 
 	/**
 	 *  Gets the precedence attribute of the LexComponent object
@@ -109,42 +144,46 @@ public abstract class LexComponent extends BaseLexComponent implements Serializa
 	}
 
 
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  component                  Description of the Parameter
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public void populate( ILexComponent component ) throws LexComponentException
+	{
+		try
+		{
+			BeanUtils.copyProperties( this, component );
+		}
+		catch ( IllegalAccessException iae )
+		{
+			throw new LexComponentException( iae );
+		}
+		catch ( java.lang.reflect.InvocationTargetException ite )
+		{
+			throw new LexComponentException( ite );
+		}
+
+	}
+
 //constructors
+
 	/**
-	 *  Constructor for the LexComponent object
+	 *Constructor for the LexComponent object
 	 *
-	 * @param  translationOf    Description of Parameter
-	 * @param  deleted          Description of Parameter
-	 * @param  analyticalNotes  Description of Parameter
-	 * @param  meta             Description of Parameter
-	 * @param  translations     Description of Parameter
-	 * @since
+	 * @param  deleted          Description of the Parameter
+	 * @param  analyticalNotes  Description of the Parameter
+	 * @param  meta             Description of the Parameter
 	 */
-	public LexComponent( Integer translationOf, Boolean deleted, List analyticalNotes, Set translations, Meta meta )
+	public LexComponent( java.lang.Boolean deleted, java.util.List analyticalNotes, org.thdl.lex.component.Meta meta )
 	{
-		super( translationOf, deleted, analyticalNotes, translations, meta );
+		super( deleted, analyticalNotes, meta );
 	}
 
 
 	/**
-	 *  Constructor for the LexComponent object
-	 *
-	 * @param  deleted          Description of Parameter
-	 * @param  analyticalNotes  Description of Parameter
-	 * @param  meta             Description of Parameter
-	 * @param  translations     Description of Parameter
-	 * @since
-	 */
-	public LexComponent( Boolean deleted, List analyticalNotes, Set translations, Meta meta )
-	{
-		super( deleted, analyticalNotes, translations, meta );
-	}
-
-
-	/**
-	 *  Constructor for the LexComponent object
-	 *
-	 * @since
+	 *Constructor for the LexComponent object
 	 */
 	public LexComponent()
 	{

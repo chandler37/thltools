@@ -2,7 +2,6 @@ package org.thdl.lex.component;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /** @author Hibernate CodeGenerator */
@@ -21,8 +20,8 @@ abstract public class BaseAnalyticalNote extends LexComponent implements Seriali
     private org.thdl.lex.component.ILexComponent parent;
 
     /** full constructor */
-    public BaseAnalyticalNote(java.lang.Integer translationOf, java.lang.Boolean deleted, List analyticalNotes, Set translations, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.String analyticalNote, org.thdl.lex.component.ILexComponent parent) {
-        super(translationOf, deleted, analyticalNotes, translations, meta);
+    public BaseAnalyticalNote(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.String analyticalNote, org.thdl.lex.component.ILexComponent parent) {
+        super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
         this.precedence = precedence;
         this.analyticalNote = analyticalNote;
@@ -34,8 +33,8 @@ abstract public class BaseAnalyticalNote extends LexComponent implements Seriali
     }
 
     /** minimal constructor */
-    public BaseAnalyticalNote(java.lang.Boolean deleted, List analyticalNotes, Set translations, org.thdl.lex.component.Meta meta) {
-      super(deleted, analyticalNotes, translations, meta);
+    public BaseAnalyticalNote(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta) {
+      super(deleted, analyticalNotes, meta);
     }
 
     public java.lang.Integer getParentId() {

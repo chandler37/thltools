@@ -22,14 +22,14 @@
 <span class="label">Dialect:	</span><c:out value="${ applicationScope.flatData.majorDialectFamilies[ component.meta.dialect ] }"  default="unknown"  escapeXml="false"/>
 <br />
 <span class="label">Translation: </span>
-<c:choose>
+<%-- <c:choose>
 <c:when test="${ component.translationOf > 0 }">
 Yes (of <c:out value="${ component.translationOf }"  default="unknown"  escapeXml="false"/>)
 </c:when>
 <c:otherwise>
 No
 </c:otherwise>
-</c:choose>
+</c:choose> --%>
 <br />
 <span class="label">Note:	</span><c:out value="${ component.meta.note }"  default="unknown"  escapeXml="false"/>	<br />
 </c:if>

@@ -4,16 +4,16 @@ package org.thdl.lex.component;
 /**
  *  Description of the Interface
  *
- *@author     travis
- *@created    October 1, 2003
+ * @author     travis
+ * @created    October 1, 2003
  */
 public interface ITerm extends ILexComponent
 {
 	/**
 	 *  Gets the term attribute of the ITerm object
 	 *
-	 *@return    The term value
-	 *@since
+	 * @return    The term value
+	 * @since
 	 */
 	public java.lang.String getTerm();
 
@@ -21,8 +21,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Sets the term attribute of the ITerm object
 	 *
-	 *@param  term  The new term value
-	 *@since
+	 * @param  term  The new term value
+	 * @since
 	 */
 	public void setTerm( java.lang.String term );
 
@@ -30,8 +30,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Gets the precedence attribute of the ITerm object
 	 *
-	 *@return    The precedence value
-	 *@since
+	 * @return    The precedence value
+	 * @since
 	 */
 	public java.lang.Short getPrecedence();
 
@@ -39,8 +39,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Sets the precedence attribute of the ITerm object
 	 *
-	 *@param  precedence  The new precedence value
-	 *@since
+	 * @param  precedence  The new precedence value
+	 * @since
 	 */
 	public void setPrecedence( java.lang.Short precedence );
 
@@ -48,8 +48,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Gets the pronunciations attribute of the ITerm object
 	 *
-	 *@return    The pronunciations value
-	 *@since
+	 * @return    The pronunciations value
+	 * @since
 	 */
 	public java.util.List getPronunciations();
 
@@ -57,8 +57,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Sets the pronunciations attribute of the ITerm object
 	 *
-	 *@param  pronunciations  The new pronunciations value
-	 *@since
+	 * @param  pronunciations  The new pronunciations value
+	 * @since
 	 */
 	public void setPronunciations( java.util.List pronunciations );
 
@@ -66,8 +66,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Gets the etymologies attribute of the ITerm object
 	 *
-	 *@return    The etymologies value
-	 *@since
+	 * @return    The etymologies value
+	 * @since
 	 */
 	public java.util.List getEtymologies();
 
@@ -75,8 +75,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Sets the etymologies attribute of the ITerm object
 	 *
-	 *@param  etymologies  The new etymologies value
-	 *@since
+	 * @param  etymologies  The new etymologies value
+	 * @since
 	 */
 	public void setEtymologies( java.util.List etymologies );
 
@@ -84,8 +84,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Gets the spellings attribute of the ITerm object
 	 *
-	 *@return    The spellings value
-	 *@since
+	 * @return    The spellings value
+	 * @since
 	 */
 	public java.util.List getSpellings();
 
@@ -93,8 +93,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Sets the spellings attribute of the ITerm object
 	 *
-	 *@param  spellings  The new spellings value
-	 *@since
+	 * @param  spellings  The new spellings value
+	 * @since
 	 */
 	public void setSpellings( java.util.List spellings );
 
@@ -102,8 +102,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Gets the functions attribute of the ITerm object
 	 *
-	 *@return    The functions value
-	 *@since
+	 * @return    The functions value
+	 * @since
 	 */
 	public java.util.List getFunctions();
 
@@ -111,8 +111,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Sets the functions attribute of the ITerm object
 	 *
-	 *@param  functions  The new functions value
-	 *@since
+	 * @param  functions  The new functions value
+	 * @since
 	 */
 	public void setFunctions( java.util.List functions );
 
@@ -120,8 +120,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Gets the encyclopediaArticles attribute of the ITerm object
 	 *
-	 *@return    The encyclopediaArticles value
-	 *@since
+	 * @return    The encyclopediaArticles value
+	 * @since
 	 */
 	public java.util.List getEncyclopediaArticles();
 
@@ -129,8 +129,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Sets the encyclopediaArticles attribute of the ITerm object
 	 *
-	 *@param  encyclopediaArticles  The new encyclopediaArticles value
-	 *@since
+	 * @param  encyclopediaArticles  The new encyclopediaArticles value
+	 * @since
 	 */
 	public void setEncyclopediaArticles( java.util.List encyclopediaArticles );
 
@@ -138,8 +138,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Gets the transitionalData attribute of the ITerm object
 	 *
-	 *@return    The transitionalData value
-	 *@since
+	 * @return    The transitionalData value
+	 * @since
 	 */
 	public java.util.List getTransitionalData();
 
@@ -147,8 +147,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Sets the transitionalData attribute of the ITerm object
 	 *
-	 *@param  transitionalData  The new transitionalData value
-	 *@since
+	 * @param  transitionalData  The new transitionalData value
+	 * @since
 	 */
 	public void setTransitionalData( java.util.List transitionalData );
 
@@ -156,8 +156,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Gets the definitions attribute of the ITerm object
 	 *
-	 *@return    The definitions value
-	 *@since
+	 * @return    The definitions value
+	 * @since
 	 */
 	public java.util.List getDefinitions();
 
@@ -165,8 +165,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Sets the definitions attribute of the ITerm object
 	 *
-	 *@param  definitions  The new definitions value
-	 *@since
+	 * @param  definitions  The new definitions value
+	 * @since
 	 */
 	public void setDefinitions( java.util.List definitions );
 
@@ -174,8 +174,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Gets the glosses attribute of the ITerm object
 	 *
-	 *@return    The glosses value
-	 *@since
+	 * @return    The glosses value
+	 * @since
 	 */
 	public java.util.List getGlosses();
 
@@ -183,8 +183,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Sets the glosses attribute of the ITerm object
 	 *
-	 *@param  glosses  The new glosses value
-	 *@since
+	 * @param  glosses  The new glosses value
+	 * @since
 	 */
 	public void setGlosses( java.util.List glosses );
 
@@ -192,8 +192,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Gets the keywords attribute of the ITerm object
 	 *
-	 *@return    The keywords value
-	 *@since
+	 * @return    The keywords value
+	 * @since
 	 */
 	public java.util.List getKeywords();
 
@@ -201,8 +201,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Sets the keywords attribute of the ITerm object
 	 *
-	 *@param  keywords  The new keywords value
-	 *@since
+	 * @param  keywords  The new keywords value
+	 * @since
 	 */
 	public void setKeywords( java.util.List keywords );
 
@@ -210,8 +210,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Gets the modelSentences attribute of the ITerm object
 	 *
-	 *@return    The modelSentences value
-	 *@since
+	 * @return    The modelSentences value
+	 * @since
 	 */
 	public java.util.List getModelSentences();
 
@@ -219,8 +219,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Sets the modelSentences attribute of the ITerm object
 	 *
-	 *@param  modelSentences  The new modelSentences value
-	 *@since
+	 * @param  modelSentences  The new modelSentences value
+	 * @since
 	 */
 	public void setModelSentences( java.util.List modelSentences );
 
@@ -228,8 +228,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Gets the translationEquivalents attribute of the ITerm object
 	 *
-	 *@return    The translationEquivalents value
-	 *@since
+	 * @return    The translationEquivalents value
+	 * @since
 	 */
 	public java.util.List getTranslationEquivalents();
 
@@ -237,8 +237,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Sets the translationEquivalents attribute of the ITerm object
 	 *
-	 *@param  translationEquivalents  The new translationEquivalents value
-	 *@since
+	 * @param  translationEquivalents  The new translationEquivalents value
+	 * @since
 	 */
 	public void setTranslationEquivalents( java.util.List translationEquivalents );
 
@@ -246,8 +246,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Gets the relatedTerms attribute of the ITerm object
 	 *
-	 *@return    The relatedTerms value
-	 *@since
+	 * @return    The relatedTerms value
+	 * @since
 	 */
 	public java.util.List getRelatedTerms();
 
@@ -255,8 +255,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Sets the relatedTerms attribute of the ITerm object
 	 *
-	 *@param  relatedTerms  The new relatedTerms value
-	 *@since
+	 * @param  relatedTerms  The new relatedTerms value
+	 * @since
 	 */
 	public void setRelatedTerms( java.util.List relatedTerms );
 
@@ -264,8 +264,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Gets the passages attribute of the ITerm object
 	 *
-	 *@return    The passages value
-	 *@since
+	 * @return    The passages value
+	 * @since
 	 */
 	public java.util.List getPassages();
 
@@ -273,8 +273,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Sets the passages attribute of the ITerm object
 	 *
-	 *@param  passages  The new passages value
-	 *@since
+	 * @param  passages  The new passages value
+	 * @since
 	 */
 	public void setPassages( java.util.List passages );
 
@@ -282,8 +282,8 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Gets the registers attribute of the ITerm object
 	 *
-	 *@return    The registers value
-	 *@since
+	 * @return    The registers value
+	 * @since
 	 */
 	public java.util.List getRegisters();
 
@@ -291,9 +291,10 @@ public interface ITerm extends ILexComponent
 	/**
 	 *  Sets the registers attribute of the ITerm object
 	 *
-	 *@param  registers  The new registers value
-	 *@since
+	 * @param  registers  The new registers value
+	 * @since
 	 */
 	public void setRegisters( java.util.List registers );
+
 }
 

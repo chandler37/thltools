@@ -33,10 +33,10 @@ function submitForm( cmd, component, metaId, parentId, componentHex, parentHex )
 	document.forms[2].comp.value = component;
 	document.forms[2].metaId.value = metaId;
 	document.forms[2].parentId.value = parentId;
-	assert( componentHex != null , "no componentHex");
-		document.forms[2].componentHex.value = componentHex;
-	assert( parentHex != null , "no parentHex") ;
-		document.forms[2].parentHex.value = parentHex;
+	//assert( componentHex != null , "no componentHex");
+		//document.forms[2].componentHex.value = componentHex;
+	//assert( parentHex != null , "no parentHex") ;
+		//document.forms[2].parentHex.value = parentHex;
 	document.forms[2].submit();
 }
 </script>
@@ -47,8 +47,8 @@ function submitForm( cmd, component, metaId, parentId, componentHex, parentHex )
 	<input type="hidden" name="comp" value="" />
 	<input type="hidden" name="metaId" value="" />
 	<input type="hidden" name="parentId" value="" />
-	<input type="hidden" name="componentHex" value="" />
-	<input type="hidden" name="parentHex" value="" />
+	<%-- <input type="hidden" name="componentHex" value="" />
+	<input type="hidden" name="parentHex" value="" /> --%>
 </p>
 </c:if>
 
@@ -57,7 +57,7 @@ function submitForm( cmd, component, metaId, parentId, componentHex, parentHex )
 <c:out value='<a name="${ query.entry.label }" ></a>' escapeXml="false" />
 		<c:if test="${ editMode }">
 		<span class="compEditOptions">
-			<c:set var="jsParams" value="'getUpdateForm', 'term', '${ query.entry.metaId }', '', '${query.entry}', ''" />
+			<c:set var="jsParams" value="'getUpdateTermForm', 'term', '${ query.entry.metaId }', '', '${query.entry}', ''" />
 			<c:out value='<input value="edit" type="image" src="/lex/images/edit.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
 			<c:set var="jsParams" value="'annotate', 'term', '${ query.entry.metaId }', '', '${query.entry}', ''" />
 			<c:out value='<input value="note" type="image" src="/lex/images/note.gif" onclick="submitForm( ${jsParams} )" />' escapeXml="false" />
@@ -99,9 +99,7 @@ function submitForm( cmd, component, metaId, parentId, componentHex, parentHex )
 <c:forEach var="transitionalData" items="${ query.entry.transitionalData }">
 <p class="data">
 <c:out value='<a name="${ transitionalData.label }" ></a>' escapeXml="false" />
-<c:out value='${ transitionalData }' escapeXml="false" /><br/>
-<c:out value='${ transitionalData.parent }' escapeXml="false" /><br/>
-<c:out value='${ query.entry }' escapeXml="false" /><br/>
+
 		<c:if test="${ editMode }">
 		<span class="compEditOptions">
 		<c:set var="jsParams" value="'annotate', 'transitionalData', '${ transitionalData.metaId }', '${ query.entry.metaId }', '${ transitionalData }' , '${ query.entry }'" />

@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <%@ taglib prefix = "req" uri = "http://jakarta.apache.org/taglibs/request-1.0" %>
 
-<c:if test="${ ! empty sessionScope.user }">
+<%-- <c:if test="${ ! empty sessionScope.user }">
 	<c:if test="${ sessionScope.user.developer }">
 	<jsp:include page="debug.jsf" flush="false" />
 	</c:if>
@@ -19,7 +19,7 @@
 		scrollIt('<c:out value="${ jumpToLocation }"/>');
 	</script>
 
-</c:if>
+</c:if> --%>
 
 </div><!--END Main-->
 

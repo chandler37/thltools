@@ -1,6 +1,44 @@
 package org.thdl.lex.component;
 
-public interface Translatable
+
+/**
+ *  Description of the Interface
+ *
+ * @author     travis
+ * @created    October 13, 2003
+ */
+public interface Translatable extends ILexComponent
 {
-	//public java.util.Enumeration getTranslatableFields();
+	/**
+	 *  Gets the translationOf attribute of the Translatable object
+	 *
+	 * @return    The translationOf value
+	 */
+	public Integer getTranslationOf();
+
+
+	/**
+	 *  Sets the translationOf attribute of the Translatable object
+	 *
+	 * @param  pkReference  The new translationOf value
+	 */
+	public void setTranslationOf( Integer pkReference );
+
+
+	/**
+	 *  Gets the translations attribute of the Translatable object
+	 *
+	 * @return    The translations value
+	 */
+	public java.util.Set getTranslations();
+
+
+	/**
+	 *  Sets the translations attribute of the Translatable object
+	 *
+	 * @param  translations  The new translations value
+	 */
+	public void setTranslations( java.util.Set translations );
+
 }
+

@@ -27,17 +27,17 @@ public class AuthenticationFilter implements Filter
 	public String getLoginPage() {
 		return loginPage;
 	}
-	public void setSessionMgr() {
+	public void setSessionManager() {
 		this.sessionMgr = UserSessionManager.getInstance();
 	}
-	public UserSessionManager getSessionMgr() {
+	public UserSessionManager getSessionManager() {
 		return sessionMgr;
 	}
 
 //contract methods
 	public void init(FilterConfig config) throws ServletException
 	{
-		setSessionMgr();
+		setSessionManager();
 		setLoginPage( config.getInitParameter("loginPage") );
 		if ( null == getLoginPage() )
 			throw new ServletException("The loginPage parameter must be specified");

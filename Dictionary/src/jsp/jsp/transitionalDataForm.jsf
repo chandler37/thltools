@@ -23,11 +23,10 @@
 </c:choose>
 
 <c:set var="translateMode" value="${ false }" />
-<c:if test="${ component.translationOf > 0 }">
+<%-- <c:if test="${ component.translationOf > 0 }">
 	<c:set var="translateMode" value="${ true }" />
-	<c:set var="originalTransitionalDataText" 
-			 value="Original Text: ${ original.transitionalDataText } <br /> Translation " />
-</c:if>
+	<c:set var="originalTransitionalDataText" value="Original Text: ${ original.transitionalDataText } <br /> Translation " />
+</c:if> --%>
 
 <form id="newCompForm" action="/lex/action" method="post">
 <p>

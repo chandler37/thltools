@@ -36,11 +36,11 @@
 		<c:set var="note" value="ERROR" />
 	</c:otherwise>
 </c:choose>
-<c:if test="${ component.translationOf > 0 }">
+<%-- <c:if test="${ component.translationOf > 0 }">
 	<c:set var="translateMode" value="${ true }" />
 	<c:set var="originalNote" value="Original Metadata Note: ${ note } <br /> Translation " />
 	<c:set var="note" value="" />
-</c:if>
+</c:if> --%>
 
 <c:if test="${ translateMode }">
 <c:out value='<input type="hidden" name="translationOf" value="${ component.translationOf }" />'escapeXml="false" />

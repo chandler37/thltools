@@ -3,6 +3,7 @@ package org.thdl.lex.component;
 import java.io.Serializable;
 import java.util.*;
 import org.thdl.lex.LexConstants;
+import org.thdl.lex.LexLogger;
 
 
 /**
@@ -11,10 +12,10 @@ import org.thdl.lex.LexConstants;
  * @author     travis
  * @created    October 3, 2003
  */
-public class Term extends BaseTerm implements Serializable
+public class Term extends BaseTerm implements Serializable, LexComponentNode
 {
 	private HashMap childMap;
-	//helper methods
+
 
 	/**
 	 *  Gets the parentId attribute of the Term object
@@ -78,53 +79,55 @@ public class Term extends BaseTerm implements Serializable
 	 */
 	public HashMap getChildMap()
 	{
+		if ( null == childMap )
+		{
+			initChildMap();
+		}
 		return childMap;
 	}
 
 
 	/**
-	 *  Gets the childList attribute of the Term object
+	 *  Description of the Method
 	 *
-	 * @param  component  Description of the Parameter
-	 * @return            The childList value
+	 * @param  component                  Description of the Parameter
+	 * @return                            Description of the Return Value
+	 * @exception  LexComponentException  Description of the Exception
 	 */
-	/*
-	    public List getChildList( String label )
-	    {
-	    List list = null;
-	    Iterator it = getChildMap().keySet().iterator();
-	    while ( it.hasNext() )
-	    {
-	    String key = (String) it.next();
-	    if ( key.equals( label ) )
-	    {
-	    list = (List) getChildMap().get( key );
-	    }
-	    }
-	    return list;
-	    }
-	  */
+	public List findSiblings( ILexComponent component ) throws LexComponentException
+	{
+		List list = null;
+		if ( null != component.getParent() )
+		{
+			LexComponentNode node = (LexComponentNode) component.getParent();
+			list = (List) node.getChildMap().get( component.getLabel() );
+			LexLogger.debug( "List derived from " + node + ": " + list );
+		}
+		else
+		{
+			throw new LexComponentException( "Failed to locate a set of siblings in the Term object graph for: " + component );
+		}
+		return list;
+	}
+
+
 	/**
 	 *  Gets the persistentChild attribute of the Term object
 	 *
-	 * @param  component  Description of the Parameter
-	 * @return            The persistentChild value
+	 * @param  child                      Description of the Parameter
+	 * @return                            The persistentChild value
+	 * @exception  LexComponentException  Description of the Exception
 	 */
-	public ILexComponent findChild( ILexComponent component )
+	public ILexComponent findChild( ILexComponent child ) throws LexComponentException
 	{
 		ILexComponent persistentChild = null;
-		if ( component.getParent() instanceof Term )
+		List list = findSiblings( child );
+		for ( Iterator it = list.iterator(); it.hasNext();  )
 		{
-			//String label =
-			//List list = getChildList( label );
-			List list = (List) getChildMap().get( component.getLabel() );
-			for ( Iterator it = list.iterator(); it.hasNext();  )
+			ILexComponent lc = (ILexComponent) it.next();
+			if ( lc.getMetaId().equals( child.getMetaId() ) )
 			{
-				ILexComponent termChild = (ILexComponent) it.next();
-				if ( termChild.getMetaId().equals( component.getMetaId() ) )
-				{
-					persistentChild = termChild;
-				}
+				persistentChild = lc;
 			}
 		}
 		return persistentChild;
@@ -134,12 +137,13 @@ public class Term extends BaseTerm implements Serializable
 	/**
 	 *  Adds a feature to the Child attribute of the Term object
 	 *
-	 * @param  component  The feature to be added to the Child attribute
-	 * @return            Description of the Return Value
+	 * @param  component                  The feature to be added to the Child attribute
+	 * @exception  LexComponentException  Description of the Exception
 	 */
-	public ILexComponent addChild( ILexComponent component )
+	public void addChild( ILexComponent component ) throws LexComponentException
 	{
-		return null;
+		List list = findSiblings( component );
+		list.add( component );
 	}
 
 
@@ -178,7 +182,7 @@ public class Term extends BaseTerm implements Serializable
 	/**
 	 *  Description of the Method
 	 */
-	private void initChild()
+	private void initChildMap()
 	{
 		setChildMap( new HashMap() );
 		getChildMap().put( LexConstants.PRONUNCIATIONLABEL_VALUE, getPronunciations() );
@@ -187,15 +191,14 @@ public class Term extends BaseTerm implements Serializable
 		getChildMap().put( LexConstants.FUNCTIONLABEL_VALUE, getFunctions() );
 		getChildMap().put( LexConstants.ENCYCLOPEDIA_ARTICLE_LABEL_VALUE, getEncyclopediaArticles() );
 		getChildMap().put( LexConstants.DEFINITIONLABEL_VALUE, getDefinitions() );
-		// getChildMap().put( LexConstants.SUBDEFINITIONLABEL_VALUE, getSubdefinitions() );
 		getChildMap().put( LexConstants.MODELSENTENCELABEL_VALUE, getModelSentences() );
 		getChildMap().put( LexConstants.PASSAGELABEL_VALUE, getPassages() );
-		getChildMap().put( LexConstants.TRANSLATIONLABEL_VALUE, getTranslations() );
 		getChildMap().put( LexConstants.RELATEDTERMLABEL_VALUE, getRelatedTerms() );
 		getChildMap().put( LexConstants.REGISTERLABEL_VALUE, getRegisters() );
 		getChildMap().put( LexConstants.KEYWORDLABEL_VALUE, getKeywords() );
 		getChildMap().put( LexConstants.ANALYTICALNOTELABEL_VALUE, getAnalyticalNotes() );
-		getChildMap().put( LexConstants.TRANSLATIONLABEL_VALUE, getTranslations() );
+		getChildMap().put( LexConstants.TRANSLATIONLABEL_VALUE, getTranslationEquivalents() );
+		getChildMap().put( LexConstants.TRANSITIONALDATALABEL_VALUE, getTransitionalData() );
 	}
 
 
@@ -205,69 +208,8 @@ public class Term extends BaseTerm implements Serializable
 	 */
 	public Term()
 	{
-		initChild();
+		super();
 	}
 
-
-	/**
-	 *Constructor for the Term object
-	 *
-	 * @param  translationOf           Description of the Parameter
-	 * @param  deleted                 Description of the Parameter
-	 * @param  analyticalNotes         Description of the Parameter
-	 * @param  translations            Description of the Parameter
-	 * @param  meta                    Description of the Parameter
-	 * @param  term                    Description of the Parameter
-	 * @param  precedence              Description of the Parameter
-	 * @param  pronunciations          Description of the Parameter
-	 * @param  etymologies             Description of the Parameter
-	 * @param  spellings               Description of the Parameter
-	 * @param  functions               Description of the Parameter
-	 * @param  encyclopediaArticles    Description of the Parameter
-	 * @param  transitionalData        Description of the Parameter
-	 * @param  definitions             Description of the Parameter
-	 * @param  glosses                 Description of the Parameter
-	 * @param  keywords                Description of the Parameter
-	 * @param  modelSentences          Description of the Parameter
-	 * @param  translationEquivalents  Description of the Parameter
-	 * @param  relatedTerms            Description of the Parameter
-	 * @param  passages                Description of the Parameter
-	 * @param  registers               Description of the Parameter
-	 */
-	public Term( java.lang.Integer translationOf, java.lang.Boolean deleted, List analyticalNotes, Set translations, org.thdl.lex.component.Meta meta, java.lang.String term, java.lang.Short precedence, List pronunciations, List etymologies, List spellings, List functions, List encyclopediaArticles, List transitionalData, List definitions, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers )
-	{
-		super( translationOf, deleted, analyticalNotes, translations, meta, term, precedence, pronunciations, etymologies, spellings, functions, encyclopediaArticles, transitionalData, definitions, glosses, keywords, modelSentences, translationEquivalents, relatedTerms, passages, registers );
-		initChild();
-	}
-
-
-	/**
-	 *Constructor for the Term object
-	 *
-	 * @param  deleted                 Description of the Parameter
-	 * @param  analyticalNotes         Description of the Parameter
-	 * @param  translations            Description of the Parameter
-	 * @param  meta                    Description of the Parameter
-	 * @param  term                    Description of the Parameter
-	 * @param  pronunciations          Description of the Parameter
-	 * @param  etymologies             Description of the Parameter
-	 * @param  spellings               Description of the Parameter
-	 * @param  functions               Description of the Parameter
-	 * @param  encyclopediaArticles    Description of the Parameter
-	 * @param  transitionalData        Description of the Parameter
-	 * @param  definitions             Description of the Parameter
-	 * @param  glosses                 Description of the Parameter
-	 * @param  keywords                Description of the Parameter
-	 * @param  modelSentences          Description of the Parameter
-	 * @param  translationEquivalents  Description of the Parameter
-	 * @param  relatedTerms            Description of the Parameter
-	 * @param  passages                Description of the Parameter
-	 * @param  registers               Description of the Parameter
-	 */
-	public Term( java.lang.Boolean deleted, List analyticalNotes, Set translations, org.thdl.lex.component.Meta meta, java.lang.String term, List pronunciations, List etymologies, List spellings, List functions, List encyclopediaArticles, List transitionalData, List definitions, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers )
-	{
-		super( deleted, analyticalNotes, translations, meta, term, pronunciations, etymologies, spellings, functions, encyclopediaArticles, transitionalData, definitions, glosses, keywords, modelSentences, translationEquivalents, relatedTerms, passages, registers );
-		initChild();
-	}
 }
 

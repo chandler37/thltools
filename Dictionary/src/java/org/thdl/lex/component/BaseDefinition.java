@@ -6,7 +6,7 @@ import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /** @author Hibernate CodeGenerator */
-abstract public class BaseDefinition extends LexComponent implements org.thdl.lex.component.IDefinition,Serializable {
+abstract public class BaseDefinition extends LexComponent implements org.thdl.lex.component.IDefinition,Serializable,org.thdl.lex.component.Translatable {
 
     /** nullable persistent field */
     private java.lang.Integer parentId;
@@ -16,6 +16,9 @@ abstract public class BaseDefinition extends LexComponent implements org.thdl.le
 
     /** nullable persistent field */
     private java.lang.String definition;
+
+    /** nullable persistent field */
+    private java.lang.Integer translationOf;
 
     /** nullable persistent field */
     private org.thdl.lex.component.ILexComponent parent;
@@ -44,12 +47,16 @@ abstract public class BaseDefinition extends LexComponent implements org.thdl.le
     /** persistent field */
     private List registers;
 
+    /** persistent field */
+    private Set translations;
+
     /** full constructor */
-    public BaseDefinition(java.lang.Integer translationOf, java.lang.Boolean deleted, List analyticalNotes, Set translations, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.String definition, org.thdl.lex.component.ILexComponent parent, List subdefinitions, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers) {
-        super(translationOf, deleted, analyticalNotes, translations, meta);
+    public BaseDefinition(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.String definition, java.lang.Integer translationOf, org.thdl.lex.component.ILexComponent parent, List subdefinitions, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers, Set translations) {
+        super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
         this.precedence = precedence;
         this.definition = definition;
+        this.translationOf = translationOf;
         this.parent = parent;
         this.subdefinitions = subdefinitions;
         this.glosses = glosses;
@@ -59,6 +66,7 @@ abstract public class BaseDefinition extends LexComponent implements org.thdl.le
         this.relatedTerms = relatedTerms;
         this.passages = passages;
         this.registers = registers;
+        this.translations = translations;
     }
 
     /** default constructor */
@@ -66,8 +74,8 @@ abstract public class BaseDefinition extends LexComponent implements org.thdl.le
     }
 
     /** minimal constructor */
-    public BaseDefinition(java.lang.Boolean deleted, List analyticalNotes, Set translations, org.thdl.lex.component.Meta meta, java.lang.Short precedence, List subdefinitions, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers) {
-      super(deleted, analyticalNotes, translations, meta);
+    public BaseDefinition(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Short precedence, List subdefinitions, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers, Set translations) {
+      super(deleted, analyticalNotes, meta);
         this.precedence = precedence;
         this.subdefinitions = subdefinitions;
         this.glosses = glosses;
@@ -77,6 +85,7 @@ abstract public class BaseDefinition extends LexComponent implements org.thdl.le
         this.relatedTerms = relatedTerms;
         this.passages = passages;
         this.registers = registers;
+        this.translations = translations;
     }
 
     public java.lang.Integer getParentId() {
@@ -101,6 +110,14 @@ abstract public class BaseDefinition extends LexComponent implements org.thdl.le
 
     public void setDefinition(java.lang.String definition) {
         this.definition = definition;
+    }
+
+    public java.lang.Integer getTranslationOf() {
+        return this.translationOf;
+    }
+
+    public void setTranslationOf(java.lang.Integer translationOf) {
+        this.translationOf = translationOf;
     }
 
     public org.thdl.lex.component.ILexComponent getParent() {
@@ -173,6 +190,14 @@ abstract public class BaseDefinition extends LexComponent implements org.thdl.le
 
     public void setRegisters(java.util.List registers) {
         this.registers = registers;
+    }
+
+    public java.util.Set getTranslations() {
+        return this.translations;
+    }
+
+    public void setTranslations(java.util.Set translations) {
+        this.translations = translations;
     }
 
     public String toString() {

@@ -20,7 +20,7 @@ public class LexQuery
 	private ILexComponent updateComponent;
 	private ITerm entry;
 	private Map results;
-	private Enumeration mode;
+	private String findMode;
 	private long duration;
 
 
@@ -72,14 +72,14 @@ public class LexQuery
 
 
 	/**
-	 *  Sets the mode attribute of the LexQuery object
+	 *  Sets the findMode attribute of the LexQuery object
 	 *
-	 * @param  mode  The new mode value
+	 * @param  findMode  The new findMode value
 	 * @since
 	 */
-	public void setMode( Enumeration mode )
+	public void setFindMode( String findMode )
 	{
-		this.mode = mode;
+		this.findMode = findMode;
 	}
 
 
@@ -114,7 +114,7 @@ public class LexQuery
 	 */
 	public long getDuration()
 	{
-		return duration;
+		return duration / 1000;
 	}
 
 
@@ -143,14 +143,14 @@ public class LexQuery
 
 
 	/**
-	 *  Gets the mode attribute of the LexQuery object
+	 *  Gets the findMode attribute of the LexQuery object
 	 *
-	 * @return    The mode value
+	 * @return    The findMode value
 	 * @since
 	 */
-	public Enumeration getMode()
+	public String getFindMode()
 	{
-		return mode;
+		return findMode;
 	}
 
 
@@ -200,17 +200,49 @@ public class LexQuery
 	/**
 	 *  Constructor for the LexQuery object
 	 *
+	 * @param  findMode  Description of the Parameter
 	 * @since
 	 */
-	public LexQuery() { }
+	public LexQuery( String findMode )
+	{
+		setFindMode( findMode );
+	}
 
-//inner classes
 
-	/*
-	    class LexQueryMode extends Enumeration
-	    {
-	    }
-	  */
+	/**
+	 *Constructor for the LexQuery object
+	 */
+	public LexQuery()
+	{
+		this( LexComponentRepository.STARTS_WITH );
+	}
+
+
+	/**
+	 *Constructor for the LexQuery object
+	 *
+	 * @param  component  Description of the Parameter
+	 */
+	public LexQuery( ILexComponent component )
+	{
+		this();
+		setQueryComponent( component );
+	}
+
+
+	/**
+	 *Constructor for the LexQuery object
+	 *
+	 * @param  component  Description of the Parameter
+	 * @param  findMode   Description of the Parameter
+	 */
+	public LexQuery( ILexComponent component, String findMode )
+	{
+		this( findMode );
+		setQueryComponent( component );
+	}
+
+
 }
 
 

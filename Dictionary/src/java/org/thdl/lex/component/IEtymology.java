@@ -1,6 +1,6 @@
 package org.thdl.lex.component;
 
-public interface IEtymology  extends ILexComponent
+public interface IEtymology  extends Translatable
 {	public ILexComponent getParent();
 	public void setParent( ILexComponent comp );
 	public java.lang.Integer getParentId();

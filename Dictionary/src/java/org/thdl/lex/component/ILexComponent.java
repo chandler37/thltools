@@ -109,16 +109,16 @@ public interface ILexComponent
 	 * @return    The translations value
 	 * @since
 	 */
-	public java.util.Set getTranslations();
+	// public java.util.Set getTranslations();
 
 
 	/**
 	 *  Sets the translations attribute of the ILexComponent object
 	 *
-	 * @param  translations  The new translations value
+	 * @return               The deleted value
 	 * @since
 	 */
-	public void setTranslations( java.util.Set translations );
+	//public void setTranslations( java.util.Set translations );
 
 
 	/**

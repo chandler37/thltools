@@ -2,7 +2,6 @@ package org.thdl.lex.component;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /** @author Hibernate CodeGenerator */
@@ -24,8 +23,8 @@ abstract public class BaseEncyclopediaArticle extends LexComponent implements or
     private org.thdl.lex.component.ILexComponent parent;
 
     /** full constructor */
-    public BaseEncyclopediaArticle(java.lang.Integer translationOf, java.lang.Boolean deleted, List analyticalNotes, Set translations, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.String article, java.lang.String articleTitle, org.thdl.lex.component.ILexComponent parent) {
-        super(translationOf, deleted, analyticalNotes, translations, meta);
+    public BaseEncyclopediaArticle(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Short precedence, java.lang.String article, java.lang.String articleTitle, org.thdl.lex.component.ILexComponent parent) {
+        super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
         this.precedence = precedence;
         this.article = article;
@@ -38,8 +37,8 @@ abstract public class BaseEncyclopediaArticle extends LexComponent implements or
     }
 
     /** minimal constructor */
-    public BaseEncyclopediaArticle(java.lang.Boolean deleted, List analyticalNotes, Set translations, org.thdl.lex.component.Meta meta, java.lang.String article, java.lang.String articleTitle) {
-      super(deleted, analyticalNotes, translations, meta);
+    public BaseEncyclopediaArticle(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.String article, java.lang.String articleTitle) {
+      super(deleted, analyticalNotes, meta);
         this.article = article;
         this.articleTitle = articleTitle;
     }
