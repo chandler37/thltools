@@ -154,6 +154,26 @@ public class TibetanDocument extends DefaultStyledDocument {
         return insertDuff(tibetanFontSize, pos, glyphs, true);
 	}
 
+
+	/** Replacing can be more efficient than inserting and then
+        removing. This replaces the glyph at position pos with glyph,
+        which is interpreted as a TMW glyph if asTMW is true and a TM
+        glyph otherwise.  The font size for the new glyph is
+        fontSize. */
+    private void replaceDuff(int fontSize, int pos,
+                             DuffData glyph, boolean asTMW) {
+		MutableAttributeSet mas
+            = ((asTMW)
+               ? TibetanMachineWeb.getAttributeSet(glyph.font)
+               : TibetanMachineWeb.getAttributeSetTM(glyph.font));
+        StyleConstants.setFontSize(mas, fontSize);
+		try {
+            replace(pos, 1, glyph.text, mas);
+        } catch (BadLocationException ble) {
+            ThdlDebug.noteIffyCode();
+		}
+    }
+
 	private int insertDuff(int fontSize, int pos, DuffData[] glyphs, boolean asTMW) {
 		if (glyphs == null)
 			return pos;
@@ -387,8 +407,17 @@ public class TibetanDocument extends DefaultStyledDocument {
                         } catch (Exception e) {
                             // leave it as tibetanFontSize
                         }
-                        insertDuff(fontSize, i, toReplaceWith, true);
-                        remove(i+1, 1);
+                        if (replaceInsteadOfInserting()) {
+                            replaceDuff(fontSize, i, toReplaceWith[0], true);
+                        } else {
+                            if (insertBefore()) {
+                                insertDuff(fontSize, i, toReplaceWith, true);
+                                remove(i+1, 1);
+                            } else {
+                                insertDuff(fontSize, i+1, toReplaceWith, true);
+                                remove(i, 1);
+                            }
+                        }
                     }
                 }
                 i++;
@@ -406,7 +435,7 @@ public class TibetanDocument extends DefaultStyledDocument {
         it before using this (well, it usually gets it right on its
         own, but just in case).  SPEED_FIXME: might be faster to run
         over the elements, if they are one per font.
-        @return true on 100% success, false if any exceptional case
+        @return false on 100% success, true if any exceptional case
         was encountered
         @param errors if non-null, then notes about all exceptional
         cases will be appended to this StringBuffer
@@ -422,7 +451,7 @@ public class TibetanDocument extends DefaultStyledDocument {
         as you like it before using this (well, it usually gets it
         right on its own, but just in case).  SPEED_FIXME: might be
         faster to run over the elements, if they are one per font.
-        @return true on 100% success, false if any exceptional case
+        @return false on 100% success, true if any exceptional case
         was encountered
         @param errors if non-null, then notes about all exceptional
         cases will be appended to this StringBuffer
@@ -431,10 +460,144 @@ public class TibetanDocument extends DefaultStyledDocument {
         return convertTMW_TM(begin, end, false, errors);
     }
 
+    /** For debugging only.  Start with an empty document, and call
+        this on it.  You'll get all the TibetanMachine glyphs
+        inserted, in order, into your document. */
+    private void insertAllTMGlyphs() {
+        int font;
+        int ord;
+        DuffData[] equivalent = new DuffData[1];
+        equivalent[0] = new DuffData();
+
+        int count = 0;
+        for (font = 0; font < 5; font++) {
+            for (ord = 32; ord < 255; ord++) {
+                if (TibetanMachineWeb.mapTMtoTMW(font, ord) != null) {
+                    equivalent[0].setData((char)ord, font + 1);
+                    try {
+                        insertDuff(tibetanFontSize, count++, equivalent, false);
+                    } catch (NullPointerException e) {
+                        System.err.println("nullpointerexception happened: font is " + font + " ord is " + ord);
+                    }
+                }
+            }
+        }
+    }
+
+    /** This setting determines whether the formatting is preserved,
+        but with infinite loops in it, or is not preserved, but works
+        well.  Inserting + removing must be used rather than replacing
+        because you get the same exception otherwise.  FIXME: try Java
+        1.5 -- maybe it beats Java 1.4.
+
+     [java] javax.swing.text.StateInvariantError: infinite loop in formatting
+     [java] 	at javax.swing.text.FlowView$FlowStrategy.layout(FlowView.java:404)
+     [java] 	at javax.swing.text.FlowView.layout(FlowView.java:182)
+     [java] 	at javax.swing.text.BoxView.setSize(BoxView.java:379)
+     [java] 	at javax.swing.text.BoxView.updateChildSizes(BoxView.java:348)
+     [java] 	at javax.swing.text.BoxView.setSpanOnAxis(BoxView.java:330)
+     [java] 	at javax.swing.text.BoxView.layout(BoxView.java:682)
+     [java] 	at javax.swing.text.BoxView.setSize(BoxView.java:379)
+     [java] 	at javax.swing.plaf.basic.BasicTextUI$RootView.setSize(BasicTextUI.java:1598)
+     [java] 	at javax.swing.plaf.basic.BasicTextUI.getPreferredSize(BasicTextUI.java:800)
+     [java] 	at javax.swing.JComponent.getPreferredSize(JComponent.java:1272)
+     [java] 	at javax.swing.JEditorPane.getPreferredSize(JEditorPane.java:1206)
+     [java] 	at javax.swing.ScrollPaneLayout.layoutContainer(ScrollPaneLayout.java:769)
+     [java] 	at java.awt.Container.layout(Container.java:1017)
+     [java] 	at java.awt.Container.doLayout(Container.java:1007)
+     [java] 	at java.awt.Container.validateTree(Container.java:1089)
+     [java] 	at java.awt.Container.validate(Container.java:1064)
+     [java] 	at javax.swing.RepaintManager.validateInvalidComponents(RepaintManager.java:353)
+     [java] 	at javax.swing.SystemEventQueueUtilities$ComponentWorkRequest.run(SystemEventQueueUtilities.java:116)
+     [java] 	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:178)
+     [java] 	at java.awt.EventQueue.dispatchEvent(EventQueue.java:448)
+     [java] 	at java.awt.EventDispatchThread.pumpOneEventForHierarchy(EventDispatchThread.java:197)
+     [java] 	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:150)
+     [java] 	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:144)
+     [java] 	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:136)
+     [java] 	at java.awt.EventDispatchThread.run(EventDispatchThread.java:99)
+     [java] javax.swing.text.StateInvariantError: infinite loop in formatting
+     [java] 	at javax.swing.text.FlowView$FlowStrategy.layout(FlowView.java:404)
+     [java] 	at javax.swing.text.FlowView.layout(FlowView.java:182)
+     [java] 	at javax.swing.text.BoxView.setSize(BoxView.java:379)
+     [java] 	at javax.swing.text.BoxView.updateChildSizes(BoxView.java:348)
+     [java] 	at javax.swing.text.BoxView.setSpanOnAxis(BoxView.java:316)
+     [java] 	at javax.swing.text.BoxView.layout(BoxView.java:683)
+     [java] 	at javax.swing.text.BoxView.setSize(BoxView.java:379)
+     [java] 	at javax.swing.plaf.basic.BasicTextUI$RootView.setSize(BasicTextUI.java:1598)
+     [java] 	at javax.swing.plaf.basic.BasicTextUI.getPreferredSize(BasicTextUI.java:800)
+     [java] 	at javax.swing.JComponent.getPreferredSize(JComponent.java:1272)
+     [java] 	at javax.swing.JEditorPane.getPreferredSize(JEditorPane.java:1206)
+     [java] 	at javax.swing.ScrollPaneLayout.layoutContainer(ScrollPaneLayout.java:769)
+     [java] 	at java.awt.Container.layout(Container.java:1017)
+     [java] 	at java.awt.Container.doLayout(Container.java:1007)
+     [java] 	at java.awt.Container.validateTree(Container.java:1089)
+     [java] 	at java.awt.Container.validate(Container.java:1064)
+     [java] 	at javax.swing.RepaintManager.validateInvalidComponents(RepaintManager.java:353)
+     [java] 	at javax.swing.SystemEventQueueUtilities$ComponentWorkRequest.run(SystemEventQueueUtilities.java:116)
+     [java] 	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:178)
+     [java] 	at java.awt.EventQueue.dispatchEvent(EventQueue.java:448)
+     [java] 	at java.awt.EventDispatchThread.pumpOneEventForHierarchy(EventDispatchThread.java:197)
+     [java] 	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:150)
+     [java] 	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:144)
+     [java] 	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:136)
+     [java] 	at java.awt.EventDispatchThread.run(EventDispatchThread.java:99)
+     [java] javax.swing.text.StateInvariantError: infinite loop in formatting
+     [java] 	at javax.swing.text.FlowView$FlowStrategy.layout(FlowView.java:404)
+     [java] 	at javax.swing.text.FlowView.layout(FlowView.java:182)
+     [java] 	at javax.swing.text.BoxView.setSize(BoxView.java:379)
+     [java] 	at javax.swing.text.BoxView.updateChildSizes(BoxView.java:348)
+     [java] 	at javax.swing.text.BoxView.setSpanOnAxis(BoxView.java:316)
+     [java] 	at javax.swing.text.BoxView.layout(BoxView.java:683)
+     [java] 	at javax.swing.text.BoxView.setSize(BoxView.java:379)
+     [java] 	at javax.swing.plaf.basic.BasicTextUI$RootView.setSize(BasicTextUI.java:1598)
+     [java] 	at javax.swing.plaf.basic.BasicTextUI.modelToView(BasicTextUI.java:934)
+     [java] 	at javax.swing.text.DefaultCaret.repaintNewCaret(DefaultCaret.java:1044)
+     [java] 	at javax.swing.text.DefaultCaret$1.run(DefaultCaret.java:1023)
+     [java] 	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:178)
+     [java] 	at java.awt.EventQueue.dispatchEvent(EventQueue.java:448)
+     [java] 	at java.awt.EventDispatchThread.pumpOneEventForHierarchy(EventDispatchThread.java:197)
+     [java] 	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:150)
+     [java] 	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:144)
+     [java] 	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:136)
+     [java] 	at java.awt.EventDispatchThread.run(EventDispatchThread.java:99)
+     [java] javax.swing.text.StateInvariantError: infinite loop in formatting
+     [java] 	at javax.swing.text.FlowView$FlowStrategy.layout(FlowView.java:404)
+     [java] 	at javax.swing.text.FlowView.layout(FlowView.java:182)
+     [java] 	at javax.swing.text.BoxView.setSize(BoxView.java:379)
+     [java] 	at javax.swing.text.BoxView.updateChildSizes(BoxView.java:348)
+     [java] 	at javax.swing.text.BoxView.setSpanOnAxis(BoxView.java:316)
+     [java] 	at javax.swing.text.BoxView.layout(BoxView.java:683)
+     [java] 	at javax.swing.text.BoxView.setSize(BoxView.java:379)
+     [java] 	at javax.swing.plaf.basic.BasicTextUI$RootView.setSize(BasicTextUI.java:1598)
+     [java] 	at javax.swing.plaf.basic.BasicTextUI.getPreferredSize(BasicTextUI.java:800)
+     [java] 	at javax.swing.JComponent.getPreferredSize(JComponent.java:1272)
+     [java] 	at javax.swing.JEditorPane.getPreferredSize(JEditorPane.java:1206)
+     [java] 	at javax.swing.ScrollPaneLayout.layoutContainer(ScrollPaneLayout.java:769)
+     [java] 	at java.awt.Container.layout(Container.java:1017)
+     [java] 	at java.awt.Container.doLayout(Container.java:1007)
+     [java] 	at java.awt.Container.validateTree(Container.java:1089)
+     [java] 	at java.awt.Container.validate(Container.java:1064)
+     [java] 	at javax.swing.RepaintManager.validateInvalidComponents(RepaintManager.java:353)
+     [java] 	at javax.swing.SystemEventQueueUtilities$ComponentWorkRequest.run(SystemEventQueueUtilities.java:116)
+     [java] 	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:178)
+     [java] 	at java.awt.EventQueue.dispatchEvent(EventQueue.java:448)
+     [java] 	at java.awt.EventDispatchThread.pumpOneEventForHierarchy(EventDispatchThread.java:197)
+     [java] 	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:150)
+     [java] 	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:144)
+     [java] 	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:136)
+     [java] at java.awt.EventDispatchThread.run(EventDispatchThread.java:99) */
+    private static boolean insertBefore() {
+        return !ThdlOptions.getBooleanOption("thdl.insert.rtf.after.not.before");
+    }
+    private static boolean replaceInsteadOfInserting() {
+        return !ThdlOptions.getBooleanOption("thdl.insert.and.remove.instead.of.replacing");
+    }
+
     /** Helper function.
         @param errors if non-null, then notes about all exceptional
         cases will be appended to this StringBuffer
-        @return true on 100% success, false if any exceptional case
+        @return false on 100% success, true if any exceptional case
         was encountered
         @see convertToTMW(int,int) 
         @see convertToTM(int,int) */
@@ -487,8 +650,17 @@ public class TibetanDocument extends DefaultStyledDocument {
                         // whereas insert-before doesn't.  And we do
                         // insert-then-remove because we're guessing
                         // that helps with formatting too.
-                        insertDuff(fontSize, i+1, equivalent, !toTM);
-                        remove(i, 1);
+                        if (replaceInsteadOfInserting()) {
+                            replaceDuff(fontSize, i, equivalent[0], !toTM);
+                        } else {
+                            if (insertBefore()) {
+                                insertDuff(fontSize, i, equivalent, !toTM);
+                                remove(i+1, 1);
+                            } else {
+                                insertDuff(fontSize, i+1, equivalent, !toTM);
+                                remove(i, 1);
+                            }
+                        }
                     } else {
                         // DLC FIXME: insert into document a string
                         // saying "<<[[there's no TM equivalent for
