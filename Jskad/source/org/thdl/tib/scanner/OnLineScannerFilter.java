@@ -24,6 +24,7 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import org.thdl.tib.text.TibetanHTML;
+import org.thdl.util.ThdlOptions;
 
 /** Interfase to provide access to an on-line dictionary through a form in html; 
     Inputs Tibetan text (Roman script only) and displays the
@@ -40,7 +41,6 @@ public class OnLineScannerFilter extends HttpServlet {
 		
 	public OnLineScannerFilter() throws Exception
 	{
-	    
 		rb = ResourceBundle.getBundle("dictionary");
 		scanner = new LocalTibetanScanner(rb.getString("onlinescannerfilter.dict-file-name"));
 	}
@@ -49,6 +49,7 @@ public class OnLineScannerFilter extends HttpServlet {
                       HttpServletResponse response)
         throws IOException, ServletException
     {
+        ThdlOptions.setUserPreference("thdl.rely.on.system.tmw.fonts", true);	    
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
 		String parrafo = request.getParameter("parrafo"), checkboxName, script;
@@ -64,8 +65,10 @@ public class OnLineScannerFilter extends HttpServlet {
         out.println("<title>The Online Tibetan to English Translation/Dictionary Tool</title>");
         script = request.getParameter("script");
         
-        // script==null || makes default tibetan
-        wantsTibetan = (script!=null && script.equals("tibetan"));
+        /* script==null || makes default tibetan
+           script!=null && makes default roman
+        */
+        wantsTibetan = (script==null || script.equals("tibetan"));
         if (wantsTibetan)
         {
     		out.println("<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
@@ -92,7 +95,7 @@ public class OnLineScannerFilter extends HttpServlet {
         out.println("    <td width=\"75%\">");
         out.println("      <p><input type=\"radio\" value=\"tibetan\" ");
         if (wantsTibetan) out.println("checked ");
-        out.println("name=\"script\">Tibetan script (CURRENTLY UNSTABLE, DO NOT USE)<br>"); //(using <a href=\"http://iris.lib.virginia.edu/tibet/tools/tmw.html\" target=\"_blank\">Tibetan Machine Web font</a>)<br>");
+        out.println("name=\"script\">Tibetan script (using <a href=\"http://iris.lib.virginia.edu/tibet/tools/tmw.html\" target=\"_blank\">Tibetan Machine Web font</a>)<br>");
         out.println("      <input type=\"radio\" value=\"roman\" ");
         if (!wantsTibetan) out.println("checked ");        
         out.println("name=\"script\">Roman script</td>");
