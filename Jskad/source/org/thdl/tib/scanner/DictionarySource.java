@@ -20,7 +20,7 @@ package org.thdl.tib.scanner;
 import java.io.*;
 
 /** Specifies a subset of dictionaries among a set of
-	dictionaries. Supports a maximum of 15 dictionaries.
+	dictionaries. Supports a maximum of 30 dictionaries.
 
     @author Andr&eacute;s Montano Pellegrini
 */
@@ -29,7 +29,7 @@ public class DictionarySource
 	private int dicts;
 
 	/** Last bit of word; 1 if there are more brothers.*/
-	private static final int lastBit=32768;
+	private static final int lastBit=1073741824;
 	private static final int allDicts=lastBit-1;
 
 	public DictionarySource()
@@ -80,13 +80,13 @@ public class DictionarySource
 		int numDict;
 		if (hasNext) numDict = lastBit | dicts;
 		else numDict = dicts;
-		raf.writeShort(numDict);
+		raf.writeInt(numDict);
 	}
 
 	public static DictionarySource read(DataInput raf) throws IOException
 	{
 		DictionarySource ds = new DictionarySource();
-		ds.setDicts(raf.readShort());
+		ds.setDicts(raf.readInt());
 		return ds;
 	}
 

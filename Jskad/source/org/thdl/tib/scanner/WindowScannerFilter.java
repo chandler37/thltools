@@ -137,6 +137,17 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		// frame.setSize(240,320);
 		//else frame.setSize(500,600);
 		frame.show();
+
+	    if (usingSwing)
+	    {
+	        //JOptionPane.showMessageDialog(frame, TibetanScanner.aboutUnicode, "About", JOptionPane.PLAIN_MESSAGE);
+   	        diagAbout = new AboutDialog(frame, true);
+	    }
+	    else if (diagAbout==null)
+	    {
+   	        diagAbout = new AboutDialog(frame, false);
+	    }
+	    diagAbout.show();	
 	}
 
 	public static void main(String[] args)
@@ -287,11 +298,12 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		{
 		    if (usingSwing)
 		    {
-		        JOptionPane.showMessageDialog(frame, TibetanScanner.aboutUnicode, "About", JOptionPane.PLAIN_MESSAGE);
+		        //JOptionPane.showMessageDialog(frame, TibetanScanner.aboutUnicode, "About", JOptionPane.PLAIN_MESSAGE);
+    	        diagAbout = new AboutDialog(frame, true);
 		    }
 		    else if (diagAbout==null)
 		    {
-    	        diagAbout = new AboutDialog(frame);
+    	        diagAbout = new AboutDialog(frame, false);
 		    }
 		    diagAbout.show();
 		}
