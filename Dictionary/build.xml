@@ -15,6 +15,11 @@
   <!-- Configure the context path for this application -->
 	<property name="path" value="/lex"/>
 
+  <!-- Configure the path to $CATALINA_HOME for this application 
+  			This is used  in the classpath to bring in servlet.jar and the jdbc-driver
+			-->
+	<property name="catalina.home" value="/usr/local/tomcat8080"/>
+
   <!-- Configure properties to access the Manager application 
   			user /pass combo should be in $TOMCAT_HOME/conf/tomcat-users.xml with managaer role.-->
 	<property name="url" value="http://localhost:2020/manager"/>
@@ -40,6 +45,11 @@
 			<include name="**/*.jar"/>
 			<include name="compiletime/lib/javax.servlet.jar"/>
 		</fileset>
+		<fileset dir="${catalina.home}/common/lib">
+			<include name="servlet.jar"/>
+			<include name="mysql-connector-java-3.0.8-stable-bin.jar"/>
+		</fileset>
+		<!--point to org/thdl/thdl/users-->
 		<pathelement location="${build}/WEB-INF/classes"/>
 	</path>
   
