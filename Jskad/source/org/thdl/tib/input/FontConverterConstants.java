@@ -26,6 +26,7 @@ import java.awt.*;
     @author Nathaniel Garson, Tibetan and Himalayan Digital Library */
 interface FontConverterConstants
 {
+    final String ACIP_TO_UNI = "ACIP to Unicode";
     final String TM_TO_TMW = "TM to TMW";
     final String TMW_TO_UNI = "TMW to Unicode";
     final String TMW_TO_WYLIE = "TMW to Wylie";

@@ -48,14 +48,15 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
     }
 
     public boolean doConversion(ConvertDialog cd, File oldFile, File newFile,
-                                String whichConversion) {
+                                String whichConversion, String warningLevel) {
         PrintStream ps;
         try {
             returnCode
                 = TibetanConverter.reallyConvert(new FileInputStream(oldFile),
                                                  ps = new PrintStream(new FileOutputStream(newFile),
                                                                       false),
-                                                 whichConversion);
+                                                 whichConversion,
+                                                 warningLevel);
             ps.close();
         } catch (FileNotFoundException e) {
             returnCode = 39;
@@ -89,6 +90,28 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
                                           "Errors in Conversion",
                                           JOptionPane.ERROR_MESSAGE);
             return false;
+        } else if (45 == returnCode) {
+            if (warningLevel == "None") throw new Error("FIXME: make this an assertion");
+            JOptionPane.showMessageDialog(cd,
+                                          "No errors occurred, but some warnings are embedded in\nthe output as [#WARNING...].",
+                                          "Warnings in Conversion",
+                                          JOptionPane.ERROR_MESSAGE);
+            return false;
+        } else if (46 == returnCode) {
+            JOptionPane.showMessageDialog(cd,
+                                          "Errors occurred, and are embedded in the output\nas [#ERROR...]."
+                                          + ((warningLevel == "None")
+                                             ? ""
+                                             : "  Warnings may have occurred; if so,\nthey are embedded in the output as [#WARNING...]."),
+                                          "Errors in Conversion",
+                                          JOptionPane.ERROR_MESSAGE);
+            return false;
+        } else if (47 == returnCode) {
+            JOptionPane.showMessageDialog(cd,
+                                          "So many errors occurred that the document is likely\nEnglish, not Tibetan.  No output was produced.",
+                                          "Many Errors in Conversion",
+                                          JOptionPane.ERROR_MESSAGE);
+            return false;
         } else if (1 == returnCode) {
             if (FIND_SOME_NON_TMW == whichConversion
                 || FIND_ALL_NON_TMW == whichConversion) {
@@ -102,6 +125,8 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
                                               "Something besides TibetanMachine was found; see output file.",
                                               "Not entirely TM",
                                               JOptionPane.PLAIN_MESSAGE);
+            } else {
+                throw new Error("Who returned this??");
             }
             return false;
         } else if (0 != returnCode) {
@@ -150,6 +175,7 @@ public class ConverterGUI implements FontConversion, FontConverterConstants {
         try {
             final ConvertDialog convDialog;
             String[] choices = new String[]{
+                ACIP_TO_UNI,
                 TM_TO_TMW,
                 TMW_TO_UNI,
                 TMW_TO_WYLIE,

@@ -139,7 +139,7 @@ class TParseTree {
 
             // We give a warning about these, optionally, so that
             // users can produce output that even a dumb ACIP reader
-            // can understand.  See getWarning(true, ..).
+            // can understand.  See getWarning("All", ..).
 
             // if j is in this list, then up.get(j) is still a
             // potential winner.
@@ -246,16 +246,24 @@ class TParseTree {
 
     /** Returns null if this parse tree is perfectly legal and valid.
      *  Returns a warning for users otherwise.  If and only if
-     *  paranoid is true, then even unambiguous ACIP like PADMA, which
-     *  could be improved by being written as PAD+MA, will cause a
-     *  warning.
-     *  @param paranoid true if you do not mind a lot of warnings
+     *  warningLevel is "All", then even unambiguous ACIP like PADMA,
+     *  which could be improved by being written as PAD+MA, will cause
+     *  a warning.
+     *  @param warningLevel "All" if you're paranoid, "Most" to see
+     *  warnings about lacking vowels on final stacks, "Some" to see
+     *  warnings about lacking vowels on non-final stacks and also
+     *  warnings about when prefix rules affect you, "None" if you
+     *  like to see IllegalArgumentExceptions.
      *  @param pl the pair list from which this parse tree originated
      *  @param originalACIP the original ACIP, or null if you want
      *  this parse tree to make a best guess. */
-    public String getWarning(boolean paranoid,
+    public String getWarning(String warningLevel,
                              TPairList pl,
                              String originalACIP) {
+        if (warningLevel != "Some"
+            && warningLevel != "Most"
+            && warningLevel != "All")
+            throw new IllegalArgumentException("warning level bad: is it interned?");
 
         {
             TStackList bestParse = getBestParse();
@@ -276,19 +284,21 @@ class TParseTree {
                 } else {
                     if (getBestParse().hasStackWithoutVowel(pl, isLastStack)) {
                         if (isLastStack[0]) {
-                            return "Warning: The last stack does not have a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}";
+                            if (warningLevel == "All" || warningLevel == "Most")
+                                return "Warning: The last stack does not have a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}";
                         } else {
                             return "Warning: There is a stack, before the last stack, without a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}";
                         }
                     }
-                    if (paranoid) {
+                    if ("All" == warningLevel) {
                         return "Warning: Though the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "} is unambiguous, it would be more computer-friendly if + signs were used to stack things because there are two (or more) ways to interpret this ACIP if you're not careful.";
                     }
                 }
             } else {
                 if (nip.get(0).hasStackWithoutVowel(pl, isLastStack)) {
                     if (isLastStack[0]) {
-                        return "Warning: The last stack does not have a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}";
+                        if (warningLevel == "All" || warningLevel == "Most")
+                            return "Warning: The last stack does not have a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}";
                     } else {
                         return "Warning: There is a stack, before the last stack, without a vowel in the ACIP {" + ((null != originalACIP) ? originalACIP : recoverACIP()) + "}";
                     }

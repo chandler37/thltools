@@ -75,9 +75,11 @@ public class ACIPString {
     public static final int START_PAREN = 15;
     /** For the closing ) in (NYA) */
     public static final int END_PAREN = 16;
+    /** For things that may not be legal syntax, such as {KA . KHA} */
+    public static final int WARNING = 17;
     /** For things that are not legal syntax, such as a file that
      * contains just "[# HALF A COMMEN" */
-    public static final int ERROR = 17;
+    public static final int ERROR = 18;
 
     /** Returns true if and only if this string is Latin (usually
      *  English).  Returns false if this string is transliteration of
@@ -132,6 +134,7 @@ public class ACIPString {
         if (type == END_SLASH) typeString = "END_SLASH";
         if (type == START_PAREN) typeString = "START_PAREN";
         if (type == END_PAREN) typeString = "END_PAREN";
+        if (type == WARNING) typeString = "WARNING";
         if (type == ERROR) typeString = "ERROR";
         return typeString + ":{" + getText() + "}";
     }

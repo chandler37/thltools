@@ -102,10 +102,10 @@ public class PackageTest extends TestCase {
             assertTrue(null == expectedLegalParses || expectedLegalParses.length == 0);
             return;
         } else {
-            if (pt.getWarning(false, l, acip) != null) {
-                System.out.println(pt.getWarning(false, l, acip));
-            } else if (pt.getWarning(true, l, acip) != null)
-                if (sdebug || debug) System.out.println("Paranoiac warning is this: " + pt.getWarning(true, l, acip));
+            if (pt.getWarning("Most", l, acip) != null) {
+                System.out.println(pt.getWarning("Most", l, acip));
+            } else if (pt.getWarning("All", l, acip) != null)
+                if (sdebug || debug) System.out.println("Paranoiac warning is this: " + pt.getWarning("All", l, acip));
         }
         int np = pt.numberOfParses();
         boolean goodness = expectedParses == null || expectedParses.length == np;
@@ -7049,12 +7049,8 @@ tstHelper("ZUR");
     }
 
     private static void shelp(String s, String expectedErrors, String expectedScan) {
-        shelp(s, expectedErrors, false, expectedScan);
-    }
-
-    private static void shelp(String s, String expectedErrors, boolean lenientPeriods, String expectedScan) {
         StringBuffer errors = new StringBuffer();
-        ArrayList al = ACIPTshegBarScanner.scan(s, errors, lenientPeriods, -1);
+        ArrayList al = ACIPTshegBarScanner.scan(s, errors, -1);
         if (null != expectedScan) {
             if (!al.toString().equals(expectedScan)) {
                 System.out.println("Scanning " + s + " into tsheg bars was expected to cause the following scan:");
@@ -7075,18 +7071,14 @@ tstHelper("ZUR");
         }
     }
 
-    /** Tests {@link ACIPTshegBarScanner#scan(String, StringBuffer, boolean, int)}. */
+    /** Tests {@link ACIPTshegBarScanner#scan(String, StringBuffer, int)}. */
     public void testScanner() {
         shelp("LA...SGRUB",
               "",
-              "[TIBETAN_NON_PUNCTUATION:{LA}, TIBETAN_PUNCTUATION:{.}, TIBETAN_PUNCTUATION:{.}, TIBETAN_PUNCTUATION:{.}, TIBETAN_NON_PUNCTUATION:{SGRUB}]"); // DLC FIXME
-        shelp("PAS... LA",
-              "Offset 5 or maybe 5: A non-breaking tsheg, '.', appeared, but not like \"...,\" or \".,\" or \".dA\" or \".DA\".\n",
-              "[TIBETAN_NON_PUNCTUATION:{PAS}, TIBETAN_PUNCTUATION:{.}, TIBETAN_PUNCTUATION:{.}, ERROR:{A non-breaking tsheg, '.', appeared, but not like \"...,\" or \".,\" or \".dA\" or \".DA\".}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{LA}]");
+              "[TIBETAN_NON_PUNCTUATION:{LA}, TIBETAN_PUNCTUATION:{.}, TIBETAN_PUNCTUATION:{.}, TIBETAN_PUNCTUATION:{.}, TIBETAN_NON_PUNCTUATION:{SGRUB}]");
         shelp("PAS... LA",
               "",
-              true,
-              "[TIBETAN_NON_PUNCTUATION:{PAS}, TIBETAN_PUNCTUATION:{.}, TIBETAN_PUNCTUATION:{.}, TIBETAN_PUNCTUATION:{.}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{LA}]");
+              "[TIBETAN_NON_PUNCTUATION:{PAS}, TIBETAN_PUNCTUATION:{.}, TIBETAN_PUNCTUATION:{.}, TIBETAN_PUNCTUATION:{.}, WARNING:{A non-breaking tsheg, '.', appeared, but not like \"...,\" or \".,\" or \".dA\" or \".DA\".}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{LA}]");
         shelp("^GONG SA,",
               "",
               "[TIBETAN_NON_PUNCTUATION:{^GONG}, TIBETAN_PUNCTUATION:{ }, TIBETAN_NON_PUNCTUATION:{SA}, TIBETAN_PUNCTUATION:{,}]");
@@ -7220,7 +7212,7 @@ tstHelper("ZUR");
     }
     private static void uhelp(String acip, String expectedUnicode) {
         StringBuffer errors = new StringBuffer();
-        String unicode = ACIPConverter.convertToUnicode(acip, errors, null, true);
+        String unicode = ACIPConverter.convertToUnicode(acip, errors, null, true, "Most");
         if (null == unicode) {
             if (null != expectedUnicode && "none" != expectedUnicode) {
                 System.out.println("No unicode exists for " + acip + " but you expected " + org.thdl.tib.text.tshegbar.UnicodeUtils.unicodeStringToPrettyString(expectedUnicode));

@@ -39,15 +39,13 @@ public class ACIPTshegBarScanner {
      *  with code zero.  <p>FIXME: not so efficient; copies the whole
      *  file into memory first. */
     public static void main(String[] args) throws IOException {
-        boolean strict = true;
-        if (args.length != 2
-            || (!(strict = "--strict".equals(args[0])) && !"--lenient".equals(args[0]))) {
-            System.out.println("Bad args!  Need '--strict filename' or '--lenient filename'.");
+        if (args.length != 1) {
+            System.out.println("Bad args!  Need just the name of the ACIP text file.");
             System.exit(1);
         }
         StringBuffer errors = new StringBuffer();
         int maxErrors = 250;
-        ArrayList al = scanFile(args[1], errors, strict, maxErrors - 1);
+        ArrayList al = scanFile(args[0], errors, maxErrors - 1);
 
         if (null == al) {
             System.out.println(maxErrors + " or more errors occurred while scanning ACIP input file; is this");
@@ -70,27 +68,39 @@ public class ACIPTshegBarScanner {
     }
 
     /** Scans an ACIP file with path fname into tsheg bars.  If errors
-     *  is non-null, error messages will be appended to it.  If strict
-     *  is true, then you're more likely to see error
-     *  messages. Returns a list of ACIPStrings that is the
-     *  scan. <p>FIXME: not so efficient; copies the whole file into
-     *  memory first.
+     *  is non-null, error messages will be appended to it.  Returns a
+     *  list of ACIPStrings that is the scan. <p>FIXME: not so
+     *  efficient; copies the whole file into memory first.
      *  @throws IOException if we cannot read in the ACIP input file */
-    public static ArrayList scanFile(String fname, StringBuffer errors, boolean strict, int maxErrors)
+    public static ArrayList scanFile(String fname, StringBuffer errors, int maxErrors)
+        throws IOException
+    {
+        return scanStream(new FileInputStream(fname),
+                          errors, maxErrors);
+    }
+
+    /** Scans a stream of ACIP into tsheg bars.  If errors is
+     *  non-null, error messages will be appended to it.  You can
+     *  recover both errors and warnings (modulo offset information)
+     *  from the result, though.  Returns a list of ACIPStrings that
+     *  is the scan, or null if more than maxErrors occur. <p>FIXME:
+     *  not so efficient; copies the whole file into memory first.
+     *  @throws IOException if we cannot read the whole ACIP stream */
+    public static ArrayList scanStream(InputStream stream, StringBuffer errors,
+                                       int maxErrors)
         throws IOException
     {
         StringBuffer s = new StringBuffer();
         char ch[] = new char[8192];
         BufferedReader in
-            = new BufferedReader(new InputStreamReader(new FileInputStream(fname),
-                                                       "US-ASCII"));
+            = new BufferedReader(new InputStreamReader(stream, "US-ASCII"));
 
         int amt;
         while (-1 != (amt = in.read(ch))) {
             s.append(ch, 0, amt);
         }
         in.close();
-        return scan(s.toString(), errors, !strict, maxErrors);
+        return scan(s.toString(), errors, maxErrors);
     }
 
     /** Returns a list of {@link ACIPString ACIPStrings} corresponding
@@ -99,26 +109,25 @@ public class ACIPTshegBarScanner {
      *  text, a tsheg bar (minus the tsheg or shad or whatever), a
      *  String of inter-tsheg-bar punctuation, etc.
      *
-     *  <p>This not only scans; it finds all the errors a parser would
-     *  too, like "NYA x" and "(" and ")" and "/NYA" etc.  It puts
-     *  those in as ACIPStrings with type {@link ACIPString#ERROR},
-     *  and also, if errors is non-null, appends helpful messages to
-     *  errors, each followed by a '\n'.  There is at least one case
-     *  where no ERROR ACIPString will appear but errors will be
-     *  modified.
+     *  <p>This not only scans; it finds all the errors and warnings a
+     *  parser would too, like "NYA x" and "(" and ")" and "/NYA" etc.
+     *  It puts those in as ACIPStrings with type {@link
+     *  ACIPString#ERROR} or {@link ACIPString#WARNING}, and also, if
+     *  errors is non-null, appends helpful messages to errors, each
+     *  followed by a '\n'.
      *  @param s the ACIP text
      *  @param errors if non-null, the buffer to which to append error
-     *  messages
-     *  @param lenientPeriods if and only if this is true, periods
-     *  will never cause errors, even if iffy text like "PAS... LA "
-     *  appears.
+     *  messages (DLC FIXME: cludge, just get this info by scanning
+     *  the result for ACIPString.ERROR (and maybe ACIPString.WARNING,
+     *  if you care about warnings), but then we'd have to put the
+     *  Offset info in the ACIPString)
      *  @param maxErrors if nonnegative, then scanning will stop when
      *  more than maxErrors errors occur.  In this event, null is
      *  returned.
      *  @return null if more than maxErrors errors occur, or the scan
      *  otherwise
     */
-    public static ArrayList scan(String s, StringBuffer errors, boolean lenientPeriods, int maxErrors) {
+    public static ArrayList scan(String s, StringBuffer errors, int maxErrors) {
 
         // the size depends on whether it's mostly Tibetan or mostly
         // Latin and a number of other factors.  This is meant to be
@@ -159,9 +168,9 @@ public class ACIPTshegBarScanner {
                         al.add(new ACIPString(s.substring(startOfString, i),
                                               currentType));
                     }
-                    al.add(new ACIPString("Found a truly unmatched close bracket, " + s.substring(i, i+1),
-                                          ACIPString.ERROR));
                     if (!waitingForMatchingIllegalClose) {
+                        al.add(new ACIPString("Found a truly unmatched close bracket, " + s.substring(i, i+1),
+                                              ACIPString.ERROR));
                         if (null != errors) {
                             errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                           + "Found a truly unmatched close bracket, ] or }.\n");
@@ -169,6 +178,8 @@ public class ACIPTshegBarScanner {
                         if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
                     }
                     waitingForMatchingIllegalClose = false;
+                    al.add(new ACIPString("Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.",
+                                          ACIPString.ERROR));
                     if (null != errors)
                         errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                       + "Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
@@ -422,9 +433,9 @@ public class ACIPTshegBarScanner {
                     // This is an error.  Sometimes [COMMENTS APPEAR
                     // WITHOUT # MARKS].  Though "... [" could cause
                     // this too.
-                    al.add(new ACIPString("Found an illegal open bracket: " + s.substring(i, i+1),
-                                          ACIPString.ERROR));
                     if (waitingForMatchingIllegalClose) {
+                        al.add(new ACIPString("Found a truly unmatched open bracket, [ or {, prior to this current illegal open bracket.",
+                                              ACIPString.ERROR));
                         if (null != errors) {
                             errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                           + "Found a truly unmatched open bracket, [ or {, prior to this current illegal open bracket.\n");
@@ -443,6 +454,8 @@ public class ACIPTshegBarScanner {
                                 inContext = inContext + "...";
                             }
                         }
+                        al.add(new ACIPString("Found an illegal open bracket (in context, this is " + inContext + ").  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?",
+                                              ACIPString.ERROR));
                         errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
                                       + "Found an illegal open bracket (in context, this is " + inContext + ").  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\n");
                         if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
@@ -729,23 +742,17 @@ public class ACIPTshegBarScanner {
                     currentType = ACIPString.ERROR;
                 }
                 // . is used for a non-breaking tsheg, such as in
-                // {NGO.,} and {....,DAM}.  We give an error unless ,
+                // {NGO.,} and {....,DAM}.  We give a warning unless ,
                 // or ., or [A-Za-z] follows '.'.
-                if (lenientPeriods
-                    || (i + 1 < sl
-                        && (s.charAt(i+1) == '.' || s.charAt(i+1) == ','
-                            || (s.charAt(i+1) == '\r' || s.charAt(i+1) == '\n')
-                            || (s.charAt(i+1) >= 'a' && s.charAt(i+1) <= 'z')
-                            || (s.charAt(i+1) >= 'A' && s.charAt(i+1) <= 'Z')))) {
-                    al.add(new ACIPString(s.substring(i, i+1),
-                                          ACIPString.TIBETAN_PUNCTUATION));
-                } else {
+                al.add(new ACIPString(s.substring(i, i+1),
+                                      ACIPString.TIBETAN_PUNCTUATION));
+                if (!(i + 1 < sl
+                      && (s.charAt(i+1) == '.' || s.charAt(i+1) == ','
+                          || (s.charAt(i+1) == '\r' || s.charAt(i+1) == '\n')
+                          || (s.charAt(i+1) >= 'a' && s.charAt(i+1) <= 'z')
+                          || (s.charAt(i+1) >= 'A' && s.charAt(i+1) <= 'Z')))) {
                     al.add(new ACIPString("A non-breaking tsheg, '.', appeared, but not like \"...,\" or \".,\" or \".dA\" or \".DA\".",
-                                          ACIPString.ERROR));
-                    if (null != errors)
-                        errors.append("Offset " + i + " or maybe " + (i-numNewlines) + ": "
-                                      + "A non-breaking tsheg, '.', appeared, but not like \"...,\" or \".,\" or \".dA\" or \".DA\".\n");
-                    if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
+                                          ACIPString.WARNING));
                 }
                 startOfString = i+1;
                 break; // end '.' case
@@ -832,16 +839,11 @@ public class ACIPTshegBarScanner {
             if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
         }
         if (!bracketTypeStack.empty()) {
-            al.add(new ACIPString("UNEXPECTED END OF INPUT",
+            al.add(new ACIPString("Unmatched open bracket found.  A " + ((ACIPString.COMMENT == currentType) ? "comment" : "correction") + " does not terminate.",
                                   ACIPString.ERROR));
             if (null != errors) {
-                if (ACIPString.COMMENT == currentType) {
-                    errors.append("Offset END: "
-                                  + "Unmatched open bracket found.  A comment does not terminate.\n");
-                } else {
-                    errors.append("Offset END: "
-                                  + "Unmatched open bracket found.  A correction does not terminate.\n");
-                }
+                errors.append("Offset END: "
+                              + "Unmatched open bracket found.  A " + ((ACIPString.COMMENT == currentType) ? "comment" : "correction") + " does not terminate.\n");
             }
             if (maxErrors >= 0 && ++numErrors >= maxErrors) return null;
         }

@@ -38,24 +38,23 @@ public class ACIPConverter {
         ThdlOptions.setUserPreference("thdl.debug", true);
     }
 
+    // DLC NOW: (KA)'s info is lost when you convert to Unicode text instead of Unicode RTF.  Give an ERROR.
+
     /** Command-line converter.  Gives error messages on standard
      *  output about why we can't convert the document perfectly and
      *  exits with non-zero return code, or is silent otherwise and
      *  exits with code zero.  <p>FIXME: not so efficient; copies the
      *  whole file into memory first. */
     public static void main(String[] args)
-        throws IOException // DLC FIXME: give nice error messages
+        throws IOException
     {
         boolean verbose = true;
-        boolean strict = true;
-        if (args.length != 2
-            || (!(strict = "--strict".equals(args[0])) && !"--lenient".equals(args[0]))) {
-            System.err.println("Bad args!  Need '--strict filename' or '--lenient filename'.");
-            System.exit(1);
+        if (args.length != 1) {
+            System.out.println("Bad args!  Need just the name of the ACIP text file.");
         }
         StringBuffer errors = new StringBuffer();
         int maxErrors = 250;
-        ArrayList al = ACIPTshegBarScanner.scanFile(args[1], errors, strict, maxErrors - 1);
+        ArrayList al = ACIPTshegBarScanner.scanFile(args[0], errors, maxErrors - 1);
 
         if (null == al) {
             System.err.println(maxErrors + " or more lexical errors occurred while scanning ACIP input file; is this");
@@ -69,7 +68,7 @@ public class ACIPConverter {
             System.err.println("Exiting with " + maxErrors + " or more lexical errors; please fix input file and try again.");
             System.exit(1);
         }
-        final boolean abortUponScanningError = false; // DLC MAKE ME CONFIGURABLE
+        final boolean abortUponScanningError = false;
         // DLC NOW: BAo isn't converting.
         if (errors.length() > 0) {
             System.err.println("Errors scanning ACIP input file: ");
@@ -80,10 +79,15 @@ public class ACIPConverter {
             }
         }
 
-        StringBuffer warnings = new StringBuffer();
-        boolean putWarningsInOutput = true; // DLC make me configurable.
+        String warningLevel = "Most"; // DLC make me configurable.
+        StringBuffer warnings = null;
+        boolean putWarningsInOutput = false;
+        if ("None" != warningLevel) {
+            warnings = new StringBuffer();
+            putWarningsInOutput = true;
+        }
         convertToUnicode(al, System.out, errors, warnings,
-                         putWarningsInOutput);
+                         putWarningsInOutput, warningLevel);
         if (errors.length() > 0) {
             System.err.println("Errors converting ACIP input file: ");
             System.err.println(errors);
@@ -91,14 +95,14 @@ public class ACIPConverter {
             System.err.println("Exiting; please fix input file and try again.");
             System.exit(2);
         }
-        if (warnings.length() > 0) {
+        if (null != warnings && warnings.length() > 0) {
             System.err.println("Warnings converting ACIP input file: ");
             System.err.println(warnings);
             if (putWarningsInOutput)
                 System.err.println("The output contains these warnings.");
             System.exit(2);
         }
-        if (verbose) System.err.println("Converted " + args[1] + " perfectly.");
+        if (verbose) System.err.println("Converted " + args[0] + " perfectly.");
         System.exit(0);
     }
 
@@ -131,16 +135,17 @@ public class ACIPConverter {
     public static String convertToUnicode(String acip,
                                           StringBuffer errors,
                                           StringBuffer warnings,
-                                          boolean writeWarningsToResult) {
+                                          boolean writeWarningsToResult,
+                                          String warningLevel) {
         ByteArrayOutputStream sw = new ByteArrayOutputStream();
-        ArrayList al = ACIPTshegBarScanner.scan(acip, errors, true /* DLC FIXME */, -1);
+        ArrayList al = ACIPTshegBarScanner.scan(acip, errors, -1);
         try {
             if (null != al
                 && convertToUnicode(al, sw, errors,
-                                    warnings, writeWarningsToResult)) {
+                                    warnings, writeWarningsToResult,
+                                    warningLevel)) {
                 return sw.toString("UTF-8");
             } else {
-                System.out.println("DLC al is " + al + " and convertToUnicode returned null.");
                 return null;
             }
         } catch (Exception e) {
@@ -151,8 +156,8 @@ public class ACIPConverter {
     /** Writes Unicode to out.  If errors occur in converting a tsheg
      *  bar, then they are appended to errors if errors is non-null.
      *  Furthermore, errors are written to out.  If writeWarningsToOut
-     *  is true, then warnings also will be written to out.  Returns
-     *  true upon perfect success, false if errors occurred.
+     *  is true, then warnings also will be written to out.
+     *  @return true upon perfect success, false if errors occurred.
      *  @param scan result of ACIPTshegBarScanner.scan(..)
      *  @param out stream to which to write converted text
      *  @param errors if non-null, all error messages are appended
@@ -166,7 +171,8 @@ public class ACIPConverter {
                                            OutputStream out,
                                            StringBuffer errors,
                                            StringBuffer warnings,
-                                           boolean writeWarningsToOut)
+                                           boolean writeWarningsToOut,
+                                           String warningLevel)
         throws IOException
     {
         int sz = scan.size();
@@ -181,8 +187,18 @@ public class ACIPConverter {
                 writer.write("[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: ");
                 writer.write(s.getText());
                 writer.write("]");
+            } else if (stype == ACIPString.WARNING) {
+                if (writeWarningsToOut) {
+                    writer.write("[#WARNING CONVERTING ACIP DOCUMENT: Lexical warning: ");
+                    writer.write(s.getText());
+                    writer.write("]");
+                }
+                if (null != warnings) {
+                    warnings.append("Warning: Lexical warning: ");
+                    warnings.append(s.getText());
+                    warnings.append('\n');
+                }
             } else {
-                // DLC FIXME: what about 'no A on root stack' and 'no A on such-and-such stack' warnings?
                 if (s.isLatin(stype)) {
                     if (stype == ACIPString.FOLIO_MARKER)
                         writer.write("{");
@@ -219,7 +235,7 @@ public class ACIPConverter {
                                         errors.append(errorMessage + "\n");
                                 } else {
                                     String warning
-                                        = pt.getWarning(false, // DLC: make me configurable
+                                        = pt.getWarning(warningLevel,
                                                         pl,
                                                         s.getText());
                                     if (null != warning) {
@@ -234,7 +250,7 @@ public class ACIPConverter {
                                         }
                                     }
                                     unicode = sl.getUnicode();
-                                    if (null == unicode) throw new Error("DLC: HOW?");
+                                    if (null == unicode) throw new Error("FIXME: make this an assertion");
                                 }
                             }
                         }
@@ -245,7 +261,7 @@ public class ACIPConverter {
                             unicode = "\u0F3D";
                         else
                             unicode = ACIPRules.getUnicodeFor(s.getText(), false);
-                        if (null == unicode) throw new Error("DLC: HOW?");
+                        if (null == unicode) throw new Error("FIXME: make this an assertion");
                     }
                     if (null != unicode) {
                         writer.write(unicode);

@@ -37,5 +37,6 @@ interface FontConversion
         whichConversion, which must be one of the known conversions.
         @return true on success, false otherwise */
     boolean doConversion(ConvertDialog cd, File oldFile,
-                         File newFile, String whichConversion);
+                         File newFile, String whichConversion,
+                         String warningLevel);
 }

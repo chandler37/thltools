@@ -372,6 +372,9 @@ public class DuffPaneTest extends TestCase {
         ensureKeysGiveCorrectWylie("bskyUMbs");
         ensureKeysGiveCorrectWylie("bskyUMbsHgro ");
 
+        ensureKeysGiveCorrectWylie("gyurd", "gyurda");
+        ensureKeysGiveCorrectWylie("gyur.d");
+
         ensureKeysGiveCorrectWylie("favakakhagangacachajanyatathadanapaphabamatsatshadzawazhaza'ayaralashasahaTaThaDaNaSha");
         ensureKeysGiveCorrectWylie("fevekekhegengecechejenyetethedenepephebemetsetshedzewezheze'eyerelesheseheTeTheDeNeShe");
         ensureKeysGiveCorrectWylie("fuvukukhugungucuchujunyututhudunupuphubumutsutshudzuwuzhuzu'uyurulushusuhuTuThuDuNuShu");

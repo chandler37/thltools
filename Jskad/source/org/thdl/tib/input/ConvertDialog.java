@@ -46,11 +46,13 @@ class ConvertDialog extends JDialog
 
     JComboBox choices;
 
+    private JComboBox warningLevels;
+
     JTextField oldTextField, newTextField;
 
     JButton browseOld, browseNew, convert, cancel, openDocOld, openDocNew, about;
 
-    JLabel type, oldLabel, newLabel;
+    JLabel oldLabel, newLabel;
 
     String[] choiceNames;
 
@@ -68,6 +70,12 @@ class ConvertDialog extends JDialog
             public void theRealActionPerformed(ActionEvent e) {
                 ConvertDialog.this.theRealActionPerformed(e);
             }};
+    private void updateWarningLevels() {
+        if (choices.getSelectedItem() == ACIP_TO_UNI)
+            this.warningLevels.enable();
+        else
+            this.warningLevels.disable();
+    }
     private void init()
     {
         jfc = new JFileChooser(controller.getDefaultDirectory());
@@ -76,9 +84,17 @@ class ConvertDialog extends JDialog
 
         content = new JPanel(new GridLayout(0,1));
         JPanel temp = new JPanel(new FlowLayout(FlowLayout.CENTER,5,5));
-        type = new JLabel("Type of Conversion: ");
-        temp.add(type);
+        temp.add(new JLabel("Type of Conversion: "));
         temp.add(choices);
+        temp.add(Box.createHorizontalStrut(20));
+        temp.add(new JLabel("Warning Level: "));
+        this.warningLevels
+            = new JComboBox(new String[] { "None", "Some", "Most", "All" });
+        this.warningLevels.setSelectedItem("Most");
+        this.warningLevels.addActionListener(tal);
+        updateWarningLevels();
+
+        temp.add(warningLevels);
         content.add(temp);
 
         temp = new JPanel(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -260,7 +276,8 @@ class ConvertDialog extends JDialog
                 controller.doConversion(this,
                                         origFile,
                                         convertedFile,
-                                        (String)choices.getSelectedItem());
+                                        (String)choices.getSelectedItem(),
+                                        (String)warningLevels.getSelectedItem());
             } catch (OutOfMemoryError e) {
                 JOptionPane.showMessageDialog(this,
                                               "The converter ran out of memory.  Please give the\nJVM more memory by using java -XmxYYYm where YYY\nis the amount of memory your system has, or\nsomething close to it.  E.g., try\n'java -Xmx512m -jar Jskad.jar'.",
@@ -316,7 +333,11 @@ class ConvertDialog extends JDialog
                                           "About",
                                           JOptionPane.PLAIN_MESSAGE);
         } else if (cmd.equals("comboBoxChanged")) {
-            updateNewFileGuess();
+            JComboBox src = (JComboBox)ae.getSource();
+            if (src == choices) {
+                updateNewFileGuess();
+                updateWarningLevels();
+            }
         }
     }
 
@@ -400,7 +421,7 @@ class ConvertDialog extends JDialog
         } else { // conversion {to Wylie or TM} mode
             if (TMW_TO_WYLIE == ct) {
                 newFileNamePrefix = suggested_WYLIE_prefix;
-            } else if (TMW_TO_UNI == ct) {
+            } else if (TMW_TO_UNI == ct || ACIP_TO_UNI == ct) {
                 newFileNamePrefix = suggested_TO_UNI_prefix;
             } else if (TM_TO_TMW == ct) {
                 newFileNamePrefix = suggested_TO_TMW_prefix;
