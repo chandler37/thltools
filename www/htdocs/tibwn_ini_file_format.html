@@ -57,7 +57,8 @@
   href="http://iris.lib.virginia.edu/tibet/tools/jskad.html">Jskad</a>
   and <a
   href="http://iris.lib.virginia.edu/tibet/tools/wyword.html">WylieWord</a>
-  both make use of a data file named <code>tibwn.ini</code>.&nbsp;
+  both make use of a data file named <a
+  href="http://cvs.sourceforge.net/viewcvs.py/thdltools/Jskad/source/org/thdl/tib/text/tibwn.ini?view=markup"><code>tibwn.ini</code></a>.&nbsp;
   This document concerns the structure and content of that data file.
 </p>
 
@@ -264,7 +265,19 @@ __TILDE__^~91,5~~9,89~~~~~~~0F82
     corresponds to a <a href="#tmwindex">Tibetan Machine Web font</a>
     and <i>ord</i> tells which Tibetan Machine Web glyph this line
     describes.&nbsp; No two rows of data may have the same value for
-    this column.
+    this column.&nbsp; (Note that TMW is a superset of TM, so there is
+    one glyph in TM that could reasonably appear twice, mapped to both
+    TibetanMachineWeb7.90 and TMW7.91.)&nbsp; <i>But note that Jskad
+    etc. must deal with a superset of TMW -- such as when converting
+    the ACIP {<tt>W+W+W+KA</tt>} into Unicode -- and thus cannot
+    internally use the TMW glyph alone to represent arbitrary Tibetan
+    text.&nbsp; And the Extended Wylie Transliteration is not a unique
+    key either; see, e.g., the many glyphs that EWTS
+    {<tt>r</tt>}.&nbsp; For this reason, a smart tool uses the pair
+    (EWTS,&nbsp;TMW) as an internal representation.&nbsp; (In Jskad,
+    this is done in a way that's hard to understand, but it is done --
+    see, e.g., the code implementing the TMW-&gt;ACIP conversion of
+    TibetanMachineWeb7.69.)</i>
   </li>
 
   <li>
