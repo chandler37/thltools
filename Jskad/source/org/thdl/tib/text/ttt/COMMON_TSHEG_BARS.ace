@@ -1748,11 +1748,6 @@ DKRIS [# DKRIS 995]
 
 'GRO'O [# 'GRO'O 997]
 
-    }
-
-
-    /** Tests the tsheg bars that appear [1000, 9999] times. */
-    public void test1000to9999() {
 GRI [# GRI 1002]
 
 KHUNG [# KHUNG 1004]
@@ -3433,10 +3428,6 @@ BTANG [# BTANG 9779]
 
 MONG [# MONG 9896]
 
-    }
-
-    /** Tests the tsheg bars that appear [10000, 99999] times. */
-    public void test10000to99999() {
 SMON [# SMON 10060]
 
 NYER [# NYER 10081]
@@ -4203,10 +4194,6 @@ BYAS [# BYAS 99364]
 
 GSUM [# GSUM 99974]
 
-    }
-
-    /** Tests the tsheg bars that appear 100,000 or more times. */
-    public void test100000toInf() {
 DGE [# DGE 101072]
 
 BSTAN [# BSTAN 102835]
