@@ -68,10 +68,8 @@ public class ThdlUserRepository
 	 * @return                                  Description of the Return Value
 	 * @exception  ThdlUserRepositoryException  Description of the Exception
 	 */
-	public ThdlUser validate( ThdlUser user ) throws ThdlUserRepositoryException
+	public ThdlUser validate( ThdlUser user ) throws ThdlUserRepositoryException, SQLException
 	{
-		try
-		{
 			ThdlUser thdlUser = null;
 			String sql = "SELECT id, firstname, lastname, middlename, email, username, creditAttributionTag, password, passwordHint "
 					 + "FROM ThdlUsers "
@@ -103,11 +101,6 @@ public class ThdlUserRepository
 			}
 			con.close();
 			return thdlUser;
-		}
-		catch ( SQLException sqle )
-		{
-			throw new ThdlUserRepositoryException( sqle );
-		}
 	}
 
 
