@@ -36,7 +36,7 @@ public class QDShell extends JFrame {
 
 	public static void main(String[] args) {
 		try {
-			ThdlDebug.attemptToSetUpLogFile("qd.log");
+			ThdlDebug.attemptToSetUpLogFile("qd", ".log");
 
 			Locale locale;
 

@@ -46,7 +46,7 @@ public class SavantShell extends JFrame
 
 	public static void main(String[] args) {
 		try {
-			ThdlDebug.attemptToSetUpLogFile("savant.log");
+			ThdlDebug.attemptToSetUpLogFile("savant", ".log");
 
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
