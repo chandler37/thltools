@@ -1,17 +1,17 @@
 /*
 The contents of this file are subject to the THDL Open Community License
 Version 1.0 (the "License"); you may not use this file except in compliance
-with the License. You may obtain a copy of the License on the THDL web site 
+with the License. You may obtain a copy of the License on the THDL web site
 (http://www.thdl.org/).
 
-Software distributed under the License is distributed on an "AS IS" basis, 
-WITHOUT WARRANTY OF ANY KIND, either express or implied. See the 
-License for the specific terms governing rights and limitations under the 
-License. 
+Software distributed under the License is distributed on an "AS IS" basis,
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+License for the specific terms governing rights and limitations under the
+License.
 
 The Initial Developer of this software is the Tibetan and Himalayan Digital
 Library (THDL). Portions created by the THDL are Copyright 2001 THDL.
-All Rights Reserved. 
+All Rights Reserved.
 
 Contributor(s): ______________________________________.
 */
@@ -134,7 +134,7 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 					setLayout(new GridLayout(1,1));
 					vPanel = new JPanel();
 					vPanel.setLayout( new BorderLayout() );
-					if ((visualComponent = player.getVisualComponent())!= null)	
+					if ((visualComponent = player.getVisualComponent())!= null)
 						vPanel.add("Center", visualComponent);
 					else
 						isMediaAudio = true;
@@ -188,7 +188,7 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 				a RestartingEvent, and if I set the media time here it messes up
 				and barely plays at all (maybe because it cancels the previously
 				set media time? - I don't know).
-			
+
 				but it seems that if you press the play/pause button on the
 				control widget, then you need to set the media time upon stop
 				(probably because of problem noted below, namely that you get
@@ -262,6 +262,7 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 		if (from == null || player == null)
 			throw new SmartMoviePanelException("no player or video still loading");
 
+
 		final Time startTime = new Time(from.longValue() * 1000000);
 		try {
 			if (player.getState() == Controller.Started)
@@ -275,7 +276,9 @@ public class SmartJMFPlayer extends SmartMoviePanel implements ControllerListene
 				stopTime = new Time(to.longValue() * 1000000);
 				player.setStopTime(stopTime);
 			}
-			player.setMediaTime(startTime);
+			System.out.println("AAAAA: "+from.toString());
+			//player.setMediaTime(startTime);
+			player.setMediaTime(new Time(0));
 			player.prefetch();
 			player.start();
 		} catch(NotRealizedError err) {
