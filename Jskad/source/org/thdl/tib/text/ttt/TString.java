@@ -18,6 +18,10 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
+import org.thdl.util.ThdlOptions;
+
+import java.util.HashSet;
+
 /**
 * An TString is some Latin text and a type, the type stating whether
 * said text is Latin (usually English) or transliteration of Tibetan,
@@ -118,10 +122,38 @@ public class TString {
      *  <i>type</i> being a characterization like {@link #DD}. */
     public TString(String text, int type) {
         setType(type);
-        setText((TIBETAN_NON_PUNCTUATION == type)
-                ? MidLexSubstitution.getFinalValueForTibetanNonPunctuationToken(text)
-                : text);
+        String ftext = (TIBETAN_NON_PUNCTUATION == type)
+            ? MidLexSubstitution.getFinalValueForTibetanNonPunctuationToken(text)
+            : text;
+        setText(ftext);
+        if ((outputAllTshegBars || outputUniqueTshegBars) && TIBETAN_NON_PUNCTUATION == type)
+            outputTshegBar(ftext);
     }
+
+    /** Prints x to standard output if and only if we have never
+        encountered x before. */
+    private static void outputTshegBar(String x) {
+        if (outputAllTshegBars) {
+            System.out.println(outputTshegBarsPrefix + x);
+        } else if (outputUniqueTshegBars) {
+            if (!tshegBars.contains(x)) {
+                tshegBars.add(x);
+                System.out.println(outputTshegBarsPrefix + x);
+            }
+        }
+    }
+
+    private static boolean outputAllTshegBars
+        = ThdlOptions.getBooleanOption("org.thdl.tib.text.ttt.OutputAllTshegBars"); // DLC DOC -- use me to generate frequency info
+
+    private static boolean outputUniqueTshegBars
+        = ThdlOptions.getBooleanOption("org.thdl.tib.text.ttt.OutputUniqueTshegBars"); // DLC DOC
+
+    private static String outputTshegBarsPrefix
+        = ThdlOptions.getStringOption("org.thdl.tib.text.ttt.PrefixForOutputTshegBars", ""); // DLC DOC
+
+    private static final HashSet tshegBars = new HashSet();
+
     public String toString() {
         String typeString = "HUH?????";
         if (type == COMMENT) typeString = "COMMENT";
