@@ -43,7 +43,7 @@ import org.thdl.util.StatusBar;
 * @author Edward Garrett, Tibetan and Himalayan Digital Library
 * @version 1.0
 */
-public class DuffPane extends TibetanPane implements FocusListener, KeyListener {
+public class DuffPane extends TibetanPane implements FocusListener {
 /** 
 * The status bar to update with messages about the current input mode.
 * Are we expecting a vowel? a subscript? et cetera.
@@ -285,7 +285,7 @@ public class DuffPane extends TibetanPane implements FocusListener, KeyListener 
 	private void setupEditor() {
 		rtfBoard = getToolkit().getSystemClipboard();
 
-        newDocument();
+		newDocument();
 
 		romanFontFamily = ThdlOptions.getStringOption("thdl.default.roman.font.face",
                                                       "Serif"); // FIXME write out this preference.
@@ -294,9 +294,14 @@ public class DuffPane extends TibetanPane implements FocusListener, KeyListener 
 
 		caret = getCaret();
 
-		addKeyListener(this);
 		addFocusListener(this);
-		
+		addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent kev) {
+				if (kev.isActionKey() || kev.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+					initKeyboard();
+			}
+		});
+
 		setupKeymap(); 
 	}
 
@@ -1135,44 +1140,6 @@ public void paste(int offset) {
 */
 	public void disableCutAndPaste() {
 		isCutAndPasteEnabled = false;
-	}
-						
-
-/**
-* Required by contract with the KeyListener interface,
-* this method initializes the keyboard
-* when an action key is pressed. It leaves the
-* behavior up to the Keymap of this DuffPane.
-*/
-	public void keyPressed(KeyEvent e) {
-        // FIXME: exceptions thrown here do not cause the program to fail, even in development mode.
-
-		if (e.isActionKey())
-			initKeyboard();
-	}
-
-
-/**
-* Required by contract with the KeyListener interface,
-* this method does nothing.
-*
-* @param e a KeyEvent
-*/
-	public void keyTyped(KeyEvent e) { }
-	
-
-/**
-* Required by contract with the Key Listener interface,
-* this method initializes the keyboard if the user presses
-* backspace.
-*
-* @param e the KeyEvent
-*/
-	public void keyReleased(KeyEvent e) {
-        // FIXME: exceptions thrown here do not cause the program to fail, even in development mode.
-
-		if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
-			initKeyboard();
 	}
 
 	private void processRomanChar(String key, MutableAttributeSet attSet) {
