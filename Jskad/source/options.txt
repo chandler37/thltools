@@ -73,6 +73,11 @@ thdl.Jskad.initial.status.message = Welcome to Jskad\!
 # not be saved if this is true.)
 thdl.Jskad.do.not.confirm.quit = false
 
+# If this is false, then upon opening any RTF document, Jskad will
+# replace the characters '{', '}', and '\' in the font 'Tahoma' with
+# the correct Tibetan Machine Web glyphs.
+thdl.Jskad.do.not.fix.curly.braces.in.rtf = false
+
 
 ############################################################################
 #######################    Developer Preferences    ########################

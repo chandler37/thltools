@@ -695,6 +695,9 @@ public class Jskad extends JPanel implements DocumentListener {
                     newFrame.dispose();
                     numberOfTibsRTFOpen--;
                 } else {
+                    if (!ThdlOptions.getBooleanOption("thdl.Jskad.do.not.fix.curly.braces.in.rtf")) {
+                        ((TibetanDocument)newRTF.dp.getDocument()).replaceTahomaCurlyBracesAndBackslashes(0, -1);
+                    }
                     newRTF.dp.getDocument().addDocumentListener(newRTF);
                     newFrame.setTitle("Jskad: " + f_name);
                     newRTF.fileName = new String(f_name);
@@ -718,6 +721,9 @@ public class Jskad extends JPanel implements DocumentListener {
 
                 in.close();
                 if (!error) {
+                    if (!ThdlOptions.getBooleanOption("thdl.Jskad.do.not.fix.curly.braces.in.rtf")) {
+                        ((TibetanDocument)dp.getDocument()).replaceTahomaCurlyBracesAndBackslashes(0, -1);
+                    }
                     dp.getCaret().setDot(0);
                     dp.getDocument().addDocumentListener(Jskad.this);
                     hasChanged = false;

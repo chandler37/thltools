@@ -131,8 +131,12 @@ public class TibetanDocument extends DefaultStyledDocument {
 * @see #setTibetanFontSize(int size)
 */
 	public void appendDuff(int offset, String s, MutableAttributeSet attr) {
+        appendDuff(tibetanFontSize, offset, s, attr);
+    }
+
+    private void appendDuff(int fontSize, int offset, String s, MutableAttributeSet attr) {
 		try {
-			StyleConstants.setFontSize(attr, tibetanFontSize);
+			StyleConstants.setFontSize(attr, fontSize);
 			insertString(offset, s, attr);
 		}
 		catch (BadLocationException ble) {
@@ -146,13 +150,17 @@ public class TibetanDocument extends DefaultStyledDocument {
 * @param pos the position at which you want to insert text
 */
 	public int insertDuff(int pos, DuffData[] glyphs) {
+        return insertDuff(tibetanFontSize, pos, glyphs);
+	}
+
+	private int insertDuff(int fontSize, int pos, DuffData[] glyphs) {
 		if (glyphs == null)
 			return pos;
 
 		MutableAttributeSet mas;
 		for (int i=0; i<glyphs.length; i++) {
 			mas = TibetanMachineWeb.getAttributeSet(glyphs[i].font);
-			appendDuff(pos, glyphs[i].text, mas);
+			appendDuff(fontSize, pos, glyphs[i].text, mas);
 			pos += glyphs[i].text.length();
 		}
 		return pos;
@@ -368,7 +376,13 @@ public class TibetanDocument extends DefaultStyledDocument {
                         break;
                     }
                     if (null != toReplaceWith) {
-                        insertDuff(i, toReplaceWith);
+                        int fontSize = tibetanFontSize;
+                        try {
+                            fontSize = ((Integer)getCharacterElement(i).getAttributes().getAttribute(StyleConstants.FontSize)).intValue();
+                        } catch (Exception e) {
+                            // leave it as tibetanFontSize
+                        }
+                        insertDuff(fontSize, i, toReplaceWith);
                         remove(i+1, 1);
                     }
                 }
