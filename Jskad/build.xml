@@ -125,7 +125,27 @@ Contributor(s): ______________________________________.
   <property name="j2ee.sdk.home" location="F:\Program Files\j2sdkee1.3.1\lib"/>
   <property name="tomcat.servlet.jar"
             location="d:\lenguaje\jakarta-tomcat-3.2.1\lib\servlet.jar"/>
+  
+<!-- Attributes used for debugging the servlet version of the translation tool within Netbeans IDE. Probably can be generalized -->
+  <property name="tt.debug.path"
+            location="C:\Documents and Settings\Andres Montano\My Documents\docs-misc\java\DictionarySearch\tibetan\WEB-INF\lib"/>    
+  <property name="tt.debug.url"
+            value="http://localhost:8084/tibetan/"/>            
+  <property name="tt.debug.jpda.host"
+            value="localhost"/>
+            
+<!-- If debugging by shared memory             
+  <property name="tt.debug.jpda.address"
+            value="tomcat_shared_memory_id"/>
+  <property name="tt.debug.jpda.transport"
+            value="dt_shmem"/>-->
 
+<!-- If debugging by socket -->
+  <property name="tt.debug.jpda.address"
+            value="11555"/>
+  <property name="tt.debug.jpda.transport"
+            value="dt_socket"/>
+                        
   <!-- Set to true for more output when running the tools and if you
        want the code to abort when it reaches poorly thought-out
        control flow paths (i.e., iffy code).
@@ -977,7 +997,42 @@ Contributor(s): ______________________________________.
     </java>
   </target>
 
+    <target name="ttsc-debug" depends="tt-standalone-compile" description="debug the standalone translation tool">
+      <fail unless="netbeans.home">This target can only run inside the NetBeans IDE.</fail>
+        <nbjpdastart name="the standalone translation tool" addressproperty="jpda.address" transport="dt_socket">
+            <classpath path="${lib}/DictionarySearchStandalone${my.jar.suffix}.jar"/>
+             <!-- Optional - If source roots are properly declared in project, should
+                      work without setting source path. -->
+             <sourcepath path="${source}"/>
+        </nbjpdastart>            
 
+        <java classname="org.thdl.tib.scanner.SwingWindowScannerFilter" fork="true">
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xnoagent"/>
+            <jvmarg value="-Djava.compiler=none"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jpda.address}"/>
+          <classpath>
+            <pathelement
+              location="${lib}/DictionarySearchStandalone${my.jar.suffix}.jar"/>
+            <path refid="entire.class.path"/>
+          </classpath>
+        </java>
+    </target>    
+    
+    <target name="tt-servlet-debug" depends="tt-servlet-deploy" if="netbeans.home" description="Debugs translation tool servlet version">
+        <nbjpdaconnect name="Translation tool servlet" host="${tt.debug.jpda.host}" address="${tt.debug.jpda.address}" transport="${tt.debug.jpda.transport}">
+              <classpath path="${tt.debug.path}\DictionarySearchServlet${my.jar.suffix}.jar"/>
+              <sourcepath path="${source}"/>
+        </nbjpdaconnect>
+        <nbbrowse url="${tt.debug.url}"/>
+    </target>    
+
+    <target name="tt-servlet-deploy" depends="tt-servlet-dist" description="copies formed jar into appropriate folder for tomcat to see.">
+        <delete file= "${tt.debug.path}\DictionarySearchServlet${my.jar.suffix}.jar"/>    
+        <copy file = "${lib}\DictionarySearchServlet${my.jar.suffix}.jar" todir="${tt.debug.path}"/>
+    </target>    
+    
+    
   <!-- DLC FIXME: build the tt-servlet release if the J2EE SDK is present. UPDATE: doesn't it do this? -->
   <!-- See http://thdltools.sf.net/BuildSystems.html for info on
        how to use this target.  Note that we must do a distclean
@@ -1155,7 +1210,6 @@ Contributor(s): ______________________________________.
       </fileset>
     </copy>
   </target>
-
 
   <!-- To avoid duplicating very similar compilation tasks, we antcall
        this task.  We do this once per class we want, and javac is
