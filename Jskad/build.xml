@@ -99,6 +99,8 @@ info on where to find these.
     <fileset dir="${ext}/drop-ins">
       <include name="*.jar"/>
       <include name="*.JAR"/>
+      <include name="*.zip"/>
+      <include name="*.ZIP"/>
     </fileset>
 
     <!-- Developers: set this on the ant command line if you need to
