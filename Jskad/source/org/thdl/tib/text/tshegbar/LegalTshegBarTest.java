@@ -279,4 +279,77 @@ public class LegalTshegBarTest extends TestCase implements UnicodeConstants {
 
         assertTrue(!LegalTshegBar.isAchungBasedSuffix(""));
     }
+
+    /** Tests that the rules concerning "which root letters take which
+     * prefixes?" are accurate.  I got a list of such rules from a
+     * native Tibetan who has been kind enough to teach me the
+     * fundamentals of the Tibetan language, but I'm not sure where he
+     * got the list.
+     */
+    public void testPrefixRules() {
+        // DLC FIXME how can we say that 0Fb2 is ok but 0fBc is not?
+        assertTrue(LegalTshegBar.takesBao(EWC_sa, EWC_ka, EWC_ra));
+        assertTrue(!LegalTshegBar.takesBao('\u0FB6', EWC_ka, EWC_ra));
+        assertTrue(!LegalTshegBar.takesBao(EWC_sa, '\u0F90', EWC_ra));
+        assertTrue(!LegalTshegBar.takesBao(EWC_sa, '\u0F90', '\u0FB2'));
+        assertTrue(!LegalTshegBar.takesBao('\u0FB6', '\u0F90', EWC_ra));
+        assertTrue(!LegalTshegBar.takesBao(EWC_sa, EWC_ka, '\u0FB2'));
+
+
+        {
+            assertTrue(LegalTshegBar.takesBao(EW_ABSENT, EWC_ka, EW_ABSENT));
+            assertTrue(LegalTshegBar.takesBao(EWC_la, EWC_da, EW_ABSENT));
+            assertTrue(LegalTshegBar.takesBao(EW_ABSENT, EWC_sa, EWC_ra));
+            assertTrue(LegalTshegBar.takesBao(EW_ABSENT, EWC_ga, EWC_ra));
+            assertTrue(LegalTshegBar.takesBao(EWC_ra, EWC_ga, EWC_ya));
+
+            assertTrue(!LegalTshegBar.takesBao(EWC_ra, EWC_da, EWC_ya));
+            assertTrue(!LegalTshegBar.takesBao(EW_ABSENT, EWC_ba, EW_ABSENT));
+            assertTrue(!LegalTshegBar.takesBao(EWC_la, EWC_nga, EW_ABSENT));
+            assertTrue(!LegalTshegBar.takesBao(EW_ABSENT, EWC_nga, EWC_ra));
+        }
+
+        {
+            assertTrue(LegalTshegBar.takesGao(EW_ABSENT, EWC_ca, EW_ABSENT));
+            assertTrue(!LegalTshegBar.takesGao(EW_ABSENT, EWC_ka, EW_ABSENT));
+            assertTrue(!LegalTshegBar.takesGao(EW_ABSENT, EWC_ka, EWC_ya));
+            assertTrue(!LegalTshegBar.takesGao(EWC_ra, EWC_ka, EW_ABSENT));
+            assertTrue(!LegalTshegBar.takesGao(EWC_ra, EWC_ka, EWC_ya));
+        }
+
+
+        {
+            assertTrue(LegalTshegBar.takesDao(EW_ABSENT, EWC_ka, EW_ABSENT));
+            assertTrue(!LegalTshegBar.takesDao(EW_ABSENT, EWC_wa, EW_ABSENT));
+            assertTrue(!LegalTshegBar.takesDao(EW_ABSENT, EWC_nga, EWC_ya));
+            assertTrue(!LegalTshegBar.takesDao(EWC_ra, EWC_ga, EW_ABSENT));
+            assertTrue(!LegalTshegBar.takesDao(EWC_ra, EWC_ga, EWC_ya));
+
+            assertTrue(LegalTshegBar.takesDao(EW_ABSENT, EWC_ga, EWC_ya));
+            assertTrue(LegalTshegBar.takesDao(EW_ABSENT, EWC_ka, EWC_ra));
+        }
+
+        {
+            assertTrue(LegalTshegBar.takesMao(EW_ABSENT, EWC_ja, EW_ABSENT));
+            assertTrue(!LegalTshegBar.takesMao(EW_ABSENT, EWC_wa, EW_ABSENT));
+            assertTrue(!LegalTshegBar.takesMao(EW_ABSENT, EWC_nga, EWC_ya));
+            assertTrue(!LegalTshegBar.takesMao(EWC_ra, EWC_ga, EW_ABSENT));
+            assertTrue(!LegalTshegBar.takesMao(EWC_ra, EWC_ga, EWC_ya));
+
+            assertTrue(LegalTshegBar.takesMao(EW_ABSENT, EWC_kha, EWC_ya));
+            assertTrue(LegalTshegBar.takesMao(EW_ABSENT, EWC_kha, EWC_ra));
+        }
+
+        {
+            assertTrue(LegalTshegBar.takesAchungPrefix(EW_ABSENT, EWC_ga, EW_ABSENT));
+            assertTrue(!LegalTshegBar.takesAchungPrefix(EW_ABSENT, EWC_ka, EW_ABSENT));
+            assertTrue(!LegalTshegBar.takesAchungPrefix(EW_ABSENT, EWC_wa, EW_ABSENT));
+            assertTrue(!LegalTshegBar.takesAchungPrefix(EW_ABSENT, EWC_nga, EWC_ya));
+            assertTrue(!LegalTshegBar.takesAchungPrefix(EWC_ra, EWC_ga, EW_ABSENT));
+            assertTrue(!LegalTshegBar.takesAchungPrefix(EWC_ra, EWC_ga, EWC_ya));
+
+            assertTrue(LegalTshegBar.takesAchungPrefix(EW_ABSENT, EWC_ba, EWC_ya));
+            assertTrue(LegalTshegBar.takesAchungPrefix(EW_ABSENT, EWC_pha, EWC_ra));
+        }
+    }
 }

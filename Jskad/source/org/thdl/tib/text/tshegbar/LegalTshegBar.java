@@ -18,6 +18,8 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.tshegbar;
 
+import java.util.Vector;
+
 import org.thdl.tib.text.THDLWylieConstants;
 import org.thdl.util.ThdlDebug;
 
@@ -42,15 +44,15 @@ import org.thdl.util.ThdlDebug;
  *  exception is that 'i (i.e., the connective case marker), 'u, and
  *  'o suffixes are permitted.</li>
  *
- *  <li>It has at most one suffix, which is a single consonant or a
- *  string consisting of 'i, 'u, 'o, 'am, and 'ang.</li>
- *
- *
-DLC FIXME: we must allow many suffixes.  See Andres' e-mail below:
+ *  <li>It has at most one suffix, which is a single consonant (the
+ *  common case) or a string consisting of 'i, 'u, 'o, 'am, and
+ *  'ang.
+
+<p>See Andres' e-mail below:</p>
 <pre>
 David,
 
-It is a particle that means "or" as opposed to "dang" that means and.
+['am] is a particle that means "or" as opposed to "dang" that means and.
 
 "sgom pa'am" would mean "... or meditation"
 
@@ -65,6 +67,7 @@ And also there are cases where they combine. For ex you can have
 
 	Andres 
 </pre>
+</li>
  *
  *
  *  <li>It may contain a EWC_sa or EWC_da postsuffix iff there exists
@@ -681,7 +684,7 @@ public final class LegalTshegBar
     }
 
     /** Like {@link
-     *  #formsLegalTshegBar(char,char,char,char,boolean,boolean,String,char,char)}
+     *  #formsLegalTshegBar(char,char,char,char,boolean,boolean,String,char,char,StringBuffer)}
      *  but geared for the common case where the suffix is simply a
      *  consonant. */
     public static boolean formsLegalTshegBar(char prefix,
@@ -1137,5 +1140,351 @@ public final class LegalTshegBar
     /** Returns a descriptive XML element. */
     public String toString() {
         return toConciseXML();
+    }
+
+    /** FIXMEDOC a shortcut */
+    private static boolean formsLegalTshegBar(Vector grcls) {
+        return formsLegalTshegBar(grcls, 0, grcls.size());
+    }
+
+    /** FIXMEDOC DLC
+     *  
+     *  Returns true iff the given UnicodeGraphemeClusters form a
+     *  syntactically legal Tibetan syllable.  If one is null, it
+     *  means that it is not present.
+     *
+     *  @exception IllegalArgumentException if root is null, or if
+     *  postsuffix is non-null and suffix is null (these being clearly
+     *  illegal)
+     */
+    private static boolean formsLegalTshegBar(UnicodeGraphemeCluster prefix,
+                                              UnicodeGraphemeCluster root,
+                                              UnicodeGraphemeCluster suffix,
+                                              UnicodeGraphemeCluster postsuffix)
+        throws IllegalArgumentException
+    {
+        // reality checks:
+        if (null == root)
+            throw new IllegalArgumentException("root letter is not present");
+        if (null != postsuffix && null == suffix)
+            throw new IllegalArgumentException("a postsuffix cannot occur without a suffix");
+
+        // handle root:
+        if (!root.isLegalTibetan())
+            return false;
+        char headLetter = root.getSuperscribedLetter();
+        char rootLetter = root.getRootCP();
+        char subjoinedLetter = root.getSoleNonWazurSubjoinedLetter();
+        char vowel = root.getVowel();
+        boolean hasAchung = root.hasAchung();
+        boolean hasWazur = root.hasWazur();
+
+        // handle prefix:
+        char prefixLetter = prefix.getSoleTibetanUnicodeCP();
+
+        // handle suffix:
+        String suffixString = null;
+        if (null != suffix) {
+            // DLC FIXME            suffixString = suffix.getUnicodeInUsualOrder();
+            throw new Error("DLC FIXME");
+        }
+
+        // handle postsuffix:
+        char postsuffixLetter = postsuffix.getSoleTibetanUnicodeCP();
+
+        return formsLegalTshegBar(prefixLetter, headLetter, rootLetter,
+                                  subjoinedLetter, hasWazur, hasAchung,
+                                  suffixString, postsuffixLetter, vowel, null);
+    }
+
+    /** Returns true iff the UnicodeGraphemeClusters in grcls with
+     *  indices in the range [start, end) form a syntactically legal
+     *  syllable.  If start is as large as end, false is returned. */
+    private static boolean formsLegalTshegBar(Vector grcls,
+                                              int start,
+                                              int end)
+    {
+        int numGrcls = start - end;
+        if (numGrcls <= 0)
+            return false;
+        if (numGrcls == 1) {
+            // Option 1: (root)
+            // else: return false;
+
+            return formsLegalTshegBar(null,
+                                      (UnicodeGraphemeCluster)grcls.elementAt(start),
+                                      null, null);
+        } else if (numGrcls == 2) {
+            // Option 1: (prefix, root)
+            // Option 2: (root, suffix)
+            // else: return false;
+
+            return (formsLegalTshegBar((UnicodeGraphemeCluster)grcls.elementAt(start),
+                                       (UnicodeGraphemeCluster)grcls.elementAt(start + 1),
+                                       null,
+                                       null)
+                    || formsLegalTshegBar(null,
+                                          (UnicodeGraphemeCluster)grcls.elementAt(start),
+                                          (UnicodeGraphemeCluster)grcls.elementAt(start + 1),
+                                          null));
+        } else if (numGrcls == 3) {
+            // Option 1: (prefix, root, suffix)
+            // Option 2: (root, suffix, postsuffix)
+            // else: return false;
+
+            return (formsLegalTshegBar((UnicodeGraphemeCluster)grcls.elementAt(start),
+                                       (UnicodeGraphemeCluster)grcls.elementAt(start + 1),
+                                       (UnicodeGraphemeCluster)grcls.elementAt(start + 2),
+                                       null)
+                    || formsLegalTshegBar(null,
+                                          (UnicodeGraphemeCluster)grcls.elementAt(start),
+                                          (UnicodeGraphemeCluster)grcls.elementAt(start + 1),
+                                          (UnicodeGraphemeCluster)grcls.elementAt(start + 2)));
+        } else if (numGrcls == 4) {
+            return (formsLegalTshegBar((UnicodeGraphemeCluster)grcls.elementAt(start),
+                                       (UnicodeGraphemeCluster)grcls.elementAt(start + 1),
+                                       (UnicodeGraphemeCluster)grcls.elementAt(start + 2),
+                                       (UnicodeGraphemeCluster)grcls.elementAt(start + 3)));
+        } else {
+            // the largest has 'i ... DLC FIXME rethink -- even the case where numGrcls == 3 could be pa'am
+            return false;
+        }
+    }
+
+
+
+    /** Returns true if the given Tibetan consonant stack (i.e., the
+     *  combination of superscribed, root, and subscribed letters)
+     *  takes an EWC_ga prefix.
+     *  @param head the {@link
+     *  isNominalRepresentationOfConsonant(char) nominal
+     *  representation} of the superscribed letter, or EW_ABSENT if
+     *  not present
+     *  @param root the {@link
+     *  isNominalRepresentationOfConsonant(char) nominal
+     *  representation} of the root letter
+     *  @param sub the {@link isNominalRepresentationOfConsonant(char)
+     *  nominal representation} of the subjoined letter, or EW_ABSENT
+     *  if not present */
+    static boolean takesGao(char head, char root, char sub) {
+        if (EW_ABSENT == head) {
+            if (EW_ABSENT == sub) {
+                return (EWC_ca == root
+                        || EWC_ta == root
+                        || EWC_da == root
+                        || EWC_tsa == root
+                        || EWC_zha == root
+                        || EWC_za == root
+                        || EWC_ya == root
+                        || EWC_sha == root
+                        || EWC_sa == root
+                        || EWC_nya == root
+                        || EWC_na == root);
+            }
+        }
+        return false;
+    }
+
+    /** Returns true if the given Tibetan consonant stack (i.e., the
+     *  combination of superscribed, root, and subscribed letters)
+     *  takes an EWC_da prefix.
+     *  @param head the {@link
+     *  isNominalRepresentationOfConsonant(char) nominal
+     *  representation} of the superscribed letter, or EW_ABSENT if
+     *  not present
+     *  @param root the {@link
+     *  isNominalRepresentationOfConsonant(char) nominal
+     *  representation} of the root letter
+     *  @param sub the {@link isNominalRepresentationOfConsonant(char)
+     *  nominal representation} of the subjoined letter, or EW_ABSENT
+     *  if not present */
+    static boolean takesDao(char head, char root, char sub) {
+        if (EW_ABSENT == head) {
+            if (EW_ABSENT == sub) {
+                return (EWC_ka == root
+                        || EWC_ga == root
+                        || EWC_nga == root
+                        || EWC_pa == root
+                        || EWC_ba == root
+                        || EWC_ma == root);
+            } else {
+                return ((EWC_ga == root && EWC_ya == sub)
+                        || (EWC_pa == root && EWC_ya == sub)
+                        || (EWC_ba == root && EWC_ya == sub)
+                        || (EWC_ma == root && EWC_ya == sub)
+
+                        || (EWC_ka == root && EWC_ra == sub)
+                        || (EWC_ga == root && EWC_ra == sub)
+                        || (EWC_ba == root && EWC_ra == sub)
+                        || (EWC_pa == root && EWC_ra == sub));
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /** Returns true if the given Tibetan consonant stack (i.e., the
+     *  combination of superscribed, root, and subscribed letters)
+     *  takes an EWC_achung prefix.
+     *  @param head the {@link
+     *  isNominalRepresentationOfConsonant(char) nominal
+     *  representation} of the superscribed letter, or EW_ABSENT if
+     *  not present
+     *  @param root the {@link
+     *  isNominalRepresentationOfConsonant(char) nominal
+     *  representation} of the root letter
+     *  @param sub the {@link isNominalRepresentationOfConsonant(char)
+     *  nominal representation} of the subjoined letter, or EW_ABSENT
+     *  if not present */
+    static boolean takesAchungPrefix(char head, char root, char sub) {
+        if (EW_ABSENT == head) {
+            if (EW_ABSENT == sub) {
+                return (EWC_ga == root
+                        || EWC_ja == root
+                        || EWC_da == root
+                        || EWC_ba == root
+                        || EWC_dza == root
+                        || EWC_kha == root
+                        || EWC_cha == root
+                        || EWC_tha == root
+                        || EWC_pha == root
+                        || EWC_tsha == root);
+            } else {
+                return ((EWC_pha == root && EWC_ya == sub)
+                        || (EWC_ba == root && EWC_ya == sub)
+                        || (EWC_kha == root && EWC_ya == sub)
+                        || (EWC_ga == root && EWC_ya == sub)
+
+                        || (EWC_ba == root && EWC_ra == sub)
+                        || (EWC_kha == root && EWC_ra == sub)
+                        || (EWC_ga == root && EWC_ra == sub)
+                        || (EWC_da == root && EWC_ra == sub)
+                        || (EWC_pha == root && EWC_ra == sub));
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /** Returns true if the given Tibetan consonant stack (i.e., the
+     *  combination of superscribed, root, and subscribed letters)
+     *  takes an EWC_ma prefix.
+     *  @param head the {@link
+     *  isNominalRepresentationOfConsonant(char) nominal
+     *  representation} of the superscribed letter, or EW_ABSENT if
+     *  not present
+     *  @param root the {@link
+     *  isNominalRepresentationOfConsonant(char) nominal
+     *  representation} of the root letter
+     *  @param sub the {@link isNominalRepresentationOfConsonant(char)
+     *  nominal representation} of the subjoined letter, or EW_ABSENT
+     *  if not present */
+    static boolean takesMao(char head, char root, char sub) {
+        if (EW_ABSENT == head) {
+            if (EW_ABSENT == sub) {
+                return (EWC_kha == root
+                        || EWC_ga == root
+                        || EWC_cha == root
+                        || EWC_ja == root
+                        || EWC_tha == root
+                        || EWC_tsha == root
+                        || EWC_da == root
+                        || EWC_dza == root
+                        || EWC_nga == root
+                        || EWC_nya == root
+                        || EWC_na == root);
+            } else {
+                return ((EWC_kha == root && EWC_ya == sub)
+                        || (EWC_ga == root && EWC_ya == sub)
+
+                        || (EWC_kha == root && EWC_ra == sub)
+                        || (EWC_ga == root && EWC_ra == sub));
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /** Returns true if the given Tibetan consonant stack (i.e., the
+     *  combination of superscribed, root, and subscribed letters)
+     *  takes an EWC_ba prefix.
+     *  @param head the {@link
+     *  isNominalRepresentationOfConsonant(char) nominal
+     *  representation} of the superscribed letter, or EW_ABSENT if
+     *  not present
+     *  @param root the {@link
+     *  isNominalRepresentationOfConsonant(char) nominal
+     *  representation} of the root letter
+     *  @param sub the {@link isNominalRepresentationOfConsonant(char)
+     *  nominal representation} of the subjoined letter, or EW_ABSENT
+     *  if not present */
+    static boolean takesBao(char head, char root, char sub) {
+        // DLC ask Ten-lo la about Wazur.
+        if (EW_ABSENT == head) {
+            if (EW_ABSENT == sub) {
+                return (EWC_ka == root
+                        || EWC_ca == root
+                        || EWC_ta == root
+                        || EWC_tsa == root
+                        || EWC_ga == root
+                        || EWC_nga == root
+                        || EWC_ja == root
+                        || EWC_nya == root
+                        || EWC_da == root
+                        || EWC_na == root
+                        || EWC_dza == root
+                        || EWC_zha == root
+                        || EWC_za == root
+                        || EWC_ra == root
+                        || EWC_la == root
+                        || EWC_sha == root);
+            } else {
+                // kra, e.g.
+                return ((EWC_ka == root && EWC_ya == sub)
+                        || (EWC_ga == root && EWC_ya == sub)
+
+                        || (EWC_ka == root && EWC_ra == sub)
+                        || (EWC_ga == root && EWC_ra == sub)
+                        || (EWC_sa == root && EWC_ra == sub)
+
+                        || (EWC_ka == root && EWC_la == sub)
+                        || (EWC_za == root && EWC_la == sub)
+                        || (EWC_ra == root && EWC_la == sub)
+                        || (EWC_sa == root && EWC_la == sub));
+            }
+        } else {
+            if (EW_ABSENT == sub) {
+                // ska, e.g.
+                return ((EWC_sa == head && EWC_ka == root)
+                        || (EWC_sa == head && EWC_ga == root)
+                        || (EWC_sa == head && EWC_nga == root)
+                        || (EWC_sa == head && EWC_nya == root)
+                        || (EWC_sa == head && EWC_ta == root)
+                        || (EWC_sa == head && EWC_da == root)
+                        || (EWC_sa == head && EWC_na == root)
+                        || (EWC_sa == head && EWC_tsa == root)
+
+                        || (EWC_ra == head && EWC_ka == root)
+                        || (EWC_ra == head && EWC_ga == root)
+                        || (EWC_ra == head && EWC_nga == root)
+                        || (EWC_ra == head && EWC_ja == root)
+                        || (EWC_ra == head && EWC_nya == root)
+                        || (EWC_ra == head && EWC_ta == root)
+                        || (EWC_ra == head && EWC_da == root)
+                        || (EWC_ra == head && EWC_na == root)
+                        || (EWC_ra == head && EWC_tsa == root)
+                        || (EWC_ra == head && EWC_dza == root)
+
+                        || (EWC_la == head && EWC_ta == root)
+                        || (EWC_la == head && EWC_da == root));
+            } else {
+                return ((EWC_ra == head && EWC_ka == root && EWC_ya == sub)
+                        || (EWC_ra == head && EWC_ga == root && EWC_ya == sub)
+                        || (EWC_sa == head && EWC_ka == root && EWC_ya == sub)
+                        || (EWC_sa == head && EWC_ga == root && EWC_ya == sub)
+                        || (EWC_sa == head && EWC_ka == root && EWC_ra == sub)
+                        || (EWC_sa == head && EWC_ga == root && EWC_ra == sub));
+            }
+        }
     }
 }
