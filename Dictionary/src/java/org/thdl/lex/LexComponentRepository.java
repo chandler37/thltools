@@ -214,18 +214,17 @@ public class LexComponentRepository
 
 		Query query = null;
 		Iterator it = null;
-		String termForQuery = null;
-		if ( lexQuery.getFindMode().equals( LexComponentRepository.EXACT ) )
+
+		String termForQuery = LexUtilities.hqlEscape( term.getTerm() );
+		LexLogger.debug( "Escaped term string: " + termForQuery );
+
+		if ( lexQuery.getFindMode().equals( LexComponentRepository.STARTS_WITH ) )
 		{
-			termForQuery = term.getTerm();
-		}
-		else if ( lexQuery.getFindMode().equals( LexComponentRepository.STARTS_WITH ) )
-		{
-			termForQuery = term.getTerm() + "%";
+			termForQuery = termForQuery + "%";
 		}
 		else if ( lexQuery.getFindMode().equals( LexComponentRepository.ANYWHERE ) )
 		{
-			termForQuery = "%" + term.getTerm() + "%";
+			termForQuery = "%" + termForQuery + "%";
 		}
 		String queryString = " FROM org.thdl.lex.component.ITerm as term WHERE term.term like '" + termForQuery + "' AND term.deleted=0 ORDER BY term.term";
 		try

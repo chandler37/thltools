@@ -72,6 +72,34 @@ public class LexUtilities
 	/**
 	 *  Description of the Method
 	 *
+	 * @param  fromString  Description of the Parameter
+	 * @return             Description of the Return Value
+	 */
+	public static String hqlEscape( String fromString )
+	{
+		HashMap map = new HashMap();
+		map.put( "'", "''" );
+		StringBuffer targetString = new StringBuffer( "" );
+		if ( null != fromString )
+		{
+			StringTokenizer tokens = new StringTokenizer( fromString, "'%_\"", true );
+			while ( tokens.hasMoreTokens() )
+			{
+				String temp = tokens.nextToken();
+				if ( map.containsKey( temp ) )
+				{
+					temp = (String) map.get( temp );
+				}
+				targetString.append( temp );
+			}
+		}
+		return targetString.toString();
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
 	 * @param  source  Description of the Parameter
 	 * @return         Description of the Return Value
 	 */
