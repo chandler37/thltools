@@ -931,7 +931,17 @@ public void paste(int offset) {
 	try {
 		Transferable contents = rtfBoard.getContents(this);
 
+/*
+		if (!isRomanEnabled) {
+			if (contents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+				String data = (String)contents.getTransferData(DataFlavor.stringFlavor);
+				toTibetanMachineWeb(data, offset);
+			}
+		} else if (contents.isDataFlavorSupported(rtfFlavor)) {
+*/
+
 		if (contents.isDataFlavorSupported(rtfFlavor)){
+
 			InputStream in = (InputStream)contents.getTransferData(rtfFlavor);
 			int p1 = offset;
 
