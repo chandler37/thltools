@@ -523,7 +523,7 @@ Contributor(s): ______________________________________.
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${ttstandalonebin}"/>
       <param name="my.included.source.file"
-             value="org/thdl/tib/scanner/WindowScannerFilter.java"/>
+             value="org/thdl/tib/scanner/SwingWindowScannerFilter.java"/>
     </antcall>
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${ttstandalonebin}"/>
@@ -560,14 +560,14 @@ Contributor(s): ______________________________________.
       <param name="target.jvm" value="1.1"/>
       <param name="mybin" value="${tthandheldbin}"/>
       <param name="my.included.source.file"
-             value="org/thdl/tib/scanner/WindowScannerFilter.java"/>
+             value="org/thdl/tib/scanner/PocketWindowScannerFilter.java"/>
     </antcall>
-    <antcall target="our-internal-javac-task">
+    <!-- <antcall target="our-internal-javac-task">
       <param name="target.jvm" value="1.1"/>
       <param name="mybin" value="${tthandheldbin}"/>
       <param name="my.included.source.file"
              value="org/thdl/tib/scanner/ConsoleScannerFilter.java"/>
-    </antcall>
+    </antcall> -->
     <antcall target="copy-license-etc-to-bin-dir-for-jarring">
       <param name="mybin" value="${tthandheldbin}"/>
     </antcall>
@@ -590,7 +590,7 @@ Contributor(s): ______________________________________.
     <antcall target="our-internal-javac-task">
       <param name="mybin" value="${ttappletjwsbin}"/>
       <param name="my.included.source.file"
-             value="org/thdl/tib/scanner/WindowScannerFilter.java"/>
+             value="org/thdl/tib/scanner/SwingWindowScannerFilter.java"/>
     </antcall>
     <antcall target="copy-ini-files-to-bin-dir-for-jarring">
       <param name="mybin" value="${ttappletjwsbin}"/>
@@ -765,7 +765,7 @@ Contributor(s): ______________________________________.
          basedir="${ttstandalonebin}">
       <manifest>
         <attribute name="Main-Class"
-                   value="org.thdl.tib.scanner.WindowScannerFilter"/>
+                   value="org.thdl.tib.scanner.SwingWindowScannerFilter"/>
       </manifest>
     </jar>
   </target>
@@ -778,7 +778,7 @@ Contributor(s): ______________________________________.
          basedir="${tthandheldbin}">
       <manifest>
         <attribute name="Main-Class"
-                   value="org.thdl.tib.scanner.WindowScannerFilter"/>
+                   value="org.thdl.tib.scanner.PocketWindowScannerFilter"/>
       </manifest>
     </jar>
   </target>
@@ -791,10 +791,10 @@ Contributor(s): ______________________________________.
          basedir="${ttappletjwsbin}">
       <!-- We have two choices here, but the web page will call for
            AppletScannerFilter, so the double-click should open the
-           standalone version, WindowScannerFilter: -->
+           standalone version, SwingWindowScannerFilter: -->
       <manifest>
         <attribute name="Main-Class"
-                   value="org.thdl.tib.scanner.WindowScannerFilter"/>
+                   value="org.thdl.tib.scanner.SwingWindowScannerFilter"/>
       </manifest>
     </jar>
   </target>
@@ -941,7 +941,7 @@ Contributor(s): ______________________________________.
   </target>
 
   <target name="tt-run" depends="tt-standalone-dist" description="runs the standalone translation tool">
-    <java classname="org.thdl.tib.scanner.WindowScannerFilter" fork="yes">
+    <java classname="org.thdl.tib.scanner.SwingWindowScannerFilter" fork="yes">
       <classpath>
         <pathelement
           location="${lib}/DictionarySearchStandalone${my.jar.suffix}.jar"/>
@@ -1277,7 +1277,8 @@ Contributor(s): ______________________________________.
   <vendor>THDL, Andres Montano Pellegrini</vendor>
   <homepage href="http://iris.lib.virginia.edu/tibet/reference/translation-tool.html" />
 
-  <description>This tool divides Tibetan language passages up into their component
+  <description>
+This tool divides Tibetan language passages up into their component
 phrases and words and displays corresponding dictionary definitions.</description>
 
   <offline-allowed/>
