@@ -237,12 +237,19 @@ public class Jskad extends JPanel implements DocumentListener {
             String whereToStart
                 = ThdlOptions.getStringOption("thdl.Jskad.working.directory",
                                               null);
-            fileChooser
-                = new JFileChooser((whereToStart == null)
-                                   ? null
-                                   : (whereToStart.equals("")
-                                      ? null
-                                      : whereToStart));
+            try {
+                fileChooser
+                    = new JFileChooser((whereToStart == null)
+                                       ? null
+                                       : (whereToStart.equals("")
+                                          ? null
+                                          : whereToStart));
+            } catch (NullPointerException e) {
+                // This weirdness happens to me when I edit .java
+                // files in the midst of an 'ant clean jskad-run':
+                System.err.println("Jskad was not cleanly compiled; please rebuild!");
+                System.exit(1);
+            }
 			rtfFilter = new RTFFilter();
 			txtFilter = new TXTFilter();
 			fileChooser.addChoosableFileFilter(rtfFilter);
@@ -484,7 +491,7 @@ public class Jskad extends JPanel implements DocumentListener {
                 }
             });
 
-        JMenuItem toUnicodeItem = new JMenuItem("Convert Tibetan to Unicode (not perfect yet)"); // DLC FIXME: do it just in the selection?
+        JMenuItem toUnicodeItem = new JMenuItem("Convert Tibetan to Unicode"); // DLC FIXME: do it just in the selection?
         toUnicodeItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
                     StringBuffer errors = new StringBuffer();
