@@ -767,9 +767,16 @@ public class ACIPTshegBarScanner {
             case ';':
             case '`':
             case '#':
+            case '%':
+            case 'x':
+            case 'o':
 
+                boolean legalTshegBarAdornment = false;
                 // The tsheg bar ends here; new token.
                 if (startOfString < i) {
+                    if (currentType == ACIPString.TIBETAN_NON_PUNCTUATION
+                        && isTshegBarAdornment(ch))
+                        legalTshegBarAdornment = true;
                     al.add(new ACIPString(s.substring(startOfString, i),
                                           currentType));
                 }
@@ -780,7 +787,8 @@ public class ACIPTshegBarScanner {
                 if (('\r' == ch
                      || ('\n' == ch && i > 0 && s.charAt(i - 1) != '\r'))
                     && !al.isEmpty()
-                    && ((ACIPString)al.get(al.size() - 1)).getType() == ACIPString.TIBETAN_NON_PUNCTUATION) {
+                    && (((ACIPString)al.get(al.size() - 1)).getType() == ACIPString.TIBETAN_NON_PUNCTUATION
+                        || ((ACIPString)al.get(al.size() - 1)).getType() == ACIPString.TSHEG_BAR_ADORNMENT)) {
                     al.add(new ACIPString(" ", ACIPString.TIBETAN_PUNCTUATION));
                 }
 
@@ -788,7 +796,8 @@ public class ACIPTshegBarScanner {
                 if (('\r' == ch
                      || ('\n' == ch && i > 0 && s.charAt(i - 1) != '\r'))
                     && !al.isEmpty()
-                    && ((ACIPString)al.get(al.size() - 1)).getType() == ACIPString.TIBETAN_PUNCTUATION
+                    && (((ACIPString)al.get(al.size() - 1)).getType() == ACIPString.TIBETAN_PUNCTUATION
+                        || ((ACIPString)al.get(al.size() - 1)).getType() == ACIPString.TSHEG_BAR_ADORNMENT)
                     && ((ACIPString)al.get(al.size() - 1)).getText().equals(",")
                     && s.charAt(i-1) == ','
                     && (i + (('\r' == ch) ? 2 : 1) < sl
@@ -804,9 +813,17 @@ public class ACIPTshegBarScanner {
                     || (realNewline
                         = ((rn = ('\n' == ch && i >= 3 && s.charAt(i-3) == '\r' && s.charAt(i-2) == '\n' && s.charAt(i-1) == '\r'))
                            || ('\n' == ch && i >= 1 && s.charAt(i-1) == '\n')))) {
-                    for (int h = 0; h < (realNewline ? 2 : 1); h++)
-                        al.add(new ACIPString(rn ? s.substring(i - 1, i+1) : s.substring(i, i+1),
-                                              ACIPString.TIBETAN_PUNCTUATION));
+                    for (int h = 0; h < (realNewline ? 2 : 1); h++) {
+                        if (isTshegBarAdornment(ch) && !legalTshegBarAdornment) {
+                            al.add(new ACIPString("The ACIP " + ch + " must be glued to the end of a tsheg bar, but this one was not",
+                                                  ACIPString.ERROR));
+                        } else {
+                            al.add(new ACIPString(rn ? s.substring(i - 1, i+1) : s.substring(i, i+1),
+                                                  (legalTshegBarAdornment
+                                                   ? ACIPString.TSHEG_BAR_ADORNMENT
+                                                   : ACIPString.TIBETAN_PUNCTUATION)));
+                        }
+                    }
                 }
                 startOfString = i+1;
                 currentType = ACIPString.ERROR;
@@ -911,14 +928,16 @@ public class ACIPTshegBarScanner {
     }
 
     /** See implementation. */
+    private static boolean isTshegBarAdornment(char ch) {
+        return (ch == '%' || ch == 'o' || ch == 'x');
+    }
+
+    /** See implementation. */
     private static boolean isAlpha(char ch) {
         return ch == '\'' // 23rd consonant
 
             // combining punctuation, vowels:
-            || ch == '%'
-            || ch == 'o'
             || ch == 'm'
-            || ch == 'x'
             || ch == ':'
             || ch == '^'
             // DLC FIXME: we must treat this guy like a vowel, a special vowel that numerals can take on.  Until then, warn.            || ch == '\\'

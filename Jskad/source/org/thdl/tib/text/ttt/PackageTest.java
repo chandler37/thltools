@@ -7171,7 +7171,13 @@ tstHelper("ZUR");
               "[TIBETAN_NON_PUNCTUATION:{K}, ERROR:{Found a Sanskrit virama, \\, but the converter currently doesn't treat these properly.  Sorry!  Please do complain to the maintainers.}, TIBETAN_PUNCTUATION:{,}]");
 
 
-        shelp("MTHAR%", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR%}]");
+        shelp("MTHAR%", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TSHEG_BAR_ADORNMENT:{%}]");
+        shelp("MTHARo", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TSHEG_BAR_ADORNMENT:{o}]");
+        shelp("MTHARx", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TSHEG_BAR_ADORNMENT:{x}]");
+
+        shelp("MTHAR\n%", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TIBETAN_PUNCTUATION:{ }, ERROR:{The ACIP % must be glued to the end of a tsheg bar, but this one was not}]");
+        shelp("MTHAR x", "", "[TIBETAN_NON_PUNCTUATION:{MTHAR}, TIBETAN_PUNCTUATION:{ }, ERROR:{The ACIP x must be glued to the end of a tsheg bar, but this one was not}]");
+
         shelp("PHYIR;", "", "[TIBETAN_NON_PUNCTUATION:{PHYIR}, TIBETAN_PUNCTUATION:{;}]");
         shelp("......,DAM ",
               "",
@@ -7254,6 +7260,10 @@ tstHelper("ZUR");
     }
 
     public void testACIPConversion() {
+        uhelp("KA%\nKHA", "\u0f40\u0f35\u0f0b\u0f41");
+        uhelp("KA%", "\u0f40\u0f35");
+        uhelp("KAo", "\u0f40[#ERROR CONVERTING ACIP DOCUMENT: This converter cannot yet convert o because the converter's author is unclear what the result should be.]");
+        uhelp("KAx", "\u0f40[#ERROR CONVERTING ACIP DOCUMENT: This converter cannot yet convert x because the converter's author is unclear what the result should be.]");
         uhelp("G+DHA", "\u0f42\u0fa2");
         uhelp("P'EE", "\u0f54\u0f71\u0f7b");
 
@@ -7284,13 +7294,11 @@ tstHelper("ZUR");
 
         uhelp("K'A:", "\u0f40\u0f71\u0f7f");
 
-        // DLC FIXME: in ACIP RTF files, (PARENTHESES) seem to make
-        // text go from 24-point to 18-point.  Thus, ACIP->Unicode.txt
-        // is fundamentally flawed, whereas ACIP->Unicode.rtf is OK.
-
         uhelp("/NY'EE/", "\u0f3C\u0f49\u0F71\u0F7B\u0f3D");
-        uhelp("*#HUm: G+DHOO GRO`;.,", "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b\u0f42\u0fa2\u0f7d\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
-        uhelp("*#HUm: K+DHA GRO`;.,", "none");
+        uhelp("*#HUm: G+DHOO GRO`;.,",
+              "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b\u0f42\u0fa2\u0f7d\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
+        uhelp("*#HUm: K+DHA GRO`;.,",
+              "\u0f04\u0f05\u0f04\u0f05\u0f05\u0f67\u0f74\u0f7e\u0f7f\u0f0b[#ERROR CONVERTING ACIP DOCUMENT: THE TSHEG BAR (\"SYLLABLE\") K+DHA IS ESSENTIALLY NOTHING.]\u0f0b\u0f42\u0fb2\u0f7c\u0f08\u0f11\u0f0c\u0f0d");
     }
 
     /** Tests some more tsheg bars, these from Dr. Lacey's critical
@@ -8860,6 +8868,9 @@ tstHelper("shKA");
     }
 }
 /* DLC FIXME: add test cases: from R0021F.ACE: ambiguous Tibetan/Sanskrit:
+
+DLC NOW: warn, in "All" mode, about each occurrence of BD, DB, DG,
+DGR, DGY, DM, GD, GN, MN (but not B+D etc.)
 
 BDA'
 B+DA

@@ -144,7 +144,7 @@ public class TMW_RTF_TO_THDL_WYLIETest extends TestCase {
     /** Tests the --to-wylie converter mode of {@link
      *  org.thdl.tib.input.TibetanConverter}. */
     public void testConverterMode() {
-        helper("--to-wylie", "Conversion", 44);
+        helper("--to-wylie", "Conversion", 0);
     }
 
     /** Tests the --to-tibetan-machine converter mode of {@link

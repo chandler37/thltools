@@ -77,9 +77,11 @@ public class ACIPString {
     public static final int END_PAREN = 16;
     /** For things that may not be legal syntax, such as {KA . KHA} */
     public static final int WARNING = 17;
+    /** For ACIP %, o, and x */
+    public static final int TSHEG_BAR_ADORNMENT = 18;
     /** For things that are not legal syntax, such as a file that
      * contains just "[# HALF A COMMEN" */
-    public static final int ERROR = 18;
+    public static final int ERROR = 19;
 
     /** Returns true if and only if this string is Latin (usually
      *  English).  Returns false if this string is transliteration of
@@ -135,6 +137,7 @@ public class ACIPString {
         if (type == START_PAREN) typeString = "START_PAREN";
         if (type == END_PAREN) typeString = "END_PAREN";
         if (type == WARNING) typeString = "WARNING";
+        if (type == TSHEG_BAR_ADORNMENT) typeString = "TSHEG_BAR_ADORNMENT";
         if (type == ERROR) typeString = "ERROR";
         return typeString + ":{" + getText() + "}";
     }

@@ -236,7 +236,7 @@ class ACIPRules {
             acipOther2wylie.put(";", ";");
             acipOther2wylie.put("*", "@");
             acipOther2wylie.put("#", "@#");
-            acipOther2wylie.put("%", "%");
+            acipOther2wylie.put("%", "~X");
             acipOther2wylie.put("&", "&");
 
             acipOther2wylie.put("0", "0");

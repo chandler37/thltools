@@ -186,10 +186,10 @@ public class ACIPConverter {
         ByteArrayOutputStream sw = new ByteArrayOutputStream();
         ArrayList al = ACIPTshegBarScanner.scan(acip, errors, -1);
         try {
-            if (null != al
-                && convertToUnicode(al, sw, errors,
-                                    warnings, writeWarningsToResult,
-                                    warningLevel)) {
+            if (null != al) {
+                convertToUnicode(al, sw, errors,
+                                 warnings, writeWarningsToResult,
+                                 warningLevel);
                 return sw.toString("UTF-8");
             } else {
                 return null;
@@ -282,6 +282,33 @@ public class ACIPConverter {
                 String text = "[#ERROR CONVERTING ACIP DOCUMENT: Lexical error: " + s.getText() + "]";
                 if (null != writer) writer.write(text);
                 if (null != tdoc) tdoc.appendRoman(text, Color.RED);
+            } else if (stype == ACIPString.TSHEG_BAR_ADORNMENT) {
+                if (lastGuyWasNonPunct) {
+                    String err = "[#ERROR CONVERTING ACIP DOCUMENT: This converter cannot yet convert " + s.getText() + " because the converter's author is unclear what the result should be.]";
+                    if (null != writer) {
+                        String uni = ACIPRules.getUnicodeFor(s.getText(), false);
+                        if (null == uni) {
+                            hasErrors = true;
+                            uni = err;
+                        }
+                        if (null != writer) writer.write(uni);
+                    }
+                    if (null != tdoc) {
+                        String wylie
+                            = ACIPRules.getWylieForACIPOther(s.getText());
+                        if (null == wylie) {
+                            hasErrors = true;
+                            tdoc.appendRoman(err, Color.RED);
+                        } else {
+                            tdoc.appendDuffCodes(new DuffCode[] { TibetanMachineWeb.getGlyph(wylie) },
+                                                 Color.BLACK);
+                        }
+                    }
+                } else {
+                    hasErrors = true;
+                }
+                lastGuyWasNonPunct = true; // this stuff is not really punctuation
+                lastGuy = null;
             } else if (stype == ACIPString.WARNING) {
                 lastGuyWasNonPunct = false;
                 lastGuy = null;
@@ -408,10 +435,10 @@ public class ACIPConverter {
                                         && (lpl = lastGuy.get(lastGuy.size() - 1)).size() == 1
                                         && lpl.get(0).getLeft().equals("G")
                                         && // it's (G . anything)
-                                           // followed by some number
-                                           // of spaces (at least one,
-                                           // this one) and then a
-                                           // comma:
+                                        // followed by some number
+                                        // of spaces (at least one,
+                                        // this one) and then a
+                                        // comma:
                                         peekaheadFindsSpacesAndComma(scan, i+1))) {
                                     if (null != writer) {
                                         unicode = "    ";
