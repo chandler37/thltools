@@ -116,7 +116,7 @@ INSERT THE BREADCRUMBS
  A HREF tags should not be applied to current page, e.g. THDL and Collections get link, Literature and Home do not. If you were on a subpage of Literature, then Literature would link to the Literature home page.
  -->
 
-	<div align="right"><font color="#000000"><A HREF="http://iris.lib.virginia.edu/tibet/index.html">THDL</A> : <A HREF="http://iris.lib.virginia.edu/tibet/tools/index.html">Tools</A> : <a href="http://iris.lib.virginia.edu/tibet/tools/software.html">Software</a> : Build Systems</a></font>
+	<div align="right"><font color="#000000"><A HREF="http://iris.lib.virginia.edu/tibet/index.html">THDL</A> : <A HREF="http://iris.lib.virginia.edu/tibet/tools/index.html">Tools</A> : <a href="http://iris.lib.virginia.edu/tibet/tools/software.html">Software</a> : TMW_RTF_TO_THDL_WYLIE</a></font>
 	</div>
 </div>
 
@@ -240,6 +240,30 @@ non-TMW character newline in the font Times New Roman appears first at location 
   <tt>'{'</tt>, <tt>'}'</tt>, and <tt>'\'</tt>.  These Tahoma
   characters are understood by the tool; they are symptoms of the
   &quot;curly-brace problem&quot;.
+</p>
+
+<p>
+  Note that some TMW glyphs have no transliteration in Exteded
+  Wylie.&nbsp; When you encounter such a glyph, you'll find a message
+  like the following in your RTF output:
+</p>
+
+<p>
+  <tt>&lt;&lt;[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert
+  DuffCode &lt;duffcode font=TibetanMachineWeb8 charNum=101
+  character=e/&gt; to THDL Extended Wylie.&nbsp; Please see the <a
+  href="http://iris.lib.virginia.edu/tibet/tools/tmw.html#doc">
+  documentation for the TMW font</a> and transcribe this
+  yourself.]]&gt;&gt;</tt>
+</p>
+
+<p>
+  Upon seeing this, you should consult the <a
+  href="http://iris.lib.virginia.edu/tibet/tools/tmw.html#doc">
+  documentation</a> for the specific TMW font named.&nbsp; Find the
+  glyph (by its charNum) and decide how to proceed.&nbsp; If you find
+  a glyph that you believe should have been converted into Extended
+  Wylie by the tool, please report this as a bug.
 </p>
 
 <h3>Invoking the Converter</h3>
