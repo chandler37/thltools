@@ -1,5 +1,5 @@
 
-<project name="Lex" default="compile" basedir="/Users/travis/webapps/lex">
+<project name="Lex" default="compile" basedir=".">
 
   <!-- Configure the directory into which the web application is built -->
 	<property name="build" value="${basedir}/build"/>
@@ -18,8 +18,8 @@
   <!-- Configure properties to access the Manager application 
   			user /pass combo should be in $TOMCAT_HOME/conf/tomcat-users.xml with managaer role.-->
 	<property name="url" value="http://localhost:2020/manager"/>
-	<property name="username" value=""/>
-	<property name="password" value=""/>
+	<property name="username" value="user"/>
+	<property name="password" value="pass"/>
 
   <!-- Configure the custom Ant tasks for the Manager application 
   			These tasks require catalina-ant.jar in $ANT_HOME/lib-->
@@ -35,7 +35,7 @@
 	<taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask"/>
 
   <!-- Configure up the classpath -->
-	<path id="lex-classpath">
+	<path id="classpath">
 		<fileset dir="${basedir}/lib">
 			<include name="**/*.jar"/>
 			<include name="compiletime/lib/javax.servlet.jar"/>
@@ -70,7 +70,7 @@
 		</copy>
 		
 		<copy todir="${build}/WEB-INF">
-			<fileset dir="${config}">
+			<fileset dir="${basedir}/config">
 				<filename name="web.xml"/>
 			</fileset>
 		</copy>
@@ -101,19 +101,17 @@
 	
 	<target name="compile" description="Compile web application" depends="copy">
 		<mkdir dir="${build}/WEB-INF/classes"/>
-		<javac srcdir="${source}/java" destdir="${build}/WEB-INF/classes" classpathref="lex-classpath" debug="on" listfiles="no"/>
+		<javac srcdir="${source}/java" destdir="${build}/WEB-INF/classes" classpathref="classpath" debug="on" listfiles="no"/>
 	</target>
 	
 	<target name="test" description="Testing" depends="compile">
-		<java classname="org.thdl.lex.LexMod" classpath="${build}/WEB-INF/classes/" classpathref="lex-classpath"/>
+		<java classname="org.thdl.lex.LexMod" classpath="${build}/WEB-INF/classes/" classpathref="classpath"/>
 	</target>
 	
 	<target name="javadoc" description="Create Javadocs">
 		<mkdir dir="${build}/docs/api"/>
-		<delete>
-			<fileset dir="${build}/docs/api/" includes="**/*"/>
-		</delete>
-		<javadoc destdir="${build}/docs/api/" classpathref="lex-classpath" author="true" version="true" use="true" windowtitle="THDL Tibetan Collaborative Dictionary API">
+		
+		<javadoc destdir="${build}/docs/api/" classpathref="classpath" author="true" version="true" use="true" windowtitle="THDL Tibetan Collaborative Dictionary API">
 			
 			<fileset dir="${source}/java" defaultexcludes="yes">
 				<include name="org/thdl/**/*.java"/>
@@ -135,6 +133,7 @@
 	</target>
 	
 	<target name="move-log" description="move old log file">
+		<mkdir dir="logs"/>
 		<tstamp prefix="now"/>
 		<touch file="${basedir}/logs/hibernate.log"/>
 		<move file="${basedir}/logs/hibernate.log" tofile="${basedir}/logs/hibernate_${now.DSTAMP}_${now.TSTAMP}.log" overwrite="true"/>
@@ -160,7 +159,7 @@
 				<include name="**/*.java"/>
 			</fileset>
 		</copy>
-		<java classname="net.sf.hibernate.tool.hbm2java.CodeGenerator" classpathref="lex-classpath" fork="yes">
+		<java classname="net.sf.hibernate.tool.hbm2java.CodeGenerator" classpathref="classpath" fork="yes">
 			<arg value="--output=${source}/java"/>
 			<arg value="--config=${basedir}/config/lex-codegen-cfg.xml"/>
 			<arg value="${source}/java/org/thdl/lex/component/LexComponent.hbm.xml"/>
@@ -189,7 +188,7 @@
 	</target>
 	
 	<target name="hbm2ddl" description="generate source code">
-		<java classname="net.sf.hibernate.tool.hbm2ddl.SchemaExport" classpathref="lex-classpath" fork="yes">
+		<java classname="net.sf.hibernate.tool.hbm2ddl.SchemaExport" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
 			</classpath>
@@ -225,7 +224,7 @@
 	</target>
 	
 	<target name="schema-update">
-		<taskdef name="schemaupdate" classname="net.sf.hibernate.tool.hbm2ddl.SchemaUpdateTask" classpathref="lex-classpath"/>
+		<taskdef name="schemaupdate" classname="net.sf.hibernate.tool.hbm2ddl.SchemaUpdateTask" classpathref="classpath"/>
 		<schemaupdate>
 			<fileset dir="src">
 				<include name="**/*.hbm.xml"/>

@@ -1,25 +1,25 @@
 package org.thdl.lex;
-
-import org.thdl.lex.component.*;
+import java.io.IOException;
+import java.util.HashMap;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.util.HashMap;
+
+import org.thdl.lex.component.*;
 
 
 /**
  *  Description of the Class
  *
- *@author     travis
- *@created    October 1, 2003
+ * @author     travis
+ * @created    October 1, 2003
  */
 public class LexComponentFilter implements Filter
 {
@@ -32,8 +32,8 @@ public class LexComponentFilter implements Filter
 	/**
 	 *  Sets the blanks attribute of the LexComponentFilter object
 	 *
-	 *@param  blanks  The new blanks value
-	 *@since
+	 * @param  blanks  The new blanks value
+	 * @since
 	 */
 	public void setBlanks( HashMap blanks )
 	{
@@ -44,8 +44,8 @@ public class LexComponentFilter implements Filter
 	/**
 	 *  Sets the sessionMgr attribute of the LexComponentFilter object
 	 *
-	 *@param  sessionMgr  The new sessionMgr value
-	 *@since
+	 * @param  sessionMgr  The new sessionMgr value
+	 * @since
 	 */
 	public void setSessionMgr( UserSessionManager sessionMgr )
 	{
@@ -56,8 +56,8 @@ public class LexComponentFilter implements Filter
 	/**
 	 *  Gets the blanks attribute of the LexComponentFilter object
 	 *
-	 *@return    The blanks value
-	 *@since
+	 * @return    The blanks value
+	 * @since
 	 */
 	public HashMap getBlanks()
 	{
@@ -68,8 +68,8 @@ public class LexComponentFilter implements Filter
 	/**
 	 *  Gets the sessionMgr attribute of the LexComponentFilter object
 	 *
-	 *@return    The sessionMgr value
-	 *@since
+	 * @return    The sessionMgr value
+	 * @since
 	 */
 	public UserSessionManager getSessionMgr()
 	{
@@ -86,9 +86,9 @@ public class LexComponentFilter implements Filter
 	/**
 	 *  Description of the Method
 	 *
-	 *@param  config                Description of Parameter
-	 *@exception  ServletException  Description of Exception
-	 *@since
+	 * @param  config                Description of Parameter
+	 * @exception  ServletException  Description of Exception
+	 * @since
 	 */
 	public void init( FilterConfig config ) throws ServletException
 	{
@@ -98,7 +98,7 @@ public class LexComponentFilter implements Filter
 			getBlanks().put( LexConstants.TERMLABEL_VALUE, new Term() );
 			getBlanks().put( LexConstants.PRONUNCIATIONLABEL_VALUE, new Pronunciation() );
 			getBlanks().put( LexConstants.ETYMOLOGYLABEL_VALUE, new Etymology() );
-			getBlanks().put( LexConstants.FUNCTIONLABEL_VALUE, new Function() );
+			getBlanks().put( LexConstants.FUNCTIONLABEL_VALUE, new GrammaticalFunction() );
 			getBlanks().put( LexConstants.SPELLINGLABEL_VALUE, new Spelling() );
 			getBlanks().put( LexConstants.ENCYCLOPEDIA_ARTICLE_LABEL_VALUE, new EncyclopediaArticle() );
 			getBlanks().put( LexConstants.DEFINITIONLABEL_VALUE, new Definition() );
@@ -108,12 +108,12 @@ public class LexComponentFilter implements Filter
 			getBlanks().put( LexConstants.KEYWORDLABEL_VALUE, new Keyword() );
 			getBlanks().put( LexConstants.RELATEDTERMLABEL_VALUE, new RelatedTerm() );
 			getBlanks().put( LexConstants.MODELSENTENCELABEL_VALUE, new ModelSentence() );
-			getBlanks().put( LexConstants.REGISTERLABEL_VALUE, new Register() );
+			getBlanks().put( LexConstants.REGISTERLABEL_VALUE, new SpeechRegister() );
 			getBlanks().put( "analyticalNote", new AnalyticalNote() );
 			getBlanks().put( "transitionalData", new TransitionalData() );
-			// getBlanks().put( LexConstants.INPUTSESSIONLABEL_VALUE, new Preferences() );
+// getBlanks().put( LexConstants.INPUTSESSIONLABEL_VALUE, new Preferences() );
 		}
-		// catch (LexComponentException labe)
+// catch (LexComponentException labe)
 		catch ( Exception labe )
 		{
 			throw new ServletException( "LABE says: " + labe.getMessage() );
@@ -124,12 +124,12 @@ public class LexComponentFilter implements Filter
 	/**
 	 *  Description of the Method
 	 *
-	 *@param  request               Description of Parameter
-	 *@param  response              Description of Parameter
-	 *@param  chain                 Description of Parameter
-	 *@exception  IOException       Description of Exception
-	 *@exception  ServletException  Description of Exception
-	 *@since
+	 * @param  request               Description of Parameter
+	 * @param  response              Description of Parameter
+	 * @param  chain                 Description of Parameter
+	 * @exception  IOException       Description of Exception
+	 * @exception  ServletException  Description of Exception
+	 * @since
 	 */
 	public void doFilter( ServletRequest request, ServletResponse response, FilterChain chain ) throws IOException, ServletException
 	{
@@ -141,12 +141,12 @@ public class LexComponentFilter implements Filter
 				String labelValue = req.getParameter( LexConstants.LABEL_REQ_PARAM );
 				try
 				{
-					// this if block is for TESTING ONLY
+// this if block is for TESTING ONLY
 					if ( getBlanks().get( labelValue ) != null )
 					{
 						Class glass = getBlanks().get( labelValue ).getClass();
 						LexComponent component = (LexComponent) glass.newInstance();
-						//component.appendDebugMap( "LCFilterMadeNewInstance", component );
+//component.appendDebugMap( "LCFilterMadeNewInstance", component );
 						req.setAttribute( LexConstants.COMPONENT_REQ_ATTR, component );
 					}
 					else
@@ -188,7 +188,7 @@ public class LexComponentFilter implements Filter
 	/**
 	 *  Description of the Method
 	 *
-	 *@since
+	 * @since
 	 */
 	public void destroy() { }
 
@@ -199,7 +199,7 @@ public class LexComponentFilter implements Filter
 	/**
 	 *  Constructor for the LexComponentFilter object
 	 *
-	 *@since
+	 * @since
 	 */
 	public LexComponentFilter() { }
 }
