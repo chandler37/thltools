@@ -22,7 +22,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
-import org.thdl.tib.input.DuffPane;
+import org.thdl.tib.input.*;
+import org.thdl.util.*;
 
 /** Graphical interfase to be used by applications and applets
 	to input a Tibetan text (in Roman or Tibetan script) and
@@ -33,7 +34,7 @@ import org.thdl.tib.input.DuffPane;
     @see WindowScannerFilter
     @see AppletScannerFilter
 */
-public class DuffScannerPanel extends ScannerPanel
+public class DuffScannerPanel extends ScannerPanel implements ItemListener
 {
 	private TextArea fullDef, txtInput;
 	private DuffPane duffInput;
@@ -46,11 +47,31 @@ public class DuffScannerPanel extends ScannerPanel
 	private DictionaryTableModel model;
 	
 	boolean showingTibetan;
+	
+    private PreferenceWindow prefWindow;
+    private Choice script, keyboard;
+    
+    /** the middleman that keeps code regarding Tibetan keyboards
+     *  clean */
+    final static JskadKeyboardManager keybdMgr;
+
+    static {
+        try {
+            keybdMgr
+                = new JskadKeyboardManager(JskadKeyboardFactory.getAllAvailableJskadKeyboards());
+        } catch (Exception e) {
+            throw new ThdlLazyException(e);
+        }
+    }
 
 	public DuffScannerPanel(String file)
 	{
-		super(file);
-		Panel panel1, panel2;
+		super(file, true);
+		Panel panel1, panel2, toolBar;
+		int i;
+		
+		prefWindow = null;
+		
 		panel2 = new Panel(new BorderLayout());
 		panel1 = getDictPanel();
 		if (panel1!=null) panel2.add (panel1, BorderLayout.NORTH);
@@ -83,8 +104,36 @@ public class DuffScannerPanel extends ScannerPanel
 		panel2.add(panel1, BorderLayout.CENTER);
 		add(panel2, BorderLayout.CENTER);
 		showingTibetan = true;
+
+		toolBar = getToolBar();
+		toolBar.setLayout(new FlowLayout());
+		toolBar.add(new Label("Display:"));
 		
-//		tibetanFont = new Font("TibetanMachine",Font.PLAIN,36);
+		script = new Choice();
+		script.add("Tibetan script");
+		script.add("Roman script");
+		toolBar.add(script);
+		script.addItemListener(this);
+		
+		toolBar.add(new Label("Keyboard:"));
+		
+		keyboard = new Choice();
+		String keyboardNames[] = keybdMgr.getIdentifyingStrings();
+		for (i=0; i<keyboardNames.length; i++)
+		    keyboard.add(keyboardNames[i]);
+		
+        int initialKeyboard
+            = ThdlOptions.getIntegerOption("thdl.default.tibetan.keyboard", 0);
+        try {
+            keyboard.select(initialKeyboard);
+        } catch (IllegalArgumentException e) {
+            initialKeyboard = 0; // good ol' Wylie
+            keyboard.select(initialKeyboard);
+        }
+        keybdMgr.elementAt(initialKeyboard).activate(duffInput);
+
+        keyboard.addItemListener(this);
+		toolBar.add(keyboard);
 	}
 
 	public void addFocusListener(FocusListener fl)
@@ -93,6 +142,29 @@ public class DuffScannerPanel extends ScannerPanel
 	    duffInput.addFocusListener(fl);
 	    fullDef.addFocusListener(fl);
 	}
+
+	public void itemStateChanged(ItemEvent e)
+	{
+	    Object obj = e.getSource();
+	    if (obj instanceof Choice)
+	    {
+	        Choice ch = (Choice) obj;
+	        if (ch == script)
+	        {
+	            boolean useTibetan = (ch.getSelectedIndex()==0); 
+	            this.setWylieInput(!useTibetan);
+	            keyboard.setEnabled(useTibetan);
+	        }
+	        else if (ch == keyboard)
+	        {
+                int ki = ch.getSelectedIndex();
+                keybdMgr.elementAt(ki).activate(duffInput);
+                ThdlOptions.setUserPreference("thdl.default.tibetan.keyboard", ki);
+			}
+	    }
+	}
+
+
 
 /*	public void printAllDefs()
 	{
@@ -203,5 +275,20 @@ public class DuffScannerPanel extends ScannerPanel
 			showingTibetan = false;
 	    }
 		table.repaint();
-	}	
+	}
+	
+    public void setPreferences()
+    {
+        Font f;
+        if (prefWindow==null) prefWindow = new PreferenceWindow(this, duffInput);
+        prefWindow.show();        
+        f = new Font(prefWindow.getRomanFont(), Font.PLAIN, prefWindow.getRomanFontSize());
+        fullDef.setFont(f);
+        txtInput.setFont(f);
+        table.setTibetanFontSize(prefWindow.getTibetanFontSize());
+        table.setRomanFont(f);
+        table.repaint();
+    }
+    
+    
 }

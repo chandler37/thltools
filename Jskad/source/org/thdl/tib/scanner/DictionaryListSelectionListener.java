@@ -47,7 +47,7 @@ public class DictionaryListSelectionListener implements ListSelectionListener
 		{
 			int selectedRow = lsm.getMinSelectionIndex();
 			//TableModel tm = table.getModel();
-			fullDef.setText(table.getValueAt(selectedRow, 1).toString());
+			fullDef.setText(table.getValueAt(selectedRow, 2).toString());
 		}
 	}    
 }

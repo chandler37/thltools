@@ -27,7 +27,7 @@ import java.awt.*;
 import java.awt.datatransfer.*;
 import javax.swing.text.JTextComponent;
 import javax.swing.JOptionPane;
-import org.thdl.tib.input.DuffPane;
+import org.thdl.tib.input.*;
 import org.thdl.util.*;
 
 /** Provides a graphical interfase to input Tibetan text (Roman or
@@ -48,13 +48,13 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 	private static String defOpenOption = "thdl.scanner.default.open";
     
 	private ScannerPanel sp;
-	private MenuItem mnuExit, mnuCut, mnuCopy, mnuPaste, mnuDelete, mnuSelectAll, mnuAbout, mnuClear, mnuOpen;
-	private CheckboxMenuItem tibScript, mnuDicts;
+	private MenuItem mnuExit, mnuCut, mnuCopy, mnuPaste, mnuDelete, mnuSelectAll, mnuAbout, mnuClear, mnuOpen, mnuPreferences, mnuSavePref;
+	private CheckboxMenuItem mnuDicts;
 	private Object objModified;
 	private AboutDialog diagAbout;
 	private Frame mainWindow;
 	private boolean pocketpc;
-			
+
 	public WindowScannerFilter(boolean pocketpc)
 	{
 		String response;
@@ -120,13 +120,12 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 	    mnuAbout = null;
 	    Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 
-		if (!pocketpc)
-			sp = new DuffScannerPanel(file);
-		else
-			sp = new SimpleScannerPanel(file, d.width >d.height);
+		if (pocketpc) sp = new SimpleScannerPanel(file, d.width >d.height);
+		else sp = new DuffScannerPanel(file);
 		
 		MenuBar mb = new MenuBar();
-		Menu m = new Menu ("File");
+		Menu m;
+	    m = new Menu ("File");
 		mnuOpen = new MenuItem("Open...");
 		mnuOpen.addActionListener(this);
 		m.add(mnuOpen);
@@ -159,36 +158,61 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
 		mnuClear = new MenuItem("Clear all");
 		m.add(mnuClear);
 		mnuClear.addActionListener(this);
-		mb.add(m);
-   		m = new Menu("View");
 		if (!pocketpc)
 		{
-	    	tibScript = new CheckboxMenuItem("Tibetan Script", true);
-		    m.add(tibScript);
-    		tibScript.addItemListener(this);
-    		mnuDicts=null;
-    	}
-    	else
-    	{
+		    m.add("-");
+		    mnuPreferences = new MenuItem("Preferences");
+		    m.add(mnuPreferences);
+		    mnuPreferences.addActionListener(this);
+		    mnuSavePref = new MenuItem("Save preferences to " + ThdlOptions.getUserPreferencesPath());
+		    m.add(mnuSavePref);
+		    mnuSavePref.addActionListener(this);
+		    mnuDicts=null;
+		}
+		mb.add(m);
+		
+		if (pocketpc)
+		{
+       		m = new Menu("View");
 	    	mnuDicts = new CheckboxMenuItem("Dictionaries", false);
 		    m.add(mnuDicts);
     		mnuDicts.addItemListener(this);
-    	    tibScript=null;
     	}
-   		mb.add(m);
-    	
-    	if (!pocketpc)
+    	else
    		{
    		    m = new Menu("Help");
+            for (int i = 0; i < DuffScannerPanel.keybdMgr.size(); i++)
+            {
+                final JskadKeyboard kbd = DuffScannerPanel.keybdMgr.elementAt(i);
+                if (kbd.hasQuickRefFile())
+                {
+                    MenuItem keybdItem = new MenuItem(kbd.getIdentifyingString());
+                    keybdItem.addActionListener(new ThdlActionListener()
+                    {
+                        public void theRealActionPerformed(ActionEvent e) 
+                        {
+                            new SimpleFrame(kbd.getIdentifyingString(),
+                                            kbd.getQuickRefPane());
+                            /* DLC FIXME -- pressing the "Extended
+                            Wylie" menu item (for example) twice
+                            causes the first pane to become dead.
+                            We should check to see if the first
+                            pane exists and raise it rather than
+                            creating a second pane. */
+                        }
+                    });
+                    m.add(keybdItem);
+                }
+            }   		    
+   		    m.add("-");
         	mnuAbout = new MenuItem("About...");
 	        m.add(mnuAbout);
    		    mnuAbout.addActionListener(this);
-        	mb.add(m);
         }
+       	mb.add(m);
 		
 		// disable menus
-        focusLost(null);
-        
+        focusLost(null);        
         
 		sp.addFocusListener(this);
 		
@@ -404,6 +428,30 @@ public class WindowScannerFilter implements WindowListener, FocusListener, Actio
         else if (clicked == mnuExit)
         {
             System.exit(0);
+        }
+        else if (clicked == mnuPreferences)
+        {
+            sp.setPreferences();
+        }
+        else if (clicked == mnuSavePref)
+        {
+            try 
+            {
+                if (!ThdlOptions.saveUserPreferences()) {
+                    JOptionPane.showMessageDialog(mainWindow,
+                                                  "You previously cleared preferences,\nso you cannot now save them.",
+                                                  "Cannot Save User Preferences",
+                                                  JOptionPane.PLAIN_MESSAGE);
+                }
+            } 
+            catch (IOException ioe)
+            {
+                JOptionPane.showMessageDialog(mainWindow,
+                                              "Could not save to your preferences file!",
+                                              "Error Saving Preferences",
+                                              JOptionPane.ERROR_MESSAGE);
+            }
+            
         }
         else
 		{

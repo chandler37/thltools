@@ -507,8 +507,8 @@ public class BinaryFileGenerator extends SimplifiedLinkedList
 		                    add(s1, s2 , defNum);
     		            }
     		        }
+		    	    currentLine++;            
 	    		}
-		    	currentLine++;            
         }
 	}
 

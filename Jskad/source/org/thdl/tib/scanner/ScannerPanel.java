@@ -36,23 +36,40 @@ public abstract class ScannerPanel extends Panel implements ActionListener
 	protected Checkbox chkDicts[];
 	Button cmdTranslate;
 	protected TibetanScanner scanner;
+	private Panel toolBar;
+    
+	public ScannerPanel(String file)
+	{
+	    this(file, false);
+	}
 
 	/** Individual components that are to be shown or
 	    hidden through the menu.
 	*/
-
-	public ScannerPanel(String file)
+	public ScannerPanel(String file, boolean includeToolBar)
 	{
 		boolean exito=true;
 
 		setLayout(new BorderLayout());
 		status = new Label();
-		Panel panel1;
+		Panel panel1, panel2;
 		panel1 = new Panel(new BorderLayout());
 		panel1.add(status, BorderLayout.CENTER);
 		cmdTranslate = new Button("Translate");
 		cmdTranslate.addActionListener(this);
-		panel1.add(cmdTranslate, BorderLayout.EAST);
+		if (includeToolBar)
+		{
+		    toolBar = new Panel();
+		    panel2 = new Panel(new FlowLayout());
+		    panel2.add(toolBar);
+		    panel2.add(cmdTranslate);
+		    panel1.add(panel2, BorderLayout.EAST);
+		}
+		else
+		{
+		    toolBar = null;
+		    panel1.add(cmdTranslate, BorderLayout.EAST);
+		}
 		chkDicts=null;
 //		Label copyright = new Label(TibetanScanner.copyrightUnicode);
 
@@ -121,8 +138,6 @@ public abstract class ScannerPanel extends Panel implements ActionListener
 		return null;
 	}
 	
-	
-
 	protected void doingStatus(String s)
 	{
 		status.setText(s);
@@ -162,6 +177,17 @@ public abstract class ScannerPanel extends Panel implements ActionListener
     {
         translate();
     }
+    
+    /**Optionally overridden. */
+    public void setPreferences()
+    {
+    }
+    
+    public Panel getToolBar()
+    {
+        return toolBar;
+    }
+
 	
 	public abstract void translate();
 	public abstract void clear();

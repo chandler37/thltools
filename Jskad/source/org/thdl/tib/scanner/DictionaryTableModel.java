@@ -59,15 +59,14 @@ public class DictionaryTableModel extends AbstractTableModel
 	
 	public Object getValueAt(int row, int column)
 	{
-		if (column==0)
-		{
-		    if (tibetanActivated)
-		        return arrayTibetan[row];
-		    else
-		        return array[row].getWylie();
+	    switch(column)
+	    {
+		    case 0:
+		    if (tibetanActivated) return arrayTibetan[row];
+		    else return array[row].getWylie();
+		    case 1: return array[row].getDef();
+		    default: return array[row].toString();
 		}
-		else
-			return array[row].getDef();
 	}
 	
 	

@@ -102,5 +102,17 @@ public class DictionaryTable extends JTable
 			tc.setCellRenderer(normalRenderer);
 		DictionaryTableModel dtm = (DictionaryTableModel) getModel();
 		dtm.activateTibetan(activate);
-	}	
+	}
+	
+	public void setTibetanFontSize(int size)
+	{
+	    DuffCellRenderer dcr = (DuffCellRenderer) duffRenderer;
+	    dcr.setTibetanFontSize(size);
+	}
+	
+	public void setRomanFont(Font f)
+	{
+	    AlmostDefaultTableCellRenderer tcr = (AlmostDefaultTableCellRenderer) normalRenderer;
+	    tcr.setFont(f);
+	}
 }
