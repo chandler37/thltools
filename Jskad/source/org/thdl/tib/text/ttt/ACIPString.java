@@ -34,11 +34,14 @@ public class ACIPString {
     public static final int COMMENT = 0;
     /** For Folio markers like @012B */
     public static final int FOLIO_MARKER = 1;
+    /** For Latin letters and numbers etc.  [*LINE BREAK?] uses this,
+     *  for example. */
+    public static final int LATIN = 2;
     /** For Tibetan letters and numbers etc. */
-    public static final int TIBETAN_NON_PUNCTUATION = 2;
+    public static final int TIBETAN_NON_PUNCTUATION = 3;
     /** For tshegs, whitespace and the like, but not combining
      *  punctutation like %, o, :, m, and x */
-    public static final int TIBETAN_PUNCTUATION = 3;
+    public static final int TIBETAN_PUNCTUATION = 4;
     /** For the start of a [*probable correction] or [*possible correction?] */
     public static final int CORRECTION_START = 5;
     /** Denotes the end of a [*probable correction] */
@@ -65,7 +68,7 @@ public class ACIPString {
     public static final int END_PAREN = 16;
     /** For things that are not legal syntax, such as a file that
      * contains just "[# HALF A COMMEN" */
-    public static final int ERROR = 17; /* DLC let the user know. */
+    public static final int ERROR = 17;
 
     /** Returns true if and only if this string is Latin (usually
      *  English).  Returns false if this string is transliteration of
@@ -105,6 +108,7 @@ public class ACIPString {
         String typeString = "HUH?????";
         if (type == COMMENT) typeString = "COMMENT";
         if (type == FOLIO_MARKER) typeString = "FOLIO_MARKER";
+        if (type == LATIN) typeString = "LATIN";
         if (type == TIBETAN_NON_PUNCTUATION) typeString = "TIBETAN_NON_PUNCTUATION";
         if (type == TIBETAN_PUNCTUATION) typeString = "TIBETAN_PUNCTUATION";
         if (type == CORRECTION_START) typeString = "CORRECTION_START";
@@ -120,6 +124,6 @@ public class ACIPString {
         if (type == START_PAREN) typeString = "START_PAREN";
         if (type == END_PAREN) typeString = "END_PAREN";
         if (type == ERROR) typeString = "ERROR";
-        return typeString + ":\"" + getText() + "\"";
+        return typeString + ":{" + getText() + "}";
     }
 }
