@@ -206,11 +206,11 @@ gayaradasa
 // R+, +W, +Y, +R
 paN+D+R+yau
 k+Sh+RUM
-kar+Wabi
+kaR+Wabi
 waw+Wa
 fuN+D+Yo
 yay+Yaya
-r+Yi
+R+Yi
 
 // Taken from THDL Sechen text collection
 dashadigAMsarbatimirabi ni saranan+nAmashrIguh+yagar+b+hatatwaMsh+ts+yayastanataras+yaTa'ikAbiharatisma
@@ -648,16 +648,16 @@ r+b+po
 r+b+bu
 r+b+hA
 r+m+mI
-r+YU
-r+Wai
-r+shau
-r+sh+y-i
-r+Sh-I
-r+Sh+Na
-r+Sh+N+ye
-r+Sh+mi
-r+Sh+yo
-r+su
+R+YU
+R+Wai
+R+shau
+R+sh+y-i
+R+Sh-I
+R+Sh+Na
+R+Sh+N+ye
+R+Sh+mi
+R+Sh+yo
+R+su
 r+hA
 r+k+ShI
 l+g+wU
