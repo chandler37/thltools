@@ -11,7 +11,9 @@
 	<span class="compEditOptions">
 		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=passage&amp;metaId=${ passage.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
 		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=passage&amp;metaId=${ passage.metaId }" title="Edit this passage"><img alt="Edit this passage" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
-		<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=passage&amp;parentId=${passage.parentId}&amp;translationOf=${passage.metaId}" title="Translate this passage"><img alt="Translate this passage" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
+		<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=passage&amp;parentId=${passage.parentId}&amp;translationOf=${passage.metaId}" title="Translate this passage"><img alt="Translate this passage" src="/lex/images/trans.gif"/></a>' escapeXm
+
+l="false" />			
 		</span>
 	</c:if>
 
