@@ -341,7 +341,7 @@ class ConvertDialog extends JDialog
                     return;
                 }
 
-                openWithExternalViewer(this, fileToOpen);
+                openWithExternalViewer(this, namedFile.getAbsolutePath());
             } catch (SecurityException se) {
                 JOptionPane.showMessageDialog(this,
                                               "Cannot proceed because your security policy interfered.",
