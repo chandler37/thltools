@@ -76,7 +76,7 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 * correctly into the proper glyphs. For example, charList might have four characters
 * in it, 'b', 's', 'g', and 'r', but it does not know that they should be drawn as
 * two glyphs, 'b' and 's-g-r'. newGlyphList is a list of glyphs
-* ({@link thdl.tibetan.text.DuffCode DuffCodes}) which is formed by
+* ({@link org.thdl.tib.text.DuffCode DuffCodes}) which is formed by
 * @link #recomputeGlyphs(boolean areStacksOnRight, boolean definitelyTibetan, boolean definitelySanskrit) recomputeGlyphs},
 * which constructs an optimal arrangement of glyphs from the charList.
 */
@@ -111,37 +111,34 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 */
 	private boolean isDefinitelyTibetan;
 /**
-* According to the active keyboard, what value is
-* {@link #isDefinitelyTibetan} assigned by default when the 
-* keyboard is initialized by {@link #initKeyboard() initKeyboard}?
+* According to the active keyboard, what value
+* {@link #isDefinitelyTibetan} should be assigned by default when the 
+* keyboard is initialized by {@link #initKeyboard() initKeyboard}
 */
 	private boolean isDefinitelyTibetan_default;
 /**
-* According to the active keyboard, what value should
-* be assigned to {@link #isDefinitelyTibetan} if the
-* user has initiated a stack by typing a stack key?
-* For example, in the Wylie keyboard, there is a Sanskrit
-* stacking key ('+'), but no Tibetan stacking key.
-* Therefore, if the user is stacking with '+', this field
-* should be false, since what the user is typing must
-* be Sanskrit, not Tibetan.
-*/
+* According to the active keyboard, what value {@link
+* #isDefinitelyTibetan} should be assigned if the user has initiated a
+* stack by typing a stack key.  For example, in the Wylie keyboard,
+* there is a Sanskrit stacking key ('+'), but no Tibetan stacking key.
+* Therefore, if the user is stacking with '+', this field should be
+* false, since what the user is typing must be Sanskrit, not Tibetan.  */
 	private boolean isDefinitelyTibetan_withStackKey;
 /**
-* Is it definitely the case that the user is typing Sanskrit
-* (e.g. a Sanskrit stack), rather than Tibetan?
+* True iff it is definitely the case that the user is typing Sanskrit
+* (for example a Sanskrit stack), rather than Tibetan 
 */
 	private boolean isDefinitelySanskrit;
 /**
-* According to the active keyboard, what value is
-* {@link #isDefinitelySanskrit} assigned by default when the 
-* keyboard is initialized by {@link #initKeyboard() initKeyboard}?
+* According to the active keyboard, the value {@link
+* #isDefinitelySanskrit} should be assigned by default when the
+* keyboard is initialized by {@link #initKeyboard() initKeyboard} 
 */
 	private boolean isDefinitelySanskrit_default;
 /**
-* According to the active keyboard, what value should
+* According to the active keyboard, the value that should
 * be assigned to {@link #isDefinitelySanskrit} if the
-* user has initiated a stack by typing a stack key?
+* user has initiated a stack by typing a stack key.
 * For example, in the Wylie keyboard, there is a Sanskrit
 * stacking key ('+'), but no Tibetan stacking key.
 * Therefore, if the user is stacking with '+', this field
@@ -150,7 +147,7 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 */
 	private boolean isDefinitelySanskrit_withStackKey;
 /**
-* Is consonant stacking allowed at the moment? In the Wylie
+* True iff consonant stacking is allowed at the moment. In the Wylie
 * keyboard, consonant stacking is usually on, since stacking
 * is automatic. However, in the TCC and Sambhota keyboards,
 * stacking is off by default, since you can only stack when
@@ -158,8 +155,8 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 */
 	private boolean isStackingOn;
 /**
-* According to the active keyboard, is stacking on by
-* default or not, assuming no stack key has been pressed?
+* True iff, according to the active keyboard, stacking is on by
+* default assuming no stack key has been pressed.
 */
 	private boolean isStackingOn_default;
 /**
@@ -171,8 +168,8 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 */
 	private boolean isStackingRightToLeft;
 /**
-* If the character last displayed was a vowel,
-* how many glyphs is the vowel composed of?
+* If the character last displayed was a vowel, this is
+* how many glyphs the vowel was composed of.
 * (Some vowels, such as Wylie 'I', consist of
 * two glyphs.)
 */
@@ -182,12 +179,12 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 */
 	private int lastStart;
 /**
-* is the user in Tibetan typing mode? this is true
-* by default
+* true iff the user is in Tibetan typing mode.  This is true
+* by default.
 */
 	private boolean isTibetan = true;
 /**
-* is the user allowed to type non-Tibetan? this is true
+* true iff the user is allowed to type non-Tibetan.  This is true
 * by default
 */
 	private boolean isRomanEnabled = true;
