@@ -227,7 +227,7 @@ public class LexComponentRepository
 			termForQuery = "%" + termForQuery + "%";
 		}
 
-		String queryString = " FROM org.thdl.lex.component.ITerm as term WHERE term like :term AND term.deleted=0 ORDER BY term";
+		String queryString = " FROM org.thdl.lex.component.ITerm as term WHERE term.term like :term AND term.deleted=0 ORDER BY term";
 		try
 		{
 			query = getSession().createQuery( queryString );
