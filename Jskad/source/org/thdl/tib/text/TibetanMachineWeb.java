@@ -1978,9 +1978,62 @@ public static String getWylieForGlyph(DuffCode dc, boolean noSuchWylie[]) {
     return wylieForGlyph(hashKey);
 }
 
-// DLC DOC
-public static String getACIPForGlyph(DuffCode dc, boolean noSuchACIP[]) {
+/** Returns ACIP transliteration or an error message stating why no
+    ACIP transliteration exists for the sole glyph dc or the two
+    glyphs dc and optionalNextDC as a whole.  noSuchACIP[0] will be
+    set (to true) if and only if there is no ACIP representation for
+    dc; in that case, an error message is returned rather than valid
+    ACIP.  optionalNextDC should be null if there is no context
+    information available (such as if dc is the last DuffCode being
+    converted from TMW to ACIP) or the DuffCode following dc
+    otherwise.  If the ACIP (or error message) returned captures both
+    dc and the nonnull optionalNextDC, then howManyGlyphsUsed[0] will
+    be set to 2, otherwise it will be set to 1.
+
+    <p>This would be more straightforward if it were not the case that
+    a TMW-&gt;ACIP conversion requires context information in the case
+    of U+0F04 and U+0F05.  Because it does, two DuffCodes, not one,
+    must be passed in whenever possible.
+
+    <p>We opt to treat a lone U+0F05 as an error in TMW-&gt;ACIP
+    conversions rather than return the pseudo-ACIP Unicode character
+    escape for U+0F05.  After all, the conversion is TMW-&gt;ACIP, not
+    TMW-&gt;pseudo-ACIP.
+
+    @return error message or valid ACIP, never pseudo-ACIP like
+    Unicode character escapes
+    @param dc the leftmost DuffCode if optionalNextDC is nonnull, or
+    the sole DuffCode
+    @param optionalNextDC null if dc is the last (rightmost) DuffCode
+    in the sequence, or the DuffCode following dc.  If you pass in dc
+    equal to the DuffCode for U+0F04, and optionalNextDC null, then
+    "*" will be returned, so don't leave this out unless dc is the
+    rightmost DuffCode.
+    @param noSuchACIP an array whose first element will be set to true
+    if and only if an error message is returned instead of valid ACIP;
+    the first element is never set to false, so nominally caller will
+    initialize the first element to false
+    @param howManyGlyphsUsed an array whose first element will be set
+    to 2 if valid ACIP that describes both dc and optionalNextDC is
+    returned, or 1 otherwise */
+public static String getACIPForGlyph(DuffCode dc,
+                                     DuffCode optionalNextDC,
+                                     boolean noSuchACIP[],
+                                     int howManyGlyphsUsed[]) {
     String hashKey = getHashKeyForGlyph(dc);
+    if (null != hashKey && hashKey.equals("@")) { // hard-coded EWTS value
+        String nextHashKey
+            = ((null == optionalNextDC)
+               ? null : getHashKeyForGlyph(optionalNextDC));
+        if (null != nextHashKey && nextHashKey.equals("#")) { // hard-coded EWTS value
+            howManyGlyphsUsed[0] = 2;
+            return "#"; // hard-coded ACIP value
+        } else {
+            howManyGlyphsUsed[0] = 1;
+            return "*"; // hard-coded ACIP value
+        }
+    }
+    howManyGlyphsUsed[0] = 1;
     String ans = (hashKey == null) ? null : acipForGlyph(hashKey);
     if (hashKey == null || ans == null) {
         noSuchACIP[0] = true;

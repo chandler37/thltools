@@ -1638,7 +1638,27 @@ public class TibTextUtils implements THDLWylieConstants {
                 translitBuffer.append(ch);
             } else {
                 String wylie = TibetanMachineWeb.getWylieForGlyph(dcs[i], noSuch);
-                String acip = EWTSNotACIP ? null : TibetanMachineWeb.getACIPForGlyph(dcs[i], noSuch);
+                String acip = null;
+                if (!EWTSNotACIP) {
+                    // U+0F04 and U+0F05 -- these require lookahead to
+                    // see if the ACIP is # (two shishes) or * (one
+                    // swish)
+                    
+                    int howManyConsumed[] = new int[] { -1 /* invalid */ };
+
+                    acip = TibetanMachineWeb.getACIPForGlyph(dcs[i],
+                                                             ((i+1<dcs.length)
+                                                              ? dcs[i+1]
+                                                              : null),
+                                                             noSuch,
+                                                             howManyConsumed);
+                    if (howManyConsumed[0] == 1) {
+                        // nothing to do
+                    } else {
+                        ThdlDebug.verify(howManyConsumed[0] == 2);
+                        ++i;
+                    }
+                }
                 if (TibetanMachineWeb.isWyliePunc(wylie)
                     && !TibetanMachineWeb.isWylieAdornment(wylie)) {
                     if (!glyphList.isEmpty()) {
