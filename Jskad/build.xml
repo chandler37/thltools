@@ -421,9 +421,6 @@
   <target name="tt-handheld-compile" depends="init"
           description="compiles the handheld Translation Tool" >
     <mkdir dir="${tthandheldbin}"/>
-    <antcall target="copy-tmw-fonts-to-bin-dir">
-      <param name="my.bin" value="${tthandheldbin}"/>
-    </antcall>
     <antcall target="create-timestamp-source-code"/>
     <antcall target="our-internal-javac-task">
       <param name="target.jvm" value="1.1"/>
