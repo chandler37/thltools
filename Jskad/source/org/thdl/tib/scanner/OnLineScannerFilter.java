@@ -143,7 +143,14 @@ public class OnLineScannerFilter extends HttpServlet {
         }
         
         out.println("<h3 align=\"center\">The Online Tibetan to English Translation/Dictionary Tool</h3>");
-        out.println("<form action=\"org.thdl.tib.scanner.OnLineScannerFilter\" method=POST>");
+		if (useTHDLBanner)
+		{
+            out.println("<form action=\"org.thdl.tib.scanner.OnLineScannerFilter?thdlBanner=on\" method=POST>");
+        }
+        else
+        {
+            out.println("<form action=\"org.thdl.tib.scanner.OnLineScannerFilter\" method=POST>");
+        }
         out.println("<table border=\"0\" width=\"100%\">");
         out.println("  <tr>");
         out.println("    <td width=\"25%\">");
