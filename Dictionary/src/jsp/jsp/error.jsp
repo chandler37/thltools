@@ -1,5 +1,5 @@
-<%@ page import="java.io.PrintWriter,java.io.StringWriter,org.thdl.lex.*,org.thdl.lex.component.*" isErrorPage="true" %>
-<%@ taglib prefix="req" uri="http://jakarta.apache.org/taglibs/request-1.0" %>
+<%@ page  buffer="512kb" autoFlush="false" import="java.io.*, org.thdl.lex.*,org.thdl.lex.component.*" isErrorPage="true" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
@@ -45,8 +45,6 @@ The message appears below.<br />
 	{ LexComponent lab =  (LexComponent) request.getAttribute("component");
 %>
 <b> Label: </b> <i> <%= lab %> </i><br /><br /> 
-<%-- <b> Sql String: </b> <i> <%= lab.getSqlString() %> </i> 
- --%>
 
 <% } %> <br /><br />
 
@@ -57,7 +55,10 @@ The message appears below.<br />
 %>
 <pre>
 <%= stackTrace %>
-</pre>
+</pre> 
+
+
+
 </p>
 </div>
 

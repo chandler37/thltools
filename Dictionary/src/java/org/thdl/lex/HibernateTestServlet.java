@@ -1,27 +1,27 @@
 package org.thdl.lex;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.*;
+import java.util.*;
+import javax.servlet.ServletException;
+// import net.sf.hibernate.tool.hbm2ddl.*;
 
-import org.thdl.lex.component.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 // import org.thdl.lex.component.peers.*;
 
 import net.sf.hibernate.*;
 import net.sf.hibernate.cfg.*;
-// import net.sf.hibernate.tool.hbm2ddl.*;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.ServletException;
-import java.sql.*;
-import java.util.*;
-import java.io.IOException;
-import java.io.PrintWriter;
+import org.thdl.lex.component.*;
 
 
 /**
  *  Description of the Class
  *
- *@author     travis
- *@created    October 1, 2003
+ * @author     travis
+ * @created    October 1, 2003
  */
 public class HibernateTestServlet
 		 extends HttpServlet
@@ -35,8 +35,8 @@ public class HibernateTestServlet
 	/**
 	 *  Sets the sessionFactory attribute of the HibernateTestServlet object
 	 *
-	 *@param  sessionFactory  The new sessionFactory value
-	 *@since
+	 * @param  sessionFactory  The new sessionFactory value
+	 * @since
 	 */
 	public void setSessionFactory( SessionFactory sessionFactory )
 	{
@@ -47,8 +47,8 @@ public class HibernateTestServlet
 	/**
 	 *  Sets the session attribute of the HibernateTestServlet object
 	 *
-	 *@param  session  The new session value
-	 *@since
+	 * @param  session  The new session value
+	 * @since
 	 */
 	public void setSession( Session session )
 	{
@@ -59,8 +59,8 @@ public class HibernateTestServlet
 	/**
 	 *  Sets the transaction attribute of the HibernateTestServlet object
 	 *
-	 *@param  transaction  The new transaction value
-	 *@since
+	 * @param  transaction  The new transaction value
+	 * @since
 	 */
 	public void setTransaction( Transaction transaction )
 	{
@@ -71,8 +71,8 @@ public class HibernateTestServlet
 	/**
 	 *  Gets the sessionFactory attribute of the HibernateTestServlet object
 	 *
-	 *@return    The sessionFactory value
-	 *@since
+	 * @return    The sessionFactory value
+	 * @since
 	 */
 	public SessionFactory getSessionFactory()
 	{
@@ -83,8 +83,8 @@ public class HibernateTestServlet
 	/**
 	 *  Gets the session attribute of the HibernateTestServlet object
 	 *
-	 *@return    The session value
-	 *@since
+	 * @return    The session value
+	 * @since
 	 */
 	public Session getSession()
 	{
@@ -95,8 +95,8 @@ public class HibernateTestServlet
 	/**
 	 *  Gets the transaction attribute of the HibernateTestServlet object
 	 *
-	 *@return    The transaction value
-	 *@since
+	 * @return    The transaction value
+	 * @since
 	 */
 	public Transaction getTransaction()
 	{
@@ -107,11 +107,11 @@ public class HibernateTestServlet
 	/**
 	 *  Description of the Method
 	 *
-	 *@param  request               Description of Parameter
-	 *@param  response              Description of Parameter
-	 *@exception  ServletException  Description of Exception
-	 *@exception  IOException       Description of Exception
-	 *@since
+	 * @param  request               Description of Parameter
+	 * @param  response              Description of Parameter
+	 * @exception  ServletException  Description of Exception
+	 * @exception  IOException       Description of Exception
+	 * @since
 	 */
 	public void doGet( HttpServletRequest request, HttpServletResponse response )
 			 throws ServletException, IOException
@@ -121,15 +121,17 @@ public class HibernateTestServlet
 		{
 			initHibernate();
 
-			response.setContentType( "text/html" );
+			//response.setContentType( "text/html" );
+			response.setContentType( "text/html;charset=UTF-8;" );
+			request.setCharacterEncoding( "UTF-8" );
+
 			PrintWriter out = response.getWriter();
 			out.println( "<html><body>" );
-
 			beginTransaction();
-			processMods( out );
-			//testQuery( out );
+			testQuery( out );
 			endTransaction( false );
-
+			LexLogger.logRequestState( request );
+			LexLogger.logResponseState( response );
 			out.println( "</body></html>" );
 
 		}
@@ -165,8 +167,8 @@ public class HibernateTestServlet
 	/**
 	 *  Description of the Method
 	 *
-	 *@exception  HibernateException  Description of Exception
-	 *@since
+	 * @exception  HibernateException  Description of Exception
+	 * @since
 	 */
 	private void initHibernate()
 			 throws HibernateException
@@ -180,8 +182,8 @@ public class HibernateTestServlet
 	/**
 	 *  Description of the Method
 	 *
-	 *@exception  HibernateException  Description of Exception
-	 *@since
+	 * @exception  HibernateException  Description of Exception
+	 * @since
 	 */
 	private void beginTransaction()
 			 throws HibernateException
@@ -194,9 +196,9 @@ public class HibernateTestServlet
 	/**
 	 *  Description of the Method
 	 *
-	 *@param  commit                  Description of Parameter
-	 *@exception  HibernateException  Description of Exception
-	 *@since
+	 * @param  commit                  Description of Parameter
+	 * @exception  HibernateException  Description of Exception
+	 * @since
 	 */
 	private void endTransaction( boolean commit )
 			 throws HibernateException
@@ -215,47 +217,25 @@ public class HibernateTestServlet
 	}
 
 
-	/**
-	 *  Description of the Method
-	 *
-	 *@param  out                     Description of Parameter
-	 *@exception  SQLException        Description of Exception
-	 *@exception  HibernateException  Description of Exception
-	 *@since
-	 */
-	public void processMods( PrintWriter out ) throws SQLException, HibernateException
-	{
-		String queryString = "FROM org.thdl.lex.component.LexComponent";
-		Query query = getSession().createQuery( queryString );
-
-		out.println( "Starting..." );
-		for ( Iterator it = query.iterate(); it.hasNext();  )
-		{
-			ILexComponent lc = (ILexComponent) it.next();
-			out.println( lc.getMetaId() + " </br/> " );
-		}
-	}
-
 
 	/**
 	 *  A unit test for JUnit
 	 *
-	 *@param  out                     Description of Parameter
-	 *@exception  SQLException        Description of Exception
-	 *@exception  HibernateException  Description of Exception
-	 *@since
+	 * @param  out                     Description of Parameter
+	 * @exception  SQLException        Description of Exception
+	 * @exception  HibernateException  Description of Exception
+	 * @since
 	 */
 	public void testQuery( PrintWriter out )
 			 throws SQLException, HibernateException
 	{
-		String queryString = "FROM org.thdl.lex.component.Term as term WHERE term.term = :term";
+		String queryString = "FROM org.thdl.lex.component.Pronunciation";
 		Query query = getSession().createQuery( queryString );
-		ITerm term = new Term();
-		term.setTerm( "thos pa" );
-		query.setProperties( term );
 		for ( Iterator it = query.iterate(); it.hasNext();  )
 		{
-			out.println( it.next() );
+			String s = ( (IPronunciation) it.next() ).getPhonetics();
+			out.println( s + "<br/>" );
+			LexLogger.debug( "Diacritics Test: " + s );
 		}
 	}
 }

@@ -176,6 +176,9 @@ public class LexComponentFilter implements Filter
 			}
 			chain.doFilter( request, response );
 
+			HttpServletResponse resp = (HttpServletResponse) response;
+			resp.setContentType( "text/html; charset=UTF-8;" );
+			LexLogger.logResponseState( resp );
 			try
 			{
 				LexComponentRepository.cleanup();

@@ -1,4 +1,4 @@
-<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*"  %>
+<%@ page  import="org.thdl.lex.LexLogger" contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <%@ taglib prefix = "req" uri = "http://jakarta.apache.org/taglibs/request-1.0" %>
 
@@ -25,3 +25,5 @@
 
 </body>
 </html>
+
+<% LexLogger.debug( "Footer.jsf has finished rendering." ); %>

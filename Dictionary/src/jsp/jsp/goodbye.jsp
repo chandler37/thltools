@@ -1,3 +1,5 @@
+<%@ page import="java.io.PrintWriter,java.io.StringWriter,org.thdl.lex.*,org.thdl.lex.component.*" isErrorPage="true" contentType="text/html; charset=UTF-8"%>
+
 <jsp:include page="header.jsf" flush="false" />
 
 <p>Thank you</p>

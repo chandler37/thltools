@@ -1,7 +1,9 @@
-<%@ page  buffer="512kb" autoFlush="false" import="org.thdl.lex.*,org.thdl.lex.component.*" errorPage="/jsp/error.jsp" contentType="text/html; charset=UTF-8"%>
+<%@ page  buffer="512kb" autoFlush="false" import="org.thdl.lex.*,org.thdl.lex.component.*" errorPage="/jsp/error.jsp" pageEncoding="UTF-8" contentType="text/html"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
-
+<% request.setCharacterEncoding("UTF-8"); %> 
+<!--Begin Render-->
 <jsp:include page="header.jsf" flush="false"/>
+
 
 <!--displayEntry.jsp-->
 <c:set var="editMode" value="${ false }" scope="request"/>

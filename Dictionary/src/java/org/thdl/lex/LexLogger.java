@@ -30,18 +30,52 @@ public class LexLogger
 	{
 
 		Iterator it;
+		LOGGER.debug( "authType: " + req.getAuthType() );
+		LOGGER.debug( "characterEncoding: " + req.getCharacterEncoding() );
+		LOGGER.debug( "contentLength: " + req.getContentLength() );
+		LOGGER.debug( "contentType: " + req.getContentType() );
+		LOGGER.debug( "method: " + req.getMethod() );
+		LOGGER.debug( "pathInfo: " + req.getPathInfo() );
+		LOGGER.debug( "pathTranslated: " + req.getPathTranslated() );
+		LOGGER.debug( "protocol: " + req.getProtocol() );
+		LOGGER.debug( "queryString: " + req.getQueryString() );
+		LOGGER.debug( "remoteAddr: " + req.getRemoteAddr() );
+		LOGGER.debug( "remoteHost: " + req.getRemoteHost() );
+		LOGGER.debug( "remoteUser: " + req.getRemoteUser() );
+		LOGGER.debug( "requestedSessionId: " + req.getRequestedSessionId() );
+		LOGGER.debug( "requestedSessionIdFromCookie: " + req.isRequestedSessionIdFromCookie() );
+		LOGGER.debug( "requestedSessionIdFromURL: " + req.isRequestedSessionIdFromURL() );
+		LOGGER.debug( "requestedSessionIdValid: " + req.isRequestedSessionIdValid() );
+		LOGGER.debug( "requestURI: " + req.getRequestURI() );
+		LOGGER.debug( "scheme: " + req.getScheme() );
+		LOGGER.debug( "serverName: " + req.getServerName() );
+		LOGGER.debug( "serverPort: " + req.getServerPort() );
+		LOGGER.debug( "contextPath: " + req.getContextPath() );
+		LOGGER.debug( "servletPath: " + req.getServletPath() );
 		Enumeration enum = req.getParameterNames();
 		while ( enum.hasMoreElements() )
 		{
 			String parm = (String) enum.nextElement();
-			LOGGER.debug( "Request Parameter " + parm + " = '" + req.getParameter( parm ) + "'" );
+			LOGGER.debug( "Request Parameter: " + parm + " = '" + req.getParameter( parm ) + "'" );
 		}
 		enum = req.getAttributeNames();
 		while ( enum.hasMoreElements() )
 		{
 			String att = (String) enum.nextElement();
-			LOGGER.debug( "Request Attribute " + att + " = " + req.getAttribute( att ) );
+			LOGGER.debug( "Request Attribute: " + att + " =: " + req.getAttribute( att ) );
 		}
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  resp  Description of the Parameter
+	 */
+	public static void logResponseState( HttpServletResponse resp )
+	{
+		LOGGER.debug( "RESPONSE STATE" );
+		LOGGER.debug( "characterEncoding: " + resp.getCharacterEncoding() );
 	}
 
 
@@ -63,7 +97,7 @@ public class LexLogger
 		while ( enum.hasMoreElements() )
 		{
 			String att = (String) enum.nextElement();
-			LOGGER.debug( "Session Attribute " + att + " = " + ses.getAttribute( att ) );
+			LOGGER.debug( "Session Attribute: " + att + " =: " + ses.getAttribute( att ) );
 		}
 
 		if ( null == visit )
@@ -90,7 +124,7 @@ public class LexLogger
 			String att = (String) enum.nextElement();
 			if ( !EXCLUDED_PARAMS.contains( att ) )
 			{
-				LOGGER.debug( "Context Attribute " + att + " = " + context.getAttribute( att ) );
+				LOGGER.debug( "Context Attribute: " + att + " =: " + context.getAttribute( att ) );
 			}
 		}
 		debugComponent( context.getAttribute( LexConstants.GLOBAL_CONTEXT_ATTR ) );
@@ -150,13 +184,13 @@ public class LexLogger
 	{
 		try
 		{
-			LOGGER.debug( "Describing: " + component );
+			LOGGER.debug( "Describing:: " + component );
 			String label = component instanceof ILexComponent ? ( (ILexComponent) component ).getLabel() : component.toString();
 			Iterator it = BeanUtils.describe( component ).entrySet().iterator();
 			while ( it.hasNext() )
 			{
 				Map.Entry entry = (Map.Entry) it.next();
-				LOGGER.debug( label + " property: " + entry.getKey() + " = '" + entry.getValue() + "'" );
+				LOGGER.debug( label + " property:: " + entry.getKey() + " = '" + entry.getValue() + "'" );
 			}
 		}
 		catch ( Exception e )
@@ -164,7 +198,7 @@ public class LexLogger
 			StringWriter writer = new StringWriter();
 			e.printStackTrace( new PrintWriter( writer ) );
 			String stackTrace = writer.getBuffer().toString();
-			LOGGER.debug( "LexLogger caught an Exception: " + stackTrace );
+			LOGGER.debug( "LexLogger caught an Exception:: " + stackTrace );
 		}
 	}
 }
