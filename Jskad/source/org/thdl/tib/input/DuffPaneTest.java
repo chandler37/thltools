@@ -79,7 +79,7 @@ public class DuffPaneTest extends DuffPaneTestBase {
 
         // SPECIAL CASE: achen:
         e("a"); e("i"); e("u"); e("e"); e("o"); e("U");
-        e("aM", "M"); // DLC FIXME: which is correct? "M" gives achen plus M or "aM" gives achen plus M.  (I bet it's the latter.  I bet {M} alone is invalid EWTS.)
+        e("aM");
         e("au"); e("ai"); e("I"); e("-i");
 
         e("rka"); e("rk", "rka"); e("rki"); e("rku"); e("rke"); e("rko"); e("rkU"); e("rkaM"); e("rkau"); e("rkai"); e("rkI"); e("rk-i");

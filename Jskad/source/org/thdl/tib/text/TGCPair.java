@@ -89,8 +89,12 @@ public class TGCPair implements THDLWylieConstants {
             // Unlike ACIP, EWTS uses e for achen with e vowel, not ae.
             if (null == vowelWylie)
                 return ACHEN;
-            else
-                return vowelWylie;
+            else {
+                if (TibetanMachineWeb.startsWithWylieVowelSequence(vowelWylie))
+                    return vowelWylie;
+                else
+                    return ACHEN + vowelWylie;
+            }
         }
         StringBuffer b = new StringBuffer();
         if (consonantWylie != null) {

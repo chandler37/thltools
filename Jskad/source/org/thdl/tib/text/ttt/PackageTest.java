@@ -69,7 +69,6 @@ public class PackageTest extends TestCase {
         broken EWTS->TMW converter and keyboard) without getting ACIP
         involved. */
     public void testTmw2Ewts() {
-
         assertEquals(ACIP2TMW2EWTS("\\u0F00"), "oM");
         assertEquals(ACIP2TMW2EWTS("\\u0F01"), "\\u0F01");
 
@@ -188,7 +187,7 @@ public class PackageTest extends TestCase {
 
         assertEquals(ACIP2TMW2EWTS("\\u0f68"), "a");
         assertEquals(ACIP2TMW2EWTS("\\u0f68\\u0f72"), "i");
-        assertEquals(ACIP2TMW2EWTS("\\u0f68\\u0f7e"), "M"); // DLC FIXME: should be "aM"
+        assertEquals(ACIP2TMW2EWTS("\\u0f68\\u0f7e"), "aM");
         assertEquals(ACIP2TMW2ACIP("\\u0f68\\u0f7e"), "Am");
         assertEquals(ACIP2TMW2ACIP("\\u0f7e"), "m");
 
