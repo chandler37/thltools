@@ -403,24 +403,21 @@ public class DuffPane extends TibetanPane implements FocusListener {
 				isStackingOn_default = false;
 				isDefinitelyTibetan_withStackKey = false;
 				isDefinitelySanskrit_withStackKey = false;
-			}
-			else {
+			} else {
 				isDefinitelyTibetan_default = false;
-				isDefinitelySanskrit_default = true;
+				isDefinitelySanskrit_default = false; // DLC FIXME: trying to make ACIP keyboard happy.
 				isStackingOn_default = true;
-				isDefinitelyTibetan_withStackKey = true;
+				isDefinitelyTibetan_withStackKey = false; // DLC FIXME: trying to make ACIP keyboard happy.
 				isDefinitelySanskrit_withStackKey = false;
 			}
-		}
-		else {
+		} else {
 			if (TibetanMachineWeb.hasSanskritStackingKey()) {
 				isDefinitelyTibetan_default = true;
 				isDefinitelySanskrit_default = false;
 				isStackingOn_default = true;
 				isDefinitelyTibetan_withStackKey = false;
 				isDefinitelySanskrit_withStackKey = true;
-			}
-			else { //no stacking key at all
+			} else { //no stacking key at all
 				isDefinitelyTibetan_default = false;
 				isDefinitelySanskrit_default = false;
 				isStackingOn_default = true;
