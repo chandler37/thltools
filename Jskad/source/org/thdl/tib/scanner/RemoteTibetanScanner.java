@@ -137,4 +137,7 @@ public class RemoteTibetanScanner extends TibetanScanner
 			return null;
 		}
 	}
+    public void destroy()
+    {
+    }
 }

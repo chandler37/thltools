@@ -82,8 +82,26 @@ public class FileSyllableListTree implements SyllableListTree
 	{
 	    return this.defSourcesWanted;
 	}
-
+	
 	public static void openFiles(String archivo) throws Exception
+	{
+	    openFiles(archivo, true);
+	}
+	
+	public static void closeFiles()
+	{
+	    try
+	    {
+	        wordRaf.close();
+	        defRaf.close();
+	    }
+	    catch (Exception e)
+	    {
+	        e.printStackTrace();
+	    }
+	}
+
+	public static void openFiles(String archivo, boolean backwardCompatible) throws Exception
 	{
 	    long fileSize;
 	    int pos;
@@ -109,17 +127,34 @@ public class FileSyllableListTree implements SyllableListTree
 		    // Updates the dictionary for backward compatibility.		    
 		    try
 		    {
-    		    wordRaf.close();
-	    	    wordRaf = new RandomAccessFile(archivo + ".wrd", "rw");
-    		    wordRaf.seek(fileSize);    	    
-		        wordRaf.writeShort(-1);
-		        wordRaf.writeByte(-1);
-		        
-		        // Because it didn't have a version number, must be version 2.
-		        versionNumber = 2;
-		        wordRaf.writeByte(versionNumber);
-		        wordRaf.close();
-		        wordRaf = new RandomAccessFile(archivo + ".wrd", "r");
+		        if (backwardCompatible)
+		        {
+    		        wordRaf.close();
+	    	        wordRaf = new RandomAccessFile(archivo + ".wrd", "rw");
+    		        wordRaf.seek(fileSize);    	    
+		            wordRaf.writeShort(-1);
+		            wordRaf.writeByte(-1);
+    		        
+		            // Because it didn't have a version number, must be version 2.
+		            versionNumber = 2;
+		            wordRaf.writeByte(versionNumber);
+		            wordRaf.close();
+		            wordRaf = new RandomAccessFile(archivo + ".wrd", "r");
+		        }
+		        else
+		        {
+		            // something is wrong
+		            ScannerLogger sl = new ScannerLogger();
+		            sl.writeLog("Crash\tFileSyllableListTree\t" + "size: " + fileSize + "; bytes: " + Integer.toHexString(pos));
+		            
+		            // try to open again, but not corrupting the file
+		            wordRaf = new RandomAccessFile(archivo + ".wrd", "r");
+
+		            fileSize = wordRaf.length();
+		            wordRaf.seek(fileSize-8L);
+		            pos = wordRaf.readInt();
+            		versionNumber = 3;
+		        }
 		    }
 		    catch (Exception e)
 		    {

@@ -22,7 +22,6 @@ import java.awt.*;
 import java.util.*;
 import java.io.*;
 import java.awt.event.*;
-import java.applet.Applet;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import org.thdl.util.*;

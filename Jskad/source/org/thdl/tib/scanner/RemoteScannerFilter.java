@@ -36,30 +36,47 @@ public class RemoteScannerFilter extends GenericServlet
 {
 	private TibetanScanner scanner;
 	private BitDictionarySource ds;
+	private ScannerLogger sl;
 	
-	public RemoteScannerFilter() throws Exception
+	public RemoteScannerFilter()
 	{
 		ResourceBundle rb = ResourceBundle.getBundle("dictionary");
-		scanner = new LocalTibetanScanner(rb.getString("onlinescannerfilter.dict-file-name"));
-		ds = scanner.getDictionarySource();
+		sl = new ScannerLogger();
 
-    		
-	    String fileName = rb.getString("remotescannerfilter.log-file-name");
-	    Calendar rightNow = Calendar.getInstance();
-	    	
-	    PrintStream pw = new PrintStream(new FileOutputStream(fileName, true));
-	    pw.println("Testing: " + rightNow.toString());
-	    pw.flush();
-	    pw.close();
+	    try
+	    {
+		    scanner = new LocalTibetanScanner(rb.getString("onlinescannerfilter.dict-file-name"),false);
+		}
+		catch (Exception e)
+		{
+		    sl.writeLog("Crash\tRemoteScannerFilter");
+		    sl.writeException(e);
+		}		
+		ds = scanner.getDictionarySource();
+		sl.writeLog("Creation\tRemoteScannerFilter");
 	}
 
-  	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException
+  	public void service(ServletRequest req, ServletResponse res) //throws ServletException, IOException
   	{
   		BufferedReader br;
   		res.setContentType ("text/plain");
+  		sl.setUserIP(req.getRemoteAddr());
+  		
   		Token token[] = null;  		
   		Word word = null;
-	    PrintWriter out = res.getWriter();
+  		PrintWriter out;
+  		
+  		try
+  		{
+	        out = res.getWriter();
+	    }
+		catch (Exception e)
+		{
+		    sl.writeLog("Crash\tRemoteScannerFilter");
+		    sl.writeException(e);
+		    return;
+		}		
+	    
 	    int i;
   		String linea, dicts = req.getParameter("dicts"), dicDescrip[];
   		
@@ -67,6 +84,7 @@ public class RemoteScannerFilter extends GenericServlet
   		{
   			if (dicts.equals("names"))
   			{
+  			    sl.writeLog("Invocation\tRemoteScannerFilter");
 				dicDescrip = scanner.getDictionaryDescriptions();
 				if (dicDescrip==null)
 				{
@@ -86,11 +104,24 @@ public class RemoteScannerFilter extends GenericServlet
   				ds.setDicts(Integer.parseInt(dicts));
   			}
   		}
-  		br = new BufferedReader(new InputStreamReader(req.getInputStream()));
+  		
+  		try
+  		{
+  		    br = new BufferedReader(new InputStreamReader(req.getInputStream()));
+  		}
+		catch (Exception e)
+		{
+		    sl.writeLog("Crash\tRemoteScannerFilter");
+		    sl.writeException(e);
+		    return;
+		}		
+  		
   		
   		/*  FIXME: sometimes getDef returns raises a NullPointerException.
   		    In the meantime, I'll just keep it from crashing
   		*/
+  		sl.writeLog("Translation\tRemoteScannerFilter");
+  		
   		try
   		{
   		    while((linea = br.readLine())!= null)
@@ -112,29 +143,19 @@ public class RemoteScannerFilter extends GenericServlet
 		}
 		catch (Exception e)
 		{
-    		ResourceBundle rb = ResourceBundle.getBundle("dictionary");
-	    	String fileName = rb.getString("remotescannerfilter.log-file-name");
-	    	Calendar rightNow = Calendar.getInstance();
-	    	
-	    	PrintStream pw = new PrintStream(new FileOutputStream(fileName, true));
-	    	pw.println("Translation tool crashed on: " + rightNow.toString());
-	    	e.printStackTrace(pw);
-	    	pw.println();
-	    	pw.println("Word that crashed: " + word.getWylie());
-	    	pw.println();
-	    	pw.println("All words:");
-		    for (i=0; i<token.length; i++)
-		    {
-			    if (!(token[i] instanceof Word)) continue;
-			    word = (Word) token[i];
-			    out.println(word.getWylie());
-			}
-			pw.println();
-			pw.flush();
-			pw.close();
+		    sl.writeLog("Crash\tRemoteScannerFilter\t" + word.getWylie());
+		    sl.writeException(e);
 		}
 
 		scanner.clearTokens();
 	    out.close();
+	}
+	
+	public void destroy()
+	{
+	    super.destroy();
+	    sl.setUserIP(null);
+	    sl.writeLog("Shutdown\tRemoteScannerFilter");
+	    scanner.destroy();
 	}
 }

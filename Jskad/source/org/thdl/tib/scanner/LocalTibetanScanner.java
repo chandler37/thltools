@@ -47,15 +47,19 @@ public class LocalTibetanScanner extends TibetanScanner
 	{
 		return raiz.getDictionarySourcesWanted();
 	}
-
-
+	
 	public LocalTibetanScanner(String arch) throws Exception
+	{
+	    this (arch, true);
+	}
+
+	public LocalTibetanScanner(String arch, boolean backwardCompatible) throws Exception
 	{
 	    super();
 		archivo = arch;
 		// raiz = new MemorySyllableListTree(archivo);
 		// raiz = new FileSyllableListTree(archivo);
-		raiz = new CachedSyllableListTree(archivo);
+		raiz = new CachedSyllableListTree(archivo, backwardCompatible);
 		floatingSil = new Vector();
 		resetAll();
 	}
@@ -409,4 +413,9 @@ outAHere:
 			return null;
 		}
 	}
+    public void destroy()
+    {
+        FileSyllableListTree.closeFiles();
+    }
+    
 }

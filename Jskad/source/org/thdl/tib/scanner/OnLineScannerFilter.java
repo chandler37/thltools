@@ -48,16 +48,29 @@ public class OnLineScannerFilter extends HttpServlet
     ResourceBundle rb;
 	private TibetanScanner scanner;
 	private String dictionaries[];
+	private ScannerLogger sl;
 	
-	public OnLineScannerFilter() throws Exception
+	public OnLineScannerFilter() //throws Exception
 	{
 		rb = ResourceBundle.getBundle(propertyFile);
-		scanner = new LocalTibetanScanner(rb.getString(dictNameProperty));
+	    sl = new ScannerLogger();
+	    
+		try
+		{
+		    scanner = new LocalTibetanScanner(rb.getString(dictNameProperty), false);
+		}
+		catch (Exception e)
+		{
+		    sl.writeLog("Crash\tOnLineScannerFilter");
+		    sl.writeException(e);
+		}
+		
 		dictionaries = scanner.getDictionaryDescriptions();
+		sl.writeLog("Creation\tOnLineScannerFilter");
 	}
 
     synchronized public void doGet(HttpServletRequest request,
-                      HttpServletResponse response) throws IOException, ServletException
+                      HttpServletResponse response) //throws IOException, ServletException
     {
 		String answer, parrafo = null, checkboxName;
         
@@ -66,7 +79,19 @@ public class OnLineScannerFilter extends HttpServlet
         ThdlOptions.setUserPreference("thdl.rely.on.system.tm.fonts", true);
         
         response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
+        PrintWriter out;
+        sl.setUserIP(request.getRemoteAddr());
+        
+        try
+        {
+            out = response.getWriter();
+        }
+		catch (Exception e)
+		{
+		    sl.writeLog("Crash\tOnLineScannerFilter");
+		    sl.writeException(e);
+		    return;
+		}
 				
 		BitDictionarySource ds=null;
 		boolean checkedDicts[], allUnchecked, wantsTibetan, useTHDLBanner = (request.getParameter("thdlBanner")!=null);
@@ -260,8 +285,12 @@ public class OnLineScannerFilter extends HttpServlet
         out.println("</form>");
 		
         if (parrafo != null)
+        {
+            sl.writeLog("Translation\tOnLineScannerFilter");
         	if (ds!=null && !ds.isEmpty())
         		desglosar(parrafo, out, wantsTibetan);
+        }
+        else sl.writeLog("Invocation\tOnLineScannerFilter");
 		
 		out.println(TibetanScanner.copyrightHTML);
 		if (useTHDLBanner) out.println("</div><!--END main-->");
@@ -271,7 +300,7 @@ public class OnLineScannerFilter extends HttpServlet
 	
     public void doPost(HttpServletRequest request,
                       HttpServletResponse response)
-        throws IOException, ServletException
+        //throws IOException, ServletException
     {
         doGet(request, response);
     }
@@ -408,4 +437,13 @@ public class OnLineScannerFilter extends HttpServlet
 		}
 		pw.println("</table>");
 	}
+	
+	public void destroy()
+	{
+	    super.destroy();
+	    sl.setUserIP(null);
+	    sl.writeLog("Shutdown\tOnLineScannerFilter");
+	    scanner.destroy();
+	}
+	
 }

@@ -379,4 +379,5 @@ public abstract class TibetanScanner
 	public abstract void finishUp();
 	public abstract BitDictionarySource getDictionarySource();
 	public abstract String[] getDictionaryDescriptions();
+	public abstract void destroy();
 }

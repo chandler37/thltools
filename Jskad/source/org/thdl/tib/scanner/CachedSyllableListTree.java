@@ -35,15 +35,20 @@ import org.thdl.util.*;
 public class CachedSyllableListTree implements SyllableListTree
 {
 	SyllableListTree syllables[];
-
+	
 	public CachedSyllableListTree(String archivo) throws Exception
+	{
+	    this (archivo, true);
+	}
+
+	public CachedSyllableListTree(String archivo, boolean backwardCompatible) throws Exception
 	{
 		String sil;
 		long pos, defSources[];
 		DictionarySource sourceDef;
 		int i;
 		
-		FileSyllableListTree.openFiles(archivo);
+		FileSyllableListTree.openFiles(archivo, backwardCompatible);
 				
 		SimplifiedLinkedList syllables = new SimplifiedLinkedList();		
 		do
