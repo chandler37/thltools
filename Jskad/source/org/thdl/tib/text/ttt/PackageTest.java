@@ -6934,7 +6934,7 @@ tstHelper("ZUR");
 
     private static void shelp(String s, String expectedErrors, boolean lenientPeriods, String expectedScan) {
         StringBuffer errors = new StringBuffer();
-        ArrayList al = ACIPTshegBarScanner.scan(s, errors, lenientPeriods);
+        ArrayList al = ACIPTshegBarScanner.scan(s, errors, lenientPeriods, -1);
         if (null != expectedScan) {
             if (!al.toString().equals(expectedScan)) {
                 System.out.println("Scanning " + s + " into tsheg bars was expected to cause the following scan:");
@@ -6955,7 +6955,7 @@ tstHelper("ZUR");
         }
     }
 
-    /** Tests {@link ACIPTshegBarScanner#scan(String, StringBuffer, boolean)}. */
+    /** Tests {@link ACIPTshegBarScanner#scan(String, StringBuffer, boolean, int)}. */
     public void testScanner() {
         shelp("LA...SGRUB",
               "",
@@ -6982,7 +6982,7 @@ tstHelper("ZUR");
               "Offset 0: Found an illegal open bracket (in context, this is {).  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?\nOffset END: Truly unmatched open bracket found.\n");
         shelp("DD", "");
         shelp("DD]",
-              "Offset 2: Found a truly unmatched close bracket, [ or {.\nOffset 2: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
+              "Offset 2: Found a truly unmatched close bracket, ] or }.\nOffset 2: Found a closing bracket without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.\n");
 
         shelp("///NYA", "Offset END: Slashes are supposed to occur in pairs, but the input had an unmatched '/' character.\n");
         shelp("/NYA/", "");
