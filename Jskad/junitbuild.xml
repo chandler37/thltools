@@ -46,6 +46,7 @@
       <test name="org.thdl.tib.text.tshegbar.UnicodeUtilsTest"/>
       <test name="org.thdl.tib.text.tshegbar.LegalTshegBarTest"/>
       <test name="org.thdl.tib.text.tshegbar.UnicodeGraphemeClusterTest"/>
+      <test name="org.thdl.tib.text.tshegbar.UnicodeCodepointToThdlWylieTest"/>
     </junit>
   </target>
 

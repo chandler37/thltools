@@ -371,6 +371,11 @@
       <param name="my.included.source.file"
              value="org/thdl/tib/text/tshegbar/UnicodeGraphemeClusterTest.java"/>
     </antcall>
+    <antcall target="our-internal-javac-task">
+      <param name="mybin" value="${junitbin}"/>
+      <param name="my.included.source.file"
+             value="org/thdl/tib/text/tshegbar/UnicodeCodepointToThdlWylieTest.java"/>
+    </antcall>
   </target>
 
   <!-- Builds the standalone translation tool: -->
