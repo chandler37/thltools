@@ -969,6 +969,27 @@ public class DuffPaneTest extends DuffPaneTestBase {
 
         ensureKeysGiveCorrectWylie("'gas");
 
+        /* Paul Hackett's e-mail on Feb 27 2005 leads to these test
+           cases: */
+        {
+            // second letter:
+            ensureKeysGiveCorrectWylie("gnas");
+            ensureKeysGiveCorrectWylie("dgas");
+            ensureKeysGiveCorrectWylie("dmas");
+            ensureKeysGiveCorrectWylie("'gas");
+            ensureKeysGiveCorrectWylie("'bas");
+
+            // TODO(dchandler): Paul Hackett's list says mngas is
+            // correct, not mangs.
+            ensureKeysGiveCorrectWylie("mngas", "mangs");
+
+            // first letter:
+            ensureKeysGiveCorrectWylie("'angs");
+            // TODO(dchandler): Paul Hackett's list says dangs is
+            // correct, not dngas.
+            ensureKeysGiveCorrectWylie("dangs", "dngas");
+        }
+
         /* Chris Fynn's e-mail on Feb 21 2005 leads to these test
            cases: */
         {
