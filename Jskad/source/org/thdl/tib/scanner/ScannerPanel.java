@@ -70,7 +70,7 @@ public abstract class ScannerPanel extends Panel implements ActionListener
 		}
 		catch (Exception e)
 		{
-			status.setText("Dictionary could no be loaded!");
+			status.setText("Dictionary could not be loaded!");
 			exito=false;
 		}
   		add(panel1, BorderLayout.NORTH);
@@ -88,6 +88,7 @@ public abstract class ScannerPanel extends Panel implements ActionListener
 	{
 		int rows, n;
 		
+        if (null == scanner) return null;
 		String dictionaries[] = scanner.getDictionaryDescriptions();
 		if (dictionaries!=null)
 		{
