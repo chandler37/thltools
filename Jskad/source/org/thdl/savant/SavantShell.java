@@ -32,12 +32,14 @@ import org.thdl.savant.tib.*;
 import org.thdl.util.TeeStream;
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlActionListener;
+import org.thdl.util.RTFPane;
+import org.thdl.util.SimpleFrame;
 
 public class SavantShell extends JFrame
 {
 	private static int numberOfSavantsOpen = 0;
-	private static JScrollPane helpPane;
-	private static JScrollPane aboutPane;
+	private static JScrollPane helpPane = null;
+	private static JScrollPane aboutPane = null;
 	private static String mediaPath = null;
 
 	private JFileChooser fileChooser;
@@ -50,38 +52,24 @@ public class SavantShell extends JFrame
 
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			} catch (Exception e) {}
-
-			RTFEditorKit rtf = new RTFEditorKit();
-			InputStream in1 = SavantShell.class.getResourceAsStream("savanthelp.rtf");
-			InputStream in2 = SavantShell.class.getResourceAsStream("aboutsavant.rtf");
-			if (in1 == null) {
-				System.out.println("Can't find savanthelp.rtf.");
-				System.exit(1);
-			}
-			if (in2 == null) {
-				System.out.println("Can't find aboutsavant.rtf.");
-				System.exit(1);
-			}
-			DefaultStyledDocument doc1 = new DefaultStyledDocument();
-			DefaultStyledDocument doc2 = new DefaultStyledDocument();
-			try {
-				rtf.read(in1, doc1, 0);
-				rtf.read(in2, doc2, 0);
-			} catch (BadLocationException ioe) {
-				return;
-			} catch (IOException ioe) {
+			} catch (Exception e) { ThdlDebug.noteIffyCode(); }
+            
+            try {
+                helpPane = new RTFPane(SavantShell.class, "savanthelp.rtf");
+                aboutPane = new RTFPane(SavantShell.class, "aboutsavant.rtf");
+            } catch (FileNotFoundException e) {
+				System.out.println("Can't find " + e.getMessage() + ".");
+                System.exit(1);
+            } catch (IOException e) {
 				System.out.println("Can't find one of savanthelp.rtf or aboutsavant.rtf.");
 				System.exit(1);
-			}
-
-			JTextPane pane1 = new JTextPane(doc1);
-			JTextPane pane2 = new JTextPane(doc2);
-			pane1.setEditable(false);
-			pane2.setEditable(false);
-
-			helpPane = new JScrollPane(pane1);
-			aboutPane = new JScrollPane(pane2);
+            } catch (BadLocationException e) {
+				System.out.println("Error reading one of savanthelp.rtf or aboutsavant.rtf.");
+				System.exit(1);
+            } catch (Exception e) {
+                /* Carry on. A security exception, probably. */
+                ThdlDebug.noteIffyCode();
+            }
 
 			SavantShell ssh = new SavantShell();
 			ssh.setVisible(true);
@@ -227,20 +215,7 @@ public class SavantShell extends JFrame
 		{
 			public void theRealActionPerformed(ActionEvent e)
 			{
-				JFrame h = new JFrame("Help");
-				h.setSize(500,400);
-				Container c = h.getContentPane();
-				c.addComponentListener(new ComponentAdapter()
-				{
-					public void componentResized(ComponentEvent e)
-					{
-						helpPane.setSize(e.getComponent().getSize());
-					}
-				});
-				helpPane.setSize(c.getSize());
-				c.add(helpPane);
-				h.setLocation(100,100);
-				h.setVisible(true);
+				new SimpleFrame("Help", helpPane);
 			}
 		});
 		JMenuItem aboutItem = new JMenuItem("About");
@@ -248,20 +223,7 @@ public class SavantShell extends JFrame
 		{
 			public void theRealActionPerformed(ActionEvent e)
 			{
-				JFrame h = new JFrame("About");
-				h.setSize(500,400);
-				Container c = h.getContentPane();
-				c.addComponentListener(new ComponentAdapter()
-				{
-					public void componentResized(ComponentEvent e)
-					{
-						aboutPane.setSize(e.getComponent().getSize());
-					}
-				});
-				aboutPane.setSize(c.getSize());
-				c.add(aboutPane);
-				h.setLocation(100,100);
-				h.setVisible(true);
+				new SimpleFrame("About", aboutPane);
 			}
 		});
 		infoMenu.add(helpItem);
