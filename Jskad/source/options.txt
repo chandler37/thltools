@@ -19,6 +19,10 @@
 #########################    User Preferences    ###########################
 ############################################################################
 
+# Set this to qt4j if you wish to use QuickTime for Java, or to jmf if you
+# with to use Sun's Java Media Framework.
+thdl.media.player = qt4j
+
 # Sets the Tibetan keyboard that Jskad uses on startup.
 # Here are the acceptable values:
 #
