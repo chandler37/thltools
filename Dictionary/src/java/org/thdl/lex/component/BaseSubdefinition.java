@@ -2,7 +2,6 @@ package org.thdl.lex.component;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /** @author Hibernate CodeGenerator */
@@ -22,6 +21,9 @@ abstract public class BaseSubdefinition extends LexComponent implements org.thdl
 
     /** nullable persistent field */
     private org.thdl.lex.component.ILexComponent parent;
+
+    /** persistent field */
+    private List translations;
 
     /** persistent field */
     private List glosses;
@@ -44,17 +46,15 @@ abstract public class BaseSubdefinition extends LexComponent implements org.thdl
     /** persistent field */
     private List registers;
 
-    /** persistent field */
-    private Set translations;
-
     /** full constructor */
-    public BaseSubdefinition(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.String subdefinition, java.lang.Integer translationOf, org.thdl.lex.component.ILexComponent parent, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers, Set translations) {
+    public BaseSubdefinition(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.String subdefinition, java.lang.Integer translationOf, org.thdl.lex.component.ILexComponent parent, List translations, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers) {
         super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
         this.precedence = precedence;
         this.subdefinition = subdefinition;
         this.translationOf = translationOf;
         this.parent = parent;
+        this.translations = translations;
         this.glosses = glosses;
         this.keywords = keywords;
         this.modelSentences = modelSentences;
@@ -62,7 +62,6 @@ abstract public class BaseSubdefinition extends LexComponent implements org.thdl
         this.relatedTerms = relatedTerms;
         this.passages = passages;
         this.registers = registers;
-        this.translations = translations;
     }
 
     /** default constructor */
@@ -70,8 +69,9 @@ abstract public class BaseSubdefinition extends LexComponent implements org.thdl
     }
 
     /** minimal constructor */
-    public BaseSubdefinition(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers, Set translations) {
+    public BaseSubdefinition(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, List translations, List glosses, List keywords, List modelSentences, List translationEquivalents, List relatedTerms, List passages, List registers) {
       super(deleted, analyticalNotes, meta);
+        this.translations = translations;
         this.glosses = glosses;
         this.keywords = keywords;
         this.modelSentences = modelSentences;
@@ -79,7 +79,6 @@ abstract public class BaseSubdefinition extends LexComponent implements org.thdl
         this.relatedTerms = relatedTerms;
         this.passages = passages;
         this.registers = registers;
-        this.translations = translations;
     }
 
     public java.lang.Integer getParentId() {
@@ -120,6 +119,14 @@ abstract public class BaseSubdefinition extends LexComponent implements org.thdl
 
     public void setParent(org.thdl.lex.component.ILexComponent parent) {
         this.parent = parent;
+    }
+
+    public java.util.List getTranslations() {
+        return this.translations;
+    }
+
+    public void setTranslations(java.util.List translations) {
+        this.translations = translations;
     }
 
     public java.util.List getGlosses() {
@@ -176,14 +183,6 @@ abstract public class BaseSubdefinition extends LexComponent implements org.thdl
 
     public void setRegisters(java.util.List registers) {
         this.registers = registers;
-    }
-
-    public java.util.Set getTranslations() {
-        return this.translations;
-    }
-
-    public void setTranslations(java.util.Set translations) {
-        this.translations = translations;
     }
 
     public String toString() {

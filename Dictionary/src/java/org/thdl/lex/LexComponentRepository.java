@@ -432,6 +432,28 @@ public class LexComponentRepository
 	 * @param  component                   Description of the Parameter
 	 * @exception  LexRepositoryException  Description of the Exception
 	 */
+	public static void remove( ILexComponent component ) throws LexRepositoryException
+	{
+
+		try
+		{
+			beginTransaction();
+			getSession().delete( component );
+			endTransaction( true );
+		}
+		catch ( HibernateException he )
+		{
+			throw new LexRepositoryException( he );
+		}
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  component                   Description of the Parameter
+	 * @exception  LexRepositoryException  Description of the Exception
+	 */
 	public static void refresh( ILexComponent component ) throws LexRepositoryException
 	{
 

@@ -1,23 +1,51 @@
 package org.thdl.lex.commands;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-
+import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.thdl.lex.*;
 import org.thdl.lex.component.*;
+import org.thdl.users.*;
 
 
 /**
  *  Description of the Class
  *
  * @author     travis
- * @created    October 14, 2003
+ * @created    October 6, 2003
  */
 public class RemoveCommand extends LexCommand implements Command
 {
+
+	private boolean termMode;
+
+
+	/**
+	 *  Sets the termMode attribute of the GetFormCommand object
+	 *
+	 * @param  termMode  The new termMode value
+	 */
+	public void setTermMode( boolean termMode )
+	{
+		this.termMode = termMode;
+	}
+
+
+	/**
+	 *  Gets the termMode attribute of the GetFormCommand object
+	 *
+	 * @return    The termMode value
+	 */
+	public boolean isTermMode()
+	{
+		return termMode;
+	}
+
+
+
 //helper methods
 	/**
 	 *  Description of the Method
@@ -29,46 +57,95 @@ public class RemoveCommand extends LexCommand implements Command
 	 */
 	public String execute( HttpServletRequest req, ILexComponent component ) throws CommandException
 	{
+		String msg = null;
+		String next = getNext();
 		Visit visit = UserSessionManager.getInstance().getVisit( req.getSession( true ) );
 
-		DisplayHelper displayHelper = visit.getHelper();
+		try
+		{
+			HttpSession ses = req.getSession( false );
+			if ( null == ses )
+			{
+				throw new CommandException( "Could not remove component, user's session has expired" );
+			}
 
-		/*
-		    try
-		    {
-		    setComponent( (LexComponent)component );
-		    getComponent().query( Integer.parseInt( req.getParameter("id") ) );
-		    String msg=null;
-		    int successCode = getComponent().remove();
-		    msg=null;
-		    String label = req.getParameter( LexConstants.LABEL_REQ_PARAM );
-		    if (successCode > 0)
-		    { msg = "The " + label +" was successfully removed."; }
-		    else
-		    { msg = "Failure: The " + getComponent().getLabel() +" was not removed."; }
-		    req.setAttribute(LexConstants.MESSAGE_REQ_ATTR, msg);
-		  */
-		return getNext();
-		/*
-		    }
-		    catch (LexComponentException e)
-		    {
-		    throw new CommandException("Lex Action  Exception: " + e.getMessage());
-		    }
-		  */
+			ThdlUser user = visit.getUser();
+			LexQuery query = visit.getQuery();
+			ITerm term = query.getEntry();
+
+			if ( CommandToken.isValid( req ) && validate( user, component ) )
+			{
+				if ( isTermMode() )
+				{
+					term.setDeleted( Boolean.TRUE );
+					LexComponentRepository.update( term );
+					query.setEntry( null );
+				}
+				else if ( component instanceof Translatable && null != ( (Translatable) component ).getTranslationOf() )
+				{
+					Translatable translation = (Translatable) component;
+					Translatable source = null;
+					try
+					{
+						source = (Translatable) translation.getClass().newInstance();
+					}
+					catch ( Exception e )
+					{
+						throw new CommandException( e );
+					}
+					source.setMetaId( translation.getTranslationOf() );
+					source.setParentId( translation.getParentId() );
+					source = (Translatable) term.findChild( source );
+					List translationList = source.getTranslations();
+					ILexComponent doomedComponent = (ILexComponent) translationList.get( translationList.indexOf( translation ) );
+					doomedComponent.setDeleted( Boolean.TRUE );
+					LexComponentRepository.update( doomedComponent );
+					translationList.remove( doomedComponent );
+					LexComponentRepository.update( term );
+				}
+				else
+				{
+					LexLogger.debug( "Checking component state from updateCommand BEFORE component assignment" );
+					LexLogger.debugComponent( component );
+					ILexComponent doomedComponent = term.findChild( component );
+					doomedComponent.setDeleted( Boolean.TRUE );
+					LexComponentRepository.update( doomedComponent );
+					term.removeChild( doomedComponent );
+					LexComponentRepository.update( term );
+				}
+				msg = "Successfully removed component";
+			}
+			else
+			{
+				msg = CommandToken.isValid( req ) ? "Unauthorized update attempted" : "Invalid reload attempted.";
+			}
+			return next;
+		}
+		catch ( LexComponentException e )
+		{
+			throw new CommandException( "Command had trouble processing " + component, e );
+		}
+		catch ( LexRepositoryException e )
+		{
+			throw new CommandException( "Command had trouble processing " + component, e );
+		}
+		finally
+		{
+			req.setAttribute( LexConstants.MESSAGE_REQ_ATTR, msg );
+		}
 	}
-
-
 
 //constructors
 	/**
-	 *Constructor for the RemoveCommand object
+	 *Constructor for the GetFormCommand object
 	 *
-	 * @param  next  Description of the Parameter
+	 * @param  next      Description of the Parameter
+	 * @param  termMode  Description of the Parameter
 	 */
-	public RemoveCommand( String next )
+	public RemoveCommand( String next, Boolean termMode )
 	{
 		super( next );
+		setTermMode( termMode.booleanValue() );
 	}
 }
 

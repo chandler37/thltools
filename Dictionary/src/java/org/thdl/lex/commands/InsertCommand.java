@@ -91,6 +91,24 @@ public class InsertCommand extends LexCommand implements Command
 					ILexComponent parent = term.findParent( component.getParentId() );
 					parent.getAnalyticalNotes().add( component );
 				}
+				else if ( component instanceof Translatable && null != ( (Translatable) component ).getTranslationOf() )
+				{
+					Translatable translation = (Translatable) component;
+					Translatable source = null;
+					try
+					{
+						source = (Translatable) translation.getClass().newInstance();
+					}
+					catch ( Exception e )
+					{
+						throw new CommandException( e );
+					}
+					source.setMetaId( translation.getTranslationOf() );
+					source.setParentId( translation.getParentId() );
+					source = (Translatable) term.findChild( source );
+					List l = source.getTranslations();
+					l.add( translation );
+				}
 				else
 				{
 					term.addChild( component );

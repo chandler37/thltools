@@ -205,6 +205,22 @@ public abstract class LexComponent extends BaseLexComponent implements Serializa
 
 	}
 
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  o  Description of the Parameter
+	 * @return    Description of the Return Value
+	 */
+	public boolean equals( Object o )
+	{
+		boolean b = false;
+		if ( o instanceof ILexComponent )
+		{
+			b = this.metaId.equals( ( (ILexComponent) o ).getMetaId() );
+		}
+		return b;
+	}
 //constructors
 
 	/**

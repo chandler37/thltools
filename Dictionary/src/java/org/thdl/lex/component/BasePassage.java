@@ -2,7 +2,6 @@ package org.thdl.lex.component;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /** @author Hibernate CodeGenerator */
@@ -33,10 +32,10 @@ abstract public class BasePassage extends LexComponent implements org.thdl.lex.c
     private org.thdl.lex.component.ILexComponent parent;
 
     /** persistent field */
-    private Set translations;
+    private List translations;
 
     /** full constructor */
-    public BasePassage(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.String literarySource, java.lang.String spelling, java.lang.String pagination, java.lang.String passage, java.lang.Integer translationOf, org.thdl.lex.component.ILexComponent parent, Set translations) {
+    public BasePassage(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, java.lang.Integer parentId, java.lang.Integer precedence, java.lang.String literarySource, java.lang.String spelling, java.lang.String pagination, java.lang.String passage, java.lang.Integer translationOf, org.thdl.lex.component.ILexComponent parent, List translations) {
         super(deleted, analyticalNotes, meta);
         this.parentId = parentId;
         this.precedence = precedence;
@@ -54,7 +53,7 @@ abstract public class BasePassage extends LexComponent implements org.thdl.lex.c
     }
 
     /** minimal constructor */
-    public BasePassage(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, Set translations) {
+    public BasePassage(java.lang.Boolean deleted, List analyticalNotes, org.thdl.lex.component.Meta meta, List translations) {
       super(deleted, analyticalNotes, meta);
         this.translations = translations;
     }
@@ -123,11 +122,11 @@ abstract public class BasePassage extends LexComponent implements org.thdl.lex.c
         this.parent = parent;
     }
 
-    public java.util.Set getTranslations() {
+    public java.util.List getTranslations() {
         return this.translations;
     }
 
-    public void setTranslations(java.util.Set translations) {
+    public void setTranslations(java.util.List translations) {
         this.translations = translations;
     }
 

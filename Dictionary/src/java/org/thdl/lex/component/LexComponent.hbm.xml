@@ -144,10 +144,11 @@
 			<property name="precedence" type="java.lang.Integer" column="precedence" not-null="true" length="6"/>
 			<property name="definition" type="java.lang.String" column="definition" length="65535"/>
 			<property name="translationOf" type="java.lang.Integer" column="translationOf" length="11"/>
-			<set name="translations" table="Definitions" lazy="true" where="translationOf IS NOT NULL">
+			<list name="translations" table="Definitions" lazy="true" where="translationOf IS NOT NULL">
 				<key column="translationOf"/>
+				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.Definition"/>
-			</set>
+			</list>
 			<list name="subdefinitions" table="Subdefinitions" lazy="true"  where="translationOf IS NULL">
 				<key column="parentId"/>
 				<index column="precedence"/>
@@ -203,10 +204,11 @@
 			<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>
 			<property name="subdefinition" type="java.lang.String" column="subdefinition" length="65535"/>
 			<property name="translationOf" type="java.lang.Integer" column="translationOf" length="11"/>
-			<set name="translations" table="Subdefinitions" lazy="true" where="translationOf IS NOT NULL">
+			<list name="translations" table="Subdefinitions" lazy="true" where="translationOf IS NOT NULL">
 				<key column="translationOf"/>
+				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.Subdefinition"/>
-			</set>
+			</list>
 			<list name="glosses" table="Glosses" lazy="true">
 				<key column="parentId"/>
 				<index column="precedence"/>
@@ -274,10 +276,11 @@
 			<property name="derivation" type="java.lang.String" column="derivation" not-null="true" length="255"/>
 			<property name="etymologyDescription" type="java.lang.String" column="etymologyDescription" not-null="true" length="65535"/>
 			<property name="translationOf" type="java.lang.Integer" column="translationOf" length="11"/>
-			<set name="translations" table="Etymologies" lazy="true" where="translationOf IS NOT NULL">
+			<list name="translations" table="Etymologies" lazy="true" where="translationOf IS NOT NULL">
 				<key column="translationOf"/>
+				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.Etymology"/>
-			</set>
+			</list>
 		</joined-subclass>
 		
 		<joined-subclass name="org.thdl.lex.component.Spelling" proxy="org.thdl.lex.component.ISpelling" table="Spellings">
@@ -361,10 +364,11 @@
 			<property name="precedence" type="java.lang.Integer" column="precedence" length="6"/>
 			<property name="modelSentence" type="java.lang.String" column="modelSentence" length="65535"/>
 			<property name="translationOf" type="java.lang.Integer" column="translationOf" length="11"/>
-			<set name="translations" table="ModelSentences" lazy="true" where="translationOf IS NOT NULL">
+			<list name="translations" table="ModelSentences" lazy="true" where="translationOf IS NOT NULL">
 				<key column="translationOf"/>
+				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.ModelSentence"/>
-			</set>
+			</list>
 		</joined-subclass>
 		
 		<joined-subclass name="org.thdl.lex.component.TranslationEquivalent" proxy="org.thdl.lex.component.ITranslationEquivalent" table="TranslationEquivalents">
@@ -410,10 +414,11 @@
 			<property name="pagination" type="java.lang.String" column="pagination" length="65535"/>
 			<property name="passage" type="java.lang.String" column="passage" length="65535"/>
 			<property name="translationOf" type="java.lang.Integer" column="translationOf" length="11"/>
-			<set name="translations" table="LiteraryQuotations" lazy="true" where="translationOf IS NOT NULL">
+			<list name="translations" table="LiteraryQuotations" lazy="true" where="translationOf IS NOT NULL">
 				<key column="translationOf"/>
+				<index column="precedence"/>
 				<one-to-many class="org.thdl.lex.component.Passage"/>
-			</set>
+			</list>
 		</joined-subclass>
 		
 		<joined-subclass name="org.thdl.lex.component.SpeechRegister" proxy="org.thdl.lex.component.IRegister" table="SpeechRegisters">

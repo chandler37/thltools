@@ -345,5 +345,14 @@ public interface ITerm extends LexComponentNode
 	 * @exception  LexComponentException  Description of the Exception
 	 */
 	public void addChild( ILexComponent component ) throws LexComponentException;
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  component                  Description of the Parameter
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public void removeChild( ILexComponent component ) throws LexComponentException;
 }
 

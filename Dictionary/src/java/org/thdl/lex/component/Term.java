@@ -163,6 +163,20 @@ public class Term extends BaseTerm implements Serializable, LexComponentNode
 	/**
 	 *  Description of the Method
 	 *
+	 * @param  child                      Description of the Parameter
+	 * @exception  LexComponentException  Description of the Exception
+	 */
+	public void removeChild( ILexComponent child ) throws LexComponentException
+	{
+		List list = findSiblings( child );
+		child = findChild( list, child.getMetaId() );
+		list.remove( child );
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
 	 * @param  pk                         Description of the Parameter
 	 * @return                            Description of the Return Value
 	 * @exception  LexComponentException  Description of the Exception

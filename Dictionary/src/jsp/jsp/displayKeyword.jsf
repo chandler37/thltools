@@ -11,6 +11,7 @@
 			<span class="compEditOptions">
 		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=keyword&amp;metaId=${ keyword.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
 		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=keyword&amp;metaId=${ keyword.metaId }" title="Edit this keyword"><img alt="Edit this keyword" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=keyword&amp;metaId=${ keyword.metaId }" title="Remove this keyword"><img alt="Remove this keyword" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
 		</span>
 	</c:if>
 

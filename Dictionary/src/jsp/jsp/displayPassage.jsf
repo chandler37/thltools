@@ -12,7 +12,7 @@
 		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=passage&amp;metaId=${ passage.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
 		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=passage&amp;metaId=${ passage.metaId }" title="Edit this passage"><img alt="Edit this passage" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
 		<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=passage&amp;parentId=${passage.parentId}&amp;translationOf=${passage.metaId}" title="Translate this passage"><img alt="Translate this passage" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
-		<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=passage&amp;parentId=${passage.parentId}&amp;translationOf=${passage.metaId}" title="Translate this passage"><img alt="Translate this passage" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
+		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=passage&amp;metaId=${ passage.metaId }" title="Remove this passage"><img alt="Remove this passage" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
 		</span>
 	</c:if>  
 
@@ -63,6 +63,13 @@
 		<ul>
 		<c:forEach var="translation" items="${ passage.translations }" >
 		<li>
+		<p class="data">
+		<c:if test="${ editMode }">
+	<span class="compEditOptions">
+		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=passage&amp;metaId=${ translation.metaId }&amp;translationOf=${ translation.translationOf }&amp;parentId=${ translation.parentId }" title="Edit this passage"><img alt="Edit this passage" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=passage&amp;metaId=${ translation.metaId }&amp;translationOf=${ translation.translationOf }&amp;parentId=${ translation.parentId }" title="Remove this passage"><img alt="Remove this passage" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+		</span>
+	</c:if>  
 		<%-- <c:set var='href' value='#'/>
 		<c:if test="${ editMode }">
 			<c:set var='href' value='/lex/action?cmd=getUpdateForm&amp;comp=passage&amp;metaId=${ translation.metaId }'  />
@@ -93,7 +100,7 @@
 		<jsp:include page="displayMeta.jsf" />
 		
 		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ originalComponent }" />
-		
+		</p>
 		</li>
 		</c:forEach> 
 		</ul>

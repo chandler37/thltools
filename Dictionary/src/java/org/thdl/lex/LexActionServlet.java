@@ -209,7 +209,10 @@ public class LexActionServlet extends HttpServlet
 		commands.put( "displayFull", new DisplayCommand( "displayEntry.jsp" ) );
 		commands.put( "editEntry", new DisplayCommand( "displayEntry.jsp" ) );
 
-		commands.put( "remove", new RemoveCommand( "displayEntry.jsp" ) );
+		commands.put( "getRemoveForm", new GetRemoveFormCommand( "displayForm.jsp?formMode=remove", Boolean.FALSE ) );
+		commands.put( "getRemoveTermForm", new GetRemoveFormCommand( "displayForm.jsp?formMode=remove", Boolean.TRUE ) );
+		commands.put( "remove", new RemoveCommand( "displayEntry.jsp", Boolean.FALSE ) );
+		commands.put( "removeTerm", new RemoveCommand( "menu.jsp", Boolean.TRUE ) );
 
 		commands.put( "setMetaPrefs", new PreferencesCommand( "menu.jsp" ) );
 		commands.put( "setMetaDefaults", new PreferencesCommand( "menu.jsp" ) );

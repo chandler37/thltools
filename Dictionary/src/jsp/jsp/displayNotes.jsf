@@ -11,6 +11,14 @@
 <ol class="notes">
 <c:forEach var="note" items="${ sessionScope.visit.helper.component.analyticalNotes }">
 <li>
+		<c:if test="${ editMode }">
+	<span class="compEditOptions">
+		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=analyticalNote&amp;metaId=${ note.metaId }" title="Edit this analyticalNote"><img alt="Edit this analyticalNote" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=analyticalNote&amp;metaId=${ note.metaId }" title="Remove this analyticalNote"><img alt="Remove this analyticalNote" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+		</span>
+	</c:if>
+
+
 <span class="analysis">
 <c:out value="${ note.analyticalNote }" escapeXml="false" />
 

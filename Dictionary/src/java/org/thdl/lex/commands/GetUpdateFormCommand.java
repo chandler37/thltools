@@ -1,7 +1,7 @@
 package org.thdl.lex.commands;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -58,7 +58,7 @@ public class GetUpdateFormCommand extends LexCommand implements Command
 	{
 		String next = getNext();
 		Visit visit = UserSessionManager.getInstance().getVisit( req.getSession( true ) );
-		LexQuery query = visit.getQuery( );
+		LexQuery query = visit.getQuery();
 		ITerm term = query.getEntry();
 		String msg = null;
 		ThdlUser user = visit.getUser();
@@ -73,6 +73,26 @@ public class GetUpdateFormCommand extends LexCommand implements Command
 				if ( isTermMode() )
 				{
 					component = query.getEntry();
+				}
+				else if ( component instanceof Translatable && null != ( (Translatable) component ).getTranslationOf() )
+				{
+					LexComponentRepository.update( term );
+					Translatable translation = (Translatable) component;
+					Translatable source = null;
+					try
+					{
+						source = (Translatable) translation.getClass().newInstance();
+					}
+					catch ( Exception e )
+					{
+						throw new CommandException( e );
+					}
+					source.setMetaId( translation.getTranslationOf() );
+					source.setParentId( translation.getParentId() );
+					source = (Translatable) term.findChild( source );
+					List translationList = source.getTranslations();
+					component = (ILexComponent) translationList.get( translationList.indexOf( translation ) );
+					req.setAttribute( LexConstants.ORIGINALBEAN_REQ_ATTR, source );
 				}
 				else
 				{
@@ -93,33 +113,6 @@ public class GetUpdateFormCommand extends LexCommand implements Command
 			}
 
 			//if the component is a translation of another component get the original as well to assist in editing
-			if ( component instanceof Translatable )
-			{
-				Translatable translatable = (Translatable) component;
-				if ( null != translatable.getTranslationOf() && translatable.getTranslationOf().intValue() > 0 )
-				{
-					try
-					{
-						LexComponent source = (LexComponent) translatable.getClass().newInstance();
-						Integer sourcePk = translatable.getTranslationOf();
-						source.setMetaId( sourcePk );
-						LexComponentRepository.loadByPk( source );
-						req.setAttribute( LexConstants.ORIGINALBEAN_REQ_ATTR, source );
-					}
-					catch ( InstantiationException ie )
-					{
-						throw new CommandException( ie );
-					}
-					catch ( IllegalAccessException iae )
-					{
-						throw new CommandException( iae );
-					}
-					catch ( LexRepositoryException lre )
-					{
-						throw new CommandException( lre );
-					}
-				}
-			}
 
 			msg = "You have reached the Update Form";
 			visit.setDisplayMode( "addEditForm" );

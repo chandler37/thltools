@@ -41,8 +41,8 @@ The message appears below.<br />
 
 <b>Message: </b> <%= exception.getMessage() %> <br /><br />
 
-<% if (request.getAttribute("component") != null) 
-	{ LexComponent lab =  (LexComponent) request.getAttribute("component");
+<% if (request.getAttribute("comp") != null) 
+	{ LexComponent lab =  (LexComponent) request.getAttribute("comp");
 %>
 <b> Label: </b> <i> <%= lab %> </i><br /><br /> 
 

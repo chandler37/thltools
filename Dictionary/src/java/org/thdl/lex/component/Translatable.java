@@ -18,7 +18,7 @@ public interface Translatable extends ILexComponent
 
 
 	/**
-	 *  Sets the translationOf attribute of the Translatable object
+	 *  Lists the translationOf attribute of the Translatable object
 	 *
 	 * @param  pkReference  The new translationOf value
 	 */
@@ -30,15 +30,15 @@ public interface Translatable extends ILexComponent
 	 *
 	 * @return    The translations value
 	 */
-	public java.util.Set getTranslations();
+	public java.util.List getTranslations();
 
 
 	/**
-	 *  Sets the translations attribute of the Translatable object
+	 *  Lists the translations attribute of the Translatable object
 	 *
 	 * @param  translations  The new translations value
 	 */
-	public void setTranslations( java.util.Set translations );
+	public void setTranslations( java.util.List translations );
 
 }
 

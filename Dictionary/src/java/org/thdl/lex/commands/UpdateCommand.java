@@ -59,9 +59,9 @@ public class UpdateCommand extends LexCommand implements Command
 	{
 		String msg = null;
 		String next = getNext();
-				Visit visit = UserSessionManager.getInstance().getVisit( req.getSession( true ) );
+		Visit visit = UserSessionManager.getInstance().getVisit( req.getSession( true ) );
 
-		DisplayHelper displayHelper = visit.getHelper( );
+		DisplayHelper displayHelper = visit.getHelper();
 		try
 		{
 			HttpSession ses = req.getSession( false );
@@ -85,6 +85,26 @@ public class UpdateCommand extends LexCommand implements Command
 					term.populate( req.getParameterMap() );
 					term.getMeta().populate( req.getParameterMap() );
 					component = term;
+				}
+				else if ( component instanceof Translatable && null != ( (Translatable) component ).getTranslationOf() )
+				{
+					Translatable translation = (Translatable) component;
+					Translatable source = null;
+					try
+					{
+						source = (Translatable) translation.getClass().newInstance();
+					}
+					catch ( Exception e )
+					{
+						throw new CommandException( e );
+					}
+					source.setMetaId( translation.getTranslationOf() );
+					source.setParentId( translation.getParentId() );
+					source = (Translatable) term.findChild( source );
+					List translationList = source.getTranslations();
+					component = (ILexComponent) translationList.get( translationList.indexOf( translation ) );
+					component.populate( req.getParameterMap() );
+					component.getMeta().populate( req.getParameterMap() );
 				}
 				else
 				{

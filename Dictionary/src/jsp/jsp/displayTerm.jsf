@@ -29,11 +29,12 @@
 			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=grammaticalFunction&amp;parentId=${sessionScope.visit.query.entry.metaId}" title="Add Grammatical Function"><img alt="Add a Grammatical Function" src="/lex/images/gram.gif"/></a>' escapeXml="false" />
 			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=encyclopediaArticle&amp;parentId=${sessionScope.visit.query.entry.metaId}" title="Add Encyclopedia Article"><img alt="Add Encyclopedia Article" src="/lex/images/ency.gif"/></a>' escapeXml="false" />
 			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=definition&amp;parentId=${sessionScope.visit.query.entry.metaId}" title="Add Definition"><img alt="Add Definition" src="/lex/images/def.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getRemoveTermForm&amp;comp=term&amp;metaId=${ sessionScope.visit.query.entry.metaId }" title="Remove Term"><img alt="Edit Term" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
 		</span>
 		</c:if>
-		
+
 		<strong><c:out value="${ sessionScope.visit.query.entry.term }" /></strong>
-		
+
 		<c:set target="${ sessionScope.visit.helper }" property="component" value="${ sessionScope.visit.query.entry }" />
 		<jsp:include page="displayMeta.jsf" />
 

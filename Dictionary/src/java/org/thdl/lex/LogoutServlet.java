@@ -66,7 +66,8 @@ public class LogoutServlet extends HttpServlet
 		UserSessionManager.getInstance().removeVisit( session );
 		try
 		{
-			UserSessionManager.doRedirect( request, response, goodbyePage );
+			String redirect = response.encodeRedirectURL( getGoodbyePage() );
+			response.sendRedirect( redirect );
 		}
 		catch ( IOException e )
 		{

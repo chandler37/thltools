@@ -13,6 +13,7 @@
 			<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=etymology&amp;metaId=${etymology.metaId}" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
 			<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=etymology&amp;metaId=${ etymology.metaId }&amp;parentId=${etymology.parentId}" title="Edit this Etymology"><img alt="Edit this component" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
 			<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=etymology&amp;parentId=${etymology.parentId}&amp;translationOf=${etymology.metaId}" title="Translate this Etymology"><img alt="Translate this Etymology" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
+			<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=etymology&amp;metaId=${ etymology.metaId }&amp;parentId=${etymology.parentId}" title="Remove this Etymology"><img alt="Remove this component" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
 			</span>
 		</c:if>
 

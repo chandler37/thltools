@@ -39,8 +39,8 @@
 	<c:set var="translateMode" value="${ true }" />
 	<c:set var="originalPagination" value="Original Pagination: ${ original.pagination } <br /> Translation "  />
 	<c:set var="originalPassage" value="Original Passage: ${ original.passage } <br /> Translation "  />
-	<c:set var="pagination" value="" />
-	<c:set var="passage" value="" />
+	<%-- <c:set var="pagination" value="" />
+	<c:set var="passage" value="" /> --%>
 </c:if>
 
 <form id="newCompForm" action="/lex/action" method="post">
@@ -61,11 +61,11 @@ Spelling: <c:out value='<input type="text" value="${ spelling }" name="spelling"
 
 <c:out value="${ originalPagination } " escapeXml='false' />
 Pagination: <br />
-<textarea name="pagination" rows="8" cols="90"><c:out value='${ pagination }' /></textarea><br />
+<c:out value='<input type="text" name="pagination"  cols="90"  value="${ pagination }"/>' escapeXml="false"/><br />
 
 <c:out value="${ originalPassage }" escapeXml='false' />
 Passage: <br />
-<textarea name="passage" rows="8" cols="90"><c:out value='${ passage }' /> </textarea> <br />
+<textarea name="passage" rows="8" cols="90"><c:out value='${ passage }' /></textarea> <br />
 
 <jsp:include page="metaForm.jsf" />
 
