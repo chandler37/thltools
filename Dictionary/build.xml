@@ -114,16 +114,11 @@
 	<target name="compile" description="Compile web application" depends="copy">
 		<mkdir dir="${build}/WEB-INF/classes"/>
 		<javac  destdir="${build}/WEB-INF/classes" classpathref="classpath" debug="on" listfiles="no">
-
-    <src path="${source}/java"/>
-    <include name="org/thdl/lex/**"/>
-    <exclude name="**/old/**"/>
-  </javac> 	
+		<src path="${source}/java"/>
+		<include name="org/thdl/lex/**"/>
+		<exclude name="**/old/**"/>
+	  </javac> 	
   </target>
-	
-	<target name="test" description="Testing" depends="compile">
-		<java classname="org.thdl.lex.${class}" classpath="${build}/WEB-INF/classes/" classpathref="classpath"/>
-	</target>
 	
 	<target name="javadoc" description="Create Javadocs">		
 		<javadoc destdir="${build}/apidocs/" classpathref="classpath" author="true" version="true" use="true" windowtitle="THDL Tibetan Collaborative Dictionary API">
@@ -167,6 +162,24 @@
 	
 	<target name="remove" description="Remove web application">
 		<remove url="${url}" username="${username}" password="${password}" path="${path}"/>
+	</target>
+	
+	<target name="test" description="Run unit tests">
+		<java classname="org.thdl.lex.test.MainMenuTestCase" classpathref="classpath" fork="yes">
+			<classpath>
+				<pathelement location="${build}/WEB-INF/classes"/>
+			</classpath>
+			<arg value="${ lex.username }"/>
+			<arg value="${ lex.password }"/>
+		</java>
+	</target>
+	
+	<target name="reload-test" description="Remove and Re-install web application" depends="reload">
+		<antcall target="test"/>
+	</target>
+	
+	<target name="install-test" description="Remove and Re-install web application" depends="install">
+		<antcall target="test"/>
 	</target>
 	
 	<target name="hbm2java" description="generate source code">
