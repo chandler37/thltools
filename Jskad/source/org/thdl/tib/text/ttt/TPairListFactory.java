@@ -60,8 +60,8 @@ class TPairListFactory {
      *  but you don't) */
     static TPairList[] breakACIPIntoChunks(String acip) throws IllegalArgumentException {
         try {
-            TPairList a = breakHelper(acip, true);
-            TPairList b = breakHelper(acip, false);
+            TPairList a = breakHelper(acip, true, false);
+            TPairList b = breakHelper(acip, false, false);
             if (a.equals(b))
                 return new TPairList[] { a, null };
             else
@@ -72,8 +72,15 @@ class TPairListFactory {
             throw new IllegalArgumentException("Input too large[2]: " + acip);
         }
     }
-    /** Helps {@link breakACIPIntoChunks(String)}. */
-    private static TPairList breakHelper(String acip, boolean tickIsVowel) {
+    /** Helps {@link breakACIPIntoChunks(String)}.
+     *  @param tickIsVowel true if and only if you want to treat the
+     *  ACIP {'} as an U+0F71 vowel instead of the full-sized
+     *  consonant in special, "this might be an appendage like 'AM or
+     *  'ANG" circumstances
+     *  @param weHaveSeenVowelAlready true if and only if, in our
+     *  recursion, we've already found one vowel (not a disambiguator,
+     *  but a vowel like "A", "E", "Um:", "'U", etc.) */
+    private static TPairList breakHelper(String acip, boolean tickIsVowel, boolean weHaveSeenVowelAlready) {
 
         // base case for our recursion:
         if ("".equals(acip))
@@ -86,6 +93,8 @@ class TPairListFactory {
         if (!tickIsVowel
             && null != head.getLeft()
             && null != head.getRight()
+            && weHaveSeenVowelAlready
+            && ACIPRules.isACIPSuffix(head.getLeft()) // DKY'O should be two horizontal units, not three. -- {D}{KY'O}, not {D}{KY}{'O}.
             && head.getRight().startsWith("'")) {
             head = new TPair(head.getLeft(),
                              // Without this disambiguator, we are
@@ -97,7 +106,12 @@ class TPairListFactory {
 
         TPairList tail;
         if ((tail
-             = breakHelper(acipBuf.substring(howMuch), tickIsVowel)).hasSimpleError()) {
+             = breakHelper(acipBuf.substring(howMuch),
+                           tickIsVowel,
+                           weHaveSeenVowelAlready
+                           || (head.getRight() != null
+                               && !"+".equals(head.getRight())
+                               && !"-".equals(head.getRight())))).hasSimpleError()) {
             for (int i = 1; i < howMuch; i++) {
                 // try giving i characters back if that leaves us with
                 // a legal head and makes the rest free of simple
@@ -106,7 +120,12 @@ class TPairListFactory {
                 TPair newHead;
                 if ((newHead = head.minusNRightmostACIPCharacters(i)).isLegal()
                     && !(newTail
-                         = breakHelper(acipBuf.substring(howMuch - i), tickIsVowel)).hasSimpleError()) {
+                         = breakHelper(acipBuf.substring(howMuch - i),
+                                       tickIsVowel,
+                                       weHaveSeenVowelAlready
+                                       || (newHead.getRight() != null
+                                           && !"+".equals(newHead.getRight())
+                                           && !"-".equals(newHead.getRight())))).hasSimpleError()) {
                     newTail.prepend(newHead);
                     return newTail;
                 }

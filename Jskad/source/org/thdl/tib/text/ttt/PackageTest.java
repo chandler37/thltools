@@ -408,10 +408,8 @@ tstHelper("KA'", "[(K . A), (' . )]",
         tstHelper("SNYAMS'AM'ANG", "{S}{NYA}{M}{S'A}{M'A}{NG}", null, null, "{S+NYA}{M+S'A}{M'A}{NG}", 0);
         tstHelper("SNYAM'AM", null, null, null, "{S+NYA}{M}{'A}{M}", 2);
         tstHelper("SNYAMS'AM", null, null, null, "{S+NYA}{M}{S}{'A}{M}", 2);
-        tstHelper("SNYAM-'A-M", null, null, null, "!null!", 1);
         tstHelper("SNYAM-'A-M", null, null, null, "{S+NYA}{M}{'A}{M}", -1);
         tstHelper("SNY-M-'-M", null, null, null, "{S+NY}{M}{'}{M}", -1);
-        tstHelper("SNY-M-'-M", null, null, null, "!null!", 1);
         tstHelper("SNYAMS'AM'ANG'U'I'O", null, null, null, "{S+NYA}{M}{S}{'A}{M}{'A}{NG}{'U}{'I}{'O}", 2);
         tstHelper("SNYAMS'I'AM'ANG'U'I'O", null, null, null, "{S+NYA}{M}{S}{'I}{'A}{M}{'A}{NG}{'U}{'I}{'O}", 2);
         tstHelper("SNYAM+S+'O", null, null, null, "{S+NYA}{M+S+'O}", -1);
@@ -421,7 +419,6 @@ tstHelper("KA'", "[(K . A), (' . )]",
         tstHelper("SAM'US", null, null, null, "{SA}{M}{'U}{S}", 2);
         tstHelper("SAM'UR'US", null, null, null, "{SA}{M}{'U}{R}{'U}{S}", 2);
         tstHelper("LA'OS", null, null, null, "{LA}{'O}{S}", -1);
-        tstHelper("LA'OS", null, null, null, "!null!", 1);
         tstHelper("NA'OS", null, null, null, "{NA}{'O}{S}", -1);
         tstHelper("NA'IS", null, null, null, "{NA}{'I}{S}", -1);
         tstHelper("LE'UNG", null, null, null, "{LE}{'U}{NG}", -1);
@@ -456,12 +453,17 @@ tstHelper("KA'", "[(K . A), (' . )]",
         }
 
         tstHelper("GDAM-S'O", null, null, null, "{G}{DA}{M}{S}{'O}", 2);
-        tstHelper("GDAM-C'O", null, null, null, "{G+DA}{M}{C'O}", 0);
-        tstHelper("GDAM-C'O", null, null, null, "{G+DA}{M}{C}{'O}", 3);
+        tstHelper("GDAM-C'O", null, null, null, "{G+DA}{M}{C'O}", -1);
         tstHelper("BRLA", null, null, null, "{B}{R+LA}", -1);
         tstHelper("DKY", null, null, null, "{D}{K+Y}", -1);
-        // DLC FIXME NOW this should work, but doesn't: tstHelper("DKY'O", null, null, null, "{D}{K+Y'O}", 3);
+        tstHelper("DKY'O", null, null, null, "{D}{K+Y'O}", -1);
         tstHelper("DKYA'O", null, null, null, "{D}{K+YA}{'O}", -1);
+        tstHelper("GM'O", null, null, null, "{G+M'O}", -1);
+        tstHelper("GAM'O", null, null, null, "{GA}{M}{'O}", 2);
+        tstHelper("G-M'O", null, null, null, "{G}{M'O}", -1);
+        tstHelper("DM'O", null, null, null, "{D}{M'O}", -1);
+        tstHelper("DAM'O", null, null, null, "{DA}{M}{'O}", 2);
+        tstHelper("D-M'O", null, null, null, "{D}{M'O}", -1);
 
         tstHelper("SHR'I", "{SH}{R'I}",
                   null,

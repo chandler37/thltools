@@ -119,11 +119,7 @@ class TPair {
                 && ((null == r || "".equals(r))
                     || "-".equals(r)
                     || "A".equals(r)) // DLC FIXME: though check for BASKYABS and warn because BSKYABS is more common
-                && ("'".equals(l)
-                    || "M".equals(l)
-                    || "B".equals(l)
-                    || "D".equals(l)
-                    || "G".equals(l)));
+                && ACIPRules.isACIPPrefix(l));
     }
 
     /** Returns true if and only if this pair could be a Tibetan
@@ -133,8 +129,7 @@ class TPair {
                 && ((null == r || "".equals(r))
                     || "-".equals(r)
                     || "A".equals(r)) // DLC FIXME: though warn about GAMASA vs. GAMS
-                && ("S".equals(l)
-                    || "D".equals(l)));
+                && ACIPRules.isACIPPostsuffix(l));
     }
 
     /** Returns true if and only if this pair could be a Tibetan
@@ -144,16 +139,7 @@ class TPair {
                 && ((null == r || "".equals(r))
                     || "-".equals(r)
                     || "A".equals(r))
-                && ("S".equals(l)
-                    || "G".equals(l)
-                    || "D".equals(l)
-                    || "M".equals(l)
-                    || "'".equals(l)
-                    || "B".equals(l)
-                    || "NG".equals(l)
-                    || "N".equals(l)
-                    || "L".equals(l)
-                    || "R".equals(l)));
+                && ACIPRules.isACIPSuffix(l));
     }
 
     /** Returns true if and only if this pair is merely a

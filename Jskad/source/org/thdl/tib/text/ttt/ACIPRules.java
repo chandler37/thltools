@@ -557,4 +557,40 @@ public class ACIPRules {
             duff.add(TibetanMachineWeb.getGlyph("H"));
 
     }
+
+    /** Returns true if and only if l is the ACIP representation of a
+        letter that can be a suffix.  Note that all postsuffixes are
+        also suffixes.  l must not have an "A" -- use "S", not "SA",
+        that is. */
+    public static boolean isACIPSuffix(String l) {
+        return ("S".equals(l)
+                || "G".equals(l)
+                || "D".equals(l)
+                || "M".equals(l)
+                || "'".equals(l)
+                || "B".equals(l)
+                || "NG".equals(l)
+                || "N".equals(l)
+                || "L".equals(l)
+                || "R".equals(l));
+    }
+
+    /** Returns true if and only if l is the ACIP representation of a
+        letter that can be a prefix.  l must not have an "A" -- use
+        "D", not "DA", that is. */
+    public static boolean isACIPPrefix(String l) {
+        return ("'".equals(l)
+                || "M".equals(l)
+                || "B".equals(l)
+                || "D".equals(l)
+                || "G".equals(l));
+    }
+
+    /** Returns true if and only if l is the ACIP representation of a
+        letter that can be a postsuffix.  l must not have an "A" --
+        use "D", not "DA", that is. */
+    public static boolean isACIPPostsuffix(String l) {
+        return ("S".equals(l)
+                || "D".equals(l));
+    }
 }
