@@ -126,25 +126,10 @@ public class Jskad extends JPanel implements DocumentListener {
     /** Do not use this JPanel constructor. */
     private Jskad(LayoutManager lm, boolean isDB) { super(lm, isDB); }
 
-    /** Tells ThdlOptions about the recently opened files. */
-    // DLC FIXME: this doesn't keep the second-most recently opened item second if you have just three items.
-    private static void storeRecentlyOpenedFilePreferences() {
-        int N = ThdlOptions.getIntegerOption("thdl.number.of.recently.opened.files.to.show", 4);
-        int n = 0;
-        // We store 2*N files in the preferences in case some are deleted.
-        for (int k = recentlyOpenedFiles.size(); k > 0 && n < 2*N; k--) {
-            File f = (File)recentlyOpenedFiles.elementAt(k - 1);
-            if (f.isFile()) {
-                ThdlOptions.setUserPreference("thdl.recently.opened.file." + n++,
-                                              f.getAbsolutePath());
-            }
-        }
-    }
-
     /** Saves user preferences to disk if possible. */
     private void savePreferencesAction() {
         try {
-            storeRecentlyOpenedFilePreferences();
+            RecentlyOpenedFilesDatabase.storeRecentlyOpenedFilePreferences();
 
             if (!ThdlOptions.saveUserPreferences()) {
                 JOptionPane.showMessageDialog(Jskad.this,
@@ -178,43 +163,14 @@ public class Jskad extends JPanel implements DocumentListener {
     /** pane displaying Jskad's single HTML help file */
     private static HTMLPane helpPane;
 
-    /** Returns the <code>n</code>th most recently opened file, given
-        that we care about <code>N</code> recently opened files in
-        total.  When <code>n</code> is zero, the most recently opened
-        file is returned.  This file does exist.  Returns null if we
-        haven't kept track of enough files to say. */
-    private static File getNthRecentlyOpenedFile(int n, int N) {
-        for (int i = n; i < N*2; i++) {
-            String x = ThdlOptions.getStringOption("thdl.recently.opened.file." + i);
-            if (null == x)
-                return null;
-            File f = new File(x);
-            if (f.isFile())
-                return f;
-        }
-        return null;
-    }
-
-    /** a vector with the most recently opened file at its end. */
-    private static Vector recentlyOpenedFiles = new Vector();
     /** the File menu */
     private JMenu fileMenu = null;
-
-    private static void addMostRecentlyOpenedFile(File fileChosen) {
-        // the last element is the most recently opened.
-        int index = recentlyOpenedFiles.indexOf(fileChosen);
-        if (index > -1) {
-            recentlyOpenedFiles.remove(index);
-        }
-        recentlyOpenedFiles.add(fileChosen);
-    }
 
     /** Updates state information now that we know that fileChosen is
         the most recently opened file. */
     private static void noteMostRecentlyOpenedFile(File fileChosen) {
-        addMostRecentlyOpenedFile(fileChosen);
-        storeRecentlyOpenedFilePreferences();
-        
+        RecentlyOpenedFilesDatabase.setMostRecentlyOpenedFile(fileChosen);
+
         int i, sz = jskads.size();
         for (i = 0; i < sz; i++) {
             ((Jskad)jskads.elementAt(i)).updateRecentlyOpenedFilesMenuItems();
@@ -225,21 +181,20 @@ public class Jskad extends JPanel implements DocumentListener {
         int ic = fileMenu.getItemCount();
         while (fileMenu.getItemCount() > 8)
             fileMenu.remove(7);
-        int N = ThdlOptions.getIntegerOption("thdl.number.of.recently.opened.files.to.show", 4);
+        int N = RecentlyOpenedFilesDatabase.getNumberOfFilesToShow();
         // Avoid adding duplicate entries:
-        int maximum = recentlyOpenedFiles.size();
-        if (N > maximum) N = maximum;
 
         boolean addedSeparator = false;
         for (int i = 0; i < N; i++) {
             final File recentlyOpenedFile
-                = getNthRecentlyOpenedFile(N-i-1, N);
+                = RecentlyOpenedFilesDatabase.getNthRecentlyOpenedFile(N-i-1);
             if (null != recentlyOpenedFile) {
                 if (!addedSeparator) {
                     fileMenu.insertSeparator(6);
                     addedSeparator = true;
                 }
-                JMenuItem item = new JMenuItem((N-i) + " " + recentlyOpenedFile.getAbsolutePath());
+                JMenuItem item = new JMenuItem((N-i) + " "
+                                               + RecentlyOpenedFilesDatabase.getLabel(recentlyOpenedFile));
                 item.addActionListener(new ThdlActionListener() {
                         public void theRealActionPerformed(ActionEvent e) {
                             openFile(recentlyOpenedFile);
@@ -274,7 +229,11 @@ public class Jskad extends JPanel implements DocumentListener {
                 = ThdlOptions.getStringOption("thdl.Jskad.working.directory",
                                               null);
             fileChooser
-                = new JFileChooser(whereToStart.equals("") ? null : whereToStart);
+                = new JFileChooser((whereToStart == null)
+                                   ? null
+                                   : (whereToStart.equals("")
+                                      ? null
+                                      : whereToStart));
 			rtfFilter = new RTFFilter();
 			txtFilter = new TXTFilter();
 			fileChooser.addChoosableFileFilter(rtfFilter);
@@ -338,14 +297,6 @@ public class Jskad extends JPanel implements DocumentListener {
 				}
 			});
 			fileMenu.add(saveAsItem);
-
-            // Add the N most recently opened files.
-            int N = ThdlOptions.getIntegerOption("thdl.number.of.recently.opened.files.to.show", 4);
-            int maxCharsToShow
-                = ThdlOptions.getIntegerOption("thdl.max.chars.in.recently.opened.file.name", 35);
-            for (int i = 0; i < 2*N; i++) {
-                addMostRecentlyOpenedFile(getNthRecentlyOpenedFile(i, N));
-            }
 
 			if (parentObject instanceof JFrame) {
 				JMenuItem exitItem = new JMenuItem("Exit");	
@@ -941,8 +892,12 @@ public class Jskad extends JPanel implements DocumentListener {
         String whereToStart
             = ThdlOptions.getStringOption("thdl.Jskad.working.directory",
                                           null);
-		fileChooser
-			= new JFileChooser(whereToStart.equals("") ? null : whereToStart);
+        fileChooser
+            = new JFileChooser((whereToStart == null)
+                               ? null
+                               : (whereToStart.equals("")
+                                  ? null
+                                  : whereToStart));
 		fileChooser.addChoosableFileFilter(rtfFilter);
 
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));

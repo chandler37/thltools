@@ -18,6 +18,13 @@
 #########################    User Preferences    ###########################
 ############################################################################
 
+# How many recently opened files should be displayed?
+thdl.number.of.recently.opened.files.to.show = 4
+
+# How many characters maximum do you want to show on the File menu for
+# a recently opened file?
+thdl.max.chars.in.recently.opened.file.name = 40
+
 # Set this to the full path of the user preferences file, or to the
 # empty string if you wish to use the default values, which are
 # system-specific.
