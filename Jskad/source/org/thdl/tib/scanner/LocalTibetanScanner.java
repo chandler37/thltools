@@ -205,8 +205,8 @@ class LocalTibetanScanner implements TibetanScanner
 
 		if (len<3) return null;
 
-		char lastCar = sil.charAt(len-1);
-		if ((lastCar == 's' || lastCar == 'r') && isVowel(sil.charAt(len-2)))
+		char lastCar = Character.toLowerCase(sil.charAt(len-1));
+		if ((lastCar == 's' || lastCar == 'r') && Manipulate.isVowel(sil.charAt(len-2)))
 		{
 			isDeclined=true;
 			sil = sil.substring(0, len-1);
@@ -354,11 +354,6 @@ outAHere:
 		while(li.hasNext())
 			token[--i] = (Token)li.next();
 		return token;
-	}
-
-	private static boolean isVowel(char ch)
-	{
-		return (ch=='a' || ch=='e' || ch=='i' || ch=='o' || ch=='u');
 	}
 
 	/** Looks for .dic file, and returns the dictionary descriptions.
