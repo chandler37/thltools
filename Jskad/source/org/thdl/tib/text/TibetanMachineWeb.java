@@ -877,7 +877,8 @@ public static boolean isWylieChar(String s) {
 
 /**
 * Checks to see if the passed string is a consonant or unadorned
-* consonant stack in Extended Wylie.
+* consonant stack in Extended Wylie.  The string shouldn't have any
+* '+' or '.' characters in it if you wnat this to return true.
 * @param s the string to be checked
 * @return true if s is such in Extended Wylie transliteration, false
 * if not */
@@ -1151,8 +1152,8 @@ public static String getWylieForVowel(String s) {
 /**
 * Gets the DuffCode required for a vowel, if
 * affixed to the given hashKey.
-* @param hashKey the key for the character the
-* vowel is to be affixed to
+* @param hashKey the key for the character the vowel is to be affixed
+* to; see {@link #getGlyph(String)} to learn about hash keys.
 * @param vowel the vowel you want the DuffCode for
 * @return the DuffCode for the vowel in the given
 * context, or null if there is no such vowel in
@@ -1170,7 +1171,8 @@ public static DuffCode getVowel(String hashKey, int vowel) {
 
 /**
 * Checks to see if a glyph exists for this hash key.
-* @param hashKey the key to be checked
+* @param hashKey the key to be checked; see {@link #getGlyph(String)}
+* to learn about hash keys.
 * @return true if there is a glyph corresponding to
 * hashKey, false if not
 */
@@ -1198,7 +1200,8 @@ public static DuffCode getGlyph(String hashKey) {
 
 /**
 * Gets the half height character for this hash key.
-* @param hashKey the key you want a half height glyph for
+* @param hashKey the key you want a half height glyph for; see {@link
+* #getGlyph(String)} to learn about hash keys.
 * @return the TibetanMachineWeb DuffCode of hashKey's
 * reduced height glyph, or null if there is no such glyph
 * @see DuffCode
@@ -1627,8 +1630,8 @@ public static int getTMWFontNumber(String name) {
 * Gets the hash key associated with this glyph.
 * @param font a TibetanMachineWeb font number
 * @param code an ASCII character code minus 32
-* @return the hashKey corresponding to the character
-* at font, code
+* @return the hashKey corresponding to the character at font, code;
+* see {@link #getGlyph(String)} to learn about hash keys.
 */
 public static String getHashKeyForGlyph(int font, int code) {
 	code = code - 32;
@@ -1640,7 +1643,8 @@ public static String getHashKeyForGlyph(int font, int code) {
 * none (probably because this glyph has no THDL Extended Wylie
 * transcription).
 * @param dc a DuffCode denoting a TibetanMachineWeb glyph
-* @return the hashKey corresponding to the character at dc */
+* @return the hashKey corresponding to the character at dc; see {@link
+* #getGlyph(String)} to learn about hash keys. */
 public static String getHashKeyForGlyph(DuffCode dc) {
 	int font = dc.getFontNum();
 	int code = dc.getCharNum()-32;
@@ -1654,7 +1658,8 @@ public static String getHashKeyForGlyph(DuffCode dc) {
 * This method takes a hash key and converts it its correct
 * Wylie value, and therefore is useful in conversions from
 * TibetanMachineWeb to Wylie.
-* @param hashKey the hash key for a glyph
+* @param hashKey the hash key for a glyph; see {@link
+* #getGlyph(String)} to learn about hash keys.
 * @return the Wylie value of that hash key
 */
 public static String wylieForGlyph(String hashKey) {

@@ -830,17 +830,21 @@ public class TibTextUtils implements THDLWylieConstants {
         consonant or consonant stack with optional adornment or a
         number (possibly super- or subscribed) or some other glyph
         alone. */
-    private static ArrayList breakTshegBarIntoGraphemeClusters(java.util.List glyphList,
-                                                               boolean noSuchWylie[]) {
+    private static TGCList breakTshegBarIntoGraphemeClusters(java.util.List glyphList,
+                                                             boolean noSuchWylie[]) {
 
         // Definition: adornment means vowels and achungs and bindus.
+
+        // DLC FIXME: {H}, U+0F7F, is part of a grapheme cluster!
+        // David Chapman and I both need a comprehensive list of these
+        // guys.
 
         int sz = glyphList.size();
         ThdlDebug.verify(sz > 0);
 
         // A list of grapheme clusters (see UnicodeGraphemeCluster).
         // sz is an overestimate (speeds us up, wastes some memory).
-        ArrayList gcs = new ArrayList(sz);
+        TMWGCList gcs = new TMWGCList(sz);
 
         StringBuffer buildingUpGc = new StringBuffer();
 
@@ -919,14 +923,22 @@ public class TibTextUtils implements THDLWylieConstants {
     }
 
 
-    private static String getClassificationOfTshegBar(ArrayList gcs,
-                                                      StringBuffer warnings) {
+    public static String getClassificationOfTshegBar(TGCList gcs,
+                                                     // DLC the warnings are Wylie-specific
+                                                     StringBuffer warnings) {
         String candidateType = null;
         // Now that we have grapheme clusters, see if they match any
         // of the "legal tsheg bars":
         int sz = gcs.size();
+        if (sz == 1) {
+            TGCPair tp = gcs.get(0);
+            int cls = tp.classification;
+            if (TGCPair.SANSKRIT_WITHOUT_VOWEL == cls
+                || TGCPair.SANSKRIT_WITH_VOWEL == cls)
+                return "single-sanskrit-gc";
+        }
         for (int i = 0; i < sz; i++) {
-            TGCPair tp = (TGCPair)gcs.get(i);
+            TGCPair tp = gcs.get(i);
             int cls = tp.classification;
             String wylie = tp.wylie;
             if (TGCPair.OTHER == cls) {
@@ -964,7 +976,7 @@ public class TibTextUtils implements THDLWylieConstants {
                         if (ACHUNG.equals(wylie)) {
                             // peek ahead to distinguish between ba's,
                             // ba'ala and ba'am:
-                            TGCPair nexttp = (i+1 < sz) ? (TGCPair)gcs.get(i+1) : null;
+                            TGCPair nexttp = (i+1 < sz) ? gcs.get(i+1) : null;
                             String nextwylie = (nexttp == null) ? "" : nexttp.wylie;
                             if (isAppendageNonVowelWylie(nextwylie)) {
                                 candidateType = "maybe-appendaged-prefix/root";
@@ -982,7 +994,7 @@ public class TibTextUtils implements THDLWylieConstants {
                         if (ACHUNG.equals(wylie)) {
                             // peek ahead to distinguish between pa's,
                             // pa'ala and pa'am:
-                            TGCPair nexttp = (i+1 < sz) ? (TGCPair)gcs.get(i+1) : null;
+                            TGCPair nexttp = (i+1 < sz) ? gcs.get(i+1) : null;
                             String nextwylie = (nexttp == null) ? "" : nexttp.wylie;
                             if (isAppendageNonVowelWylie(nextwylie)) {
                                 candidateType = "maybe-appendaged-root";
@@ -1003,7 +1015,7 @@ public class TibTextUtils implements THDLWylieConstants {
                         if (ACHUNG.equals(wylie)) {
                             // peek ahead to distinguish between bpa's,
                             // bpa'ala and bpa'am:
-                            TGCPair nexttp = (i+1 < sz) ? (TGCPair)gcs.get(i+1) : null;
+                            TGCPair nexttp = (i+1 < sz) ? gcs.get(i+1) : null;
                             String nextwylie = (nexttp == null) ? "" : nexttp.wylie;
                             if (isAppendageNonVowelWylie(nextwylie)) {
                                 candidateType = "maybe-appendaged-prefix-root";
@@ -1025,7 +1037,7 @@ public class TibTextUtils implements THDLWylieConstants {
                         if (ACHUNG.equals(wylie)) {
                             // peek ahead to distinguish between
                             // gga'am and gaga'ala:
-                            TGCPair nexttp = (i+1 < sz) ? (TGCPair)gcs.get(i+1) : null;
+                            TGCPair nexttp = (i+1 < sz) ? gcs.get(i+1) : null;
                             String nextwylie = (nexttp == null) ? "" : nexttp.wylie;
                             if (isAppendageNonVowelWylie(nextwylie)) {
                                 candidateType = "maybe-appendaged-prefix/root-root/suffix";
@@ -1207,11 +1219,12 @@ public class TibTextUtils implements THDLWylieConstants {
                                          boolean noSuchWylie[],
                                          StringBuffer warnings,
                                          StringBuffer wylieBuffer) {
-        ArrayList gcs
+        TGCList gcs
             = breakTshegBarIntoGraphemeClusters(glyphList, noSuchWylie);
         String candidateType = getClassificationOfTshegBar(gcs, warnings);
         int sz = gcs.size();
-        if (candidateType == "invalid") {
+        if (candidateType == "invalid"
+            || candidateType == "single-sanskrit-gc") {
             // Forget beauty and succintness -- just be sure to
             // generate Wylie that can be converted unambiguously into
             // Tibetan.  Use a disambiguator or vowel after each
@@ -1243,10 +1256,7 @@ public class TibTextUtils implements THDLWylieConstants {
 
             // Appendaged vs. not appendaged?  it affects nothing at
             // this stage.
-            if (candidateType.startsWith("appendaged-")) {
-                candidateType
-                    = candidateType.substring("appendaged-".length()).intern();
-            }
+            candidateType = getCandidateTypeModuloAppendage(candidateType);
 
             if ("prefix/root-root/suffix-suffix/postsuffix" == candidateType) {
                 /* Yes, this is ambiguous. How do we handle it?  See
@@ -1439,29 +1449,35 @@ public class TibTextUtils implements THDLWylieConstants {
         else
             return null;
     }
-}
 
-/** An ordered pair consisting of a Tibetan grapheme cluster's (see
-    {@link org.thdl.tib.text.tshegbar.UnicodeGraphemeCluster} for a
-    definition of the term}) classification and its
-    context-insensitive THDL Extended Wylie representation. */
-class TGCPair {
-    static final int OTHER = 1;
-    // a standalone achen would fall into this category:
-    static final int CONSONANTAL_WITHOUT_VOWEL = 2;
-    static final int CONSONANTAL_WITH_VOWEL = 3;
-    static final int LONE_VOWEL = 4;
-    static final int SANSKRIT_WITHOUT_VOWEL = 5;
-    static final int SANSKRIT_WITH_VOWEL = 6;
-
-    String wylie;
-    int classification;
-    TGCPair(String wylie, int classification) {
-        this.wylie = wylie;
-        this.classification = classification;
+    /** Returns "root" instead of "appendaged-root", for example. */
+    private static final String getCandidateTypeModuloAppendage(String candidateType) {
+        if (candidateType.startsWith("appendaged-")) {
+            candidateType
+                = candidateType.substring("appendaged-".length()).intern();
+        }
+        return candidateType;
     }
-    public String toString() {
-        return "<TGCPair wylie=" + wylie + " classification="
-            + classification + "/>";
+
+    /** Returns an array of size 2 that lists all the possible indices
+     *  of the root stack given the chosen candidate type.  A negative
+     *  number appears if there are not that many possible positions
+     *  for the root.  (You'll get two negative numbers if there is no
+     *  root stack.) */
+    public static final int[] getIndicesOfRootForCandidateType(String candidateType) {
+        // Appendaged vs. not appendaged?  it affects nothing.
+        candidateType = getCandidateTypeModuloAppendage(candidateType);
+
+        int[] rv = new int[] { -1, -1 };
+        if (candidateType == "prefix/root"
+            || candidateType.startsWith("root")) {
+            rv[0] = 0;
+        } else if (candidateType.startsWith("prefix/root-")) {
+            rv[0] = 0;
+            rv[1] = 1;
+        } else if (candidateType.startsWith("prefix-root")) {
+            rv[0] = 1;
+        }
+        return rv;
     }
 }
