@@ -52,6 +52,7 @@ public class OnLineScannerFilter extends HttpServlet {
     {
         // if this line is included in the constructor, it works on the iris server but not on wyllie!
         ThdlOptions.setUserPreference("thdl.rely.on.system.tmw.fonts", true);	    
+        ThdlOptions.setUserPreference("thdl.rely.on.system.tm.fonts", true);
         
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
