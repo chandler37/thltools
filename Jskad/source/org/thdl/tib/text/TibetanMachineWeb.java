@@ -45,7 +45,6 @@ import org.thdl.tib.text.tshegbar.UnicodeCodepointToThdlWylie;
 * @author Edward Garrett, Tibetan and Himalayan Digital Library
 * @version 1.0
 */
-// FIXME: for speed, make either this class, its methods, or both, final?
 public class TibetanMachineWeb implements THDLWylieConstants {
     /** This addresses bug 624133, "Input freezes after impossible
      *  character".  The input sequences that are valid in Extended
