@@ -43,7 +43,7 @@ import org.thdl.util.StatusBar;
 * @author Edward Garrett, Tibetan and Himalayan Digital Library
 * @version 1.0
 */
-public class DuffPane extends JTextPane implements KeyListener, FocusListener {
+public class DuffPane extends TibetanPane implements KeyListener, FocusListener {
 /** 
 * The status bar to update with messages about the current input mode.
 * Are we expecting a vowel? a subscript? et cetera.
@@ -179,16 +179,10 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 */
 	private boolean isRomanEnabled = true;
 /**
-* The document displayed by this object.
-*/
-	private TibetanDocument doc;
-/**
 * The caret of {@link #doc}, used to keep track of the
 * current entry/edit/deletion position.
 */
 	private Caret caret;
-//	private StyledEditorKit editorKit;
-	private StyleContext styleContext;
 	private Style rootStyle;
 	private boolean skipUpdate = false;
 	private boolean isCutAndPasteEnabled = true;
@@ -197,9 +191,7 @@ public class DuffPane extends JTextPane implements KeyListener, FocusListener {
 	private int romanFontSize;
 	private MutableAttributeSet romanAttributeSet;
 
-public Clipboard rtfBoard;
-public DataFlavor rtfFlavor;
-public RTFEditorKit rtfEd = null;
+    private Clipboard rtfBoard;
 
     /** Initializes this object.  All constructors should call
         this. */
@@ -289,25 +281,14 @@ public RTFEditorKit rtfEd = null;
 */
 	private void setupEditor() {
 		rtfBoard = getToolkit().getSystemClipboard();
-		rtfFlavor = new DataFlavor("text/rtf", "Rich Text Format");
-		rtfEd = new TibetanRTFEditorKit();
-		setEditorKit(rtfEd);
-		styleContext = new StyleContext();
 
-		doc = new TibetanDocument(styleContext);
-		doc.setTibetanFontSize(defaultTibFontSize());
-		setDocument(doc);
-
-		Style defaultStyle = styleContext.getStyle(StyleContext.DEFAULT_STYLE);
-		StyleConstants.setFontFamily(defaultStyle, "TibetanMachineWeb");
-		StyleConstants.setFontSize(defaultStyle, defaultTibFontSize()); // FIXME make pref
+        newDocument();
 
 		romanFontFamily = ThdlOptions.getStringOption("thdl.default.roman.font.face",
                                                       "Serif"); // FIXME write out this preference.
-		romanFontSize = defaultRomanFontSize(); // FIXME make pref
+		romanFontSize = defaultRomanFontSize();
 		setRomanAttributeSet(romanFontFamily, romanFontSize);
 
-//		newDocument();
 		caret = getCaret();
 
 		addKeyListener(this);
@@ -397,10 +378,15 @@ public RTFEditorKit rtfEd = null;
 * Clears the current document.
 */
 	public void newDocument() {
-		styleContext = new StyleContext();
+		StyleContext styleContext = new StyleContext();
 
 		doc = new TibetanDocument(styleContext);
 		doc.setTibetanFontSize(defaultTibFontSize());
+
+        // Something about the order in which you do this step
+        // relative to the others in this method matters.  You'll get
+        // a small cursor, though most everything else will be normal,
+        // if you call setDocument(doc) at the end of this method.
 		setDocument(doc);
 
 		Style defaultStyle = styleContext.getStyle(StyleContext.DEFAULT_STYLE);
@@ -493,7 +479,7 @@ public RTFEditorKit rtfEd = null;
 */
 	public void append(int offset, String s, MutableAttributeSet attr) {
 		try {
-			doc.insertString(offset, s, attr);
+			getTibDoc().insertString(offset, s, attr);
 		}
 		catch (BadLocationException ble) {
 		}
@@ -506,7 +492,7 @@ public RTFEditorKit rtfEd = null;
 */
 	public void setTibetanFontSize(int size) {
 		if (size > 0)
-			doc.setTibetanFontSize(size);
+			getTibDoc().setTibetanFontSize(size);
 	}
 
 /**
@@ -515,7 +501,7 @@ public RTFEditorKit rtfEd = null;
 * text entry mode
 */
 	public int getTibetanFontSize() {
-		return doc.getTibetanFontSize();
+		return getTibDoc().getTibetanFontSize();
 	}
 
 /**
@@ -556,7 +542,7 @@ public RTFEditorKit rtfEd = null;
 */
 	private void backSpace(int k) {
 		try {
-			doc.remove(caret.getDot()-k, k);
+			getTibDoc().remove(caret.getDot()-k, k);
 		}
 		catch (BadLocationException ble) {
 		}
@@ -628,7 +614,7 @@ public RTFEditorKit rtfEd = null;
 
 		java.util.List sublist = newGlyphList.subList(k, newGlyphCount);
 		DuffData[] dd = TibTextUtils.convertGlyphs(sublist);
-		doc.insertDuff(caret.getDot(), dd);
+		getTibDoc().insertDuff(caret.getDot(), dd);
 		return newGlyphList;
 	}
 
@@ -652,13 +638,13 @@ public RTFEditorKit rtfEd = null;
 			return;
 		}
 
-		AttributeSet attr = doc.getCharacterElement(caret.getDot()-1).getAttributes();
+		AttributeSet attr = getTibDoc().getCharacterElement(caret.getDot()-1).getAttributes();
 		String fontName = StyleConstants.getFontFamily(attr);
 		int fontNum;
 
 		if (0 != (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName))) {
 			try {
-				char c2 = doc.getText(caret.getDot()-1, 1).charAt(0);
+				char c2 = getTibDoc().getText(caret.getDot()-1, 1).charAt(0);
 				int k = (int)c2;
 				if (k<32 || k>126) { //if previous character is formatting or some other non-character
 					if (!TibetanMachineWeb.isAChenRequiredBeforeVowel())
@@ -679,10 +665,10 @@ public RTFEditorKit rtfEd = null;
 				DuffCode dc_2 = new DuffCode(fontNum, c2);
 
 				if (caret.getDot() > 2) {
-					attr = doc.getCharacterElement(caret.getDot()-2).getAttributes();
+					attr = getTibDoc().getCharacterElement(caret.getDot()-2).getAttributes();
 					fontName = StyleConstants.getFontFamily(attr);
 					if (0 != (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName))) {
-						c2 = doc.getText(caret.getDot()-2, 1).charAt(0);
+						c2 = getTibDoc().getText(caret.getDot()-2, 1).charAt(0);
 						dc_1 = new DuffCode(fontNum, c2);
 					}
 				}
@@ -739,7 +725,7 @@ public RTFEditorKit rtfEd = null;
 		DuffCode dc = dc_array[TibetanMachineWeb.TMW];
 		java.util.List achenlist = TibTextUtils.getVowel(dc,v);
 		DuffData[] dd = TibTextUtils.convertGlyphs(achenlist);
-		doc.insertDuff(caret.getDot(), dd);		
+		getTibDoc().insertDuff(caret.getDot(), dd);		
 	}
 
 /**
@@ -754,7 +740,7 @@ public RTFEditorKit rtfEd = null;
 			if (caret.getDot()==0)
 				break special_bindu_block;
 
-			AttributeSet attr = doc.getCharacterElement(caret.getDot()-1).getAttributes();
+			AttributeSet attr = getTibDoc().getCharacterElement(caret.getDot()-1).getAttributes();
 			String fontName = StyleConstants.getFontFamily(attr);
 			int fontNum;
 
@@ -762,7 +748,7 @@ public RTFEditorKit rtfEd = null;
 				break special_bindu_block;
 
 			try {
-				char c2 = doc.getText(caret.getDot()-1, 1).charAt(0);
+				char c2 = getTibDoc().getText(caret.getDot()-1, 1).charAt(0);
 				int k = (int)c2;
 				if (k<32 || k>126) //if previous character is formatting or some other non-character
 					break special_bindu_block;
@@ -786,7 +772,7 @@ public RTFEditorKit rtfEd = null;
 		}
 
 		DuffData[] dd = TibTextUtils.convertGlyphs(TibTextUtils.getBindu(null));
-		doc.insertDuff(caret.getDot(), dd);
+		getTibDoc().insertDuff(caret.getDot(), dd);
 		initKeyboard();
 	}
 
@@ -814,12 +800,14 @@ public RTFEditorKit rtfEd = null;
         appendStatus(" (because the window focus was lost)");
 	}
 
+    // FIXMEDOC
 class RTFSelection implements ClipboardOwner, Transferable {
-	DataFlavor[] supportedFlavor;
-	ByteArrayOutputStream rtfOut;
-	String plainText;
+	private DataFlavor[] supportedFlavor;
+	private ByteArrayOutputStream rtfOut;
+	private String plainText;
 
-	RTFSelection(StyledDocument doc, int offset, int length) {
+	// FIXMEDOC
+	RTFSelection(StyledDocument sdoc, int offset, int length) {
 		supportedFlavor = new DataFlavor[2];
 		supportedFlavor[0] = rtfFlavor;
 		supportedFlavor[1] = DataFlavor.stringFlavor;
@@ -829,8 +817,8 @@ class RTFSelection implements ClipboardOwner, Transferable {
 			StyledDocument newDoc = new DefaultStyledDocument();
 			for (int i=offset; i<offset+length; i++) {
 				try {
-					String s = doc.getText(i,1);
-					AttributeSet as = doc.getCharacterElement(i).getAttributes();
+					String s = sdoc.getText(i,1);
+					AttributeSet as = sdoc.getCharacterElement(i).getAttributes();
 					newDoc.insertString(i-offset, s, as);
 				} catch (BadLocationException ble) {
 					ble.printStackTrace();
@@ -848,8 +836,10 @@ class RTFSelection implements ClipboardOwner, Transferable {
 			ThdlDebug.noteIffyCode();
 		}
 	}
+	// FIXMEDOC
 	public void lostOwnership(Clipboard clipboard, Transferable contents) {
 	}
+	// FIXMEDOC
 	public Object getTransferData(DataFlavor flavor) {
 		if (flavor.equals(rtfFlavor))
 			return new ByteArrayInputStream(rtfOut.toByteArray());
@@ -857,16 +847,18 @@ class RTFSelection implements ClipboardOwner, Transferable {
 			return plainText;
 		return null;
 	}
+	// FIXMEDOC
 	public DataFlavor[] getTransferDataFlavors() {
-		return supportedFlavor;	
+		return supportedFlavor; 
 	}
+	// FIXMEDOC
 	public boolean isDataFlavorSupported(DataFlavor flavor) {
 		for (int i=0; i<supportedFlavor.length; i++)
 			if (flavor.equals(supportedFlavor[i]))
 				return true;
 		return false;
 	}
-}
+} // class RTFSelection
 
     /** Copies the current selection to the system clipboard, unless
         cut-and-paste operations are disabled. */
@@ -974,7 +966,7 @@ public void paste(int offset) {
 				    try {
 					    String s = sd.getText(i,1);
 					    AttributeSet as = sd.getCharacterElement(i).getAttributes();
-					    doc.insertString(p1+i, s, as);
+					    getTibDoc().insertString(p1+i, s, as);
 				    } catch (BadLocationException ble) {
 					    ble.printStackTrace();
 					    ThdlDebug.noteIffyCode();
@@ -1056,7 +1048,7 @@ public void paste(int offset) {
 				if (e.isControlDown() && isCutAndPasteEnabled) {
 					e.consume();
 					setSelectionStart(0);
-					setSelectionEnd(doc.getLength());
+					setSelectionEnd(getTibDoc().getLength());
 				}
 				break;
 
@@ -1086,7 +1078,7 @@ public void paste(int offset) {
                 if (this.isEditable()) {
                     initKeyboard();
                     if (isTibetan)
-                        doc.appendDuff(caret.getDot(),"	",TibetanMachineWeb.getAttributeSet(1));
+                        getTibDoc().appendDuff(caret.getDot(),"	",TibetanMachineWeb.getAttributeSet(1));
                     else
                         append("	", romanAttributeSet);
                 }
@@ -1097,7 +1089,7 @@ public void paste(int offset) {
                 if (this.isEditable()) {
                     initKeyboard();
                     if (isTibetan)
-                        doc.appendDuff(caret.getDot(),"\n",TibetanMachineWeb.getAttributeSet(1)); // FIXME does this work on all platforms?
+                        getTibDoc().appendDuff(caret.getDot(),"\n",TibetanMachineWeb.getAttributeSet(1)); // FIXME does this work on all platforms?
                     else
                         append("\n", romanAttributeSet); // FIXME does this work on all platforms?
                 }
@@ -1197,7 +1189,7 @@ public void paste(int offset) {
                 if (kev.getKeyCode() != KeyEvent.VK_ESCAPE) {
                     try {
                         initKeyboard();
-                        doc.remove(start, end-start);
+                        getTibDoc().remove(start, end-start);
                         shouldIBackSpace = false;
                     }
                     catch (BadLocationException ble) {
@@ -1279,8 +1271,8 @@ public void paste(int offset) {
                         updateStatus("!isStackingOn || (isStackingOn && isDefinitelyTibetan==isDefinitelyTibetan_default)");
 					}
 					else {try {
-						char ch = doc.getText(caret.getDot()-1, 1).charAt(0);
-						AttributeSet attr = doc.getCharacterElement(caret.getDot()-1).getAttributes();
+						char ch = getTibDoc().getText(caret.getDot()-1, 1).charAt(0);
+						AttributeSet attr = getTibDoc().getCharacterElement(caret.getDot()-1).getAttributes();
 						String fontName = StyleConstants.getFontFamily(attr);
 						int fontNum = TibetanMachineWeb.getTMWFontNumber(fontName);
 
@@ -1343,7 +1335,7 @@ public void paste(int offset) {
 					else {
 						DuffCode puncDc = TibetanMachineWeb.getGlyph(val);
 						MutableAttributeSet mas = TibetanMachineWeb.getAttributeSet(puncDc.getFontNum());
-						doc.appendDuff(caret.getDot(), String.valueOf(puncDc.getCharacter()), mas);
+						getTibDoc().appendDuff(caret.getDot(), String.valueOf(puncDc.getCharacter()), mas);
 					}
 
 					initKeyboard();
@@ -1599,25 +1591,25 @@ public void paste(int offset) {
 		java.util.List dcs = new ArrayList();
 
 		try {
-			endPos = doc.createPosition(end);
+			endPos = getTibDoc().createPosition(end);
 			i = start;
 
 			while (i < endPos.getOffset()+1) {
-				attr = doc.getCharacterElement(i).getAttributes();
+				attr = getTibDoc().getCharacterElement(i).getAttributes();
 				fontName = StyleConstants.getFontFamily(attr);
 
 				if ((0 == (fontNum = TibetanMachineWeb.getTMWFontNumber(fontName))) || i==endPos.getOffset()) {
 					if (i != start) {
 						dc_array = new DuffCode[0];
 						dc_array = (DuffCode[])dcs.toArray(dc_array);
-						doc.remove(start, i-start);
+						getTibDoc().remove(start, i-start);
 						append(start, TibTextUtils.getWylie(dc_array), romanAttributeSet);
 						dcs.clear();
 					}
 					start = i+1;
 				}
 				else {
-					ch = doc.getText(i,1).charAt(0);
+					ch = getTibDoc().getText(i,1).charAt(0);
 					dc = new DuffCode(fontNum, ch);
 					dcs.add(dc);
 				}
@@ -1645,7 +1637,7 @@ public void paste(int offset) {
 				String next = sTok.nextToken();
 				if (next.equals("\n") || next.equals("\t")) { // FIXME does this work on all platforms?
 					try {
-						doc.insertString(offset, next, null);
+						getTibDoc().insertString(offset, next, null);
 						offset++;
 					} catch (BadLocationException ble) {
 						ble.printStackTrace();
@@ -1653,7 +1645,7 @@ public void paste(int offset) {
 					}
 				} else {
 					DuffData[] dd = TibTextUtils.getTibetanMachineWeb(next);
-					offset = doc.insertDuff(offset, dd);
+					offset = getTibDoc().insertDuff(offset, dd);
 				}
 			}
 		}
@@ -1692,19 +1684,19 @@ public void paste(int offset) {
 
 		try {
 			sb = new StringBuffer();
-			endPos = doc.createPosition(end);
+			endPos = getTibDoc().createPosition(end);
 			i = start;
 
 			while (i < endPos.getOffset()+1) {
-				attr = doc.getCharacterElement(i).getAttributes();
+				attr = getTibDoc().getCharacterElement(i).getAttributes();
 				fontName = StyleConstants.getFontFamily(attr);
 
 				if ((0 != TibetanMachineWeb.getTMWFontNumber(fontName)) || i==endPos.getOffset()) {
 					if (i != start) {
 						try {
 							DuffData[] duffdata = TibTextUtils.getTibetanMachineWeb(sb.toString());
-							doc.remove(start, i-start);
-							doc.insertDuff(start, duffdata);
+							getTibDoc().remove(start, i-start);
+							getTibDoc().insertDuff(start, duffdata);
 						}
 						catch (InvalidWylieException iwe) {
 							JOptionPane.showMessageDialog(this,
@@ -1718,7 +1710,7 @@ public void paste(int offset) {
 					start = i+1;
 				}
 				else
-					sb.append(doc.getText(i, 1));
+					sb.append(getTibDoc().getText(i, 1));
 
 				i++;
 			}
@@ -1736,7 +1728,7 @@ public void paste(int offset) {
 * @return the string of Wylie corresponding to the associated document
 * @see org.thdl.tib.text.TibetanDocument#getWylie() */
     public String getWylie() {
-        return doc.getWylie();
+        return getTibDoc().getWylie();
     }
 
 }
