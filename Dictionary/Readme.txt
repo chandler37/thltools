@@ -7,7 +7,7 @@ The THDL Tibetan Collaborative Dictionary requires the following:
 
 3. Ant must be installed and the ant bin directory should be in your PATH variable. Also, catalina-ant.jar needs to be in $ANT_HOME/lib.
 
-4. The MySQL databases Lex and ThdlUsers should be running locally  with select, insert, update and delete privileges for the user specified in the following files: lex-context-config.xml, tomcat\conf\Catalina\localhost\lex.xml , webroot\META-INF\context.xml. Make sure to also update the docbase, workdir, and address for mysql database.
+4. The MySQL databases Lex and ThdlUsers should be running locally  with select, insert, update and delete privileges for the user specified in the following files: lex-context-config.xml, tomcat\conf\Catalina\localhost\lex.xml. Make sure to also update the docbase, workdir, and address for mysql database.
 
 5. If you are using the DictionaryImporter class, copy dictionary-importer.properties.sample to dictionary.properties and update also the user and password.
 
@@ -19,7 +19,4 @@ The THDL Tibetan Collaborative Dictionary requires the following:
 To get a copy of the database, contact Steve Weinberger ( snw8f@virginia.edu ).
 
 This document was written by Travis McCauley.
-Updated by Andres Montano.
-
-
-
+Updated by Andres Montano, 2/22/2005
