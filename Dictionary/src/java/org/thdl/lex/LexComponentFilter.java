@@ -138,7 +138,11 @@ public class LexComponentFilter implements Filter
 		long start = System.currentTimeMillis();
 		if ( request instanceof HttpServletRequest && response instanceof HttpServletResponse )
 		{
+			HttpServletResponse res = (HttpServletResponse) response;
 			HttpServletRequest req = (HttpServletRequest) request;
+			res.setContentType( "text/html; charset=UTF-8;" );
+			req.setCharacterEncoding( "UTF-8" );
+
 			if ( null != req.getParameter( LexConstants.LABEL_REQ_PARAM ) )
 			{
 				String labelValue = req.getParameter( LexConstants.LABEL_REQ_PARAM );

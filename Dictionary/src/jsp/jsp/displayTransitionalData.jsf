@@ -1,4 +1,4 @@
-<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false"  contentType="text/html; charset=UTF-8"%>
+<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false"  %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <!--displayTransitionalData.jsf-->
 

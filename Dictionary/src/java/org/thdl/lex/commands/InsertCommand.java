@@ -76,11 +76,15 @@ public class InsertCommand extends LexCommand implements Command
 
 			if ( CommandToken.isValid( req ) && validate( user, component ) )
 			{
-				LexComponentRepository.update( term );
+				if ( !isTermMode() )
+				{
+					LexComponentRepository.update( term );
+				}
+
 				if ( isTermMode() )
 				{
-					term.populate( req.getParameterMap() );
-					component = term;
+					term = (ITerm) component;
+					//term.populate( req.getParameterMap() );
 				}
 				else if ( component instanceof AnalyticalNote )
 				{

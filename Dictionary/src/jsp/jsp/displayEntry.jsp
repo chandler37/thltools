@@ -1,6 +1,7 @@
-<%@ page  buffer="512kb" autoFlush="false" import="org.thdl.lex.*,org.thdl.lex.component.*" errorPage="/jsp/error.jsp" pageEncoding="UTF-8" contentType="text/html"%>
+<%@ page  buffer="512kb" autoFlush="false" import="org.thdl.lex.*,org.thdl.lex.component.*" errorPage="/jsp/error.jsp" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
-<% request.setCharacterEncoding("UTF-8"); %> 
+<% request.setCharacterEncoding("UTF-8"); %>
+
 <!--Begin Render-->
 <jsp:include page="header.jsf" flush="false"/>
 
@@ -118,6 +119,8 @@
 		</p>
 	</form>
 	
+	<p><span class="warning">The requires the <a href="http://iris.lib.virginia.edu/tibet/tools/tmw.html">TibetanMachineWeb font</a>  to display Tibetan script.</span></p>
+
 	<div id="entry">
 		<c:choose>
 			<c:when test="${ param.comp == 'encyclopediaArticle' && param.cmd == 'display' }">

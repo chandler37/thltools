@@ -1,5 +1,6 @@
-<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*"  %>
+<%@ page  buffer="512kb" autoFlush="false" import="org.thdl.lex.*,org.thdl.lex.component.*" errorPage="/jsp/error.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+
 <!--termForm.jsf-->
 <c:out value='<a name="${ component }" ></a>' escapeXml="false" />
 <c:choose>

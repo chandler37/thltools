@@ -1,4 +1,4 @@
-<%@ page import="org.thdl.lex.*,org.thdl.lex.component.*" buffer="512kb" autoFlush="false"  contentType="text/html; charset=UTF-8"%>
+<%@ page  buffer="512kb" autoFlush="false" import="org.thdl.lex.*,org.thdl.lex.component.*" errorPage="/jsp/error.jsp"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 
 <!--displayTerm.jsf-->
@@ -39,7 +39,7 @@
 
 		<jsp:include page="displayNotes.jsf" />
 
-	</p>
+</p>
 
 	<!--END TERM-->
 

@@ -11,7 +11,7 @@
         <!-- DBCP database connection settings -->
 		<parameter>
 			<name>url</name>
-			<value>jdbc:mysql://localhost/Lex</value>
+			<value>jdbc:mysql://localhost/Lex?useUnicode=true&amp;characterEncoding=UTF-8</value>
 		</parameter>
 		<parameter>
 			<name>driverClassName</name>
@@ -24,14 +24,6 @@
 		<parameter>
 			<name>password</name>
 			<value>password</value>
-		</parameter>
-		<parameter>
-			<name>useUnicode</name>
-			<value>true</value>
-		</parameter>
-		<parameter>
-			<name>characterEncoding</name>
-			<value>utf-8</value>
 		</parameter>
 
         <!-- DBCP connection pooling options -->
