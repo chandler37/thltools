@@ -1015,7 +1015,7 @@ private static final DuffCode TMW_tab = new DuffCode(1, '\t');
 public static DuffCode mapTMtoTMW(int font, int ordinal, int suggestedFont) {
     if (font < 0 || font > 4)
         return null;
-    if (ordinal > 255)
+    if (ordinal >= 255)
         return getUnusualTMtoTMW(font, ordinal);
     if (ordinal < 32) {
         if (ordinal == (int)'\r') {
@@ -1068,7 +1068,7 @@ private static final DuffCode TM_tab = new DuffCode(1, '\t');
 public static DuffCode mapTMWtoTM(int font, int ordinal, int suggestedFont) {
     if (font < 0 || font > 9)
         return null;
-    if (ordinal > 127)
+    if (ordinal >= 127)
         return null;
     if (ordinal < 32) {
         if (ordinal == (int)'\r') {
@@ -1149,19 +1149,46 @@ public static void main(String[] args) {
     }
 }
 
-/** Tibet Doc makes weird RTF where you see TibetanMachine.8225 etc.
-    The highest possible glyph value should be 255, but that's not
-    what appears.  This returns non-null if (font, code) identify an
-    oddball we know.  This list may well be incomplete, but we handle
-    such oddballs in a first-class fashion. */
+/** A horrible kludge.  A kludge is needed because javax.swing.rtf is
+    quite busted.  As you'll see below though, this kludge does not
+    suffice.
+
+    <p>If you open up a file that TibetDoc has saved, it will appear,
+    thanks to Java's bugs, to have weird RTF where you see
+    TibetanMachine.8225 etc.  The highest possible glyph value should
+    be 255, but that's not what appears.  The bug, precisely, is that
+    the RTF <code>\'9c</code> is not treated like the RTF
+    <code>\u0156</code>, as it should be, but is instead turned into
+    something akin to <code>\u0347</code>.  This is Java's fault, not
+    TibetDoc's.  I think it happens for glyphs that are like \'8X and
+    \'9X, not for \'7X, \'aX and the rest.  Thus, there are 32 guys to
+    worry about, and 158, \'9e, and 142, \'8e, are not used by any TM
+    fonts, leaving us with 30 to worry about.  Unfortunately, 145
+    (\'91), 147 (\'93), 148 (\'94), 150 (\'96), 151 (\'97), and 152
+    (\'98) simply DISAPPEAR from the input document.
+
+    @return non-null if (font, code) identify an oddball we know.
+
+    @deprecated This list is thought to be as many of the 30 as are
+    possible to get.  But we cannot give you (char)145, etc. ever
+    because they are simply NOT THERE.  So if you are using this
+    method, you are LOSING INFORMATION.  Do not use this method. */
 private static DuffCode getUnusualTMtoTMW(int font, int code) {
-    if (code > 255) {
+    // FIXME: don't use this!  Do a search and replace through the RTF
+    // file instead.
+    if (code > 254) {
         switch (code) {
+        case 346: // 0=ga-wazur
+            return TMtoTMW[font][140 - 32];
+
         case 347: // 0=reduced-height ha
             return TMtoTMW[font][156 - 32];
 
         case 352: // 1=dz-wazur, 0=k-wazur
             return TMtoTMW[font][138 - 32];
+
+        case 356: // 0=ca-wazur
+            return TMtoTMW[font][141 - 32];
 
         case 357: // 2=b-t
             return TMtoTMW[font][157 - 32];
@@ -1174,6 +1201,12 @@ private static DuffCode getUnusualTMtoTMW(int font, int code) {
 
         case 378: // 1=reverse-ta--reverse-ta
             return TMtoTMW[font][159 - 32];
+
+        case 381: // unused, here for completeness
+            return TMtoTMW[font][142 - 32];
+
+        case 382: // unused, here for completeness
+            return TMtoTMW[font][158 - 32];
 
         case 402: // 1=dz-ny 2=n-r 3=h-y
             return TMtoTMW[font][131 - 32];
