@@ -38,6 +38,7 @@ info on where to find these.
 
   <!-- set global properties for this build -->
   <property name="my.jar.suffix" value="vanilla"/>
+  <property name="link.offline" value="true"/>
   <property name="javacdashg" value="yes"/>
   <property name="source" location="source"/>
   <property name="license" location="license"/>
@@ -162,6 +163,14 @@ info on where to find these.
     <antcall target="copy-license-to-bin-dir-for-jarring">
       <param name="mybin" value="${jskadbin}"/>
     </antcall>
+    <copy todir="${jskadbin}/org/thdl/tib/input">
+      <fileset dir="${source}">
+        <include name="Sambhota_keymap_one.rtf"/>
+        <include name="TCC_keyboard_1.rtf"/>
+        <include name="TCC_keyboard_2.rtf"/>
+        <include name="Wylie_keyboard.rtf"/>
+      </fileset>
+    </copy>
   </target>
 
   <target name="savant-compile" depends="init"
@@ -691,10 +700,10 @@ info on where to find these.
       <group title="Tibetan Input Packages" packages="org.thdl.tib.input.**"/>
 
       <!-- Have our API docs link to Sun's, JDOM's, etc. -->
-      <link offline="true"
+      <link offline="${link.offline}"
             href="http://java.sun.com/j2se/1.4/docs/api/"
             packagelistLoc="${docs}/j2sdk1.4-package-list"/>
-      <link offline="true"
+      <link offline="${link.offline}"
             href="http://www.jdom.org/docs/apidocs/"
             packagelistLoc="${docs}/jdom-package-list"/>
     </javadoc>
