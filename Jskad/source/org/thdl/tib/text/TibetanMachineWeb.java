@@ -43,6 +43,7 @@ import org.thdl.util.ThdlOptions;
 * @author Edward Garrett, Tibetan and Himalayan Digital Library
 * @version 1.0
 */
+// FIXME: for speed, make either this class, its methods, or both, final?
 public class TibetanMachineWeb {
     /** This addresses bug 624133, "Input freezes after impossible
      *  character".  The input sequences that are valid in Extended
@@ -694,6 +695,22 @@ public static boolean isVowel(String s) {
 		return vowelSet.contains(s);
 	else
 		return keyboard.isVowel(s);
+}
+
+/**
+* Checks to see if the concatenation of x and y is ambiguous in
+* Extended Wylie.  gya and g.ya, bla and b.la, and bra and b.ra are
+* the only syntactically legal ambigous fellows, as stacks like blha,
+* blda, brla, brkya, brgya, brka, etc. are unambiguous.
+* @param x the prefix
+* @param y the root stack
+* @return true if x + y is ambiguous in the Extended Wylie
+* transliteration, false if not
+*/
+public static boolean isAmbiguousWylie(String x, String y) {
+	return (("g".equals(x) && "y".equals(y))
+            || ("b".equals(x) && "l".equals(y))
+            || ("b".equals(x) && "r".equals(y)));
 }
 
 /**

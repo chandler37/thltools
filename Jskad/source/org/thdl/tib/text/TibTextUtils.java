@@ -830,10 +830,7 @@ public class TibTextUtils {
                     sb.append(aVowelToUseAfter(lastWylie));
                 }
 
-                // FIXME: "g" and "y" should not be hard-coded here.
-                //	Instead, TibetanMachineWeb should introduce relevant sets
-
-                if (lastWylie.equals("g") && wylie.equals("y"))
+                if (TibetanMachineWeb.isAmbiguousWylie(lastWylie, wylie))
                     sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
 
                 if (!wylie.equals(TibetanMachineWeb.ACHEN)) {
@@ -895,7 +892,7 @@ public class TibTextUtils {
                             || !TibetanMachineWeb.isWylieFarRight(TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(size - 1))))))) {
                 for (int i = 0; i < size; i++) {
                     wylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(i));
-                    if ((lastWylie.equals("g") && wylie.equals("y"))
+                    if (TibetanMachineWeb.isAmbiguousWylie(lastWylie, wylie)
                         || (i != 0 && wylie.equals(TibetanMachineWeb.ACHEN)))
                         sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
 
@@ -909,7 +906,7 @@ public class TibTextUtils {
             int i = 0;
             while (i+2 < size) {
                 wylie = TibetanMachineWeb.getWylieForGlyph((DuffCode)glyphList.get(i));
-                if ((lastWylie.equals("g") && wylie.equals("y"))
+                if (TibetanMachineWeb.isAmbiguousWylie(lastWylie, wylie)
                     || (i != 0 && wylie.equals(TibetanMachineWeb.ACHEN)))
                     sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
 
@@ -1010,6 +1007,8 @@ public class TibTextUtils {
                     } else {
                         /* no ambiguity. the "a" vowel comes after
                          * wylie1. */
+                        if (TibetanMachineWeb.isAmbiguousWylie(wylie0, wylie1))
+                            sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
                         sb.append(wylie1
                                   + aVowelToUseAfter(wylie1)
                                   + wylie2);
@@ -1068,10 +1067,7 @@ public class TibTextUtils {
 			dc = (DuffCode)iter.next();
 			currWylie = TibetanMachineWeb.getWylieForGlyph(dc);
 
-//note: "g" and "y" should not be hard-coded
-//	instead, TibetanMachineWeb should introduce relevant sets
-
-			if ((lastWylie.equals("g") && currWylie.equals("y"))
+			if (TibetanMachineWeb.isAmbiguousWylie(lastWylie, currWylie)
 				|| (!lastWylie.equals("")
                     && currWylie.equals(TibetanMachineWeb.ACHEN)))
                 sb.append(TibetanMachineWeb.WYLIE_DISAMBIGUATING_KEY);
@@ -1081,6 +1077,9 @@ public class TibTextUtils {
 			lastWylie = currWylie;
 		}
 
+        // DLC FIXME: type jeskada, convert Tibetan->Wylie.  You get
+        // the wrong thing in makeIllegalTibetanGoEndToEnd mode.  Fix
+        // it here.
 		return sb.toString();
 	}
 
