@@ -147,7 +147,11 @@ public class Jskad extends JPanel implements DocumentListener {
 		JMenuBar menuBar = new JMenuBar();
 
 		if (parentObject instanceof JFrame || parentObject instanceof JInternalFrame) {
-			fileChooser = new JFileChooser();
+            String whereToStart
+                = ThdlOptions.getStringOption("thdl.Jskad.working.directory",
+                                              null);
+            fileChooser
+                = new JFileChooser(whereToStart.equals("") ? null : whereToStart);
 			rtfFilter = new RTFFilter();
 			txtFilter = new TXTFilter();
 			fileChooser.addChoosableFileFilter(rtfFilter);
@@ -617,89 +621,81 @@ public class Jskad extends JPanel implements DocumentListener {
 	}
 
 	private void openFile() {
-		fileChooser = new JFileChooser();
+        String whereToStart
+            = ThdlOptions.getStringOption("thdl.Jskad.working.directory",
+                                          null);
+		fileChooser
+			= new JFileChooser(whereToStart.equals("") ? null : whereToStart);
 		fileChooser.addChoosableFileFilter(rtfFilter);
 
-		if (dp.getDocument().getLength()>0 && parentObject instanceof JFrame) {
-			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-			if (fileChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
-				setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-				return;
-			}
+        if (fileChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            return;
+        }
 
-			final File fileChosen = fileChooser.getSelectedFile();
-			final String f_name = fileChosen.getAbsolutePath();
+        final File fileChosen = fileChooser.getSelectedFile();
+        final String f_name = fileChosen.getAbsolutePath();
 
-			try {
-				JFrame parentFrame = (JFrame)parentObject;
-				InputStream in = new FileInputStream(fileChosen);
-				JFrame newFrame = new JFrame(f_name);
-				Point point = parentFrame.getLocationOnScreen();
-				newFrame.setSize(x_size, y_size);
-				newFrame.setLocation(point.x+50, point.y+50);
-				Jskad newRTF = new Jskad(newFrame);
-				newFrame.getContentPane().add(newRTF);
-				newRTF.dp.rtfEd.read(in, newRTF.dp.getDocument(), 0);
-				newRTF.dp.getDocument().addDocumentListener(newRTF);
-				in.close();
-				newFrame.setTitle(f_name);
-				newRTF.fileName = new String(f_name);
-				newRTF.hasChanged = false;
-				newRTF.dp.getCaret().setDot(0);
-				newFrame.setVisible(true);
-			}
-			catch (FileNotFoundException fnfe) {
-                ThdlDebug.noteIffyCode();
-			}
-			catch (IOException ioe) {
-                ThdlDebug.noteIffyCode();
-			}
-			catch (BadLocationException ble) {
-                ThdlDebug.noteIffyCode();
-			}
-		}
-		else {
-			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        try {
+            if (dp.getDocument().getLength()>0 && parentObject instanceof JFrame) {
+                JFrame parentFrame = (JFrame)parentObject;
+                InputStream in = new FileInputStream(fileChosen);
+                ThdlOptions.setUserPreference("thdl.Jskad.working.directory",
+                                              fileChosen.getParentFile().getAbsolutePath());
+                JFrame newFrame = new JFrame(f_name);
+                Point point = parentFrame.getLocationOnScreen();
+                newFrame.setSize(x_size, y_size);
+                newFrame.setLocation(point.x+50, point.y+50);
+                Jskad newRTF = new Jskad(newFrame);
+                newFrame.getContentPane().add(newRTF);
+                newRTF.dp.rtfEd.read(in, newRTF.dp.getDocument(), 0);
+                newRTF.dp.getDocument().addDocumentListener(newRTF);
+                in.close();
+                newFrame.setTitle(f_name);
+                newRTF.fileName = new String(f_name);
+                newRTF.hasChanged = false;
+                newRTF.dp.getCaret().setDot(0);
+                newFrame.setVisible(true);
+            } else {
+                InputStream in = new FileInputStream(fileChosen);
+                ThdlOptions.setUserPreference("thdl.Jskad.working.directory",
+                                              fileChosen.getParentFile().getAbsolutePath());
+                dp.newDocument();
+                dp.rtfEd.read(in, dp.getDocument(), 0);
+                in.close();
+                dp.getCaret().setDot(0);
+                dp.getDocument().addDocumentListener(Jskad.this);
+                hasChanged = false;
+                fileName = new String(f_name);
 
-			if (fileChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
-				setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-				return;
-			}
-
-			final File fileChosen = fileChooser.getSelectedFile();
-			final String f_name = fileChosen.getAbsolutePath();
-
-			try {
-				InputStream in = new FileInputStream(fileChosen);
-				dp.newDocument();
-				dp.rtfEd.read(in, dp.getDocument(), 0);
-				in.close();
-				dp.getCaret().setDot(0);
-				dp.getDocument().addDocumentListener(Jskad.this);
-				hasChanged = false;
-				fileName = new String(f_name);
-
-				if (parentObject instanceof JFrame) {
-					JFrame parentFrame = (JFrame)parentObject;
-					parentFrame.setTitle(fileName);
-				}
-				else if (parentObject instanceof JInternalFrame) {
-					JInternalFrame parentFrame = (JInternalFrame)parentObject;
-					parentFrame.setTitle(fileName);
-				}
-			}
-			catch (FileNotFoundException fnfe) {
-                ThdlDebug.noteIffyCode();
-			}
-			catch (IOException ioe) {
-                ThdlDebug.noteIffyCode();
-			}
-			catch (BadLocationException ble) {
-                ThdlDebug.noteIffyCode();
-			}
-		}
-		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                if (parentObject instanceof JFrame) {
+                    JFrame parentFrame = (JFrame)parentObject;
+                    parentFrame.setTitle(fileName);
+                }
+                else if (parentObject instanceof JInternalFrame) {
+                    JInternalFrame parentFrame = (JInternalFrame)parentObject;
+                    parentFrame.setTitle(fileName);
+                }
+            }
+        }
+        catch (FileNotFoundException fnfe) {
+            JOptionPane.showMessageDialog(Jskad.this,
+                                          "No such file exists.",
+                                          "Open File Error",
+                                          JOptionPane.ERROR_MESSAGE);
+        }
+        catch (IOException ioe) {
+            JOptionPane.showMessageDialog(Jskad.this,
+                                          "Error reading file.",
+                                          "Open File Error",
+                                          JOptionPane.ERROR_MESSAGE);
+        }
+        catch (BadLocationException ble) {
+            ThdlDebug.noteIffyCode();
+        }
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 
 	private void saveFile() {
@@ -768,8 +764,11 @@ public class Jskad extends JPanel implements DocumentListener {
 			out.close();
 			hasChanged = false;
 		} catch (IOException exception) {
-			exception.printStackTrace();
-			ThdlDebug.noteIffyCode();
+            JOptionPane.showMessageDialog(Jskad.this,
+                                          "Cannot save to that file.",
+                                          "Save As Error",
+                                          JOptionPane.ERROR_MESSAGE);
+
 			return null;
 		} catch (BadLocationException ble) {
 			ble.printStackTrace();
@@ -792,6 +791,8 @@ public class Jskad extends JPanel implements DocumentListener {
 		}
 
 		File fileChosen = fileChooser.getSelectedFile();
+        ThdlOptions.setUserPreference("thdl.Jskad.working.directory",
+                                      fileChosen.getParentFile().getAbsolutePath());
 		String fileName = fileChosen.getAbsolutePath();
 		int i = fileName.lastIndexOf('.');
 

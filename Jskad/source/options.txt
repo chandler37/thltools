@@ -24,6 +24,10 @@
 # system-specific.
 thdl.user.options.directory =
 
+# Set this to the full path of Jskad's working directory.  When you go
+# to open a file or to save a file, this is the path you'll see first.
+thdl.Jskad.working.directory =
+
 # Should the TibetanMachineWeb fonts not be loaded from within the JAR?  Set
 # this to true if you can get away with it and want your THDL tools to load
 # faster.
