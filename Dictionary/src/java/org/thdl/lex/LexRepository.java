@@ -80,34 +80,51 @@ public class LexRepository
 	/**
 	 *  Gets the connection attribute of the LexRepository object
 	 *
-	 * @return    The connection value
+	 * @return                             The connection value
+	 * @exception  LexRepositoryException  Description of the Exception
 	 * @since
 	 */
-	private Connection getConnection()
+	private Connection getConnection() throws LexRepositoryException
 	{
-		if ( null == connection || connection.isClosed() )
+		try
 		{
-			Context context = new InitialContext();
-			DataSource source = (DataSource) context.lookup( LexConstants.DATASOURCE_NAME );
-			setConnection( source.getConnection() );
+			if ( null == connection || connection.isClosed() )
+			{
+				Context context = new InitialContext();
+				DataSource source = (DataSource) context.lookup( LexConstants.DATASOURCE_NAME );
+				setConnection( source.getConnection() );
+			}
+		}
+		catch ( Exception se )
+		{
+			throw new LexRepositoryException( se );
 		}
 		return connection;
 	}
 
 
+
 	/**
 	 *  Gets the queryStatement attribute of the LexRepository object
 	 *
-	 * @return    The queryStatement value
+	 * @return                             The queryStatement value
+	 * @exception  LexRepositoryException  Description of the Exception
 	 * @since
 	 */
-	public Statement getQueryStatement()
+	public Statement getQueryStatement() throws LexRepositoryException
 	{
-		if ( getConnection().isClosed() )
+		try
 		{
-			Context context = new InitialContext();
-			DataSource source = (DataSource) context.lookup( LexConstants.DATASOURCE_NAME );
-			setConnection( source.getConnection() );
+			if ( getConnection().isClosed() )
+			{
+				Context context = new InitialContext();
+				DataSource source = (DataSource) context.lookup( LexConstants.DATASOURCE_NAME );
+				setConnection( source.getConnection() );
+			}
+		}
+		catch ( Exception se )
+		{
+			throw new LexRepositoryException( se );
 		}
 		return queryStatement;
 	}
