@@ -1651,6 +1651,10 @@ public void paste(int offset)
                 "beginning from:\n     " + iwe.getCulpritInContext() + "\n" +
                 "The culprit is probably the character '"+iwe.getCulprit()+"'.");
         }
+        catch (Exception e)
+		{
+        	System.err.println("Could not convert: " + wylie);
+		}
     }
 
 /**
