@@ -198,6 +198,24 @@ public class SimplifiedLinkedList
 		return array;		
 	}
 	
+	public String[] toReverseStringArray()
+	{
+		int n = size();
+		if (n==0) return null;
+		Object o;
+		String array[] = new String[n];
+		SimplifiedListIterator li = listIterator();
+		n=0;
+		while (li.hasNext())
+		{
+			o = li.next();
+			if (o==null) array[n]=null;
+			else array[n] = o.toString();
+			n++;
+		}
+		return array;		
+	}	
+	
 	public void write(PrintWriter pw)
 	{
 		SimplifiedListIterator li = listIterator();
