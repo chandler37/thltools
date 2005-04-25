@@ -17,9 +17,6 @@ Contributor(s): ______________________________________.
 */
 package org.thdl.tib.scanner;
 
-import java.io.*;
-import org.thdl.util.*;
-
 /** Miscelaneous static methods for the manipulation of Tibetan text.
 	
     @author Andr&eacute;s Montano Pellegrini
@@ -471,7 +468,7 @@ public class Manipulate
         if (length>2)
         {
             if ((s.charAt(0)=='\"') && (s.charAt(length-1)=='\"'))
-                return s.substring(1,length-1);
+                s = s.substring(1,length-1);
                 
             do
             {
