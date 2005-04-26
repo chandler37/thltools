@@ -1,28 +1,14 @@
 package org.thdl.lex.util;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.LinkedList;
-import java.util.ListIterator;
 import java.util.ResourceBundle;
 
-import org.thdl.lex.LexComponentRepository;
-import org.thdl.lex.component.ITerm;
-import org.thdl.lex.component.Meta;
-import org.thdl.lex.component.Term;
-import org.thdl.lex.component.TransitionalData;
 import org.thdl.tib.scanner.Manipulate;
 
 public class DictionaryImporter {
@@ -46,37 +32,19 @@ public class DictionaryImporter {
 
 	private static int delimiterType;
 
-	private static Integer creator;
-
 	private static String note;
 
-	private static Integer proj;
+	private static int proj;
 
 	private static String publicCons;
 
-	private static Integer label;
+	private static int label;
 
 	private static Statement sqlStatement;
 
-	private static Connection conn;
+	private static Connection connLex, connUsers;
 
-	private static Connection conn2;
-
-	private static Connection conn3;
-
-	private static Connection conn4;
-
-	private static Connection conn5;
-
-	private static PreparedStatement insertMetaStmt;
-
-	private static PreparedStatement selectMetaStmt;
-
-	private static PreparedStatement insertTermStmt;
-
-	private static PreparedStatement updateTransStmt;
-
-	private static PreparedStatement insertTransStmt;
+	private static PreparedStatement insertMetaStmt, selectMetaStmt, insertTermStmt, updateTransStmt, insertTransStmt;
 
 	public final static int delimiterGeneric = 0;
 
@@ -147,8 +115,10 @@ public class DictionaryImporter {
 			out.flush();
 		if (sqlStatement != null)
 			sqlStatement.close();
-		if (conn != null)
-			conn.close();
+		if (connLex != null)
+			connLex.close();
+		if (connUsers != null)
+			connUsers.close();
 	}
 
 	public void addRecordManually(String term, String definition)
@@ -192,7 +162,7 @@ public class DictionaryImporter {
 				.executeQuery("SELECT TransitionalDataText, TransitionalData.metaid FROM TransitionalData, Meta where TransitionalData.parentid = "
 						+ metaID
 						+ " and TransitionalData.metaid = Meta.metaid and createdbyprojsub = "
-						+ proj.toString());
+						+ proj);
 
 		// if there is, append the definition if it is different. If not add it.
 		if (set.first()) {
@@ -231,7 +201,7 @@ public class DictionaryImporter {
 			insertTransStmt.setInt(1, metaIDTrans);
 			insertTransStmt.setInt(2, metaID);
 			insertTransStmt.setInt(3, prec);
-			insertTransStmt.setInt(4, label.intValue());
+			insertTransStmt.setInt(4, label);
 			insertTransStmt.setString(5, publicCons);
 			insertTransStmt.setString(6, definition);
 			insertTransStmt.executeUpdate();
@@ -248,23 +218,6 @@ public class DictionaryImporter {
 		else
 			addRecordManually(term, definition);
 
-	}
-
-	public Meta defaultMeta() {
-		//use the file src/sql/import-updates.sql to add new metadata for use
-		// in this method.
-		Meta meta = new Meta();
-		meta.setCreatedBy(creator);
-		meta.setModifiedBy(creator);
-		meta.setCreatedByProjSub(proj);
-		meta.setModifiedByProjSub(proj);
-		meta.setSource(new Integer(0));
-		// meta.setTranslationOf( new Integer( 0 ) );
-		meta.setLanguage(new Integer("0"));
-		meta.setDialect(new Integer("0"));
-		meta.setScript(new Integer("1"));
-		meta.setNote(note);
-		return meta;
 	}
 
 	/**
@@ -285,16 +238,10 @@ public class DictionaryImporter {
 
 		// Connecting to database
 		try {
-			conn = DriverManager.getConnection(rb
-					.getString("dictionaryimporter.url"));
-			conn2 = DriverManager.getConnection(rb
-					.getString("dictionaryimporter.url"));
-			conn3 = DriverManager.getConnection(rb
-					.getString("dictionaryimporter.url"));
-			conn4 = DriverManager.getConnection(rb
-					.getString("dictionaryimporter.url"));
-			conn5 = DriverManager.getConnection(rb
-					.getString("dictionaryimporter.url"));
+			connLex = DriverManager.getConnection(rb
+					.getString("dictionaryimporter.lex.url"));
+			connUsers = DriverManager.getConnection(rb
+					.getString("dictionaryimporter.thdlusers.url"));
 		} catch (Exception ex) {
 			// handle any errors
 			System.out.println("Could not connect to database!");
@@ -305,12 +252,12 @@ public class DictionaryImporter {
 
 	private static void initStatements() {
 		try {
-			sqlStatement = conn.createStatement();
-			insertMetaStmt = conn.prepareStatement(INSERT_META);
-			selectMetaStmt = conn.prepareStatement(SELECT_META);
-			insertTermStmt = conn.prepareStatement(INSERT_TERM);
-			updateTransStmt = conn.prepareStatement(UPDATE_TRANS);
-			insertTransStmt = conn.prepareStatement(INSERT_TRANS);
+			sqlStatement = connLex.createStatement();
+			insertMetaStmt = connLex.prepareStatement(INSERT_META);
+			selectMetaStmt = connLex.prepareStatement(SELECT_META);
+			insertTermStmt = connLex.prepareStatement(INSERT_TERM);
+			updateTransStmt = connLex.prepareStatement(UPDATE_TRANS);
+			insertTransStmt = connLex.prepareStatement(INSERT_TRANS);
 		} catch (Exception ex) {
 			// handle any errors
 			System.out.println("Could not create statement!");
@@ -321,31 +268,181 @@ public class DictionaryImporter {
 
 	public DictionaryImporter() {
 	}
+	
+	public static int getCreator(String firstName, String lastName) throws Exception
+	{
+		PreparedStatement stmt, stmt2;
+		ResultSet set;
+		int creator = -1;
+		
+		stmt = connUsers.prepareStatement("SELECT id FROM thdlusers WHERE firstname LIKE ? AND lastname LIKE ?");
+		stmt.setString(1, "%" + firstName + "%");
+		stmt.setString(2, "%" + lastName + "%");
+		set = stmt.executeQuery();
+		
+		// check if there is at least one
+		if (set.next())
+		{
+			creator = set.getInt(1);
+			
+			// if there are more instances of the same user delete them
+			if (set.next())
+			{
+				stmt = connUsers.prepareStatement("DELETE FROM thdlusers WHERE firstname LIKE ? AND lastname LIKE ? AND id != ?");
+				stmt.setString(1, "%" + firstName + "%");
+				stmt.setString(2, "%" + lastName + "%");
+				stmt.setInt(3, creator);
+				stmt.executeUpdate();
+			}
+		}
+		else
+		{
+			stmt2 = connUsers.prepareStatement("INSERT INTO thdlusers(firstname, lastname) VALUES (?, ?)");
+			stmt2.setString(1, firstName);
+			stmt2.setString(2, lastName);
+			stmt2.executeUpdate();
+			set = stmt.executeQuery();
+			
+			if (set.next())
+			{
+				creator = set.getInt(1);
+			}
 
-	public static void main(String[] args) throws Exception {
-		String format = null;
+		}
+		
+		return creator;
+	}
+	
+	public static int getProject(String projectName, String shortName, int creator) throws Exception
+	{
+		PreparedStatement stmt, stmt2;
+		ResultSet set;
+		int projectFirst = -1, project = -1;
+		
+		stmt = connLex.prepareStatement("SELECT id FROM projectsubjects WHERE projectSubject like ? OR projectSubject like ?");
+		stmt.setString(1, "%" + projectName + "%");
+		stmt.setString(2, "%" + shortName + "%");
+		set = stmt.executeQuery();
+		stmt2 = connLex.prepareStatement("DELETE FROM transitionaldata, meta USING transitionaldata, meta WHERE transitionaldata.metaid=meta.metaid AND createdbyprojsub = ?");
+		
+		while (set.next())
+		{
+			project = set.getInt(1);
+			if (projectFirst==-1) projectFirst = project;
+			stmt2.setInt(1, project);
+			stmt2.executeUpdate();
+		}
+		
+		if (projectFirst==-1)
+		{
+			stmt2 = connLex.prepareStatement("INSERT INTO ProjectSubjects(projectSubject, leader, participantList) VALUES (?, ?, ?)");
+			stmt2.setString(1, projectName);
+			stmt2.setInt(2, creator);
+			stmt2.setString(3, "");
+			stmt2.executeUpdate();
+			
+			set = stmt.executeQuery();
+			if (set.next())
+			{
+				projectFirst = set.getInt(1);
+			}
+		}
+		/* if there is more than one project under that name
+		 * delete the others
+		 * */
+		else
+		{
+			stmt2 = connLex.prepareStatement("UPDATE projectsubjects SET projectSubject = ?, leader = ?, participantList = ? WHERE id = ?");
+			stmt2.setString(1, projectName);
+			stmt2.setInt(2, creator);
+			stmt2.setString(3, "");
+			stmt2.setInt(4, projectFirst);
+			stmt2.executeUpdate();
+			
+			if (projectFirst!=project)
+			{
+				stmt2 = connLex.prepareStatement("DELETE FROM projectsubjects WHERE id != ? AND (projectSubject like ? OR projectSubject like ?)");
+				stmt2.setInt(1, projectFirst);
+				stmt2.setString(2, "%" + projectName + "%");
+				stmt2.setString(3, "%" + shortName + "%");
+				stmt2.executeUpdate();
+			}
+		}
+		
+		return projectFirst;
+	}
+	
+	public static int getLabel(String longName, String shortName, int priority) throws Exception
+	{
+		PreparedStatement stmt, stmt2;
+		ResultSet set;
+		int label=-1;
+		
+		stmt = connLex.prepareStatement("SELECT id FROM transitionaldatalabels WHERE transitionaldatalabel like ? OR transitionaldatalabel like ?");
+		stmt.setString(1, "%" + shortName + "%");
+		stmt.setString(2, "%" + longName + "%");
+		set = stmt.executeQuery();
+		
+		if (set.next())
+		{
+			label = set.getInt(1);
+			if (set.next())
+			{
+				stmt2 = connLex.prepareStatement("DELETE FROM transitionaldatalabels WHERE id != ? AND (transitionaldatalabel like ? OR transitionaldatalabel like ?)");
+				stmt2.setInt(1, label);
+				stmt2.setString(2, "%" + shortName + "%");
+				stmt2.setString(3, "%" + longName + "%");
+				stmt2.executeUpdate();
+			}
+			stmt2 = connLex.prepareStatement("UPDATE transitionaldatalabels SET priority = ?, transitionaldatalabelshort = ?, transitionaldatalabel = ? WHERE id = ?");
+			stmt2.setInt(1, priority);
+			stmt2.setString(2, shortName);
+			stmt2.setString(3, longName);
+			stmt2.setInt(4, label);
+			stmt2.executeUpdate();
+		}
+		else
+		{
+			stmt2 = connLex.prepareStatement("INSERT INTO transitionaldatalabels(priority, transitionaldatalabel, transitionaldatalabelshort) VALUES (?, ?, ?)");
+			stmt2.setInt(1, priority);
+			stmt2.setString(2, longName);
+			stmt2.setString(3, shortName);
+			stmt2.executeUpdate();
+			
+			set = stmt.executeQuery();
+			
+			if (set.next())
+			{
+				label = set.getInt(1);
+			}
+		}
+		
+		return label;
+	}
+
+	public static void main(String[] args)
+	{
+		String format = null, firstName = "", lastName = "", longName = "", shortName = "";
 		InputStream is;
 
-		int argNum = args.length, currentArg = 0;
+		int argNum = args.length, currentArg = 0, creator, priority = -1;
 		String option;
 		boolean file = false;
-		boolean manual = false;
 		out = null;
 
 		delimiterType = delimiterDash;
 		delimiter = "-";
-		creator = new Integer(80);
-		proj = new Integer(18);
-		note = "This entry comes from The Rangjung Yeshe Tibetan-English Dictionary of Buddhist Culture (www.rangjung.com).";
+		proj = -1;
+		note = "";
 		publicCons = "true";
-		label = new Integer(6);
+		label = -1;
 		sqlStatement = null;
-		conn = null;
+		connLex = null;
 
 		if (argNum <= currentArg) {
 			System.out
-					.println("Syntax: DictionaryImporter [-manual] [-format format] [-tab | -delim delimiter] "
-							+ "[-creator creator-id] [-proj project-id] [-label label] [-note note] "
+					.println("Syntax: DictionaryImporter [-format format] [-tab | -delim delimiter] "
+							+ "-creatorFirstName first-name -creatorLastName last-name [-proj project-name] [-note note] "
 							+ "[-pub-cons public-consumption-marker] [input-file] [output-error-file]");
 			return;
 		}
@@ -353,11 +450,7 @@ public class DictionaryImporter {
 		while (args[currentArg].charAt(0) == '-') {
 			option = args[currentArg].substring(1);
 			currentArg++;
-			if (option.equals("manual")) {
-				initConnections();
-				initStatements();
-				manual = true;
-			} else if (option.equals("format")) {
+			if (option.equals("format")) {
 				if (argNum <= currentArg) {
 					System.out.println("Syntax error: format expected.");
 					return;
@@ -374,26 +467,40 @@ public class DictionaryImporter {
 				}
 				delimiter = args[currentArg];
 				currentArg++;
-			} else if (option.equals("creator")) {
+			} else if (option.equals("creatorFirstName")) {
 				if (argNum <= currentArg) {
-					System.out.println("Syntax error: creator expected.");
+					System.out.println("Syntax error: creator\'s first name expected.");
 					return;
 				}
-				creator = new Integer(args[currentArg]);
+				firstName = args[currentArg];
 				currentArg++;
-			} else if (option.equals("proj")) {
+			} else if (option.equals("creatorLastName")) {
 				if (argNum <= currentArg) {
-					System.out.println("Syntax error: project expected.");
+					System.out.println("Syntax error: creator\'s last name expected.");
 					return;
 				}
-				proj = new Integer(args[currentArg]);
+				lastName = args[currentArg];
 				currentArg++;
-			} else if (option.equals("label")) {
+			} else if (option.equals("longName")) {
 				if (argNum <= currentArg) {
-					System.out.println("Syntax error: label expected.");
+					System.out.println("Syntax error: project\'s full name expected.");
 					return;
 				}
-				label = new Integer(args[currentArg]);
+				longName = args[currentArg];
+				currentArg++;
+			} else if (option.equals("shortName")) {
+				if (argNum <= currentArg) {
+					System.out.println("Syntax error: project\'s abbreviated name expected.");
+					return;
+				}
+				shortName = args[currentArg];
+				currentArg++;
+			} else if (option.equals("priority")) {
+				if (argNum <= currentArg) {
+					System.out.println("Syntax error: project\'s priority expected.");
+					return;
+				}
+				priority = Integer.parseInt(args[currentArg]);
 				currentArg++;
 			} else if (option.equals("note")) {
 				if (argNum <= currentArg) {
@@ -426,35 +533,74 @@ public class DictionaryImporter {
 			break;
 		default:
 			if (format != null)
-				out = new PrintWriter(new OutputStreamWriter(
+			{
+				try
+				{
+					out = new PrintWriter(new OutputStreamWriter(
 						new FileOutputStream(args[currentArg + 1]), format));
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
 			else
-				out = new PrintWriter(
+			{
+				try
+				{
+					out = new PrintWriter(
 						new FileOutputStream(args[currentArg + 1]));
+				}
+				catch (FileNotFoundException e)
+				{
+					e.printStackTrace();
+				}
+			}
 			file = true;
 		}
 
-		if (file) {
-			if (args[currentArg].indexOf("http://") >= 0)
-				is = new BufferedInputStream((new URL(args[currentArg]))
-						.openStream());
-			else
-				is = new FileInputStream(args[currentArg]);
-
-			if (format == null)
-				in = new BufferedReader(new InputStreamReader(is));
-			else
-				in = new BufferedReader(new InputStreamReader(is, format));
+		if (file)
+		{
+			try
+			{
+				if (args[currentArg].indexOf("http://") >= 0)
+					is = new BufferedInputStream((new URL(args[currentArg]))
+							.openStream());
+				else
+					is = new FileInputStream(args[currentArg]);
+	
+				if (format == null)
+					in = new BufferedReader(new InputStreamReader(is));
+				else
+					in = new BufferedReader(new InputStreamReader(is, format));
+			}
+			catch (Exception e)
+			{
+				System.out.println("File " + args[currentArg] + " not found.");
+				e.printStackTrace();
+			}
 		}
 
-		if (manual) {
-			insertMetaStmt.setString(1, creator.toString());
-			insertMetaStmt.setString(2, creator.toString());
-			insertMetaStmt.setString(3, proj.toString());
-			insertMetaStmt.setString(4, proj.toString());
+		initConnections();
+		initStatements();
+		
+		try
+		{
+			creator = getCreator(firstName, lastName);
+			proj = getProject(longName, shortName, creator);
+			label = getLabel (longName, shortName, priority);
+			
+			insertMetaStmt.setInt(1, creator);
+			insertMetaStmt.setInt(2, creator);
+			insertMetaStmt.setInt(3, proj);
+			insertMetaStmt.setInt(4, proj);
 			insertMetaStmt.setString(5, note);
+	
+			new DictionaryImporter().doImport();
 		}
-
-		new DictionaryImporter().doImport();
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 }
