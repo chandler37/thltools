@@ -19,8 +19,8 @@
 	</target>
 	
 	<target name="compile" description="Compile web application">
-		<delete dir="webroot/WEB-INF/classes"/>
-		<mkdir dir="webroot/WEB-INF/classes"/>
+		<!--<delete dir="webroot/WEB-INF/classes"/>
+		<mkdir dir="webroot/WEB-INF/classes"/>-->
 		<copy todir="webroot/WEB-INF/classes">
 			<fileset dir="src/java">
 				<exclude name="**/*.java"/>
@@ -124,106 +124,123 @@
 		</java>
 	</target>
 
-	<target name="import-dm" description="Imports Dan Martin's dictionary into database.">
+	<target name="import-dm" depends="compile" description="Imports Dan Martin's dictionary into database.">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="webroot/WEB-INF/classes"/>
 			</classpath>
-			<arg value="-manual"/>
+			<arg value="-creatorFirstName"/><arg value="Dan"/>
+			<arg value="-creatorLastName"/><arg value="Martin"/>
+			<arg value="-longName"/><arg value="Dan Martin's Tibetan Vocabulary"/>
+			<arg value="-shortName"/><arg value="Dan Martin"/>
+			<arg value="-priority"/><arg value="2"/>
 			<arg value="-format"/><arg value="UTF-16"/>
 			<arg value="-tab"/>
-			<arg value="-creator"/><arg value="9"/>
-			<arg value="-proj"/><arg value="18"/>
-			<arg value="-label"/><arg value="3"/>
-			<arg value="-note"/><arg value=""/>
 			<arg value="dicts/DanMartin.txt"/>
 		</java>
 	</target>
-	<target name="import-jh" description="Imports Jeffrey Hopkins' dictionary into database. ">
+	<target name="import-jh" depends="compile" description="Imports Jeffrey Hopkins' dictionary into database. ">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
 			</classpath>
-			<arg value="-manual"/>
 			<arg value="-format"/><arg value="UTF-16"/>
 			<arg value="-tab"/>
-			<arg value="-creator"/><arg value="95"/>
-			<arg value="-proj"/><arg value="19"/>
-			<arg value="-label"/><arg value="4"/>
-			<arg value="-note"/><arg value=""/>
+			<arg value="-creatorFirstName"/><arg value="Jeffrey"/>
+			<arg value="-creatorLastName"/><arg value="Hopkins"/>
+			<arg value="-longName"/><arg value="Jeffrey Hopkins' Tibetan-Sanskrit-English Dictionary"/>
+			<arg value="-shortName"/><arg value="Jeffrey Hopkins"/>
+			<arg value="-priority"/><arg value="3"/>
 			<arg value="dicts/JHTabUnicode.txt"/>
 		</java>
 	</target>
-	<target name="import-tc" description="Imports The Great Tibetan-Chinese Dictionary into database. ">
+	<target name="import-tc" depends="compile" description="Imports The Great Tibetan-Chinese Dictionary into database. ">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
 			</classpath>
-			<arg value="-manual"/>
 			<arg value="-tab"/>
-			<arg value="-creator"/><arg value="80"/>
-			<arg value="-proj"/><arg value="23"/>
 			<arg value="-pub-cons"/><arg value="false"/>
-			<arg value="-label"/><arg value="2"/>
-			<arg value="-note"/><arg value=""/>
-			<arg value="dicts/tshig.tab"/>
+			<arg value="-creatorFirstName"/><arg value="Andres"/>
+			<arg value="-creatorLastName"/><arg value="Montano"/>
+			<arg value="-longName"/><arg value="Great Tibetan-Chinese Dictionary"/>
+			<arg value="-shortName"/><arg value="Great Dictionary"/>
+			<arg value="-priority"/><arg value="1"/>
+			<arg value="dicts/tshig.tab"/>			
 		</java>
 	</target>
-	<target name="import-ry" description="Imports Rangjung Yeshe's dictionary into database. ">
+	<target name="import-ry" depends="compile" description="Imports Rangjung Yeshe's dictionary into database.">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
 			</classpath>
-			<arg value="-manual"/>
-			<arg value="-creator"/><arg value="4"/>
-			<arg value="-proj"/><arg value="16"/>
-			<arg value="-label"/><arg value="1"/>
-			<arg value="-note"/><arg value=""/>
+			<arg value="-creatorFirstName"/><arg value="Rangjung"/>
+			<arg value="-creatorLastName"/><arg value="Yeshe"/>
+			<arg value="-longName"/><arg value="Rangjung Yeshe Tibetan-English Dictionary"/>
+			<arg value="-shortName"/><arg value="Rangjung Yeshe"/>
+			<arg value="-priority"/><arg value="8"/>
 			<arg value="dicts/ry-dic2003-prop.txt"/>
 		</java>
 	</target>
-	<target name="import-jv" description="Imports Jim Valby's dictionary into database. ">
+	<target name="import-jv" depends="compile" description="Imports Jim Valby's dictionary into database. ">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
 			</classpath>
-			<arg value="-manual"/>
-			<arg value="-creator"/><arg value="96"/>
-			<arg value="-proj"/><arg value="20"/>
-			<arg value="-label"/><arg value="5"/>
-			<arg value="-note"/><arg value=""/>
-			<arg value="dicts/JimValby2002-trimmed.txt"/>
+			<arg value="-creatorFirstName"/><arg value="Jim"/>
+			<arg value="-creatorLastName"/><arg value="Valby"/>
+			<arg value="-longName"/><arg value="Jim Valby's Tibetan-English Dictionary"/>
+			<arg value="-shortName"/><arg value="Jim Valby"/>
+			<arg value="-priority"/><arg value="6"/>
+			<arg value="dicts/JimValby2002.txt"/>
 		</java>
 	</target>
 
-	<target name="import-rb" description="Imports Richard Barron's dictionary into database. ">
+	<target name="import-rb" depends="compile" description="Imports Richard Barron's dictionary into database. ">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
 			</classpath>
-			<arg value="-manual"/>
-			<arg value="-creator"/><arg value="97"/>
-			<arg value="-proj"/><arg value="21"/>
-			<arg value="-label"/><arg value="6"/>
-			<arg value="-note"/><arg value=""/>
-			<arg value="dicts/RichardBarron.txt"/>
+			<arg value="-creatorFirstName"/><arg value="Richard"/>
+			<arg value="-creatorLastName"/><arg value="Barron"/>
+			<arg value="-longName"/><arg value="Richard Barron's Tibetan-English Dictionary"/>
+			<arg value="-shortName"/><arg value="Richard Barron"/>
+			<arg value="-priority"/><arg value="7"/>
+			<arg value="dicts/RichardBarron.txt"/>			
 		</java>
 	</target>
 
-	<target name="import-iw" description="Imports Ives Waldo's dictionary into database. ">
+	<target name="import-iw" depends="compile" description="Imports Ives Waldo's dictionary into database. ">
 		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
 			<classpath>
 				<pathelement location="${build}/WEB-INF/classes"/>
 			</classpath>
-			<arg value="-manual"/>
-			<arg value="-creator"/><arg value="98"/>
-			<arg value="-proj"/><arg value="22"/>
-			<arg value="-label"/><arg value="7"/>
-			<arg value="-note"/><arg value=""/>
-			<arg value="dicts/IvesWaldo.txt"/>
+			<arg value="-creatorFirstName"/><arg value="Ives"/>
+			<arg value="-creatorLastName"/><arg value="Waldo"/>
+			<arg value="-longName"/><arg value="Ives Waldo's Tibetan-English Dictionary"/>
+			<arg value="-shortName"/><arg value="Ives Waldo"/>
+			<arg value="-priority"/><arg value="5"/>
+			<arg value="dicts/IvesWaldo.txt"/>			
 		</java>
 	</target>
 	
+	<target name="import-yb" depends="compile" description="Imports the Yogacara-bhumi glossary into database. ">
+		<java classname="org.thdl.lex.util.DictionaryImporter" classpathref="classpath" fork="yes">
+			<classpath>
+				<pathelement location="${build}/WEB-INF/classes"/>
+			</classpath>
+			<arg value="-tab"/>
+			<arg value="-creatorFirstName"/><arg value="Andres"/>
+			<arg value="-creatorLastName"/><arg value="Montano"/>
+			<arg value="-longName"/><arg value="Yogacara-bhumi Glossary"/>
+			<arg value="-shortName"/><arg value="Yogacara-bhumi"/>
+			<arg value="-priority"/><arg value="4"/>
+			<arg value="-format"/><arg value="UTF-16"/>
+			<arg value="dicts/yogauni.txt"/>
+		</java>
+	</target>
+	
+	
 <!-- <target name="import-all" depends="import-dm, import-jh, import-tc, import-ry import-jv,import-rb, import-iw"/> -->
-		<target name="import-all" depends="import-dm, import-jh, import-tc, import-jv,import-rb, import-iw"/>
+		<target name="import-all" depends="import-tc, import-dm, import-jh, import-yb, import-iw, import-jv, import-rb, import-ry"/>
 </project>
