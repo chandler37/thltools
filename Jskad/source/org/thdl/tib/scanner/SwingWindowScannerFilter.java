@@ -209,9 +209,7 @@ public class SwingWindowScannerFilter extends WindowScannerFilter
 		    break;
 		    default:
 		    System.out.println("Syntax error!");
-			System.out.println("Sintaxis: java SwingWindowScannerFilter [options] arch-dict");
-			System.out.println("Options:");
-			System.out.println("  -simple: runs the non-swing version.");
+			System.out.println("Sintaxis: java SwingWindowScannerFilter [arch-dict]");
 			System.out.println(TibetanScanner.copyrightASCII);
 		}
 	}

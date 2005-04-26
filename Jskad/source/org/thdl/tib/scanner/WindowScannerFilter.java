@@ -55,53 +55,60 @@ public abstract class WindowScannerFilter implements WindowListener, FocusListen
 	protected Frame mainWindow;
 	
 	/** This class is not meant to be called by itself */
-	public WindowScannerFilter()
+	public WindowScannerFilter(String argument)
 	{
 		String response, dictType;
 		WhichDictionaryFrame wdf;
 		
+		mainWindow = null;		
 		response = ThdlOptions.getStringOption(defOpenOption);
 		
 		if (response==null || response.equals(""))
 		{
-		    mainWindow = new Frame("Tibetan Translation Tool");
-		    mainWindow.show();
-		    mainWindow.toFront();
-		    
-		    wdf = getWhichDictionaryFrame();    
-    		response = wdf.getResponse();
-	    	wdf.dispose();
-		    
-		    if (response.equals(""))
-		    {
-		        mainWindow.dispose();
-		        System.exit(0);
-		    }
-		    else
-		    {
-		        dictType = wdf.getDictionaryType();
-		        mainWindow.setTitle("Tibetan Translation Tool: Connected to " + dictType + " database");
-		        if (wdf.getDefaultOption())
-		        {
-		            ThdlOptions.setUserPreference(defOpenOption, response);
-		            ThdlOptions.setUserPreference(dictOpenType, dictType);		            
-		            try
-		            {
-		                ThdlOptions.saveUserPreferences();
-		            }
-		            catch (Exception e)
-		            {
-		            }
-		        }
-		    }
+			if (argument!=null && !argument.equals(""))
+			{
+				response = argument;
+			}
+			else
+			{
+			    mainWindow = new Frame("Tibetan Translation Tool");
+			    mainWindow.show();
+			    mainWindow.toFront();
+			    
+			    wdf = getWhichDictionaryFrame();    
+	    		response = wdf.getResponse();
+		    	wdf.dispose();
+			    
+			    if (response.equals(""))
+			    {
+			        mainWindow.dispose();
+			        System.exit(0);
+			    }
+			    else
+			    {
+			        dictType = wdf.getDictionaryType();
+			        mainWindow.setTitle("Tibetan Translation Tool: Connected to " + dictType + " database");
+			        if (wdf.getDefaultOption())
+			        {
+			            ThdlOptions.setUserPreference(defOpenOption, response);
+			            ThdlOptions.setUserPreference(dictOpenType, dictType);		            
+			            try
+			            {
+			                ThdlOptions.saveUserPreferences();
+			            }
+			            catch (Exception e)
+			            {
+			            }
+			        }
+			    }
+			}
 		}
     	makeWindow (response);
 	}	
 	
-	public WindowScannerFilter(String file)
+	public WindowScannerFilter()
 	{
-	    mainWindow = null;
-		makeWindow (file);
+		this(null);
 	}
 	
 	protected abstract WhichDictionaryFrame getWhichDictionaryFrame();
