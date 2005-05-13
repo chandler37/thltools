@@ -92,7 +92,7 @@ Section -AdditionalIcons
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
   Pop $R0
   StrCpy $R0 '$R0\bin\javaw.exe'
-  StrCpy $R1 '-jar DictionarySearchStandalone.jar free'
+  StrCpy $R1 '-jar DictionarySearchStandalone.jar -firsttime free'
   push $R0
   
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\${PRODUCT_NAME}.lnk" "$R0" "$R1" "$INSTDIR\TranslationTool.ico"
