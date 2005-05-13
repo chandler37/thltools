@@ -19,11 +19,8 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.scanner;
 
 import java.awt.*;
-import java.util.*;
 import java.io.*;
 import java.awt.event.*;
-import java.applet.Applet;
-import java.awt.*;
 import java.awt.datatransfer.*;
 import javax.swing.text.*;
 import javax.swing.*;
@@ -45,7 +42,8 @@ import org.thdl.util.*;
 */
 public class SwingWindowScannerFilter extends WindowScannerFilter
 {	
-
+	private static String firstTimeOption = "thdl.scanner.first.time";
+	
 	public SwingWindowScannerFilter()
 	{
 	    super();
@@ -196,21 +194,53 @@ public class SwingWindowScannerFilter extends WindowScannerFilter
 	    }
 	}
 	
+	public static void printSyntax()
+	{
+		System.out.println("Sintaxis: java SwingWindowScannerFilter [-firsttime] [arch-dict]");
+		System.out.println(TibetanScanner.copyrightASCII);
+	}
+	
 	public static void main(String[] args)
 	{
-	    String os;
+	    String response;
+	    
 		switch(args.length)
 		{
 		    case 0:
-		    new SwingWindowScannerFilter();
-		    break;
+		    	new SwingWindowScannerFilter();
+		    	break;
 		    case 1:
-		    new SwingWindowScannerFilter(args[0]);
-		    break;
+		    	new SwingWindowScannerFilter(args[0]);
+		    	break;
+		    case 2:
+		    	if (args[0].equals("-firsttime"))
+		    	{
+		    		response = ThdlOptions.getStringOption(firstTimeOption);
+		    		if (response==null || response.equals("") || !response.equals("no"))
+					{
+		    			ThdlOptions.setUserPreference(defOpenOption, args[1]);
+			            ThdlOptions.setUserPreference(dictOpenType, "local");
+			            ThdlOptions.setUserPreference(firstTimeOption, "no");
+			            try
+			            {
+			                ThdlOptions.saveUserPreferences();
+			            }
+			            catch (Exception e)
+			            {
+			            }
+			            new SwingWindowScannerFilter(args[1]);
+					}
+		    		else new SwingWindowScannerFilter();
+		    	}	
+		    	else
+		    	{
+				    System.out.println("Syntax error! Invalid option.");
+					printSyntax();
+		    	}
+		    	break;
 		    default:
 		    System.out.println("Syntax error!");
-			System.out.println("Sintaxis: java SwingWindowScannerFilter [arch-dict]");
-			System.out.println(TibetanScanner.copyrightASCII);
+			printSyntax();
 		}
 	}
 	

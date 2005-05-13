@@ -19,12 +19,7 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.scanner;
 
 import java.awt.*;
-import java.util.*;
-import java.io.*;
 import java.awt.event.*;
-import java.applet.Applet;
-import java.awt.*;
-import java.awt.datatransfer.*;
 import org.thdl.util.*;
 
 /** Provides a graphical interfase to input Tibetan text (Roman or
@@ -59,17 +54,17 @@ public abstract class WindowScannerFilter implements WindowListener, FocusListen
 	{
 		String response, dictType;
 		WhichDictionaryFrame wdf;
+		mainWindow = null;
 		
-		mainWindow = null;		
-		response = ThdlOptions.getStringOption(defOpenOption);
-		
-		if (response==null || response.equals(""))
+		if (argument!=null && !argument.equals(""))
 		{
-			if (argument!=null && !argument.equals(""))
-			{
-				response = argument;
-			}
-			else
+			response = argument;
+		}
+		else
+		{
+			response = ThdlOptions.getStringOption(defOpenOption);
+			
+			if (response==null || response.equals(""))
 			{
 			    mainWindow = new Frame("Tibetan Translation Tool");
 			    mainWindow.show();
@@ -100,8 +95,8 @@ public abstract class WindowScannerFilter implements WindowListener, FocusListen
 			            {
 			            }
 			        }
-			    }
-			}
+			    }	
+			}			
 		}
     	makeWindow (response);
 	}	
