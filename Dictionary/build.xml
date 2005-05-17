@@ -1,4 +1,4 @@
-<project name="Lex" default="compile" basedir=".">
+<project name="Lex " default="compile" basedir=".">
 
 	<path id="classpath">
 		<fileset dir="webroot/WEB-INF/lib">
