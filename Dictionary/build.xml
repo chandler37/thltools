@@ -4,11 +4,6 @@
 		<fileset dir="webroot/WEB-INF/lib">
 			<include name="**/*.jar"/>
 		</fileset>
-		<fileset dir="C:/Program Files/Apache Software Foundation/Tomcat 5.5/common/lib">
-			<include name="servlet-api.jar"/>
-			<include name="*.jar"/>
-			<include name="mysql-connector-java-3.0.15-ga-bin.jar"/>
-		</fileset>
 		<pathelement location="webroot/WEB-INF/classes"/>
 		<pathelement location="webroot/WEB-INF/tld"/>
 	</path>
@@ -176,7 +171,7 @@
 			</classpath>
 			<arg value="-creatorFirstName"/><arg value="Rangjung"/>
 			<arg value="-creatorLastName"/><arg value="Yeshe"/>
-			<arg value="-longName"/><arg value="Rangjung Yeshe Tibetan-English Dictionary of Buddhist Culture"/>
+			<arg value="-longName"/><arg value="Rangjung Yeshe Tibetan-English Dictionary"/>
 			<arg value="-shortName"/><arg value="Rangjung Yeshe"/>
 			<arg value="-priority"/><arg value="8"/>
 			<arg value="dicts/ry-dic2003-prop.txt"/>
