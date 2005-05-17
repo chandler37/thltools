@@ -1,6 +1,7 @@
 package org.thdl.lex.component;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -147,7 +148,7 @@ public class Term extends BaseTerm implements Serializable, LexComponentNode {
 	public ILexComponent findChild(ILexComponent child)
 			throws LexComponentException {
 		List list = findSiblings(child);
-		child = findChild(list, child.getMetaId());
+		child = findChild(list.iterator(), child.getMetaId());
 		return child;
 	}
 
@@ -164,8 +165,9 @@ public class Term extends BaseTerm implements Serializable, LexComponentNode {
 		ILexComponent child = null;
 		Iterator childMapValues = getChildMap().values().iterator();
 		while (childMapValues.hasNext() && null == child) {
-			List list = (List) childMapValues.next();
-			child = findChild(list, pk);
+			Object obj = childMapValues.next();
+			Collection list = (Collection) obj;
+			child = findChild(list.iterator(), pk);
 		}
 		if (null != getDefinitions()) {
 			Iterator definitions = getDefinitions().iterator();
@@ -187,11 +189,11 @@ public class Term extends BaseTerm implements Serializable, LexComponentNode {
 	 * @return Description of the Return Value
 	 */
 
-	public ILexComponent findChild(List list, Integer pk) {
+	public ILexComponent findChild(Iterator list, Integer pk) {
 		ILexComponent child = null;
 		if (list != null) {
-			for (Iterator it = list.iterator(); it.hasNext();) {
-				ILexComponent lc = (LexComponent) it.next();
+			while (list.hasNext()) {
+				ILexComponent lc = (LexComponent) list.next();
 				if (lc.getMetaId().equals(pk)) {
 					child = lc;
 					break;

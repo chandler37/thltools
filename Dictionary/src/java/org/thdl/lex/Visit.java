@@ -2,8 +2,6 @@ package org.thdl.lex;
 
 import javax.servlet.http.HttpSession;
 
-import org.thdl.users.ThdlUser;
-
 /**
  * Description of the Class
  * 
@@ -22,7 +20,7 @@ public class Visit {
 
 	LexQuery query;
 
-	ThdlUser user;
+	LexUser user;
 
 	String displayMode;
 
@@ -100,7 +98,7 @@ public class Visit {
 	 * @param user
 	 *            The new user value
 	 */
-	public void setUser(ThdlUser user) {
+	public void setUser(LexUser user) {
 		if (user.hasRole("guest")) {
 			getSession().setMaxInactiveInterval(60 * 5);
 		} else {
@@ -164,7 +162,7 @@ public class Visit {
 	 * 
 	 * @return The user value
 	 */
-	public ThdlUser getUser() {
+	public LexUser getUser() {
 		return user;
 	}
 
@@ -203,7 +201,7 @@ public class Visit {
 	 * @param user
 	 *            Description of the Parameter
 	 */
-	public Visit(HttpSession session, ThdlUser user) {
+	public Visit(HttpSession session, LexUser user) {
 		this(session);
 		setUser(user);
 	}

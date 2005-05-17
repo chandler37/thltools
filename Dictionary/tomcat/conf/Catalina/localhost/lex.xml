@@ -1,0 +1,30 @@
+<Context path="/lex" docBase="/home/anoop/workspaces/thdl-ws/Dictionary/webroot" debug="0" reloadable="true" crossContext="true">
+
+	<!-- Jakarta Tomcat 5.5 does not accept the resource & resourceparams partnership. There use this: -->
+
+	<Resource name="jdbc/lex-datasource" scope="Shareable" type="javax.sql.DataSource"
+	factory="org.apache.commons.dbcp.BasicDataSourceFactory"
+	url="jdbc:mysql://localhost:3306/Lex?useUnicode=true&amp;characterEncoding=UTF-8"
+	driverClassName="com.mysql.jdbc.Driver"
+	username="root"
+	useUnicode="true"
+	characterEncoding="utf-8"
+	maxWait="5000"
+	maxIdle="7"
+	maxActive="15"
+	removeAbandoned="true"/>
+
+	<Resource name="jdbc/thdl-users-datasource" scope="Shareable" type="javax.sql.DataSource"
+	factory="org.apache.commons.dbcp.BasicDataSourceFactory"
+	url="jdbc:mysql://localhost:3306/ThdlUser"
+	driverClassName="com.mysql.jdbc.Driver"
+	username="root"
+	useUnicode="true"
+	characterEncoding="utf-8"
+	maxWait="5000"
+	maxIdle="7"
+	maxActive="15"
+	removeAbandoned="true"/>
+
+	<Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs/access" prefix="lex_access_log." suffix=".txt" pattern="combined" resolveHosts="true"/>
+</Context>

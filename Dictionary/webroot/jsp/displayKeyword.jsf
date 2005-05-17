@@ -8,10 +8,22 @@
 	<p class="data">
 
 		<c:if test="${ editMode }">
-			<span class="compEditOptions">
-		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=keyword&amp;metaId=${ keyword.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
-		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=keyword&amp;metaId=${ keyword.metaId }" title="Edit this keyword"><img alt="Edit this keyword" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
-		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=keyword&amp;metaId=${ keyword.metaId }&amp;parentId=${keyword.parentId}" title="Remove this keyword"><img alt="Remove this keyword" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+		<span class="compEditOptions">
+			<c:if test="${ sessionScope.visit.user.administrator }" >
+				<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=keyword&amp;metaId=${ keyword.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+				<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=keyword&amp;metaId=${ keyword.metaId }" title="Edit this keyword"><img alt="Edit this keyword" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+				<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=keyword&amp;metaId=${ keyword.metaId }&amp;parentId=${keyword.parentId}" title="Remove this keyword"><img alt="Remove this keyword" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+			</c:if>
+			<c:if test="${ sessionScope.visit.user.editor }" >
+				<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=keyword&amp;metaId=${ keyword.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+				<c:if test="${ sessionScope.visit.user.id == sessionScope.visit.helper.component.meta.createdBy }">
+					<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=keyword&amp;metaId=${ keyword.metaId }" title="Edit this keyword"><img alt="Edit this keyword" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+					<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=keyword&amp;metaId=${ keyword.metaId }&amp;parentId=${keyword.parentId}" title="Remove this keyword"><img alt="Remove this keyword" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+				</c:if>
+			</c:if>
+			<c:if test="${ sessionScope.visit.user.proofer }" >
+				<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=keyword&amp;metaId=${ keyword.metaId }" title="Edit this keyword"><img alt="Edit this keyword" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+			</c:if>
 		</span>
 	</c:if>
 

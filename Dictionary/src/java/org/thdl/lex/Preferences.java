@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.thdl.lex.component.LexComponentException;
-import org.thdl.users.ThdlUser;
 
 /**
  * Description of the Class
@@ -14,7 +13,7 @@ import org.thdl.users.ThdlUser;
  * @created October 6, 2003
  */
 public class Preferences {
-	//attributes
+	// attributes
 	private Integer id;
 
 	private Integer userId;
@@ -55,7 +54,7 @@ public class Preferences {
 
 	private Integer[] dialectSet;
 
-	//accessors
+	// accessors
 
 	/**
 	 * Sets the id attribute of the Preferences object
@@ -437,7 +436,7 @@ public class Preferences {
 		return note;
 	}
 
-	//helpers
+	// helpers
 
 	/**
 	 * Description of the Method
@@ -476,16 +475,11 @@ public class Preferences {
 				setUseDefaultDialect(bool.booleanValue());
 				bool = Boolean.valueOf(results.getString(15));
 				setUseDefaultNote(bool.booleanValue());
-				setProjectSubjectSet(LexUtilities
-						.convertTokensToIntegerArray(results.getString(16)));
-				setSourceSet(LexUtilities.convertTokensToIntegerArray(results
-						.getString(17)));
-				setLanguageSet(LexUtilities.convertTokensToIntegerArray(results
-						.getString(18)));
-				setScriptSet(LexUtilities.convertTokensToIntegerArray(results
-						.getString(19)));
-				setDialectSet(LexUtilities.convertTokensToIntegerArray(results
-						.getString(20)));
+				setProjectSubjectSet(LexUtilities.convertTokensToIntegerArray(results.getString(16)));
+				setSourceSet(LexUtilities.convertTokensToIntegerArray(results.getString(17)));
+				setLanguageSet(LexUtilities.convertTokensToIntegerArray(results.getString(18)));
+				setScriptSet(LexUtilities.convertTokensToIntegerArray(results.getString(19)));
+				setDialectSet(LexUtilities.convertTokensToIntegerArray(results.getString(20)));
 			} else {
 				insertNew();
 			}
@@ -503,8 +497,7 @@ public class Preferences {
 	 */
 	public void insertNew() throws LexComponentException {
 		try {
-			String sql = "INSERT INTO Preferences ( id, userId ) VALUES ( NULL, "
-					+ getUserId() + " )";
+			String sql = "INSERT INTO Preferences ( id, userId ) VALUES ( NULL, " + getUserId() + " )";
 			Integer i = new Integer(LexRepository.getInstance().doUpdate(sql));
 			setId(i);
 		} catch (LexRepositoryException lre) {
@@ -520,8 +513,7 @@ public class Preferences {
 	 */
 	public void save() throws LexComponentException {
 		try {
-			String sql = "SELECT id FROM Preferences WHERE userId = "
-					+ getUserId();
+			String sql = "SELECT id FROM Preferences WHERE userId = " + getUserId();
 			LexRepository lr = LexRepository.getInstance();
 			Connection con = lr.getDataSource().getConnection();
 			ResultSet results = con.createStatement().executeQuery(sql);
@@ -560,20 +552,15 @@ public class Preferences {
 			sqlBuffer.append("', useDefaultNote =  '");
 			sqlBuffer.append(getUseDefaultNote());
 			sqlBuffer.append("', projectSubjectSet =  '");
-			sqlBuffer.append(LexUtilities
-					.convertIntegerArrayToTokens(getProjectSubjectSet()));
+			sqlBuffer.append(LexUtilities.convertIntegerArrayToTokens(getProjectSubjectSet()));
 			sqlBuffer.append("', sourceSet =  '");
-			sqlBuffer.append(LexUtilities
-					.convertIntegerArrayToTokens(getSourceSet()));
+			sqlBuffer.append(LexUtilities.convertIntegerArrayToTokens(getSourceSet()));
 			sqlBuffer.append("', languageSet =  '");
-			sqlBuffer.append(LexUtilities
-					.convertIntegerArrayToTokens(getLanguageSet()));
+			sqlBuffer.append(LexUtilities.convertIntegerArrayToTokens(getLanguageSet()));
 			sqlBuffer.append("', scriptSet =  '");
-			sqlBuffer.append(LexUtilities
-					.convertIntegerArrayToTokens(getScriptSet()));
+			sqlBuffer.append(LexUtilities.convertIntegerArrayToTokens(getScriptSet()));
 			sqlBuffer.append("', dialectSet =  '");
-			sqlBuffer.append(LexUtilities
-					.convertIntegerArrayToTokens(getDialectSet()));
+			sqlBuffer.append(LexUtilities.convertIntegerArrayToTokens(getDialectSet()));
 			sqlBuffer.append("' WHERE id = ");
 			sqlBuffer.append(getId());
 			LexRepository.getInstance().doUpdate(sqlBuffer.toString());
@@ -601,7 +588,7 @@ public class Preferences {
 		}
 	}
 
-	//constructors
+	// constructors
 	/**
 	 * Constructor for the Preferences object
 	 */
@@ -636,8 +623,7 @@ public class Preferences {
 	 * @exception LexComponentException
 	 *                Description of the Exception
 	 */
-	public Preferences(ThdlUser user) throws LexRepositoryException,
-			LexComponentException {
+	public Preferences(LexUser user) throws LexRepositoryException, LexComponentException {
 		this();
 		setUserId(user.getId());
 		populate();
@@ -649,4 +635,3 @@ public class Preferences {
 		 */
 	}
 }
-

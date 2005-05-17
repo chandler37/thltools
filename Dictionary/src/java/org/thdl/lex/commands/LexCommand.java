@@ -1,8 +1,8 @@
 package org.thdl.lex.commands;
 
+import org.thdl.lex.LexUser;
 import org.thdl.lex.UserSessionManager;
 import org.thdl.lex.component.ILexComponent;
-import org.thdl.users.ThdlUser;
 
 /**
  * Description of the Class
@@ -11,12 +11,12 @@ import org.thdl.users.ThdlUser;
  * @created October 3, 2003
  */
 public abstract class LexCommand implements Command {
-	//attributes
+	// attributes
 	private String next;
 
 	private UserSessionManager sessionManager;
 
-	//accessors
+	// accessors
 	/**
 	 * Sets the sessionManager attribute of the LexCommand object
 	 * 
@@ -75,19 +75,17 @@ public abstract class LexCommand implements Command {
 	/*
 	 * public ILexComponent getComponent() { return component; }
 	 */
-	//helpers
-	public boolean validate(ThdlUser user, ILexComponent component) {
+	// helpers
+public boolean validate(LexUser user, ILexComponent component) {
 		boolean valid = false;
 		Integer creator = component.getMeta().getCreatedBy();
 
-		if (user.getId().equals(creator) || user.hasRole("admin")
-				|| user.hasRole("dev")) {
+		if (user.getId().equals(creator) || user.isCanEdit()) {
 			valid = true;
 		}
 		return valid;
 	}
-
-	//constructors
+	// constructors
 
 	/**
 	 * Constructor for the LexCommand object
@@ -108,4 +106,3 @@ public abstract class LexCommand implements Command {
 	public LexCommand() {
 	}
 }
-

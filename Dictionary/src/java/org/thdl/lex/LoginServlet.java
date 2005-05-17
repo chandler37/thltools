@@ -20,7 +20,7 @@ import org.thdl.users.ThdlUserRepositoryException;
  * @created October 2, 2003
  */
 public class LoginServlet extends HttpServlet {
-	//attributes
+	// attributes
 
 	private String welcomePage;
 
@@ -28,7 +28,7 @@ public class LoginServlet extends HttpServlet {
 
 	private UserSessionManager sessionManager;
 
-	//accessors
+	// accessors
 	/**
 	 * Sets the welcomePage attribute of the LoginServlet object
 	 * 
@@ -85,7 +85,7 @@ public class LoginServlet extends HttpServlet {
 		}
 	}
 
-	//helper methods
+	// helper methods
 	/**
 	 * Description of the Method
 	 * 
@@ -99,15 +99,13 @@ public class LoginServlet extends HttpServlet {
 		setWelcomePage("/action?cmd=menu");
 
 		if (getWelcomePage() == null) {
-			throw new ServletException(
-					"The welcomePage init parameter must be specified.");
+			throw new ServletException("The welcomePage init parameter must be specified.");
 		}
 
 		setLoginPage(config.getInitParameter("loginPage"));
 
 		if (getLoginPage() == null) {
-			throw new ServletException(
-					"The loginPage init parameter must be specified.");
+			throw new ServletException("The loginPage init parameter must be specified.");
 		}
 
 	}
@@ -123,8 +121,7 @@ public class LoginServlet extends HttpServlet {
 	 *                Description of Exception
 	 * @since
 	 */
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException {
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		String username = request.getParameter(LexConstants.USERNAME_REQ_PARAM);
 
 		if (username == null) {
@@ -137,17 +134,15 @@ public class LoginServlet extends HttpServlet {
 			throw new ServletException("No Password Specified");
 		}
 
-		ThdlUser thdlUser = null;
 		try {
-			ThdlUser lexUser = new LexUser();
-			lexUser.setUsername(username);
-			lexUser.setPassword(password);
-			lexUser = ThdlUserRepository.getInstance().validate(lexUser,
-					"dictionary");
-			doLoginSuccess(request, response, lexUser);
+			ThdlUser thdlUser = new ThdlUser();
+			thdlUser.setUsername(username);
+			thdlUser.setPassword(password);
+			thdlUser = ThdlUserRepository.getInstance().validate(thdlUser, "dictionary");
+			doLoginSuccess(request, response, new LexUser(thdlUser));
 		} catch (ThdlUserRepositoryException ture) {
 			doLoginFailure(request, response, username);
-			//throw new ServletException( ture );
+			// throw new ServletException( ture );
 		} catch (Exception e) {
 			throw new ServletException(e);
 		}
@@ -170,11 +165,8 @@ public class LoginServlet extends HttpServlet {
 	 *                Description of Exception
 	 * @since
 	 */
-	private void doLoginSuccess(HttpServletRequest req,
-			HttpServletResponse response, ThdlUser user) throws IOException,
-			LexRepositoryException, LexComponentException {
-		Visit visit = UserSessionManager.getInstance().getVisit(
-				req.getSession(true));
+	private void doLoginSuccess(HttpServletRequest req, HttpServletResponse response, LexUser user) throws IOException, LexRepositoryException, LexComponentException {
+		Visit visit = UserSessionManager.getInstance().getVisit(req.getSession(true));
 
 		visit.setUser(user);
 
@@ -182,8 +174,7 @@ public class LoginServlet extends HttpServlet {
 		visit.setPreferences(preferences);
 
 		visit.setDisplayMode("brief");
-		String targetPage = UserSessionManager.getInstance()
-				.getSessionLoginTarget(req.getSession(true), true);
+		String targetPage = UserSessionManager.getInstance().getSessionLoginTarget(req.getSession(true), true);
 
 		if (targetPage == null) {
 			UserSessionManager.doRedirect(req, response, getWelcomePage());
@@ -206,9 +197,7 @@ public class LoginServlet extends HttpServlet {
 	 *                Description of Exception
 	 * @since
 	 */
-	private void doLoginFailure(HttpServletRequest request,
-			HttpServletResponse response, String username)
-			throws ServletException {
+	private void doLoginFailure(HttpServletRequest request, HttpServletResponse response, String username) throws ServletException {
 
 		String loginURL = getLoginPage() + "?retry=true&username=" + username;
 		try {
@@ -218,4 +207,3 @@ public class LoginServlet extends HttpServlet {
 		}
 	}
 }
-

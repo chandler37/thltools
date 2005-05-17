@@ -27,7 +27,10 @@
 	<classpathentry kind="lib" path="webroot/WEB-INF/lib/taglibs-response.jar"/>
 	<classpathentry kind="lib" path="webroot/WEB-INF/lib/taglibs-session.jar"/>
 	<classpathentry kind="lib" path="webroot/WEB-INF/lib/taglibs-string.jar"/>
-	<classpathentry kind="lib" path="webroot/WEB-INF/lib/ThdlUser.jar"/>
+	<classpathentry sourcepath="/ThdlUser/src/java" kind="lib" path="webroot/WEB-INF/lib/ThdlUser.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="var" path="TOMCAT_HOME/common/lib/servlet-api.jar"/>
 	<classpathentry kind="var" path="TOMCAT_HOME/common/lib/jasper-runtime.jar"/>
 	<classpathentry kind="var" path="TOMCAT_HOME/common/lib/jsp-api.jar"/>

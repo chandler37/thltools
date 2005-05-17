@@ -12,6 +12,7 @@ import org.thdl.lex.LexConstants;
 import org.thdl.lex.LexLogger;
 import org.thdl.lex.LexQuery;
 import org.thdl.lex.LexRepositoryException;
+import org.thdl.lex.LexUser;
 import org.thdl.lex.UserSessionManager;
 import org.thdl.lex.Visit;
 import org.thdl.lex.component.AnalyticalNote;
@@ -19,7 +20,6 @@ import org.thdl.lex.component.ILexComponent;
 import org.thdl.lex.component.ITerm;
 import org.thdl.lex.component.LexComponentException;
 import org.thdl.lex.component.Translatable;
-import org.thdl.users.ThdlUser;
 
 /**
  * Description of the Class
@@ -50,7 +50,7 @@ public class UpdateCommand extends LexCommand implements Command {
 		return termMode;
 	}
 
-	//helper methods
+	// helper methods
 	/**
 	 * Description of the Method
 	 * 
@@ -62,53 +62,43 @@ public class UpdateCommand extends LexCommand implements Command {
 	 * @exception CommandException
 	 *                Description of the Exception
 	 */
-	public String execute(HttpServletRequest req, ILexComponent component)
-			throws CommandException {
+	public String execute(HttpServletRequest req, ILexComponent component) throws CommandException {
 		String msg = null;
 		String next = getNext();
-		Visit visit = UserSessionManager.getInstance().getVisit(
-				req.getSession(true));
+		Visit visit = UserSessionManager.getInstance().getVisit(req.getSession(true));
 
 		DisplayHelper displayHelper = visit.getHelper();
 		try {
 			HttpSession ses = req.getSession(false);
 			if (null == ses) {
-				throw new CommandException(
-						"Could not update component, user's session has expired");
+				throw new CommandException("Could not update component, user's session has expired");
 			}
 
-			ThdlUser user = visit.getUser();
+			LexUser user = visit.getUser();
 			LexQuery query = visit.getQuery();
 			ITerm term = query.getEntry();
 
 			if (CommandToken.isValid(req) && validate(user, component)) {
 				LexComponentRepository.update(term);
 
-				LexLogger
-						.debug("Checking component state from updateCommand BEFORE component assignment");
+				LexLogger.debug("Checking component state from updateCommand BEFORE component assignment");
 				LexLogger.debugComponent(component);
 				if (isTermMode()) {
 					term.populate(req.getParameterMap());
 					term.getMeta().populate(req.getParameterMap());
 					component = term;
 				} else if (component instanceof AnalyticalNote) {
-					LexLogger
-							.debug("Debugging Component before updating analytical note");
+					LexLogger.debug("Debugging Component before updating analytical note");
 					LexLogger.debugComponent(component);
-					ILexComponent parent = term.findParent(component
-							.getParentId());
+					ILexComponent parent = term.findParent(component.getParentId());
 					List notes = parent.getAnalyticalNotes();
-					ILexComponent ilc = (ILexComponent) notes.get(notes
-							.indexOf(component));
+					ILexComponent ilc = (ILexComponent) notes.get(notes.indexOf(component));
 					ilc.populate(component);
-				} else if (component instanceof Translatable
-						&& null != ((Translatable) component)
-								.getTranslationOf()) {
+				} else if (component instanceof Translatable && null != ((Translatable) component).getTranslationOf()) {
 					Translatable translation = (Translatable) component;
 					Translatable source = null;
 					try {
-						source = (Translatable) translation.getClass()
-								.newInstance();
+						source = (Translatable) translation.getClass().newInstance();
 					} catch (Exception e) {
 						throw new CommandException(e);
 					}
@@ -116,8 +106,7 @@ public class UpdateCommand extends LexCommand implements Command {
 					source.setParentId(translation.getParentId());
 					source = (Translatable) term.findChild(source);
 					List translationList = source.getTranslations();
-					component = (ILexComponent) translationList
-							.get(translationList.indexOf(translation));
+					component = (ILexComponent) translationList.get(translationList.indexOf(translation));
 					component.populate(req.getParameterMap());
 					component.getMeta().populate(req.getParameterMap());
 				} else {
@@ -126,15 +115,17 @@ public class UpdateCommand extends LexCommand implements Command {
 					ilc.getMeta().populate(req.getParameterMap());
 					component = ilc;
 				}
-				LexLogger
-						.debug("Checking component state from updateCommand AFTER component assignment");
+				LexLogger.debug("Checking component state from updateCommand AFTER component assignment");
 				LexLogger.debugComponent(component);
 
 				Date now = new Date(System.currentTimeMillis());
 				component.getMeta().setModifiedOn(now);
-				component.getMeta().setModifiedBy(user.getId());
 				term.getMeta().setModifiedOn(now);
-				term.getMeta().setModifiedBy(user.getId());
+					
+				if (!user.isFingerprintless()) {
+					component.getMeta().setModifiedBy(user.getId());
+					term.getMeta().setModifiedBy(user.getId());
+				}
 
 				LexLogger.debugComponent(component);
 				LexLogger.debugComponent(term);
@@ -143,21 +134,19 @@ public class UpdateCommand extends LexCommand implements Command {
 				msg = "Successful Update";
 				visit.setDisplayMode("edit");
 			} else {
-				msg = CommandToken.isValid(req) ? "Unauthorized update attempted"
-						: "Invalid reload attempted.";
+				msg = CommandToken.isValid(req) ? "Unauthorized update attempted" : "Invalid reload attempted.";
 			}
 			return next;
 		} catch (LexComponentException e) {
 			throw new CommandException(e);
 		} catch (LexRepositoryException e) {
-			throw new CommandException("Command had trouble processing "
-					+ component, e);
+			throw new CommandException("Command had trouble processing " + component, e);
 		} finally {
 			req.setAttribute(LexConstants.MESSAGE_REQ_ATTR, msg);
 		}
 	}
 
-	//constructors
+	// constructors
 	/**
 	 * Constructor for the GetFormCommand object
 	 * 
@@ -172,4 +161,3 @@ public class UpdateCommand extends LexCommand implements Command {
 	}
 
 }
-

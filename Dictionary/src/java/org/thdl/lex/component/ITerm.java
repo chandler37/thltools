@@ -285,7 +285,7 @@ public interface ITerm extends LexComponentNode {
 	 * @exception LexComponentException
 	 *                Description of the Exception
 	 */
-	public ILexComponent findChild(java.util.List list, Integer pk)
+	public ILexComponent findChild(java.util.Iterator list, Integer pk)
 			throws LexComponentException;
 
 	/**

@@ -13,8 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.thdl.users.ThdlUser;
-
 /**
  * Description of the Class
  * 
@@ -83,7 +81,7 @@ public class AuthenticationFilter implements Filter {
 			HttpServletRequest req = (HttpServletRequest) request;
 			Visit visit = UserSessionManager.getInstance().getVisit(
 					req.getSession(true));
-			ThdlUser user = visit.getUser();
+			LexUser user = visit.getUser();
 			if (null == user) {
 				requireLogin(req, (HttpServletResponse) response, req
 						.getSession(true));

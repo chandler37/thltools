@@ -7,9 +7,21 @@
 
 <c:if test="${ editMode }">
 <span class="compEditOptions">
-<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=encyclopediaArticle&amp;metaId=${ encyclopediaArticle.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
-<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=encyclopediaArticle&amp;metaId=${ encyclopediaArticle.metaId }" title="Edit this encyclopediaArticle"><img alt="Edit this encyclopediaArticle" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
-<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=encyclopediaArticle&amp;metaId=${ encyclopediaArticle.metaId }&amp;parentId=${encyclopediaArticle.parentId}" title="Remove this encyclopediaArticle"><img alt="Remove this encyclopediaArticle" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+	<c:if test="${ sessionScope.visit.user.administrator }" >
+		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=encyclopediaArticle&amp;metaId=${ encyclopediaArticle.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=encyclopediaArticle&amp;metaId=${ encyclopediaArticle.metaId }" title="Edit this encyclopediaArticle"><img alt="Edit this encyclopediaArticle" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=encyclopediaArticle&amp;metaId=${ encyclopediaArticle.metaId }&amp;parentId=${encyclopediaArticle.parentId}" title="Remove this encyclopediaArticle"><img alt="Remove this encyclopediaArticle" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+	</c:if>
+	<c:if test="${ sessionScope.visit.user.editor }" >
+		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=encyclopediaArticle&amp;metaId=${ encyclopediaArticle.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+		<c:if test="${ sessionScope.visit.user.id == sessionScope.visit.helper.component.meta.createdBy }">
+		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=encyclopediaArticle&amp;metaId=${ encyclopediaArticle.metaId }" title="Edit this encyclopediaArticle"><img alt="Edit this encyclopediaArticle" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=encyclopediaArticle&amp;metaId=${ encyclopediaArticle.metaId }&amp;parentId=${encyclopediaArticle.parentId}" title="Remove this encyclopediaArticle"><img alt="Remove this encyclopediaArticle" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+		</c:if>
+	</c:if>
+	<c:if test="${ sessionScope.visit.user.proofer }" >
+		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=encyclopediaArticle&amp;metaId=${ encyclopediaArticle.metaId }" title="Edit this encyclopediaArticle"><img alt="Edit this encyclopediaArticle" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+	</c:if>
 </span>
 </c:if>
 <!--<span class="label">Encyclopedia Article:</span>-->  

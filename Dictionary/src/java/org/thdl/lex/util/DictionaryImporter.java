@@ -275,7 +275,7 @@ public class DictionaryImporter {
 		ResultSet set;
 		int creator = -1;
 		
-		stmt = connUsers.prepareStatement("SELECT id FROM thdlusers WHERE firstname LIKE ? AND lastname LIKE ?");
+		stmt = connUsers.prepareStatement("SELECT id FROM ThdlUsers WHERE firstname LIKE ? AND lastname LIKE ?");
 		stmt.setString(1, "%" + firstName + "%");
 		stmt.setString(2, "%" + lastName + "%");
 		set = stmt.executeQuery();
@@ -288,7 +288,7 @@ public class DictionaryImporter {
 			// if there are more instances of the same user delete them
 			if (set.next())
 			{
-				stmt = connUsers.prepareStatement("DELETE FROM thdlusers WHERE firstname LIKE ? AND lastname LIKE ? AND id != ?");
+				stmt = connUsers.prepareStatement("DELETE FROM ThdlUsers WHERE firstname LIKE ? AND lastname LIKE ? AND id != ?");
 				stmt.setString(1, "%" + firstName + "%");
 				stmt.setString(2, "%" + lastName + "%");
 				stmt.setInt(3, creator);
@@ -297,7 +297,7 @@ public class DictionaryImporter {
 		}
 		else
 		{
-			stmt2 = connUsers.prepareStatement("INSERT INTO thdlusers(firstname, lastname) VALUES (?, ?)");
+			stmt2 = connUsers.prepareStatement("INSERT INTO ThdlUsers(firstname, lastname) VALUES (?, ?)");
 			stmt2.setString(1, firstName);
 			stmt2.setString(2, lastName);
 			stmt2.executeUpdate();
@@ -319,11 +319,11 @@ public class DictionaryImporter {
 		ResultSet set;
 		int projectFirst = -1, project = -1;
 		
-		stmt = connLex.prepareStatement("SELECT id FROM projectsubjects WHERE projectSubject like ? OR projectSubject like ?");
+		stmt = connLex.prepareStatement("SELECT id FROM ProjectSubjects WHERE projectSubject like ? OR projectSubject like ?");
 		stmt.setString(1, "%" + projectName + "%");
 		stmt.setString(2, "%" + shortName + "%");
 		set = stmt.executeQuery();
-		stmt2 = connLex.prepareStatement("DELETE FROM transitionaldata, meta USING transitionaldata, meta WHERE transitionaldata.metaid=meta.metaid AND createdbyprojsub = ?");
+		stmt2 = connLex.prepareStatement("DELETE FROM TransitionalData, Meta USING TransitionalData, Meta WHERE TransitionalData.metaid=Meta.metaid AND createdbyprojsub = ?");
 		
 		while (set.next())
 		{
@@ -352,7 +352,7 @@ public class DictionaryImporter {
 		 * */
 		else
 		{
-			stmt2 = connLex.prepareStatement("UPDATE projectsubjects SET projectSubject = ?, leader = ?, participantList = ? WHERE id = ?");
+			stmt2 = connLex.prepareStatement("UPDATE ProjectSubjects SET projectSubject = ?, leader = ?, participantList = ? WHERE id = ?");
 			stmt2.setString(1, projectName);
 			stmt2.setInt(2, creator);
 			stmt2.setString(3, "");
@@ -361,7 +361,7 @@ public class DictionaryImporter {
 			
 			if (projectFirst!=project)
 			{
-				stmt2 = connLex.prepareStatement("DELETE FROM projectsubjects WHERE id != ? AND (projectSubject like ? OR projectSubject like ?)");
+				stmt2 = connLex.prepareStatement("DELETE FROM ProjectSubjects WHERE id != ? AND (projectSubject like ? OR projectSubject like ?)");
 				stmt2.setInt(1, projectFirst);
 				stmt2.setString(2, "%" + projectName + "%");
 				stmt2.setString(3, "%" + shortName + "%");
@@ -378,7 +378,7 @@ public class DictionaryImporter {
 		ResultSet set;
 		int label=-1;
 		
-		stmt = connLex.prepareStatement("SELECT id FROM transitionaldatalabels WHERE transitionaldatalabel like ? OR transitionaldatalabel like ?");
+		stmt = connLex.prepareStatement("SELECT id FROM TransitionalDataLabels WHERE transitionaldatalabel like ? OR transitionaldatalabel like ?");
 		stmt.setString(1, "%" + shortName + "%");
 		stmt.setString(2, "%" + longName + "%");
 		set = stmt.executeQuery();
@@ -388,13 +388,13 @@ public class DictionaryImporter {
 			label = set.getInt(1);
 			if (set.next())
 			{
-				stmt2 = connLex.prepareStatement("DELETE FROM transitionaldatalabels WHERE id != ? AND (transitionaldatalabel like ? OR transitionaldatalabel like ?)");
+				stmt2 = connLex.prepareStatement("DELETE FROM TransitionalDataLabels WHERE id != ? AND (transitionaldatalabel like ? OR transitionaldatalabel like ?)");
 				stmt2.setInt(1, label);
 				stmt2.setString(2, "%" + shortName + "%");
 				stmt2.setString(3, "%" + longName + "%");
 				stmt2.executeUpdate();
 			}
-			stmt2 = connLex.prepareStatement("UPDATE transitionaldatalabels SET priority = ?, transitionaldatalabelshort = ?, transitionaldatalabel = ? WHERE id = ?");
+			stmt2 = connLex.prepareStatement("UPDATE TransitionalDataLabels SET priority = ?, transitionaldatalabelshort = ?, transitionaldatalabel = ? WHERE id = ?");
 			stmt2.setInt(1, priority);
 			stmt2.setString(2, shortName);
 			stmt2.setString(3, longName);
@@ -403,7 +403,7 @@ public class DictionaryImporter {
 		}
 		else
 		{
-			stmt2 = connLex.prepareStatement("INSERT INTO transitionaldatalabels(priority, transitionaldatalabel, transitionaldatalabelshort) VALUES (?, ?, ?)");
+			stmt2 = connLex.prepareStatement("INSERT INTO TransitionalDataLabels(priority, transitionaldatalabel, transitionaldatalabelshort) VALUES (?, ?, ?)");
 			stmt2.setInt(1, priority);
 			stmt2.setString(2, longName);
 			stmt2.setString(3, shortName);

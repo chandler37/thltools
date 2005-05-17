@@ -10,11 +10,27 @@
 
 		<c:if test="${ editMode }">
 		<span class="compEditOptions">
-			<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=definition&amp;metaId=${ definition.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
-			<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=definition&amp;metaId=${ definition.metaId }" title="Edit this Definition"><img alt="Edit this Definition" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
-			<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=definition&amp;parentId=${definition.parentId}&amp;translationOf=${definition.metaId}" title="Translate this Definition"><img alt="Translate this Definition" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
-			<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=subdefinition&amp;parentId=${definition.metaId}" title="Add a Subdefinition"><img alt="Add a Subdefinition" src="/lex/images/subdef.gif"/></a>' escapeXml="false" />
-			<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=definition&amp;metaId=${ definition.metaId }&amp;parentId=${definition.parentId}" title="Remove this Definition"><img alt="Remove this Definition" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+			<c:if test="${ sessionScope.visit.user.administrator }" >
+				<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=definition&amp;metaId=${ definition.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+				<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=definition&amp;metaId=${ definition.metaId }" title="Edit this Definition"><img alt="Edit this Definition" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+				<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=definition&amp;parentId=${definition.parentId}&amp;translationOf=${definition.metaId}" title="Translate this Definition"><img alt="Translate this Definition" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
+				<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=subdefinition&amp;parentId=${definition.metaId}" title="Add a Subdefinition"><img alt="Add a Subdefinition" src="/lex/images/subdef.gif"/></a>' escapeXml="false" />
+				<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=definition&amp;metaId=${ definition.metaId }&amp;parentId=${definition.parentId}" title="Remove this Definition"><img alt="Remove this Definition" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+			</c:if>
+			<c:if test="${ sessionScope.visit.user.editor }" >
+				<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=definition&amp;metaId=${ definition.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+				<c:if test="${ sessionScope.visit.user.id == sessionScope.visit.helper.component.meta.createdBy }">
+				<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=definition&amp;metaId=${ definition.metaId }" title="Edit this Definition"><img alt="Edit this Definition" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+				</c:if>
+				<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=definition&amp;parentId=${definition.parentId}&amp;translationOf=${definition.metaId}" title="Translate this Definition"><img alt="Translate this Definition" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
+				<c:out value='<a href="/lex/action?cmd=getInsertForm&amp;comp=subdefinition&amp;parentId=${definition.metaId}" title="Add a Subdefinition"><img alt="Add a Subdefinition" src="/lex/images/subdef.gif"/></a>' escapeXml="false" />
+				<c:if test="${ sessionScope.visit.user.id == sessionScope.visit.helper.component.meta.createdBy }">
+				<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=definition&amp;metaId=${ definition.metaId }&amp;parentId=${definition.parentId}" title="Remove this Definition"><img alt="Remove this Definition" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+				</c:if>
+			</c:if>
+			<c:if test="${ sessionScope.visit.user.proofer }" >
+				<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=definition&amp;metaId=${ definition.metaId }" title="Edit this Definition"><img alt="Edit this Definition" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+			</c:if>
 		</span>
 </c:if>
 

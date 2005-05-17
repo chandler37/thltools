@@ -8,11 +8,26 @@
 	<p class="data">
 
 		<c:if test="${ editMode }">
-	<span class="compEditOptions">
-		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
-		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }" title="Edit this modelSentence"><img alt="Edit this modelSentence" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
-		<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=modelSentence&amp;parentId=${modelSentence.parentId}&amp;translationOf=${modelSentence.metaId}" title="Translate this modelSentence"><img alt="Translate this modelSentence" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
-		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }&amp;parentId=${modelSentence.parentId}" title="Remove this modelSentence"><img alt="Remove this modelSentence" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+		<span class="compEditOptions">
+			<c:if test="${ sessionScope.visit.user.administrator }" >
+				<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+				<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }" title="Edit this modelSentence"><img alt="Edit this modelSentence" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+				<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=modelSentence&amp;parentId=${modelSentence.parentId}&amp;translationOf=${modelSentence.metaId}" title="Translate this modelSentence"><img alt="Translate this modelSentence" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
+				<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }&amp;parentId=${modelSentence.parentId}" title="Remove this modelSentence"><img alt="Remove this modelSentence" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+			</c:if>
+			<c:if test="${ sessionScope.visit.user.editor }" >
+				<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+				<c:if test="${ sessionScope.visit.user.id == sessionScope.visit.helper.component.meta.createdBy }">
+					<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }" title="Edit this modelSentence"><img alt="Edit this modelSentence" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+				</c:if>
+				<c:out value='<a href="/lex/action?cmd=getTranslationForm&amp;comp=modelSentence&amp;parentId=${modelSentence.parentId}&amp;translationOf=${modelSentence.metaId}" title="Translate this modelSentence"><img alt="Translate this modelSentence" src="/lex/images/trans.gif"/></a>' escapeXml="false" />			
+				<c:if test="${ sessionScope.visit.user.id == sessionScope.visit.helper.component.meta.createdBy }">
+					<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }&amp;parentId=${modelSentence.parentId}" title="Remove this modelSentence"><img alt="Remove this modelSentence" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+				</c:if>
+			</c:if>
+			<c:if test="${ sessionScope.visit.user.proofer }" >
+				<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=modelSentence&amp;metaId=${ modelSentence.metaId }" title="Edit this modelSentence"><img alt="Edit this modelSentence" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+			</c:if>
 		</span>
 	</c:if>
 

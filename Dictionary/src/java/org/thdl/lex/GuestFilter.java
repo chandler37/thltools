@@ -11,8 +11,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.thdl.users.ThdlUser;
-
 /**
  * Description of the Class
  * 
@@ -78,7 +76,7 @@ public class GuestFilter implements Filter {
 			HttpServletRequest req = (HttpServletRequest) request;
 			Visit visit = UserSessionManager.getInstance().getVisit(
 					req.getSession(true));
-			ThdlUser user = visit.getUser();
+			LexUser user = visit.getUser();
 			if (null == user) {
 				try {
 					user = new LexUser();

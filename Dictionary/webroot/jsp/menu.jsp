@@ -33,7 +33,7 @@
 	</form>
 	</div>
 	
-	<c:if test="${ editMode }">
+	<c:if test="${ sessionScope.visit.user.canAddTerms }">
 
 	<div class="highlightBox">
 	<form id="newTerm" action="/lex/action" method="get" >
@@ -52,6 +52,10 @@
 	</form>
 	</div>
 	
+	</c:if>
+
+	<c:if test="${ editMode }">
+				
 	<div class="highlightBox">
 	<h2>Defaults &amp; Preferences</h2>
 	<form id="defaults" action="/lex/action" method="get" >

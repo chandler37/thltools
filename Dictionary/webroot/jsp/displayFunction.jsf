@@ -4,13 +4,27 @@
 <c:set var="function" value="${ sessionScope.visit.helper.component }"/>
 	<p class="data">
 <c:if test="${ editMode }">
-<span class="compEditOptions">			
-<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=grammaticalFunction&amp;metaId=${ function.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
-<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=grammaticalFunction&amp;metaId=${ function.metaId }" title="Edit this component"><img alt="Edit this component" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
-<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=grammaticalFunction&amp;metaId=${ function.metaId }&amp;parentId=${function.parentId}" title="Remove this component"><img alt="Remove this component" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
-</span>
-</c:if>
+	<span class="compEditOptions">			
 
+	<c:if test="${ sessionScope.visit.user.administrator}">
+		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=grammaticalFunction&amp;metaId=${ function.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=grammaticalFunction&amp;metaId=${ function.metaId }" title="Edit this component"><img alt="Edit this component" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+		<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=grammaticalFunction&amp;metaId=${ function.metaId }&amp;parentId=${function.parentId}" title="Remove this component"><img alt="Remove this component" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+	</c:if>
+	<c:if test="${ sessionScope.visit.user.editor}">
+		<c:out value='<a href="/lex/action?cmd=getAnnotationForm&amp;comp=grammaticalFunction&amp;metaId=${ function.metaId }" title="Add Analytical Note"><img alt="Add Analytical Note" src="/lex/images/note.gif"/></a>' escapeXml="false" />
+		<c:if test="${ sessionScope.visit.user.id == sessionScope.visit.helper.component.meta.createdBy }">
+			<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=grammaticalFunction&amp;metaId=${ function.metaId }" title="Edit this component"><img alt="Edit this component" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+			<c:out value='<a href="/lex/action?cmd=getRemoveForm&amp;comp=grammaticalFunction&amp;metaId=${ function.metaId }&amp;parentId=${function.parentId}" title="Remove this component"><img alt="Remove this component" src="/lex/images/remove.gif"/></a>' escapeXml="false" />
+		</c:if>
+	</c:if>
+	<c:if test="${ sessionScope.visit.user.proofer }">
+		<c:out value='<a href="/lex/action?cmd=getUpdateForm&amp;comp=grammaticalFunction&amp;metaId=${ function.metaId }" title="Edit this component"><img alt="Edit this component" src="/lex/images/edit.gif"/></a>' escapeXml="false" />
+	</c:if>
+			
+	</span>
+</c:if>
+			
 <!--<span class="label">Grammatical Function:</span>-->
 <c:out value="${ applicationScope.flatData.functionsGeneral[function.function] }" escapeXml="false" /> 
 

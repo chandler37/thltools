@@ -10,6 +10,7 @@ import org.thdl.lex.LexConstants;
 import org.thdl.lex.LexLogger;
 import org.thdl.lex.LexQuery;
 import org.thdl.lex.LexRepositoryException;
+import org.thdl.lex.LexUser;
 import org.thdl.lex.UserSessionManager;
 import org.thdl.lex.Visit;
 import org.thdl.lex.component.AnalyticalNote;
@@ -17,7 +18,6 @@ import org.thdl.lex.component.ILexComponent;
 import org.thdl.lex.component.ITerm;
 import org.thdl.lex.component.LexComponentException;
 import org.thdl.lex.component.Translatable;
-import org.thdl.users.ThdlUser;
 
 /**
  * Description of the Class
@@ -74,7 +74,7 @@ public class RemoveCommand extends LexCommand implements Command {
 						"Could not remove component, user's session has expired");
 			}
 
-			ThdlUser user = visit.getUser();
+			LexUser user = visit.getUser();
 			LexQuery query = visit.getQuery();
 			ITerm term = query.getEntry();
 			LexComponentRepository.update(term);

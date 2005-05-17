@@ -9,6 +9,7 @@ import org.thdl.lex.LexConstants;
 import org.thdl.lex.LexLogger;
 import org.thdl.lex.LexQuery;
 import org.thdl.lex.LexRepositoryException;
+import org.thdl.lex.LexUser;
 import org.thdl.lex.UserSessionManager;
 import org.thdl.lex.Visit;
 import org.thdl.lex.component.IAnalyticalNote;
@@ -16,7 +17,6 @@ import org.thdl.lex.component.ILexComponent;
 import org.thdl.lex.component.ITerm;
 import org.thdl.lex.component.LexComponentException;
 import org.thdl.lex.component.Translatable;
-import org.thdl.users.ThdlUser;
 
 /**
  * Description of the Class
@@ -66,7 +66,7 @@ public class GetRemoveFormCommand extends LexCommand implements Command {
 		LexQuery query = visit.getQuery();
 		ITerm term = query.getEntry();
 		String msg = null;
-		ThdlUser user = visit.getUser();
+		LexUser user = visit.getUser();
 		if (validate(user, component)) {
 
 			try {
