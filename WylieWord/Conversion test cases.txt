@@ -105,6 +105,7 @@ lang
 mkha'i
 mkhe'i
 khe'i
+dam
 
 // A-chung as root
 'a
