@@ -18,12 +18,9 @@ Contributor(s): ______________________________________.
 
 package org.thdl.util;
 
-import java.io.PrintStream;
-import java.io.FileOutputStream;
 import java.io.File;
-
-import org.thdl.util.TeeStream;
-import org.thdl.util.ThdlOptions;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 /**
  * This uninstantiable class provides assertions and the like in a

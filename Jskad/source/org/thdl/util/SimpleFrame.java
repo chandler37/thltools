@@ -18,13 +18,12 @@ Contributor(s): ______________________________________.
 
 package org.thdl.util;
 
-import javax.swing.JFrame;
-import java.awt.Container;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
-import org.thdl.util.RTFPane;
+import javax.swing.JFrame;
 
 /** An SimpleFrame is a top-level window displaying a JScrollPane. */
 public class SimpleFrame extends JFrame {

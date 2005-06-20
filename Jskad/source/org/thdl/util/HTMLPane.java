@@ -21,8 +21,9 @@ package org.thdl.util;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.swing.JScrollPane;
+
 import javax.swing.JEditorPane;
+import javax.swing.JScrollPane;
 
 /** An HTMLPane is a JScrollPane displaying the contents of an HTML
  *  file.  DLC FIXME: at present, neither internal nor external

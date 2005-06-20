@@ -18,9 +18,9 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
+import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
-import java.util.ArrayList;
 
 /** An object that can iterate over an {@link TParseTree}.
  *

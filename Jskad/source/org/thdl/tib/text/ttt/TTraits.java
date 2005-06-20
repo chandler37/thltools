@@ -19,6 +19,7 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.text.ttt;
 
 import java.util.ArrayList;
+
 import org.thdl.tib.text.DuffCode;
 
 /** A TTraits object encapsulates all the things that make a
@@ -65,6 +66,11 @@ interface TTraits {
      *  any wowel) */
     boolean isConsonant(String s);
 
+    /** Returns true if and only if this transliteration scheme supports
+     *  Tibetan Unicode characters and if ch is such a character and is a
+     *  wowel. */
+    boolean isUnicodeWowel(char ch);
+    
     /** Returns true if and only if <em>s</em> is a stretch of
      *  transliteration corresponding to a Tibetan wowel (without any
      *  [achen or other] consonant) */
@@ -120,6 +126,10 @@ interface TTraits {
      *  null if l is unknown. */
     String getUnicodeFor(String l, boolean subscribed);
 
+    /** Returns the unicode for a wowel.  Returns null if l is
+     *  unknown. */
+    String getUnicodeForWowel(String wowel);
+
     /** Returns a scanner that can break up a string of
         transliteration. */
     TTshegBarScanner scanner();
@@ -127,4 +137,78 @@ interface TTraits {
     /** Gets the duffcodes for wowel, such that they look good with
      *  the preceding glyph, and appends them to duff. */
     void getDuffForWowel(ArrayList duff, DuffCode preceding, String wowel);
+    
+    /** Human-readable name of this transliteration for short error
+        strings. */
+    String shortTranslitName();
+
+    /** Returns true if and only pair is clearly not valid
+        transliteration. */
+    boolean isClearlyIllegal(TPair pair);
+
+    /** Returns one or two new TPairList instances.  Breaks a
+     *  transliterated tsheg bar (roughly a &quot;syllable&quot;) into
+     *  chunks; this computes l' (for you design doc enthusiasts).
+     *
+     *  <p>Here's a rough sketch of the algorithm: run along getting
+     *  the current TPair as big as you can.  If you get it very big,
+     *  but there's something illegal afterward that wouldn't
+     *  otherwise be illegal, undo as little as possible to correct.
+     *  For example, ACIP {G'A'I} becomes [(G . 'A), (' . I)], and
+     *  ACIP {TAA} becomes [(T . A)] in a first pass but then we see
+     *  that the rest would be suboptimal, so we backtrack to [(T . )]
+     *  and then finally become [(T . ), (A . A)].  We look for (A . )
+     *  and ( . <vowel>) in the rest in order to say "the rest would
+     *  be suboptimal", i.e. we use {@link
+     *  TPairList.hasSimpleError()}.</p>
+     *
+     *  <p>There is one case where we break things up into two pair
+     *  lists if and only if specialHandlingForAppendages is true -- I
+     *  thought the converter had a bug because I saw ACIP {SNYAM'AM}
+     *  in KD0003I2.ACT.  I asked Robert Chilton, though, and he said
+     *  "SNYAM'AM " was likely a typo for "SNYAM 'AM", so leave
+     *  specialHandlingForAppendages false.</p>
+     *
+     *  <p>I found out about (OK, as it turns out, imagined) this case
+     *  too late to do anything clean about it.  ACIP {SNYAM'AM},
+     *  e.g., breaks up into [(S . ), (NY . A), (M . 'A), (M . )],
+     *  which is incorrect -- [(S . ), (NY . A), (M . ), (' . A), (M
+     *  . )] is correct.  But we don't know which is correct without
+     *  parsing, so both are returned.  The clean treatment would be
+     *  to lex into a form that didn't insist ACIP {'A} was either a
+     *  vowel or a consonant.  Then the parser would figure it out.
+     *  But don't bother, because specialHandlingForAppendages should
+     *  be false always.</p>
+     *
+     *  @param tt a string of transliteration corresponding to a tsheg
+     *  bar (i.e., it has no punctuation in it)
+     *  @param specialHandlingForAppendages true if and only if you
+     *  want ACIP {SNYAM'AM} to ultimately parse as {S+NYA}{M}{'A}{M}
+     *  instead of {S+NYA}{M'A}{M}
+     *  @return an array of length two consisting of one or two pair
+     *  lists.  If the former, then the second element will be null,
+     *  if the latter, the second element will have (* . ), (' . *)
+     *  instead of (* . '*) which the former has.  */
+    TPairList[] breakTshegBarIntoChunks(String tt,
+                                        boolean specialHandlingForAppendages);
+    
+    /** Returns true if and only if these are ACIP transliteration's
+        traits.  TODO(dchandler): get rid of this function.  Any
+        caller is employing a hack. */
+    boolean isACIP();
+    
+    /** Returns true if and only if a vowel all by its lonesome has an
+     *  implied a-chen (U+0F68) with it.  (ACIP requires "AI" to
+     *  represent a-chen with gigu, but EWTS requires "i".)*/
+    boolean vowelAloneImpliesAChen();
+    
+    /** Returns true if and only if multiple vowels (TODO(dchandler):
+     *  wowels?) may appear on a single consonant stack via the
+     *  stacking operator, '+'. */
+    boolean vowelsMayStack();
+
+    /** Returns true if and only if pl could represent one TPairList
+        in a tsheg bar.  (EWTS's list of standard stacks comes into
+        play; ACIP always returns true.) */
+    boolean couldBeValidStack(TPairList pl);
 }

@@ -21,9 +21,9 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
-import org.thdl.util.ThdlOptions;
-
 import junit.framework.TestCase;
+
+import org.thdl.util.ThdlOptions;
 
 
 /** Tests ACIP-to-Tibetan conversions using tsheg bars from real ACIP

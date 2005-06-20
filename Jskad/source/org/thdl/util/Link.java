@@ -17,7 +17,6 @@ Contributor(s): ______________________________________.
 */
 
 package org.thdl.util;
-import java.io.*;
 
 /** Used by {@link SimplifiedLinkedList} to provide the implementation of a
     simple dynamic link list.

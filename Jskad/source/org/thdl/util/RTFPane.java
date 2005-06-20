@@ -21,11 +21,12 @@ package org.thdl.util;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.rtf.RTFEditorKit;
-import javax.swing.text.BadLocationException;
 
 /** An RTFPane is a JScrollPane displaying the contents of a rich text
     file (an RTF file). */

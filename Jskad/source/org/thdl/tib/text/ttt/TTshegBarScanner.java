@@ -18,16 +18,12 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
-import java.io.IOException;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.io.InputStream;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Stack;
-
-import org.thdl.util.ThdlDebug;
-import org.thdl.util.ThdlOptions;
 
 /**
 * A TTshegBarScanner is able to break up Strings of transliterated

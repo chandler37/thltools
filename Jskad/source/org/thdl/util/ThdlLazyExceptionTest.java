@@ -18,9 +18,9 @@ Contributor(s): ______________________________________.
 
 package org.thdl.util;
 
-import junit.framework.TestCase;
+import java.io.IOException;
 
-import java.io.IOException; /* a checked exception */
+import junit.framework.TestCase;
 
 /**
  * @author David Chandler

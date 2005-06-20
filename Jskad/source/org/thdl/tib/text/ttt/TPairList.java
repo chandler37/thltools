@@ -20,13 +20,12 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
-import org.thdl.tib.text.TibetanMachineWeb;
-import org.thdl.tib.text.DuffCode;
-import org.thdl.tib.text.TGCPair;
-import org.thdl.util.ThdlDebug;
-
-import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.thdl.tib.text.TGCPair;
+import org.thdl.tib.text.TibetanMachineWeb;
+import org.thdl.util.ThdlDebug;
 
 /** A list of {@link TPair TPairs}, typically corresponding to
  *  one tsheg bar.  <i>l</i>' in the design doc is a TPairList.
@@ -101,6 +100,11 @@ class TPairList {
         al.add(0, p);
     }
 
+    /** Appends p to the current list of TPairs. */
+    public void append(TPair p) {
+        al.add(p);
+    }
+
     /** Returns the number of TPairs in this list. */
     public int size() { return al.size(); }
 
@@ -145,12 +149,11 @@ class TPairList {
     /** Returns true if this list contains ( . <vowel>) or (A . ),
      *  which are two simple errors you encounter if you interpret DAA
      *  or TAA or DAI or DAE the wrong way. TODO(DLC)[EWTS->Tibetan]: ACIP vs. EWTS */
-    boolean hasSimpleError(TTraits ttraits) {
+    boolean hasSimpleError() {
         int sz = size();
         for (int i = 0; i < sz; i++) {
             TPair p = get(i);
-            if ((null == p.getLeft() && !ttraits.disambiguator().equals(p.getRight()))
-                || ttraits.hasSimpleError(p))
+            if (traits.hasSimpleError(p))
                 return true;
         }
         return false;
@@ -161,7 +164,7 @@ class TPairList {
      *  Returns an error message, or null if there is no error that
      *  you can find without the help of tsheg bar syntax rules. */
     // FIXME: This is needlessly ACIP specific -- rename and change text of messages
-    String getACIPError(String originalACIP, boolean shortMessages) {
+    String getACIPError(String originalACIP, boolean shortMessages) { // TODO(DLC)[EWTS->Tibetan] misnomer.
         // FIXME: this returns just the first error.  List all errors
         // at once.
         int sz = size();
@@ -169,46 +172,60 @@ class TPairList {
             return ErrorsAndWarnings.getMessage(122, shortMessages,
                                                 ((null != originalACIP)
                                                  ? originalACIP
-                                                 : ""));
+                                                 : ""),
+                                                traits);
         String translit
             = (null != originalACIP) ? originalACIP : recoverACIP();
         boolean mustBeEntirelyNumeric = get(0).isNumeric();
         for (int i = 0; i < sz; i++) {
             TPair p = get(i);
             if (mustBeEntirelyNumeric != p.isNumeric())
-                return ErrorsAndWarnings.getMessage(123, shortMessages, translit);
+                return ErrorsAndWarnings.getMessage(123, shortMessages, translit, traits);
 
-            if ((i == 0 && "V".equals(p.getLeft()))
-                || (i > 0 && "V".equals(p.getLeft())
-                    && (null != get(i - 1).getRight()
-                        && !"+".equals(get(i - 1).getRight())))) {
-                return ErrorsAndWarnings.getMessage(124, shortMessages, translit);
-            } else if ("A".equals(p.getLeft()) && (null == p.getRight() || "".equals(p.getRight()))) {
-                return ErrorsAndWarnings.getMessage(125, shortMessages, translit);
-            } else if ((null == p.getLeft() && !"-".equals(p.getRight()))
+            if (traits.isACIP()
+                && ((i == 0 && "V".equals(p.getLeft()))
+                    || (i > 0 && "V".equals(p.getLeft())
+                        && (null != get(i - 1).getRight()
+                            && !"+".equals(get(i - 1).getRight()))))) {
+                return ErrorsAndWarnings.getMessage(124, shortMessages, translit, traits);
+            } else if (traits.aVowel().equals(p.getLeft())
+                       && (null == p.getRight()
+                           || "".equals(p.getRight()))) {
+                return ErrorsAndWarnings.getMessage(125, shortMessages, translit, traits);
+            } else if (null != p.getRight()
+                       && !"+".equals(p.getRight())
+                       && !traits.disambiguator().equals(p.getRight())
+                       && !traits.isWowel(p.getRight())
+                       && false /* TODO(DLC)[EWTS->Tibetan]: think about this harder. */) {
+            	return "ErrorNumberDLC1: We don't yet support stacking vowels, convert {" + translit + "} manually.";
+                // TODO(DLC)[EWTS->Tibetan]: test, i think we do support it
+            } else if ((null == p.getLeft()
+                        && (!traits.disambiguator().equals(p.getRight())
+                        	&& (!traits.vowelAloneImpliesAChen()
+                        		|| !traits.aVowel().equals(p.getRight()))))
                        || (null != p.getLeft()
-                           && !traits.isConsonant(p.getLeft())
+                           && (!traits.isConsonant(p.getLeft()) && (!traits.vowelAloneImpliesAChen() || !traits.aVowel().equals(p.getLeft())))
                            && !p.isNumeric())) {
                 // FIXME: stop handling this outside of ErrorsAndWarnings:
                 if (null == p.getLeft()) {
                     if (shortMessages)
                         return "128: {" + translit + "}";
                     else
-                        return "128: Cannot convert ACIP {" + translit + "} because " + p.getRight() + " is a \"vowel\" without an associated consonant.";
+                        return "128: Cannot convert " + traits.shortTranslitName() + " {" + translit + "} because " + p.getRight() + " is a \"vowel\" without an associated consonant.";
                 } else {
                     if (shortMessages)
                         return "129: {" + translit + "}";
                     else
-                        return "129: Cannot convert ACIP {" + translit + "} because " + p.getLeft() + " is not an ACIP consonant.";
+                        return "129: Cannot convert " + traits.shortTranslitName() + " {" + translit + "} because " + p.getLeft() + " is not an " + traits.shortTranslitName() + " consonant.";
                 }
             }
         }
         if ("+".equals(get(sz - 1).getRight())) {
-            return ErrorsAndWarnings.getMessage(126, shortMessages, translit);
+            return ErrorsAndWarnings.getMessage(126, shortMessages, translit, traits);
         }
         // FIXME: really this is a warning, not an error:
-        if ("-".equals(get(sz - 1).getRight())) {
-            return ErrorsAndWarnings.getMessage(127, shortMessages, translit);
+        if (traits.disambiguator().equals(get(sz - 1).getRight())) {
+            return ErrorsAndWarnings.getMessage(127, shortMessages, translit, traits);
         }
         return null;
     }
@@ -245,6 +262,9 @@ class TPairList {
      *  empty parse tree.
      */
     public TParseTree getParseTree() {
+        // TODO(DLC)[EWTS->Tibetan]: EWTS NOTE: this is still useful for EWTS: In EWTS, bkra
+        // is b.k+ra, smra is s+m+ra, and tshmra is invalid.
+
         // We treat [(B . ), (G . +), (K . ), (T . A)] as if it could
         // be {B+G+K+T} or {B}{G+K+T}; we handle prefixes specially
         // this way.  [(T . ), (G . +), (K . ), (T . A)] is clearly
@@ -254,22 +274,10 @@ class TPairList {
         // master list of stacks.
 
         int sz = size();
-        for (int i = 0; i < sz; i++) {
-            TPair p = get(i);
-            if (p.getLeft() == null && !"-".equals(p.getRight()))
-                return null; // clearly illegal.
-            if ("+".equals(p.getLeft()))
-                return null; // clearly illegal.
-            if (":".equals(p.getLeft()))
-                return null; // clearly illegal.
-            if ("m".equals(p.getLeft()))
-                return null; // clearly illegal.
-            if ("m:".equals(p.getLeft()))
-                return null; // clearly illegal.
-        }
+        for (int i = 0; i < sz; i++)
+            if (traits.isClearlyIllegal(get(i)))
+                return null;
 
-
-        TParseTree pt = new TParseTree();
         if (sz < 1) return null;
 
         // When we see a stretch of ACIP without a disambiguator or a
@@ -387,7 +395,7 @@ class TPairList {
         if ((breakLocations[1] >= 0 && breakLocations[1] <= breakLocations[0])
             || (breakLocations[2] >= 0 && breakLocations[2] <= breakLocations[1]))
             throw new Error("breakLocations is monotonically increasing, ain't it?");
-
+        TParseTree pt = new TParseTree();
         for (int i = 0; i < sz; i++) {
             if (i+1 == sz || get(i).endsACIPStack()) {
                 TStackListList sll = new TStackListList(4); // maximum is 4.
@@ -412,35 +420,54 @@ class TPairList {
                 // and only if b1 is one, etc.
                 for (int counter = 0; counter < (1<<numBreaks); counter++) {
                     TStackList sl = new TStackList();
+                    boolean slIsInvalid = false;
                     TPairList currentStack = new TPairList(traits);
+                    TPairList currentStackUnmodified = new TPairList(traits);
                     for (int k = startLoc; k <= i; k++) {
                         if (!get(k).isDisambiguator()) {
                             if (get(k).isNumeric()
                                 || (get(k).getLeft() != null
-                                    && traits.isConsonant(get(k).getLeft())))
+                                    && (traits.isConsonant(get(k).getLeft())
+                                        || traits.vowelAloneImpliesAChen() && traits.aVowel().equals(get(k).getLeft())))) {
                                 currentStack.add(get(k).insideStack());
-                            else
+                                currentStackUnmodified.add(get(k));
+                            } else {
                                 return null; // sA, for example, is illegal.
+                            }
                         }
                         if (k == i || get(k).endsACIPStack()) {
-                            if (!currentStack.isEmpty())
-                                sl.add(currentStack.asStack());
+                            if (!currentStack.isEmpty()) {
+                                if (traits.couldBeValidStack(currentStackUnmodified)) {
+                                    sl.add(currentStack.asStack());
+                                } else {
+                                    slIsInvalid = true;
+                                    break;
+                                }
+                            }
                             currentStack = new TPairList(traits);
+                            currentStackUnmodified = new TPairList(traits);
                         } else {
                             if (numBreaks > 0) {
                                 for (int j = 0; breakStart+j < 3; j++) {
                                     if (k == breakLocations[breakStart+j]
                                         && 1 == ((counter >> j) & 1)) {
-                                        if (!currentStack.isEmpty())
-                                            sl.add(currentStack.asStack());
+                                        if (!currentStack.isEmpty()) {
+                                            if (traits.couldBeValidStack(currentStackUnmodified)) {
+                                                sl.add(currentStack.asStack());
+                                            } else {
+                                                slIsInvalid = true;
+                                                break;
+                                            }
+                                        }
                                         currentStack = new TPairList(traits);
+                                        currentStackUnmodified = new TPairList(traits);
                                         break; // shouldn't matter, but you never know
                                     }
                                 }
                             }
                         }
                     }
-                    if (!sl.isEmpty()) {
+                    if (!slIsInvalid && !sl.isEmpty()) {
                         sll.add(sl);
                     }
                 }
@@ -467,7 +494,7 @@ class TPairList {
             TPair lastPair = get(size() - 1);
             if ("+".equals(lastPair.getRight()))
                 al.set(size() - 1, new TPair(traits, lastPair.getLeft(), null));
-            else if ("-".equals(lastPair.getRight()))
+            else if (traits.disambiguator().equals(lastPair.getRight()))
                 al.set(size() - 1, new TPair(traits, lastPair.getLeft(), null));
         }
         return this;
@@ -507,14 +534,15 @@ class TPairList {
             boolean add_U0F7F = false;
             int where;
             if (p.getRight() != null
-                && (where = p.getRight().indexOf(':')) >= 0) {
+                && (where = p.getRight().indexOf(':')) >= 0) { // TODO(DLC)[EWTS->Tibetan]
                 // this ':' guy is his own TGCPair.
                 add_U0F7F = true;
                 StringBuffer rr = new StringBuffer(p.getRight());
                 rr.deleteCharAt(where);
                 p = new TPair(traits, p.getLeft(), rr.toString());
             }
-            boolean hasNonAVowel = (!"A".equals(p.getRight()) && null != p.getRight());
+            boolean hasNonAVowel = (!traits.aVowel().equals(p.getRight())
+                                    && null != p.getRight());
             String thislWylie = traits.getEwtsForConsonant(p.getLeft());
             if (thislWylie == null) {
                 char ch;
@@ -560,7 +588,7 @@ class TPairList {
             pl.add(tp);
             if (add_U0F7F) {
                 indexList.add(new Integer(index));
-                pl.add(new TGCPair("H", null, TGCPair.TYPE_OTHER));
+                pl.add(new TGCPair("H", null, TGCPair.TYPE_OTHER)); // TODO(DLC)[EWTS->Tibetan]
             }
         }
     }
@@ -618,7 +646,7 @@ class TPairList {
                 unicodeExceptionsMap.put("\u0f62\u0fb6", "\u0f6a\u0fb6"); // RS
             }
             String mapEntry = (String)unicodeExceptionsMap.get(nonVowelSB.toString());
-            if (null != mapEntry)
+            if (traits.isACIP() && null != mapEntry)
                 sb.append(mapEntry);
             else
                 sb.append(nonVowelSB);
@@ -696,11 +724,13 @@ class TPairList {
                                                                 ? 137
                                                                 : 511,
                                                                 shortMessages,
-                                                                recoverACIP()));
+                                                                recoverACIP(),
+                                                                traits));
                 return;
             }
         }
-        if (lastPair.getRight() == null || lastPair.equals("-")) {
+        if (lastPair.getRight() == null
+            || lastPair.equals(traits.disambiguator())) {
             duffsAndErrors.add(TibetanMachineWeb.getGlyph(hashKey));
         } else {
             traits.getDuffForWowel(duffsAndErrors,

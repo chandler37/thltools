@@ -21,11 +21,11 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
-import org.thdl.util.ThdlOptions;
-
 import java.util.ArrayList;
 
 import junit.framework.TestCase;
+
+import org.thdl.util.ThdlOptions;
 
 
 /** Tests this package, especially {@link #TPairListFactory} and
@@ -275,7 +275,8 @@ public class PackageTest extends TestCase {
                                    String[] expectedLegalParses,
                                    String expectedBestParse,
                                    int pairListToUse) {
-        TPairList[] la = TPairListFactory.breakACIPIntoChunks(acip, true);
+        TPairList[] la
+            = ACIPTraits.instance().breakTshegBarIntoChunks(acip, true);
         TPairList l = la[(pairListToUse == -1) ? 0 : ((pairListToUse >= 1) ? 1 : pairListToUse)];
         if (sdebug || debug)
             System.out.println("ACIP=" + acip + " and l'=" + l);
@@ -302,9 +303,9 @@ public class PackageTest extends TestCase {
             return;
         } else {
             String s;
-            if ((s = pt.getWarning("Most", l, acip, false)) != null) {
+            if ((s = pt.getWarning("Most", l, acip, false, ACIPTraits.instance())) != null) {
                 System.out.println(s);
-            } else if ((s = pt.getWarning("All", l, acip, false)) != null)
+            } else if ((s = pt.getWarning("All", l, acip, false, ACIPTraits.instance())) != null)
                 if (sdebug || debug) System.out.println("Paranoiac warning is this: " + s);
         }
         int np = pt.numberOfParses();
@@ -447,9 +448,9 @@ public class PackageTest extends TestCase {
         tstHelper("9012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678");
     }
 
-    /** Tests {@link TPairListFactory#breakACIPIntoChunks(String,
-     *  boolean)}, {@link TPairList#getACIPError(String, boolean)}, and {@link
-     *  TPairList#recoverACIP()}. */
+    /** Tests {@link ACIPTraits#breakTshegBarIntoChunks(String,
+     *  boolean)}, {@link TPairList#getACIPError(String, boolean)},
+     *  and {@link TPairList#recoverACIP()}. */
     public void testBreakACIPIntoChunks() {
 tstHelper("GASN"); // ambiguous with regard to prefix rules
 tstHelper("BARMA"); // ambiguous with regard to prefix rules

@@ -18,11 +18,9 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
-import org.thdl.util.ThdlOptions;
-
-import java.util.ArrayList;
-
 import junit.framework.TestCase;
+
+import org.thdl.util.ThdlOptions;
 
 
 /** Tests this package's ability to understand EWTS and turn it into
@@ -65,6 +63,15 @@ public class EWTStibwniniTest extends TestCase {
      *  EWTSTest.ewts2uni_test(String,String)}. */
     private static void assert_EWTS_error(String ewts) {
         EWTSTest.assert_EWTS_error(ewts);
+    }
+
+    /** Asserts that ewts is valid EWTS.  Call this for those strings
+        that someone might intend a stack in TMW for, but that really
+        mean two or more stacks in EWTS thanks to prefix rules. g+ga,
+        for example, might be mistakenly input as gga.  If so, it's
+        legal EWTS because ga takes a ga prefix. */
+    private static void special_case(String ewts) {
+        assertTrue(!EWTSTest.hasEwtsError(ewts));
     }
 
     /** Tests that all of the standard stacks are treated like
@@ -393,7 +400,7 @@ public class EWTStibwniniTest extends TestCase {
         ewts2uni_test("N", "\u0F4E");
         ewts2uni_test("Sh", "\u0F65");
         
-        ewts2uni_test("k+Sh", "\u0F69");
+        ewts2uni_test("k+Sh", "\u0f40\u0fb5"); // TODO(DLC)[EWTS->Tibetan]: \u0F69 instead?  Shouldn't matter by the unicode standard's terms, and a tiny, separate translator on unicode-to-unicode ought to be better.  But maybe change tibwn.ini?
         ewts2uni_test("k+k", "\u0f40\u0f90");
         ewts2uni_test("k+kh", "\u0f40\u0f91");
         ewts2uni_test("k+ng", "\u0f40\u0f94");
@@ -437,16 +444,16 @@ public class EWTStibwniniTest extends TestCase {
         ewts2uni_test("g+m", "\u0f42\u0fa8");
         ewts2uni_test("g+m+y", "\u0f42\u0fa8\u0fb1");
         ewts2uni_test("g+r+y", "\u0f42\u0fb2\u0fb1");
-        ewts2uni_test("g+h", "\u0F43");
-        ewts2uni_test("g+h+g+h", "\u0f43\u0f92\u0fb7");
-        ewts2uni_test("g+h+ny", "\u0f43\u0f99");
-        ewts2uni_test("g+h+n", "\u0f43\u0fa3");
-        ewts2uni_test("g+h+n+y", "\u0f43\u0fa3\u0fb1");
-        ewts2uni_test("g+h+m", "\u0f43\u0fa8");
-        ewts2uni_test("g+h+l", "\u0f43\u0fb3");
-        ewts2uni_test("g+h+y", "\u0f43\u0fb1");
-        ewts2uni_test("g+h+r", "\u0f43\u0fb2");
-        ewts2uni_test("g+h+w", "\u0f43\u0fad");
+        ewts2uni_test("g+h", "\u0f42\u0fb7");  // TODO(DLC)[EWTS->Tibetan]: \u0F43 instead?  Shouldn't matter by the unicode standard's terms, and a tiny, separate translator on unicode-to-unicode ought to be better.  But maybe change tibwn.ini?  (Same goes for every occurrence of \u0f42\u0fb7 in this file.)
+        ewts2uni_test("g+h+g+h", "\u0f42\u0fb7\u0f92\u0fb7");
+        ewts2uni_test("g+h+ny", "\u0f42\u0fb7\u0f99");
+        ewts2uni_test("g+h+n", "\u0f42\u0fb7\u0fa3");
+        ewts2uni_test("g+h+n+y", "\u0f42\u0fb7\u0fa3\u0fb1");
+        ewts2uni_test("g+h+m", "\u0f42\u0fb7\u0fa8");
+        ewts2uni_test("g+h+l", "\u0f42\u0fb7\u0fb3");
+        ewts2uni_test("g+h+y", "\u0f42\u0fb7\u0fb1");
+        ewts2uni_test("g+h+r", "\u0f42\u0fb7\u0fb2");
+        ewts2uni_test("g+h+w", "\u0f42\u0fb7\u0fad");
         ewts2uni_test("ng+k", "\u0f44\u0f90");
         ewts2uni_test("ng+k+t", "\u0f44\u0f90\u0f9f");
         ewts2uni_test("ng+k+t+y", "\u0f44\u0f90\u0f9f\u0fb1");
@@ -499,11 +506,11 @@ public class EWTStibwniniTest extends TestCase {
         ewts2uni_test("dz+y", "\u0f5b\u0fb1");
         ewts2uni_test("dz+r", "\u0f5b\u0fb2");
         ewts2uni_test("dz+w", "\u0f5b\u0fad");
-        ewts2uni_test("dz+h", "\u0F5C");
-        ewts2uni_test("dz+h+y", "\u0f5c\u0fb1");
-        ewts2uni_test("dz+h+r", "\u0f5c\u0fb2");
-        ewts2uni_test("dz+h+l", "\u0f5c\u0fb3");
-        ewts2uni_test("dz+h+w", "\u0f5c\u0fad");
+        ewts2uni_test("dz+h", "\u0F5B\u0FB7");  // TODO(DLC)[EWTS->Tibetan]: 0f5c is what tibwn.ini has
+        ewts2uni_test("dz+h+y", "\u0f5b\u0fb7\u0fb1");  // TODO(DLC)[EWTS->Tibetan]: 0f5c is what tibwn.ini has
+        ewts2uni_test("dz+h+r", "\u0f5b\u0fb7\u0fb2");  // TODO(DLC)[EWTS->Tibetan]: 0f5c is what tibwn.ini has
+        ewts2uni_test("dz+h+l", "\u0f5b\u0fb7\u0fb3");  // TODO(DLC)[EWTS->Tibetan]: 0f5c is what tibwn.ini has
+        ewts2uni_test("dz+h+w", "\u0f5b\u0fb7\u0fad");  // TODO(DLC)[EWTS->Tibetan]: 0f5c is what tibwn.ini has
         ewts2uni_test("ny+ts", "\u0f49\u0fa9");
         ewts2uni_test("ny+ts+m", "\u0f49\u0fa9\u0fa8");
         ewts2uni_test("ny+ts+y", "\u0f49\u0fa9\u0fb1");
@@ -541,12 +548,16 @@ public class EWTStibwniniTest extends TestCase {
         ewts2uni_test("D+y", "\u0f4c\u0fb1");
         ewts2uni_test("D+r", "\u0f4c\u0fb2");
         ewts2uni_test("D+w", "\u0f4c\u0fad");
-        ewts2uni_test("D+h", "\u0F4D");
-        ewts2uni_test("D+h+D+h", "\u0f4d\u0f9d");
-        ewts2uni_test("D+h+m", "\u0f4d\u0fa8");
-        ewts2uni_test("D+h+y", "\u0f4d\u0fb1");
-        ewts2uni_test("D+h+r", "\u0f4d\u0fb2");
-        ewts2uni_test("D+h+w", "\u0f4d\u0fad");
+        ewts2uni_test("D+h", "\u0F4C\u0FB7");  // TODO(DLC)[EWTS->Tibetan]: 0f4d is what tibwn.ini has
+        {
+            // TODO(DLC)[EWTS->Tibetan]: 0f4d is what tibwn.ini has
+            ewts2uni_test("D+h+D+h", "\u0f4c\u0fb7\u0f9c\u0fb7");
+            // TODO(DLC)[EWTS->Tibetan]: 0f9d is what tibwn.ini has
+        }
+        ewts2uni_test("D+h+m", "\u0f4c\u0fb7\u0fa8");  // TODO(DLC)[EWTS->Tibetan]: 0f4d is what tibwn.ini has
+        ewts2uni_test("D+h+y", "\u0f4c\u0fb7\u0fb1");  // TODO(DLC)[EWTS->Tibetan]: 0f4d is what tibwn.ini has
+        ewts2uni_test("D+h+r", "\u0f4c\u0fb7\u0fb2");  // TODO(DLC)[EWTS->Tibetan]: 0f4d is what tibwn.ini has
+        ewts2uni_test("D+h+w", "\u0f4c\u0fb7\u0fad");  // TODO(DLC)[EWTS->Tibetan]: 0f4d is what tibwn.ini has
         ewts2uni_test("N+T", "\u0f4e\u0f9a");
         ewts2uni_test("N+Th", "\u0f4e\u0f9b");
         ewts2uni_test("N+D", "\u0f4e\u0f9c");
@@ -592,7 +603,8 @@ public class EWTStibwniniTest extends TestCase {
         ewts2uni_test("t+s+w", "\u0f4f\u0fb6\u0fad");
         ewts2uni_test("t+r+y", "\u0f4f\u0fb2\u0fb1");
         ewts2uni_test("t+w+y", "\u0f4f\u0fad\u0fb1");
-        ewts2uni_test("t+k+Sh", "\u0f4f\u0fb9");
+        ewts2uni_test("t+k+Sh", "\u0f4f\u0f90\u0fb5");  // TODO(DLC)[EWTS->Tibetan]: 0fb9 is what tibwn.ini has
+
         ewts2uni_test("th+y", "\u0f50\u0fb1");
         ewts2uni_test("th+w", "\u0f50\u0fad");
         ewts2uni_test("d+g", "\u0f51\u0f92");
@@ -620,14 +632,14 @@ public class EWTStibwniniTest extends TestCase {
         ewts2uni_test("d+y", "\u0f51\u0fb1");
         ewts2uni_test("d+r+y", "\u0f51\u0fb2\u0fb1");
         ewts2uni_test("d+w+y", "\u0f51\u0fad\u0fb1");
-        ewts2uni_test("d+h", "\u0F52");
-        ewts2uni_test("d+h+n", "\u0f52\u0fa3");
-        ewts2uni_test("d+h+n+y", "\u0f52\u0fa3\u0fb1");
-        ewts2uni_test("d+h+m", "\u0f52\u0fa8");
-        ewts2uni_test("d+h+y", "\u0f52\u0fb1");
-        ewts2uni_test("d+h+r", "\u0f52\u0fb2");
-        ewts2uni_test("d+h+r+y", "\u0f52\u0fb2\u0fb1");
-        ewts2uni_test("d+h+w", "\u0f52\u0fad");
+        ewts2uni_test("d+h", "\u0F51\u0fb7");  // TODO(DLC)[EWTS->Tibetan]: 0f52 is what tibwn.ini has
+        ewts2uni_test("d+h+n", "\u0f51\u0fb7\u0fa3");  // TODO(DLC)[EWTS->Tibetan]: 0f52 is what tibwn.ini has
+        ewts2uni_test("d+h+n+y", "\u0f51\u0fb7\u0fa3\u0fb1");  // TODO(DLC)[EWTS->Tibetan]: 0f52 is what tibwn.ini has
+        ewts2uni_test("d+h+m", "\u0f51\u0fb7\u0fa8");  // TODO(DLC)[EWTS->Tibetan]: 0f52 is what tibwn.ini has
+        ewts2uni_test("d+h+y", "\u0f51\u0fb7\u0fb1");  // TODO(DLC)[EWTS->Tibetan]: 0f52 is what tibwn.ini has
+        ewts2uni_test("d+h+r", "\u0f51\u0fb7\u0fb2");  // TODO(DLC)[EWTS->Tibetan]: 0f52 is what tibwn.ini has
+        ewts2uni_test("d+h+r+y", "\u0f51\u0fb7\u0fb2\u0fb1");  // TODO(DLC)[EWTS->Tibetan]: 0f52 is what tibwn.ini has
+        ewts2uni_test("d+h+w", "\u0f51\u0fb7\u0fad");  // TODO(DLC)[EWTS->Tibetan]: 0f52 is what tibwn.ini has
         ewts2uni_test("n+k", "\u0f53\u0f90");
         ewts2uni_test("n+k+t", "\u0f53\u0f90\u0f9f");
         ewts2uni_test("n+g+h", "\u0f53\u0f92\u0fb7");
@@ -651,7 +663,7 @@ public class EWTStibwniniTest extends TestCase {
         ewts2uni_test("n+d+h+r", "\u0f53\u0fa1\u0fb7\u0fb2");
         ewts2uni_test("n+d+h+y", "\u0f53\u0fa1\u0fb7\u0fb1");
         ewts2uni_test("n+n", "\u0f53\u0fa3");
-        ewts2uni_test("n+n+y", "\u0f53\u0fa3\u0f61");
+        ewts2uni_test("n+n+y", "\u0f53\u0fa3\u0fb1");
         ewts2uni_test("n+p", "\u0f53\u0fa4");
         ewts2uni_test("n+p+r", "\u0f53\u0fa4\u0fb2");
         ewts2uni_test("n+ph", "\u0f53\u0fa5");
@@ -692,13 +704,13 @@ public class EWTStibwniniTest extends TestCase {
         ewts2uni_test("b+b+h", "\u0f56\u0fa6\u0fb7");
         ewts2uni_test("b+b+h+y", "\u0f56\u0fa6\u0fb7\u0fb1");
         ewts2uni_test("b+m", "\u0f56\u0fa8");
-        ewts2uni_test("b+h", "\u0F57");
-        ewts2uni_test("b+h+N", "\u0f57\u0f9e");
-        ewts2uni_test("b+h+n", "\u0f57\u0fa3");
-        ewts2uni_test("b+h+m", "\u0f57\u0fa8");
-        ewts2uni_test("b+h+y", "\u0f57\u0fb1");
-        ewts2uni_test("b+h+r", "\u0f57\u0fb2");
-        ewts2uni_test("b+h+w", "\u0f57\u0fad");
+        ewts2uni_test("b+h", "\u0F56\u0fb7");  // TODO(DLC)[EWTS->Tibetan]: 0f57 is what tibwn.ini has
+        ewts2uni_test("b+h+N", "\u0f56\u0fb7\u0f9e");  // TODO(DLC)[EWTS->Tibetan]: 0f57 is what tibwn.ini has
+        ewts2uni_test("b+h+n", "\u0f56\u0fb7\u0fa3");  // TODO(DLC)[EWTS->Tibetan]: 0f57 is what tibwn.ini has
+        ewts2uni_test("b+h+m", "\u0f56\u0fb7\u0fa8");  // TODO(DLC)[EWTS->Tibetan]: 0f57 is what tibwn.ini has
+        ewts2uni_test("b+h+y", "\u0f56\u0fb7\u0fb1");  // TODO(DLC)[EWTS->Tibetan]: 0f57 is what tibwn.ini has
+        ewts2uni_test("b+h+r", "\u0f56\u0fb7\u0fb2");  // TODO(DLC)[EWTS->Tibetan]: 0f57 is what tibwn.ini has
+        ewts2uni_test("b+h+w", "\u0f56\u0fb7\u0fad");  // TODO(DLC)[EWTS->Tibetan]: 0f57 is what tibwn.ini has
         ewts2uni_test("m+ny", "\u0f58\u0f99");
         ewts2uni_test("m+N", "\u0f58\u0f9e");
         ewts2uni_test("m+n", "\u0f58\u0fa3");
@@ -736,13 +748,13 @@ public class EWTStibwniniTest extends TestCase {
         ewts2uni_test("r+t+s+n+y", "\u0f62\u0f9f\u0fb6\u0fa3\u0fb1");
         ewts2uni_test("r+th", "\u0f62\u0fa0");
         ewts2uni_test("r+th+y", "\u0f62\u0fa0\u0fb1");
-        ewts2uni_test("r+d+d+h", "\u0f62\u0fa1\u0fa2");
-        ewts2uni_test("r+d+d+h+y", "\u0f62\u0fa1\u0fa2\u0fb1");
+        ewts2uni_test("r+d+d+h", "\u0f62\u0fa1\u0fa1\u0fb7");  // TODO(DLC)[EWTS->Tibetan]: 0fa2 is what tibwn.ini has
+        ewts2uni_test("r+d+d+h+y", "\u0f62\u0fa1\u0fa1\u0fb7\u0fb1");  // TODO(DLC)[EWTS->Tibetan]: 0fa2 is what tibwn.ini has
         ewts2uni_test("r+d+y", "\u0f62\u0fa1\u0fb1");
-        ewts2uni_test("r+d+h", "\u0f62\u0fa1\u0fb7");
-        ewts2uni_test("r+d+h+m", "\u0f62\u0fa1\u0fb7\u0fa8");
-        ewts2uni_test("r+d+h+y", "\u0f62\u0fa2\u0fb1");
-        ewts2uni_test("r+d+h+r", "\u0f62\u0fa2\u0fb2");
+        ewts2uni_test("r+d+h", "\u0f62\u0fa1\u0fb7");  // TODO(DLC)[EWTS->Tibetan]: 0fa2 is what tibwn.ini has
+        ewts2uni_test("r+d+h+m", "\u0f62\u0fa1\u0fb7\u0fa8");  // TODO(DLC)[EWTS->Tibetan]: 0fa2 is what tibwn.ini has
+        ewts2uni_test("r+d+h+y", "\u0f62\u0fa1\u0fb7\u0fb1");  // TODO(DLC)[EWTS->Tibetan]: 0fa2 is what tibwn.ini has
+        ewts2uni_test("r+d+h+r", "\u0f62\u0fa1\u0fb7\u0fb2");  // TODO(DLC)[EWTS->Tibetan]: 0fa2 is what tibwn.ini has
         ewts2uni_test("r+p", "\u0f62\u0fa4");
         ewts2uni_test("r+b+p", "\u0f62\u0fa6\u0fa4");
         ewts2uni_test("r+b+b", "\u0f62\u0fa6\u0fa6");
@@ -780,22 +792,22 @@ public class EWTStibwniniTest extends TestCase {
         assert_EWTS_error("khkha");
         assert_EWTS_error("khna");
         assert_EWTS_error("khla");
-        assert_EWTS_error("gga");
+        special_case("gga");
         assert_EWTS_error("ggha");
-        assert_EWTS_error("gnya");
-        assert_EWTS_error("gda");
+        special_case("gnya");
+        special_case("gda");
         assert_EWTS_error("gdha");
         assert_EWTS_error("gdhya");
         assert_EWTS_error("gdhwa");
-        assert_EWTS_error("gna");
-        assert_EWTS_error("gnya");
-        assert_EWTS_error("gpa");
+        special_case("gna");
+        special_case("gnya");
+        special_case("gpa");
         assert_EWTS_error("gbha");
         assert_EWTS_error("gbhya");
-        assert_EWTS_error("gma");
-        assert_EWTS_error("gmya");
+        special_case("gma");
+        special_case("gmya");
         assert_EWTS_error("grya");
-        assert_EWTS_error("gha");
+        special_case("gha");
         assert_EWTS_error("ghgha");
         assert_EWTS_error("ghnya");
         assert_EWTS_error("ghna");
@@ -803,8 +815,8 @@ public class EWTStibwniniTest extends TestCase {
         assert_EWTS_error("ghma");
         assert_EWTS_error("ghla");
         assert_EWTS_error("ghya");
-        assert_EWTS_error("ghra");
-        assert_EWTS_error("ghwa");
+        special_case("ghra");
+        special_case("ghwa");
         assert_EWTS_error("ngka");
         assert_EWTS_error("ngkta");
         assert_EWTS_error("ngktya");
@@ -939,7 +951,7 @@ public class EWTStibwniniTest extends TestCase {
         assert_EWTS_error("tmya");
         assert_EWTS_error("tya");
         assert_EWTS_error("trna");
-        assert_EWTS_error("tsa");
+        special_case("tsa");
         assert_EWTS_error("tstha");
         assert_EWTS_error("tsna");
         assert_EWTS_error("tsnya");
@@ -947,45 +959,45 @@ public class EWTStibwniniTest extends TestCase {
         assert_EWTS_error("tsmya");
         assert_EWTS_error("tsya");
         assert_EWTS_error("tsra");
-        assert_EWTS_error("tswa");
+        special_case("tswa");
         assert_EWTS_error("trya");
         assert_EWTS_error("twya");
         assert_EWTS_error("tkSha");
         assert_EWTS_error("thya");
         assert_EWTS_error("thwa");
-        assert_EWTS_error("dga");
-        assert_EWTS_error("dgya");
-        assert_EWTS_error("dgra");
+        special_case("dga");
+        special_case("dgya");
+        special_case("dgra");
         assert_EWTS_error("dgha");
         assert_EWTS_error("dghra");
-        assert_EWTS_error("ddza");
-        assert_EWTS_error("dda");
+        special_case("ddza");
+        special_case("dda");
         assert_EWTS_error("ddya");
-        assert_EWTS_error("ddra");
-        assert_EWTS_error("ddwa");
+        special_case("ddra");
+        special_case("ddwa");
         assert_EWTS_error("ddha");
         assert_EWTS_error("ddhna");
         assert_EWTS_error("ddhya");
         assert_EWTS_error("ddhra");
         assert_EWTS_error("ddhwa");
-        assert_EWTS_error("dna");
-        assert_EWTS_error("dba");
-        assert_EWTS_error("dbra");
+        special_case("dna");
+        special_case("dba");
+        special_case("dbra");
         assert_EWTS_error("dbha");
         assert_EWTS_error("dbhya");
         assert_EWTS_error("dbhra");
-        assert_EWTS_error("dma");
-        assert_EWTS_error("dya");
+        special_case("dma");
+        special_case("dya");
         assert_EWTS_error("drya");
         assert_EWTS_error("dwya");
-        assert_EWTS_error("dha");
+        special_case("dha");
         assert_EWTS_error("dhna");
         assert_EWTS_error("dhnya");
         assert_EWTS_error("dhma");
         assert_EWTS_error("dhya");
-        assert_EWTS_error("dhra");
+        special_case("dhra");
         assert_EWTS_error("dhrya");
-        assert_EWTS_error("dhwa");
+        special_case("dhwa");
         assert_EWTS_error("nka");
         assert_EWTS_error("nkta");
         assert_EWTS_error("ngha");
@@ -1016,7 +1028,7 @@ public class EWTStibwniniTest extends TestCase {
         assert_EWTS_error("nma");
         assert_EWTS_error("nbhya");
         assert_EWTS_error("ntsa");
-        assert_EWTS_error("nya");
+        special_case("nya");
         assert_EWTS_error("nra");
         assert_EWTS_error("nwa");
         assert_EWTS_error("nwya");
@@ -1039,39 +1051,39 @@ public class EWTStibwniniTest extends TestCase {
         assert_EWTS_error("pswa");
         assert_EWTS_error("psya");
         assert_EWTS_error("bgha");
-        assert_EWTS_error("bdza");
-        assert_EWTS_error("bda");
+        special_case("bdza");
+        special_case("bda");
         assert_EWTS_error("bddza");
         assert_EWTS_error("bdha");
         assert_EWTS_error("bdhwa");
-        assert_EWTS_error("bta");
-        assert_EWTS_error("bna");
-        assert_EWTS_error("bba");
+        special_case("bta");
+        special_case("bna");
+        special_case("bba");
         assert_EWTS_error("bbha");
         assert_EWTS_error("bbhya");
-        assert_EWTS_error("bma");
-        assert_EWTS_error("bha");
+        special_case("bma");
+        special_case("bha");
         assert_EWTS_error("bhNa");
         assert_EWTS_error("bhna");
         assert_EWTS_error("bhma");
         assert_EWTS_error("bhya");
-        assert_EWTS_error("bhra");
-        assert_EWTS_error("bhwa");
-        assert_EWTS_error("mnya");
-        assert_EWTS_error("mNa");
-        assert_EWTS_error("mna");
-        assert_EWTS_error("mnya");
-        assert_EWTS_error("mpa");
-        assert_EWTS_error("mpra");
-        assert_EWTS_error("mpha");
-        assert_EWTS_error("mba");
+        special_case("bhra");
+        special_case("bhwa");
+        special_case("mnya");
+        special_case("mNa");  // TODO(DLC)[EWTS->Tibetan]: do prefix rules really allow mNa?  I think not.
+        special_case("mna");
+        special_case("mnya");
+        special_case("mpa");
+        special_case("mpra");
+        special_case("mpha");
+        special_case("mba");
         assert_EWTS_error("mbha");
         assert_EWTS_error("mbhya");
-        assert_EWTS_error("mma");
-        assert_EWTS_error("mla");
-        assert_EWTS_error("mwa");
-        assert_EWTS_error("msa");
-        assert_EWTS_error("mha");
+        special_case("mma");
+        special_case("mla");
+        special_case("mwa");
+        special_case("msa");
+        special_case("mha");
         assert_EWTS_error("yYa");
         assert_EWTS_error("yra");
         assert_EWTS_error("ywa");
@@ -1089,7 +1101,7 @@ public class EWTStibwniniTest extends TestCase {
         assert_EWTS_error("rNa");
         assert_EWTS_error("rtwa");
         assert_EWTS_error("rtta");
-        assert_EWTS_error("rtsa");
+        special_case("rtsa");
         assert_EWTS_error("rtsna");
         assert_EWTS_error("rtsnya");
         assert_EWTS_error("rtha");

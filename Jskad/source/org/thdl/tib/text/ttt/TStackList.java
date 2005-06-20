@@ -18,13 +18,11 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
-import org.thdl.tib.text.TibTextUtils;
-import org.thdl.tib.text.TGCList;
-import org.thdl.tib.text.DuffCode;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.ListIterator;
+
+import org.thdl.tib.text.TGCList;
+import org.thdl.tib.text.TibTextUtils;
 
 /** A list of {@link TPairList TPairLists}, each of which is for
  *  a stack (a grapheme cluster), typically corresponding to one tsheg
@@ -165,7 +163,7 @@ class TStackList {
                     TPairList pl = get(pairListIndex);
                     TPair p = pl.get(pl.size() - 1);
                     isLegalAndHasAVowelOnRoot
-                        = (p.getRight() != null && p.getRight().startsWith("A")); // could be {A:}, e.g.
+                        = (p.getRight() != null && p.getRight().startsWith("A")); // could be {A:}, e.g.  TODO(DLC)[EWTS->Tibetan]: ???
                     if (isLegalAndHasAVowelOnRoot)
                         break;
                 }

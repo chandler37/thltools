@@ -18,11 +18,11 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
-import org.thdl.util.ThdlOptions;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
+
+import org.thdl.util.ThdlOptions;
 
 /** MidLexSubstitution is a hack that lets the end user clumsily fix
  *  the EWTS-to-Tibetan and ACIP-to-Tibetan converters without having

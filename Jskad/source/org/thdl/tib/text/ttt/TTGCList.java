@@ -18,10 +18,10 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
+import java.util.ArrayList;
+
 import org.thdl.tib.text.TGCList;
 import org.thdl.tib.text.TGCPair;
-
-import java.util.ArrayList;
 
 /** A list of grapheme clusters.
  *

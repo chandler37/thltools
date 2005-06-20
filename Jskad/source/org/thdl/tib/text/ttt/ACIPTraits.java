@@ -18,17 +18,15 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
-import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
-import java.util.List;
 
-import org.thdl.util.ThdlOptions;
 import org.thdl.tib.text.DuffCode;
 import org.thdl.tib.text.THDLWylieConstants;
-import org.thdl.tib.text.TibetanMachineWeb;
 import org.thdl.tib.text.TibTextUtils;
+import org.thdl.tib.text.TibetanMachineWeb;
+import org.thdl.util.ThdlOptions;
 
 
 /** A singleton class that should contain (but due to laziness and
@@ -62,7 +60,9 @@ public final class ACIPTraits implements TTraits {
     public int maxWowelLength() { return MAX_WOWEL_LENGTH; }
 
     public boolean hasSimpleError(TPair p) {
-        return ("A".equals(p.getLeft()) && null == p.getRight());
+    	return (("A".equals(p.getLeft()) && null == p.getRight())
+    			|| (null == p.getLeft()
+    				&& !this.disambiguator().equals(p.getRight())));
     }
 
     public String aVowel() { return "A"; }
@@ -95,6 +95,11 @@ public final class ACIPTraits implements TTraits {
 
     private HashMap superACIP2unicode = null;
     private HashMap subACIP2unicode = null;
+
+    public String getUnicodeForWowel(String wowel) {
+        return getUnicodeFor(wowel, /* doesn't matter: */ true);
+    }
+
     public /* synchronized */ String getUnicodeFor(String acip, boolean subscribed) {
         if (superACIP2unicode == null) {
             final boolean compactUnicode
@@ -588,5 +593,45 @@ public final class ACIPTraits implements TTraits {
         if (wowel.indexOf(':') >= 0)
             duff.add(TibetanMachineWeb.getGlyph(getEwtsForOther(":")));
     }
+
+    public String shortTranslitName() { return "ACIP"; }
+
+    public boolean isClearlyIllegal(TPair p) {
+        if (p.getLeft() == null
+            && !disambiguator().equals(p.getRight()))
+            return true;
+        if ("+".equals(p.getLeft()))
+            return true;
+        if (isWowel(p.getLeft())
+            && !aVowel().equals(p.getLeft())) // achen
+            return true;
+        if (":".equals(p.getLeft()))
+            return true;
+        if ("m".equals(p.getLeft()))
+            return true;
+        if ("m:".equals(p.getLeft()))
+            return true;
+        return false;
+    }
+
+    public TPairList[] breakTshegBarIntoChunks(String tt, boolean sh) {
+        try {
+            return TPairListFactory.breakACIPIntoChunks(tt, sh);
+        } catch (StackOverflowError e) {
+            throw new IllegalArgumentException("Input too large[1]: " + tt);
+        } catch (OutOfMemoryError e) {
+            throw new IllegalArgumentException("Input too large[2]: " + tt);
+        }
+    }
+
+    public boolean isACIP() { return true; }
+    
+    public boolean vowelAloneImpliesAChen() { return false; }
+    
+    public boolean vowelsMayStack() { return false; }
+    
+    public boolean isUnicodeWowel(char ch) { return false; }
+
+    public boolean couldBeValidStack(TPairList pl) { return true; }
 }
 

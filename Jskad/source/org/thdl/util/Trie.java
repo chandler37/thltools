@@ -81,7 +81,6 @@ Contributor(s): ______________________________________.
 
 package org.thdl.util;
 
-import org.thdl.util.ThdlDebug;
 
 /**
  * A digital search trie for 7-bit ASCII text.  The API is a subset of

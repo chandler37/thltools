@@ -18,7 +18,7 @@ Contributor(s): ______________________________________.
 
 package org.thdl.util;
 
-import java.io.*;
+import java.io.PrintWriter;
 
 /** Implementation of a simple dynamic link list. Be careful with word order!
     Why not just use java.util.LinkedList? It is not supported for the

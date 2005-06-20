@@ -258,7 +258,7 @@ class ValidatingUnicodeReader implements UnicodeReadingStateMachineConstants {
         throws TibetanSyntaxException
     {
         Vector syllables = new Vector();
-        int grcls_len = grcls.length();
+        int grcls_len = grcls.size();
         int beginning_of_cluster = 0;
         for (int i = 0; i < grcls_len; i++) {
             UnicodeGraphemeCluster current_grcl

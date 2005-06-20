@@ -258,7 +258,7 @@ public class TGCPair implements THDLWylieConstants {
         }
         if (mark < v.length()) {
             vowelish_sb.append(v.substring(mark));
-            ThdlDebug.noteIffyCode();
+            // TODO(DLC)[EWTS->Tibetan]:  ThdlDebug.noteIffyCode();
             // FIXME(dchandler): what should I do here?  I doubt v is
             // valid.
         }

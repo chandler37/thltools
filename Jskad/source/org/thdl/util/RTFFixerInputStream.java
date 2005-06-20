@@ -18,13 +18,11 @@ Contributor(s): ______________________________________.
 
 package org.thdl.util;
 
-import org.thdl.util.ThdlDebug;
-
-import java.util.ArrayList;
-import java.io.IOException;
-import java.io.FilterInputStream;
 import java.io.BufferedInputStream;
+import java.io.FilterInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 
 /** Provides an input stream that fixes another RTF input stream so

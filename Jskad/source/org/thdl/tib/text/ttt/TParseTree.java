@@ -18,8 +18,6 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
-import org.thdl.util.ThdlDebug;
-
 import java.util.ArrayList;
 
 /** A list of non-empty list of {@link TStackListList
@@ -129,6 +127,10 @@ class TParseTree {
         if (sz == 1) {
             return up.get(0);
         } else if (sz > 1) {
+            // TODO(DLC)[EWTS->Tibetan]: does this still happen?  If so, when?
+            //
+            // System.out.println("SHO NUFF, >1 non-illegal parses still happens");
+
             // {PADMA}, for example.  Our technique is to go from the
             // left and stack as much as we can.  So {PA}{D}{MA} is
             // inferior to {PA}{D+MA}, and {PA}{D+MA}{D}{MA} is
@@ -279,7 +281,8 @@ class TParseTree {
     public String getWarning(String warningLevel,
                              TPairList pl,
                              String originalACIP,
-                             boolean shortMessages) {
+                             boolean shortMessages,
+                             TTraits traits) {
         // ROOM_FOR_IMPROVEMENT: Allow one tsheg bar to have multiple
         // warnings/errors associated with it.  Make this a private
         // subroutine, and have the public getWarning(..) call on this
@@ -301,7 +304,7 @@ class TParseTree {
                     if (shortMessages)
                         return "501: Using " + bestParse + ", not " + noPrefixTestsUniqueParse.get(0);
                     else
-                        return "501: Using " + bestParse + ((null != originalACIP) ? (" for the ACIP {" + originalACIP + "}") : "") + ", but only because the tool's knowledge of prefix rules (see the documentation) says that " + noPrefixTestsUniqueParse.get(0) + " is not a legal Tibetan tsheg bar (\"syllable\")";
+                        return "501: Using " + bestParse + ((null != originalACIP) ? (" for the " + traits.shortTranslitName() + " {" + originalACIP + "}") : "") + ", but only because the tool's knowledge of prefix rules (see the documentation) says that " + noPrefixTestsUniqueParse.get(0) + " is not a legal Tibetan tsheg bar (\"syllable\")";
             }
         }
 
@@ -321,27 +324,31 @@ class TParseTree {
                     // FIXME: The caller will prepend "WARNING " to this error!
                     if (ErrorsAndWarnings.isEnabled(101, warningLevel))
                         return ErrorsAndWarnings.getMessage(101, shortMessages,
-                                                            translit);
+                                                            translit,
+                                                            traits);
                 } else {
                     if (bestParse.hasStackWithoutVowel(pl, isLastStack)) {
                         if (isLastStack[0]) {
                             if (ErrorsAndWarnings.isEnabled(502, warningLevel))
                                 return ErrorsAndWarnings.getMessage(502, shortMessages,
-                                                                    translit);
+                                                                    translit,
+                                                                    traits);
                         } else {
                             throw new Error("Can't happen now that we stack greedily");
                         }
                     }
                     if (ErrorsAndWarnings.isEnabled(503, warningLevel))
                         return ErrorsAndWarnings.getMessage(503, shortMessages,
-                                                            translit);
+                                                            translit,
+                                                            traits);
                 }
             } else {
                 if (nip.get(0).hasStackWithoutVowel(pl, isLastStack)) {
                     if (isLastStack[0]) {
                         if (ErrorsAndWarnings.isEnabled(502, warningLevel))
                             return ErrorsAndWarnings.getMessage(502, shortMessages,
-                                                                translit);
+                                                                translit,
+                                                                traits);
                     } else {
                         throw new Error("Can't happen now that we stack greedily [2]");
                     }
@@ -362,7 +369,8 @@ class TParseTree {
                 ++plnum;
                 if (ErrorsAndWarnings.isEnabled(505, warningLevel))
                     return ErrorsAndWarnings.getMessage(505, shortMessages,
-                                                        translit);
+                                                        translit,
+                                                        traits);
             }
             plnum = 0;
             for (int stackNum = 0; stackNum < bestParse.size(); stackNum++) {
@@ -380,14 +388,16 @@ class TParseTree {
                             else if (type == 1)
                                 if (ErrorsAndWarnings.isEnabled(506, warningLevel))
                                     return ErrorsAndWarnings.getMessage(506, shortMessages,
-                                                                        translit);
+                                                                        translit,
+                                                                        traits);
                         } else {
                             if (type == 0)
                                 type = 1;
                             else if (type == -1)
                                 if (ErrorsAndWarnings.isEnabled(506, warningLevel))
                                     return ErrorsAndWarnings.getMessage(506, shortMessages,
-                                                                        translit);
+                                                                        translit,
+                                                                        traits);
                         }
                     }
                     if (stackSize > 1 && tp.getLeft() != null && tp.getLeft().length() > 1) {
@@ -445,14 +455,16 @@ n+t+s
                     if (ErrorsAndWarnings.isEnabled(warningNum, warningLevel))
                         return ErrorsAndWarnings.getMessage(warningNum,
                                                             shortMessages,
-                                                            translit);
+                                                            translit,
+                                                            traits);
                 }
 
                 while (plnum < pl.size() && pl.get(plnum).isDisambiguator()) {
                     ++plnum;
                     if (ErrorsAndWarnings.isEnabled(505, warningLevel))
                         return ErrorsAndWarnings.getMessage(505, shortMessages,
-                                                            translit);
+                                                            translit,
+                                                            traits);
                 }
             }
         }
@@ -472,11 +484,13 @@ n+t+s
                     if (pl.size() == 3) {
                         if (ErrorsAndWarnings.isEnabled(508, warningLevel))
                             return ErrorsAndWarnings.getMessage(508, shortMessages,
-                                                                translit);
+                                                                translit,
+                                                                traits);
                     } else {
                         if (ErrorsAndWarnings.isEnabled(509, warningLevel))
                             return ErrorsAndWarnings.getMessage(509, shortMessages,
-                                                                translit);
+                                                                translit,
+                                                                traits);
                     }
                 }
             }
@@ -497,11 +511,13 @@ n+t+s
                     if (pl.size() == 2) {
                         if (ErrorsAndWarnings.isEnabled(508, warningLevel))
                             return ErrorsAndWarnings.getMessage(508, shortMessages,
-                                                                translit);
+                                                                translit,
+                                                                traits);
                     } else {
                         if (ErrorsAndWarnings.isEnabled(509, warningLevel))
                             return ErrorsAndWarnings.getMessage(509, shortMessages,
-                                                                translit);
+                                                                translit,
+                                                                traits);
                     }
                 }
             }
@@ -513,7 +529,7 @@ n+t+s
     /** Returns something akin to the ACIP input (okay, maybe 1-2-3-4
      *  instead of 1234, and maybe AUTPA instead of AUT-PA)
      *  corresponding to this parse tree. */
-    public String recoverACIP() {
+    public String recoverACIP() { // TODO(DLC)[EWTS->Tibetan]: acip-specific
         ParseIterator pi = getParseIterator();
         if (pi.hasNext()) {
             return pi.next().recoverACIP();

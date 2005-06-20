@@ -18,16 +18,13 @@ Contributor(s): ______________________________________.
 
 package org.thdl.util;
 
-import java.io.InputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Properties;
-
-import org.thdl.util.ThdlLazyException;
-import org.thdl.util.OperatingSystemUtils;
 
 /**
  * Provides a clean interface to the multi-tiered system of user

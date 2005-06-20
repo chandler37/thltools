@@ -18,16 +18,19 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Stack;
 import java.awt.Color;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 
-import org.thdl.util.ThdlDebug;
-import org.thdl.util.ThdlOptions;
+import org.thdl.tib.text.DuffCode;
 import org.thdl.tib.text.TibetanDocument;
 import org.thdl.tib.text.TibetanMachineWeb;
-import org.thdl.tib.text.DuffCode;
+import org.thdl.util.ThdlDebug;
+import org.thdl.util.ThdlOptions;
 
 // TODO(DLC)[EWTS->Tibetan]: THis class is broken for ewts.  But kill this class unless it needs to exist.
 /**
@@ -338,9 +341,9 @@ public class TConverter {
             if (smallFontSize >= regularFontSize)
                 smallFontSize = regularFontSize - 1;
             if (colors)
-                tdoc.enableColors();
+                TibetanDocument.enableColors();
             else
-                tdoc.disableColors();
+                TibetanDocument.disableColors();
         }
 
         int sz = scan.size();
@@ -371,7 +374,8 @@ public class TConverter {
                 }
             } else if (stype == TString.TSHEG_BAR_ADORNMENT) {
                 if (lastGuyWasNonPunct) {
-                    String err = "[#ERROR " + ErrorsAndWarnings.getMessage(133, shortMessages, s.getText()) + "]";
+                    String err = "[#ERROR " + ErrorsAndWarnings.getMessage(133, shortMessages, s.getText(),
+                                                                           ttraits) + "]";
                     if (null != writer) {
                         String uni = ttraits.getUnicodeFor(s.getText(), false);
                         if (null == uni) {
@@ -434,7 +438,9 @@ public class TConverter {
                     Object[] duff = null;
                     if (stype == TString.TIBETAN_NON_PUNCTUATION) {
                         lastGuyWasNonPunct = true;
-                        TPairList pls[] = TPairListFactory.breakACIPIntoChunks(s.getText(), false);
+                        TPairList pls[]
+                            = ttraits.breakTshegBarIntoChunks(s.getText(),
+                                                              false);
                         String acipError;
 
                         if ((acipError = pls[0].getACIPError(s.getText(), shortMessages)) != null
@@ -457,7 +463,8 @@ public class TConverter {
                                 hasErrors = true;
                                 String errorMessage
                                     = ("[#ERROR "
-                                       + ErrorsAndWarnings.getMessage(130, shortMessages, s.getText())
+                                       + ErrorsAndWarnings.getMessage(130, shortMessages, s.getText(),
+                                                                      ttraits)
                                        + "]");
                                 if (null != writer) writer.write(errorMessage);
                                 if (null != tdoc) {
@@ -478,7 +485,8 @@ public class TConverter {
                                         "[#ERROR "
                                         + ErrorsAndWarnings.getMessage(134,
                                                                        shortMessages,
-                                                                       s.getText())
+                                                                       s.getText(),
+                                                                       ttraits)
                                         + "]";
                                     if (null != writer)
                                         writer.write(errorMessage);
@@ -516,7 +524,8 @@ public class TConverter {
                                         warning = pt.getWarning(warningLevel,
                                                                 pl,
                                                                 s.getText(),
-                                                                shortMessages);
+                                                                shortMessages,
+                                                                ttraits);
                                     }
                                     if (null != warning) {
                                         if (writeWarningsToOut) {
@@ -632,7 +641,7 @@ public class TConverter {
                                         // one) and then a comma:
                                         peekaheadFindsSpacesAndComma(scan, i+1))) {
                                     if (null != writer) {
-                                        unicode = " "; // DLC NOW FIXME: allow for U+00A0 between two <i>shad</i>s (0F0D or 0F0E), and optionally insert a U+200B after the <i>shad</i> following the whitespace so that stupid software will break lines more nicely
+                                        unicode = " "; // TODO(DLC)[EWTS->Tibetan]: FIXME: allow for U+00A0 between two <i>shad</i>s (0F0D or 0F0E), and optionally insert a U+200B after the <i>shad</i> following the whitespace so that stupid software will break lines more nicely
                                         done = true;
                                     }
                                     if (null != tdoc) {
@@ -692,7 +701,8 @@ public class TConverter {
                                 writer.write("[ERROR "
                                              + ErrorsAndWarnings.getMessage(142,
                                                                             shortMessages,
-                                                                            "(" /* hard-coded ACIP value */) + "]");
+                                                                            "(" /* hard-coded ACIP value */,
+                                                                            ttraits) + "]");
                             if (null != tdoc) {
                                 tdoc.setTibetanFontSize(smallFontSize);
                             }
@@ -702,7 +712,8 @@ public class TConverter {
                                 writer.write("[ERROR "
                                              + ErrorsAndWarnings.getMessage(143,
                                                                             shortMessages,
-                                                                            ")" /* hard-coded ACIP value */) + "]");
+                                                                            ")" /* hard-coded ACIP value. TODO(DLC)[EWTS->Tibetan]: and above*/,
+                                                                            ttraits) + "]");
                             if (null != tdoc) {
                                 tdoc.setTibetanFontSize(regularFontSize);
                             }
@@ -717,7 +728,8 @@ public class TConverter {
                                         "[#ERROR "
                                         + ErrorsAndWarnings.getMessage(135,
                                                                        shortMessages,
-                                                                       "" + ch)
+                                                                       "" + ch,
+                                                                       ttraits)
                                         + "]";
                                     writer.write(errorMessage);
                                     if (null != errors)
@@ -729,7 +741,8 @@ public class TConverter {
                                         "[#ERROR "
                                         + ErrorsAndWarnings.getMessage(138,
                                                                        shortMessages,
-                                                                       "" + ch)
+                                                                       "" + ch,
+                                                                       ttraits)
                                         + "]";
                                     writer.write(errorMessage);
                                     if (null != errors)
@@ -746,7 +759,8 @@ public class TConverter {
                                         "[#ERROR "
                                         + ErrorsAndWarnings.getMessage(136,
                                                                        shortMessages,
-                                                                       s.getText())
+                                                                       s.getText(),
+                                                                       ttraits)
                                         + "]";
                                     tdoc.appendRoman(tdocLocation[0],
                                                      errorMessage,

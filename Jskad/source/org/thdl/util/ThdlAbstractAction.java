@@ -18,11 +18,10 @@ Contributor(s): ______________________________________.
 
 package org.thdl.util;
 
-import javax.swing.AbstractAction;
-import javax.swing.Icon;
 import java.awt.event.ActionEvent;
 
-import org.thdl.util.ThdlDebug;
+import javax.swing.AbstractAction;
+import javax.swing.Icon;
 
 /**
  * This ActionListener is like any other except in the way that it

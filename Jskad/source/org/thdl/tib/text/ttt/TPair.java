@@ -19,10 +19,6 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.text.ttt;
 
 import org.thdl.util.ThdlDebug;
-import org.thdl.tib.text.TibetanMachineWeb;
-import org.thdl.tib.text.DuffCode;
-
-import java.util.ArrayList;
 
 /** An ordered pair used in ACIP/EWTS-to-TMW/Unicode conversion.  The
  *  left side is the consonant or empty; the right side is either the
@@ -182,8 +178,14 @@ class TPair {
 
     /** Returns true if this pair contains a Tibetan number. */
     boolean isNumeric() {
-        char ch;
-        return (l != null && l.length() == 1 && (ch = l.charAt(0)) >= '0' && ch <= '9');
+        if (l != null && l.length() == 1) {
+        	char ch = l.charAt(0);
+        	return ((ch >= '0' && ch <= '9')
+		            || (ch >= '\u0f18' && ch <= '\u0f33')
+					|| ch == '\u0f3e' || ch == '\u0f3f');
+        }
+        return false;
+        // TODO(DLC)[EWTS->Tibetan]: what about half-numbers?
     }
 
     String getWylie() {
@@ -209,7 +211,7 @@ class TPair {
         if (null == leftWylie) leftWylie = "";
         if (justLeft) return leftWylie;
         String rightWylie = null;
-        if ("-".equals(getRight()))
+        if (traits.disambiguator().equals(getRight()))
             rightWylie = ".";
         else if ("+".equals(getRight()))
             rightWylie = "+";
@@ -238,8 +240,9 @@ class TPair {
             consonantSB.append(x);
         }
         if (null != getRight()
-            && !("-".equals(getRight()) || "+".equals(getRight()) || "A".equals(getRight()))) {
-            String x = traits.getUnicodeFor(getRight(), subscribed);
+            && !(traits.disambiguator().equals(getRight())
+                 || "+".equals(getRight()) || traits.aVowel().equals(getRight()))) {
+            String x = traits.getUnicodeForWowel(getRight());
             if (null == x) throw new Error("TPair: " + getRight() + " has no Uni");
             vowelSB.append(x);
         }

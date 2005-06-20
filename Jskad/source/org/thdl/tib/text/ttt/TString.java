@@ -18,12 +18,11 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
-import org.thdl.util.ThdlOptions;
-import org.thdl.util.ThdlDebug;
-import org.thdl.tib.text.tshegbar.UnicodeUtils;
-
 import java.util.HashSet;
-import java.io.*;
+
+import org.thdl.tib.text.tshegbar.UnicodeUtils;
+import org.thdl.util.ThdlDebug;
+import org.thdl.util.ThdlOptions;
 
 /**
 * An TString is some Latin text and a type, the type stating whether

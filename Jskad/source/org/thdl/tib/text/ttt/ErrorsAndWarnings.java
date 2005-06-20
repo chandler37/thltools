@@ -18,10 +18,10 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
+import java.util.HashMap;
+
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlOptions;
-
-import java.util.HashMap;
 
 /** A noninstantiable class that knows about every user-visible error
  *  or warning message.  Each has a unique integer key starting at 101
@@ -96,7 +96,8 @@ public class ErrorsAndWarnings {
         messages that take more than one "parameter", if you will,
         like message 501. */
     static String getMessage(int code, boolean shortMessages,
-                             String translit) {
+                             String translit,
+                             TTraits traits) {
         // Let's make sure that no unknown code is used during
         // development:
         ThdlDebug.verify("unknown code " + code,
@@ -123,27 +124,35 @@ public class ErrorsAndWarnings {
             return "" + code + ": There's not even a unique, non-illegal parse for {" + translit + "}";
 
         case 102:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Found an open bracket, '" + translit + "', within a [#COMMENT]-style comment.  Brackets may not appear in comments.";
 
         case 103:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Found a truly unmatched close bracket, '" + translit + "'.";
 
         case 104: // See also 140
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Found a closing bracket, '" + translit + "', without a matching open bracket.  Perhaps a [#COMMENT] incorrectly written as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], caused this.";
 
         case 105:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Found a truly unmatched open bracket, '[' or '{', prior to this current illegal open bracket, '" + translit + "'.";
 
         case 106: // see also 139
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Found an illegal open bracket (in context, this is '" + translit + "').  Perhaps there is a [#COMMENT] written incorrectly as [COMMENT], or a [*CORRECTION] written incorrectly as [CORRECTION], or an unmatched open bracket?";
 
         case 107:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Found an illegal at sign, @ (in context, this is " + translit + ").  This folio marker has a period, '.', at the end of it, which is illegal.";
 
         case 108:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Found an illegal at sign, @ (in context, this is " + translit + ").  This folio marker is not followed by whitespace, as is expected.";
 
         case 109:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Found an illegal at sign, @ (in context, this is " + translit + ").  @012B is an example of a legal folio marker.";
 
         case 110:
@@ -152,21 +161,26 @@ public class ErrorsAndWarnings {
               /////NYA/.  We warn about // for this reason.  \\ causes
               a tsheg-bar //error.
             */
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Found //, which could be legal (the Unicode would be \\u0F3C\\u0F3D), but is likely in an illegal construct like //NYA\\\\.";
 
         case 111:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Found an illegal open parenthesis, '('.  Nesting of parentheses is not allowed.";
 
         case 112:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Unexpected closing parenthesis, ')', found.";
 
         case 113:
-            return "" + code + ": The ACIP {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the ACIP {[?]} does.";
+            ThdlDebug.verify(traits.isACIP());
+            return "" + code + ": The " + traits.shortTranslitName() + " {?}, found alone, may intend U+0F08, but it may intend a question mark, i.e. '?', in the output.  It may even mean that the original text could not be deciphered with certainty, like the " + traits.shortTranslitName() + " {[?]} does.";
 
         case 114:
             return "" + code + ": Found an illegal, unprintable character.";
 
         case 115:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Found a backslash, \\, which the ACIP Tibetan Input Code standard says represents a Sanskrit virama.  In practice, though, this is so often misused (to represent U+0F3D) that {\\} always generates this error.  If you want a Sanskrit virama, change the input document to use {\\u0F84} instead of {\\}.  If you want U+0F3D, use {/NYA/} or {/NYA\\u0F3D}.";
 
         case 116:
@@ -174,37 +188,44 @@ public class ErrorsAndWarnings {
             return "" + code + ": Found an illegal character, '" + translit + "', with ordinal (in decimal) " + (int)translit.charAt(0) + ".";
 
         case 117:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Unexpected end of input; truly unmatched open bracket found.";
 
         case 118:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Unmatched open bracket found.  A comment does not terminate.";
 
         case 119:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Unmatched open bracket found.  A correction does not terminate.";
 
         case 120:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Slashes are supposed to occur in pairs, but the input had an unmatched '/' character.";
 
         case 121:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Parentheses are supposed to occur in pairs, but the input had an unmatched parenthesis, '('.";
 
         case 122:
-            return "" + code + ": Warning, empty tsheg bar found while converting from ACIP!";
+            return "" + code + ": Warning, empty tsheg bar found while converting from " + traits.shortTranslitName() + "!";
 
         case 123:
-            return "" + code + ": Cannot convert ACIP {" + translit + "} because it contains a number but also a non-number.";
+            return "" + code + ": Cannot convert " + traits.shortTranslitName() + " {" + translit + "} because it contains a number but also a non-number.";
 
         case 124:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Cannot convert ACIP {" + translit + "} because {V}, wa-zur, appears without being subscribed to a consonant.";
 
         case 125:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Cannot convert ACIP {" + translit + "} because we would be required to assume that {A} is a consonant, when it is not clear if it is a consonant or a vowel.";
 
         case 126:
-            return "" + code + ": Cannot convert ACIP {" + translit + "} because it ends with a '+'.";
+            return "" + code + ": Cannot convert " + traits.shortTranslitName() + " {" + translit + "} because it ends with a '+'.";
 
         case 127:
-            return "" + code + ": Cannot convert ACIP {" + translit + "} because it ends with a '-'.";
+            return "" + code + ": Cannot convert " + traits.shortTranslitName() + " {" + translit + "} because it ends with a disambiguator (i.e., '" + traits.disambiguator() + "').";
 
         case 128: // fall through
         case 129:
@@ -214,13 +235,14 @@ public class ErrorsAndWarnings {
             return "" + code + ": The tsheg bar (\"syllable\") {" + translit + "} is essentially nothing.";
 
         case 131:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": The ACIP caret, {^}, must precede a tsheg bar.";
 
         case 132:
-            return "" + code + ": The ACIP {" + translit + "} must be glued to the end of a tsheg bar, but this one was not.";
+            return "" + code + ": The " + traits.shortTranslitName() + " {" + translit + "} must be glued to the end of a tsheg bar, but this one was not.";
 
         case 133:
-            return "" + code + ": Cannot convert the ACIP {" + translit + "} to Tibetan because it is unclear what the result should be.  The correct output would likely require special mark-up.";
+            return "" + code + ": Cannot convert the " + traits.shortTranslitName() + " {" + translit + "} to Tibetan because it is unclear what the result should be.  The correct output would likely require special mark-up.";
 
         case 134:
             return "" + code + ": The tsheg bar (\"syllable\") {" + translit + "} has no legal parses.";
@@ -241,21 +263,26 @@ public class ErrorsAndWarnings {
 
             // See also 106.
         case 139:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Found an illegal open bracket (in context, this is '" + translit + "').  There is no matching closing bracket.";
 
         case 140:
             // see also 104
+            ThdlDebug.verify(traits.isACIP());
             ThdlDebug.verify(translit.length() == 1);
             return "" + code + ": Unmatched closing bracket, '" + translit + "', found.  Pairs are expected, as in [#THIS] or [THAT].  Nesting is not allowed.";
 
         case 141:
+            ThdlDebug.verify(traits.isACIP());
             ThdlDebug.verify(translit.length() == 1);
             return "" + code + ": While waiting for a closing bracket, an opening bracket, '" + translit + "', was found instead.  Nesting of bracketed expressions is not permitted.";
 
         case 142: // this number is referenced in error 143's message
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Because you requested conversion to a Unicode text file, there is no way to indicate that the font size is supposed to decrease starting here and continuing until error 143.  That is, this is the beginning of a region in YIG CHUNG.";
 
         case 143: // this number is referenced in error 142's message
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Because you requested conversion to a Unicode text file, there is no way to indicate that the font size is supposed to increase (go back to the size it was before the last error 142, that is) starting here.  That is, this is the end of a region in YIG CHUNG.";
 
 
@@ -270,27 +297,32 @@ public class ErrorsAndWarnings {
             return "" + code + ": The last stack does not have a vowel in {" + translit + "}; this may indicate a typo, because Sanskrit, which this probably is (because it's not legal Tibetan), should have a vowel after each stack.";
 
         case 503:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": Though {" + translit + "} is unambiguous, it would be more computer-friendly if '+' signs were used to stack things because there are two (or more) ways to interpret this ACIP if you're not careful.";
 
         case 504:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": The ACIP {" + translit + "} is treated by this converter as U+0F35, but sometimes might represent U+0F14 in practice.  To avoid seeing this warning again, change the input to use {\\u0F35} instead of {" + translit + "}.";
 
         case 505:
             return "" + code + ": There is a useless disambiguator in {" + translit + "}.";
 
         case 506:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": There is a stack of three or more consonants in {" + translit + "} that uses at least one '+' but does not use a '+' between each consonant.";
 
         case 507:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": There is a chance that the ACIP {" + translit + "} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too."; // TMW has glyphs for both GH+N+YA (G+H+N+YA) and GH+NYA (G+H+NYA).
 
         case 508: // see 509 also
-            return "" + code + ": The ACIP {" + translit + "} has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack (because there is such a stack used in Sanskrit transliteration for this particular sequence) and forget to input it with '+' characters.";
+            return "" + code + ": The " + traits.shortTranslitName() + " {" + translit + "} has been interpreted as two stacks, not one, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack (because there is such a stack used in Sanskrit transliteration for this particular sequence) and forget to input it with '+' characters.";
 
         case 509: // see 508 also
-            return "" + code + ": The ACIP {" + translit + "} has an initial sequence that has been interpreted as two stacks, a prefix and a root stack, not one nonnative stack, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack (because there is such a stack used in Sanskrit transliteration for this particular sequence) and forget to input it with '+' characters.";
+            return "" + code + ": The " + traits.shortTranslitName() + " {" + translit + "} has an initial sequence that has been interpreted as two stacks, a prefix and a root stack, not one nonnative stack, but you may wish to confirm that the original text had two stacks as it would be an easy mistake to make to see one stack (because there is such a stack used in Sanskrit transliteration for this particular sequence) and forget to input it with '+' characters.";
 
         case 510:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": A non-breaking tsheg, '" + translit + "', appeared, but not like \"...,\" or \".,\" or \".dA\" or \".DA\".";
 
 
@@ -298,9 +330,10 @@ public class ErrorsAndWarnings {
         // ERROR 137 and WARNING 511 are the same:
         case 137: /* fall through */
         case 511:
-            return "" + code + ": The ACIP {" + translit + "} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.  The TibetanMachineWeb font has only a limited number of ready-made, precomposed glyphs, and {" + translit + "} is not one of them.";
+            return "" + code + ": The " + traits.shortTranslitName() + " {" + translit + "} cannot be represented with the TibetanMachine or TibetanMachineWeb fonts because no such glyph exists in these fonts.  The TibetanMachineWeb font has only a limited number of ready-made, precomposed glyphs, and {" + translit + "} is not one of them.";
 
         case 512:
+            ThdlDebug.verify(traits.isACIP());
             return "" + code + ": There is a chance that the ACIP {" + translit + "} was intended to represent more consonants than we parsed it as representing -- GHNYA, e.g., means GH+NYA, but you can imagine seeing GH+N+YA and typing GHNYA for it too.  In fact, there are glyphs in the Tibetan Machine font for N+N+Y, N+G+H, G+N+Y, G+H+N+Y, T+N+Y, T+S+TH, T+S+N, T+S+N+Y, TS+NY, TS+N+Y, H+N+Y, M+N+Y, T+S+M, T+S+M+Y, T+S+Y, T+S+R, T+S+V, N+T+S, T+S, S+H, R+T+S, R+T+S+N, R+T+S+N+Y, and N+Y, indicating the importance of these easily mistyped stacks, so the possibility is very real.";
 
 
@@ -391,11 +424,11 @@ public class ErrorsAndWarnings {
             severityMap.put(new Integer(num), (null != opt) ? opt : defaultSeverities[num - 501]);
         }
 
- // DLC FIXME: make 506 an error?  or a new, super-high priority class of warning?
+ // TODO(DLC)[EWTS->Tibetan] FIXME: make 506 an error?  or a new, super-high priority class of warning?
     }
 
     /** Prints out the long forms of the error messages, which will
-        help a user to decipher the short forms. */
+        help a user to decipher the short forms. TODO(DLC)[EWTS->Tibetan]: ACIP only */
     public static void printErrorAndWarningDescriptions(java.io.PrintStream out) {
         final String translit = "X";
         out.println("ACIP->Tibetan ERRORS are as follows, and appear in their short forms, embedded");
@@ -407,7 +440,8 @@ public class ErrorsAndWarnings {
             } else if (129 == num) {
                 out.println("129: Cannot convert ACIP {" + translit + "} because " + "+" + " is not an ACIP consonant.");
             } else {
-                out.println(getMessage(num, false, translit));
+                out.println(getMessage(num, false, translit,
+                                       ACIPTraits.instance()));
             }
             out.println("");
         }
@@ -419,7 +453,8 @@ public class ErrorsAndWarnings {
             if (501 == num) {
                 out.println("501: Using " + translit + ", but only because the tool's knowledge of prefix rules (see the documentation) says that " + "XX" + " is not a legal Tibetan tsheg bar (\"syllable\")");
             } else {
-                out.println(getMessage(num, false, translit));
+                out.println(getMessage(num, false, translit,
+                                       ACIPTraits.instance()));
             }
             out.println("");
         }

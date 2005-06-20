@@ -18,31 +18,59 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.input;
 
-import java.io.*;
+import java.awt.BorderLayout;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.LayoutManager;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.awt.*;
-import java.awt.event.*;
-
-import java.awt.print.*;
-import javax.swing.plaf.basic.*;
-
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
-import javax.swing.text.rtf.*;
-
 import java.util.Vector;
 
-import org.thdl.tib.text.*;
-import org.thdl.util.ThdlDebug;
+import javax.swing.Box;
+import javax.swing.JApplet;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+
+import org.thdl.tib.text.TibetanDocument;
 import org.thdl.util.RTFFixerInputStream;
-import org.thdl.util.ThdlOptions;
-import org.thdl.util.ThdlVersion;
+import org.thdl.util.SimpleFrame;
 import org.thdl.util.StatusBar;
 import org.thdl.util.ThdlActionListener;
-import org.thdl.util.HTMLPane;
-import org.thdl.util.SimpleFrame;
+import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlLazyException;
+import org.thdl.util.ThdlOptions;
+import org.thdl.util.ThdlVersion;
 
 import calpa.html.CalHTMLPane;
 

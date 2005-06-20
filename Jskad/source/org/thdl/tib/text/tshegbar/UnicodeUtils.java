@@ -506,5 +506,25 @@ public class UnicodeUtils implements UnicodeConstants {
         } while (mutated_this_time_through);
         return mutated;
     }
+
+    /** Returns true iff ch is a valid Tibetan codepoint in Unicode
+     *  4.0: */
+    public boolean isTibetanUnicodeCodepoint(char ch) {
+        // NOTE: could use an array of 256 booleans for speed but I'm lazy
+        return ((ch >= '\u0f00' && ch <= '\u0fcf')
+                && !(ch == '\u0f48'
+                     || (ch > '\u0f6a' && ch < '\u0f71')
+                     || (ch > '\u0f8b' && ch < '\u0f90')
+                     || ch == '\u0f98'
+                     || ch == '\u0fbd'
+                     || ch == '\u0fcd'
+                     || ch == '\u0fce'));
+    }
+
+    /** Returns true iff ch is in 0F00-0FFF but isn't a valid Tibetan
+     *  codepoint in Unicode 4.0: */
+    public boolean isInvalidTibetanUnicode(char ch) {
+        return (isInTibetanRange(ch) && !isTibetanUnicodeCodepoint(ch));
+    }
 }
 

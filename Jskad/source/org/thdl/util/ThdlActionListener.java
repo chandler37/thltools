@@ -18,10 +18,8 @@ Contributor(s): ______________________________________.
 
 package org.thdl.util;
 
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-
-import org.thdl.util.ThdlDebug;
+import java.awt.event.ActionListener;
 
 /**
  * This ActionListener is like any other except in the way that it

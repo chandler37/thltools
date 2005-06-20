@@ -178,9 +178,9 @@ class ValidatingUnicodeReaderTest {
             }
         }
 
-        DLC;
-        assertTrue(ValidatingUnicodeReader.isFullyValidUnicode(
-                      "\u0F\u0F\u0F\u0F\u0F"));
+//        DLC;
+//        assertTrue(ValidatingUnicodeReader.isFullyValidUnicode(
+//                      "\u0F00\u0F00\u0F00\u0F00\u0F00"));
     }
 
     void testSyntacticallyLegalUnicodeToThdlWylie() {

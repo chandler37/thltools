@@ -2,6 +2,7 @@ package org.thdl.util;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
+
 import javax.swing.JComponent;
 
 public class ThdlI18n {

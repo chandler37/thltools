@@ -18,10 +18,11 @@ Contributor(s): ______________________________________.
 
 package org.thdl.util;
 
-import junit.framework.TestCase;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+
+import junit.framework.TestCase;
 
 /**
  * @author David Chandler

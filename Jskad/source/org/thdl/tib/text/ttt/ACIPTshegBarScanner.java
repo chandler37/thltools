@@ -115,7 +115,8 @@ class ACIPTshegBarScanner extends TTshegBarScanner {
         al.add(new TString("ACIP",
                            errMsg = ErrorsAndWarnings.getMessage(code,
                                                                  shortMessages,
-                                                                 translit),
+                                                                 translit,
+                                                                 ACIPTraits.instance()),
                            TString.ERROR));
         if (null != errors)
             errors.append("Offset " + ((i < 0) ? "END" : ("" + i))
@@ -792,7 +793,8 @@ class ACIPTshegBarScanner extends TTshegBarScanner {
                     al.add(new TString("ACIP",
                                        ErrorsAndWarnings.getMessage(510,
                                                                     shortMessages,
-                                                                    "" + ch),
+                                                                    "" + ch,
+                                                                    ACIPTraits.instance()),
                                        TString.WARNING));
                 }
                 startOfString = i+1;
@@ -902,7 +904,8 @@ class ACIPTshegBarScanner extends TTshegBarScanner {
                         al.add(new TString("ACIP",
                                            ErrorsAndWarnings.getMessage(504,
                                                                         shortMessages,
-                                                                        "" + ch),
+                                                                        "" + ch,
+                                                                        ACIPTraits.instance()),
                                            TString.WARNING));
                     }
                 }

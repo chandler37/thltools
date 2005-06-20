@@ -18,10 +18,12 @@ Contributor(s): ______________________________________.
 
 package org.thdl.util;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
 import java.util.Stack;
+
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 /** A StatusBar can be added to a component, typically to the bottom
     of it, in order to show the user the status of the program.  There
