@@ -327,14 +327,16 @@ class TParseTree {
                                                             translit,
                                                             traits);
                 } else {
-                    if (bestParse.hasStackWithoutVowel(pl, isLastStack)) {
+                    if (bestParse.hasStackWithoutVowel(traits.isACIP(),
+                                                       pl, isLastStack)) {
                         if (isLastStack[0]) {
                             if (ErrorsAndWarnings.isEnabled(502, warningLevel))
                                 return ErrorsAndWarnings.getMessage(502, shortMessages,
                                                                     translit,
                                                                     traits);
                         } else {
-                            throw new Error("Can't happen now that we stack greedily");
+                            if (traits.isACIP())
+                                throw new Error("Can't happen now that we stack greedily");
                         }
                     }
                     if (ErrorsAndWarnings.isEnabled(503, warningLevel))
@@ -343,14 +345,16 @@ class TParseTree {
                                                             traits);
                 }
             } else {
-                if (nip.get(0).hasStackWithoutVowel(pl, isLastStack)) {
+                if (nip.get(0).hasStackWithoutVowel(traits.isACIP(),
+                                                    pl, isLastStack)) {
                     if (isLastStack[0]) {
                         if (ErrorsAndWarnings.isEnabled(502, warningLevel))
                             return ErrorsAndWarnings.getMessage(502, shortMessages,
                                                                 translit,
                                                                 traits);
                     } else {
-                        throw new Error("Can't happen now that we stack greedily [2]");
+                        if (traits.isACIP())
+                            throw new Error("Can't happen now that we stack greedily [2]");
                     }
                 }
             }

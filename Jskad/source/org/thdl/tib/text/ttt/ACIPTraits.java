@@ -560,6 +560,7 @@ public final class ACIPTraits implements TTraits {
         } else if (wowel.indexOf("'I") >= 0) {
             TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.I_VOWEL, context_added);
         } else {
+            // TODO(dchandler): I don't understand why we go from else ifs to this form...
             if (wowel.indexOf('\'') >= 0) {
                 TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.A_VOWEL, context_added);
             }

@@ -193,14 +193,15 @@ class TStackList {
 
     /** Returns true if and only if this stack list contains a stack
      *  that does not end in a vowel or disambiguator.  Note that this
-     *  is not erroneous for legal Tibetan like {BRTAN}, where {B} has
+     *  is not erroneous for legal Tibetan like ACIP {BRTAN}, where {B} has
      *  no vowel, but it is a warning sign for Sanskrit stacks.
+     *  @param isACIP true iff opl is ACIP (not EWTS)
      *  @param opl the pair list from which this stack list
      *  originated
      *  @param isLastStack if non-null, then isLastStack[0] will be
      *  set to true if and only if the very last stack is the only
      *  stack not to have a vowel or disambiguator on it */
-    boolean hasStackWithoutVowel(TPairList opl, boolean[] isLastStack) {
+    boolean hasStackWithoutVowel(boolean isACIP, TPairList opl, boolean[] isLastStack) {
         int runningSize = 0;
         // FIXME: MARDA is MARD==MAR-D to us, but is probably MAR+DA, warn -- see 838470
         for (int i = 0; i < size(); i++) {
@@ -213,15 +214,16 @@ class TStackList {
                      && l.charAt(0) >= '0' && l.charAt(0) <= '9')) {
                 if (null != isLastStack) {
                     isLastStack[0] = (i + 1 == size());
-                    if (!isLastStack[0]) {
+                    if (!isLastStack[0] && isACIP) {
                         throw new Error("But we now stack greedily!");
                     }
                 }
                 return true;
             }
         }
-        if (runningSize != opl.sizeMinusDisambiguators())
+        if (runningSize != opl.sizeMinusDisambiguators()) {
             throw new IllegalArgumentException("runningSize = " + runningSize + "; opl.sizeMinusDisambiguators = " + opl.sizeMinusDisambiguators() + "; opl (" + opl + ") is bad for this stack list (" + toString() + ")");
+        }
         return false;
     }
 

@@ -61,6 +61,9 @@ class EWTSTshegBarScanner extends TTshegBarScanner {
         StringBuffer sb = new StringBuffer(s);
         ExpandEscapeSequences(sb);
         int sl = sb.length();
+        // TODO(DLC)[EWTS->Tibetan]:: '@#', in ewts->tmw, is not working
+        // TODO(DLC)[EWTS->Tibetan]:: 'jamX 'jam~X one is not working in ->tmw mode
+        // TODO(DLC)[EWTS->Tibetan]:: dzaHsogs is not working
         for (int i = 0; i < sl; i++) {
         	if (isValidInsideTshegBar(sb.charAt(i))) {
         		StringBuffer tbsb = new StringBuffer();
@@ -75,7 +78,7 @@ class EWTSTshegBarScanner extends TTshegBarScanner {
         		al.add(new TString("EWTS", tbsb.toString(),
         				TString.TIBETAN_NON_PUNCTUATION));
         	} else {
-        		if (" /;|!:=_@#$%<>()\r\n\t".indexOf(sb.charAt(i)) >= 0)
+        		if (" /;|!:=_@#$%<>()\r\n\t*".indexOf(sb.charAt(i)) >= 0)
         			al.add(new TString("EWTS", sb.substring(i, i+1),
         					TString.TIBETAN_PUNCTUATION));
         		else

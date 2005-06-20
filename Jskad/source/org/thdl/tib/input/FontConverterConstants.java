@@ -26,7 +26,9 @@ import java.awt.*;
     @author Nathaniel Garson, Tibetan and Himalayan Digital Library */
 interface FontConverterConstants
 {
-    final String TMW_TO_SAME_TWM = "TMW to the same TMW (for testing only) (RTF->RTF)";
+    final String WYLIE_TO_UNI_TEXT = "Wylie to Unicode (Text->Text)";
+    final String WYLIE_TO_TMW = "Wylie to TMW (Text->RTF)";
+    final String TMW_TO_SAME_TMW = "TMW to the same TMW (for testing only) (RTF->RTF)";
     final String ACIP_TO_UNI_TEXT = "ACIP to Unicode (Text->Text)";
     final String ACIP_TO_TMW = "ACIP to TMW (Text->RTF)";
     final String TMW_TO_ACIP = "TMW to ACIP (RTF->RTF)";
@@ -42,6 +44,10 @@ interface FontConverterConstants
     final String FIND_ALL_NON_TM = "Find all non-TM (in RTF)";
 
     final String[] CHOICES = new String[] {
+        /* TODO(DLC)[EWTS->Tibetan]: once we're done debugging:
+        WYLIE_TO_UNI_TEXT,
+        WYLIE_TO_TMW,
+        */
         ACIP_TO_UNI_TEXT,
         ACIP_TO_TMW,
         TMW_TO_ACIP,
@@ -58,7 +64,9 @@ interface FontConverterConstants
     };
 
     final String[] DEBUG_CHOICES = new String[] {
-        TMW_TO_SAME_TWM,
+        TMW_TO_SAME_TMW,
+        WYLIE_TO_UNI_TEXT,
+        WYLIE_TO_TMW,
         ACIP_TO_UNI_TEXT,
         ACIP_TO_TMW,
         TMW_TO_ACIP,

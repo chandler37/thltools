@@ -23,6 +23,8 @@ package org.thdl.tib.text.ttt;
 import java.util.ArrayList;
 
 import org.thdl.tib.text.DuffCode;
+import org.thdl.tib.text.THDLWylieConstants;
+import org.thdl.tib.text.TibTextUtils;
 import org.thdl.tib.text.TibetanMachineWeb;
 import org.thdl.util.ThdlDebug;
 
@@ -154,7 +156,70 @@ public final class EWTSTraits implements TTraits {
     public TTshegBarScanner scanner() { return EWTSTshegBarScanner.instance(); }
 
     public void getDuffForWowel(ArrayList duff, DuffCode preceding, String wowel) {
-        throw new Error("TODO(DLC)[EWTS->Tibetan]");
+
+        // TODO(DLC)[EWTS->Tibetan]: I have no confidence in this! test, test, test.
+
+        // Order matters here.
+        boolean context_added[] = new boolean[] { false };
+        if (wowel.equals(THDLWylieConstants.WYLIE_aVOWEL)) {
+            TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.WYLIE_aVOWEL, context_added);
+        } else {
+            // TODO(DLC)[EWTS->Tibetan]: test vowel stacking
+            if (wowel.indexOf(THDLWylieConstants.U_VOWEL) >= 0) {
+                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.U_VOWEL, context_added);
+            }
+            if (wowel.indexOf(THDLWylieConstants.reverse_I_VOWEL) >= 0) {
+                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.reverse_I_VOWEL, context_added);
+            } else if (wowel.indexOf(THDLWylieConstants.I_VOWEL) >= 0) {
+                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.I_VOWEL, context_added);
+            }
+            if (wowel.indexOf(THDLWylieConstants.A_VOWEL) >= 0) {
+                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.A_VOWEL, context_added);
+            }
+            if (wowel.indexOf(THDLWylieConstants.ai_VOWEL) >= 0) {
+                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.ai_VOWEL, context_added);
+            }
+            if (wowel.indexOf(THDLWylieConstants.au_VOWEL) >= 0) {
+                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.au_VOWEL, context_added);
+            }
+            if (wowel.indexOf(THDLWylieConstants.reverse_i_VOWEL) >= 0) {
+                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.reverse_i_VOWEL, context_added);
+            } else if (wowel.indexOf(THDLWylieConstants.i_VOWEL) >= 0) {
+                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.i_VOWEL, context_added);
+            }
+            if (wowel.indexOf(THDLWylieConstants.e_VOWEL) >= 0) {
+                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.e_VOWEL, context_added);
+            }
+            if (wowel.indexOf(THDLWylieConstants.o_VOWEL) >= 0) {
+                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.o_VOWEL, context_added);
+            }
+            if (wowel.indexOf(THDLWylieConstants.u_VOWEL) >= 0) {
+                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.u_VOWEL, context_added);
+            }
+            if (wowel.indexOf("~X") >= 0) {  // TODO(DLC)[EWTS->Tibetan]: introduce THDLWylieConstants.blah
+                duff.add(TibetanMachineWeb.getGlyph("~X"));
+            } else if (wowel.indexOf("X") >= 0) {  // TODO(DLC)[EWTS->Tibetan]: introduce THDLWylieConstants.blah
+                duff.add(TibetanMachineWeb.getGlyph("X"));
+            }
+        }
+        // FIXME: Use TMW9.61, the "o'i" special combination, when appropriate.
+
+        if (wowel.indexOf('M') >= 0) {
+            DuffCode last = null;
+            if (duff.size() > 0) {
+                last = (DuffCode)duff.get(duff.size() - 1);
+                duff.remove(duff.size() - 1); // getBindu will add it back...
+                // TODO(DLC)[EWTS->Tibetan]: is this okay????  when is a bindu okay to be alone???
+            }
+            TibTextUtils.getBindu(duff, last);
+        }
+        if (wowel.indexOf('H') >= 0)
+            duff.add(TibetanMachineWeb.getGlyph("H"));
+
+        
+        // TODO(DLC)[EWTS->Tibetan]: verify that no part of wowel is discarded!  acip does that.  'jam~X I think we screw up, e.g.
+
+        // TODO(DLC)[EWTS->Tibetan]:: are bindus are screwed up in the unicode output?  i see (with tmuni font) lone bindus without glyphs to stack on
     }
 
     public String getUnicodeForWowel(String wowel) {
@@ -218,12 +283,17 @@ public final class EWTSTraits implements TTraits {
     }
 
     public String getUnicodeFor(String l, boolean subscribed) {
-        
+
         // First, handle "\u0f71\u0f84\u0f86", "", "\u0f74", etc.
         {
             boolean already_done = true;
             for (int i = 0; i < l.length(); i++) {
-                if (!(l.charAt(0) >= '\u0f00' && l.charAt(0) <= '\u0fff')) {
+                char ch = l.charAt(i);
+                if ((ch < '\u0f00' || ch > '\u0fff')
+                    && '\n' != ch
+                    && '\r' != ch) {
+                    // TODO(DLC)[EWTS->Tibetan]: Is this the place
+                    // where we want to interpret how newlines work???
                     already_done = false;
                     break;
                 }

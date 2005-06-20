@@ -28,6 +28,8 @@ import org.thdl.tib.text.*;
 
 import org.thdl.tib.text.ttt.TConverter;
 import org.thdl.tib.text.ttt.ACIPTraits;
+import org.thdl.tib.text.ttt.EWTSTraits;
+import org.thdl.tib.text.ttt.TTraits;
 import java.util.ArrayList;
 
 /** TibetanConverter is a command-line utility for converting to and
@@ -71,6 +73,8 @@ public class TibetanConverter implements FontConverterConstants {
             boolean convertToTMMode = false;
             boolean convertACIPToUniMode = false;
             boolean convertACIPToTMWMode = false;
+            boolean convertWylieToUniMode = false;
+            boolean convertWylieToTMWMode = false;
             boolean convertToTMWMode = false;
             boolean convertToWylieRTFMode = false;
             boolean convertToWylieTextMode = false;
@@ -116,6 +120,10 @@ public class TibetanConverter implements FontConverterConstants {
                                  = args[numArgs - 2].equals("--acip-to-unicode"))
                              || (convertACIPToTMWMode
                                  = args[numArgs - 2].equals("--acip-to-tmw"))
+                             || (convertWylieToUniMode
+                                 = args[numArgs - 2].equals("--wylie-to-unicode"))
+                             || (convertWylieToTMWMode
+                                 = args[numArgs - 2].equals("--wylie-to-tmw"))
                              || (convertToUnicodeMode
                                  = args[numArgs - 2].equals("--to-unicode"))
                              || (convertToWylieRTFMode
@@ -147,6 +155,7 @@ public class TibetanConverter implements FontConverterConstants {
                 out.println("                   | --to-tibetan-machine | --to-tibetan-machine-web");
                 out.println("                   | --to-unicode | --to-wylie | --to-acip");
                 out.println("                   | --to-wylie-text | --to-acip-text");
+                out.println("                   | --wylie-to-unicode | --wylie-to-tmw");
                 out.println("                   | --acip-to-unicode | --acip-to-tmw RTF_file|TXT_file");
                 out.println(" | TibetanConverter [--version | -v | --help | -h]");
                 out.println("");
@@ -251,13 +260,17 @@ public class TibetanConverter implements FontConverterConstants {
                 } else if (convertToUnicodeMode) {
                     conversionTag = TMW_TO_UNI;
                 } else if (convertTmwToTmwMode) {
-                    conversionTag = TMW_TO_SAME_TWM;
+                    conversionTag = TMW_TO_SAME_TMW;
                 } else if (convertToTMWMode) {
                     conversionTag = TM_TO_TMW;
                 } else if (convertACIPToUniMode) {
                     conversionTag = ACIP_TO_UNI_TEXT;
                 } else if (convertACIPToTMWMode) {
                     conversionTag = ACIP_TO_TMW;
+                } else if (convertWylieToUniMode) {
+                    conversionTag = WYLIE_TO_UNI_TEXT;
+                } else if (convertWylieToTMWMode) {
+                    conversionTag = WYLIE_TO_TMW;
                 } else {
                     ThdlDebug.verify(convertToTMMode);
                     conversionTag = TMW_TO_TM;
@@ -294,20 +307,28 @@ public class TibetanConverter implements FontConverterConstants {
     static int reallyConvert(InputStream in, PrintStream out, String ct,
                              String warningLevel, boolean shortMessages,
                              boolean colors) {
-        if (ACIP_TO_UNI_TEXT == ct || ACIP_TO_TMW == ct) {
+        if (ACIP_TO_UNI_TEXT == ct || ACIP_TO_TMW == ct
+            || WYLIE_TO_UNI_TEXT == ct || WYLIE_TO_TMW == ct) {
             try {
                 ArrayList al
-                    = ACIPTraits.instance().scanner().scanStream(in, null,
-                                                                 ThdlOptions.getIntegerOption("thdl.most.errors.a.tibetan.acip.document.can.have",
-                                                                                              1000 - 1),
-                                                                 shortMessages,
-                                                                 warningLevel);
+                    = ((ACIP_TO_UNI_TEXT == ct || ACIP_TO_TMW == ct)
+                       ? (TTraits)ACIPTraits.instance()
+                       : (TTraits)EWTSTraits.instance()).scanner().scanStream(in, null,
+                                                                              ThdlOptions.getIntegerOption((ACIP_TO_UNI_TEXT == ct || ACIP_TO_TMW == ct)
+                                                                                                           ? "thdl.most.errors.a.tibetan.acip.document.can.have"
+                                                                                                           : "thdl.most.errors.a.tibetan.ewts.document.can.have",
+                                                                                                           1000 - 1),
+                                                                              shortMessages,
+                                                                              warningLevel);
                 if (null == al)
                     return 47;
                 boolean embeddedWarnings = (warningLevel != "None");
                 boolean hasWarnings[] = new boolean[] { false };
-                if (ACIP_TO_UNI_TEXT == ct) {
-                    if (!TConverter.convertToUnicodeText(ACIPTraits.instance(),
+                if (ACIP_TO_UNI_TEXT == ct
+                    || WYLIE_TO_UNI_TEXT == ct) {
+                    if (!TConverter.convertToUnicodeText((WYLIE_TO_UNI_TEXT == ct)
+                                                         ? (TTraits)EWTSTraits.instance()
+                                                         : (TTraits)ACIPTraits.instance(),
                                                          al, out, null,
                                                          null, hasWarnings,
                                                          embeddedWarnings,
@@ -315,8 +336,9 @@ public class TibetanConverter implements FontConverterConstants {
                                                          shortMessages))
                         return 46;
                 } else {
-                    if (ct != ACIP_TO_TMW) throw new Error("badness");
-                    if (!TConverter.convertToTMW(ACIPTraits.instance(),
+                    if (!TConverter.convertToTMW((WYLIE_TO_TMW == ct)
+                                                 ? (TTraits)EWTSTraits.instance()
+                                                 : (TTraits)ACIPTraits.instance(),
                                                  al, out, null, null,
                                                  hasWarnings,
                                                  embeddedWarnings,
@@ -402,7 +424,7 @@ public class TibetanConverter implements FontConverterConstants {
 
                 int exitCode = 0;
                 ThdlDebug.verify(((TMW_TO_TM == ct) ? 1 : 0)
-                                 + ((TMW_TO_SAME_TWM == ct) ? 1 : 0)
+                                 + ((TMW_TO_SAME_TMW == ct) ? 1 : 0)
                                  + ((TMW_TO_UNI == ct) ? 1 : 0)
                                  + ((TM_TO_TMW == ct) ? 1 : 0)
                                  + ((TMW_TO_ACIP == ct) ? 1 : 0)
@@ -411,7 +433,7 @@ public class TibetanConverter implements FontConverterConstants {
                                  + ((TMW_TO_WYLIE_TEXT == ct) ? 1 : 0)
                                  == 1);
                 long numAttemptedReplacements[] = new long[] { 0 };
-                if (TMW_TO_SAME_TWM == ct) {
+                if (TMW_TO_SAME_TMW == ct) {
                     // Identity conversion for testing
                     if (tdoc.identityTmwToTmwConversion(0,
                                                         tdoc.getLength(),

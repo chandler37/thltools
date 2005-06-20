@@ -34,7 +34,7 @@ import org.thdl.tib.text.DuffCode;
  *
  *  <p>It is very likely that classes that implement this interface
  *  will choose to use the design pattern 'singleton'. */
-interface TTraits {
+public interface TTraits {
     /** Returns the disambiguator for this transliteration scheme,
      *  which had better be a string containing just one character
      *  lest {@link #disambiguatorChar()} become nonsensical for
