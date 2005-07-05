@@ -868,6 +868,8 @@ r'o
 // Obscure special case
 lng+ta
 
+rSha
+
 // These were rejected by WylieWord 2.0 because they are non-TMW stacks; but they are legal Unicode stacks, 
 // so we shouldn't reject them (when in Unicode mode).
 //
