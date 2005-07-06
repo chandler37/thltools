@@ -65,4 +65,9 @@ class TTGCList implements TGCList {
     public int getTPairListIndex(int tgcPairIndex) {
         return ((Integer)stackIndices.get(tgcPairIndex)).intValue();
     }
+
+    public String toString() {
+        return ("<a TTGCList of " + size() + " TGCPairs: " + al.toString()
+                + " with stack indices " + stackIndices.toString() + ">");
+    }
 }

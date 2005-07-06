@@ -151,7 +151,7 @@ public class EWTSTest extends TestCase {
     /** Tests that the EWTS->unicode converter isn't completely
         braindead. */
     public void testEwtsBasics() {
-        if (RUN_FAILING_TESTS) ewts2uni_test("g.yogs", "\u0f42\u0f61\u0f7c\u0f42\u0f66"); // TODO(DLC)[EWTS->Tibetan]: DLC NOW!
+        ewts2uni_test("g.yogs", "\u0f42\u0f61\u0f7c\u0f42\u0f66");
         if (RUN_FAILING_TESTS) ewts2uni_test("hUM^", "TODO(DLC)[EWTS->Tibetan]: DLC NOW");
         ewts2uni_test("brgyad", "\u0f56\u0f62\u0f92\u0fb1\u0f51");
         ewts2uni_test("brjod", "\u0f56\u0f62\u0f97\u0f7c\u0f51");

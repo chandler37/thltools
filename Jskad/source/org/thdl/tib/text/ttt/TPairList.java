@@ -571,8 +571,10 @@ class TPairList {
                     }
                 }
             }
-            boolean hasNonAVowel = (!traits.aVowel().equals(p.getRight())
-                                    && null != p.getRight());
+            boolean hasNonAVowel
+                = (!traits.aVowel().equals(p.getRight())
+                   && null != p.getRight()
+                   && !traits.disambiguator().equals(p.getRight()));  // [g.yogs] needs this, e.g.
             String thislWylie = traits.getEwtsForConsonant(p.getLeft());
             if (thislWylie == null) {
                 char ch;
