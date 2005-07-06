@@ -432,7 +432,7 @@ public final class EWTSTraits implements TTraits {
 
     public boolean isUnicodeWowelThatRequiresAChen(char ch) {
         // TODO(DLC)[EWTS->Tibetan]: ask if 18 19 3e 3f combine only with digits
-        return "\u0f35\u0f37\u0f18\u0f19\u0f3e\u0f3f\u0f86\u0f87\u0fc6".indexOf(ch) >= 0;
+        return "\u0f39\u0f35\u0f37\u0f18\u0f19\u0f3e\u0f3f\u0f86\u0f87\u0fc6".indexOf(ch) >= 0;
     }
 
     public boolean couldBeValidStack(TPairList pl) {

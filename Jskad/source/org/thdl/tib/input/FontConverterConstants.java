@@ -44,10 +44,8 @@ interface FontConverterConstants
     final String FIND_ALL_NON_TM = "Find all non-TM (in RTF)";
 
     final String[] CHOICES = new String[] {
-        /* TODO(DLC)[EWTS->Tibetan]: once we're done debugging:
         WYLIE_TO_UNI_TEXT,
         WYLIE_TO_TMW,
-        */
         ACIP_TO_UNI_TEXT,
         ACIP_TO_TMW,
         TMW_TO_ACIP,
@@ -57,10 +55,10 @@ interface FontConverterConstants
         TMW_TO_UNI,
         TMW_TO_WYLIE,
         TMW_TO_WYLIE_TEXT,
-        FIND_SOME_NON_TMW,
-        FIND_SOME_NON_TM,
-        FIND_ALL_NON_TMW,
-        FIND_ALL_NON_TM
+        FIND_SOME_NON_TMW,  // TODO(dchandler): should this be in DEBUG_CHOICES only?
+        FIND_SOME_NON_TM,   // TODO(dchandler): should this be in DEBUG_CHOICES only?
+        FIND_ALL_NON_TMW,   // TODO(dchandler): should this be in DEBUG_CHOICES only?
+        FIND_ALL_NON_TM     // TODO(dchandler): should this be in DEBUG_CHOICES only?
     };
 
     final String[] DEBUG_CHOICES = new String[] {
