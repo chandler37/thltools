@@ -68,6 +68,11 @@ public class TibetanMachineWebTest extends TestCase {
         assertTrue(org.thdl.tib.text.TibetanMachineWeb.startsWithWylieVowelSequence("eieio"));
         assertTrue(org.thdl.tib.text.TibetanMachineWeb.startsWithWylieVowelSequence("auai-iAI"));
     }
+
+    public void testTshegUnicode() {
+        assertEquals(TibetanMachineWeb.getUnicodeForWylieForGlyph(" "),
+                     "\u0f0b");
+    }
 }
 
 

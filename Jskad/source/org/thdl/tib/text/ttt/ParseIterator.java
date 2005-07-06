@@ -22,7 +22,9 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
-/** An object that can iterate over an {@link TParseTree}.
+/** An object that can iterate over an {@link TParseTree}.  NOTE: This
+ *  constructs the list over which it iterates when it is constructed,
+ *  so you pay upfront.
  *
  *  @author David Chandler */
 class ParseIterator {

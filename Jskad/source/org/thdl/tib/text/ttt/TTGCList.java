@@ -23,7 +23,10 @@ import java.util.ArrayList;
 import org.thdl.tib.text.TGCList;
 import org.thdl.tib.text.TGCPair;
 
-/** A list of grapheme clusters.
+/** A list of grapheme clusters.  If you use this for anything other
+ *  than testing the legality (the Tibetanness, if you will) of a
+ *  tsheg-bar, then you'll probably fail because U+0F7F, U+0F35, and
+ *  U+0F37 get special treatment.
  *
  *  @author David Chandler */
 class TTGCList implements TGCList {
@@ -35,7 +38,9 @@ class TTGCList implements TGCList {
     /** Don't use this. */
     private TTGCList() { }
 
-    /** Creates a TGCList. */
+    /** Creates a TGCList.  Note that U+0F7F, U+0F35, and U+0F37 get
+     *  special treatment because the sole use of this class is for
+     *  testing the legality of a tsheg bar. */
     public TTGCList(TStackList sl) {
         al = new ArrayList();
         stackIndices = new ArrayList();

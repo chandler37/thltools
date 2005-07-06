@@ -634,5 +634,15 @@ public final class ACIPTraits implements TTraits {
     public boolean isUnicodeWowel(char ch) { return false; }
 
     public boolean couldBeValidStack(TPairList pl) { return true; }
+
+    public boolean stackingMustBeExplicit() { return false; }
+
+    public String U0F7F() { return ":"; }
+
+    /** Test cases show that we don't need special-case treatment of this. */
+    public String U0F35() { return null; }
+
+    /** Test cases show that we don't need special-case treatment of this. */
+    public String U0F37() { return null; }
 }
 

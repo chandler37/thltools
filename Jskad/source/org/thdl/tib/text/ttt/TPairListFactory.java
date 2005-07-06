@@ -20,6 +20,8 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
+import org.thdl.tib.text.TibetanMachineWeb;
+
 /** A factory for creating {@link TPairList TPairLists} from
  *  Strings of ACIP.
  *  @author David Chandler */
@@ -111,12 +113,15 @@ class TPairListFactory {
         return tail;
     }
 
+    private static final boolean debug = false;
+
     /** See {@link TTraits#breakTshegBarIntoChunks}. */
     static TPairList[] breakEWTSIntoChunks(String ewts)
         throws IllegalArgumentException
     {
     	EWTSTraits traits = EWTSTraits.instance();
     	TPairList pl = breakHelperEWTS(ewts, traits);
+        if (debug) System.out.println("breakEWTSIntoChunks: pl is " + pl);
         TPairList npl = pl;
 
         // TODO(DLC)[EWTS->Tibetan]: this crap ain't workin' for kaHM.  But kaeM and kaMe shouldn't work, right?  Figure out what EWTS really says...
@@ -148,14 +153,18 @@ class TPairListFactory {
                 }
             }
         }
+        pl = null;
+        if (debug) System.out.println("breakEWTSIntoChunks: npl is " + npl);
 
         TPairList nnpl;
         if (true) {
+            // TODO(DLC)[EWTS->Tibetan]: this nnpl crap was before getFirstConsonantAndVowel got fixed.  Try killing it!
+
             // Collapse ( . wowel1) ( . wowel2) into (
             // . wowel1+wowel2).  Then collapse (* . a) ( . x) into (*
             // . x).  Also, if an a-chen (\u0f68) is implied, then
             // insert it.
-            TPairList xnnpl = new TPairList(traits, pl.size());
+            TPairList xnnpl = new TPairList(traits, npl.size());
             for (int i = 0; i < npl.size(); ) {
                 TPair p = npl.get(i);
                 int set_i_to = i + 1;
@@ -184,7 +193,7 @@ class TPairListFactory {
                 i = set_i_to;
             }
 
-            nnpl = new TPairList(traits, pl.size());
+            nnpl = new TPairList(traits, xnnpl.size());
             // (* . a ) ( . x) ... ( . y) -> (* . a+x+...+y)
             for (int i = 0; i < xnnpl.size(); ) {
                 TPair p = xnnpl.get(i);
@@ -221,7 +230,7 @@ class TPairListFactory {
             }
         } else {
             // TODO(DLC)[EWTS->Tibetan]: this block is not executing.  kill it after testing and thinking
-            nnpl = new TPairList(traits, pl.size());
+            nnpl = new TPairList(traits, npl.size());
         	
             for (int i = npl.size() - 1; i >= 0; i--) {
                 TPair p = npl.get(i);
@@ -234,11 +243,89 @@ class TPairListFactory {
                 nnpl.prepend(p);
             }
         }
+        npl = null;
+        if (debug) System.out.println("breakEWTSIntoChunks: nnpl is " + nnpl);
 
-        // TODO(DLC)[EWTS->Tibetan]: this nnpl crap was before getFirstConsonantAndVowel got fixed.  Try killing it!
+        TPairList nnnpl = transformNativeStacks(traits, nnpl);
+        if (debug) System.out.println("breakEWTSIntoChunks: nnnpl is " + nnnpl);
+
         return new TPairList[] {
-            nnpl, null
+            nnnpl, null
         };
+    }
+
+    /** EWTS helper function that transforms native stacks to include
+     *  pluses: [(ph . ) (y . ) (w . *)] -> [(ph . +) (y . +) (w
+     *  . *)], e.g.
+     *  @param traits must mesh with orig */
+    private static TPairList transformNativeStacks(TTraits traits,
+                                                   TPairList orig) {
+        // TODO(DLC)[EWTS->Tibetan]: instead of using
+        // TibetanMachineWeb's knowledge of the hash keys in tibwn.ini
+        // (ph-y-w is a hash key, e.g.), we assume that 3 is the
+        // maximum size of a native stack.
+        final int maxNativeStackSize = 3;
+        // [(s . *)] alone doesn't need transformation.  [(s . ) 
+        // (k . *)] does:
+        final int minNativeStackSize = 2;
+
+        TPairList result = new TPairList(traits, orig.size());
+        for (int i = 0; i < orig.size();
+             ) {  // we increment i inside the loop
+            // If, upon looking ahead, we see a native stack of
+            // size 3, we transform three pairs.  Failing that, if
+            // we see a native stack of size 2, we transform it.
+
+            boolean found_something = false;
+            TPair p[] = new TPair[maxNativeStackSize];
+            for (int j = 0; j < maxNativeStackSize; j++) {
+                if (i + j < orig.size())
+                    p[j] = orig.get(i + j);
+                else
+                    p[j] = null;
+            }
+            // Now p[0] is current pair, p[1] is the one after that, etc.
+
+            for (int nss = maxNativeStackSize; nss >= minNativeStackSize;
+                 nss--) {
+                String hash_key = "";
+                int good = 0;
+                for (int k = 0; k < nss - 1; k++) {
+                    if (null != p[k]
+                        && null != p[k].getLeft()
+                        && null == p[k].getRight()) {
+                        hash_key += p[k].getLeft() + "-";
+                        ++good;
+                    }
+                }
+                if (null != p[nss - 1]
+                    && null != p[nss - 1].getLeft()
+                    && !"+".equals(p[nss - 1].getRight())) {
+                    hash_key += p[nss - 1].getLeft();
+                    ++good;
+                }
+                if (nss == good
+                    && TibetanMachineWeb.isKnownHashKey(hash_key)) {
+                    found_something = true;
+                    for (int n = 0; n < nss - 1; n++) {
+                        ++i;
+                        result.append(new TPair(traits,
+                                                p[n].getLeft(), "+"));
+                    }
+                    ++i;
+                    result.append(p[nss - 1]);
+                    break;  // for ph-y-w etc.
+                }
+            }
+            if (!found_something) {
+                ++i;
+                result.append(p[0]);
+            }
+        }
+        if (result.size() != orig.size()) {
+            throw new Error("orig=" + orig + "\nresult=" + result);  // TODO(dchandler): make this an assertion.
+        }
+        return result;
     }
 
     // TODO(DLC)[EWTS->Tibetan]: doc

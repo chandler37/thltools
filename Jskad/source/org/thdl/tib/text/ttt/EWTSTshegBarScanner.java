@@ -10,7 +10,7 @@ License for the specific terms governing rights and limitations under the
 License. 
 
 The Initial Developer of this software is the Tibetan and Himalayan Digital
-Library (THDL). Portions created by the THDL are Copyright 2003 THDL.
+Library (THDL). Portions created by the THDL are Copyright 2003-2005 THDL.
 All Rights Reserved. 
 
 Contributor(s): ______________________________________.
@@ -42,52 +42,80 @@ class EWTSTshegBarScanner extends TTshegBarScanner {
                 || EWTSTraits.instance().isUnicodeWowel(ch)
                 || (ch >= '\u0f20' && ch <= '\u0f33')
                 || "khgncjytdpbmtstdzwzz'rlafvTDNSWYReuioIAUMHX?^\u0f39\u0f35\u0f37.+~'`-\u0f19\u0f18\u0f3f\u0f3e\u0f86\u0f87\u0f88".indexOf(ch) >= 0);
+        // NOTE: We treat \u0f00 as punctuation, not something valid
+        // inside a tsheg bar.  This is questionable, but since it is
+        // a tsheg bar all by itself (almost always in practice,
+        // anyway) and since it would've required code changes I
+        // didn't want to make, that's how it is.
     }
 
-    /** See the comment in TTshegBarScanner.  This does not find
-        errors and warnings that you'd think of a parser finding (TODO(DLC)[EWTS->Tibetan]:
-        DOES IT?). */
-    public ArrayList scan(String s, StringBuffer errors, int maxErrors, // TODO(DLC)[EWTS->Tibetan]: ignored
-                          boolean shortMessages, String warningLevel) {
-        // the size depends on whether it's mostly Tibetan or mostly
-        // Latin and a number of other factors.  This is meant to be
-        // an underestimate, but not too much of an underestimate.
-        ArrayList al = new ArrayList(s.length() / 10);
+  // TODO(dchandler): use jflex, javacc or something similar as much
+  // as you can.  I don't think EWTS can be perfectly parsed by
+  // javacc, by the way, but having several components in a pipeline
+  // would likely make things more maintainable.
+  //
+  // NOTE: EWTS doesn't fully specify how Unicode escapes (e.g.,
+  // [\\u0f20] should work).  When do you evaluate them?
+  // Immediately like Java source files or later, say right before
+  // outputting?  Our answer: immediately.  [\\u0f88+ka] becomes
+  // hard to do otherwise.  This means we treat actual Unicode in a
+  // way that a reader of the EWTS standard might not think about,
+  // but actual Unicode is rare in the input
+  // (TODO(DLC)[EWTS->Tibetan]: it's so rare that we ought to give a
+  // warning/error when we see it).
+  /** See the comment in TTshegBarScanner.  This does not find
+      errors and warnings that you'd think of a parser finding (TODO(DLC)[EWTS->Tibetan]:
+      DOES IT?). */
+  public ArrayList scan(String s, StringBuffer errors, int maxErrors, // TODO(DLC)[EWTS->Tibetan]: ignored
+                        boolean shortMessages, String warningLevel) {
+    // the size depends on whether it's mostly Tibetan or mostly
+    // Latin and a number of other factors.  This is meant to be
+    // an underestimate, but not too much of an underestimate.
+    ArrayList al = new ArrayList(s.length() / 10);
 
-        // TODO(DLC)[EWTS->Tibetan]: use jflex, javacc or something similar
-
-        // TODO(DLC)[EWTS->Tibetan]: what about Unicode escapes like \u0f20?  When do you do that?  Immediately like Java source files?  I think so and then we can say that oddballs like \u0f19 are valid within tsheg bars.
-
-        StringBuffer sb = new StringBuffer(s);
-        ExpandEscapeSequences(sb);
-        int sl = sb.length();
-        // TODO(DLC)[EWTS->Tibetan]:: '@#', in ewts->tmw, is not working
-        // TODO(DLC)[EWTS->Tibetan]:: 'jamX 'jam~X one is not working in ->tmw mode
-        // TODO(DLC)[EWTS->Tibetan]:: dzaHsogs is not working
-        for (int i = 0; i < sl; i++) {
-        	if (isValidInsideTshegBar(sb.charAt(i))) {
-        		StringBuffer tbsb = new StringBuffer();
-        		for (; i < sl; i++) {
-        			if (isValidInsideTshegBar(sb.charAt(i)))
-        				tbsb.append(sb.charAt(i));
-        			else {
-        				--i;
-        				break;
-        			}
-        		}
-        		al.add(new TString("EWTS", tbsb.toString(),
-        				TString.TIBETAN_NON_PUNCTUATION));
-        	} else {
-        		if (" /;|!:=_@#$%<>()\r\n\t*".indexOf(sb.charAt(i)) >= 0)
-        			al.add(new TString("EWTS", sb.substring(i, i+1),
-        					TString.TIBETAN_PUNCTUATION));
-        		else
-        			al.add(new TString("EWTS", "ERROR TODO(DLC)[EWTS->Tibetan]: this character is illegal in EWTS: " + sb.substring(i, i+1),
-        					TString.ERROR));
-        	}
+    StringBuffer sb = new StringBuffer(s);
+    ExpandEscapeSequences(sb);
+    int sl = sb.length();
+    // TODO(DLC)[EWTS->Tibetan]:: '@#', in ewts->tmw, is not working
+    // TODO(DLC)[EWTS->Tibetan]:: 'jamX 'jam~X one is not working in ->tmw mode
+    // TODO(DLC)[EWTS->Tibetan]:: dzaHsogs is not working
+    for (int i = 0; i < sl; i++) {
+      if (isValidInsideTshegBar(sb.charAt(i))) {
+        StringBuffer tbsb = new StringBuffer();
+        for (; i < sl; i++) {
+          if (isValidInsideTshegBar(sb.charAt(i)))
+            tbsb.append(sb.charAt(i));
+          else {
+            --i;
+            break;
+          }
         }
-        return al;
+        al.add(new TString("EWTS", tbsb.toString(),
+                           TString.TIBETAN_NON_PUNCTUATION));
+      } else {
+        // NOTE: It's questionable, but we treat
+        // \u0f00 like punctuation because it was
+        // easier coding that way.
+        if ((sb.charAt(i) >= EWTSTraits.PUA_MIN
+             && sb.charAt(i) <= EWTSTraits.PUA_MAX)
+            || (sb.charAt(i) >= '\u0f00' && sb.charAt(i) <= '\u0f17')
+            || (sb.charAt(i) >= '\u0f1a' && sb.charAt(i) <= '\u0f1f')
+            || (sb.charAt(i) >= '\u0fbe' && sb.charAt(i) <= '\u0fcc')
+            || (sb.charAt(i) >= '\u0fcf' && sb.charAt(i) <= '\u0fd1')
+            || (EWTSTraits.SAUVASTIKA == sb.charAt(i))
+            || (EWTSTraits.SWASTIKA == sb.charAt(i))
+            || (" /;|!:=_@#$%<>()*&\r\n\t\u0f36\u0f38\u0f89\u0f8a\u0f8b".indexOf(sb.charAt(i))
+                >= 0)) {
+          al.add(new TString("EWTS", sb.substring(i, i+1),
+                             TString.TIBETAN_PUNCTUATION));
+        } else {
+          al.add(new TString("EWTS", "ERROR TODO(DLC)[EWTS->Tibetan]: this character is illegal in EWTS: " + sb.substring(i, i+1),
+                             TString.ERROR));
+        }
+      }
     }
+    return al;
+  }
     
     /** Modifies the EWTS in sb such that Unicode escape sequences are
      *  expanded. */

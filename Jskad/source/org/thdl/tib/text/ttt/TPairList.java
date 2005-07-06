@@ -16,8 +16,6 @@ All Rights Reserved.
 Contributor(s): ______________________________________.
 */
 
-// TODO(DLC)[EWTS->Tibetan]: a (DLC: does this become (a.) or (.a)?), ug pha, g.a, aM, etc. -- test!
-
 package org.thdl.tib.text.ttt;
 
 import java.util.ArrayList;
@@ -146,9 +144,10 @@ class TPairList {
         return original.toString();
     }
 
-    /** Returns true if this list contains ( . <vowel>) or (A . ),
-     *  which are two simple errors you encounter if you interpret DAA
-     *  or TAA or DAI or DAE the wrong way. TODO(DLC)[EWTS->Tibetan]: ACIP vs. EWTS */
+    /** Returns true if this list contains an obvious error.  For
+     *  example, with ACIP this returns true if ( . <vowel>) or (A . ) 
+     *  appears, which are two simple errors you encounter if you
+     *  interpret (ACIP) DAA or TAA or DAI or DAE the wrong way. */
     boolean hasSimpleError() {
         int sz = size();
         for (int i = 0; i < sz; i++) {
@@ -192,13 +191,6 @@ class TPairList {
                        && (null == p.getRight()
                            || "".equals(p.getRight()))) {
                 return ErrorsAndWarnings.getMessage(125, shortMessages, translit, traits);
-            } else if (null != p.getRight()
-                       && !"+".equals(p.getRight())
-                       && !traits.disambiguator().equals(p.getRight())
-                       && !traits.isWowel(p.getRight())
-                       && false /* TODO(DLC)[EWTS->Tibetan]: think about this harder. */) {
-            	return "ErrorNumberDLC1: We don't yet support stacking vowels, convert {" + translit + "} manually.";
-                // TODO(DLC)[EWTS->Tibetan]: test, i think we do support it
             } else if ((null == p.getLeft()
                         && (!traits.disambiguator().equals(p.getRight())
                         	&& (!traits.vowelAloneImpliesAChen()
@@ -224,7 +216,8 @@ class TPairList {
             return ErrorsAndWarnings.getMessage(126, shortMessages, translit, traits);
         }
         // FIXME: really this is a warning, not an error:
-        if (traits.disambiguator().equals(get(sz - 1).getRight())) {
+        if (traits.disambiguator().equals(get(sz - 1).getRight())
+            && !traits.stackingMustBeExplicit()) {
             return ErrorsAndWarnings.getMessage(127, shortMessages, translit, traits);
         }
         return null;
@@ -280,26 +273,28 @@ class TPairList {
 
         if (sz < 1) return null;
 
-        // When we see a stretch of ACIP without a disambiguator or a
-        // vowel, that stretch is taken to be one stack unless it may
-        // be prefix-root or suffix-postsuffix or suffix/postsuffix-'
-        // -- the latter necessary because GAMS'I is GAM-S-'I, not
-        // GAM-S+'I.  'UR, 'US, 'ANG, 'AM, 'I, 'O, 'U -- all begin
-        // with '.  So we can have zero, one, two, or three special
-        // break locations.  (The kind that aren't special are the
-        // break after G in G-DAMS, or the break after G in GADAMS or
-        // GEDAMS.)
+        // When we see a stretch of ACIP (TODO(DLC)[EWTS->Tibetan]:
+        // this works for EWTS, but differently) without a
+        // disambiguator or a vowel, that stretch is taken to be one
+        // stack unless it may be prefix-root or suffix-postsuffix or
+        // suffix/postsuffix-' -- the latter necessary because GAMS'I
+        // is GAM-S-'I, not GAM-S+'I.  'UR, 'US, 'ANG, 'AM, 'I, 'O, 'U
+        // -- all begin with '.  So we can have zero, one, two, or
+        // three special break locations.  (The kind that aren't
+        // special are the break after G in G-DAMS, or the break after
+        // G in GADAMS or GEDAMS.)
         //
         // If a nonnegative number appears in breakLocations[i], it
         // means that pair i may or may not be stacked with pair i+1.
         int nextBreakLoc = 0;
         int breakLocations[] = { -1, -1, -1 };
 
-        boolean mayHavePrefix;
+        boolean mayHavePrefix = get(0).isPrefix();
 
         // Handle the first pair specially -- it could be a prefix.
         if (ddebug) System.out.println("i is " + 0);
-        if ((mayHavePrefix = get(0).isPrefix())
+        if (mayHavePrefix
+            && !traits.stackingMustBeExplicit()
             && sz > 1
             && null == get(0).getRight()) {
             // special case: we must have a branch in the parse tree
@@ -311,9 +306,9 @@ class TPairList {
         }
 
         // stack numbers start at 1.
-        int stackNumber = (get(0).endsACIPStack()) ? 2 : 1;
+        int stackNumber = (get(0).endsStack()) ? 2 : 1;
         // this starts at 0.
-        int stackStart = (get(0).endsACIPStack()) ? 1 : 0;
+        int stackStart = (get(0).endsStack()) ? 1 : 0;
 
         int numeric = get(0).isNumeric() ? 1 : (get(0).isDisambiguator() ? 0 : -1);
 
@@ -340,7 +335,7 @@ class TPairList {
                     numeric = -1;
             }
 
-            if (i+1==sz || p.endsACIPStack()) {
+            if (i+1==sz || p.endsStack()) {
                 if (/* the stack ending here might really be
                        suffix-postsuffix or
                        suffix-appendage or
@@ -350,15 +345,17 @@ class TPairList {
                     if (i > stackStart) {
                         if (get(stackStart).isSuffix()
                             && (get(stackStart+1).isPostSuffix() // suffix-postsuffix
-                                || "'".equals(get(stackStart+1).getLeft()))) // suffix-appendage
+                                || "'".equals(get(stackStart+1).getLeft()))) { // suffix-appendage
                             breakLocations[nextBreakLoc++] = stackStart;
+                        }
                         if (i > stackStart + 1) {
                             // three to play with, maybe it's
                             // suffix-postsuffix-appendage.
                             if (get(stackStart).isSuffix()
                                 && get(stackStart+1).isPostSuffix()
-                                && "'".equals(get(stackStart+2).getLeft()))
+                                && "'".equals(get(stackStart+2).getLeft())) {
                                 breakLocations[nextBreakLoc++] = stackStart+1;
+                            }
                         }
                     }
                     // else no need to insert a breakLocation, we're
@@ -370,8 +367,9 @@ class TPairList {
                     || (!mayHavePrefix && (stackNumber == 3))) {
                     if (i == stackStart+1) { // because GDAM--S'O is illegal, and because it's 'ANG, not 'NG, 'AM, not 'M -- ' always ends the stack
                         if (get(stackStart).isPostSuffix()
-                            && "'".equals(get(stackStart+1).getLeft()))
+                            && "'".equals(get(stackStart+1).getLeft())) {
                             breakLocations[nextBreakLoc++] = stackStart;
+                        }
                     }
                 }
                 ++stackNumber;
@@ -397,7 +395,8 @@ class TPairList {
             throw new Error("breakLocations is monotonically increasing, ain't it?");
         TParseTree pt = new TParseTree();
         for (int i = 0; i < sz; i++) {
-            if (i+1 == sz || get(i).endsACIPStack()) {
+            if (ddebug) System.out.println("getParseTree: second loop i is " + i);
+            if (i+1 == sz || get(i).endsStack()) {
                 TStackListList sll = new TStackListList(4); // maximum is 4.
 
                 int numBreaks = 0;
@@ -419,6 +418,7 @@ class TPairList {
                 // one, at location breakLocations[breakStart+1] if
                 // and only if b1 is one, etc.
                 for (int counter = 0; counter < (1<<numBreaks); counter++) {
+                    if (ddebug) System.out.println("getParseTree: counter is " + counter);
                     TStackList sl = new TStackList();
                     boolean slIsInvalid = false;
                     TPairList currentStack = new TPairList(traits);
@@ -435,7 +435,7 @@ class TPairList {
                                 return null; // sA, for example, is illegal.
                             }
                         }
-                        if (k == i || get(k).endsACIPStack()) {
+                        if (k == i || get(k).endsStack()) {
                             if (!currentStack.isEmpty()) {
                                 if (traits.couldBeValidStack(currentStackUnmodified)) {
                                     sl.add(currentStack.asStack());
@@ -479,45 +479,48 @@ class TPairList {
         }
 
 
+        if (ddebug) System.out.println("getParseTree: parse tree for " + toString() + " is " + pt);
         if (pt.isEmpty()) return null;
         return pt;
     }
 
     private static final boolean ddebug = false;
 
-    /** Mutates this TPairList object such that the last pair is
-     *  empty or is a vowel, but is never the stacking operator ('+')
-     *  or a disambiguator (i.e., a '-' on the right).
+    /** Mutates this TPairList object such that the last pair is empty
+     *  or is a vowel, but is never the stacking operator ('+') or (in
+     *  ACIP, but not in EWTS) a disambiguator (i.e., an ACIP '-' or
+     *  EWTS '.' on the right).
      *  @return this instance */
     private TPairList asStack() {
         if (!isEmpty()) {
             TPair lastPair = get(size() - 1);
-            if ("+".equals(lastPair.getRight()))
+            if ("+".equals(lastPair.getRight())) {
                 al.set(size() - 1, new TPair(traits, lastPair.getLeft(), null));
-            else if (traits.disambiguator().equals(lastPair.getRight()))
+            } else if (traits.disambiguator().equals(lastPair.getRight())
+                       && !traits.stackingMustBeExplicit()) {
                 al.set(size() - 1, new TPair(traits, lastPair.getLeft(), null));
+            }
         }
         return this;
     }
 
-    /** Adds the TGCPairs corresponding to this list to the end of
-     *  pl. Some TPairs correspond to more than one TGCPair
-     *  ({AA:}); some TGCPairs correspond to more than one TPair
-     *  ({G+YA}).  To keep track, indexList will be appended to in
-     *  lockstep with pl.  index (wrapped as an {@link
-     *  java.lang#Integer}) will be appended to indexList once each
-     *  time we append to pl.  This assumes that this TPairList
-     *  corresponds to exactly one Tibetan grapheme cluster (i.e.,
-     *  stack).  Note that U+0F7F (ACIP {:}) is part of a stack, not a
-     *  stack all on its own. */
+    /** Adds the TGCPairs corresponding to this list to the end of pl.
+     *  Some TPairs correspond to more than one TGCPair ({AA:}); some
+     *  TGCPairs correspond to more than one TPair ({G+YA}).  To keep
+     *  track, indexList will be appended to in lockstep with pl.
+     *  index (wrapped as an {@link java.lang#Integer}) will be
+     *  appended to indexList once each time we append to pl.  This
+     *  assumes that this TPairList corresponds to exactly one Tibetan
+     *  grapheme cluster (i.e., stack).  Note that U+0F7F, U+0F35, and
+     *  U+0F37 get special treatment because the sole client of this
+     *  code is TTGCList, and its sole client is to test for legality
+     *  of a tsheg bar. */
     void populateWithTGCPairs(ArrayList pl,
                               ArrayList indexList, int index) {
         int sz = size();
         if (sz == 0) {
             return;
         } else {
-            // drop the disambiguator, if there is one.
-
             boolean isNumeric = false;
             StringBuffer lWylie = new StringBuffer();
             int i;
@@ -531,15 +534,42 @@ class TPairList {
             // The last pair:
             TPair p = get(i);
             ThdlDebug.verify(!"+".equals(p.getRight()));
-            boolean add_U0F7F = false;
-            int where;
-            if (p.getRight() != null
-                && (where = p.getRight().indexOf(':')) >= 0) { // TODO(DLC)[EWTS->Tibetan]
-                // this ':' guy is his own TGCPair.
-                add_U0F7F = true;
-                StringBuffer rr = new StringBuffer(p.getRight());
-                rr.deleteCharAt(where);
-                p = new TPair(traits, p.getLeft(), rr.toString());
+            final String specialCases[] = new String[] {
+                traits.U0F7F(),
+                traits.U0F35(),
+                traits.U0F37()
+            };
+            final String specialCaseEwts[] = new String[] {
+                EWTSTraits.instance().U0F7F(),
+                EWTSTraits.instance().U0F35(),
+                EWTSTraits.instance().U0F37()
+            };
+            final boolean ignoreSpecialCase[] = new boolean[] {
+                false,  // Don't ignore this -- it's Sanskrit.
+                        // ['jamH] should be illegal EWTS.
+                        // (TODO(dchandler): ask)
+                true,
+                true,
+            };
+            boolean hasSpecialCase[] = new boolean[] { false, false, false, };
+            for (int j = 0; j < specialCases.length; j++) {
+                if (null != specialCases[j]) {
+                    int where;
+                    if (p.getRight() != null
+                        && (where = p.getRight().indexOf(specialCases[j])) >= 0) {
+                        // this guy is his own TGCPair.
+                        hasSpecialCase[j] = true;
+                        StringBuffer rr = new StringBuffer(p.getRight());
+                        rr.replace(where, where + specialCases[j].length(), "");
+                        if (rr.length() > where && '+' == rr.charAt(where)) {
+                            rr.deleteCharAt(where);
+                        } else if (where > 0 && rr.length() > where - 1
+                                   && '+' == rr.charAt(where - 1)) {
+                            rr.deleteCharAt(where - 1);
+                        }
+                        p = new TPair(traits, p.getLeft(), rr.toString());
+                    }
+                }
             }
             boolean hasNonAVowel = (!traits.aVowel().equals(p.getRight())
                                     && null != p.getRight());
@@ -586,9 +616,12 @@ class TPairList {
                                     ? TGCPair.TYPE_TIBETAN
                                     : TGCPair.TYPE_OTHER))));
             pl.add(tp);
-            if (add_U0F7F) {
-                indexList.add(new Integer(index));
-                pl.add(new TGCPair("H", null, TGCPair.TYPE_OTHER)); // TODO(DLC)[EWTS->Tibetan]
+            for (int j = 0; j < specialCases.length; j++) {
+                if (hasSpecialCase[j] && !ignoreSpecialCase[j]) {
+                    indexList.add(new Integer(index));
+                    pl.add(new TGCPair(specialCaseEwts[j],
+                                       null, TGCPair.TYPE_OTHER));
+                }
             }
         }
     }

@@ -163,14 +163,15 @@ class TPair {
     }
 
     /** Returns a TPair that is like this pair except that it has a
-     *  "+" on the right if this pair is empty on the right and is
-     *  empty on the right if this pair has a disambiguator on the
-     *  right.  May return itself (but never mutates this
-     *  instance). */
+     *  "+" on the right if this pair is empty on the right and, when
+     *  appropriate, is empty on the right if this pair has a
+     *  disambiguator on the right.  May return itself (but never
+     *  mutates this instance). */
     TPair insideStack() {
         if (null == getRight())
             return new TPair(traits, getLeft(), "+");
-        else if (traits.disambiguator().equals(getRight()))
+        else if (traits.disambiguator().equals(getRight())
+                 && !traits.stackingMustBeExplicit())
             return new TPair(traits, getLeft(), null);
         else
             return this;
@@ -248,11 +249,18 @@ class TPair {
         }
     }
 
-    // TODO(DLC)[EWTS->Tibetan]
-    /** Returns true if this pair is surely the last pair in an ACIP
-     *  stack. Stacking continues through (* . ) and (* . +), but
-     *  stops anywhere else. */
-    boolean endsACIPStack() {
-        return (getRight() != null && !"+".equals(getRight()));
+    /** For ACIP: Returns true if this pair is surely the last pair in
+     *  an ACIP stack. Stacking continues through (* . ) and (* . +),
+     *  but stops anywhere else.
+     *
+     *  <p>For EWTS: Returns true if this pair is probably the last
+     *  pair in an EWTS stack.  For natives stacks like that found in
+     *  [bra], this is not really true. */
+    boolean endsStack() {
+        final boolean explicitlyStacks = "+".equals(getRight());
+        if (!traits.stackingMustBeExplicit())
+            return (getRight() != null && !explicitlyStacks);
+        else
+            return (!explicitlyStacks);
     }
 }

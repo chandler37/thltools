@@ -22,6 +22,7 @@ package org.thdl.tib.text.ttt;
 
 import java.util.ArrayList;
 
+import org.thdl.tib.text.tshegbar.UnicodeUtils;
 import org.thdl.tib.text.DuffCode;
 import org.thdl.tib.text.THDLWylieConstants;
 import org.thdl.tib.text.TibTextUtils;
@@ -74,8 +75,12 @@ public final class EWTSTraits implements TTraits {
     public int maxWowelLength() { return 3; /* a~M`  (TODO(DLC)[EWTS->Tibetan]:!  why the 'a'?) */}
     
     public boolean isUnicodeConsonant(char ch) {
-    	return ((ch != '\u0f48' && ch >= '\u0f40' && ch <= '\u0f6a')
-				|| (ch != '\u0f98' && ch >= '\u0f90' && ch <= '\u0fbc'));
+        return ((ch != '\u0f48' && ch >= '\u0f40' && ch <= '\u0f6a')
+                || (ch != '\u0f98' && ch >= '\u0f90' && ch <= '\u0fbc')
+                // NOTE: \u0f88 is questionable, but we want EWTS
+                // [\u0f88+kha] to become "\u0f88\u0f91" and this does
+                // the trick.
+                || ch == '\u0f88');
     }
     
     public boolean isUnicodeWowel(char ch) {
@@ -290,6 +295,9 @@ public final class EWTSTraits implements TTraits {
             for (int i = 0; i < l.length(); i++) {
                 char ch = l.charAt(i);
                 if ((ch < '\u0f00' || ch > '\u0fff')
+                    && SAUVASTIKA != ch
+                    && SWASTIKA != ch
+                    && (ch < PUA_MIN || ch > PUA_MAX)  // TODO(DLC)[EWTS->Tibetan]: give a warning, though?  PUA isn't specified by the unicode standard after all.
                     && '\n' != ch
                     && '\r' != ch) {
                     // TODO(DLC)[EWTS->Tibetan]: Is this the place
@@ -352,7 +360,6 @@ public final class EWTSTraits implements TTraits {
             if ("h".equals(l)) return "\u0FB7";
             if ("a".equals(l)) return "\u0FB8";
             if ("k+Sh".equals(l)) return "\u0FB9";
-            if (false) throw new Error("TODO(DLC)[EWTS->Tibetan]:: subscribed for " + l);
             return null;
         } else {
             if ("R".equals(l)) return "\u0f6a";
@@ -360,6 +367,10 @@ public final class EWTSTraits implements TTraits {
             if ("W".equals(l)) return "\u0f5d";
             
             if (!TibetanMachineWeb.isKnownHashKey(l)) {
+//                 System.err.println("Getting unicode for the following is hard: '"
+//                                    + l + "' (pretty string: '"
+//                                    + UnicodeUtils.unicodeStringToPrettyString(l)
+//                                    + "'");
                 ThdlDebug.noteIffyCode();
                 return null;
             }
@@ -445,4 +456,36 @@ public final class EWTSTraits implements TTraits {
         return (allHavePlus
                 || TibetanMachineWeb.hasGlyph(hashKey.toString())); // TODO(DLC)[EWTS->Tibetan]: test with smra and tsma and bdgya
     }
+
+    public boolean stackingMustBeExplicit() { return true; }
+
+    public String U0F7F() { return "H"; }
+
+    public String U0F35() { return "~X"; }
+
+    public String U0F37() { return "X"; }
+
+    /** The EWTS standard mentions this character specifically.  See
+        http://www.symbols.com/encyclopedia/15/155.html to learn about
+        its meaning as relates to Buddhism.
+    */
+    static final char SAUVASTIKA = '\u534d';
+
+    /** The EWTS standard mentions this character specifically.  See
+        http://www.symbols.com/encyclopedia/15/151.html to learn about
+        its meaning as relates to Buddhism.
+    */
+    static final char SWASTIKA = '\u5350';
+
+    /** EWTS has some glyphs not specified by Unicode in the
+     *  private-use area (PUA).  EWTS puts them in the range [PUA_MIN,
+     *  PUA_MAX].  (Note that \uf042 is the highest in use as of July
+     *  2, 2005.) */
+    static final char PUA_MIN = '\uf021';
+
+    /** EWTS has some glyphs not specified by Unicode in the
+     *  private-use area (PUA).  EWTS puts them in the range [PUA_MIN,
+     *  PUA_MAX].  (Note that \uf042 is the highest in use as of July
+     *  2, 2005.) */
+    static final char PUA_MAX = '\uf0ff';
 }

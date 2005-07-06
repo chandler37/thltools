@@ -622,7 +622,7 @@ public class TConverter {
                             boolean done = false;
                             // what about after numbers?  marks? FIXME: test
                             TPairList lpl = null;
-                            if (s.getText().equals(" ")) {
+                            if (ttraits.isACIP() && s.getText().equals(" ")) {
                                 if (!lastGuyWasNonPunct
                                     || (null != lastGuy
                                         && (lpl = lastGuy.get(lastGuy.size() - 1)).size() == 1
@@ -652,7 +652,8 @@ public class TConverter {
                                         continue; // FIXME: if null != writer, output was just dropped.
                                     }
                                 }
-                            } else if (s.getText().equals(",")
+                            } else if (ttraits.isACIP()
+                                       && s.getText().equals(",")
                                        && lastGuyWasNonPunct
                                        && null != lastGuy
                                        && (lpl = lastGuy.get(lastGuy.size() - 1)).size() == 1
@@ -722,7 +723,8 @@ public class TConverter {
                             ThdlDebug.verify(1 == s.getText().length());
                             if (null != writer) {
                                 char ch = s.getText().charAt(0);
-                                if (ch >= '\uF021' && ch <= '\uF0FF') {
+                                if (ch >= EWTSTraits.PUA_MIN
+                                    && ch <= EWTSTraits.PUA_MAX) {
                                     hasErrors = true;
                                     String errorMessage =
                                         "[#ERROR "

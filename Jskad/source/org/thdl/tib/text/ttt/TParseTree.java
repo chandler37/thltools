@@ -105,12 +105,15 @@ class TParseTree {
         ParseIterator pi = getParseIterator();
         while (pi.hasNext()) {
             TStackList sl = pi.next();
-            if (!sl.isClearlyIllegal()) {
+            BoolTriple bt = sl.isLegalTshegBar(false);
+            if (!sl.isClearlyIllegal(bt.candidateType)) {
                 sll.add(sl);
             }
         }
         return sll;
     }
+
+    private static final boolean debug = false;
 
     /** Returns the best parse, if there is a unique parse that is
      *  clearly preferred to other parses.  Basically, if there's a
@@ -118,13 +121,17 @@ class TParseTree {
      *  a unique non-illegal parse, you get it.  If there's not a
      *  unique answer, null is returned. */
     public TStackList getBestParse() {
+        if (debug) System.out.println("getBestParse: parse tree is " + toString());
         TStackListList up = getUniqueParse(false);
-        if (up.size() == 1)
+        if (up.size() == 1) {
+            if (debug) System.out.println("getBestParse: unique parse");
             return up.get(0);
+        }
 
         up = getNonIllegalParses();
         int sz = up.size();
         if (sz == 1) {
+            if (debug) System.out.println("getBestParse: sole non-illegal parse");
             return up.get(0);
         } else if (sz > 1) {
             // TODO(DLC)[EWTS->Tibetan]: does this still happen?  If so, when?
@@ -132,12 +139,14 @@ class TParseTree {
             // System.out.println("SHO NUFF, >1 non-illegal parses still happens");
 
             // {PADMA}, for example.  Our technique is to go from the
-            // left and stack as much as we can.  So {PA}{D}{MA} is
-            // inferior to {PA}{D+MA}, and {PA}{D+MA}{D}{MA} is
-            // inferior to {PA}{D+MA}{D+MA}.  We do not look for the
-            // minimum number of glyphs, though -- {PA}{N+D}{B+H+R}
-            // and {PA}{N}{D+B+H+R} tie by that score, but the former
-            // is the clear winner.
+            // left and stack as much as we can (when
+            // !traits.stackingMustBeExplicit() only!
+            // TODO(DLC)[EWTS->Tibetan]: fix these comments).  So
+            // {PA}{D}{MA} is inferior to {PA}{D+MA}, and
+            // {PA}{D+MA}{D}{MA} is inferior to {PA}{D+MA}{D+MA}.  We
+            // do not look for the minimum number of glyphs, though --
+            // {PA}{N+D}{B+H+R} and {PA}{N}{D+B+H+R} tie by that
+            // score, but the former is the clear winner.
 
             // We give a warning about these, optionally, so that
             // users can produce output that even a dumb ACIP reader
@@ -177,11 +186,27 @@ class TParseTree {
                 }
                 ++stackNumber;
             }
-            if (candidates.size() == 1)
+            if (candidates.size() == 1) {
+                if (debug) System.out.println("getBestParse: one candidate");
                 return up.get(((Integer)candidates.get(0)).intValue());
-            else
+            } else {
+                if (debug) {
+                    System.out.println("getBestParse: no parse, num candidates="
+                                       + candidates.size());
+                    for (int i = 0; i < candidates.size(); i++) {
+                        System.out.println("candidate " + i + " is "
+                                           + up.get(((Integer)candidates.get(i)).intValue()));
+                        if (i + 1 < candidates.size()) {
+                            boolean eq = (up.get(((Integer)candidates.get(i)).intValue()).equals(up.get(((Integer)candidates.get(i + 1)).intValue())));
+                            System.out.println("This candidate and the next are"
+                                               + (eq ? "" : " not") + " equal.");
+                        }
+                    }
+                }
                 return null;
+            }
         }
+        if (debug) System.out.println("getBestParse: no non-illegal parses");
         return null;
     }
 
@@ -480,9 +505,10 @@ n+t+s
             middle = pl.get(1).getLeft();
             right = pl.get(2).getLeft();
             if (pl.get(0).getRight() == null
-                && !pl.get(1).endsACIPStack()
-                && pl.get(2).endsACIPStack()
+                && !pl.get(1).endsStack()
+                && pl.get(2).endsStack()
                 && null != left && null != right) {
+                // TODO(DLC)[EWTS->Tibetan]: This is ACIP-specific.
                 if (("D".equals(left) && "G".equals(middle) && "R".equals(right))
                     || ("D".equals(left) && "G".equals(middle) && "Y".equals(right))) {
                     if (pl.size() == 3) {
@@ -503,7 +529,7 @@ n+t+s
             String left, right;
             left = pl.get(0).getLeft();
             right = pl.get(1).getLeft();
-            if (pl.get(0).getRight() == null && pl.get(1).endsACIPStack()
+            if (pl.get(0).getRight() == null && pl.get(1).endsStack()
                 && null != left && null != right) {
                 if (("D".equals(left) && "B".equals(right))
                     || ("B".equals(left) && "D".equals(right))

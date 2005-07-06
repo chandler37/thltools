@@ -312,6 +312,9 @@ public class UnicodeUtils implements UnicodeConstants {
             if ((cp >= 'a' && cp <= 'z')
                 || (cp >= 'A' && cp <= 'Z')
                 || (cp >= '0' && cp <= '9')
+                || cp == '\\'
+                || cp == '~'
+                || cp == '`'
                 || cp == '.'
                 || cp == ','
                 || cp == ' '

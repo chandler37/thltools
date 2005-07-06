@@ -59,13 +59,13 @@ public abstract class TTshegBarScanner {
                           errors, maxErrors, shortMessages, warningLevel);
     }
 
-    /** Scans a stream of transliteration into tsheg bars.  If errors is
-     *  non-null, error messages will be appended to it.  You can
+    /** Scans a stream of transliteration into tsheg bars.  If errors
+     *  is non-null, error messages will be appended to it.  You can
      *  recover both errors and (optionally) warnings (modulo offset
      *  information) from the result, though.  They will be short
      *  messages iff shortMessages is true.  Returns a list of
-     *  TStrings that is the scan, or null if more than maxErrors
-     *  occur.
+     *  TStrings that is the scan, or null if maxErrors is nonnegative
+     *  and more than maxErrors occur.
      *
      *  <p>This is not so efficient; copies the whole stream into
      *  memory first.

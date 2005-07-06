@@ -21,6 +21,7 @@ package org.thdl.tib.text.ttt;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
+import org.thdl.util.ThdlDebug;
 import org.thdl.tib.text.TGCList;
 import org.thdl.tib.text.TibTextUtils;
 
@@ -136,17 +137,21 @@ class TStackList {
         StringBuffer warnings = new StringBuffer();
         String candidateType
             = TibTextUtils.getClassificationOfTshegBar(tgcList, warnings, noPrefixTests);
+        if (ddebug) System.out.println("ddebug: tgclist is " + tgcList + "\n  warnings is " + warnings + "\n candidateType is " + candidateType);
 
         // preliminary answer:
         boolean isLegal = (candidateType != "invalid");
 
         if (isLegal) {
-            if (isClearlyIllegal())
+            if (isClearlyIllegal(candidateType))
                 isLegal = false;
             TPairList firstStack = this.get(0);
+            // NOTE: In ewts, [([b'dgm] . ) (...] is illegal unless
+            // this is a legal tsheg bar featuring a prefix.  (I'm not
+            // sure this is enforced here, though...)
             if (1 == firstStack.size()
                 && firstStack.get(0).isPrefix()
-                && null == firstStack.get(0).getRight() // because GAM is legal
+                && null == firstStack.get(0).getRight()  // ACIP {GAM}/EWTS {gam} is legal
                 && !(candidateType.startsWith("prefix")
                      || candidateType.startsWith("appendaged-prefix"))) {
                 isLegal = false;
@@ -163,7 +168,8 @@ class TStackList {
                     TPairList pl = get(pairListIndex);
                     TPair p = pl.get(pl.size() - 1);
                     isLegalAndHasAVowelOnRoot
-                        = (p.getRight() != null && p.getRight().startsWith("A")); // could be {A:}, e.g.  TODO(DLC)[EWTS->Tibetan]: ???
+                        = (p.getRight() != null
+                           && p.getRight().startsWith(p.getTraits().aVowel())); // could be ACIP {A:}, e.g.
                     if (isLegalAndHasAVowelOnRoot)
                         break;
                 }
@@ -178,7 +184,34 @@ class TStackList {
 
     /** Returns true if and only if this stack list contains a clearly
      *  illegal construct.  An example of such is a TPair (V . something). */
-    boolean isClearlyIllegal() {
+    boolean isClearlyIllegal(String candidateType) {
+        if (isVeryClearlyIllegal())
+            return true;
+        int choices[]
+            = TibTextUtils.getIndicesOfRootForCandidateType(candidateType);
+        int max = size() - 1;  // TODO(DLC)[EWTS->Tibetan]:
+                               // optionally, use just size().  This
+                               // will make [g] and [bad+man] illegal,
+                               // e.g.
+        for (int i = 0; i < max; i++) {
+            // We want EWTS [gga] to be illegal because ga does not
+            // takes a gao prefix and we want EWTS [trna] to be
+            // illegal because a disambiguator or wowel is required to
+            // end a stack unless that stack is a prefix, suffix, or
+            // postsuffix.
+            if ((choices[0] < 0 && choices[1] < 0)
+                || (choices[0] == i && choices[1] < 0)) {
+                TPair last = get(i).get(get(i).size() - 1);
+                if (last.getTraits().stackingMustBeExplicit()
+                    && last.getRight() == null) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isVeryClearlyIllegal() {
         // check for {D}{VA} sorts of things:
         for (int i = 0; i < size(); i++) {
             if (get(i).getACIPError("THIS MAKES IT FASTER AND IS SAFE, DON'T WORRY",
@@ -286,7 +319,7 @@ class BoolTriple implements Comparable {
     }
 
     /** True if and only if {@link #isLegal} is true and there may be
-        an ACIP "A" vowel on the root stack. */
+        an TTraits.aVowel() on the root stack. */
     boolean isLegalAndHasAVowelOnRoot;
     BoolTriple(boolean isLegal,
                boolean isLegalAndHasAVowelOnRoot,
@@ -322,4 +355,7 @@ class BoolTriple implements Comparable {
         BoolTriple b = (BoolTriple)o;
         return score() - b.score();
     }
+
+    // NOTE: TibTextUtils.getIndicesOfRootForCandidateType(candidateType)
+    // is useful.
 }

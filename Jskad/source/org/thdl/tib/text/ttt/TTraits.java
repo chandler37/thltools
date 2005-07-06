@@ -211,4 +211,24 @@ public interface TTraits {
         in a tsheg bar.  (EWTS's list of standard stacks comes into
         play; ACIP always returns true.) */
     boolean couldBeValidStack(TPairList pl);
+
+    /** Returns true if stacking happens only via the '+' operator.
+     * Otherwise, stacking is greedy: for the most part we stack up
+     * until we hit something that stops us, like a vowel (though
+     * prefixes are special).  NOTE: In EWTS, native stacks (EWTS
+     * [phywa], e.g.) are transformed by an early pass to use '+'. */
+    boolean stackingMustBeExplicit();
+
+    // TODO(dchandler): If there exists more than one transliteration
+    // for \u0f7f or the like, do we handle both equally well?  Must
+    // we?
+
+    /** The transliteration of \u0f7f. */
+    String U0F7F();
+
+    /** The transliteration of \u0f35. */
+    String U0F35();
+
+    /** The transliteration of \u0f37. */
+    String U0F37();
 }
