@@ -479,7 +479,7 @@ public class TConverter {
                                 TStackList sl1 = ((null == pt1)
                                                   ? null : pt1.getBestParse());
                                 if (null == sl0 && null == sl1) {
-                                    // {A-DZU} causes this, for example.
+                                    // ACIP {A-DZU} causes this, for example.
                                     hasErrors = true;
                                     String errorMessage =
                                         "[#ERROR "

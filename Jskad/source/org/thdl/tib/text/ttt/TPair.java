@@ -190,17 +190,19 @@ class TPair {
     }
 
     String getWylie() {
-        return getWylie(false);
+        return getWylie(false, false);
     }
 
     /** Returns the EWTS Wylie that corresponds to this pair if
      *  justLeft is false, or the EWTS Wylie that corresponds to just
-     *  {@link #getLeft()} if justLeft is true.
+     *  {@link #getLeft()} if justLeft is true.  If dropDisambiguator
+     *  is true and the right component is a disambiguator, then the
+     *  Wylie will not contain '.'.
      *
      *  <p>Returns "W" for ACIP "W", "r" for ACIP "R", y for ACIP "Y",
      *  even though sometimes the EWTS for those is "w", "R", or "Y".
      *  Handle that in the caller. */
-    String getWylie(boolean justLeft) {
+    String getWylie(boolean justLeft, boolean dropDisambiguator) {
         String leftWylie = null;
         if (getLeft() != null) {
             leftWylie = traits.getEwtsForConsonant(getLeft());
@@ -212,7 +214,7 @@ class TPair {
         if (null == leftWylie) leftWylie = "";
         if (justLeft) return leftWylie;
         String rightWylie = null;
-        if (traits.disambiguator().equals(getRight()))
+        if (!dropDisambiguator && traits.disambiguator().equals(getRight()))
             rightWylie = ".";
         else if ("+".equals(getRight()))
             rightWylie = "+";

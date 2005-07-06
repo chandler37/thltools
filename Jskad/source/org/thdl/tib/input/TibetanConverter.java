@@ -149,7 +149,7 @@ public class TibetanConverter implements FontConverterConstants {
                     
                 out.println("TibetanConverter --colors yes|no");
                 out.println("                 --warning-level None|Some|Most|All");
-                out.println("                 --acip-to-tibetan-warning-and-error-messages short|long");
+                out.println("                 --acip-to-tibetan-warning-and-error-messages short|long");  // TODO(DLC)[EWTS->Tibetan]: misnomer, ewts and acip both are affected
                 out.println("                 --find-all-non-tmw | --find-some-non-tmw");
                 out.println("                   | --tmw-to-tmw-for-testing");
                 out.println("                   | --to-tibetan-machine | --to-tibetan-machine-web");
@@ -165,6 +165,10 @@ public class TibetanConverter implements FontConverterConstants {
                 out.println(" -v | --version for version info");
                 out.println("");
                 out.println(" -h | --help for this message");
+                out.println("");
+                out.println(" --wylie-to-unicode to convert an EWTS text file to a Unicode");
+                out.println("");
+                out.println(" --wylie-to-tmw to convert an EWTS text file to TibetanMachineWeb");
                 out.println("");
                 out.println(" --to-tibetan-machine to convert TibetanMachineWeb to TibetanMachine");
                 out.println("");

@@ -211,7 +211,9 @@ public final class EWTSTraits implements TTraits {
 
         if (wowel.indexOf('M') >= 0) {
             DuffCode last = null;
-            if (duff.size() > 0) {
+            if (!context_added[0]) {
+                last = preceding;
+            } else if (duff.size() > 0) {
                 last = (DuffCode)duff.get(duff.size() - 1);
                 duff.remove(duff.size() - 1); // getBindu will add it back...
                 // TODO(DLC)[EWTS->Tibetan]: is this okay????  when is a bindu okay to be alone???

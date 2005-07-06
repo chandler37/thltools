@@ -256,7 +256,14 @@ class TPairListFactory {
 
     /** EWTS helper function that transforms native stacks to include
      *  pluses: [(ph . ) (y . ) (w . *)] -> [(ph . +) (y . +) (w
-     *  . *)], e.g.
+     *  . *)], e.g.  The tricky case is something like [brgyad] or
+     *  [brjod] because b+r is a native stack and so is r+g+y (and in
+     *  fact r+g+y accepts a bao prefix).  It's not quite safe to
+     *  always grab the rightmost native stack from a stretch, as
+     *  [drwa] proves.  You must grab the longest, rightmost stack.
+     *  In most cases, either way you did it it'd be illegal.  In the
+     *  rest, the only way it can be legal is if there's a prefix and
+     *  the rightmost stack.
      *  @param traits must mesh with orig */
     private static TPairList transformNativeStacks(TTraits traits,
                                                    TPairList orig) {
@@ -277,8 +284,9 @@ class TPairListFactory {
             // we see a native stack of size 2, we transform it.
 
             boolean found_something = false;
-            TPair p[] = new TPair[maxNativeStackSize];
-            for (int j = 0; j < maxNativeStackSize; j++) {
+            TPair p[]
+                = new TPair[maxNativeStackSize + 1];  // plus one for [brgyad]
+            for (int j = 0; j < maxNativeStackSize + 1; j++) {
                 if (i + j < orig.size())
                     p[j] = orig.get(i + j);
                 else
@@ -286,35 +294,32 @@ class TPairListFactory {
             }
             // Now p[0] is current pair, p[1] is the one after that, etc.
 
-            for (int nss = maxNativeStackSize; nss >= minNativeStackSize;
-                 nss--) {
-                String hash_key = "";
-                int good = 0;
-                for (int k = 0; k < nss - 1; k++) {
-                    if (null != p[k]
-                        && null != p[k].getLeft()
-                        && null == p[k].getRight()) {
-                        hash_key += p[k].getLeft() + "-";
-                        ++good;
+            if (null != p[0].getLeft()
+                && null == p[0].getRight()) {
+                // TODO(dchandler): The way I do this [drwa] case,
+                // does it rely on the fact that maxNativeStackSize ==
+                // 3?  Let's have it not rely on that...
+                int h;
+                if (0 == (h = helper(traits, 0, maxNativeStackSize, p, result))) {  // [drwa]
+                    // [brgyad] makes us go from right to left.
+                    // (TODO(dchandler): It's a shame we're doing this
+                    // stuff when we have the code to figure out, for
+                    // ACIP, that [BRGYAD] is what it is.)
+                    for (int offset = 1; offset >= 0; offset--) {
+                        if (found_something) break;
+                        for (int nss = maxNativeStackSize;
+                             nss >= minNativeStackSize;
+                             nss--) {
+                            if (0 != (h = helper(traits, offset, nss, p, result))) {
+                                found_something = true;
+                                i += h;
+                                break;
+                            }
+                        }
                     }
-                }
-                if (null != p[nss - 1]
-                    && null != p[nss - 1].getLeft()
-                    && !"+".equals(p[nss - 1].getRight())) {
-                    hash_key += p[nss - 1].getLeft();
-                    ++good;
-                }
-                if (nss == good
-                    && TibetanMachineWeb.isKnownHashKey(hash_key)) {
+                } else {
+                    i += h;
                     found_something = true;
-                    for (int n = 0; n < nss - 1; n++) {
-                        ++i;
-                        result.append(new TPair(traits,
-                                                p[n].getLeft(), "+"));
-                    }
-                    ++i;
-                    result.append(p[nss - 1]);
-                    break;  // for ph-y-w etc.
                 }
             }
             if (!found_something) {
@@ -326,6 +331,47 @@ class TPairListFactory {
             throw new Error("orig=" + orig + "\nresult=" + result);  // TODO(dchandler): make this an assertion.
         }
         return result;
+    }
+
+    /** We mutate result and return the number of TPairs we scarfed if
+     *  we find a native stack of size nss at p[offset], p[offset +
+     *  1], ..., p[offset + nss - 1]. */
+    private static int helper(TTraits traits, int offset, int nss, TPair p[],
+                              TPairList result) {
+        String hashKey = "";
+        int good = 0;
+        for (int k = 0; k < nss - 1; k++) {
+            if (null != p[k + offset]
+                && null != p[k + offset].getLeft()
+                && null == p[k + offset].getRight()) {
+                hashKey += p[k + offset].getLeft() + "-";
+                ++good;
+            }
+        }
+        if (null != p[nss - 1 + offset]
+            && null != p[nss - 1 + offset].getLeft()
+            && !"+".equals(p[nss - 1 + offset].getRight())) {
+            hashKey += p[nss - 1 + offset].getLeft();
+            ++good;
+        }
+        if (nss == good
+            && TibetanMachineWeb.isKnownHashKey(hashKey)) {
+            int i = 0;
+            if (1 == offset) {
+                ++i;
+                result.append(p[0]);
+            }
+            for (int n = 0; n < nss - 1; n++) {
+                ++i;
+                result.append(new TPair(traits,
+                                        p[n + offset].getLeft(),
+                                        "+"));
+            }
+            ++i;
+            result.append(p[nss - 1 + offset]);
+            return i;
+        }
+        return 0;
     }
 
     // TODO(DLC)[EWTS->Tibetan]: doc

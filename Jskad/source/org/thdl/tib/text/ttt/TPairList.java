@@ -701,10 +701,10 @@ class TPairList {
         int previousSize = duffsAndErrors.size();
         StringBuffer wylieForConsonant = new StringBuffer();
         for (int x = 0; x + 1 < size(); x++) {
-            wylieForConsonant.append(get(x).getWylie(false));
+            wylieForConsonant.append(get(x).getWylie(false, true));
         }
         TPair lastPair = get(size() - 1);
-        wylieForConsonant.append(lastPair.getWylie(true));
+        wylieForConsonant.append(lastPair.getWylie(true, false));
         String hashKey = wylieForConsonant.toString();
 
         // Because EWTS has special handling for full-formed
@@ -763,6 +763,7 @@ class TPairList {
             }
         }
         if (lastPair.getRight() == null
+            || lastPair.getRight().equals(traits.disambiguator())
             || lastPair.equals(traits.disambiguator())) {
             duffsAndErrors.add(TibetanMachineWeb.getGlyph(hashKey));
         } else {
@@ -771,7 +772,7 @@ class TPairList {
                                    lastPair.getRight());
         }
         if (previousSize == duffsAndErrors.size())
-            throw new Error("TPairList with no duffs? " + toString()); // FIXME: change to assertion.
+            throw new Error("TPairList with no duffs? " + toString() + " has hash key " + hashKey + " and previous size is " + previousSize); // FIXME: change to assertion.
     }
 }
 
