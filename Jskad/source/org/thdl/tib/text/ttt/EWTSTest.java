@@ -148,11 +148,27 @@ public class EWTSTest extends TestCase {
         }
     }
 
+    public void test0F39() {
+        ewts2uni_test("v", "\u0F56\u0F39");
+        ewts2uni_test("f", "\u0F55\u0F39");
+        ewts2uni_test("a^", "\u0f68\u0f39");
+        ewts2uni_test("hUM^", "\u0f67\u0f71\u0f74\u0f7e\u0f39");
+        ewts2uni_test("ph^", "\u0f55\u0f39");
+        ewts2uni_test("phe^", "\u0f55\u0f7a\u0f39");  // TODO(DLC)[EWTS->Tibetan]: does order of U+0F39 matter?
+        ewts2uni_test("ph^e", "\u0f55\u0f39\u0f68\u0f7a");  // TODO(DLC)[EWTS->Tibetan]: This is no good!  We don't even warn, do we!?
+        ewts2uni_test("f+beM", "\u0f55\u0f39\u0fa6\u0f7a\u0f7e");
+        ewts2uni_test("faM", "\u0f55\u0f39\u0f7e");
+        ewts2uni_test("vaM", "\u0f56\u0f39\u0f7e");
+        ewts2uni_test("k+fa", "\u0f40\u0fa5\u0f39");
+        ewts2uni_test("f+va", "\u0f55\u0f39\u0fa6\u0f39");
+        ewts2uni_test("ph+veM", "\u0f55\u0fa6\u0f39\u0f7a\u0f7e");
+        if (RUN_FAILING_TESTS) ewts2uni_test("ph^+beM", "\u0f55\u0f39\u0fa6\u0f7a\u0f7e");
+    }
+
     /** Tests that the EWTS->unicode converter isn't completely
         braindead. */
     public void testEwtsBasics() {
         ewts2uni_test("g.yogs", "\u0f42\u0f61\u0f7c\u0f42\u0f66");
-        if (RUN_FAILING_TESTS) ewts2uni_test("hUM^", "TODO(DLC)[EWTS->Tibetan]: DLC NOW");
         ewts2uni_test("brgyad", "\u0f56\u0f62\u0f92\u0fb1\u0f51");
         ewts2uni_test("brjod", "\u0f56\u0f62\u0f97\u0f7c\u0f51");
         ewts2uni_test("drwa", "\u0f51\u0fb2\u0fad");
@@ -690,7 +706,7 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("\\u0F36", "\u0F36");
         if (RUN_FAILING_TESTS) ewts2uni_test("X", "\u0F37"); // TODO(DLC)[EWTS->Tibetan]: error combiner
         ewts2uni_test("\\u0F38", "\u0F38");
-        if (RUN_FAILING_TESTS) ewts2uni_test("^", "\u0F39"); // TODO(DLC)[EWTS->Tibetan]: error combiner
+        assert_EWTS_error("^");  // If you want \u0f68\u0f39, use [a^]
         ewts2uni_test("<", "\u0F3A");
         ewts2uni_test(">", "\u0F3B");
         ewts2uni_test("(", "\u0F3C");

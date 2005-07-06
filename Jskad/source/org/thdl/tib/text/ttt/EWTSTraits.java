@@ -68,12 +68,11 @@ public final class EWTSTraits implements TTraits {
      *  three. */
     public int maxConsonantLength() { return 3; }
 
-    /** {-i~M`}, in a tie for the longest wowel, has 5 characters, so
-     *  this is five.  (No, 'l-i' and 'r-i' are not wowels (but '-i'
-     *  is).  (TODO(DLC)[EWTS->Tibetan]: this is crap!  you can put arbitrary wowels
-     *  together using plus signs or Unicode escapes) */
-    public int maxWowelLength() { return 3; /* a~M`  (TODO(DLC)[EWTS->Tibetan]:!  why the 'a'?) */}
-    
+    /** Wowels can be arbitrarily long via stacking.  But each
+     *  component is no longer, in characters, than this.  [~M`] is
+     *  the current winner. */
+    public int maxWowelLength() { return 3; }
+
     public boolean isUnicodeConsonant(char ch) {
         return ((ch != '\u0f48' && ch >= '\u0f40' && ch <= '\u0f6a')
                 || (ch != '\u0f98' && ch >= '\u0f90' && ch <= '\u0fbc')
@@ -86,6 +85,7 @@ public final class EWTSTraits implements TTraits {
     public boolean isUnicodeWowel(char ch) {
     	// TODO(DLC)[EWTS->Tibetan]: what about combiners that combine only with digits?  TEST
         return ((ch >= '\u0f71' && ch <= '\u0f84')
+                || '\u0f39' == ch
                 || isUnicodeWowelThatRequiresAChen(ch));
     }
 
@@ -269,21 +269,15 @@ public final class EWTSTraits implements TTraits {
             if ("-I".equals(wowel)) return "\u0f81";
             if ("I".equals(wowel)) return "\u0f71\u0f72"; // \u0f73 is discouraged
 
-            // TODO(DLC)[EWTS->Tibetan]: fix me!
-                // DLC say ah        if ("aM".equals(wowel)) return "\u0f7e";
+            // TODO(DLC)[EWTS->Tibetan]: test, test, test.
             if ("M".equals(wowel)) return "\u0f7e";
-            // DLC say ah        if ("aH".equals(wowel)) return "\u0f7f";
             if ("H".equals(wowel)) return "\u0f7f";
-            // DLC say ah        if ("a?".equals(wowel)) return "\u0f84";
             if ("?".equals(wowel)) return "\u0f84";
-            // DLC say ah        if ("a~M".equals(wowel)) return "\u0f83";
             if ("~M".equals(wowel)) return "\u0f83";
-            // DLC say ah        if ("a~M`".equals(wowel)) return "\u0f82";
             if ("~M`".equals(wowel)) return "\u0f82";
-            // DLC say ah        if ("aX".equals(wowel)) return "\u0f37";
             if ("X".equals(wowel)) return "\u0f37";
-            // DLC say ah        if ("a~X".equals(wowel)) return "\u0f35";
             if ("~X".equals(wowel)) return "\u0f35";
+            if ("^".equals(wowel)) return "\u0f39";
 
             return null;
         }
@@ -362,6 +356,9 @@ public final class EWTSTraits implements TTraits {
             if ("h".equals(l)) return "\u0FB7";
             if ("a".equals(l)) return "\u0FB8";
             if ("k+Sh".equals(l)) return "\u0FB9";
+
+            if ("f".equals(l)) return "\u0FA5\u0F39";
+            if ("v".equals(l)) return "\u0FA6\u0F39";
             return null;
         } else {
             if ("R".equals(l)) return "\u0f6a";
@@ -426,17 +423,10 @@ public final class EWTSTraits implements TTraits {
     public boolean isWowelThatRequiresAChen(String s) {
         // TODO(DLC)[EWTS->Tibetan]: fix me!
         return ((s.length() == 1 && (isUnicodeWowelThatRequiresAChen(s.charAt(0))
-                                     || "?MHX".indexOf(s.charAt(0)) >= 0))
-                // DLC say ah                || "aM".equals(s) // DLC funny...  (DLC NOW too funny! affects longest wowel length!)
-                // DLC say ah                || "a?".equals(s) // DLC funny...
-                // DLC say ah                || "aH".equals(s) // DLC funny...
-                // DLC say ah                || "aX".equals(s) // DLC funny...
+                                     || "?MHX^".indexOf(s.charAt(0)) >= 0))
                 || "~X".equals(s)
-                // DLC say ah                || "a~X".equals(s) // DLC funny...
                 || "~M".equals(s)
-                // DLC say ah                || "a~M".equals(s) // DLC funny...
                 || "~M`".equals(s)
-                // DLC say ah                || "a~M`".equals(s) // DLC funny...
                 );
     }
 
