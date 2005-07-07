@@ -164,6 +164,10 @@ public final class EWTSTraits implements TTraits {
 
         // TODO(DLC)[EWTS->Tibetan]: I have no confidence in this! test, test, test.
 
+        // TODO(DLC)[EWTS->Tibetan]: ko+o doesn't work.  kai+-i doesn't work.
+
+        // TODO(DLC)[EWTS->Tibetan]: kai doesn't work.
+
         // Order matters here.
         boolean context_added[] = new boolean[] { false };
         if (wowel.equals(THDLWylieConstants.WYLIE_aVOWEL)) {
@@ -183,11 +187,7 @@ public final class EWTSTraits implements TTraits {
             }
             if (wowel.indexOf(THDLWylieConstants.ai_VOWEL) >= 0) {
                 TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.ai_VOWEL, context_added);
-            }
-            if (wowel.indexOf(THDLWylieConstants.au_VOWEL) >= 0) {
-                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.au_VOWEL, context_added);
-            }
-            if (wowel.indexOf(THDLWylieConstants.reverse_i_VOWEL) >= 0) {
+            } else if (wowel.indexOf(THDLWylieConstants.reverse_i_VOWEL) >= 0) {
                 TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.reverse_i_VOWEL, context_added);
             } else if (wowel.indexOf(THDLWylieConstants.i_VOWEL) >= 0) {
                 TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.i_VOWEL, context_added);
@@ -198,7 +198,9 @@ public final class EWTSTraits implements TTraits {
             if (wowel.indexOf(THDLWylieConstants.o_VOWEL) >= 0) {
                 TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.o_VOWEL, context_added);
             }
-            if (wowel.indexOf(THDLWylieConstants.u_VOWEL) >= 0) {
+            if (wowel.indexOf(THDLWylieConstants.au_VOWEL) >= 0) {
+                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.au_VOWEL, context_added);
+            } else if (wowel.indexOf(THDLWylieConstants.u_VOWEL) >= 0) {
                 TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.u_VOWEL, context_added);
             }
             if (wowel.indexOf("~X") >= 0) {  // TODO(DLC)[EWTS->Tibetan]: introduce THDLWylieConstants.blah
@@ -209,7 +211,12 @@ public final class EWTSTraits implements TTraits {
         }
         // FIXME: Use TMW9.61, the "o'i" special combination, when appropriate.
 
-        if (wowel.indexOf('M') >= 0) {
+        if (wowel.indexOf(THDLWylieConstants.BINDU) >= 0
+            // TODO(DLC)[EWTS->Tibetan]: This is really ugly... we
+            // rely on the fact that we know every Wylie wowel that
+            // contains 'M'.  Let's, instead, parse the wowel.
+            && wowel.indexOf(THDLWylieConstants.U0F82) < 0
+            && wowel.indexOf(THDLWylieConstants.U0F83) < 0) {
             DuffCode last = null;
             if (!context_added[0]) {
                 last = preceding;
@@ -219,10 +226,35 @@ public final class EWTSTraits implements TTraits {
                 // TODO(DLC)[EWTS->Tibetan]: is this okay????  when is a bindu okay to be alone???
             }
             TibTextUtils.getBindu(duff, last);
+            context_added[0] = true;
+        }
+        if (!context_added[0]) {
+            duff.add(preceding);
         }
         if (wowel.indexOf('H') >= 0)
             duff.add(TibetanMachineWeb.getGlyph("H"));
-
+        int ix;
+        if ((ix = wowel.indexOf(THDLWylieConstants.WYLIE_TSA_PHRU)) >= 0) {
+            // This likely won't look good!  TMW has glyphs for [va]
+            // and [fa], so use that transliteration if you care, not
+            // [ph^] or [b^].
+            duff.add(TibetanMachineWeb.getGlyph(THDLWylieConstants.WYLIE_TSA_PHRU));
+            StringBuffer sb = new StringBuffer(wowel);
+            sb.replace(ix, ix + THDLWylieConstants.WYLIE_TSA_PHRU.length(), "");
+            wowel = sb.toString();
+        }
+        if ((ix = wowel.indexOf(THDLWylieConstants.U0F82)) >= 0) {
+            duff.add(TibetanMachineWeb.getGlyph(THDLWylieConstants.U0F82));
+            StringBuffer sb = new StringBuffer(wowel);
+            sb.replace(ix, ix + THDLWylieConstants.U0F82.length(), "");
+            wowel = sb.toString();
+        }
+        if ((ix = wowel.indexOf(THDLWylieConstants.U0F83)) >= 0) {
+            duff.add(TibetanMachineWeb.getGlyph(THDLWylieConstants.U0F83));
+            StringBuffer sb = new StringBuffer(wowel);
+            sb.replace(ix, ix + THDLWylieConstants.U0F83.length(), "");
+            wowel = sb.toString();
+        }
         
         // TODO(DLC)[EWTS->Tibetan]: verify that no part of wowel is discarded!  acip does that.  'jam~X I think we screw up, e.g.
 

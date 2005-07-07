@@ -25,7 +25,9 @@ import javax.swing.text.rtf.RTFEditorKit;
 import java.io.*;
 
 import org.thdl.util.ThdlDebug;
+import org.thdl.tib.text.ttt.TTraits;
 import org.thdl.tib.text.ttt.ACIPTraits;
+import org.thdl.tib.text.ttt.EWTSTraits;
 import org.thdl.tib.text.ttt.TConverter;
 import org.thdl.tib.text.tshegbar.LegalTshegBar;
 import org.thdl.tib.text.tshegbar.UnicodeConstants;
@@ -312,34 +314,44 @@ public class TibTextUtils implements THDLWylieConstants {
         = new boolean[] { false };
 
 /**
-* Converts a string of ACIP into TibetanMachineWeb and inserts that
-* into tdoc at offset loc.
-* @param acip the ACIP you want to convert
+* Converts a string of transliteration into TibetanMachineWeb and
+* inserts that into tdoc at offset loc.
+* @param EWTSNotACIP true if you want THDL Extended Wylie, false if
+* you want ACIP
+* @param translit the transliteration you want to convert
 * @param tdoc the document in which to insert the TMW
 * @param loc the offset inside the document at which to insert the TMW
 * @param withWarnings true if and only if you want warnings to appear
 * in the output, such as "this could be a mistranscription of blah..."
-* @throws InvalidACIPException if the ACIP is deemed invalid, i.e. if
-* it does not conform to the ACIP transcription rules (those in the
-* official document and the subtler rules pieced together by David
-* Chandler through study and private correspondence with Robert
-* Chilton)
+* @throws InvalidTransliterationException if the transliteration is
+* deemed invalid, i.e. if it does not conform to the transcription
+* rules (those in the official document and the subtler rules pieced
+* together by David Chandler through study and private correspondence
+* with Robert Chilton (for ACIP), Than Garson, David Germano, Chris
+* Fynn, and others)
 * @return the number of characters inserted into tdoc */
-    public static int insertTibetanMachineWebForACIP(String acip,
-                                                     TibetanDocument tdoc,
-                                                     int loc,
-                                                     boolean withWarnings)
-        throws InvalidACIPException
+    public static int insertTibetanMachineWebForTranslit(boolean EWTSNotACIP,
+                                                         String translit,
+                                                         TibetanDocument tdoc,
+                                                         int loc,
+                                                         boolean withWarnings)
+        throws InvalidTransliterationException
     {
         StringBuffer errors = new StringBuffer();
         String warningLevel = withWarnings ? "All" : "None";
-        ArrayList al = ACIPTraits.instance().scanner().scan(acip, errors, 500,
-                                                            false, warningLevel);
+        
+        TTraits traits = (EWTSNotACIP
+                          ? (TTraits)EWTSTraits.instance()
+                          : (TTraits)ACIPTraits.instance());
+        ArrayList al = traits.scanner().scan(translit, errors, 500,
+                                             false, warningLevel);
         if (null == al || errors.length() > 0) {
             if (errors.length() > 0)
-                throw new InvalidACIPException(errors.toString());
+                throw new InvalidTransliterationException(errors.toString());
             else
-                throw new InvalidACIPException("Fatal error converting ACIP to TMW.");
+                throw new InvalidTransliterationException("Fatal error converting "
+                                                          + traits.shortTranslitName()
+                                                          + " to TMW.");
         }
         boolean colors = withWarnings;
         boolean putWarningsInOutput = false;
@@ -348,7 +360,7 @@ public class TibTextUtils implements THDLWylieConstants {
         }
         try {
             int tloc[] = new int[] { loc };
-            TConverter.convertToTMW(ACIPTraits.instance(), al, tdoc, null, null,
+            TConverter.convertToTMW(traits, al, tdoc, null, null,
                                     null, putWarningsInOutput, warningLevel,
                                     false, colors, tloc);
             return tloc[0] - loc;
@@ -364,8 +376,13 @@ public class TibTextUtils implements THDLWylieConstants {
 * corresponding to the Wylie text
 * @throws InvalidWylieException if the Wylie is deemed invalid,
 * i.e. if it does not conform to the Extended Wylie standard
+* @deprecated by insertTibetanMachineWebForTranslit
 */
     public static DuffData[] getTibetanMachineWebForEWTS(String wylie) throws InvalidWylieException {
+        ThdlDebug.noteIffyCode();  // deprecated method!
+                                   // TODO(dchandler): remove it and
+                                   // hopefully a ton of code that
+                                   // only it uses.
         List chars = new ArrayList();
         DuffCode dc;
         int start = 0;

@@ -503,15 +503,22 @@ public class Jskad extends JPanel implements DocumentListener {
             }
         });
         convertSelectionMenu.add(TMWACIPItem);
-        toolsMenu.add(convertSelectionMenu);
 
-        JMenuItem wylieTMWItem = new JMenuItem("(Buggy) Convert Wylie to Tibetan Machine Web (non-Unicode)");
+        JMenuItem wylieTMWItem = new JMenuItem("Convert Wylie to Tibetan Machine Web (non-Unicode) (no warnings)");
         wylieTMWItem.addActionListener(new ThdlActionListener() {
+            public void theRealActionPerformed(ActionEvent e) {
+                toTibetan(false, false);
+            }
+        });
+        convertSelectionMenu.add(wylieTMWItem);
+
+        JMenuItem wylieTMWWarningsItem = new JMenuItem("Convert Wylie to Tibetan Machine Web (non-Unicode) (pedantic warnings)");
+        wylieTMWWarningsItem.addActionListener(new ThdlActionListener() {
             public void theRealActionPerformed(ActionEvent e) {
                 toTibetan(false, true);
             }
         });
-        convertSelectionMenu.add(wylieTMWItem);
+        convertSelectionMenu.add(wylieTMWWarningsItem);
 
         JMenuItem ACIPTMWItem = new JMenuItem("Convert ACIP to Tibetan Machine Web (non-Unicode) (no warnings)");
         ACIPTMWItem.addActionListener(new ThdlActionListener() {
@@ -521,7 +528,7 @@ public class Jskad extends JPanel implements DocumentListener {
         });
         convertSelectionMenu.add(ACIPTMWItem);
 
-        JMenuItem ACIPTMWWarnItem = new JMenuItem("Convert ACIP to Tibetan Machine Web (non-Unicode) (with pedantic warnings)");
+        JMenuItem ACIPTMWWarnItem = new JMenuItem("Convert ACIP to Tibetan Machine Web (non-Unicode) (pedantic warnings)");
         ACIPTMWWarnItem.addActionListener(new ThdlActionListener() {
             public void theRealActionPerformed(ActionEvent e) {
                 toTibetan(true, true);

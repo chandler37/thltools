@@ -79,6 +79,11 @@ public class EWTSTest extends TestCase {
     /** Causes a JUnit test case failure unless the EWTS document ewts
      *  converts to the unicode expectedUnicode. */
     static void ewts2uni_test(String ewts, String expectedUnicode) {
+        // TODO(DLC)[EWTS->Tibetan]: In addition to what this
+        // currently does, have this function convert to TMW and
+        // convert that TMW to Unicode and verify that the result is
+        // the same.  Almost every call should allow for that.
+
         StringBuffer errors = new StringBuffer();
         String unicode = TConverter.convertToUnicodeText(EWTSTraits.instance(),
                                                          ewts, errors,

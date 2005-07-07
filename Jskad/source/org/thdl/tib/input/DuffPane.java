@@ -1628,33 +1628,17 @@ public void paste(int offset)
 */
     public void toTibetanMachineWeb(String wylie, int offset) {
         try {
-            StringTokenizer sTok = new StringTokenizer(wylie, "\n\t", true); // FIXME does this work on all platforms?
-            while (sTok.hasMoreTokens()) {
-                String next = sTok.nextToken();
-                if (next.equals("\n") || next.equals("\t")) { // FIXME does this work on all platforms?
-                    try {
-                        getTibDoc().insertString(offset, next, null);
-                        offset++;
-                    } catch (BadLocationException ble) {
-                        ble.printStackTrace();
-                        ThdlDebug.noteIffyCode();
-                    }
-                } else {
-                    DuffData[] dd = TibTextUtils.getTibetanMachineWebForEWTS(next);
-                    offset = getTibDoc().insertDuff(offset, dd);
-                }
-            }
+            TibTextUtils.insertTibetanMachineWebForTranslit(
+                    true, wylie, getTibDoc(), offset,
+                    false  // warnings?
+                    );
+        } catch (InvalidTransliterationException ite) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "The transliteration you are trying to convert is invalid:\n"
+                    + ite.getMessage());
+            return;
         }
-        catch (InvalidWylieException iwe) {
-            JOptionPane.showMessageDialog(this,
-                "The Wylie you are trying to convert is invalid, " +
-                "beginning from:\n     " + iwe.getCulpritInContext() + "\n" +
-                "The culprit is probably the character '"+iwe.getCulprit()+"'.");
-        }
-        catch (Exception e)
-		{
-        	System.err.println("Could not convert: " + wylie);
-		}
     }
 
 /**
@@ -1701,30 +1685,16 @@ public void paste(int offset)
                 if ((0 != TibetanMachineWeb.getTMWFontNumber(fontName)) || i==endPos.getOffset()) {
                     if (i != start) {
                         try {
-                            DuffData[] duffdata = null;
-                            if (fromACIP) {
-                                getTibDoc().remove(start, i-start);
-                                i += -1 /* because i++ will occur */
-                                    + TibTextUtils.insertTibetanMachineWebForACIP(sb.toString(),
-                                                                                  getTibDoc(),
-                                                                                  start,
-                                                                                  withWarnings);
-                            } else
-                                duffdata = TibTextUtils.getTibetanMachineWebForEWTS(sb.toString());
-                            if (!fromACIP) {
-                                getTibDoc().remove(start, i-start);
-                                getTibDoc().insertDuff(start, duffdata);
-                            }
-                        } catch (InvalidWylieException iwe) {
-                            JOptionPane.showMessageDialog(this,
-                                "The Wylie you are trying to convert is invalid, " +
-                                "beginning from:\n     " + iwe.getCulpritInContext() +
-                                "\nThe culprit is probably the character '" +
-                                iwe.getCulprit() + "'.");
-                            return;
-                        } catch (InvalidACIPException iae) {
-                            JOptionPane.showMessageDialog(this,
-                                "The ACIP you are trying to convert is invalid:\n" + iae.getMessage());
+                            getTibDoc().remove(start, i-start);
+                            i += -1 /* because i++ will occur */
+                                 + TibTextUtils.insertTibetanMachineWebForTranslit(
+                                     !fromACIP, sb.toString(), getTibDoc(),
+                                     start, withWarnings);
+                        } catch (InvalidTransliterationException ite) {
+                            JOptionPane.showMessageDialog(
+                                this,
+                                "The transliteration you are trying to convert is invalid:\n"
+                                + ite.getMessage());
                             return;
                         }
                     }

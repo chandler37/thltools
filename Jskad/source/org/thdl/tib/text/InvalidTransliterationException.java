@@ -19,17 +19,17 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.text;
 
 /**
-* An exception thrown whenever ACIP->TMW conversion in the Jskad GUI
-* runs into invalid ACIP.
+* An exception thrown whenever an EWTS->TMW or ACIP->TMWconversion in
+* the Jskad GUI runs into an invalid transliteration string.
 * @author David Chandler */
-public class InvalidACIPException extends Exception {
+public class InvalidTransliterationException extends Exception {
     private String error;
 
 /**
-* Creates an InvalidACIPException.
+* Creates an InvalidTransliterationException.
 * @param s an error message
 */
-    public InvalidACIPException(String s) {
+    public InvalidTransliterationException(String s) {
         error = s;
     }
 

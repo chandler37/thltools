@@ -22,7 +22,15 @@ package org.thdl.tib.text;
  *  @see TibetanMachineWeb */
 public interface THDLWylieConstants {
 /**
-* the Wylie for bindu/anusvara
+* the Wylie for U+0F82
+*/
+	public static final String U0F82 = "~M`";
+/**
+* the Wylie for U+0F83
+*/
+	public static final String U0F83 = "~M";
+/**
+* the Wylie for bindu/anusvara (U+0F7E)
 */
 	public static final char BINDU = 'M';
 /**
@@ -51,6 +59,10 @@ public interface THDLWylieConstants {
 * the Wylie for the invisible 'a' vowel
 */
 	public static final String WYLIE_aVOWEL = "a";
+/**
+* the Wylie for U+0F39
+*/
+	public static final String WYLIE_TSA_PHRU = "^";
 /**
 * the Wylie for achung
 */
