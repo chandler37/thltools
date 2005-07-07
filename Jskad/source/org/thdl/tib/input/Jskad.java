@@ -645,16 +645,6 @@ public class Jskad extends JPanel implements DocumentListener {
                 });
             toolsMenu.add(converterItem);
 
-
-            JMenuItem importItem = new JMenuItem("(Buggy) Import Wylie as Tibetan Machine Web (non-Unicode)...");
-            importItem.addActionListener(new ThdlActionListener() {
-                public void theRealActionPerformed(ActionEvent e) {
-                    importWylie();
-                }
-            });
-            toolsMenu.addSeparator();
-            toolsMenu.add(importItem);
-
             JMenuItem openWithItem = new JMenuItem("Open With External Viewer...");
             openWithItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {

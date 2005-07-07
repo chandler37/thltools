@@ -38,10 +38,10 @@ class ConvertDialog extends JDialog
     private static final boolean debug = false;
 
     private JCheckBox colors;
-    private static final String colorDesc = "Color-coding (ACIP to RTF only)";
+    private static final String colorDesc = "Color-coding (ACIP/EWTS to RTF only)";
 
     private JCheckBox shortMessages;
-    private static final String shortMessagesDesc = "Short warning and error messages (ACIP to Tibetan only)";
+    private static final String shortMessagesDesc = "Short warning and error messages (ACIP/EWTS to Tibetan only)";
 
     // Attributes
     private FontConversion controller;
@@ -77,7 +77,9 @@ class ConvertDialog extends JDialog
     private void updateWarningLevels()
     {
         this.warningLevels.setEnabled(choices.getSelectedItem() == ACIP_TO_UNI_TEXT
-        || choices.getSelectedItem() == ACIP_TO_TMW);
+                                      || choices.getSelectedItem() == ACIP_TO_TMW
+                                      || choices.getSelectedItem() == WYLIE_TO_TMW
+                                      || choices.getSelectedItem() == WYLIE_TO_UNI_TEXT);
     }
 
     private javax.swing.filechooser.FileFilter acipff, rtfff;
