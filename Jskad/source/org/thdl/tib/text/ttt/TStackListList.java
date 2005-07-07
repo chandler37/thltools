@@ -84,10 +84,12 @@ class TStackListList {
      *  happen. */
     public ListIterator listIterator() { return al.listIterator(); }
 
-    /** Returns the ACIP input (okay, maybe 1-2-3-4 instead of 1234)
-     *  corresponding to this stack list list. */
-    public String recoverACIP() {
+    /** Returns something akin to the transliteration that was input
+     *  (okay, maybe 1-2-3-4 instead of 1234, and maybe AUTPA instead
+     *  of AUT-PA [ACIP examples]) corresponding to this stack list
+     *  list. */
+    public String recoverTranslit() {
         if (isEmpty()) return null;
-        return get(0).recoverACIP();
+        return get(0).recoverTranslit();
     }
 }

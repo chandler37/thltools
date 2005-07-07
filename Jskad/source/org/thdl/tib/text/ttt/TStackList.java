@@ -70,9 +70,10 @@ class TStackList {
     /** Returns true if and only if this list is empty. */
     public boolean isEmpty() { return al.isEmpty(); }
 
-    /** Returns the ACIP input (okay, maybe 1-2-3-4 instead of 1234)
-     *  corresponding to this stack list. */
-    public String recoverACIP() {
+    /** Returns something akin to the transliteration that was input
+     *  (okay, maybe 1-2-3-4 instead of 1234, and maybe AUTPA instead
+     *  of AUT-PA [ACIP examples]) corresponding to this stack list. */
+    public String recoverTranslit() {
         return toStringHelper(false);
     }
 
@@ -87,7 +88,7 @@ class TStackList {
         StringBuffer b = new StringBuffer();
         for (int i = 0; i < sz; i++) {
             if (brackets) b.append('{');
-            b.append(get(i).recoverACIP());
+            b.append(get(i).recoverTranslit());
             if (brackets) b.append('}');
         }
         return b.toString();

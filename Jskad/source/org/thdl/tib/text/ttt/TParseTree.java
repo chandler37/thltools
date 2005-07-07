@@ -333,7 +333,7 @@ class TParseTree {
             }
         }
 
-        String translit = (null != originalACIP) ? originalACIP : recoverACIP();
+        String translit = (null != originalACIP) ? originalACIP : recoverTranslit();
         TStackListList up = getUniqueParse(false);
         if (null == up || up.size() != 1) {
             boolean isLastStack[] = new boolean[1];
@@ -508,7 +508,7 @@ n+t+s
                 && !pl.get(1).endsStack()
                 && pl.get(2).endsStack()
                 && null != left && null != right) {
-                // TODO(DLC)[EWTS->Tibetan]: This is ACIP-specific.
+                // TODO(DLC)[EWTS->Tibetan]: This function is ACIP-specific.
                 if (("D".equals(left) && "G".equals(middle) && "R".equals(right))
                     || ("D".equals(left) && "G".equals(middle) && "Y".equals(right))) {
                     if (pl.size() == 3) {
@@ -556,13 +556,14 @@ n+t+s
         return null;
     }
     
-    /** Returns something akin to the ACIP input (okay, maybe 1-2-3-4
-     *  instead of 1234, and maybe AUTPA instead of AUT-PA)
-     *  corresponding to this parse tree. */
-    public String recoverACIP() { // TODO(DLC)[EWTS->Tibetan]: acip-specific
+    /** Returns something akin to the transliteration that was input
+     *  (okay, maybe 1-2-3-4 instead of 1234, and maybe AUTPA instead
+     *  of AUT-PA [ACIP examples]) corresponding to this parse
+     *  tree. */
+    public String recoverTranslit() {
         ParseIterator pi = getParseIterator();
         if (pi.hasNext()) {
-            return pi.next().recoverACIP();
+            return pi.next().recoverTranslit();
         }
         return null;
     }

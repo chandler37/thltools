@@ -160,8 +160,9 @@ public final class EWTSTraits implements TTraits {
 
     public TTshegBarScanner scanner() { return EWTSTshegBarScanner.instance(); }
 
-    public void getDuffForWowel(ArrayList duff, DuffCode preceding, String wowel) {
-
+    public void getDuffForWowel(ArrayList duff, DuffCode preceding, String wowel)
+            throws IllegalArgumentException
+    {
         // TODO(DLC)[EWTS->Tibetan]: I have no confidence in this! test, test, test.
 
         // TODO(DLC)[EWTS->Tibetan]: ko+o doesn't work.  kai+-i doesn't work.

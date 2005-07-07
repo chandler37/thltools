@@ -393,7 +393,7 @@ public class PackageTest extends TestCase {
         }
         if (l.getACIPError(acip, false) != null)
             System.out.println("ACIPError: " + l.getACIPError(acip, false));
-        if (!l.recoverACIP().equals(acip)
+        if (!l.recoverTranslit().equals(acip)
             && (acip.indexOf("A+") < 1) // which becomes +, e.g. {NA+YA}
             && (acip.indexOf('0') < 0)
             && (acip.indexOf('1') < 0)
@@ -408,7 +408,7 @@ public class PackageTest extends TestCase {
             && pairListToUse == 1
             && (acip.indexOf('\'') < 0)) {
             System.out.println("acip=" + acip
-                               + "; recovery is " + l.recoverACIP());
+                               + "; recovery is " + l.recoverTranslit());
             assertTrue(false);
         }
         if (pairListToUse >= 2) {
@@ -450,7 +450,7 @@ public class PackageTest extends TestCase {
 
     /** Tests {@link ACIPTraits#breakTshegBarIntoChunks(String,
      *  boolean)}, {@link TPairList#getACIPError(String, boolean)},
-     *  and {@link TPairList#recoverACIP()}. */
+     *  and {@link TPairList#recoverTranslit()}. */
     public void testBreakACIPIntoChunks() {
 tstHelper("GASN"); // ambiguous with regard to prefix rules
 tstHelper("BARMA"); // ambiguous with regard to prefix rules

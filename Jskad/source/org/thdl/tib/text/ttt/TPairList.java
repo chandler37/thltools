@@ -128,10 +128,11 @@ class TPairList {
         return b.toString();
     }
 
-    /** Returns the ACIP corresponding to this TPairList.  It will
-     *  be as ambiguous as the input.  It may have more disambiguators
-     *  than the original, such as in the case of the ACIP {1234}. */
-    String recoverACIP() {
+    /** Returns the transliteration corresponding to this TPairList.
+     *  It will be as ambiguous as the input.  It may have more
+     *  disambiguators than the original, such as in the case of the
+     *  ACIP {1234}. */
+    String recoverTranslit() {
         StringBuffer original = new StringBuffer();
         int sz = size();
         for (int i = 0; i < sz; i++) {
@@ -174,7 +175,7 @@ class TPairList {
                                                  : ""),
                                                 traits);
         String translit
-            = (null != originalACIP) ? originalACIP : recoverACIP();
+            = (null != originalACIP) ? originalACIP : recoverTranslit();
         boolean mustBeEntirelyNumeric = get(0).isNumeric();
         for (int i = 0; i < sz; i++) {
             TPair p = get(i);
@@ -759,7 +760,7 @@ class TPairList {
                                                                 ? 137
                                                                 : 511,
                                                                 shortMessages,
-                                                                recoverACIP(),
+                                                                recoverTranslit(),
                                                                 traits));
                 return;
             }
@@ -769,9 +770,23 @@ class TPairList {
             || lastPair.equals(traits.disambiguator())) {
             duffsAndErrors.add(TibetanMachineWeb.getGlyph(hashKey));
         } else {
-            traits.getDuffForWowel(duffsAndErrors,
-                                   TibetanMachineWeb.getGlyph(hashKey),
-                                   lastPair.getRight());
+            try {
+                traits.getDuffForWowel(duffsAndErrors,
+                                       TibetanMachineWeb.getGlyph(hashKey),
+                                       lastPair.getRight());
+            } catch (IllegalArgumentException e) {
+                // TODO(dchandler): Error 137 isn't the perfect
+                // message.  Try EWTS [RAM], e.g. to see why.  It acts
+                // like we're trying to find a single glyph for (R
+                // . A+M) in that case.
+                duffsAndErrors.add(ErrorsAndWarnings.getMessage(noCorrespondingTMWGlyphIsError
+                                                                ? 137
+                                                                : 511,
+                                                                shortMessages,
+                                                                recoverTranslit(),
+                                                                traits));
+                return;
+            }
         }
         if (previousSize == duffsAndErrors.size())
             throw new Error("TPairList with no duffs? " + toString() + " has hash key " + hashKey + " and previous size is " + previousSize); // FIXME: change to assertion.

@@ -633,7 +633,7 @@ public class TibTextUtils implements THDLWylieConstants {
         if (vowel.equals(WYLIE_aVOWEL)
             || TibetanMachineWeb.isTopVowel(context_2)) {
             if (TibetanMachineWeb.isTopVowel(context_2))
-                throw new IllegalArgumentException("dropping vowels is bad1");
+                throw new IllegalArgumentException("dropping vowels is bad1:" + vowel);
             if (!context_added[0]) {
                 context_added[0] = true;
                 if (context_1 != null)
@@ -686,7 +686,7 @@ public class TibTextUtils implements THDLWylieConstants {
             if (!TibetanMachineWeb.isTopVowel(context_2)) {
                 DuffCode[] dc_v = (DuffCode[])TibetanMachineWeb.getTibHash().get(reverse_i_VOWEL);
                 l.add(dc_v[TibetanMachineWeb.TMW]);
-            } else throw new IllegalArgumentException("dropping vowels is bad2");
+            } else throw new IllegalArgumentException("dropping vowels is bad2:" + vowel);
 
             return;
         }
@@ -716,7 +716,7 @@ public class TibTextUtils implements THDLWylieConstants {
             
             if (null != dc_v)
                 l.add(dc_v);
-            else throw new IllegalArgumentException("dropping vowels is bad3");
+            else throw new IllegalArgumentException("dropping vowels is bad3:" + vowel);
 
             return;
         }
@@ -740,7 +740,7 @@ public class TibTextUtils implements THDLWylieConstants {
             
             if (null != dc_v)
                 l.add(dc_v);
-            else throw new IllegalArgumentException("dropping vowels is bad4");
+            else throw new IllegalArgumentException("dropping vowels is bad4:" + vowel);
 
             return;
         }
@@ -763,7 +763,7 @@ public class TibTextUtils implements THDLWylieConstants {
 
             if (null != dc_v)
                 l.add(dc_v);
-            else throw new IllegalArgumentException("dropping vowels is bad5");
+            else throw new IllegalArgumentException("dropping vowels is bad5:" + vowel);
 
             return;
         }
@@ -792,7 +792,7 @@ public class TibTextUtils implements THDLWylieConstants {
             
             if (null != dc_v)
                 l.add(dc_v);
-            else throw new IllegalArgumentException("dropping vowels is bad6");
+            else throw new IllegalArgumentException("dropping vowels is bad6:" + vowel);
 
             return;
         }
@@ -815,7 +815,7 @@ public class TibTextUtils implements THDLWylieConstants {
             
             if (null != dc_v)
                 l.add(dc_v);
-            else throw new IllegalArgumentException("dropping vowels is bad7");            
+            else throw new IllegalArgumentException("dropping vowels is bad7:" + vowel);
 
             return;
         }
@@ -838,7 +838,7 @@ public class TibTextUtils implements THDLWylieConstants {
             
             if (null != dc_v && !TibetanMachineWeb.isTopVowel(context_2))
                 l.add(dc_v);
-            else throw new IllegalArgumentException("dropping vowels is bad8");
+            else throw new IllegalArgumentException("dropping vowels is bad8:" + vowel);
 
             return;
         }
@@ -868,7 +868,7 @@ public class TibTextUtils implements THDLWylieConstants {
             if (null != dc_v_sub && null != dc_v_sup) {
                 l.add(dc_v_sub);
                 l.add(dc_v_sup);
-            } else throw new IllegalArgumentException("dropping vowels is bad9");
+            } else throw new IllegalArgumentException("dropping vowels is bad9:" + vowel);
 
             return;
         }
@@ -894,7 +894,7 @@ public class TibTextUtils implements THDLWylieConstants {
             if (null != dc_v_sub && null != dc_v_sup) {
                 l.add(dc_v_sub);
                 l.add(dc_v_sup);
-            } else throw new IllegalArgumentException("dropping vowels is bad10");
+            } else throw new IllegalArgumentException("dropping vowels is bad10:" + vowel);
 
             return;
         }
