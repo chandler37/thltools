@@ -684,10 +684,17 @@ public class TConverter {
                                         tdocLocation[0] += s.getText().length();
                                         continue; // FIXME: this means the unicode above doesn't go into the output if null != writer && null != tdoc?
                                     } else {
-                                        if ("#".equals(s.getText())) { // hard-coded ACIP value
+                                        if (ttraits.isACIP()
+                                            && "#".equals(s.getText())) { // hard-coded ACIP value
                                             duff = new Object[] {
-                                                TibetanMachineWeb.getGlyph("@#"),
-                                                TibetanMachineWeb.getGlyph("#")
+                                                TibetanMachineWeb.getGlyph("@#"),  // hard-coded EWTS
+                                                TibetanMachineWeb.getGlyph("#")  // hard-coded EWTS
+                                            }; // hard-coded EWTS values
+                                        } else if (!ttraits.isACIP()
+                                                   && "//".equals(s.getText())) {
+                                            duff = new Object[] {
+                                                TibetanMachineWeb.getGlyph("/"),  // hard-coded EWTS
+                                                TibetanMachineWeb.getGlyph("/")   // hard-coded EWTS
                                             }; // hard-coded EWTS values
                                         } else {
                                             String wy = ttraits.getEwtsForOther(s.getText());
