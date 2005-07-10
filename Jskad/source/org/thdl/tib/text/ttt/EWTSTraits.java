@@ -397,6 +397,7 @@ public final class EWTSTraits implements TTraits {
             if ("R".equals(l)) return "\u0f6a";
             if ("Y".equals(l)) return "\u0f61";
             if ("W".equals(l)) return "\u0f5d";
+            if ("//".equals(l)) return "\u0f0e";
             
             if (!TibetanMachineWeb.isKnownHashKey(l)) {
 //                 System.err.println("Getting unicode for the following is hard: '"

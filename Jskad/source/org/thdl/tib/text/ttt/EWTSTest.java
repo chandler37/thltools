@@ -676,7 +676,9 @@ public class EWTSTest extends TestCase {
         ewts2uni_test(" ", "\u0F0B");
         ewts2uni_test("*", "\u0F0C");
         ewts2uni_test("/", "\u0F0D");
-        if (RUN_FAILING_TESTS) ewts2uni_test("//", "\u0F0E");
+        ewts2uni_test("//", "\u0F0E");
+        ewts2uni_test("////", "\u0F0E\u0f0e");
+        ewts2uni_test("/////", "\u0F0E\u0f0e\u0f0d");
         ewts2uni_test(";", "\u0F0F");
         ewts2uni_test("\\u0F10", "\u0F10");
         ewts2uni_test("|", "\u0F11");

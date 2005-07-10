@@ -79,7 +79,7 @@ class EWTSTshegBarScanner extends TTshegBarScanner {
     // TODO(DLC)[EWTS->Tibetan]:: '@#', in ewts->tmw, is not working
     // TODO(DLC)[EWTS->Tibetan]:: 'jamX 'jam~X one is not working in ->tmw mode
     // TODO(DLC)[EWTS->Tibetan]:: dzaHsogs is not working
-    for (int i = 0; i < sl; i++) {
+    for (int i = 0; i < sl; i++) {  // i is modified in the loop, also
       if (isValidInsideTshegBar(sb.charAt(i))) {
         StringBuffer tbsb = new StringBuffer();
         for (; i < sl; i++) {
@@ -96,16 +96,22 @@ class EWTSTshegBarScanner extends TTshegBarScanner {
         // NOTE: It's questionable, but we treat
         // \u0f00 like punctuation because it was
         // easier coding that way.
-        if ((sb.charAt(i) >= EWTSTraits.PUA_MIN
-             && sb.charAt(i) <= EWTSTraits.PUA_MAX)
-            || (sb.charAt(i) >= '\u0f00' && sb.charAt(i) <= '\u0f17')
-            || (sb.charAt(i) >= '\u0f1a' && sb.charAt(i) <= '\u0f1f')
-            || (sb.charAt(i) >= '\u0fbe' && sb.charAt(i) <= '\u0fcc')
-            || (sb.charAt(i) >= '\u0fcf' && sb.charAt(i) <= '\u0fd1')
-            || (EWTSTraits.SAUVASTIKA == sb.charAt(i))
-            || (EWTSTraits.SWASTIKA == sb.charAt(i))
-            || (" /;|!:=_@#$%<>()*&\r\n\t\u0f36\u0f38\u0f89\u0f8a\u0f8b".indexOf(sb.charAt(i))
-                >= 0)) {
+        if (i + 1 < sl
+            && sb.charAt(i) == '/'
+            && sb.charAt(i + 1) == '/') {
+          al.add(new TString("EWTS", "//",
+                             TString.TIBETAN_PUNCTUATION));
+          ++i;
+        } else if ((sb.charAt(i) >= EWTSTraits.PUA_MIN
+                    && sb.charAt(i) <= EWTSTraits.PUA_MAX)
+                   || (sb.charAt(i) >= '\u0f00' && sb.charAt(i) <= '\u0f17')
+                   || (sb.charAt(i) >= '\u0f1a' && sb.charAt(i) <= '\u0f1f')
+                   || (sb.charAt(i) >= '\u0fbe' && sb.charAt(i) <= '\u0fcc')
+                   || (sb.charAt(i) >= '\u0fcf' && sb.charAt(i) <= '\u0fd1')
+                   || (EWTSTraits.SAUVASTIKA == sb.charAt(i))
+                   || (EWTSTraits.SWASTIKA == sb.charAt(i))
+                   || (" /;|!:=_@#$%<>()*&\r\n\t\u0f36\u0f38\u0f89\u0f8a\u0f8b".indexOf(sb.charAt(i))
+                       >= 0)) {
           al.add(new TString("EWTS", sb.substring(i, i+1),
                              TString.TIBETAN_PUNCTUATION));
         } else {
