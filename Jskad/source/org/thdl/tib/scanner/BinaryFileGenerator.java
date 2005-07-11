@@ -17,10 +17,15 @@ Contributor(s): ______________________________________.
 */
 package org.thdl.tib.scanner;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.RandomAccessFile;
+
+import org.thdl.util.Link;
 import org.thdl.util.SimplifiedLinkedList;
 import org.thdl.util.SimplifiedListIterator;
-import org.thdl.util.Link;
 
 
 /** Converts Tibetan dictionaries stored in text files

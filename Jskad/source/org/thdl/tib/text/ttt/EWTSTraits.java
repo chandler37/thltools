@@ -23,11 +23,11 @@ package org.thdl.tib.text.ttt;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.thdl.tib.text.tshegbar.UnicodeUtils;
 import org.thdl.tib.text.DuffCode;
 import org.thdl.tib.text.THDLWylieConstants;
 import org.thdl.tib.text.TibTextUtils;
 import org.thdl.tib.text.TibetanMachineWeb;
+import org.thdl.tib.text.tshegbar.UnicodeUtils;
 import org.thdl.util.ThdlDebug;
 
 /** A singleton class that should contain (but due to laziness and

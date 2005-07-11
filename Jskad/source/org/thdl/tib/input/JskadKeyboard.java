@@ -18,13 +18,11 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.input;
 
-import java.util.Vector;
 import java.net.URL;
 
+import org.thdl.tib.text.TibetanMachineWeb;
 import org.thdl.util.RTFPane;
 import org.thdl.util.ThdlLazyException;
-import org.thdl.tib.text.TibetanMachineWeb;
-import org.thdl.tib.input.DuffPane;
 
 /** A JskadKeyboard is the high-level view of a Tibetan-input keyboard
     that Jskad has.  Each keyboard is associated with a .ini file

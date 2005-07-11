@@ -18,8 +18,13 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.scanner;
 
-import java.net.*;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.URL;
 
 /** Provides an interfase to convert from tibetan text transliterated in the Acip scheme to THDL's <a href="http://iris.lib.virginia.edu/tibet/tools/ewts.pdf" target="_blank">Extended Wylie</a> scheme.
 

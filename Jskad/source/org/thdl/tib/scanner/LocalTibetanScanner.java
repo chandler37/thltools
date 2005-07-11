@@ -17,10 +17,8 @@ Contributor(s): ______________________________________.
 */
 
 package org.thdl.tib.scanner;
-import org.thdl.util.*;
-import java.io.*;
-import java.util.Vector;
 import java.util.Enumeration;
+import java.util.Vector;
 
 /** Loads dictionary stored in tree format and searches for words recursively.
     How the the dictionary is loaded depends on which implementation of

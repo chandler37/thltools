@@ -18,17 +18,30 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text;
 
-import java.util.*;
-import javax.swing.*; 
-import javax.swing.text.*;
-import javax.swing.text.rtf.RTFEditorKit;
-import java.io.*;
 import java.awt.Color;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-import org.thdl.util.ThdlDebug;
-import org.thdl.util.ThdlOptions;
-import org.thdl.util.ThdlLazyException;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Element;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.Position;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import javax.swing.text.rtf.RTFEditorKit;
+
 import org.thdl.tib.text.tshegbar.UnicodeUtils;
+import org.thdl.util.ThdlDebug;
+import org.thdl.util.ThdlLazyException;
+import org.thdl.util.ThdlOptions;
 
 /** Represents a character meant to be rendered in a certain font.
  *  @author David Chandler

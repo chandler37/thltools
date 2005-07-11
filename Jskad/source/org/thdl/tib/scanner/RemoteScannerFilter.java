@@ -17,13 +17,14 @@ Contributor(s): ______________________________________.
 */
 package org.thdl.tib.scanner;
 
-import org.thdl.util.*;
-import java.util.*;
-import java.io.*;
-import java.text.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.util.ResourceBundle;
+
+import javax.servlet.GenericServlet;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 /** Running on the server, receives the tibetan text from applet/applications running on
     the client and sends them the words with their definitions through the Internet.

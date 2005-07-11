@@ -27,9 +27,9 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 import org.thdl.tib.text.DuffCode;
+import org.thdl.tib.text.THDLWylieConstants;
 import org.thdl.tib.text.TibetanDocument;
 import org.thdl.tib.text.TibetanMachineWeb;
-import org.thdl.tib.text.THDLWylieConstants;
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlOptions;
 

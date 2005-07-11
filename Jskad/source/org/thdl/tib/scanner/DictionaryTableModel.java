@@ -17,10 +17,10 @@ Contributor(s): ______________________________________.
 */
 package org.thdl.tib.scanner;
 
-import javax.swing.*;
-import javax.swing.table.*;
-import org.thdl.tib.text.TibTextUtils;
+import javax.swing.table.AbstractTableModel;
+
 import org.thdl.tib.text.DuffData;
+import org.thdl.tib.text.TibTextUtils;
 
 /** Stores the words being displayed in a DictionaryTable.
 

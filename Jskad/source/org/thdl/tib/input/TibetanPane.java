@@ -18,17 +18,13 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.input;
 
-import java.io.*;
-import java.util.*;
-import java.awt.datatransfer.*;
-import javax.swing.*;
-import javax.swing.text.*;
-import javax.swing.text.rtf.*;
+import java.awt.datatransfer.DataFlavor;
 
-import org.thdl.tib.text.*;
-import org.thdl.util.ThdlDebug;
-import org.thdl.util.ThdlLazyException;
-import org.thdl.util.ThdlOptions;
+import javax.swing.JTextPane;
+import javax.swing.text.rtf.RTFEditorKit;
+
+import org.thdl.tib.text.TibetanDocument;
+import org.thdl.tib.text.TibetanRTFEditorKit;
 
 /**
 * Enables display of Tibetan text using Tibetan Computer Company's

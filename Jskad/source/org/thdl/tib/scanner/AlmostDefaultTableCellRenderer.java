@@ -17,11 +17,17 @@ Contributor(s): ______________________________________.
 */
 package org.thdl.tib.scanner;
 
-import java.awt.*;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.border.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Component;
 import java.io.Serializable;
+
+import javax.swing.JComponent;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableCellRenderer;
 
 /** Used by DictionaryTable to display multiple lines of
     text (in Roman script) in a single cell.

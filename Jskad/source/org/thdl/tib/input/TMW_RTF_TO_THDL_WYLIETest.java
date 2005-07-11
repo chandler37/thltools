@@ -18,16 +18,16 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.input;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+
 import junit.framework.TestCase;
 
-import java.io.File;
-import java.io.PrintStream;
-import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
-
-import org.thdl.util.ThdlOptions;
-import org.apache.commons.jrcs.tools.JDiff;
 import org.apache.commons.jrcs.diff.Revision;
+import org.apache.commons.jrcs.tools.JDiff;
+import org.thdl.util.ThdlOptions;
 
 /**
  * @author David Chandler

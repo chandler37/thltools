@@ -18,17 +18,18 @@ Contributor(s): Edward Garrett.
 
 package org.thdl.tib.text;
 
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.border.*;
-import javax.swing.text.*;
-import org.thdl.tib.input.DuffPane;
-import org.thdl.tib.text.*;
-import org.thdl.tib.text.DuffData;
-import org.thdl.util.ThdlDebug;
-
+import java.awt.Color;
+import java.awt.Component;
 import java.io.Serializable;
+
+import javax.swing.JComponent;
+import javax.swing.JTable;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableCellRenderer;
+
+import org.thdl.tib.input.DuffPane;
 
 /** Used by DictionaryTable to display a Tibetan word or phrase
 	(in either Roman or Tibetan script) in a single cell.

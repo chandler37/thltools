@@ -17,10 +17,12 @@ Contributor(s): ______________________________________.
 */
 package org.thdl.tib.scanner;
 
-import javax.swing.event.*;
-import javax.swing.*;
-import java.awt.*;
-import javax.swing.table.*;
+import java.awt.TextArea;
+
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableModel;
 
 /** Used by the DictionaryTable to display the full definition
 	of Tibetan word displayed in a table when its row is clicked.

@@ -17,8 +17,8 @@ Contributor(s): ______________________________________.
 */
 package org.thdl.tib.scanner;
 
-import java.io.*;
-import org.thdl.util.*;
+import org.thdl.util.SimplifiedLinkedList;
+import org.thdl.util.SimplifiedListIterator;
 
 /** Provides recommended implementation of the {@link SyllableListTree}
 	(currently most efficient memory-speed combination) loading

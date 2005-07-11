@@ -17,8 +17,12 @@ Contributor(s): ______________________________________.
 */
 package org.thdl.tib.scanner;
 
-import java.io.*;
-import org.thdl.util.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.RandomAccessFile;
+
+import org.thdl.util.SimplifiedLinkedList;
 
 /** Searches the words directly in a file; not the preferred
 	implementation. The search is too slow!

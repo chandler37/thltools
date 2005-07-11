@@ -19,20 +19,26 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text;
 
-import java.util.*;
-import java.net.URL;
-import java.io.*;
-import java.lang.*;
 import java.awt.Font;
-import java.awt.event.KeyEvent;
-import javax.swing.text.*;
-import java.awt.font.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
-import org.thdl.util.ThdlDebug;
-import org.thdl.util.ThdlLazyException;
-import org.thdl.util.Trie;
-import org.thdl.util.ThdlOptions;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+
 import org.thdl.tib.text.tshegbar.UnicodeUtils;
+import org.thdl.util.ThdlDebug;
+import org.thdl.util.ThdlOptions;
+import org.thdl.util.Trie;
 
 /**
 * Interfaces between Extended Wylie and the TibetanMachineWeb fonts.

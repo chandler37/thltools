@@ -21,7 +21,6 @@ package org.thdl.tib.text.ttt;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.thdl.tib.text.tshegbar.UnicodeUtils;
 import org.thdl.tib.text.TGCPair;
 import org.thdl.tib.text.TibetanMachineWeb;
 import org.thdl.util.ThdlDebug;

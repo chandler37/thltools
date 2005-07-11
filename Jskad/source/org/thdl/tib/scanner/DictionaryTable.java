@@ -17,10 +17,16 @@ Contributor(s): ______________________________________.
 */
 package org.thdl.tib.scanner;
 
-import javax.swing.*;
-import javax.swing.table.*;
-import javax.swing.event.*;
-import java.awt.*;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.TextArea;
+
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 /** Table of two columns that displays a Tibetan word or
 	phrase (in either Tibetan or Roman script) and the

@@ -18,14 +18,15 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.scanner;
 
-import org.thdl.util.*;
-import org.thdl.tib.text.TibetanHTML;
-import java.util.*;
-import java.io.*;
-import java.text.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.io.PrintWriter;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.thdl.util.ThdlOptions;
 
 /** Interfase to provide access to an on-line dictionary through a form in html; 
     Inputs Tibetan text (Roman script only) and displays the

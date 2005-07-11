@@ -18,8 +18,10 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text;
 
-import javax.swing.*; 
-import javax.swing.text.*;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.Element;
+import javax.swing.text.View;
+import javax.swing.text.ViewFactory;
 
 import org.thdl.util.ThdlOptions;
 

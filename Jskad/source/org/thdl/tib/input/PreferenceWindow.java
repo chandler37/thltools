@@ -18,8 +18,15 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.input;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.GraphicsEnvironment;
+import java.awt.GridLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 /** Shows a standard dialog window to set the preferences
     for the tibetan and roman script used

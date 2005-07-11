@@ -18,14 +18,20 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.scanner;
 
-import java.awt.datatransfer.*;
-import java.io.*;
-import javax.swing.*;
-import javax.swing.text.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
+import java.io.InputStream;
 
-import org.thdl.tib.input.*;
-import org.thdl.tib.text.*;
-import org.thdl.util.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+
+import org.thdl.tib.input.DuffPane;
+import org.thdl.tib.text.TibetanDocument;
+import org.thdl.util.RTFFixerInputStream;
+import org.thdl.util.ThdlDebug;
+import org.thdl.util.ThdlOptions;
 
 /** Identical to DuffPane except that it only supports Tibetan script in
     TibetanMachineWeb. No roman script can be inputted. If roman script is

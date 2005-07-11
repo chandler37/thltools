@@ -18,20 +18,20 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text;
 
-import java.util.*;
-import javax.swing.*; 
-import javax.swing.text.*;
-import javax.swing.text.rtf.RTFEditorKit;
-import java.io.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
-import org.thdl.util.ThdlDebug;
-import org.thdl.tib.text.ttt.TTraits;
-import org.thdl.tib.text.ttt.ACIPTraits;
-import org.thdl.tib.text.ttt.EWTSTraits;
-import org.thdl.tib.text.ttt.TConverter;
 import org.thdl.tib.text.tshegbar.LegalTshegBar;
 import org.thdl.tib.text.tshegbar.UnicodeConstants;
 import org.thdl.tib.text.tshegbar.UnicodeUtils;
+import org.thdl.tib.text.ttt.ACIPTraits;
+import org.thdl.tib.text.ttt.EWTSTraits;
+import org.thdl.tib.text.ttt.TConverter;
+import org.thdl.tib.text.ttt.TTraits;
+import org.thdl.util.ThdlDebug;
 
 /**
 * Provides methods for converting back and forth between Extended

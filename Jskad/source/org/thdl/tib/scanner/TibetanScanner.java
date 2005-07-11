@@ -17,7 +17,9 @@ Contributor(s): ______________________________________.
 */
 
 package org.thdl.tib.scanner;
-import org.thdl.util.*;
+import org.thdl.util.SimplifiedLinkedList;
+import org.thdl.util.SimplifiedListIterator;
+import org.thdl.util.ThdlVersion;
 
 /** Defines the core methods required to provide access to a dictionary; local or remote.
 

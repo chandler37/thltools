@@ -18,15 +18,30 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.input;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.filechooser.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
 
-import org.thdl.util.*;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import org.thdl.util.ThdlActionListener;
+import org.thdl.util.ThdlDebug;
+import org.thdl.util.ThdlOptions;
+import org.thdl.util.ThdlVersion;
 
 /** A GUI widget used to convert Tibetan documents from one encoding
     to another.

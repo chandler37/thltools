@@ -21,11 +21,11 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.text.ttt;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Comparator;
+import java.util.List;
 
-import org.thdl.tib.text.TibetanMachineWeb;
 import org.thdl.tib.text.THDLWylieConstants;
+import org.thdl.tib.text.TibetanMachineWeb;
 
 /** A factory for creating {@link TPairList TPairLists} from
  *  Strings of ACIP.

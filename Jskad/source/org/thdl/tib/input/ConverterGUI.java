@@ -18,13 +18,19 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.input;
 
-import java.io.*;
-
-import org.thdl.util.*;
-import org.thdl.tib.text.*;
-import javax.swing.JOptionPane;
 import java.awt.Frame;
-import java.awt.Dialog;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+
+import javax.swing.JOptionPane;
+
+import org.thdl.util.ThdlDebug;
+import org.thdl.util.ThdlLazyException;
+import org.thdl.util.ThdlOptions;
 
 /** The ConverterGUI is a Swing GUI application.  It is used for
  *  converting TibetanMachine-, TibetanMachineWeb-, and THDL Extended

@@ -17,9 +17,14 @@ Contributor(s): ______________________________________.
 */
 package org.thdl.tib.scanner;
 
-import org.thdl.util.*;
-import java.net.*; 
-import java.io.*; 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLConnection;
+
+import org.thdl.util.SimplifiedLinkedList;
 
 /** Used by applets and applications to access remote on-line dictionaries.
     Sends Tibetan text, and receives the words with their definitions. The

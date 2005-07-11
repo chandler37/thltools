@@ -18,7 +18,6 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.tshegbar;
 
-import java.io.InputStream;
 
 /** A UnicodeReader attempts to read from an InputStream and forms our
  *  <i>TTBIR</i>, our Tibetan Tsheg Bar Internal Representation.  You

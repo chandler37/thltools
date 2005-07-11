@@ -18,22 +18,58 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.input;
 
-import java.io.*;
-import java.util.*;
-import java.awt.*;
-import java.awt.datatransfer.*;
-import java.awt.font.*;
-import java.awt.event.*;
-import javax.swing.*; 
-import javax.swing.text.*;
-import javax.swing.event.*;
-import javax.swing.text.rtf.*;
+import java.awt.Font;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
 
-import org.thdl.tib.text.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JOptionPane;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Caret;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.JTextComponent;
+import javax.swing.text.Keymap;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.Position;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import javax.swing.text.StyledDocument;
+
+import org.thdl.tib.text.DuffCode;
+import org.thdl.tib.text.DuffData;
+import org.thdl.tib.text.InvalidTransliterationException;
+import org.thdl.tib.text.THDLWylieConstants;
+import org.thdl.tib.text.TibTextUtils;
+import org.thdl.tib.text.TibetanDocument;
+import org.thdl.tib.text.TibetanKeyboard;
+import org.thdl.tib.text.TibetanMachineWeb;
+import org.thdl.util.RTFFixerInputStream;
+import org.thdl.util.StatusBar;
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlOptions;
-import org.thdl.util.StatusBar;
-import org.thdl.util.RTFFixerInputStream;
 
 /**
 * Enables input of Tibetan text

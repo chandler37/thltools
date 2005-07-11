@@ -18,7 +18,6 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.input;
 
-import junit.framework.TestCase;
 
 /**
  * @author David Chandler

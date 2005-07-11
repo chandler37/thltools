@@ -20,8 +20,6 @@ package org.thdl.tib.input;
 
 import java.util.Properties;
 
-import org.thdl.tib.input.JskadKeyboard;
-import org.thdl.util.ThdlLazyException;
 import org.thdl.util.ThdlOptions;
 
 /** A JskadKeyboardFactory determines which Tibetan keyboards Jskad

@@ -18,8 +18,7 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text;
 
-import javax.swing.*; 
-import javax.swing.text.*;
+import javax.swing.text.ViewFactory;
 import javax.swing.text.rtf.RTFEditorKit;
 
 /** An EditorKit that is cognizant of the line-wrapping rules for

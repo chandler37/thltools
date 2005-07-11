@@ -18,19 +18,28 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.input;
 
-import java.io.*;
-import javax.swing.text.rtf.RTFEditorKit;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
+import java.util.ArrayList;
+
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
+import javax.swing.text.rtf.RTFEditorKit;
 
-import org.thdl.util.*;
-import org.thdl.tib.text.*;
-
-import org.thdl.tib.text.ttt.TConverter;
+import org.thdl.tib.text.TibetanDocument;
 import org.thdl.tib.text.ttt.ACIPTraits;
 import org.thdl.tib.text.ttt.EWTSTraits;
+import org.thdl.tib.text.ttt.TConverter;
 import org.thdl.tib.text.ttt.TTraits;
-import java.util.ArrayList;
+import org.thdl.util.RTFFixerInputStream;
+import org.thdl.util.ThdlDebug;
+import org.thdl.util.ThdlLazyException;
+import org.thdl.util.ThdlOptions;
+import org.thdl.util.ThdlVersion;
 
 /** TibetanConverter is a command-line utility for converting to and
  *  from Tibetan Machine Web (TMW).  It converts TMW to Wylie, ACIP,

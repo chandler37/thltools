@@ -21,7 +21,6 @@ package org.thdl.tib.text.ttt;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import org.thdl.util.ThdlDebug;
 import org.thdl.tib.text.TGCList;
 import org.thdl.tib.text.TibTextUtils;
 

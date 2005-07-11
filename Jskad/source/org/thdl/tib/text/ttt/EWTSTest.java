@@ -23,9 +23,9 @@ import java.util.ArrayList;
 
 import junit.framework.TestCase;
 
-import org.thdl.util.ThdlOptions;
 import org.thdl.tib.text.TibetanDocument;
 import org.thdl.tib.text.tshegbar.UnicodeUtils;
+import org.thdl.util.ThdlOptions;
 
 /** Tests this package's ability to understand EWTS and turn it into
  *  the appropriate TMW or Unicode.

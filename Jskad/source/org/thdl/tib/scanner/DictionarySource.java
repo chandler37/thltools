@@ -17,7 +17,9 @@ Contributor(s): ______________________________________.
 */
 
 package org.thdl.tib.scanner;
-import java.io.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
 /** Specifies a generic interface to access and process a subset of 
     dictionaries among a set of dictionaries.

@@ -17,13 +17,30 @@ Contributor(s): ______________________________________.
 */
 package org.thdl.tib.scanner;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
-import org.thdl.tib.input.*;
-import org.thdl.util.*;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Choice;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.TextArea;
+import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.event.TableModelEvent;
+
+import org.thdl.tib.input.DuffPane;
+import org.thdl.tib.input.JskadKeyboardFactory;
+import org.thdl.tib.input.JskadKeyboardManager;
+import org.thdl.tib.input.PreferenceWindow;
+import org.thdl.util.ThdlLazyException;
+import org.thdl.util.ThdlOptions;
 
 /** Graphical interfase to be used by applications and applets
 	to input a Tibetan text (in Roman or Tibetan script) and

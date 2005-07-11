@@ -20,8 +20,8 @@ package org.thdl.tib.text.ttt;
 
 import java.util.HashSet;
 
-import org.thdl.tib.text.tshegbar.UnicodeUtils;
 import org.thdl.tib.text.THDLWylieConstants;
+import org.thdl.tib.text.tshegbar.UnicodeUtils;
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlOptions;
 

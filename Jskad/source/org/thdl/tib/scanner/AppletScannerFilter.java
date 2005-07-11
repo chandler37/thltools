@@ -18,14 +18,32 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.scanner;
 
-import java.awt.*;
-import java.applet.Applet;
-import javax.swing.*;
+import java.awt.Frame;
+import java.awt.TextArea;
+import java.awt.TextComponent;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+
+import javax.swing.JApplet;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 import javax.swing.text.JTextComponent;
-import java.awt.event.*;
-import java.awt.datatransfer.*;
+
 import org.thdl.tib.input.DuffPane;
-import org.thdl.util.*;
+import org.thdl.util.ThdlOptions;
 
 /** Inputs a Tibetan text and displays the words with
 	their definitions through through a graphical interfase using a

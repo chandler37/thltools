@@ -18,8 +18,6 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.input;
 
-import java.io.*;
-import java.awt.*;
 
 /** Constants used by ConvertDialog.
 

@@ -18,9 +18,13 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.scanner;
 
-import org.thdl.util.*;
-import java.util.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+
+import org.thdl.util.SimplifiedLinkedList;
+import org.thdl.util.SimplifiedListIterator;
 
 /** Loads the whole dictionary into memory; not the preferred
 	implementation. Provides the fastest search, but takes up to

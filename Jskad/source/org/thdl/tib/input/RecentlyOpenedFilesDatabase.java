@@ -18,10 +18,10 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.input;
 
-import org.thdl.util.ThdlOptions;
-
-import java.util.Vector;
 import java.io.File;
+import java.util.Vector;
+
+import org.thdl.util.ThdlOptions;
 
 /** A database of the files most recently opened in Jskad.  The client
     must call {@link #storeRecentlyOpenedFilePreferences()} before

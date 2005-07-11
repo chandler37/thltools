@@ -1,10 +1,19 @@
 package org.thdl.tib.scanner;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.*;
-import java.io.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Checkbox;
+import java.awt.CheckboxGroup;
+import java.awt.Choice;
+import java.awt.FileDialog;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+
+import javax.swing.JFileChooser;
 
 /** provides a friendly user interface when the command-line
     is not used for choosing a dictionary or connection to open.

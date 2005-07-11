@@ -18,8 +18,10 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text;
 
-import javax.swing.*; 
-import javax.swing.text.*;
+import javax.swing.text.Element;
+import javax.swing.text.LabelView;
+import javax.swing.text.Segment;
+import javax.swing.text.View;
 
 /** A TibetanLabelView is a LabelView that has its own idea, informed
  *  by its knowledge of Tibetan, about where a good place to break

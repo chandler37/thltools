@@ -20,9 +20,6 @@ package org.thdl.tib.input;
 
 import junit.framework.TestCase;
 
-import javax.swing.Action;
-import javax.swing.KeyStroke;
-
 import org.thdl.util.ThdlOptions;
 
 /**

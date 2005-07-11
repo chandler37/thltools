@@ -18,7 +18,6 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text;
 
-import java.util.Vector;
 
 /**
 * A stretch of Roman transliteration all in a certain font size.

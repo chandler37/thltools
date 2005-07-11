@@ -17,10 +17,16 @@ Contributor(s): ______________________________________.
 */
 package org.thdl.tib.scanner;
 
-import org.thdl.util.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.URL;
 
-import java.io.*;
-import java.net.*;
+import org.thdl.util.SimplifiedLinkedList;
+import org.thdl.util.SimplifiedListIterator;
 
 /** Inputs a Tibetan text and displays the words with their
     definitions through the console over a shell. Use when no

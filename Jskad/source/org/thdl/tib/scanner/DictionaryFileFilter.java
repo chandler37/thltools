@@ -1,7 +1,6 @@
 package org.thdl.tib.scanner;
 
-import java.io.*;
-import javax.swing.filechooser.*;
+import java.io.File;
 
 class DictionaryFileFilter extends javax.swing.filechooser.FileFilter
 {

@@ -17,8 +17,10 @@ Contributor(s): ______________________________________.
 */
 package org.thdl.tib.scanner;
 
-import java.io.*;
-import java.util.*;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+import java.util.Calendar;
+import java.util.ResourceBundle;
 
 /** Designed to keep a log of the transactions taking place in the 
     servlet version of the translation tool.

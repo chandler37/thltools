@@ -18,13 +18,24 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.scanner;
 
-import java.awt.*;
-import java.util.*;
-import java.io.*;
-import java.awt.event.*;
-import java.awt.*;
-import java.awt.datatransfer.*;
-import org.thdl.util.*;
+import java.awt.CheckboxMenuItem;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
+import java.awt.TextArea;
+import java.awt.TextComponent;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+
+import org.thdl.util.ThdlOptions;
 
 /** Provides a graphical interfase to input Tibetan text (in Roman script)
     and displays the words (in Roman script) with their definitions. Use

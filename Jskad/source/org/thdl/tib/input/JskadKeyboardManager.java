@@ -20,8 +20,6 @@ package org.thdl.tib.input;
 
 import java.util.Vector;
 
-import org.thdl.tib.input.JskadKeyboard;
-
 /** A JskadKeyboardManager maintains a list of JskadKeyboards.
 
     @author David Chandler

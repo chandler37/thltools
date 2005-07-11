@@ -17,8 +17,17 @@ Contributor(s): ______________________________________.
 */
 
 package org.thdl.tib.scanner;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.List;
+import java.awt.Panel;
+import java.awt.TextArea;
+import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /** A non-Swing graphical interfase to be used by applications
     running on platforms that don't support Swing,

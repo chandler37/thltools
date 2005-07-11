@@ -17,7 +17,9 @@ Contributor(s): ______________________________________.
 */
 package org.thdl.tib.scanner;
 
-import java.io.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
 /** Specifies a subset of dictionaries among a set of
 	dictionaries. Supports a maximum of 30 dictionaries.
