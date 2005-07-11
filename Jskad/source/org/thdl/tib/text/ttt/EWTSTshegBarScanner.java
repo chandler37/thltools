@@ -21,6 +21,8 @@ package org.thdl.tib.text.ttt;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
+import org.thdl.tib.text.THDLWylieConstants;
+
 /**
 * This singleton class is able to break up Strings of EWTS text (for
 * example, an entire sutra file) into tsheg bars, comments, etc.
@@ -76,8 +78,11 @@ class EWTSTshegBarScanner extends TTshegBarScanner {
     StringBuffer sb = new StringBuffer(s);
     ExpandEscapeSequences(sb);
     int sl = sb.length();
-    // TODO(DLC)[EWTS->Tibetan]:: '@#', in ewts->tmw, is not working
-    // TODO(DLC)[EWTS->Tibetan]:: 'jamX 'jam~X one is not working in ->tmw mode
+    // TODO(DLC)[EWTS->Tibetan]:: '@#', in ewts->tmw, is not working (probably because)
+    // TODO(DLC)[EWTS->Tibetan]:: '#', in ewts->tmw, is not working
+    //
+    // TODO(DLC)[EWTS->Tibetan]:: 'jamX one is not working in ewts->tmw mode in the sense that X appears under the last glyph of the three instead of the middle glyph
+    //
     // TODO(DLC)[EWTS->Tibetan]:: dzaHsogs is not working
     for (int i = 0; i < sl; i++) {  // i is modified in the loop, also
       if (isValidInsideTshegBar(sb.charAt(i))) {
@@ -102,14 +107,14 @@ class EWTSTshegBarScanner extends TTshegBarScanner {
           al.add(new TString("EWTS", "//",
                              TString.TIBETAN_PUNCTUATION));
           ++i;
-        } else if ((sb.charAt(i) >= EWTSTraits.PUA_MIN
-                    && sb.charAt(i) <= EWTSTraits.PUA_MAX)
+        } else if ((sb.charAt(i) >= THDLWylieConstants.PUA_MIN
+                    && sb.charAt(i) <= THDLWylieConstants.PUA_MAX)
                    || (sb.charAt(i) >= '\u0f00' && sb.charAt(i) <= '\u0f17')
                    || (sb.charAt(i) >= '\u0f1a' && sb.charAt(i) <= '\u0f1f')
                    || (sb.charAt(i) >= '\u0fbe' && sb.charAt(i) <= '\u0fcc')
                    || (sb.charAt(i) >= '\u0fcf' && sb.charAt(i) <= '\u0fd1')
-                   || (EWTSTraits.SAUVASTIKA == sb.charAt(i))
-                   || (EWTSTraits.SWASTIKA == sb.charAt(i))
+                   || (THDLWylieConstants.SAUVASTIKA == sb.charAt(i))
+                   || (THDLWylieConstants.SWASTIKA == sb.charAt(i))
                    || (" /;|!:=_@#$%<>()*&\r\n\t\u0f36\u0f38\u0f89\u0f8a\u0f8b".indexOf(sb.charAt(i))
                        >= 0)) {
           al.add(new TString("EWTS", sb.substring(i, i+1),
@@ -186,7 +191,31 @@ class EWTSTshegBarScanner extends TTshegBarScanner {
                             // leave x == -1
                         }
                         if (x >= 0) {
-                            sb.replace(i, i + "\\uXXXX".length(), new String(new char[] { (char)x }));
+                            String replacement = String.valueOf((char)x);
+
+                            if (false) {
+                                // This would ruin EWTS->Unicode to
+                                // help EWTS->TMW, so we don't do it.
+                                // TODO(dchandler): Fix EWTS->TMW for
+                                // \u0f02 and \u0f03.
+
+                                // A nasty little HACK for you:
+                                //
+                                // TODO(dchandler): we may create "ga..u~M`H..ha" which may cause errors
+                                String hack = null;
+                                if ('\u0f02' == x) {
+                                    hack = "u~M`H";  // hard-coded EWTS
+                                } else if ('\u0f03' == x) {
+                                    hack = "u~M`:";  // hard-coded EWTS
+                                } else if ('\u0f00' == x) {
+                                    hack = "oM";  // hard-coded EWTS
+                                }
+                                if (null != hack) {
+                                    replacement = "." + hack + ".";  // hard-coded EWTS disambiguators
+                                    i += replacement.length() - 1;
+                                }
+                            }
+                            sb.replace(i, i + "\\uXXXX".length(), replacement);
                             continue;
                         }
                     }

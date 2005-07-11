@@ -21,6 +21,7 @@ package org.thdl.tib.text.ttt;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.thdl.tib.text.tshegbar.UnicodeUtils;
 import org.thdl.tib.text.TGCPair;
 import org.thdl.tib.text.TibetanMachineWeb;
 import org.thdl.util.ThdlDebug;
@@ -710,47 +711,49 @@ class TPairList {
         wylieForConsonant.append(lastPair.getWylie(true, false));
         String hashKey = wylieForConsonant.toString();
 
-        // Because EWTS has special handling for full-formed
-        // subjoined consonants, we have special handling here.
-        if ("r+y".equals(hashKey))
-            hashKey = "r+Y";
-        else if ("y+y".equals(hashKey))
-            hashKey = "y+Y";
-        else if ("N+D+y".equals(hashKey))
-            hashKey = "N+D+Y";
-        else if ("N+D+r+y".equals(hashKey))
-            hashKey = "N+D+R+y";
-        else if ("k+Sh+r".equals(hashKey))
-            hashKey = "k+Sh+R";
+        if (traits.isACIP()) {
+            // Because EWTS has special handling for full-formed
+            // subjoined consonants, we have special handling here.
+            if ("r+y".equals(hashKey))
+                hashKey = "r+Y";
+            else if ("y+y".equals(hashKey))
+                hashKey = "y+Y";
+            else if ("N+D+y".equals(hashKey))
+                hashKey = "N+D+Y";
+            else if ("N+D+r+y".equals(hashKey))
+                hashKey = "N+D+R+y";
+            else if ("k+Sh+r".equals(hashKey))
+                hashKey = "k+Sh+R";
         
-        // TPair.getWylie(..) returns "W" sometimes when "w" is what
-        // really should be returned.  ("V" always causes "w" to be
-        // returned, which is fine.)  We'll change "W" to "w" here if
-        // we need to.  We do it only for a few known stacks (the ones
-        // in TMW).
-        if ("W".equals(hashKey))
-            hashKey = "w";
-        else if ("W+y".equals(hashKey))
-            hashKey = "w+y";
-        else if ("W+r".equals(hashKey))
-            hashKey = "w+r";
-        else if ("W+n".equals(hashKey))
-            hashKey = "w+n";
-        else if ("W+W".equals(hashKey))
-            hashKey = "w+W";
+            // TPair.getWylie(..) returns "W" sometimes when "w" is what
+            // really should be returned.  ("V" always causes "w" to be
+            // returned, which is fine.)  We'll change "W" to "w" here if
+            // we need to.  We do it only for a few known stacks (the ones
+            // in TMW).
+            if ("W".equals(hashKey))
+                hashKey = "w";
+            else if ("W+y".equals(hashKey))
+                hashKey = "w+y";
+            else if ("W+r".equals(hashKey))
+                hashKey = "w+r";
+            else if ("W+n".equals(hashKey))
+                hashKey = "w+n";
+            else if ("W+W".equals(hashKey))
+                hashKey = "w+W";
 
-        if ("r+Y".equals(hashKey)
-            || "r+W".equals(hashKey)
-            || "r+sh".equals(hashKey)
-            || "r+sh+y".equals(hashKey)
-            || "r+Sh".equals(hashKey)
-            || "r+Sh+N".equals(hashKey)
-            || "r+Sh+N+y".equals(hashKey)
-            || "r+Sh+m".equals(hashKey)
-            || "r+Sh+y".equals(hashKey)
-            || "r+s".equals(hashKey)
-            ) {
-            hashKey = "R" + hashKey.substring(1); // r+Y => R+Y, etc.
+            if ("r+Y".equals(hashKey)
+                || "r+W".equals(hashKey)
+                || "r+sh".equals(hashKey)
+                || "r+sh+y".equals(hashKey)
+                || "r+Sh".equals(hashKey)
+                || "r+Sh+N".equals(hashKey)
+                || "r+Sh+N+y".equals(hashKey)
+                || "r+Sh+m".equals(hashKey)
+                || "r+Sh+y".equals(hashKey)
+                || "r+s".equals(hashKey)
+                ) {
+                hashKey = "R" + hashKey.substring(1); // r+Y => R+Y, etc.
+            }
         }
 
         if (!TibetanMachineWeb.isKnownHashKey(hashKey)) {
@@ -774,7 +777,7 @@ class TPairList {
                 traits.getDuffForWowel(duffsAndErrors,
                                        TibetanMachineWeb.getGlyph(hashKey),
                                        lastPair.getRight());
-            } catch (IllegalArgumentException e) {
+            } catch (ConversionException e) {
                 // TODO(dchandler): Error 137 isn't the perfect
                 // message.  Try EWTS [RAM], e.g. to see why.  It acts
                 // like we're trying to find a single glyph for (R

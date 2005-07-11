@@ -546,10 +546,12 @@ public final class ACIPTraits implements TTraits {
 
     /** Gets the duffcodes for wowel, such that they look good with
      *  the preceding glyph, and appends them to duff. */
-    public void getDuffForWowel(ArrayList duff, DuffCode preceding, String wowel) {
+    public void getDuffForWowel(ArrayList duff, DuffCode preceding, String wowel)
+            throws ConversionException
+    {
         if (null == wowel) return;
         if (null == getEwtsForWowel(wowel)) // FIXME: expensive assertion!  Use assert.
-            throw new IllegalArgumentException("Wowel " + wowel + " isn't in the small set of wowels we handle correctly.");
+            throw new ConversionException("Wowel " + wowel + " isn't in the small set of wowels we handle correctly.");
 
         // Order matters here.
         boolean context_added[] = new boolean[] { false };
@@ -619,8 +621,10 @@ public final class ACIPTraits implements TTraits {
         try {
             return TPairListFactory.breakACIPIntoChunks(tt, sh);
         } catch (StackOverflowError e) {
+            // TODO(dchandler): use ConversionException?  Stop catching these?
             throw new IllegalArgumentException("Input too large[1]: " + tt);
         } catch (OutOfMemoryError e) {
+            // TODO(dchandler): use ConversionException?  Stop catching these?
             throw new IllegalArgumentException("Input too large[2]: " + tt);
         }
     }

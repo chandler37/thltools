@@ -136,7 +136,8 @@ public interface TTraits {
 
     /** Gets the duffcodes for wowel, such that they look good with
      *  the preceding glyph, and appends them to duff. */
-    void getDuffForWowel(ArrayList duff, DuffCode preceding, String wowel);
+    void getDuffForWowel(ArrayList duff, DuffCode preceding, String wowel)
+            throws ConversionException;
     
     /** Human-readable name of this transliteration for short error
         strings. */

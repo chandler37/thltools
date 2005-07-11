@@ -1347,11 +1347,25 @@ public static boolean isKnownHashKey(String hashKey) {
 * @see DuffCode
 */
 public static DuffCode getGlyph(String hashKey) {
-    DuffCode[] dc = (DuffCode[])tibHash.get(hashKey);
+    DuffCode dc = maybeGetGlyph(hashKey);
     if (null == dc)
         throw new Error("Hash key " + hashKey + " not found; it is likely that you misconfigured tibwn.ini such that, say, M is expected (i.e., it is listed as, e.g. punctuation), but no 'M~...' line appears.");
+    return dc;
+}
+
+/**
+* Gets a glyph for this hash key if possible; returns null
+* otherwise.
+* @see #getGlyph(String)
+*/
+public static DuffCode maybeGetGlyph(String hashKey) {
+    DuffCode[] dc = (DuffCode[])tibHash.get(hashKey);
+    if (null == dc)
+        return null;
     return dc[TMW];
 }
+
+
 
 /**
 * Gets the half height character for this hash key.
@@ -1783,6 +1797,8 @@ private static final String Unicode_tab = "\t";
         = new DuffCode[] { new DuffCode(1, (char)58) };
     private static final DuffCode[] tmwFor0F73
         = new DuffCode[] { new DuffCode(4, (char)106), new DuffCode(1, (char)109) };
+    private static final DuffCode[] tmwFor0F75
+        = new DuffCode[] { new DuffCode(10, (char)126) };
     private static final DuffCode[] tmwFor0F76
         = new DuffCode[] { new DuffCode(8, (char)71), new DuffCode(8, (char)87) };
     private static final DuffCode[] tmwFor0F77
@@ -1840,6 +1856,8 @@ private static final String Unicode_tab = "\t";
             return tmwFor0F6A;
         } else if ('\u0F73' == ch) {
             return tmwFor0F73;
+        } else if ('\u0F75' == ch) {
+            return tmwFor0F75;
         } else if ('\u0F76' == ch) {
             return tmwFor0F76;
         } else if ('\u0F77' == ch) {

@@ -242,8 +242,8 @@
 \f1\fs144 >\f3 6\f1 >\f2\i0\b0\ul0 k+s+ma\fs28\i0\b0\ul0\cf0  font 2; ord 54\par
 \f1\fs144 >\f3 7\f1 >\f2\i0\b0\ul0 k+s+ya\fs28\i0\b0\ul0\cf0  font 2; ord 55\par
 \f1\fs144 >\f3 8\f1 >\f2\i0\b0\ul0 k+s+wa\fs28\i0\b0\ul0\cf0  font 2; ord 56\par
-\f1\fs144 >\f3 9\f1 >\f2\i0\b0\ul0 <<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert <glyph font=TibetanMachineWeb2 charNum=59 character=;/> to THDL Extended Wylie.  Please see the documentation for the TM or TMW font and transcribe this yourself.]]>>\fs28\i0\b0\ul0\cf0  font 2; ord 57\par
-\f1\fs144 >\f3 :\f1 >\f2\i0\b0\ul0 <<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert <glyph font=TibetanMachineWeb2 charNum=60 character=</> to THDL Extended Wylie.  Please see the documentation for the TM or TMW font and transcribe this yourself.]]>>\fs28\i0\b0\ul0\cf0  font 2; ord 58\par
+\f1\fs144 >\f3 9\f1 >\f2\i0\b0\ul0\\u0F88+k\fs28\i0\b0\ul0\cf0  font 2; ord 57\par
+\f1\fs144 >\f3 :\f1 >\f2\i0\b0\ul0\\u0F88+kh\fs28\i0\b0\ul0\cf0  font 2; ord 58\par
 \f1\fs144 >\f3 ;\f1 >\f2\i0\b0\ul0 kh+kha\fs28\i0\b0\ul0\cf0  font 2; ord 59\par
 \f1\fs144 >\f3 <\f1 >\f2\i0\b0\ul0 kh+na\fs28\i0\b0\ul0\cf0  font 2; ord 60\par
 \f1\fs144 >\f3 =\f1 >\f2\i0\b0\ul0 kh+la\fs28\i0\b0\ul0\cf0  font 2; ord 61\par
@@ -812,8 +812,8 @@
 \f1\fs144 >\f6 ^\f1 >\f2\i0\b0\ul0\\u0F13\fs28\i0\b0\ul0\cf0  font 5; ord 94\par
 \f1\fs144 >\f6 _\f1 >\f2\i0\b0\ul0 <\fs28\i0\b0\ul0\cf0  font 5; ord 95\par
 \f1\fs144 >\f6 `\f1 >\f2\i0\b0\ul0 >\fs28\i0\b0\ul0\cf0  font 5; ord 96\par
-\f1\fs144 >\f6 a\f1 >\f2\i0\b0\ul0 <<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert <glyph font=TibetanMachineWeb8 charNum=97 character=a/> to THDL Extended Wylie.  Please see the documentation for the TM or TMW font and transcribe this yourself.]]>>\fs28\i0\b0\ul0\cf0  font 5; ord 97\par
-\f1\fs144 >\f6 b\f1 >\f2\i0\b0\ul0 <<[[JSKAD_TMW_TO_WYLIE_ERROR_NO_SUCH_WYLIE: Cannot convert <glyph font=TibetanMachineWeb8 charNum=98 character=b/> to THDL Extended Wylie.  Please see the documentation for the TM or TMW font and transcribe this yourself.]]>>\fs28\i0\b0\ul0\cf0  font 5; ord 98\par
+\f1\fs144 >\f6 a\f1 >\f2\i0\b0\ul0\\u5350\fs28\i0\b0\ul0\cf0  font 5; ord 97\par
+\f1\fs144 >\f6 b\f1 >\f2\i0\b0\ul0\\u534D\fs28\i0\b0\ul0\cf0  font 5; ord 98\par
 \f1\fs144 >\f6 c\f1 >\f2\i0\b0\ul0\\uF038\fs28\i0\b0\ul0\cf0  font 5; ord 99\par
 \f1\fs144 >\f6 d\f1 >\f2\i0\b0\ul0\\uF037\fs28\i0\b0\ul0\cf0  font 5; ord 100\par
 \f1\fs144 >\f6 e\f1 >\f2\i0\b0\ul0 X\fs28\i0\b0\ul0\cf0  font 5; ord 101\par

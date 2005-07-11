@@ -43,7 +43,7 @@ public class VerboseUnicodeDump {
 					    java.nio.charset.Charset.forName(args[1]));
         int x;
         while (-1 != (x = fr.read())) {
-            System.out.println(org.thdl.tib.text.tshegbar.UnicodeUtils.unicodeCodepointToString((char)x, false, ""));
+            System.out.println(org.thdl.tib.text.tshegbar.UnicodeUtils.unicodeCodepointToString((char)x, false, "", false));
         }
         System.exit(0);
     }

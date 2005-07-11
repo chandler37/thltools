@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import org.thdl.tib.text.DuffCode;
 import org.thdl.tib.text.TibetanDocument;
 import org.thdl.tib.text.TibetanMachineWeb;
+import org.thdl.tib.text.THDLWylieConstants;
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlOptions;
 
@@ -699,7 +700,13 @@ public class TConverter {
                                         } else {
                                             String wy = ttraits.getEwtsForOther(s.getText());
                                             if (null == wy) throw new Error("No wylie for ACIP " + s.getText());
-                                            duff = new Object[] { TibetanMachineWeb.getGlyph(wy) };
+                                            duff = new Object[] { TibetanMachineWeb.maybeGetGlyph(wy) };
+                                            if (null == duff[0]) {
+                                              duff[0] =
+                                                ErrorsAndWarnings.getMessage(
+                                                    137, shortMessages,
+                                                    s.getText(), ttraits);
+                                            }
                                         }
                                     }
                                 }
@@ -730,8 +737,8 @@ public class TConverter {
                             ThdlDebug.verify(1 == s.getText().length());
                             if (null != writer) {
                                 char ch = s.getText().charAt(0);
-                                if (ch >= EWTSTraits.PUA_MIN
-                                    && ch <= EWTSTraits.PUA_MAX) {
+                                if (ch >= THDLWylieConstants.PUA_MIN
+                                    && ch <= THDLWylieConstants.PUA_MAX) {
                                     hasErrors = true;
                                     String errorMessage =
                                         "[#ERROR "

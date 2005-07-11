@@ -418,7 +418,7 @@ public class TibTextUtils implements THDLWylieConstants {
 
                 chars.clear();
 
-                if (next.equals(String.valueOf(BINDU))) {
+                if (next.equals(BINDU)) {
                     if (glyphs.isEmpty())
                         dc = null;
                     else 
@@ -560,11 +560,11 @@ public class TibTextUtils implements THDLWylieConstants {
 * or null */
     public static void getBindu(List list, DuffCode dc) {
         if (null == dc) {
-            list.add(TibetanMachineWeb.getGlyph(String.valueOf(BINDU)));
+            list.add(TibetanMachineWeb.getGlyph(BINDU));
         } else {
             if (!TibetanMachineWeb.getBinduMap().containsKey(dc)) {
                 list.add(dc);
-                list.add(TibetanMachineWeb.getGlyph(String.valueOf(BINDU)));
+                list.add(TibetanMachineWeb.getGlyph(BINDU));
             } else {
                 list.add((DuffCode)TibetanMachineWeb.getBinduMap().get(dc));
             }

@@ -21,6 +21,7 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.text.ttt;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.thdl.tib.text.tshegbar.UnicodeUtils;
 import org.thdl.tib.text.DuffCode;
@@ -102,124 +103,172 @@ public final class EWTSTraits implements TTraits {
 
     public boolean isWowel(String s) {
         return (getUnicodeForWowel(s) != null);
-        /* TODO(DLC)[EWTS->Tibetan]: test ko+m+e etc.
-        // TODO(DLC)[EWTS->Tibetan]: all non-consonant combiners? 0f71 0f87 etc.?
-    	if (s.length() == 1 && isUnicodeWowel(s.charAt(0))) return true;
-        return ("a".equals(s)
-                || "e".equals(s)
-                || "i".equals(s)
-                || "o".equals(s)
-                || "u".equals(s)
-                || "U".equals(s)
-                || "I".equals(s)
-                || "A".equals(s)
-                || "-i".equals(s)
-                || "-I".equals(s)
-                || "au".equals(s)
-                || "ai".equals(s)
-                || isWowelThatRequiresAChen(s));
-                 // TODO(DLC)[EWTS->Tibetan]:???
-        */
     }
 
-    public String aVowel() { return "a"; }
+    public String aVowel() { return THDLWylieConstants.WYLIE_aVOWEL; }
 
     public boolean isPostsuffix(String s) {
         return ("s".equals(s) || "d".equals(s));
     }
 
     public boolean isPrefix(String l) {
-        return ("'".equals(l)
-                || "m".equals(l)
-                || "b".equals(l)
-                || "d".equals(l)
-                || "g".equals(l));
+        return (THDLWylieConstants.ACHUNG.equals(l)
+                || THDLWylieConstants.MA.equals(l)
+                || THDLWylieConstants.BA.equals(l)
+                || THDLWylieConstants.DA.equals(l)
+                || THDLWylieConstants.GA.equals(l));
     }
 
     public boolean isSuffix(String l) {
-        return ("s".equals(l)
-                || "g".equals(l)
-                || "d".equals(l)
-                || "m".equals(l)
-                || "'".equals(l)
-                || "b".equals(l)
-                || "ng".equals(l)
-                || "n".equals(l)
-                || "l".equals(l)
-                || "r".equals(l));
+        return (isPrefix(l)
+                || THDLWylieConstants.SA.equals(l)
+                || THDLWylieConstants.NGA.equals(l)
+                || THDLWylieConstants.NA.equals(l)
+                || THDLWylieConstants.LA.equals(l)
+                || THDLWylieConstants.RA.equals(l));
     }
 
-    /** Returns l, since this is EWTS's traits class. */
-    public String getEwtsForConsonant(String l) { return l; }
+    /** Returns the best EWTS for l, which is often l but not always
+     *  thanks to Unicode escapes.  NOTE: For "\u0f42", you don't want
+     *  to return "g" lest "\\u0f42ya " become the wrong thing under
+     *  EWTS->Unicode. */
+    public String getEwtsForConsonant(String l) {
+        return helpGetEwts(l);
+    }
 
-    /** Returns l, since this is EWTS's traits class. */
-    public String getEwtsForOther(String l) { return l; }
+    /** Returns the best EWTS for l, which is often l but not always
+     *  thanks to Unicode escapes. */
+    public String getEwtsForOther(String l) {
+        return helpGetEwts(l);
+    }
+
+    private String helpGetEwts(String l) {
+        if (l.length() == 1
+            && ((l.charAt(0) >= THDLWylieConstants.PUA_MIN
+                 && l.charAt(0) <= THDLWylieConstants.PUA_MAX)
+                || 0 <= "\u0F01\u0F09\u0F0A\u0F10\u0F12\u0F13\u0F15\u0F16\u0F17\u0F18\u0F19\u0F1A\u0F1B\u0F1C\u0F1D\u0F1E\u0F1F\u0F2A\u0F2B\u0F2C\u0F2D\u0F2E\u0F2F\u0F30\u0F31\u0F32\u0F33\u0F36\u0F38\u0F86\u0F87\u0F88\u0F89\u0F8A\u0F8B\u0FBE\u0FBF\u0FC0\u0FC1\u0FC2\u0FC3\u0FC4\u0FC5\u0FC6\u0FC7\u0FC8\u0FC9\u0FCA\u0FCB\u0FCC\u0FCF\u5350\u534D".indexOf(l.charAt(0)))) {
+            return UnicodeUtils.unicodeCodepointToString(l.charAt(0), false, "\\u", true);
+        }
+        if (false) {  // TODO(dchandler): it's too late in the game to do this.  EWTS->TMW is broken for \u0f00, \u0f02, and \u0f03 right now, fix that.
+            if ("\u0f02".equals(l)) return "u~M`H";  // too long for a single hash key, see?
+            if ("\u0f03".equals(l)) return "u~M`:";  // ditto
+        }
+        return l;
+    }
 
     /** Returns l, since this is EWTS's traits class. */
     public String getEwtsForWowel(String l) { return l; }
 
     public TTshegBarScanner scanner() { return EWTSTshegBarScanner.instance(); }
 
-    public void getDuffForWowel(ArrayList duff, DuffCode preceding, String wowel)
-            throws IllegalArgumentException
+    /** If needle is found in haystack, then haystack without the
+     *  first instance of needle is returned.  Otherwise haystack
+     *  itself is returned. */
+    private static String removeFirstMatch(String haystack, String needle) {
+        int ix;
+        if ((ix = haystack.indexOf(needle)) >= 0) {
+            StringBuffer sb = new StringBuffer(haystack);
+            sb.replace(ix, ix + needle.length(), "");
+            return sb.toString();
+        }
+        return haystack;
+    }
+    
+    private static HashMap bestEwtsMap = null;
+    private static String getBestEwtsForSingleWowel(String wowel) {
+        // NOTE: Not MT-safe
+        if (null == bestEwtsMap) {
+            bestEwtsMap = new HashMap(20);
+            // Unicode-escape sequences are handled early.  To be
+            // correct, we must "unescape" here any Unicode escape to
+            // whatever tibwn.ini has.  (TODO(dchandler): tibwn.ini
+            // has this info, use that instead of duplicating it in
+            // this code.)
+            bestEwtsMap.put("\u0f18", THDLWylieConstants.U0F18);
+            bestEwtsMap.put("\u0f19", THDLWylieConstants.U0F19);
+            bestEwtsMap.put("\u0f35", THDLWylieConstants.U0F35);
+            bestEwtsMap.put("\u0f37", THDLWylieConstants.U0F37);
+            bestEwtsMap.put("\u0f39", THDLWylieConstants.WYLIE_TSA_PHRU);
+            bestEwtsMap.put("\u0f3e", THDLWylieConstants.U0F3E);
+            bestEwtsMap.put("\u0f3f", THDLWylieConstants.U0F3F);
+            bestEwtsMap.put("\u0f84", THDLWylieConstants.U0F84);
+            bestEwtsMap.put("\u0f86", THDLWylieConstants.U0F86);
+            bestEwtsMap.put("\u0f87", THDLWylieConstants.U0F87);
+            bestEwtsMap.put("\u0fc6", THDLWylieConstants.U0FC6);
+
+            bestEwtsMap.put("\u0f71", THDLWylieConstants.A_VOWEL);
+            bestEwtsMap.put("\u0f72", THDLWylieConstants.i_VOWEL);
+            bestEwtsMap.put("\u0f74", THDLWylieConstants.u_VOWEL);
+            bestEwtsMap.put("\u0f7a", THDLWylieConstants.e_VOWEL);
+            bestEwtsMap.put("\u0f7b", THDLWylieConstants.ai_VOWEL);
+            bestEwtsMap.put("\u0f7c", THDLWylieConstants.o_VOWEL);
+            bestEwtsMap.put("\u0f7d", THDLWylieConstants.au_VOWEL);
+            bestEwtsMap.put("\u0f7e", THDLWylieConstants.BINDU);
+            bestEwtsMap.put("\u0f80", THDLWylieConstants.reverse_i_VOWEL);
+            bestEwtsMap.put("\u0f81", THDLWylieConstants.reverse_I_VOWEL);
+
+            bestEwtsMap.put("\u0f73", THDLWylieConstants.I_VOWEL);  // not in tibwn.ini
+            bestEwtsMap.put("\u0f75", THDLWylieConstants.U_VOWEL);  // not in tibwn.ini
+        }
+        String mapping = (String)bestEwtsMap.get(wowel);
+        if (null != mapping)
+            return mapping;
+        else
+            return wowel;
+    }
+
+    public void getDuffForWowel(ArrayList duff, DuffCode preceding,
+                                String wowel)
+            throws ConversionException
     {
-        // TODO(DLC)[EWTS->Tibetan]: I have no confidence in this! test, test, test.
+        boolean preceding_added[] = new boolean[] { false };
+        String[] wowels = wowel.split("\\+");
+        for (int i = 0; i < wowels.length; i++) {
+            getDuffForSingleWowel(duff, preceding,
+                                  getBestEwtsForSingleWowel(wowels[i]),
+                                  preceding_added);
+        }
+    }
 
-        // TODO(DLC)[EWTS->Tibetan]: ko+o doesn't work.  kai+-i doesn't work.
-
-        // TODO(DLC)[EWTS->Tibetan]: kai doesn't work.
-
-        // Order matters here.
-        boolean context_added[] = new boolean[] { false };
-        if (wowel.equals(THDLWylieConstants.WYLIE_aVOWEL)) {
-            TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.WYLIE_aVOWEL, context_added);
+    /** Wowels can stack.  This works on a single wowel. */
+    private void getDuffForSingleWowel(ArrayList duff, DuffCode preceding,
+                                       String wowel, boolean preceding_added[])
+            throws ConversionException
+    {
+        if (wowel.equals(THDLWylieConstants.WYLIE_aVOWEL)) { // TODO(dchandler): ka+o deserves at least a warning.  kaM, though, does not.  Do we handle it?
+            TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.WYLIE_aVOWEL, preceding_added);
+            wowel = "";
         } else {
-            // TODO(DLC)[EWTS->Tibetan]: test vowel stacking
-            if (wowel.indexOf(THDLWylieConstants.U_VOWEL) >= 0) {
-                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.U_VOWEL, context_added);
-            }
-            if (wowel.indexOf(THDLWylieConstants.reverse_I_VOWEL) >= 0) {
-                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.reverse_I_VOWEL, context_added);
-            } else if (wowel.indexOf(THDLWylieConstants.I_VOWEL) >= 0) {
-                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.I_VOWEL, context_added);
-            }
-            if (wowel.indexOf(THDLWylieConstants.A_VOWEL) >= 0) {
-                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.A_VOWEL, context_added);
-            }
-            if (wowel.indexOf(THDLWylieConstants.ai_VOWEL) >= 0) {
-                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.ai_VOWEL, context_added);
-            } else if (wowel.indexOf(THDLWylieConstants.reverse_i_VOWEL) >= 0) {
-                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.reverse_i_VOWEL, context_added);
-            } else if (wowel.indexOf(THDLWylieConstants.i_VOWEL) >= 0) {
-                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.i_VOWEL, context_added);
-            }
-            if (wowel.indexOf(THDLWylieConstants.e_VOWEL) >= 0) {
-                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.e_VOWEL, context_added);
-            }
-            if (wowel.indexOf(THDLWylieConstants.o_VOWEL) >= 0) {
-                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.o_VOWEL, context_added);
-            }
-            if (wowel.indexOf(THDLWylieConstants.au_VOWEL) >= 0) {
-                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.au_VOWEL, context_added);
-            } else if (wowel.indexOf(THDLWylieConstants.u_VOWEL) >= 0) {
-                TibTextUtils.getVowel(duff, preceding, THDLWylieConstants.u_VOWEL, context_added);
-            }
-            if (wowel.indexOf("~X") >= 0) {  // TODO(DLC)[EWTS->Tibetan]: introduce THDLWylieConstants.blah
-                duff.add(TibetanMachineWeb.getGlyph("~X"));
-            } else if (wowel.indexOf("X") >= 0) {  // TODO(DLC)[EWTS->Tibetan]: introduce THDLWylieConstants.blah
-                duff.add(TibetanMachineWeb.getGlyph("X"));
+            // We call these combining because the TMW font treats
+            // such a vowel specially depending on the preceding glyph
+            // with which it combines.
+            String combining_wowels[] = new String[] {
+                // order does not matter
+                THDLWylieConstants.U_VOWEL,
+                THDLWylieConstants.reverse_I_VOWEL,
+                THDLWylieConstants.I_VOWEL,
+                THDLWylieConstants.A_VOWEL,
+                THDLWylieConstants.ai_VOWEL,
+                THDLWylieConstants.reverse_i_VOWEL,
+                THDLWylieConstants.i_VOWEL,
+                THDLWylieConstants.e_VOWEL,
+                THDLWylieConstants.o_VOWEL,
+                THDLWylieConstants.au_VOWEL,
+                THDLWylieConstants.u_VOWEL
+            };
+            for (int i = 0; i < combining_wowels.length; i++) {
+                if (wowel.equals(combining_wowels[i])) {
+                    TibTextUtils.getVowel(duff, preceding, combining_wowels[i],
+                                          preceding_added);
+                    wowel = removeFirstMatch(wowel, combining_wowels[i]);
+                }
             }
         }
         // FIXME: Use TMW9.61, the "o'i" special combination, when appropriate.
 
-        if (wowel.indexOf(THDLWylieConstants.BINDU) >= 0
-            // TODO(DLC)[EWTS->Tibetan]: This is really ugly... we
-            // rely on the fact that we know every Wylie wowel that
-            // contains 'M'.  Let's, instead, parse the wowel.
-            && wowel.indexOf(THDLWylieConstants.U0F82) < 0
-            && wowel.indexOf(THDLWylieConstants.U0F83) < 0) {
+        if (wowel.equals(THDLWylieConstants.BINDU)) {
             DuffCode last = null;
-            if (!context_added[0]) {
+            if (!preceding_added[0]) {
                 last = preceding;
             } else if (duff.size() > 0) {
                 last = (DuffCode)duff.get(duff.size() - 1);
@@ -227,52 +276,77 @@ public final class EWTSTraits implements TTraits {
                 // TODO(DLC)[EWTS->Tibetan]: is this okay????  when is a bindu okay to be alone???
             }
             TibTextUtils.getBindu(duff, last);
-            context_added[0] = true;
+            preceding_added[0] = true;
+            wowel = removeFirstMatch(wowel, THDLWylieConstants.BINDU);
         }
-        if (!context_added[0]) {
+
+        if (!preceding_added[0]) {
             duff.add(preceding);
+            preceding_added[0] = true;
         }
-        if (wowel.indexOf('H') >= 0)
-            duff.add(TibetanMachineWeb.getGlyph("H"));
-        int ix;
-        if ((ix = wowel.indexOf(THDLWylieConstants.WYLIE_TSA_PHRU)) >= 0) {
+
+        String standalone_wowels[] = new String[] {
+            // order does not matter
+
             // This likely won't look good!  TMW has glyphs for [va]
             // and [fa], so use that transliteration if you care, not
             // [ph^] or [b^].
-            duff.add(TibetanMachineWeb.getGlyph(THDLWylieConstants.WYLIE_TSA_PHRU));
-            StringBuffer sb = new StringBuffer(wowel);
-            sb.replace(ix, ix + THDLWylieConstants.WYLIE_TSA_PHRU.length(), "");
-            wowel = sb.toString();
+            THDLWylieConstants.WYLIE_TSA_PHRU,
+            THDLWylieConstants.U0F35,
+            THDLWylieConstants.U0F37,
+            THDLWylieConstants.U0F7F,
+            THDLWylieConstants.U0F82,
+            THDLWylieConstants.U0F83,
+            THDLWylieConstants.U0F86,
+            THDLWylieConstants.U0F87,
+            THDLWylieConstants.U0F19,
+            THDLWylieConstants.U0F18,
+            THDLWylieConstants.U0FC6,
+            THDLWylieConstants.U0F3E,
+            THDLWylieConstants.U0F3F,
+            THDLWylieConstants.U0F84,
+        };
+        for (int i = 0; i < standalone_wowels.length; i++) {
+            if (wowel.equals(standalone_wowels[i])) {
+                ThdlDebug.verify(preceding_added[0]);
+                duff.add(TibetanMachineWeb.getGlyph(standalone_wowels[i]));
+                wowel = removeFirstMatch(wowel, standalone_wowels[i]);
+            }
         }
-        if ((ix = wowel.indexOf(THDLWylieConstants.U0F82)) >= 0) {
-            duff.add(TibetanMachineWeb.getGlyph(THDLWylieConstants.U0F82));
-            StringBuffer sb = new StringBuffer(wowel);
-            sb.replace(ix, ix + THDLWylieConstants.U0F82.length(), "");
-            wowel = sb.toString();
-        }
-        if ((ix = wowel.indexOf(THDLWylieConstants.U0F83)) >= 0) {
-            duff.add(TibetanMachineWeb.getGlyph(THDLWylieConstants.U0F83));
-            StringBuffer sb = new StringBuffer(wowel);
-            sb.replace(ix, ix + THDLWylieConstants.U0F83.length(), "");
-            wowel = sb.toString();
-        }
-        
-        // TODO(DLC)[EWTS->Tibetan]: verify that no part of wowel is discarded!  acip does that.  'jam~X I think we screw up, e.g.
 
-        // TODO(DLC)[EWTS->Tibetan]:: are bindus are screwed up in the unicode output?  i see (with tmuni font) lone bindus without glyphs to stack on
+        // We verify that no part of wowel is discarded.
+        if (wowel.length() > 0) {
+            throw new ConversionException(
+                    "Full wowel was not handled, there remains: " + wowel);
+        }
+
+        // TODO(DLC)[EWTS->Tibetan]:: are bindus are screwed up in the
+        // unicode output?  i see (with tmuni font) lone bindus
+        // without glyphs to stack on
     }
 
     public String getUnicodeForWowel(String wowel) {
-        if ("a".equals(wowel))
+        if (THDLWylieConstants.WYLIE_aVOWEL.equals(wowel))
             return "";
         return helpGetUnicodeForWowel(wowel);
     }
 
     private String helpGetUnicodeForWowel(String wowel) {
-        if ("a".equals(wowel))
+        if (THDLWylieConstants.WYLIE_aVOWEL.equals(wowel))
             return null; // ko+a+e is invalid, e.g.
-        if (wowel.length() == 1 && isUnicodeWowel(wowel.charAt(0)))
+        if (wowel.length() == 1 && isUnicodeWowel(wowel.charAt(0))) {
+            if ("\u0f75".equals(wowel))
+                return "\u0f71\u0f74"; // \u0f75 is discouraged
+            if ("\u0f81".equals(wowel))
+                return "\u0f71\u0f80"; // \u0f81 is discouraged
+            if ("\u0f73".equals(wowel))
+                return "\u0f71\u0f72"; // \u0f73 is discouraged
+            if ("\u0f79".equals(wowel))
+                return "\u0fb3\u0f81"; // \u0f79 is discouraged
+            if ("\u0f78".equals(wowel))
+                return "\u0fb3\u0f80"; // \u0f78 is discouraged
             return wowel;
+        }
         // handle o+u, etc.
         int i;
         if ((i = wowel.indexOf("+")) >= 0) {
@@ -290,27 +364,27 @@ public final class EWTSTraits implements TTraits {
         } else {
             // Handle vowels.  (TODO(dchandler): tibwn.ini has this
             // info, use that instead of duplicating it in this code.)
-            if ("i".equals(wowel)) return "\u0f72";
-            if ("u".equals(wowel)) return "\u0f74";
-            if ("A".equals(wowel)) return "\u0f71";
-            if ("U".equals(wowel)) return "\u0f71\u0f74"; // \u0f75 is discouraged
-            if ("e".equals(wowel)) return "\u0f7a";
-            if ("o".equals(wowel)) return "\u0f7c";
-            if ("-i".equals(wowel)) return "\u0f80";
-            if ("ai".equals(wowel)) return "\u0f7b";
-            if ("au".equals(wowel)) return "\u0f7d";
-            if ("-I".equals(wowel)) return "\u0f81";
-            if ("I".equals(wowel)) return "\u0f71\u0f72"; // \u0f73 is discouraged
+            if (THDLWylieConstants.i_VOWEL.equals(wowel)) return "\u0f72";
+            if (THDLWylieConstants.u_VOWEL.equals(wowel)) return "\u0f74";
+            if (THDLWylieConstants.A_VOWEL.equals(wowel)) return "\u0f71";
+            if (THDLWylieConstants.U_VOWEL.equals(wowel)) return "\u0f71\u0f74";  // \u0f75 is discouraged
+            if (THDLWylieConstants.e_VOWEL.equals(wowel)) return "\u0f7a";
+            if (THDLWylieConstants.o_VOWEL.equals(wowel)) return "\u0f7c";
+            if (THDLWylieConstants.reverse_i_VOWEL.equals(wowel)) return "\u0f80";
+            if (THDLWylieConstants.ai_VOWEL.equals(wowel)) return "\u0f7b";
+            if (THDLWylieConstants.au_VOWEL.equals(wowel)) return "\u0f7d";
+            if (THDLWylieConstants.reverse_I_VOWEL.equals(wowel)) return "\u0f71\u0f80";  // \u0f81 is discouraged
+            if (THDLWylieConstants.I_VOWEL.equals(wowel)) return "\u0f71\u0f72";  // \u0f73 is discouraged
 
-            // TODO(DLC)[EWTS->Tibetan]: test, test, test.
-            if ("M".equals(wowel)) return "\u0f7e";
-            if ("H".equals(wowel)) return "\u0f7f";
-            if ("?".equals(wowel)) return "\u0f84";
-            if ("~M".equals(wowel)) return "\u0f83";
-            if ("~M`".equals(wowel)) return "\u0f82";
-            if ("X".equals(wowel)) return "\u0f37";
-            if ("~X".equals(wowel)) return "\u0f35";
-            if ("^".equals(wowel)) return "\u0f39";
+            // TODO(DLC)[EWTS->Tibetan]: what about \u0f3e and \u0f3f!!!!
+            if (THDLWylieConstants.BINDU.equals(wowel)) return "\u0f7e";
+            if (THDLWylieConstants.U0F7F.equals(wowel)) return "\u0f7f";
+            if (THDLWylieConstants.U0F84.equals(wowel)) return "\u0f84";
+            if (THDLWylieConstants.U0F83.equals(wowel)) return "\u0f83";
+            if (THDLWylieConstants.U0F82.equals(wowel)) return "\u0f82";
+            if (THDLWylieConstants.U0F37.equals(wowel)) return "\u0f37";
+            if (THDLWylieConstants.U0F35.equals(wowel)) return "\u0f35";
+            if (THDLWylieConstants.WYLIE_TSA_PHRU.equals(wowel)) return "\u0f39";
 
             return null;
         }
@@ -324,9 +398,9 @@ public final class EWTSTraits implements TTraits {
             for (int i = 0; i < l.length(); i++) {
                 char ch = l.charAt(i);
                 if ((ch < '\u0f00' || ch > '\u0fff')
-                    && SAUVASTIKA != ch
-                    && SWASTIKA != ch
-                    && (ch < PUA_MIN || ch > PUA_MAX)  // TODO(DLC)[EWTS->Tibetan]: give a warning, though?  PUA isn't specified by the unicode standard after all.
+                    && THDLWylieConstants.SAUVASTIKA != ch
+                    && THDLWylieConstants.SWASTIKA != ch
+                    && (ch < THDLWylieConstants.PUA_MIN || ch > THDLWylieConstants.PUA_MAX)  // TODO(DLC)[EWTS->Tibetan]: give a warning, though?  PUA isn't specified by the unicode standard after all.
                     && '\n' != ch
                     && '\r' != ch) {
                     // TODO(DLC)[EWTS->Tibetan]: Is this the place
@@ -345,6 +419,8 @@ public final class EWTSTraits implements TTraits {
             if ("R".equals(l)) return "\u0fbc";
             if ("Y".equals(l)) return "\u0fbb";
             if ("W".equals(l)) return "\u0fba";
+
+            // TODO(dchandler): use tibwn.ini -- it has this same info.
 
             // g+h etc. should not be inputs to this function, but for
             // completeness they're here.
@@ -455,18 +531,24 @@ public final class EWTSTraits implements TTraits {
     public boolean vowelsMayStack() { return true; }
 
     public boolean isWowelThatRequiresAChen(String s) {
-        // TODO(DLC)[EWTS->Tibetan]: fix me!
-        return ((s.length() == 1 && (isUnicodeWowelThatRequiresAChen(s.charAt(0))
-                                     || "?MHX^".indexOf(s.charAt(0)) >= 0))
-                || "~X".equals(s)
-                || "~M".equals(s)
-                || "~M`".equals(s)
-                );
+        // TODO(DLC)[EWTS->Tibetan]: not sure why we pick this subset.
+        // Why don't we use a negative set of regular vowels like "i",
+        // "o", etc.?
+        return ((s.length() == 1
+                 && (isUnicodeWowelThatRequiresAChen(s.charAt(0))))
+                || THDLWylieConstants.BINDU.equals(s)
+                || THDLWylieConstants.U0F35.equals(s)
+                || THDLWylieConstants.U0F37.equals(s)
+                || THDLWylieConstants.U0F7F.equals(s)
+                || THDLWylieConstants.U0F82.equals(s)
+                || THDLWylieConstants.U0F83.equals(s)
+                || THDLWylieConstants.U0F84.equals(s)
+                || THDLWylieConstants.WYLIE_TSA_PHRU.equals(s));
     }
 
     public boolean isUnicodeWowelThatRequiresAChen(char ch) {
         // TODO(DLC)[EWTS->Tibetan]: ask if 18 19 3e 3f combine only with digits
-        return "\u0f39\u0f35\u0f37\u0f18\u0f19\u0f3e\u0f3f\u0f86\u0f87\u0fc6".indexOf(ch) >= 0;
+        return ("\u0f39\u0f35\u0f37\u0f18\u0f19\u0f3e\u0f3f\u0f86\u0f87\u0fc6".indexOf(ch) >= 0);
     }
 
     public boolean couldBeValidStack(TPairList pl) {
@@ -485,33 +567,9 @@ public final class EWTSTraits implements TTraits {
 
     public boolean stackingMustBeExplicit() { return true; }
 
-    public String U0F7F() { return "H"; }
+    public String U0F7F() { return THDLWylieConstants.U0F7F; }
 
-    public String U0F35() { return "~X"; }
+    public String U0F35() { return THDLWylieConstants.U0F35; }
 
-    public String U0F37() { return "X"; }
-
-    /** The EWTS standard mentions this character specifically.  See
-        http://www.symbols.com/encyclopedia/15/155.html to learn about
-        its meaning as relates to Buddhism.
-    */
-    static final char SAUVASTIKA = '\u534d';
-
-    /** The EWTS standard mentions this character specifically.  See
-        http://www.symbols.com/encyclopedia/15/151.html to learn about
-        its meaning as relates to Buddhism.
-    */
-    static final char SWASTIKA = '\u5350';
-
-    /** EWTS has some glyphs not specified by Unicode in the
-     *  private-use area (PUA).  EWTS puts them in the range [PUA_MIN,
-     *  PUA_MAX].  (Note that \uf042 is the highest in use as of July
-     *  2, 2005.) */
-    static final char PUA_MIN = '\uf021';
-
-    /** EWTS has some glyphs not specified by Unicode in the
-     *  private-use area (PUA).  EWTS puts them in the range [PUA_MIN,
-     *  PUA_MAX].  (Note that \uf042 is the highest in use as of July
-     *  2, 2005.) */
-    static final char PUA_MAX = '\uf0ff';
+    public String U0F37() { return THDLWylieConstants.U0F37; }
 }

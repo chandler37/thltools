@@ -1377,7 +1377,7 @@ public void paste(int offset)
                 if (TibetanMachineWeb.isPunc(val)) { //punctuation
                     val = TibetanMachineWeb.getWylieForPunc(val);
 
-                    if (val.charAt(0) == TibetanMachineWeb.BINDU)
+                    if (val.startsWith(THDLWylieConstants.BINDU))
                         putBindu();
 
                     else {

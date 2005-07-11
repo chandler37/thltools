@@ -20,7 +20,12 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.text.ttt;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Comparator;
+
 import org.thdl.tib.text.TibetanMachineWeb;
+import org.thdl.tib.text.THDLWylieConstants;
 
 /** A factory for creating {@link TPairList TPairLists} from
  *  Strings of ACIP.
@@ -374,6 +379,85 @@ class TPairListFactory {
         return 0;
     }
 
+    /** Returns a TPair just like tp (sometimes the very same,
+     *  unchanged instance) except that the wowel, if present, is in
+     *  the order that Section 9.11 of the Unicode Standard, version
+     *  4.0.1, would have us use. */
+    private static TPair ewtsSortWowels(TPair tp) {
+        if (tp.getRight() != null
+            && tp.getRight().length() > 0
+            && !"+".equals(tp.getRight())) {
+            class WowelComparator implements Comparator {
+                /** @see
+                 * org.thdl.tib.text.tshegbar.UnicodeUtils#fixSomeOrderingErrorsInTibetanUnicode(StringBuffer) */
+                private List order = Arrays.asList(new String[] {
+                    // equivalence class:
+                    "\u0f39", THDLWylieConstants.WYLIE_TSA_PHRU,
+
+                    // equivalence class:
+                    THDLWylieConstants.WYLIE_aVOWEL,
+
+                    // equivalence class:
+                    "\u0f71", THDLWylieConstants.A_VOWEL,
+                    "\u0f73", THDLWylieConstants.I_VOWEL,  // TODO(dchandler): in a perfect world, we'd decompose and sort the components.
+                    "\u0f75", THDLWylieConstants.U_VOWEL,  // TODO(dchandler): in a perfect world, we'd decompose and sort the components.
+                    "\u0f81", THDLWylieConstants.reverse_I_VOWEL,  // TODO(dchandler): in a perfect world, we'd decompose and sort the components.
+
+                    "\u0f74", THDLWylieConstants.u_VOWEL,
+
+                    // equivalence class:
+                    "\u0f72", THDLWylieConstants.i_VOWEL,
+                    "\u0f7a", THDLWylieConstants.e_VOWEL,
+                    "\u0f7b", THDLWylieConstants.ai_VOWEL,
+                    "\u0f7c", THDLWylieConstants.o_VOWEL,
+                    "\u0f7d", THDLWylieConstants.au_VOWEL,
+                    "\u0f80", THDLWylieConstants.reverse_i_VOWEL,
+
+                    // equivalence class:
+                    "\u0f7e", THDLWylieConstants.BINDU,
+                    "\u0f82", THDLWylieConstants.U0F82,
+                    "\u0f83", THDLWylieConstants.U0F83,
+                    "\u0f86", THDLWylieConstants.U0F86,
+                    "\u0f87", THDLWylieConstants.U0F87,
+
+                    // NOTE: we always say "e" comes before "o" but
+                    // either order would work.
+
+                    /* TODO(dchandler): should these go with other
+                     * under-line wowels like \u0f74?  They're for the
+                     * whole tsheg-bar, so they're oddballs...
+                     *
+                     * bestEwtsMap.put("\u0f35", THDLWylieConstants.U0F35);
+                     *
+                     * bestEwtsMap.put("\u0f37", THDLWylieConstants.U0F37);
+                     *
+                     * bestEwtsMap.put("\u0f84", THDLWylieConstants.U0F84);
+                     *
+                     * bestEwtsMap.put("\u0fc6", THDLWylieConstants.U0FC6);
+                     */
+                });
+                public int compare(Object o1, Object o2) {
+                    int i1 = order.indexOf(o1);
+                    int i2 = order.indexOf(o2);
+                    if (i1 < 0) i1 = order.size();
+                    if (i2 < 0) i2 = order.size();
+                    return i1 - i2;
+                }
+            }
+            String wowels[] = tp.getRight().split("\\+");
+            java.util.Arrays.sort(wowels, new WowelComparator());
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < wowels.length; i++) {
+                sb.append(wowels[i]);
+                if (i + 1 < wowels.length)
+                    sb.append('+');
+            }
+            return new TPair(tp.getTraits(), tp.getLeft(), sb.toString());
+        } else {
+            return tp;
+        }
+    }
+
     // TODO(DLC)[EWTS->Tibetan]: doc
     private static TPairList breakHelperEWTS(String ewts, TTraits ttraits) {
 
@@ -383,7 +467,9 @@ class TPairListFactory {
 
         StringBuffer ewtsBuf = new StringBuffer(ewts);
         int howMuchBuf[] = new int[1];
-        TPair head = getFirstConsonantAndVowel(ewtsBuf, howMuchBuf, ttraits);
+        TPair head = ewtsSortWowels(getFirstConsonantAndVowel(ewtsBuf,
+                                                              howMuchBuf,
+                                                              ttraits));
         int howMuch = howMuchBuf[0];
 
         TPairList tail;
@@ -448,7 +534,7 @@ class TPairListFactory {
      *  {N+YE} or an error or whatever you like.  howMuch[0] will be
      *  set to the number of characters of tx that this call has
      *  consumed. */
-    private static TPair getFirstConsonantAndVowel(StringBuffer tx, // TODO(DLC)[EWTS->Tibetan]: function name needs ACIP in it?
+    private static TPair getFirstConsonantAndVowel(StringBuffer tx,
                                                    int howMuch[],
                                                    TTraits ttraits) {
         // To handle EWTS "phywa\\u0f84\u0f86" [yes that's two slashes

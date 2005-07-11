@@ -19,10 +19,12 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.text.ttt;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 
 import junit.framework.TestCase;
 
 import org.thdl.util.ThdlOptions;
+import org.thdl.tib.text.TibetanDocument;
 import org.thdl.tib.text.tshegbar.UnicodeUtils;
 
 /** Tests this package's ability to understand EWTS and turn it into
@@ -76,42 +78,145 @@ public class EWTSTest extends TestCase {
         }
     }
 
-    /** Causes a JUnit test case failure unless the EWTS document ewts
-     *  converts to the unicode expectedUnicode. */
-    static void ewts2uni_test(String ewts, String expectedUnicode) {
-        // TODO(DLC)[EWTS->Tibetan]: In addition to what this
-        // currently does, have this function convert to TMW and
-        // convert that TMW to Unicode and verify that the result is
-        // the same.  Almost every call should allow for that.
-
+    /** Returns the Unicode corresponding to the TMW to which ewts
+     *  corresponds, or null if we couldn't push through, even with
+     *  errors, from EWTS->TMW->Unicode. */
+    private static String ewts2tmw2uni(String ewts) {
+        TTraits traits = EWTSTraits.instance();
         StringBuffer errors = new StringBuffer();
-        String unicode = TConverter.convertToUnicodeText(EWTSTraits.instance(),
-                                                         ewts, errors,
-                                                         null, true,
-                                                         "None", // TODO(DLC)[EWTS->Tibetan]: ???
-                                                         false /* short warnings */);
-        if (null == unicode) {
+        boolean shortMessages = true;
+        String warningLevel = "All";  // slow but exercises more code paths
+        ArrayList scan
+            = traits.scanner().scan(ewts, errors, -1,
+                                     shortMessages,
+                                     warningLevel);
+        if (null == scan)
+            return null;
+        if (errors.length() > 0)
+            return null;
+        errors = new StringBuffer();
+        TibetanDocument tdoc = new TibetanDocument();
+        boolean rv;
+        try {
+            rv = TConverter.convertToTMW(traits,
+                                         scan, tdoc, errors, null, null,
+                                         false, warningLevel,
+                                         shortMessages, true,
+                                         new int[] { tdoc.getLength() });
+        } catch (java.io.IOException e) {
+            // I doubt this can happen.
+            throw new Error(e.toString());
+        }
+        if (!rv)
+            return null;
+        if (tdoc.getLength() < 1 && ewts.length() > 0)
+            return null;
+        errors = new StringBuffer();
+        long numAttemptedReplacements[] = new long[] { 0 };
+        tdoc.convertToUnicode(0, tdoc.getLength(), errors, null,
+                              numAttemptedReplacements);
+        if (errors.length() > 0)
+            return null;
+        if (numAttemptedReplacements[0] < 1)
+            return null;
+        
+        try {
+            return tdoc.getText(0, tdoc.getLength());
+        } catch (javax.swing.text.BadLocationException e) {
+            throw new Error("I know this won't happen: " + e);
+        }
+    }
+
+    static void ewts2uni_test(String ewts, String expectedUnicode) {
+        ewts2uni_test(ewts, expectedUnicode, true);
+    }
+
+    /** Tests EWTS->Unicode but not EWTS->TMW[->Unicode]. */
+    static void just_ewts2uni_test(String ewts, String expectedUnicode) {
+        ewts2uni_test(ewts, expectedUnicode, false);
+    }
+
+    /** Causes a JUnit test case failure unless the EWTS document ewts
+     *  converts to the unicode expectedUnicode.  If doEwts2tmw2uni is
+     *  true, then this causes a test case failure if an
+     *  EWTS->TMW->Unicode trip doesn't give the same
+     *  expectedUnicode. */
+    static void ewts2uni_test(String ewts, String expectedUnicode,
+                              boolean doEwts2tmw2uni) {
+        StringBuffer errors = new StringBuffer();
+        String unicode
+            = TConverter.convertToUnicodeText(EWTSTraits.instance(),
+                                              ewts, errors,
+                                              null, true,
+                                              "None", // TODO(DLC)[EWTS->Tibetan]: ???
+                                              false /* short warnings */);
+        help_ewts2uni_test("EWTS->Unicode: ",
+                           ewts, expectedUnicode, unicode, errors);
+        if (doEwts2tmw2uni) {
+            help_ewts2uni_test("EWTS->TMW->Unicode: ",
+                               ewts, expectedUnicode, ewts2tmw2uni(ewts),
+                               new StringBuffer());
+        }
+    }
+
+    /** Doing EWTS->Unicode conversions yields one answer out of many
+     *  for some inputs, such as "b+ha".  This function checks for
+     *  equality between two pieces of Unicode modulo such acceptable
+     *  changes.  It's only complete enough to handle the test cases
+     *  we have.  Why do we make two choices?  TMW->Unicode is
+     *  different source code from EWTS->Unicode; that's why. */
+    private static boolean ewts2uni_unicode_equality(String expectedUnicode,
+                                                     String actualUnicode) {
+        // TODO(dchandler): replaceAll is a 1.4-ism.  Will users balk?
+        if (actualUnicode
+            .replaceAll("\u0f0d\u0f0d", "\u0f0e")  // TMW has no \u0f0e glyph
+            .replaceAll("\u0f69", "\u0f40\u0fb5")  // equivalent and neither are discouraged
+            .replaceAll("\u0f43", "\u0f42\u0fb7")  // ditto...
+            .replaceAll("\u0f4d", "\u0f4c\u0fb7")
+            .replaceAll("\u0f52", "\u0f51\u0fb7")
+            .replaceAll("\u0f57", "\u0f56\u0fb7")
+            .replaceAll("\u0f5c", "\u0f5b\u0fb7")
+            .replaceAll("\u0fb9", "\u0f90\u0fb5")
+            .replaceAll("\u0f93", "\u0f92\u0fb7")
+            .replaceAll("\u0f9d", "\u0f9c\u0fb7")
+            .replaceAll("\u0fa2", "\u0fa1\u0fb7")
+            .replaceAll("\u0fa7", "\u0fa6\u0fb7")  // ...
+            .replaceAll("\u0fac", "\u0fab\u0fb7")  // equivalent and neither are discouraged
+
+            .equals(expectedUnicode)) {
+            return true;
+        }
+        return expectedUnicode.equals(actualUnicode);
+    }
+
+    private static void help_ewts2uni_test(String prefix,
+                                           String ewts,
+                                           String expectedUnicode,
+                                           String actualUnicode,
+                                           StringBuffer errors) {
+        if (null == actualUnicode) {
             if (null != expectedUnicode && "none" != expectedUnicode) {
-                System.out.println("No unicode exists for " + ewts
+                System.out.println(prefix + "No unicode exists for " + ewts
                                    + " but you expected "
                                    + UnicodeUtils.unicodeStringToPrettyString(expectedUnicode));
                 assertTrue(false);
             }
-            System.out.println("Unicode for " + ewts + " can't be had; errors are " + errors);
+            System.out.println(prefix + "Unicode for " + ewts + " can't be had; errors are " + errors);
         } else {
-            if (null != expectedUnicode && !expectedUnicode.equals(unicode)) {
-                explainInequality(unicode, expectedUnicode, System.out);
-                if (UnicodeUtils.unicodeStringToPrettyString(unicode).equals(UnicodeUtils.unicodeStringToPrettyString(expectedUnicode))) {
-                    System.out.println("UGLY strings: The unicode for\n  \"" + ewts
+            if (null != expectedUnicode
+                && !ewts2uni_unicode_equality(expectedUnicode, actualUnicode)) {
+                explainInequality(actualUnicode, expectedUnicode, System.out);
+                if (UnicodeUtils.unicodeStringToPrettyString(actualUnicode).equals(UnicodeUtils.unicodeStringToPrettyString(expectedUnicode))) {
+                    System.out.println(prefix + "UGLY strings: The unicode for\n  \"" + ewts
                                        + "\"\nis\n  \""
-                                       + unicode
+                                       + actualUnicode
                                        + "\",\nbut you expected\n  \""
                                        + expectedUnicode
                                        + "\"");
                 } else {
-                    System.out.println("The unicode for\n  \"" + ewts
+                    System.out.println(prefix + "The unicode for\n  \"" + ewts
                                        + "\"\nis\n  \""
-                                       + UnicodeUtils.unicodeStringToPrettyString(unicode)
+                                       + UnicodeUtils.unicodeStringToPrettyString(actualUnicode)
                                        + "\",\nbut you expected\n  \""
                                        + UnicodeUtils.unicodeStringToPrettyString(expectedUnicode)
                                        + "\"");
@@ -122,7 +227,7 @@ public class EWTSTest extends TestCase {
                     TPairList[] la
                         = EWTSTraits.instance().breakTshegBarIntoChunks(sb.toString(), false);
                     assertTrue(la[1] == null);
-                    System.out.println("EWTS=" + ewts + " and l'=" + la[0].toString2());
+                    System.out.println(prefix + "EWTS=" + ewts + " and l'=" + la[0].toString2());
                 }
                 assertTrue(false);
             }
@@ -156,24 +261,25 @@ public class EWTSTest extends TestCase {
     public void test0F39() {
         ewts2uni_test("v", "\u0F56\u0F39");
         ewts2uni_test("f", "\u0F55\u0F39");
-        ewts2uni_test("f+beM", "\u0f55\u0f39\u0fa6\u0f7a\u0f7e");
+        just_ewts2uni_test("f+beM", "\u0f55\u0f39\u0fa6\u0f7a\u0f7e");
         ewts2uni_test("faM", "\u0f55\u0f39\u0f7e");
         ewts2uni_test("vaM", "\u0f56\u0f39\u0f7e");
-        ewts2uni_test("k+fa", "\u0f40\u0fa5\u0f39");
-        ewts2uni_test("f+va", "\u0f55\u0f39\u0fa6\u0f39");
-        ewts2uni_test("ph+veM", "\u0f55\u0fa6\u0f39\u0f7a\u0f7e");
+        just_ewts2uni_test("k+fa", "\u0f40\u0fa5\u0f39");
+        just_ewts2uni_test("f+va", "\u0f55\u0f39\u0fa6\u0f39");
+        just_ewts2uni_test("ph+veM", "\u0f55\u0fa6\u0f39\u0f7a\u0f7e");
 
         ewts2uni_test("a^", "\u0f68\u0f39");
-        ewts2uni_test("hUM^", "\u0f67\u0f71\u0f74\u0f7e\u0f39");
+        ewts2uni_test("hUM^", "\u0f67\u0f39\u0f71\u0f74\u0f7e");
         ewts2uni_test("ph^", "\u0f55\u0f39");
-        ewts2uni_test("phe^", "\u0f55\u0f7a\u0f39");  // TODO(DLC)[EWTS->Tibetan]: does order of U+0F39 matter?
-        ewts2uni_test("ph^e", "\u0f55\u0f39\u0f68\u0f7a");  // TODO(DLC)[EWTS->Tibetan]: This is no good!  We don't even warn, do we!?
+        ewts2uni_test("phe^", "\u0f55\u0f39\u0f7a");
+        ewts2uni_test("ph^e", "\u0f55\u0f39\u0f68\u0f7a");  // TODO(DLC)[EWTS->Tibetan]: This is no good!  We don't even warn, do we!?  EWTSTraits.isWowelThatRequiresAChen(..) might be to blame
+
 
         ewts2uni_test("a\u0f39", "\u0f68\u0f39");
-        ewts2uni_test("hUM\u0f39", "\u0f67\u0f71\u0f74\u0f7e\u0f39");
+        ewts2uni_test("hUM\u0f39", "\u0f67\u0f39\u0f71\u0f74\u0f7e");
         ewts2uni_test("ph\u0f39", "\u0f55\u0f39");
-        ewts2uni_test("phe\u0f39", "\u0f55\u0f7a\u0f39");  // TODO(DLC)[EWTS->Tibetan]: does order of U+0F39 matter?
-        ewts2uni_test("ph\u0f39e", "\u0f55\u0f39\u0f68\u0f7a");  // TODO(DLC)[EWTS->Tibetan]: This is no good!  We don't even warn, do we!?
+        ewts2uni_test("phe\u0f39", "\u0f55\u0f39\u0f7a");
+        ewts2uni_test("ph\u0f39e", "\u0f55\u0f39\u0f68\u0f7a");  // TODO(DLC)[EWTS->Tibetan]: This is no good!  We don't even warn, do we!?  EWTSTraits.isWowelThatRequiresAChen(..) might be to blame
 
         if (RUN_FAILING_TESTS) ewts2uni_test("ph^+beM", "\u0f55\u0f39\u0fa6\u0f7a\u0f7e");
     }
@@ -181,6 +287,13 @@ public class EWTSTest extends TestCase {
     /** Tests that the EWTS->unicode converter isn't completely
         braindead. */
     public void testEwtsBasics() {
+        just_ewts2uni_test("r+sa", "\u0f62\u0fb6");
+        ewts2uni_test("R+s", "\u0f6a\u0fb6");
+
+        ewts2uni_test("k?e", "\u0f40\u0f84\u0f68\u0f7a");
+        ewts2uni_test("ko+o", "\u0f40\u0f7c\u0f7c");
+        ewts2uni_test("kau+u", "\u0f40\u0f74\u0f7d");
+        
         ewts2uni_test("g.yogs", "\u0f42\u0f61\u0f7c\u0f42\u0f66");
         ewts2uni_test("brgyad", "\u0f56\u0f62\u0f92\u0fb1\u0f51");
         ewts2uni_test("brjod", "\u0f56\u0f62\u0f97\u0f7c\u0f51");
@@ -220,39 +333,46 @@ public class EWTSTest extends TestCase {
 
         ewts2uni_test("b.ra ", "\u0f56\u0f62\u0f0b");
         ewts2uni_test("bara ", "\u0f56\u0f62\u0f0b");
-        ewts2uni_test("b+Ra ", "\u0f56\u0fbc\u0f0b");
+        just_ewts2uni_test("b+Ra ", "\u0f56\u0fbc\u0f0b");
     }
 
     /** Miscellaneous tests of EWTS->Unicode conversion. */
     public void test__EWTS__miscellany() {
+        just_ewts2uni_test("ga\\u0f02ha", "\u0f42\u0f02\u0f67"); // TODO(DLC)[EWTS->Tibetan]: ewts->tmw is broken
+        just_ewts2uni_test("g.\\u0f03\u0f0b", "\u0f42\u0f03\u0f0b"); // TODO(DLC)[EWTS->Tibetan]: ewts->tmw is broken
 
-        ewts2uni_test("", "");
+        just_ewts2uni_test("k+\u0fb2e", "\u0f40\u0fb2\u0f7a");
+        assert_EWTS_error("\u0f42ya");
+        just_ewts2uni_test("\u0f42+ya", "\u0f42\u0fb1");
+        just_ewts2uni_test("\u0f42.ya", "\u0f42\u0f61");
+
+        just_ewts2uni_test("", "");
 
         ewts2uni_test("0\\u0f19", "\u0f20\u0f19");
         ewts2uni_test("0\\u0f18", "\u0f20\u0f18");
         ewts2uni_test("0\\u0f3e", "\u0f20\u0f3e"); // TODO(DLC)[EWTS->Tibetan]: test ewts->tmw
         ewts2uni_test("0\\u0f3f", "\u0f20\u0f3f"); // TODO(DLC)[EWTS->Tibetan]: test ewts->tmw
 
-        ewts2uni_test("R", "\u0f6A");
-        ewts2uni_test("Ra", "\u0f6A");
+        just_ewts2uni_test("R", "\u0f6A");
+        just_ewts2uni_test("Ra", "\u0f6A");
 
-        ewts2uni_test("R+ka", "\u0F6A\u0f90");
-        ewts2uni_test("k+Wa", "\u0f40\u0FBA");
-        ewts2uni_test("k+Ya", "\u0f40\u0FBB");
-        ewts2uni_test("k+Ra", "\u0f40\u0FBC");
+        just_ewts2uni_test("R+ka", "\u0F6A\u0f90");
+        just_ewts2uni_test("k+Wa", "\u0f40\u0FBA");
+        just_ewts2uni_test("k+Ya", "\u0f40\u0FBB");
+        just_ewts2uni_test("k+Ra", "\u0f40\u0FBC");
         ewts2uni_test("k+wa", "\u0f40\u0Fad");
         ewts2uni_test("k+la", "\u0f40\u0Fb3");
         ewts2uni_test("k+ya", "\u0f40\u0Fb1");
         ewts2uni_test("k+ra", "\u0f40\u0Fb2");
 
-        ewts2uni_test("r-I", "\u0f62\u0f81");
-        ewts2uni_test("l-I", "\u0f63\u0f81");
+        ewts2uni_test("r-I", "\u0f62\u0f71\u0f80");
+        ewts2uni_test("l-I", "\u0f63\u0f71\u0f80");
         ewts2uni_test("r-i", "\u0f62\u0f80");
         ewts2uni_test("l-i", "\u0f63\u0f80");
         ewts2uni_test("gr-i", "\u0f42\u0fb2\u0f80");
-        ewts2uni_test("gr-I", "\u0f42\u0fb2\u0f81");
+        ewts2uni_test("gr-I", "\u0f42\u0fb2\u0f71\u0f80");
         ewts2uni_test("gl-i", "\u0f42\u0fb3\u0f80");
-        ewts2uni_test("gl-I", "\u0f42\u0fb3\u0f81");
+        ewts2uni_test("gl-I", "\u0f42\u0fb3\u0f71\u0f80");
     }
 
 
@@ -277,9 +397,9 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("u", "\u0f68\u0f74");
         ewts2uni_test("U", "\u0f68\u0f71\u0f74");
         ewts2uni_test("a+r-i", "\u0f68\u0fb2\u0f80");
-        ewts2uni_test("a+r-I", "\u0f68\u0fb2\u0f81");
-        ewts2uni_test("a+l-i", "\u0f68\u0fb3\u0f80");
-        ewts2uni_test("a+l-I", "\u0f68\u0fb3\u0f81");
+        ewts2uni_test("a+r-I", "\u0f68\u0fb2\u0f71\u0f80");
+        just_ewts2uni_test("a+l-i", "\u0f68\u0fb3\u0f80");
+        just_ewts2uni_test("a+l-I", "\u0f68\u0fb3\u0f71\u0f80");
         ewts2uni_test("e", "\u0f68\u0f7a");
         ewts2uni_test("ai", "\u0f68\u0f7b");
        // ewts2uni_test("ao", "\u0f68\u0f68\u0f7c"); // TODO(DLC)[EWTS->Tibetan]:
@@ -289,11 +409,12 @@ public class EWTSTest extends TestCase {
        // ewts2uni_test("aM", "\u0f68\u0f7e"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
        // ewts2uni_test("aH", "\u0f68\u0f7f"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
         ewts2uni_test("-i", "\u0f68\u0f80");
-        ewts2uni_test("-I", "\u0f68\u0f81");
+        ewts2uni_test("-I", "\u0f68\u0f71\u0f80");
       //  ewts2uni_test("a~M`", "\u0f68\u0f82"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
       //  ewts2uni_test("a~M", "\u0f68\u0f83"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
 //        ewts2uni_test("a?", "\u0f68\u0f84"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
-        ewts2uni_test("\\u0f68", "\u0f68");
+        just_ewts2uni_test("\\u0f68", "\u0f68");
+        ewts2uni_test("\\u0f86", "\u0f68\u0f86"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
         ewts2uni_test("a\\u0f86", "\u0f68\u0f86");
         ewts2uni_test("a\\U0f86", "\u0f68\u0f86");
         ewts2uni_test("a\\U0F86", "\u0f68\u0f86");
@@ -305,7 +426,7 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("a\\u0f87", "\u0f68\u0f87");
 
 //        ewts2uni_test("aMH", "\u0f68\u0f7e\u0f7f"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
-//        ewts2uni_test("aHM", "\u0f68\u0f7f\u0f7e"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
+//        ewts2uni_test("aHM", "\u0f68\u0f7e\u0f7f"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
         ewts2uni_test("a", "\u0f68");
 
     }
@@ -325,7 +446,7 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("e+e+e+e+e", "\u0f68\u0f7a\u0f7a\u0f7a\u0f7a\u0f7a"); // TODO(DLC)[EWTS->Tibetan]:?
         ewts2uni_test("o+e", "\u0f68\u0f7c\u0f7a");
         ewts2uni_test("u+A+i+o+e", "\u0f68\u0f74\u0f71\u0f72\u0f7c\u0f7a");
-        ewts2uni_test("u+A+i+o+eHM", "\u0f68\u0f74\u0f71\u0f72\u0f7c\u0f7a\u0f7f\u0f7e");
+        ewts2uni_test("u+A+i+o+eHM", "\u0f68\u0f74\u0f71\u0f72\u0f7c\u0f7a\u0f7e\u0f7f");
         ewts2uni_test("u+A", "\u0f68\u0f74\u0f71");
 
         ewts2uni_test("o+-I", "DLC");
@@ -342,9 +463,9 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("ku", "\u0f40\u0f74");
         ewts2uni_test("kU", "\u0f40\u0f71\u0f74");
         ewts2uni_test("k+r-i", "\u0f40\u0fb2\u0f80");
-        ewts2uni_test("k+r-I", "\u0f40\u0fb2\u0f81");
+        ewts2uni_test("k+r-I", "\u0f40\u0fb2\u0f71\u0f80");
         ewts2uni_test("k+l-i", "\u0f40\u0fb3\u0f80");
-        ewts2uni_test("k+l-I", "\u0f40\u0fb3\u0f81");
+        ewts2uni_test("k+l-I", "\u0f40\u0fb3\u0f71\u0f80");
         ewts2uni_test("ke", "\u0f40\u0f7a");
         ewts2uni_test("e", "\u0f68\u0f7a");
         ewts2uni_test("a", "\u0f68");
@@ -354,7 +475,7 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("kaM", "\u0f40\u0f7e"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
         ewts2uni_test("kaH", "\u0f40\u0f7f"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
         ewts2uni_test("k-i", "\u0f40\u0f80");
-        ewts2uni_test("k-I", "\u0f40\u0f81");
+        ewts2uni_test("k-I", "\u0f40\u0f71\u0f80");
         ewts2uni_test("ka~M`", "\u0f40\u0f82"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
         ewts2uni_test("ka~M", "\u0f40\u0f83"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
         ewts2uni_test("ka?", "\u0f40\u0f84"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
@@ -369,7 +490,7 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("ka\\u0f87", "\u0f40\u0f87");
 
         ewts2uni_test("kaMH", "\u0f40\u0f7e\u0f7f"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
-        ewts2uni_test("kaHM", "\u0f40\u0f7f\u0f7e"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
+        ewts2uni_test("kaHM", "\u0f40\u0f7e\u0f7f"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
 
 
         // Than's e-mails of Aug 10 and Aug 11, 2004 say that A+i is
@@ -380,10 +501,10 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("ke+e+e", "\u0f40\u0f7a\u0f7a\u0f7a"); // TODO(DLC)[EWTS->Tibetan]:?
         ewts2uni_test("ke+e+e+e", "\u0f40\u0f7a\u0f7a\u0f7a\u0f7a"); // TODO(DLC)[EWTS->Tibetan]:?
         ewts2uni_test("ke+e+e+e+e", "\u0f40\u0f7a\u0f7a\u0f7a\u0f7a\u0f7a"); // TODO(DLC)[EWTS->Tibetan]:?
-        ewts2uni_test("ko+e", "\u0f40\u0f7c\u0f7a");
-        ewts2uni_test("ku+A+i+o+e", "\u0f40\u0f74\u0f71\u0f72\u0f7c\u0f7a");
-        ewts2uni_test("ku+A+i+o+eHM", "\u0f40\u0f74\u0f71\u0f72\u0f7c\u0f7a\u0f7f\u0f7e");
-        ewts2uni_test("ku+A", "\u0f40\u0f74\u0f71");
+        ewts2uni_test("ko+e", "\u0f40\u0f7a\u0f7c");
+        ewts2uni_test("ku+A+i+o+e", "\u0f40\u0f71\u0f74\u0f72\u0f7a\u0f7c");
+        ewts2uni_test("ku+A+i+o+eHM", "\u0f40\u0f71\u0f74\u0f72\u0f7a\u0f7c\u0f7e\u0f7f");
+        ewts2uni_test("ku+A", "\u0f40\u0f71\u0f74");
 
         ewts2uni_test("k", "\u0f40");
         ewts2uni_test("ka", "\u0f40");
@@ -414,7 +535,7 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("'aM", "\u0f60\u0f7e"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
         ewts2uni_test("'aH", "\u0f60\u0f7f"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
         ewts2uni_test("'-i", "\u0f60\u0f80");
-        ewts2uni_test("'-I", "\u0f60\u0f81");
+        ewts2uni_test("'-I", "\u0f60\u0f71\u0f80");
         ewts2uni_test("'a~M`", "\u0f60\u0f82"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
         ewts2uni_test("'a~M", "\u0f60\u0f83"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
         ewts2uni_test("'a?", "\u0f60\u0f84"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
@@ -429,7 +550,7 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("'a\\u0f87", "\u0f60\u0f87");
 
         ewts2uni_test("'aMH", "\u0f60\u0f7e\u0f7f"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
-        ewts2uni_test("'aHM", "\u0f60\u0f7f\u0f7e"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
+        ewts2uni_test("'aHM", "\u0f60\u0f7e\u0f7f"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
 
 
         // Than's e-mails of Aug 10 and Aug 11, 2004 say that A+i is
@@ -440,19 +561,19 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("'e+e+e", "\u0f60\u0f7a\u0f7a\u0f7a"); // TODO(DLC)[EWTS->Tibetan]:?
         ewts2uni_test("'e+e+e+e", "\u0f60\u0f7a\u0f7a\u0f7a\u0f7a"); // TODO(DLC)[EWTS->Tibetan]:?
         ewts2uni_test("'e+e+e+e+e", "\u0f60\u0f7a\u0f7a\u0f7a\u0f7a\u0f7a"); // TODO(DLC)[EWTS->Tibetan]:?
-        ewts2uni_test("'o+e", "\u0f60\u0f7c\u0f7a");
-        ewts2uni_test("'u+A+i+o+e", "\u0f60\u0f74\u0f71\u0f72\u0f7c\u0f7a");
-        ewts2uni_test("'u+A+i+o+eHM", "\u0f60\u0f74\u0f71\u0f72\u0f7c\u0f7a\u0f7f\u0f7e");
+        ewts2uni_test("'o+e", "\u0f60\u0f7a\u0f7c");
+        ewts2uni_test("'u+A+i+o+e", "\u0f60\u0f71\u0f74\u0f72\u0f7a\u0f7c");
+        ewts2uni_test("'u+A+i+o+eHM", "\u0f60\u0f71\u0f74\u0f72\u0f7a\u0f7c\u0f7e\u0f7f");
 
-        ewts2uni_test("'u+A", "\u0f60\u0f74\u0f71");
+        ewts2uni_test("'u+A", "\u0f60\u0f71\u0f74");
 
         ewts2uni_test("'", "\u0f60");
         ewts2uni_test("'a", "\u0f60");
 
-        ewts2uni_test("'+r-i", "\u0f60\u0fb2\u0f80");
-        ewts2uni_test("'+r-I", "\u0f60\u0fb2\u0f81"); 
-        ewts2uni_test("'+l-i", "\u0f60\u0fb3\u0f80");
-        ewts2uni_test("'+l-I", "\u0f60\u0fb3\u0f81");
+        just_ewts2uni_test("'+r-i", "\u0f60\u0fb2\u0f80");
+        just_ewts2uni_test("'+r-I", "\u0f60\u0fb2\u0f71\u0f80"); 
+        just_ewts2uni_test("'+l-i", "\u0f60\u0fb3\u0f80");
+        just_ewts2uni_test("'+l-I", "\u0f60\u0fb3\u0f71\u0f80");
     }
 
     /** Tests that our implementation of EWTS's wowels are correct,
@@ -471,7 +592,7 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("k+ShaM", "\u0f40\u0fb5\u0f7e"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
         ewts2uni_test("k+ShaH", "\u0f40\u0fb5\u0f7f"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
         ewts2uni_test("k+Sh-i", "\u0f40\u0fb5\u0f80");
-        ewts2uni_test("k+Sh-I", "\u0f40\u0fb5\u0f81");
+        ewts2uni_test("k+Sh-I", "\u0f40\u0fb5\u0f71\u0f80");
         ewts2uni_test("k+Sha~M`", "\u0f40\u0fb5\u0f82"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
         ewts2uni_test("k+Sha~M", "\u0f40\u0fb5\u0f83"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
         ewts2uni_test("k+Sha?", "\u0f40\u0fb5\u0f84"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
@@ -486,7 +607,7 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("k+Sha\\u0f87", "\u0f40\u0fb5\u0f87");
 
         ewts2uni_test("k+ShaMH", "\u0f40\u0fb5\u0f7e\u0f7f"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
-        ewts2uni_test("k+ShaHM", "\u0f40\u0fb5\u0f7f\u0f7e"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
+        ewts2uni_test("k+ShaHM", "\u0f40\u0fb5\u0f7e\u0f7f"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
 
 
         // Than's e-mails of Aug 10 and Aug 11, 2004 say that A+i is
@@ -497,18 +618,18 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("k+She+e+e", "\u0f40\u0fb5\u0f7a\u0f7a\u0f7a"); // TODO(DLC)[EWTS->Tibetan]:?
         ewts2uni_test("k+She+e+e+e", "\u0f40\u0fb5\u0f7a\u0f7a\u0f7a\u0f7a"); // TODO(DLC)[EWTS->Tibetan]:?
         ewts2uni_test("k+She+e+e+e+e", "\u0f40\u0fb5\u0f7a\u0f7a\u0f7a\u0f7a\u0f7a"); // TODO(DLC)[EWTS->Tibetan]:?
-        ewts2uni_test("k+Sho+e", "\u0f40\u0fb5\u0f7c\u0f7a");
-        ewts2uni_test("k+Shu+A+i+o+e", "\u0f40\u0fb5\u0f74\u0f71\u0f72\u0f7c\u0f7a");
-        ewts2uni_test("k+Shu+A+i+o+eHM", "\u0f40\u0fb5\u0f74\u0f71\u0f72\u0f7c\u0f7a\u0f7f\u0f7e");
-        ewts2uni_test("k+Shu+A", "\u0f40\u0fb5\u0f74\u0f71");
+        ewts2uni_test("k+Sho+e", "\u0f40\u0fb5\u0f7a\u0f7c");
+        ewts2uni_test("k+Shu+A+i+o+e", "\u0f40\u0fb5\u0f71\u0f74\u0f72\u0f7a\u0f7c");
+        ewts2uni_test("k+Shu+A+i+o+eHM", "\u0f40\u0fb5\u0f71\u0f74\u0f72\u0f7a\u0f7c\u0f7e\u0f7f");
+        ewts2uni_test("k+Shu+A", "\u0f40\u0fb5\u0f71\u0f74");
 
         ewts2uni_test("k+Sh", "\u0f40\u0fb5");
         ewts2uni_test("k+Sha", "\u0f40\u0fb5");
 
-        ewts2uni_test("k+Sh+r-i", "\u0f40\u0fb5\u0fb2\u0f80");
-        ewts2uni_test("k+Sh+r-I", "\u0f40\u0fb5\u0fb2\u0f81");
+        just_ewts2uni_test("k+Sh+r-i", "\u0f40\u0fb5\u0fb2\u0f80");
+        just_ewts2uni_test("k+Sh+r-I", "\u0f40\u0fb5\u0fb2\u0f71\u0f80");
         ewts2uni_test("k+Sh+l-i", "\u0f40\u0fb5\u0fb3\u0f80");
-        ewts2uni_test("k+Sh+l-I", "\u0f40\u0fb5\u0fb3\u0f81");
+        ewts2uni_test("k+Sh+l-I", "\u0f40\u0fb5\u0fb3\u0f71\u0f80");
     }
 
     /** Tests that our implementation of EWTS's wowels are correct,
@@ -526,12 +647,12 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("phywo", "\u0f55\u0fb1\u0fad\u0f7c");
         ewts2uni_test("phywau", "\u0f55\u0fb1\u0fad\u0f7d");
         ewts2uni_test("phyw-i", "\u0f55\u0fb1\u0fad\u0f80");
-        ewts2uni_test("phyw-I", "\u0f55\u0fb1\u0fad\u0f81");
+        ewts2uni_test("phyw-I", "\u0f55\u0fb1\u0fad\u0f71\u0f80");
         ewts2uni_test("phyw\\u0f86", "\u0f55\u0fb1\u0fad\u0f86");
         assertEquals(EWTSTraits.instance().getUnicodeForWowel("\u0f86+\u0f84"), "\u0f86\u0f84");
 
-        ewts2uni_test("phyw\\u0f84\\u0f86", "\u0f55\u0fb1\u0fad\u0f84\u0f86");
-        ewts2uni_test("phyw\\u0f84\u0f86", "\u0f55\u0fb1\u0fad\u0f84\u0f86");
+        ewts2uni_test("phyw\\u0f84\\u0f86", "\u0f55\u0fb1\u0fad\u0f86\u0f84");
+        ewts2uni_test("phyw\\u0f84\u0f86", "\u0f55\u0fb1\u0fad\u0f86\u0f84");
         ewts2uni_test("phywa\\u0f86", "\u0f55\u0fb1\u0fad\u0f86");
         ewts2uni_test("phywa\\u0f86\u0f84", "\u0f55\u0fb1\u0fad\u0f86\u0f84");
         ewts2uni_test("phywa\\U0f86", "\u0f55\u0fb1\u0fad\u0f86");
@@ -552,10 +673,10 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("phywe+e+e", "\u0f55\u0fb1\u0fad\u0f7a\u0f7a\u0f7a"); // TODO(DLC)[EWTS->Tibetan]:?
         ewts2uni_test("phywe+e+e+e", "\u0f55\u0fb1\u0fad\u0f7a\u0f7a\u0f7a\u0f7a"); // TODO(DLC)[EWTS->Tibetan]:?
         ewts2uni_test("phywe+e+e+e+e", "\u0f55\u0fb1\u0fad\u0f7a\u0f7a\u0f7a\u0f7a\u0f7a"); // TODO(DLC)[EWTS->Tibetan]:?
-        ewts2uni_test("phywo+e", "\u0f55\u0fb1\u0fad\u0f7c\u0f7a");
-        ewts2uni_test("phywu+A+i+o+e", "\u0f55\u0fb1\u0fad\u0f74\u0f71\u0f72\u0f7c\u0f7a");
-        ewts2uni_test("phywu+A+i+o+eHM", "\u0f55\u0fb1\u0fad\u0f74\u0f71\u0f72\u0f7c\u0f7a\u0f7f\u0f7e");
-        ewts2uni_test("phywu+A", "\u0f55\u0fb1\u0fad\u0f74\u0f71");
+        ewts2uni_test("phywo+e", "\u0f55\u0fb1\u0fad\u0f7a\u0f7c");
+        ewts2uni_test("phywu+A+i+o+e", "\u0f55\u0fb1\u0fad\u0f71\u0f74\u0f72\u0f7a\u0f7c");
+        ewts2uni_test("phywu+A+i+o+eHM", "\u0f55\u0fb1\u0fad\u0f71\u0f74\u0f72\u0f7a\u0f7c\u0f7e\u0f7f");
+        ewts2uni_test("phywu+A", "\u0f55\u0fb1\u0fad\u0f71\u0f74");
 
         ewts2uni_test("phyw", "\u0f55\u0fb1\u0fad");
         ewts2uni_test("phywa", "\u0f55\u0fb1\u0fad");
@@ -566,7 +687,7 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("phywa~M", "\u0f55\u0fb1\u0fad\u0f83"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
         ewts2uni_test("phywa?", "\u0f55\u0fb1\u0fad\u0f84"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
         ewts2uni_test("phywaMH", "\u0f55\u0fb1\u0fad\u0f7e\u0f7f"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
-        ewts2uni_test("phywaHM", "\u0f55\u0fb1\u0fad\u0f7f\u0f7e"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
+        ewts2uni_test("phywaHM", "\u0f55\u0fb1\u0fad\u0f7e\u0f7f"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
 
         assert_EWTS_error("phywr-i");
         assert_EWTS_error("phyw+r-i");
@@ -579,55 +700,55 @@ public class EWTSTest extends TestCase {
      *  (U+0F40,U+0F97,U+0F97,U+0F90,U+0F90,U+0F97) is correct.  I
      *  chose this stack as an example of an absurd stack. */
     public void test__EWTS__wowels_on_kjjkkj() {
-        ewts2uni_test("k+j+j+k+k+jA", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f71");
-        ewts2uni_test("k+j+j+k+k+ji", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f72");
-        ewts2uni_test("k+j+j+k+k+jI", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f71\u0f72");
-        ewts2uni_test("k+j+j+k+k+ju", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f74");
-        ewts2uni_test("k+j+j+k+k+jU", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f71\u0f74");
-        ewts2uni_test("k+j+j+k+k+je", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7a");
-        ewts2uni_test("k+j+j+k+k+jai", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7b");
-        ewts2uni_test("k+j+j+k+k+jo", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7c");
-        ewts2uni_test("k+j+j+k+k+jau", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7d");
-        ewts2uni_test("k+j+j+k+k+jaM", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7e"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
-        ewts2uni_test("k+j+j+k+k+jaH", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7f"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
-        ewts2uni_test("k+j+j+k+k+j-i", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f80");
-        ewts2uni_test("k+j+j+k+k+j-I", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f81");
-        ewts2uni_test("k+j+j+k+k+ja~M`", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f82"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
-        ewts2uni_test("k+j+j+k+k+ja~M", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f83"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
-        ewts2uni_test("k+j+j+k+k+ja?", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f84"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
-        ewts2uni_test("k+j+j+k+k+ja\\u0f86", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f86");
-        ewts2uni_test("k+j+j+k+k+ja\\U0f86", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f86");
-        ewts2uni_test("k+j+j+k+k+ja\\U0F86", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f86");
-        ewts2uni_test("k+j+j+k+k+ja\\u0F86", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f86");
-        ewts2uni_test("k+j+j+k+k+ja\\u00000f86", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f86");
-        ewts2uni_test("k+j+j+k+k+ja\\u00000f86", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f86");
-        ewts2uni_test("k+j+j+k+k+ja\\u00000F86", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f86");
-        ewts2uni_test("k+j+j+k+k+ja\\u00000F86", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f86");
-        ewts2uni_test("k+j+j+k+k+ja\\u0f87", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f87");
+        just_ewts2uni_test("k+j+j+k+k+jA", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f71");
+        just_ewts2uni_test("k+j+j+k+k+ji", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f72");
+        just_ewts2uni_test("k+j+j+k+k+jI", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f71\u0f72");
+        just_ewts2uni_test("k+j+j+k+k+ju", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f74");
+        just_ewts2uni_test("k+j+j+k+k+jU", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f71\u0f74");
+        just_ewts2uni_test("k+j+j+k+k+je", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7a");
+        just_ewts2uni_test("k+j+j+k+k+jai", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7b");
+        just_ewts2uni_test("k+j+j+k+k+jo", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7c");
+        just_ewts2uni_test("k+j+j+k+k+jau", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7d");
+        just_ewts2uni_test("k+j+j+k+k+jaM", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7e"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
+        just_ewts2uni_test("k+j+j+k+k+jaH", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7f"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
+        just_ewts2uni_test("k+j+j+k+k+j-i", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f80");
+        just_ewts2uni_test("k+j+j+k+k+j-I", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f71\u0f80");
+        just_ewts2uni_test("k+j+j+k+k+ja~M`", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f82"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
+        just_ewts2uni_test("k+j+j+k+k+ja~M", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f83"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
+        just_ewts2uni_test("k+j+j+k+k+ja?", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f84"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
+        just_ewts2uni_test("k+j+j+k+k+ja\\u0f86", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f86");
+        just_ewts2uni_test("k+j+j+k+k+ja\\U0f86", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f86");
+        just_ewts2uni_test("k+j+j+k+k+ja\\U0F86", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f86");
+        just_ewts2uni_test("k+j+j+k+k+ja\\u0F86", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f86");
+        just_ewts2uni_test("k+j+j+k+k+ja\\u00000f86", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f86");
+        just_ewts2uni_test("k+j+j+k+k+ja\\u00000f86", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f86");
+        just_ewts2uni_test("k+j+j+k+k+ja\\u00000F86", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f86");
+        just_ewts2uni_test("k+j+j+k+k+ja\\u00000F86", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f86");
+        just_ewts2uni_test("k+j+j+k+k+ja\\u0f87", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f87");
 
-        ewts2uni_test("k+j+j+k+k+jaMH", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7e\u0f7f"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
-        ewts2uni_test("k+j+j+k+k+jaHM", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7f\u0f7e"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
+        just_ewts2uni_test("k+j+j+k+k+jaMH", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7e\u0f7f"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
+        just_ewts2uni_test("k+j+j+k+k+jaHM", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7e\u0f7f"); // TODO(DLC)[EWTS->Tibetan]: than needs to say
 
 
         // Than's e-mails of Aug 10 and Aug 11, 2004 say that A+i is
         // the same as I and o+o is the same as au.
-        ewts2uni_test("k+j+j+k+k+jA+i", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f71\u0f72");
-        ewts2uni_test("k+j+j+k+k+jo+o", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7c\u0f7c");
-        ewts2uni_test("k+j+j+k+k+je+e", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7a\u0f7a");
-        ewts2uni_test("k+j+j+k+k+je+e+e", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7a\u0f7a\u0f7a"); // TODO(DLC)[EWTS->Tibetan]:?
-        ewts2uni_test("k+j+j+k+k+je+e+e+e", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7a\u0f7a\u0f7a\u0f7a"); // TODO(DLC)[EWTS->Tibetan]:?
-        ewts2uni_test("k+j+j+k+k+je+e+e+e+e", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7a\u0f7a\u0f7a\u0f7a\u0f7a"); // TODO(DLC)[EWTS->Tibetan]:?
-        ewts2uni_test("k+j+j+k+k+jo+e", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7c\u0f7a");
-        ewts2uni_test("k+j+j+k+k+ju+A+i+o+e", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f74\u0f71\u0f72\u0f7c\u0f7a");
-        ewts2uni_test("k+j+j+k+k+ju+A+i+o+eHM", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f74\u0f71\u0f72\u0f7c\u0f7a\u0f7f\u0f7e");
-        ewts2uni_test("k+j+j+k+k+ju+A", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f74\u0f71");
+        just_ewts2uni_test("k+j+j+k+k+jA+i", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f71\u0f72");
+        just_ewts2uni_test("k+j+j+k+k+jo+o", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7c\u0f7c");
+        just_ewts2uni_test("k+j+j+k+k+je+e", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7a\u0f7a");
+        just_ewts2uni_test("k+j+j+k+k+je+e+e", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7a\u0f7a\u0f7a"); // TODO(DLC)[EWTS->Tibetan]:?
+        just_ewts2uni_test("k+j+j+k+k+je+e+e+e", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7a\u0f7a\u0f7a\u0f7a"); // TODO(DLC)[EWTS->Tibetan]:?
+        just_ewts2uni_test("k+j+j+k+k+je+e+e+e+e", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7a\u0f7a\u0f7a\u0f7a\u0f7a"); // TODO(DLC)[EWTS->Tibetan]:?
+        just_ewts2uni_test("k+j+j+k+k+jo+e", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f7a\u0f7c");
+        just_ewts2uni_test("k+j+j+k+k+ju+A+i+o+e", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f71\u0f74\u0f72\u0f7a\u0f7c");
+        just_ewts2uni_test("k+j+j+k+k+ju+A+i+o+eHM", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f71\u0f74\u0f72\u0f7a\u0f7c\u0f7e\u0f7f");
+        just_ewts2uni_test("k+j+j+k+k+ju+A", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0f71\u0f74");
 
-        ewts2uni_test("k+j+j+k+k+j", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97");
-        ewts2uni_test("k+j+j+k+k+ja", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97");
-        ewts2uni_test("k+j+j+k+k+j+r-i", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0fb2\u0f80");
-        ewts2uni_test("k+j+j+k+k+j+r-I", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0fb2\u0f81");
-        ewts2uni_test("k+j+j+k+k+j+l-i", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0fb3\u0f80");
-        ewts2uni_test("k+j+j+k+k+j+l-I", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0fb3\u0f81");
+        just_ewts2uni_test("k+j+j+k+k+j", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97");
+        just_ewts2uni_test("k+j+j+k+k+ja", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97");
+        just_ewts2uni_test("k+j+j+k+k+j+r-i", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0fb2\u0f80");
+        just_ewts2uni_test("k+j+j+k+k+j+r-I", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0fb2\u0f71\u0f80");
+        just_ewts2uni_test("k+j+j+k+k+j+l-i", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0fb3\u0f80");
+        just_ewts2uni_test("k+j+j+k+k+j+l-I", "\u0f40\u0f97\u0f97\u0f90\u0f90\u0f97\u0fb3\u0f71\u0f80");
     }
 
     /** Tests that the EWTS that the spec says corresponds to each
@@ -644,14 +765,16 @@ public class EWTSTest extends TestCase {
             ewts2uni_test("\\u0000", "\u0000");
             ewts2uni_test("\\u0eff", "\u0eff");
         }
-        ewts2uni_test("\\u0f00", "\u0f00");
-        ewts2uni_test("\\u0f40", "\u0f40");
+        just_ewts2uni_test("\\u0f00", "\u0f00"); // TODO(DLC)[EWTS->Tibetan]: ewts->tmw is broken
+        just_ewts2uni_test("\\u0F02", "\u0F02"); // TODO(DLC)[EWTS->Tibetan]: ewts->tmw is broken
+        just_ewts2uni_test("\\u0F03", "\u0F03"); // TODO(DLC)[EWTS->Tibetan]: ewts->tmw is broken
+        just_ewts2uni_test("\\u0f40", "\u0f40");
         if (RUN_FAILING_TESTS) {
             assert_EWTS_error("\\u0f70"); // reserved codepoint
             assert_EWTS_error("\\u0fff"); // reserved codepoint
-            ewts2uni_test("\\uf000", "\uf000");
-            ewts2uni_test("\\uf01f", "\uf01f");
-            ewts2uni_test("\\uefff", "\uefff");
+            just_ewts2uni_test("\\uf000", "\uf000");
+            just_ewts2uni_test("\\uf01f", "\uf01f");
+            just_ewts2uni_test("\\uefff", "\uefff");
         }
 
 
@@ -661,11 +784,11 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("f", "\u0F55\u0F39");
         ewts2uni_test("\u0f88+ka", "\u0f88\u0f90");
         ewts2uni_test("\u0f88+kha", "\u0f88\u0f91");
+        ewts2uni_test("\\u0f88+ka", "\u0f88\u0f90");
+        ewts2uni_test("\\u0f88+kha", "\u0f88\u0f91");
         ewts2uni_test("oM",
                       false ? "\u0F00" : "\u0f68\u0f7c\u0f7e");  // TODO(DLC)[EWTS->Tibetan]: which is correct?  see e-mail (maybe it was cfynn who thought \u0F00 ought not be generated?
         ewts2uni_test("\\u0F01", "\u0F01");
-        ewts2uni_test("\\u0F02", "\u0F02");
-        ewts2uni_test("\\u0F03", "\u0F03");
         ewts2uni_test("@", "\u0F04");
         ewts2uni_test("#", "\u0F05");  // TODO(DLC)[EWTS->Tibetan]: warning/error?  [#] alone is nonsense.
         ewts2uni_test("$", "\u0F06");
@@ -777,9 +900,9 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("u", achen + "\u0F74");
         ewts2uni_test("U", achen + "\u0F71\u0F74");
         ewts2uni_test("a+r-i", achen + "\u0fb2\u0f80");  // not 0F76, which is discouraged by the Unicode standard
-        ewts2uni_test("a+r-I", achen + "\u0fb2\u0f81");  // not 0F77, which is discouraged by the Unicode standard
-        ewts2uni_test("a+l-i", achen + "\u0fb3\u0f80");  // not 0F78, which is discouraged by the Unicode standard
-        ewts2uni_test("a+l-I", achen + "\u0fb3\u0f81");  // not 0F79, which is discouraged by the Unicode standard
+        ewts2uni_test("a+r-I", achen + "\u0fb2\u0f71\u0f80");  // not 0F77, which is discouraged by the Unicode standard
+        just_ewts2uni_test("a+l-i", achen + "\u0fb3\u0f80");  // not 0F78, which is discouraged by the Unicode standard
+        just_ewts2uni_test("a+l-I", achen + "\u0fb3\u0f71\u0f80");  // not 0F79, which is discouraged by the Unicode standard
         ewts2uni_test("e", achen + "\u0F7A");
         ewts2uni_test("ai", achen + "\u0F7B");
         ewts2uni_test("o", achen + "\u0F7C");
@@ -787,7 +910,7 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("M", achen + "\u0F7E");
         ewts2uni_test("H", achen + "\u0F7F");
         ewts2uni_test("-i", achen + "\u0F80");
-        ewts2uni_test("-I", achen + "\u0F81");
+        ewts2uni_test("-I", achen + "\u0F71\u0F80");
         ewts2uni_test("~M`", achen + "\u0F82");
         ewts2uni_test("~M", achen + "\u0F83");
         ewts2uni_test("?", achen + "\u0F84");  // \u0f84 is a combiner
@@ -799,8 +922,8 @@ public class EWTSTest extends TestCase {
         ewts2uni_test("\\u0F8A", "\u0F8A");
         ewts2uni_test("\\u0F8B", "\u0F8B");
 
-        final String ewts_for_superscript = "tsh+";
-        final String unicode_for_superscript = "\u0f5a";
+        final String ewts_for_superscript = "r+";
+        final String unicode_for_superscript = "\u0f62";
         ewts2uni_test(ewts_for_superscript + "k",
                       unicode_for_superscript + "\u0F90");
         ewts2uni_test(ewts_for_superscript + "kh",
@@ -812,10 +935,10 @@ public class EWTSTest extends TestCase {
                       + (false ? "\u0F93" : "\u0f92\u0fb7"));
         ewts2uni_test(ewts_for_superscript + "ng",
                       unicode_for_superscript + "\u0F94");
-        ewts2uni_test(ewts_for_superscript + "c",
-                      unicode_for_superscript + "\u0F95");
-        ewts2uni_test(ewts_for_superscript + "ch",
-                      unicode_for_superscript + "\u0F96");
+        just_ewts2uni_test(ewts_for_superscript + "c",
+                           unicode_for_superscript + "\u0F95");
+        just_ewts2uni_test(ewts_for_superscript + "ch",
+                           unicode_for_superscript + "\u0F96");
         ewts2uni_test(ewts_for_superscript + "j",
                       unicode_for_superscript + "\u0F97");
         ewts2uni_test(ewts_for_superscript + "ny",
@@ -826,9 +949,9 @@ public class EWTSTest extends TestCase {
                       unicode_for_superscript + "\u0F9B");
         ewts2uni_test(ewts_for_superscript + "D",
                       unicode_for_superscript + "\u0F9C");
-        ewts2uni_test(ewts_for_superscript + "D+h",
-                      unicode_for_superscript
-                      + (false ? "\u0F9D" : "\u0f9c\u0fb7"));
+        just_ewts2uni_test(ewts_for_superscript + "D+h",
+                           unicode_for_superscript
+                           + (false ? "\u0F9D" : "\u0f9c\u0fb7"));
         ewts2uni_test(ewts_for_superscript + "N",
                       unicode_for_superscript + "\u0F9E");
         ewts2uni_test(ewts_for_superscript + "t",
@@ -844,8 +967,8 @@ public class EWTSTest extends TestCase {
                       unicode_for_superscript + "\u0FA3");
         ewts2uni_test(ewts_for_superscript + "p",
                       unicode_for_superscript + "\u0FA4");
-        ewts2uni_test(ewts_for_superscript + "ph",
-                      unicode_for_superscript + "\u0FA5");
+        just_ewts2uni_test(ewts_for_superscript + "ph",
+                           unicode_for_superscript + "\u0FA5");
         ewts2uni_test(ewts_for_superscript + "b",
                       unicode_for_superscript + "\u0FA6");
         ewts2uni_test(ewts_for_superscript + "b+h",
@@ -859,119 +982,122 @@ public class EWTSTest extends TestCase {
                       unicode_for_superscript + "\u0FAA");
         ewts2uni_test(ewts_for_superscript + "dz",
                       unicode_for_superscript + "\u0FAB");
-        ewts2uni_test(ewts_for_superscript + "dz+h",
-                      unicode_for_superscript
-                      + (false ? "\u0FAC" : "\u0fab\u0fb7"));
+        just_ewts2uni_test(ewts_for_superscript + "dz+h",
+                           unicode_for_superscript
+                           + (false ? "\u0FAC" : "\u0fab\u0fb7"));
         ewts2uni_test(ewts_for_superscript + "w",
                       unicode_for_superscript + "\u0FAD");
-        ewts2uni_test(ewts_for_superscript + "zh",
-                      unicode_for_superscript + "\u0FAE");
-        ewts2uni_test(ewts_for_superscript + "z",
-                      unicode_for_superscript + "\u0FAF");
-        ewts2uni_test(ewts_for_superscript + "'",
-                      unicode_for_superscript + "\u0FB0");
-        ewts2uni_test(ewts_for_superscript + "y",
-                      unicode_for_superscript + "\u0FB1");
-        ewts2uni_test(ewts_for_superscript + "r",
-                      unicode_for_superscript + "\u0FB2");
+        just_ewts2uni_test(ewts_for_superscript + "zh",
+                           unicode_for_superscript + "\u0FAE");
+        just_ewts2uni_test(ewts_for_superscript + "z",
+                           unicode_for_superscript + "\u0FAF");
+        just_ewts2uni_test(ewts_for_superscript + "'",
+                           unicode_for_superscript + "\u0FB0");
+        just_ewts2uni_test(ewts_for_superscript + "y",
+                           unicode_for_superscript + "\u0FB1");
+        just_ewts2uni_test(ewts_for_superscript + "r",
+                           unicode_for_superscript + "\u0FB2");
         ewts2uni_test(ewts_for_superscript + "l",
                       unicode_for_superscript + "\u0FB3");
-        ewts2uni_test(ewts_for_superscript + "sh",
-                      unicode_for_superscript + "\u0FB4");
-        ewts2uni_test(ewts_for_superscript + "Sh",
-                      unicode_for_superscript + "\u0FB5");
-        ewts2uni_test(ewts_for_superscript + "s",
-                      unicode_for_superscript + "\u0FB6");
+        just_ewts2uni_test(ewts_for_superscript + "sh",
+                           unicode_for_superscript + "\u0FB4");
+        just_ewts2uni_test(ewts_for_superscript + "Sh",
+                           unicode_for_superscript + "\u0FB5");
+        just_ewts2uni_test(ewts_for_superscript + "s",
+                           unicode_for_superscript + "\u0FB6");
         ewts2uni_test(ewts_for_superscript + "h",
                       unicode_for_superscript + "\u0FB7");
-        ewts2uni_test(ewts_for_superscript + "a",
-                      unicode_for_superscript + "\u0FB8");
+        just_ewts2uni_test(ewts_for_superscript + "a",
+                           unicode_for_superscript + "\u0FB8");
         ewts2uni_test(ewts_for_superscript + "k+Sh",
                       unicode_for_superscript
                       + (false ? "\u0FB9" : "\u0f90\u0fb5"));
-        ewts2uni_test(ewts_for_superscript + "W",
-                      unicode_for_superscript + "\u0FBA");
-        ewts2uni_test(ewts_for_superscript + "Y",
-                      unicode_for_superscript + "\u0FBB");
-        ewts2uni_test(ewts_for_superscript + "R",
-                      unicode_for_superscript + "\u0FBC");
+        just_ewts2uni_test(ewts_for_superscript + "W",
+                           unicode_for_superscript + "\u0FBA");
+        just_ewts2uni_test(ewts_for_superscript + "Y",
+                           unicode_for_superscript + "\u0FBB");
+        just_ewts2uni_test(ewts_for_superscript + "R",
+                           unicode_for_superscript + "\u0FBC");
 
-        ewts2uni_test("\\u0FBE", "\u0FBE");
-        ewts2uni_test("\\u0FBF", "\u0FBF");
-        ewts2uni_test("\\u0FC0", "\u0FC0");
-        ewts2uni_test("\\u0FC1", "\u0FC1");
-        ewts2uni_test("\\u0FC2", "\u0FC2");
-        ewts2uni_test("\\u0FC3", "\u0FC3");
-        ewts2uni_test("\\u0FC4", "\u0FC4");
-        ewts2uni_test("\\u0FC5", "\u0FC5");
-        ewts2uni_test("\\u0FC6", achen + "\u0FC6");  // \u0fc6 is a combiner
-        ewts2uni_test("\\u0FC7", "\u0FC7");
-        ewts2uni_test("\\u0FC8", "\u0FC8");
-        ewts2uni_test("\\u0FC9", "\u0FC9");
-        ewts2uni_test("\\u0FCA", "\u0FCA");
-        ewts2uni_test("\\u0FCB", "\u0FCB");
-        ewts2uni_test("\\u0FCC", "\u0FCC");
-        ewts2uni_test("\\u0FCF", "\u0FCF");
-        ewts2uni_test("\\u0FD0", "\u0FD0");
-        ewts2uni_test("\\u0FD1", "\u0FD1");
+        just_ewts2uni_test("\\u0FBE", "\u0FBE");
+        just_ewts2uni_test("\\u0FBF", "\u0FBF");
+        just_ewts2uni_test("\\u0FC0", "\u0FC0");
+        just_ewts2uni_test("\\u0FC1", "\u0FC1");
+        just_ewts2uni_test("\\u0FC2", "\u0FC2");
+        just_ewts2uni_test("\\u0FC3", "\u0FC3");
+        just_ewts2uni_test("\\u0FC4", "\u0FC4");
+        just_ewts2uni_test("\\u0FC5", "\u0FC5");
+        just_ewts2uni_test("\\u0FC6", achen + "\u0FC6");  // \u0fc6 is a combiner
+        just_ewts2uni_test("\\u0FC7", "\u0FC7");
+        just_ewts2uni_test("\\u0FC8", "\u0FC8");
+        just_ewts2uni_test("\\u0FC9", "\u0FC9");
+        just_ewts2uni_test("\\u0FCA", "\u0FCA");
+        just_ewts2uni_test("\\u0FCB", "\u0FCB");
+        just_ewts2uni_test("\\u0FCC", "\u0FCC");
+        just_ewts2uni_test("\\u0FCF", "\u0FCF");
+        just_ewts2uni_test("\\u0FD0", "\u0FD0");
+        just_ewts2uni_test("\\u0FD1", "\u0FD1");
         ewts2uni_test("_", "\u00a0");  // tibwn.ini says that the Unicode spec wants a non-breaking space.
         ewts2uni_test("\\u534D", "\u534D");
         ewts2uni_test("\\u5350", "\u5350");
+        ewts2uni_test("\u534D", "\u534D");
+        ewts2uni_test("\u5350", "\u5350");
         ewts2uni_test("\\u0F88+k", "\u0F88\u0F90");
         ewts2uni_test("\\u0F88+kh", "\u0F88\u0F91");
         /* TODO(DLC)[EWTS->Tibetan]:
 
            Do we want to ever generate \uf021? (NOT \u0f21, but the
            private-use area (PUA) of Unicode).  EWTS->TMW and this
-           makes sense, but EWTS->Unicode? */
-        ewts2uni_test("\\uF021", "\uF021");
-        ewts2uni_test("\\uF022", "\uF022");
-        ewts2uni_test("\\uF023", "\uF023");
-        ewts2uni_test("\\uF024", "\uF024");
-        ewts2uni_test("\\uF025", "\uF025");
-        ewts2uni_test("\\uF026", "\uF026");
-        ewts2uni_test("\\uF027", "\uF027");
-        ewts2uni_test("\\uF028", "\uF028");
-        ewts2uni_test("\\uF029", "\uF029");
-        ewts2uni_test("\\uF02A", "\uF02A");
-        ewts2uni_test("\\uF02B", "\uF02B");
-        ewts2uni_test("\\uF02C", "\uF02C");
-        ewts2uni_test("\\uF02D", "\uF02D");
-        ewts2uni_test("\\uF02E", "\uF02E");
-        ewts2uni_test("\\uF02F", "\uF02F");
-        ewts2uni_test("\\uF030", "\uF030");
-        ewts2uni_test("\\uF031", "\uF031");
-        ewts2uni_test("\\uF032", "\uF032");
-        ewts2uni_test("\\uF033", "\uF033");
-        ewts2uni_test("\\uF034", "\uF034");
-        ewts2uni_test("\\uF035", "\uF035");
-        ewts2uni_test("\\uF036", "\uF036");
-        ewts2uni_test("\\uF037", "\uF037");
-        ewts2uni_test("\\uF038", "\uF038");
-        ewts2uni_test("\\uF039", "\uF039");
-        ewts2uni_test("\\uF03A", "\uF03A");
-        ewts2uni_test("\\uF03B", "\uF03B");
-        ewts2uni_test("\\uF03C", "\uF03C");
-        ewts2uni_test("\\uF03D", "\uF03D");
-        ewts2uni_test("\\uF03E", "\uF03E");
-        ewts2uni_test("\\uF03F", "\uF03F");
-        ewts2uni_test("\\uF040", "\uF040");
-        ewts2uni_test("\\uF041", "\uF041");
-        ewts2uni_test("\\uF042", "\uF042");
+           makes sense, but EWTS->Unicode?  Shouldn't we match the
+           behavior of TMW->Unicode, regardless?  */
+        just_ewts2uni_test("\\uF021", "\uF021");
+        just_ewts2uni_test("\\uF022", "\uF022");
+        just_ewts2uni_test("\\uF023", "\uF023");
+        just_ewts2uni_test("\\uF024", "\uF024");
+        just_ewts2uni_test("\\uF025", "\uF025");
+        just_ewts2uni_test("\\uF026", "\uF026");
+        just_ewts2uni_test("\\uF027", "\uF027");
+        just_ewts2uni_test("\\uF028", "\uF028");
+        just_ewts2uni_test("\\uF029", "\uF029");
+        just_ewts2uni_test("\\uF02A", "\uF02A");
+        just_ewts2uni_test("\\uF02B", "\uF02B");
+        just_ewts2uni_test("\\uF02C", "\uF02C");
+        just_ewts2uni_test("\\uF02D", "\uF02D");
+        just_ewts2uni_test("\\uF02E", "\uF02E");
+        just_ewts2uni_test("\\uF02F", "\uF02F");
+        just_ewts2uni_test("\\uF030", "\uF030");
+        just_ewts2uni_test("\\uF031", "\uF031");
+        just_ewts2uni_test("\\uF032", "\uF032");
+        just_ewts2uni_test("\\uF033", "\uF033");
+        just_ewts2uni_test("\\uF034", "\uF034");
+        just_ewts2uni_test("\\uF035", "\uF035");
+        just_ewts2uni_test("\\uF036", "\uF036");
+        just_ewts2uni_test("\\uF037", "\uF037");
+        just_ewts2uni_test("\\uF038", "\uF038");
+        just_ewts2uni_test("\\uF039", "\uF039");
+        just_ewts2uni_test("\\uF03A", "\uF03A");
+        just_ewts2uni_test("\\uF03B", "\uF03B");
+        just_ewts2uni_test("\\uF03C", "\uF03C");
+        just_ewts2uni_test("\\uF03D", "\uF03D");
+        just_ewts2uni_test("\\uF03E", "\uF03E");
+        just_ewts2uni_test("\\uF03F", "\uF03F");
+        just_ewts2uni_test("\\uF040", "\uF040");
+        just_ewts2uni_test("\\uF041", "\uF041");
+        just_ewts2uni_test("\\uF042", "\uF042");
     }
     
     public void test__EWTS__long_wowels() {
-        ewts2uni_test("k-I~M`~X", "\u0f40\u0f81\u0f82\u0f35"); // TODO(DLC)[EWTS->Tibetan]: actually the 0f68 stuff could be true... ask
+        ewts2uni_test("k-I~M`~X", "\u0f40\u0f71\u0f80\u0f82\u0f35"); // TODO(DLC)[EWTS->Tibetan]: actually the 0f68 stuff could be true... ask
     }
 
     public void test__EWTS__32bit_unicode_escapes() {
         assert_EWTS_error("\\u00010000"); // TODO(dchandler): make it work
-        ewts2uni_test("\\uF0010000",
-                      "[#ERROR ERROR TODO(DLC)[EWTS->Tibetan]: this character is illegal in EWTS: \\]\u0f68\u0f74[#ERROR ERROR TODO(DLC)[EWTS->Tibetan]: this character is illegal in EWTS: F]\u0f20\u0f20\u0f21\u0f20\u0f20\u0f20\u0f20"); // TODO(dchandler): make it work.  Until you can, TODO(DLC)[EWTS->Tibetan]: make the following work:
+        just_ewts2uni_test("\\uF0010000",
+                           "[#ERROR ERROR TODO(DLC)[EWTS->Tibetan]: this character is illegal in EWTS: \\]\u0f68\u0f74[#ERROR ERROR TODO(DLC)[EWTS->Tibetan]: this character is illegal in EWTS: F]\u0f20\u0f20\u0f21\u0f20\u0f20\u0f20\u0f20"); // TODO(dchandler): make it work.  Until you can, TODO(DLC)[EWTS->Tibetan]: make the following work:
         if (RUN_FAILING_TESTS) assert_EWTS_error("\\uF0010000");  // TODO(DLC)[EWTS->Tibetan]: error subsystem is hosed
         if (RUN_FAILING_TESTS) {
-        ewts2uni_test("\\ucafe0000",
-                      "[#ERROR Sorry, we don't yet support Unicode escape sequences above 0x0000FFFF!  File a bug.]");
+        just_ewts2uni_test("\\ucafe0000",
+                           "[#ERROR Sorry, we don't yet support Unicode escape sequences above 0x0000FFFF!  File a bug.]");
         // TODO(dchandler): make it "\ucafe0000");
         ewts2uni_test("\\ucafe0eff", "\ucafe0eff");
         ewts2uni_test("\\ucafe0eff", "\ucafe0eff");
@@ -1003,8 +1129,8 @@ public class EWTSTest extends TestCase {
             ewts2uni_test("\\u00000000", "\u0000");
             ewts2uni_test("\\u00000eff", "\u0eff");
         }
-        ewts2uni_test("\\u00000f00", "\u0f00");
-        ewts2uni_test("\\u00000f40", "\u0f40");
+        just_ewts2uni_test("\\u00000f00", "\u0f00");  // TODO(DLC)[EWTS->Tibetan]: EWTS->TMW is broken for this
+        just_ewts2uni_test("\\u00000f40", "\u0f40");
         if (RUN_FAILING_TESTS) {
             ewts2uni_test("\\u00000f70", "\u0f70");
             ewts2uni_test("\\u00000fff", "\u0fff");
@@ -1089,22 +1215,33 @@ public class EWTSTest extends TestCase {
 
         if (RUN_FAILING_TESTS) {
             ewts2uni_test("'a+r-i", "\u0f60\u0fb2\u0f80"); // TODO(DLC)[EWTS->Tibetan]: NOW: prefix rules should make this invalid!
-            ewts2uni_test("'a+r-I", "\u0f60\u0fb2\u0f81"); 
+            ewts2uni_test("'a+r-I", "\u0f60\u0fb2\u0f71\u0f80"); 
             ewts2uni_test("'a+l-i", "\u0f60\u0fb3\u0f80");// TODO(DLC)[EWTS->Tibetan]: NOW error handling is CRAP
-            ewts2uni_test("'a+l-I", "\u0f60\u0fb3\u0f81");
+            ewts2uni_test("'a+l-I", "\u0f60\u0fb3\u0f71\u0f80");
         }
 
     }
 
     public void testMoreMiscellany() {
+        ewts2uni_test("k+Sh+R-i", "\u0f40\u0fb5\u0fbc\u0f80");
+
+        ewts2uni_test("k\\u0f35", "\u0f40\u0f35");
+        ewts2uni_test("k\\u0f72", "\u0f40\u0f72");
+        ewts2uni_test("k\\u0f73", "\u0f40\u0f71\u0f72");
+        ewts2uni_test("k\\u0f75", "\u0f40\u0f71\u0f74");
+        ewts2uni_test("k\\u0f3e", "\u0f40\u0f3e");
+        ewts2uni_test("k\\u0f3f", "\u0f40\u0f3f");
+
+        ewts2uni_test("kHai", "\u0f40\u0f7f\u0f68\u0f7b");  // TODO(DLC)[EWTS->Tibetan]: Is this correct?
+
         ewts2uni_test("r-i", "\u0f62\u0f80");
-        ewts2uni_test("r-I", "\u0f62\u0f81");
+        ewts2uni_test("r-I", "\u0f62\u0f71\u0f80");
         ewts2uni_test("l-i", "\u0f63\u0f80");
-        ewts2uni_test("l-I", "\u0f63\u0f81");
-        ewts2uni_test("ga\u0f0bga ga\\u0F0bga",
-                      "\u0f42\u0f0b\u0f42\u0f0b\u0f42\u0f0b\u0f42");
-        ewts2uni_test("ga\u0f0cga*ga\\u0f0Cga",
-                      "\u0f42\u0f0c\u0f42\u0f0c\u0f42\u0f0c\u0f42");
+        ewts2uni_test("l-I", "\u0f63\u0f71\u0f80");
+        just_ewts2uni_test("ga\u0f0bga ga\\u0F0bga",
+                           "\u0f42\u0f0b\u0f42\u0f0b\u0f42\u0f0b\u0f42");
+        just_ewts2uni_test("ga\u0f0cga*ga\\u0f0Cga",
+                           "\u0f42\u0f0c\u0f42\u0f0c\u0f42\u0f0c\u0f42");
         ewts2uni_test("'jam",
                       "\u0f60\u0f47\u0f58");
         ewts2uni_test("jamX 'jam~X",

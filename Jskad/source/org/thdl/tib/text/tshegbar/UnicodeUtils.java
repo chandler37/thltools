@@ -298,7 +298,7 @@ public class UnicodeUtils implements UnicodeConstants {
         characters will appear as themselves. */
     public static String unicodeCodepointToString(char cp,
                                                   boolean shortenIfPossible) {
-        return unicodeCodepointToString(cp, shortenIfPossible, "\\u");
+        return unicodeCodepointToString(cp, shortenIfPossible, "\\u", false);
     }
 
     /** Like {@link #unicodeCodepointToString(char, boolean)} if you
@@ -307,7 +307,8 @@ public class UnicodeUtils implements UnicodeConstants {
         <code>0F55</code>. */
     public static String unicodeCodepointToString(char cp,
                                                   boolean shortenIfPossible,
-                                                  String prefix) {
+                                                  String prefix,
+                                                  boolean upperCase) {
         if (shortenIfPossible) {
             if ((cp >= 'a' && cp <= 'z')
                 || (cp >= 'A' && cp <= 'Z')
@@ -348,14 +349,16 @@ public class UnicodeUtils implements UnicodeConstants {
                 return "\\r";
         }
 
+        String suffix;
         if (cp < '\u0010')
-            return prefix + "000" + Integer.toHexString((int)cp);
+            suffix = "000" + Integer.toHexString((int)cp);
         else if (cp < '\u0100')
-            return prefix + "00" + Integer.toHexString((int)cp);
+            suffix = "00" + Integer.toHexString((int)cp);
         else if (cp < '\u1000')
-            return prefix + "0" + Integer.toHexString((int)cp);
+            suffix = "0" + Integer.toHexString((int)cp);
         else
-            return prefix + Integer.toHexString((int)cp);
+            suffix = Integer.toHexString((int)cp);
+        return prefix + (upperCase ? suffix.toUpperCase() : suffix);
     }
 
     /**

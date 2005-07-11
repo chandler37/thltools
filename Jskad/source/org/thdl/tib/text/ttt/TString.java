@@ -21,6 +21,7 @@ package org.thdl.tib.text.ttt;
 import java.util.HashSet;
 
 import org.thdl.tib.text.tshegbar.UnicodeUtils;
+import org.thdl.tib.text.THDLWylieConstants;
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlOptions;
 
@@ -66,8 +67,8 @@ public class TString {
                 && type != END_SLASH
                 && (type != UNICODE_CHARACTER
                     || !(UnicodeUtils.isInTibetanRange(ch = getText().charAt(0))
-                         || (ch >= EWTSTraits.PUA_MIN
-                             && ch <= EWTSTraits.PUA_MAX))));
+                         || (ch >= THDLWylieConstants.PUA_MIN
+                             && ch <= THDLWylieConstants.PUA_MAX))));
     }
 
     /** For ACIP [#COMMENTS] and EWTS (DLC FIXME: what are EWTS comments?) */
