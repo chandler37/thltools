@@ -26,7 +26,9 @@ import java.util.StringTokenizer;
  *  that uses TMW.  Or something like that -- I, David Chandler,
  *  didn't write this class, Edward Garrett did.  But now that
  *  EWTS->TMW conversion is best done by org.thdl.tib.text.ttt, this
- *  class is deprecated.
+ *  class is deprecated.  Really, it'd be easy to undeprecate it --
+ *  just stop calling the deprecated EWTS->TMW function that's being
+ *  called in favor of the new, better function.
  *  @author Edward Garrett, Tibetan and Himalayan Digital Library
  *  @deprecated
  */
