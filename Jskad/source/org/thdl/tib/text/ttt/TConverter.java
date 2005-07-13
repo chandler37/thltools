@@ -196,18 +196,18 @@ public class TConverter {
                          loc[0] == tdoc.getLength());
     }
 
-    /** Returns UTF-8 encoded Unicode.  A bit indirect, so use this
-     *  for testing only if performance is a concern.  If errors occur
-     *  in scanning the transliteration or in converting a tsheg bar,
-     *  then they are appended to errors if errors is non-null, as
-     *  well as written to the result.  If warnings occur in scanning
-     *  the transliteration or in converting a tsheg bar, then they
-     *  are appended to warnings if warnings is non-null, and they are
-     *  written to the result if writeWarningsToResult is true.  Error
-     *  and warning messages are long and self-contained unless
-     *  shortMessages is true.  Returns the conversion upon perfect
-     *  success or if there were merely warnings, null if errors
-     *  occurred.  */
+    /** Returns the Unicode that the given translit corresponds to.  A
+     *  bit indirect, so use this for testing only if performance is a
+     *  concern.  If errors occur in scanning the transliteration or
+     *  in converting a tsheg bar, then they are appended to errors if
+     *  errors is non-null, as well as written to the result.  If
+     *  warnings occur in scanning the transliteration or in
+     *  converting a tsheg bar, then they are appended to warnings if
+     *  warnings is non-null, and they are written to the result if
+     *  writeWarningsToResult is true.  Error and warning messages are
+     *  long and self-contained unless shortMessages is true.  Returns
+     *  the conversion upon perfect success or if there were merely
+     *  warnings, null if errors occurred. */
     public static String convertToUnicodeText(TTraits ttraits,
                                               String translit,
                                               StringBuffer errors,
@@ -229,6 +229,9 @@ public class TConverter {
                 return null;
             }
         } catch (IOException e) {
+            // Won't happen.  UTF-8 is guaranteed to be a supported
+            // encoding, and ByteArrayOutputStreams don't have such
+            // problems I don't think.
             throw new Error(e.toString());
         }
     }
