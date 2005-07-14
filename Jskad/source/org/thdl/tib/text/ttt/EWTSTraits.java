@@ -401,6 +401,7 @@ public final class EWTSTraits implements TTraits {
                     && THDLWylieConstants.SAUVASTIKA != ch
                     && THDLWylieConstants.SWASTIKA != ch
                     && (ch < THDLWylieConstants.PUA_MIN || ch > THDLWylieConstants.PUA_MAX)  // TODO(DLC)[EWTS->Tibetan]: give a warning, though?  PUA isn't specified by the unicode standard after all.
+                    && '\t' != ch
                     && '\n' != ch
                     && '\r' != ch) {
                     // TODO(DLC)[EWTS->Tibetan]: Is this the place
