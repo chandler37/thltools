@@ -90,10 +90,14 @@ public class EWTSTest extends TestCase {
             = traits.scanner().scan(ewts, errors, -1,
                                      shortMessages,
                                      warningLevel);
-        if (null == scan)
+        if (null == scan) {
+            System.out.println("EWTS->TMW->Uni ho");
             return null;
-        if (errors.length() > 0)
+        }
+        if (errors.length() > 0) {
+            System.out.println("EWTS->TMW->Uni ho: " + errors);
             return null;
+        }
         errors = new StringBuffer();
         TibetanDocument tdoc = new TibetanDocument();
         boolean rv;
@@ -107,18 +111,26 @@ public class EWTSTest extends TestCase {
             // I doubt this can happen.
             throw new Error(e.toString());
         }
-        if (!rv)
+        if (!rv) {
+            System.out.println("EWTS->TMW->Uni ho2");
             return null;
-        if (tdoc.getLength() < 1 && ewts.length() > 0)
+        }
+        if (tdoc.getLength() < 1 && ewts.length() > 0) {
+            System.out.println("EWTS->TMW->Uni ho3");
             return null;
+        }
         errors = new StringBuffer();
         long numAttemptedReplacements[] = new long[] { 0 };
         tdoc.convertToUnicode(0, tdoc.getLength(), errors, null,
                               numAttemptedReplacements);
-        if (errors.length() > 0)
+        if (errors.length() > 0) {
+            System.out.println("EWTS->TMW->Uni ho4: " + errors);
             return null;
-        if (numAttemptedReplacements[0] < 1)
-            return null;
+        }
+        if (numAttemptedReplacements[0] < 1) {
+            System.out.println("NOTE: During TMW->Unicode for the EWTS '"
+                               + ewts + "', we made no replacements.");
+        }
         
         try {
             return tdoc.getText(0, tdoc.getLength());
@@ -287,6 +299,15 @@ public class EWTSTest extends TestCase {
     /** Tests that the EWTS->unicode converter isn't completely
         braindead. */
     public void testEwtsBasics() {
+        ewts2uni_test("\n\t\nga\nha\nha\tga\r",
+                      "\n\t\n\u0f42\n\u0f67\n\u0f67\t\u0f42\r");
+        ewts2uni_test("\n", "\n");
+        ewts2uni_test("\r\n", "\r\n");
+        ewts2uni_test("\n\r", "\n\r");
+        ewts2uni_test("\r", "\r");
+        ewts2uni_test("\t", "\t");
+        ewts2uni_test("\t\n\n", "\t\n\n");
+
         just_ewts2uni_test("r+sa", "\u0f62\u0fb6");
         ewts2uni_test("R+s", "\u0f6a\u0fb6");
 
