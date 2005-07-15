@@ -19,10 +19,11 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.text.ttt;
 
 /** A class for use in XSL transformations that converts EWTS
- *  transliteration to Unicode.  This is intended to be used by Xalan
- *  XSLT to convert an XML document that uses Wylie into
- *  HTML/text/whatever that uses Unicode (probably TibetanMachineUni
- *  font).
+ *  transliteration to Unicode.  Note that the syntax for
+ *  calling Java extensions from XSL is vendor-specific; 
+ *  for more details, please consult the documentation for the
+ *  XSLT processor you use, for example Saxon or 
+ *  Xalan-Java.
  *  @author David Chandler
  */
 public class EwtsToUnicodeForXslt {
@@ -32,8 +33,7 @@ public class EwtsToUnicodeForXslt {
     }
 
     /** Converts EWTS transliteration into Tibetan Unicode.
-     *  TODO(dchandler): must we worry about the encoding, UTF-8
-     *  vs. UTF-16LE e.g.? */
+     */
     public static String convertEwtsTo(String ewts) {
         return TConverter.convertToUnicodeText(EWTSTraits.instance(),
                                                ewts,
