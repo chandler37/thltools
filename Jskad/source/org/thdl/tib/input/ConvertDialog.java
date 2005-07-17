@@ -97,14 +97,14 @@ class ConvertDialog extends JDialog
                                       || choices.getSelectedItem() == WYLIE_TO_UNI_TEXT);
     }
 
-    private javax.swing.filechooser.FileFilter acipff, rtfff;
+    private javax.swing.filechooser.FileFilter textFileFilter, rtfFileFilter;
 
     private void init()
     {
         jfc = new JFileChooser(controller.getDefaultDirectory());
         jfc.setDialogTitle(LOCATE_FILE);
-        jfc.addChoosableFileFilter(acipff = new ACIPFileFilter());
-        jfc.addChoosableFileFilter(rtfff = new RTFFileFilter());
+        jfc.addChoosableFileFilter(textFileFilter = new TextFileFilter());
+        jfc.addChoosableFileFilter(rtfFileFilter = new RTFFileFilter());
 
         content = new JPanel(new GridLayout(0,1));
         JPanel temp = new JPanel(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -186,7 +186,7 @@ class ConvertDialog extends JDialog
         content.add(buttonBox);
         setContentPane(content);
         pack();
-        setSize(new Dimension(600,240));
+        setSize(new Dimension(760,340));
     }
 
     private void setChoices(String[] choices)
@@ -241,15 +241,17 @@ class ConvertDialog extends JDialog
             if (src == browseOld) {
                 jfc.setFileFilter((ACIP_TO_UNI_TEXT.equals((String)choices.getSelectedItem())
                                    || WYLIE_TO_UNI_TEXT.equals((String)choices.getSelectedItem())
+                                   || UNI_TO_WYLIE_TEXT.equals((String)choices.getSelectedItem())
                                    || ACIP_TO_TMW.equals((String)choices.getSelectedItem())
                                    || WYLIE_TO_TMW.equals((String)choices.getSelectedItem()))
-                                  ? acipff : rtfff);
+                                  ? textFileFilter : rtfFileFilter);
             } else {
                 jfc.setFileFilter((ACIP_TO_UNI_TEXT.equals((String)choices.getSelectedItem())
                                    || WYLIE_TO_UNI_TEXT.equals((String)choices.getSelectedItem())
+                                   || UNI_TO_WYLIE_TEXT.equals((String)choices.getSelectedItem())
                                    || TMW_TO_ACIP_TEXT.equals((String)choices.getSelectedItem())
                                    || TMW_TO_WYLIE_TEXT.equals((String)choices.getSelectedItem()))
-                                  ? acipff : rtfff);
+                                  ? textFileFilter : rtfFileFilter);
             }
             if (jfc.showOpenDialog(this) != jfc.APPROVE_OPTION)
                 return;
@@ -445,13 +447,25 @@ class ConvertDialog extends JDialog
         else
             oldFileDirName = oldFileDirName + File.separator;
         String oldFileNameSansThingy = of.getName();
-        if (oldFileNameSansThingy.startsWith("TMW_")) {
+        if (oldFileNameSansThingy.startsWith(suggested_TO_TMW_prefix)) {
             oldFileNameSansThingy
-                = oldFileNameSansThingy.substring("TMW_".length(),
+                = oldFileNameSansThingy.substring(suggested_TO_TMW_prefix.length(),
                                                   oldFileNameSansThingy.length());
-        } else if (oldFileNameSansThingy.startsWith("TM_")) {
+        } else if (oldFileNameSansThingy.startsWith(suggested_TO_TM_prefix)) {
             oldFileNameSansThingy
-                = oldFileNameSansThingy.substring("TM_".length(),
+                = oldFileNameSansThingy.substring(suggested_TO_TM_prefix.length(),
+                                                  oldFileNameSansThingy.length());
+        } else if (oldFileNameSansThingy.startsWith(suggested_TO_UNI_prefix)) {
+            oldFileNameSansThingy
+                = oldFileNameSansThingy.substring(suggested_TO_UNI_prefix.length(),
+                                                  oldFileNameSansThingy.length());
+        } else if (oldFileNameSansThingy.startsWith(suggested_ACIP_prefix)) {
+            oldFileNameSansThingy
+                = oldFileNameSansThingy.substring(suggested_ACIP_prefix.length(),
+                                                  oldFileNameSansThingy.length());
+        } else if (oldFileNameSansThingy.startsWith(suggested_WYLIE_prefix)) {
+            oldFileNameSansThingy
+                = oldFileNameSansThingy.substring(suggested_WYLIE_prefix.length(),
                                                   oldFileNameSansThingy.length());
         } else if (oldFileNameSansThingy.startsWith("TMW")) {
             oldFileNameSansThingy
@@ -481,8 +495,11 @@ class ConvertDialog extends JDialog
             newFileNamePrefix = "TMW_to_same_TMW__";
             newFileNameExtension = ".RTF";
         } else { // conversion mode
-            if (TMW_TO_WYLIE == ct) {
+            if (TMW_TO_WYLIE == ct
+                || UNI_TO_WYLIE_TEXT == ct) {
                 newFileNamePrefix = suggested_WYLIE_prefix;
+                if (UNI_TO_WYLIE_TEXT == ct)
+                    newFileNameExtension = ".TXT";
             } else if (TMW_TO_WYLIE_TEXT == ct) {
                 newFileNamePrefix = suggested_WYLIE_prefix;
                 newFileNameExtension = ".TXT";
@@ -531,8 +548,7 @@ class ConvertDialog extends JDialog
         }
     }
 
-    // TODO(DLC)[EWTS->Tibetan]: we use for wylie (ewts) too...
-    public class ACIPFileFilter extends javax.swing.filechooser.FileFilter
+    public class TextFileFilter extends javax.swing.filechooser.FileFilter
     {
         public boolean accept(File f)
         {

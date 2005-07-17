@@ -24,6 +24,7 @@ package org.thdl.tib.input;
     @author Nathaniel Garson, Tibetan and Himalayan Digital Library */
 interface FontConverterConstants
 {
+    final String UNI_TO_WYLIE_TEXT = "Unicode to Wylie (UTF-8 Text->Text)";
     final String WYLIE_TO_UNI_TEXT = "Wylie to Unicode (Text->Text)";
     final String WYLIE_TO_TMW = "Wylie to TMW (Text->RTF)";
     final String TMW_TO_SAME_TMW = "TMW to the same TMW (for testing only) (RTF->RTF)";
@@ -60,6 +61,7 @@ interface FontConverterConstants
     };
 
     final String[] DEBUG_CHOICES = new String[] {
+        UNI_TO_WYLIE_TEXT,
         TMW_TO_SAME_TMW,
         WYLIE_TO_UNI_TEXT,
         WYLIE_TO_TMW,

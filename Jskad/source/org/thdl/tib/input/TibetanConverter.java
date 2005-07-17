@@ -18,10 +18,12 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.input;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.rtf.RTFEditorKit;
 
 import org.thdl.tib.text.TibetanDocument;
+import org.thdl.tib.text.reverter.Converter;
 import org.thdl.tib.text.ttt.ACIPTraits;
 import org.thdl.tib.text.ttt.EWTSTraits;
 import org.thdl.tib.text.ttt.TConverter;
@@ -89,6 +92,7 @@ public class TibetanConverter implements FontConverterConstants {
             boolean convertToWylieTextMode = false;
             boolean convertToACIPRTFMode = false;
             boolean convertToACIPTextMode = false;
+            boolean convertUniToWylieTextMode = false;
             boolean findSomeNonTMWMode = false;
             boolean findAllNonTMWMode = false;
             boolean findSomeNonTMMode = false;
@@ -123,6 +127,8 @@ public class TibetanConverter implements FontConverterConstants {
                                  = args[numArgs - 2].equals("--tmw-to-tmw-for-testing"))
                              || (convertToTMMode
                                  = args[numArgs - 2].equals("--to-tibetan-machine"))
+                             || (convertUniToWylieTextMode
+                                 = args[numArgs - 2].equals("--utf8-text-to-ewts-text"))
                              || (convertToTMWMode
                                  = args[numArgs - 2].equals("--to-tibetan-machine-web"))
                              || (convertACIPToUniMode
@@ -224,7 +230,8 @@ public class TibetanConverter implements FontConverterConstants {
                 out.println("are in your document waiting for your personal attention,");
                 out.println("43 if not even one glyph found was eligible for this conversion, which means");
                 out.println("that you probably selected the wrong conversion or the wrong document, or ");
-                out.println("nonzero otherwise.");
+                out.println("nonzero on some other error.");
+                // TODO(dchandler): describe 47 48 50 etc.
                 out.println("");
                 out.println("You may find it helpful to use `--find-some-non-tmw' mode (or");
                 out.println("`--find-some-non-tm' mode for Tibetan Machine input) before doing a");
@@ -266,6 +273,8 @@ public class TibetanConverter implements FontConverterConstants {
                     conversionTag = TMW_TO_WYLIE;
                 } else if (convertToWylieTextMode) {
                     conversionTag = TMW_TO_WYLIE_TEXT;
+                } else if (convertUniToWylieTextMode) {
+                    conversionTag = UNI_TO_WYLIE_TEXT;
                 } else if (convertToACIPRTFMode) {
                     conversionTag = TMW_TO_ACIP;
                 } else if (convertToACIPTextMode) {
@@ -320,8 +329,36 @@ public class TibetanConverter implements FontConverterConstants {
     static int reallyConvert(InputStream in, PrintStream out, String ct,
                              String warningLevel, boolean shortMessages,
                              boolean colors) {
-        if (ACIP_TO_UNI_TEXT == ct || ACIP_TO_TMW == ct
-            || WYLIE_TO_UNI_TEXT == ct || WYLIE_TO_TMW == ct) {
+        if (UNI_TO_WYLIE_TEXT == ct) {
+            try {
+                String uniText;
+                {
+                    // TODO(dchandler): use, here and elsewhere in the
+                    // codebase,
+                    // org.apache.commons.io.IOUtils.toString(InputStream,
+                    // encoding)
+                    StringBuffer s = new StringBuffer();
+                    char ch[] = new char[8192];
+                    BufferedReader bin
+                        = new BufferedReader(new InputStreamReader(in,
+                                                                   "UTF-8"));
+                    int amt;
+                    while (-1 != (amt = bin.read(ch))) {
+                        s.append(ch, 0, amt);
+                    }
+                    bin.close();
+                    uniText = s.toString();
+                }
+                StringBuffer errors = new StringBuffer();
+                String ewtsText = Converter.convertToEwts(uniText, errors);
+                // TODO(dchandler): is 51 the right choice?
+                return (errors.length() > 0) ? 51 : 0;
+            } catch (IOException e) {
+                // TODO(dchandler): print it?  where to?
+                return 48;
+            }
+        } else if (ACIP_TO_UNI_TEXT == ct || ACIP_TO_TMW == ct
+                   || WYLIE_TO_UNI_TEXT == ct || WYLIE_TO_TMW == ct) {
             try {
                 ArrayList al
                     = ((ACIP_TO_UNI_TEXT == ct || ACIP_TO_TMW == ct)
@@ -364,6 +401,7 @@ public class TibetanConverter implements FontConverterConstants {
                 else
                     return 0;
             } catch (IOException e) {
+                // TODO(dchandler): print it?  where to?
                 return 48;
             }
         } else {
