@@ -19,7 +19,8 @@ Increment the version number in AboutWylieWord.
 Do "Debug > Compile" in the F11 window.  Verify there are no
 compilation errors.
 
-Update the Testing.doc document to reflect functionality changes.
+Update the Testing.doc document to reflect any functionality changes
+and to test any bugs that have been fixed.
 
 Re-test everything that has changed since the last release, and
 anything that might be affected by those changes.
