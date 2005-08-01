@@ -102,7 +102,10 @@ public class UnicodeUtils implements UnicodeConstants {
         nor NFKD breaks down <code>U+0F00</code> into its constituent
         codepoints.  NFTHDL uses a maximum of codepoints, and it never
         uses codepoints whose use has been {@link #isDiscouraged(char)
-        discouraged}.
+        discouraged}.  NFTHDL also does not screw things up by using
+        the standard-but-wrong CCCVs.  It sorts stretches of combining
+        characters wisely as per
+        {@link http://iris.lib.virginia.edu/tibet/xml/showEssay.php?xml=/tools/encodingTib.xml}.
 
         <p>The Tibetan passages of the returned string are in the
         chosen normalized form, but codepoints outside of the {@link
@@ -135,6 +138,9 @@ public class UnicodeUtils implements UnicodeConstants {
                 tibetanUnicode.deleteCharAt(offset);
                 tibetanUnicode.insert(offset, s);
             }
+        }
+        if (normForm == NORM_NFTHDL) {
+            fixSomeOrderingErrorsInTibetanUnicode(tibetanUnicode);
         }
     }
 
@@ -418,7 +424,39 @@ public class UnicodeUtils implements UnicodeConstants {
      *  product.)
      */
     private static char unicode_pairs[][]
-        = { { '\u0f71', '\u0f74' },
+        = {
+            /* TODO(dchandler): use regex
+             * "[\u0f39\u0f71-\u0f84\u0f86\u0f87]{2,}" to find patches
+             * that need sorting and then sort each of those.  This
+             * cross product is ugly. */
+            
+            { '\u0f39', '\u0f71' },
+            { '\u0f39', '\u0f72' },
+            { '\u0f39', '\u0f74' },
+            { '\u0f39', '\u0f7a' },
+            { '\u0f39', '\u0f7b' },
+            { '\u0f39', '\u0f7c' },
+            { '\u0f39', '\u0f7d' },
+            { '\u0f39', '\u0f7e' },
+            { '\u0f39', '\u0f7f' },
+            { '\u0f39', '\u0f80' },
+            { '\u0f39', '\u0f82' },
+            { '\u0f39', '\u0f83' },
+
+            { '\u0f71', '\u0f7f' },
+            { '\u0f72', '\u0f7f' },
+            { '\u0f74', '\u0f7f' },
+            { '\u0f7a', '\u0f7f' },
+            { '\u0f7b', '\u0f7f' },
+            { '\u0f7c', '\u0f7f' },
+            { '\u0f7d', '\u0f7f' },
+            // but not { '\u0f7e', '\u0f7f' },
+            { '\u0f39', '\u0f7f' },
+            { '\u0f80', '\u0f7f' },
+            { '\u0f82', '\u0f7f' },
+            { '\u0f83', '\u0f7f' },
+
+            { '\u0f71', '\u0f74' },
 
             { '\u0f71', '\u0f72' },
             { '\u0f71', '\u0f7a' },
@@ -489,7 +527,9 @@ public class UnicodeUtils implements UnicodeConstants {
      *  the same file modulo Unicode booboos would be better.  </p>
      *
      *  @param sb the buffer to be mutated
-     *  @return true if sb was mutated */
+     *  @return true if sb was mutated
+     *  @see <a href="http://iris.lib.virginia.edu/tibet/xml/showEssay.php?xml=/tools/encodingTib.xml">Tibetan Encoding Model</a>
+     */
     public static boolean fixSomeOrderingErrorsInTibetanUnicode(StringBuffer sb) {
         boolean mutated = false;
         int len = sb.length();
@@ -511,26 +551,6 @@ public class UnicodeUtils implements UnicodeConstants {
                     }
         } while (mutated_this_time_through);
         return mutated;
-    }
-
-    /** Returns true iff ch is a valid Tibetan codepoint in Unicode
-     *  4.0: */
-    public boolean isTibetanUnicodeCodepoint(char ch) {
-        // NOTE: could use an array of 256 booleans for speed but I'm lazy
-        return ((ch >= '\u0f00' && ch <= '\u0fcf')
-                && !(ch == '\u0f48'
-                     || (ch > '\u0f6a' && ch < '\u0f71')
-                     || (ch > '\u0f8b' && ch < '\u0f90')
-                     || ch == '\u0f98'
-                     || ch == '\u0fbd'
-                     || ch == '\u0fcd'
-                     || ch == '\u0fce'));
-    }
-
-    /** Returns true iff ch is in 0F00-0FFF but isn't a valid Tibetan
-     *  codepoint in Unicode 4.0: */
-    public boolean isInvalidTibetanUnicode(char ch) {
-        return (isInTibetanRange(ch) && !isTibetanUnicodeCodepoint(ch));
     }
 }
 

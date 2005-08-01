@@ -463,6 +463,7 @@ public final class LegalTshegBar
      *  concatenation like 'u'i'o.  Returns false otherwise (including
      *  the case that suffix is the empty string). */
     public static boolean isAchungBasedSuffix(String suffix) {
+        // TODO(dchandler): use java.util.regex
         int i = 0; // so that the empty string causes false to be returned.
         while (i == 0 || !suffix.equals("")) {
             boolean startsWithOneOfThem = false;

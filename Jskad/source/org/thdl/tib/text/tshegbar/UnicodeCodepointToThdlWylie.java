@@ -67,11 +67,16 @@ public class UnicodeCodepointToThdlWylie {
         // fail.
 
         switch (x) {
+        case '\t': return "\t";
+        case '\n': return "\n";
+        case '\r': return "\r";
+        case ' ': return "_";
+        case '\u00a0': return "_";
 
         case '\u0F00': return "oM";
         case '\u0F01': return "\\u0F01";
-        case '\u0F02': return null; // DLC
-        case '\u0F03': return null; // DLC
+        case '\u0F02': return "\\u0F02";
+        case '\u0F03': return "\\u0F03";
         case '\u0F04': return "@";
         case '\u0F05': return "#";
         case '\u0F06': return "$";
@@ -314,8 +319,6 @@ public class UnicodeCodepointToThdlWylie {
         case '\u0FCF': return "\\u0FCF"; // DLC i added this to the 'EWTS document misspeaks' bug report... null I think...
 
         default: {
-            // DLC handle space (EW's "_")
-
             // This codepoint is in the range 0FD0-0FFF or is not in
             // the Tibetan range at all.  In either case, there is no
             // corresponding THDL Extended Wylie.

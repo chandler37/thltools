@@ -32,11 +32,12 @@ public class UnicodeToTranslitForXslt {
     }
 
     /** Converts Tibetan Unicode to EWTS transliteration. */
-    public static String unicodeToEwts(String unicode) {
-        return Converter.convertToEwts(unicode, null);
+    public static String unicodeToEwtsForComputers(String unicode) {
+        return Converter.convertToEwtsForComputers(unicode, null);
     }
+
     /** Converts Tibetan Unicode to ACIP transliteration. */
     public static String unicodeToAcip(String unicode) {
-        throw new Error("DLC: not yet");
+        throw new Error("TODO(dchandler): not yet");
     }
 }

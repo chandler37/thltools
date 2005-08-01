@@ -798,6 +798,7 @@ public class EWTSTest extends TestCase {
             just_ewts2uni_test("\\uefff", "\uefff");
         }
 
+        ewts2uni_test("kaHH", "\u0F40\u0f7f\u0f7f");
 
         // Below was semiautomatically generated from the EWTS spec's
         // 'ewts.xml' representation (early August 2004 edition):

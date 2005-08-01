@@ -165,8 +165,8 @@ the jvm starting tomcat:
   <!-- Set this to 1.2 if you want J2SDK 1.4's default.  1.1 gives us
        more compatibility, but maybe there will be a performance hit
        or something.  -->
-  <property name="target.jvm" value="1.2"/>
-  <property name="source.jvm" value="1.2"/>
+  <property name="target.jvm" value="1.4"/>
+  <property name="source.jvm" value="1.4"/>
 
   <!-- Only the tt-servlet-compile target changes this.  Humans
        shouldn't mess with this. -->

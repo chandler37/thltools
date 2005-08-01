@@ -350,7 +350,10 @@ public class TibetanConverter implements FontConverterConstants {
                     uniText = s.toString();
                 }
                 StringBuffer errors = new StringBuffer();
-                String ewtsText = Converter.convertToEwts(uniText, errors);
+                // TODO(dchandler): DLC: use human-friendly EWTS, not
+                // computer-friendly!
+                String ewtsText = Converter.convertToEwtsForComputers(uniText,
+                                                                      errors);
                 // TODO(dchandler): is 51 the right choice?
                 return (errors.length() > 0) ? 51 : 0;
             } catch (IOException e) {

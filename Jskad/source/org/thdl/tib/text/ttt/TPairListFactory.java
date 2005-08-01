@@ -405,6 +405,12 @@ class TPairListFactory {
 
                     "\u0f74", THDLWylieConstants.u_VOWEL,
 
+                    // TODO(dchandler): equivalence classes I'm not
+                    // sure.
+                    // http://iris.lib.virginia.edu/tibet/xml/showEssay.php?xml=/tools/encodingTib.xml
+                    // says to go above base and then upwards.  Think
+                    // it over.
+
                     // equivalence class:
                     "\u0f72", THDLWylieConstants.i_VOWEL,
                     "\u0f7a", THDLWylieConstants.e_VOWEL,

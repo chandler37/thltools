@@ -73,10 +73,8 @@
       <formatter type="xml"/><!-- If not XML, then 'ant -buildfile
                                   build.xml check-report' will fail. -->
       <sysproperty key="java.awt.headless" value="true"/>
-<!-- TODO(dchandler): DLC: enable these
       <test name="org.thdl.tib.text.reverter.ConverterTest"/>
       <test name="org.thdl.tib.text.reverter.UnicodeToTranslitForXsltTest"/>
--->
       <test name="org.thdl.tib.text.ttt.EwtsToUnicodeForXsltTest"/>
       <test name="org.thdl.tib.text.ttt.EWTSTest"/>
       <test name="org.thdl.tib.text.ttt.EWTStibwniniTest"/>
