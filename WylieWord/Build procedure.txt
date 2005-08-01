@@ -19,11 +19,13 @@ Increment the version number in AboutWylieWord.
 Do "Debug > Compile" in the F11 window.  Verify there are no
 compilation errors.
 
+Re-test everything that has changed since the last release, and
+anything that might be affected by those changes.
+
 Update the Testing.doc document to reflect any functionality changes
 and to test any bugs that have been fixed.
 
-Re-test everything that has changed since the last release, and
-anything that might be affected by those changes.
+If the manual has changed, update its revision date.
 
 Run PrepareDistribution in immediate window.
   This runs automated tests.  For these to work, you need to have the test case 
@@ -32,12 +34,10 @@ Run PrepareDistribution in immediate window.
     Verify that the results are OK.
   It also unbinds all the WylieWord keys.
     This is critical to having WylieWord work correctly on non-English keyboards.
+  It also saves the source file in a special place that is the input to SEAU.
+    (If you aren't me, you will need to change the constant developmentFolder.)
 
-Save "WylieWord development copy.dot"
-
-Make a copy and rename it Setup.doc.  This is the input to the build process.
-
-If the manual has changed, update its revision date.
+Exit Word.  Delete the template from the STARTUP folder if it's there.
 
 The WylieWord installer is created using the program "SEAU"
 ("Self-Extracting Archive Utility"), available for $49 on the web.
