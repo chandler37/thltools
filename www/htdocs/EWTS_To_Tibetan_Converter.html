@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<!-- @author David Chandler -->
+<!-- @editor Emacs, baby! -->
+
+
+<head>
+   <title>EWTS To Tibetan Converters</title>
+
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+   <script type="text/javascript" src="http://iris.lib.virginia.edu/tibet/scripts/thdl_scripts.js"></script>
+   <link rel="stylesheet" type="text/css" href="http://iris.lib.virginia.edu/tibet/style/thdl-styles.css"/>
+</head>
+
+<body>
+
+<div id="banner">
+   <a id="logo" href="http://iris.lib.virginia.edu/tibet/index.html"><img id="test" alt="THDL Logo" src="http://iris.lib.virginia.edu/tibet/images/logo.png"/></a>
+   <h1>The Tibetan &amp; Himalayan Digital Library</h1>
+
+   <div id="menubar">
+   <script type='text/javascript'>function Go(){return}</script>
+   <script type='text/javascript' src='http://iris.lib.virginia.edu/tibet/scripts/new/thdl_menu_config.js'></script>
+
+   <script type='text/javascript' src='http://iris.lib.virginia.edu/tibet/scripts/new/menu_new.js'></script>
+   <script type='text/javascript' src='http://iris.lib.virginia.edu/tibet/scripts/new/menu9_com.js'></script>
+   <noscript><p>Your browser does not support javascript.</p></noscript>
+   <div id='MenuPos' >Menu Loading...  </div>
+	</div><!--END menubar-->
+
+</div><!--END banner-->
+
+<div id="sub_banner">
+	<div id="search">
+		<form  method="get" action="http://www.google.com/u/thdl">
+			<p>
+				<input type="text" name="q" id="q" size="15" maxlength="255" value="" />
+				<input type="submit" name="sa" id="sa" value="Search"/>
+				<input type="hidden" name="hq" id="hq"  value="inurl:iris.lib.virginia.edu"/>
+			</p>
+		</form>
+
+	</div>
+	<div id="breadcrumbs">
+		<a href="http://iris.lib.virginia.edu/tibet/index.html">Home</a> &gt; <a href="index.html">Tools</a> &gt; <a href="http://iris.lib.virginia.edu/tibet/tools/allfonts.html">Fonts &amp; Input</a> &gt; <a href="http://iris.lib.virginia.edu/tibet/tools/conv.html">Converters</a> &gt; <a href="TMW_RTF_TO_THDL_WYLIE.html">Converters in Jskad</a> &gt; EWTS To Tibetan Converters
+	</div>
+</div><!--END banner-->
+
+
+<div id="main">
+
+<h2>EWTS To Tibetan Converters</h2>
+
+<p>
+  This document describes the EWTS-&gt;Tibetan converters built atop
+  <a
+  href="http://iris.lib.virginia.edu/tibet/tools/jskad.html">Jskad</a>.&nbsp;
+  These converters were initially written by David Chandler, a
+  volunteer with the <a
+  href="http://iris.lib.virginia.edu/tibet/index.html">Tibetan and
+  Himalayan Digital Library</a>, from 2003-2005.&nbsp; They built upon
+  the work of Tony Duff, Edward Garrett, Than Garson, and
+  Andr&eacute;s Montano Pellegrini.  (Please forgive any omission from
+  this list.)
+</p>
+
+<p>
+  These converters accept transliteration in Latin alphabet conforming
+  to the <a
+  href="http://iris.lib.virginia.edu/tibet/collections/langling/ewts/">Extended
+  Wylie Transliteration Scheme</a> (EWTS) proposed by THDL.
+</p>
+
+<p>
+  The converters were built by retrofitting the <a
+  href="ACIP_To_Tibetan_Converter.html">ACIP-&gt;Tibetan</a>
+  converters with support for EWTS since both are Latin-alphabet
+  transliteration schemes.  The two are quite different (greedy
+  stacking vs. explicit stacking, handling of U+0F68, disambiguation
+  character, etc.).  The EWTS converters are not yet as trustworthy as
+  the ACIP converters because they've not been as well tested.
+</p>
+
+<p>
+  To learn more about how to use the converters via either the GUI or
+  command-line interface, please see the documentation for the <a
+  href="ACIP_To_Tibetan_Converter.html">ACIP-&gt;Tibetan</a>
+  converters and keep in mind the various differences in
+  transliteration rules.  If you find this documentation lacking,
+  please e-mail the <a
+  href="mailto:thdltools-devel@lists.sourceforge.net">developers</a>
+  and let them know that, giving as many details as possible.
+</p>
+
+
+<h2>License</h2>
+
+<p>Both the EWTS-&gt;Tibetan converters and this document are released
+under the <a
+href="http://iris.lib.virginia.edu/tibet/tools/thdl_license.txt">THDL
+Open Community License Version 1.0</a>.</p>
+
+
+<p>
+    Please
+
+    <a href="mailto:thdltools-devel@lists.sourceforge.net">
+      e-mail us</a> 
+
+    your comments about this page.
+</p>
+
+<p>
+The
+<a href="http://www.sourceforge.net/projects/thdltools">
+  THDL Tools</a>
+project is generously hosted by:
+<!--
+
+DO NOT DELETE THE SF.NET LOGO.
+
+We have a choice of colors and sizes for this logo (see
+"https://sourceforge.net/docman/display_doc.php?docid=790&group_id=1"),
+but we do not have the option of removing it.  SourceForge requests
+that we put it on each web page for our project, and to give us
+incentive to do so, they will not track the number of hits for our
+project web pages unless we put this link in.  To track hits, see
+"http://sourceforge.net/project/stats/index.php?report=months&group_id=61934".
+
+-->
+<a href="http://sourceforge.net/">
+  <img src="http://sourceforge.net/sflogo.php?group_id=61934&amp;type=1"
+       width="88" height="31" alt="SourceForge Logo" />
+</a>
+<!-- AGAIN, DO NOT DELETE THE SF.NET LOGO. -->
+</p>
+</div>
+
+
+</body>
+</html>
