@@ -93,7 +93,6 @@ i'u'i
 // things that at one time or another tickled bugs in WW code
 gyurd
 ga*ra
-ha_sa
 gangs
 'gram
 la'i
@@ -786,10 +785,11 @@ fai
 vo
 fI/ fai/ fo/ fuM
 
-// punctuation
+// Punctuation.  Underscore is not tested because it (correctly) turns into [ ] in round-trip testing.
+// 
 012345678901234 
-!@#$%&*()_={}:;<>?
-a_tsal852ja$)@#%(!Ta)0daM)%!@sa
+!@#$%&*()={}:;<>?
+a1tsal852ja$)@#%(!Ta)0daM)%!@sa
 // test special handing for @#
 @# #@ @a#
 
@@ -815,6 +815,7 @@ S+ta
 t+Sa
 b~a
 ba~
+h-
 
 // ??? legal???
 pa'am'ang
