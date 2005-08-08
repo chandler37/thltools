@@ -120,8 +120,17 @@ class EWTSTshegBarScanner extends TTshegBarScanner {
           al.add(new TString("EWTS", sb.substring(i, i+1),
                              TString.TIBETAN_PUNCTUATION));
         } else {
-          al.add(new TString("EWTS", "ERROR TODO(DLC)[EWTS->Tibetan]: this character is illegal in EWTS: " + sb.substring(i, i+1),
+          String errMsg;
+          al.add(new TString("EWTS",
+                             errMsg
+                             = ErrorsAndWarnings.getMessage(116,
+                                                            shortMessages,
+                                                            sb.substring(i, i + 1),
+                                                            EWTSTraits.instance()),
                              TString.ERROR));
+          if (null != errors) {
+            errors.append("Offset " + i + ": ERROR " + errMsg + "\n");
+          }
         }
       }
     }
