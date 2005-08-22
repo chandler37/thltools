@@ -65,7 +65,7 @@ class TransitionInstruction implements UnicodeReadingStateMachineConstants {
      *  if it is in the Tibetan range but can be from outside the
      *  Tibetan range of Unicode */
     static int getCCForCP(char cp) {
-        ThdlDebug.verify(getNFTHDL(cp) == null); // DLC FIXME: assert this
+      // DLC does not compile:        ThdlDebug.verify(getNFTHDL(cp) == null); // DLC FIXME: assert this
         if ('\u0F82' == cp) {
             return CC_0F82;
         } else if ('\u0F8A' == cp) {
