@@ -87,7 +87,7 @@ class GC {
                                + UnicodeUtils.unicodeStringToPrettyString(nfthdl));
         }
         this.nfthdl = nfthdl;
-        assert (nfthdl.length() > 0);
+        ThdlDebug.verify(nfthdl.length() > 0);  // TODO(dchandler): assert only
         if (nfthdl.length() < 1)
             valid = false;
         valid = validGcRegex.matcher(nfthdl).matches();
