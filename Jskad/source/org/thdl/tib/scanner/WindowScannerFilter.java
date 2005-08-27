@@ -54,7 +54,7 @@ public abstract class WindowScannerFilter implements WindowListener, FocusListen
     protected static String defaultOutputRows = "thdl.scanner.output-pane.rows";
     
 	protected ScannerPanel sp;
-	protected MenuItem mnuExit, mnuCut, mnuCopy, mnuPaste, mnuDelete, mnuSelectAll, mnuAbout, mnuClear, mnuOpen, mnuPreferences, mnuSavePref;
+	protected MenuItem mnuExit, mnuCut, mnuCopy, mnuPaste, mnuDelete, mnuSelectAll, mnuAbout, mnuClear, mnuOpen, mnuPreferences, mnuSavePref, mnuTranslate;
 	protected CheckboxMenuItem mnuDicts;
 	protected Object objModified;
 	protected AboutDialog diagAbout;

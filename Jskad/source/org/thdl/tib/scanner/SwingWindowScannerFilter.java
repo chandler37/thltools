@@ -18,21 +18,11 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.scanner;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.Menu;
-import java.awt.MenuBar;
-import java.awt.MenuItem;
-import java.awt.TextArea;
-import java.awt.TextComponent;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
+import java.awt.event.*;
 import java.io.IOException;
 
 import javax.swing.JOptionPane;
@@ -145,7 +135,13 @@ public class SwingWindowScannerFilter extends WindowScannerFilter
 		mnuDicts=null;
 
 		mb.add(m);
-		    	
+		m = new Menu("Tools");
+		mnuTranslate  = new MenuItem ("Translate");
+		mnuTranslate.setShortcut(new MenuShortcut(KeyEvent.VK_T));
+		mnuTranslate.addActionListener(this);
+		m.add(mnuTranslate);
+		mb.add(m);
+		
 	    m = new Menu("Help");
 
         for (int i = 0; i < DuffScannerPanel.keybdMgr.size(); i++)
@@ -191,6 +187,7 @@ public class SwingWindowScannerFilter extends WindowScannerFilter
 		//else mainWindow.setSize(500,600);
 		mainWindow.show();
 		mainWindow.toFront();
+		sp.setFocusToInput();
 
 	    if (!ThdlOptions.getBooleanOption(AboutDialog.windowAboutOption))
 	    {
@@ -322,6 +319,10 @@ public class SwingWindowScannerFilter extends WindowScannerFilter
                                               JOptionPane.ERROR_MESSAGE);
             }
             
+        }
+        else if (clicked == mnuTranslate)
+        {
+        	sp.translate();
         }
         else
 		{

@@ -156,6 +156,11 @@ public class DuffScannerPanel extends ScannerPanel implements ItemListener
         keyboard.addItemListener(this);
 		toolBar.add(keyboard);
 	}
+	
+	public void setFocusToInput()
+	{
+		duffInput.requestFocusInWindow();
+	}
 
 	public void addFocusListener(FocusListener fl)
 	{
@@ -235,41 +240,42 @@ public class DuffScannerPanel extends ScannerPanel implements ItemListener
 
     public void translate()
     {
-            String in;
-            setDicts(scanner.getDictionarySource());
+    	String in;
+    	setDicts(scanner.getDictionarySource());
 
-            in = "";
-            if (showingTibetan)
-                in = duffInput.getWylie(new boolean[] { false });
-            else
+    	in = "";
+    	if (showingTibetan)
+    		in = duffInput.getWylie(new boolean[] { false });
+    	else
             in = txtInput.getText();
 
-            if (!in.equals(""))
-            {
-                doingStatus("Translating...");
-                scanner.scanBody(in);
-                scanner.finishUp();
-                model.newSearch(scanner.getWordArray());
-                //printAllDefs();
-                scanner.clearTokens();
-                returnStatusToNorm();
-                fullDef.setText("");
-                /*ListSelectionModel lsm = (ListSelectionModel)table.getSelectionModel();
-                if (!lsm.isSelectionEmpty())
-                {
-                        int selectedRow = lsm.getMinSelectionIndex();
-                        //TableModel tm = table.getModel();
-                        if (selectedRow<model.getRowCount())
-                                fullDef.setText(model.getValueAt(selectedRow, 1).toString());
-                }*/
-            }
-            else
-            {
-                    model.newSearch(null);
-                    fullDef.setText("");
-            }
-            table.tableChanged(new TableModelEvent(model));
+    	if (!in.equals(""))
+    	{
+    		doingStatus("Translating...");
+    		scanner.scanBody(in);
+    		scanner.finishUp();
+    		model.newSearch(scanner.getWordArray());
+    		//printAllDefs();
+    		scanner.clearTokens();
+    		returnStatusToNorm();
+    		fullDef.setText("");
+    		/*ListSelectionModel lsm = (ListSelectionModel)table.getSelectionModel();
+    		 if (!lsm.isSelectionEmpty())
+    		 {
+    		 	int selectedRow = lsm.getMinSelectionIndex();
+    		 	//TableModel tm = table.getModel();
+    		 	 if (selectedRow<model.getRowCount())
+    		 	 	fullDef.setText(model.getValueAt(selectedRow, 1).toString());
+    		 }*/
+    	}
+    	else
+    	{
+    		model.newSearch(null);
+    		fullDef.setText("");
+    	}
+    	table.tableChanged(new TableModelEvent(model));
     	table.repaint();
+    	if (table.getRowCount()>0) table.setRowSelectionInterval(0,0);
     }
 
 	public void setWylieInput(boolean enabled)

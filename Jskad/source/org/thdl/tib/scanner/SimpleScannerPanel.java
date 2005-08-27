@@ -116,6 +116,11 @@ public class SimpleScannerPanel extends ScannerPanel implements ItemListener
     	add(cardPanel, BorderLayout.CENTER);
 	}
 	
+	public void setFocusToInput()
+	{
+		txtInput.requestFocusInWindow();
+	}
+	
     public void itemStateChanged(ItemEvent e)
     {
         int n = listDefs.getSelectedIndex();

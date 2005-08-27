@@ -215,5 +215,6 @@ public abstract class ScannerPanel extends Panel implements ActionListener
 	public abstract void translate();
 	public abstract void clear();
 	public abstract void setWylieInput(boolean enabled);
+	public abstract void setFocusToInput();
 	public void addFocusListener(FocusListener fl) {}
 }
