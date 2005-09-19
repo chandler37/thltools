@@ -164,7 +164,7 @@ public class OnLineScannerFilter extends HttpServlet
             out.println("   <p>");
             out.println("    <input type=\"text\" name=\"q\" id=\"q\" size=\"15\" maxlength=\"255\" value=\"\" />");
             out.println("    <input type=\"submit\" name=\"sa\" id=\"sa\" value=\"Search\"/>");
-            out.println("    <input type=\"hidden\" name=\"hq\" id=\"hq\" value=\"inurl:iris.lib.virginia.edu\"/>");
+            out.println("    <input type=\"hidden\" name=\"hq\" id=\"hq\" value=\"inurl:orion.lib.virginia.edu\"/>");
             out.println("   </p>");
             out.println("  </form>");
             out.println(" </div>");
@@ -201,7 +201,7 @@ public class OnLineScannerFilter extends HttpServlet
         out.println("    <td width=\"75%\">");
         out.println("      <p><input type=\"radio\" value=\"" + tibetanStr + "\" ");
         if (wantsTibetan) out.println("checked ");
-        out.println("name=\"" + scriptStr + "\">Tibetan script (using <a href=\"http://iris.lib.virginia.edu/tibet/tools/tmw.html\" target=\"_blank\">Tibetan Machine Web font</a>)<br/>");
+        out.println("name=\"" + scriptStr + "\">Tibetan script (using <a href=\"http://orion.lib.virginia.edu/thdl/tools/tmw.html\" target=\"_blank\">Tibetan Machine Web font</a>)<br/>");
         out.println("      <input type=\"radio\" value=\"roman\" ");
         if (!wantsTibetan) out.println("checked ");
         out.println("name=\"" + scriptStr + "\">Roman script</td>");

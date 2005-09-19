@@ -736,7 +736,7 @@ public class Jskad extends JPanel implements DocumentListener {
                     public void theRealActionPerformed(ActionEvent e) {
                         CalHTMLPane onlineHelpPane = new CalHTMLPane();
                         try {
-                            onlineHelpPane.showHTMLDocument(new URL("http://iris.lib.virginia.edu/tibet/tools/jskad.html"));
+                            onlineHelpPane.showHTMLDocument(new URL("http://orion.lib.virginia.edu/thdl/tools/jskad.html"));
                         } catch (Exception ex) {
                             ex.printStackTrace(System.err);
                             throw new ThdlLazyException(ex);

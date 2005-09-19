@@ -114,7 +114,7 @@ Contributor(s): ______________________________________.
 
 
   <property name="jnlp.codebase"
-            value="http://iris.lib.virginia.edu/tibet/tools"/>
+            value="http://orion.lib.virginia.edu/thdl/tools"/>
 
   <property name="key.alias" value="David Germano"/>
   <property name="keystore" value="file:///f:/thdl/Jskad/thawte/keystore"/>
@@ -1126,7 +1126,7 @@ the jvm starting tomcat:
       <param name="dgkey.password" value="nightly"/>
       <param name="keystore.password" value="nightly"/>
       <param name="jnlp.codebase"
-             value="http://iris.lib.virginia.edu/thdl/builds"/>
+             value="http://orion.lib.virginia.edu/thdl/builds"/>
     </antcall>
   </target>
 
@@ -1331,7 +1331,7 @@ the jvm starting tomcat:
 <information>
   <title>Jskad</title>
   <vendor>THDL</vendor>
-  <homepage href="http://iris.lib.virginia.edu/tibet/tools/jskad.html" />
+  <homepage href="http://orion.lib.virginia.edu/thdl/tools/jskad.html" />
 
   <description>
     Jskad is a simple text editor for the Tibetan language, using the
@@ -1379,7 +1379,7 @@ the jvm starting tomcat:
 <information>
   <title>Tibetan Translation Tool</title>
   <vendor>THDL, Andres Montano Pellegrini</vendor>
-  <homepage href="http://iris.lib.virginia.edu/tibet/reference/translation-tool.html" />
+  <homepage href="http://orion.lib.virginia.edu/thdl/reference/translation-tool.html" />
 
   <description>
     This tool divides Tibetan language passages up into their component 

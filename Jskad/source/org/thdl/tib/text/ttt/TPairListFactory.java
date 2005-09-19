@@ -407,7 +407,7 @@ class TPairListFactory {
 
                     // TODO(dchandler): equivalence classes I'm not
                     // sure.
-                    // http://iris.lib.virginia.edu/tibet/xml/showEssay.php?xml=/tools/encodingTib.xml
+                    // http://orion.lib.virginia.edu/thdl/xml/showEssay.php?xml=/tools/encodingTib.xml
                     // says to go above base and then upwards.  Think
                     // it over.
 

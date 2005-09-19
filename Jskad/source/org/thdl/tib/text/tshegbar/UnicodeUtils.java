@@ -105,7 +105,7 @@ public class UnicodeUtils implements UnicodeConstants {
         discouraged}.  NFTHDL also does not screw things up by using
         the standard-but-wrong CCCVs.  It sorts stretches of combining
         characters wisely as per
-        {@link http://iris.lib.virginia.edu/tibet/xml/showEssay.php?xml=/tools/encodingTib.xml}.
+        {@link http://orion.lib.virginia.edu/thdl/xml/showEssay.php?xml=/tools/encodingTib.xml}.
 
         <p>The Tibetan passages of the returned string are in the
         chosen normalized form, but codepoints outside of the {@link
@@ -528,7 +528,7 @@ public class UnicodeUtils implements UnicodeConstants {
      *
      *  @param sb the buffer to be mutated
      *  @return true if sb was mutated
-     *  @see <a href="http://iris.lib.virginia.edu/tibet/xml/showEssay.php?xml=/tools/encodingTib.xml">Tibetan Encoding Model</a>
+     *  @see <a href="http://orion.lib.virginia.edu/thdl/xml/showEssay.php?xml=/tools/encodingTib.xml">Tibetan Encoding Model</a>
      */
     public static boolean fixSomeOrderingErrorsInTibetanUnicode(StringBuffer sb) {
         boolean mutated = false;

@@ -26,7 +26,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
 
-/** Provides an interfase to convert from tibetan text transliterated in the Acip scheme to THDL's <a href="http://iris.lib.virginia.edu/tibet/tools/ewts.pdf" target="_blank">Extended Wylie</a> scheme.
+/** Provides an interfase to convert from tibetan text transliterated in the Acip scheme to THDL's <a href="http://orion.lib.virginia.edu/thdl/tools/ewts.pdf" target="_blank">Extended Wylie</a> scheme.
 
 <p>If no arguments are sent, it takes the Acip text from the standard input and sends the 
 Wylie text to the standard output. If one argument is sent, it interprets it as the

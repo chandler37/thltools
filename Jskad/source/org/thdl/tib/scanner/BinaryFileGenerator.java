@@ -48,7 +48,7 @@ import org.thdl.util.SimplifiedListIterator;
 by '-' (a dash). Even though it is not 
 required, it is highly recommended to include a space before and afterwards 
 (to eliminate any possible ambiguity with regards to the transliteration of 
-reverse vowels in <a href="http://iris.lib.virginia.edu/tibet/tools/ewts.pdf" target="_blank">
+reverse vowels in <a href="http://orion.lib.virginia.edu/thdl/tools/ewts.pdf" target="_blank">
     Extended Wylie</a>). A sample entry for the dictionary is:
     <hr>
     <pre>bkra shis - 1) auspiciousness, good luck, good fortune, goodness, prosperity, happiness. 2) auspicious, favorable, fortunate, successful, felicitous, lucky. 3) verse of auspiciousness; benediction, blessing. 4) a personal name.
@@ -84,7 +84,7 @@ bde legs ** 1) goodness, happiness, well-being, wellfare, auspiciousness, good f
 <li>-<b>acip</b>: it is assumed that the electronic file is a transliteration of 
 a Tibetan dictionary. It is called &quot;acip&quot; because it accepts Acip's comment 
 codes ('@' to mark page numbers, brackets to mark comments, etc). Nevertheless, 
-it still requires the files to be in <a href="http://iris.lib.virginia.edu/tibet/tools/ewts.pdf" target="_blank">
+it still requires the files to be in <a href="http://orion.lib.virginia.edu/thdl/tools/ewts.pdf" target="_blank">
     Extended Wylie</a>, so if your file is in Acip's transliteration scheme make 
 sure to run <i><a href="#org.thdl.tib.scanner.AcipToWylie">org.thdl.tib.scanner.AcipToWylie</a></i> first. Definitions here can 
 be of multiple lines, but with no blank lines in between. It is assumed that the 
