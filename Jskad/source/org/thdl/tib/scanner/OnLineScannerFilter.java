@@ -109,8 +109,8 @@ public class OnLineScannerFilter extends HttpServlet
 		{
             out.println(" <title>Tibetan and Himalayan Digital Library - The Online Tibetan to English Translation/Dictionary Tool</title>");
             out.println(" <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />");
-            out.println(" <script type=\"text/javascript\" src=\"/tibet/scripts/thdl_scripts.js\"></script>");
-            out.println(" <link rel=\"stylesheet\" type=\"text/css\" href=\"/tibet/style/thdl-styles.css\"/>");
+            out.println(" <script type=\"text/javascript\" src=\"/thdl/scripts/thdl_scripts.js\"></script>");
+            out.println(" <link rel=\"stylesheet\" type=\"text/css\" href=\"/thdl/style/thdl-styles.css\"/>");
         }
         else
             out.println(" <title>The Online Tibetan to English Translation/Dictionary Tool</title>");
@@ -145,13 +145,13 @@ public class OnLineScannerFilter extends HttpServlet
 		if (useTHDLBanner)
 		{
             out.println("<div id=\"banner\">");
-            out.println(" <a id=\"logo\" href=\"/tibet/index.html\"><img id=\"test\" alt=\"THDL Logo\" src=\"/tibet/images/logo.png\"/></a>");
+            out.println(" <a id=\"logo\" href=\"/thdl/index.html\"><img id=\"test\" alt=\"THDL Logo\" src=\"/thdl/images/logo.png\"/></a>");
             out.println(" <h1>Tibetan and Himalayan Digital Library</h1>");
             out.println("  <div id=\"menubar\">");
             out.println(" <script type=\'text/javascript\'>function Go(){return}</script>");
-            out.println(" <script type=\'text/javascript\' src=\'/tibet/scripts/new/thdl_menu_config.js\'></script>");
-            out.println(" <script type=\'text/javascript\' src=\'/tibet/scripts/new/menu_new.js\'></script>");
-            out.println(" <script type=\'text/javascript\' src=\'/tibet/scripts/new/menu9_com.js\'></script>");
+            out.println(" <script type=\'text/javascript\' src=\'/thdl/scripts/new/thdl_menu_config.js\'></script>");
+            out.println(" <script type=\'text/javascript\' src=\'/thdl/scripts/new/menu_new.js\'></script>");
+            out.println(" <script type=\'text/javascript\' src=\'/thdl/scripts/new/menu9_com.js\'></script>");
             out.println(" <noscript><p>Your browser does not support javascript.</p></noscript>");
             out.println(" <div id=\'MenuPos\' >Menu Loading... </div>");
             
@@ -169,7 +169,7 @@ public class OnLineScannerFilter extends HttpServlet
             out.println("  </form>");
             out.println(" </div>");
             out.println(" <div id=\"breadcrumbs\">");
-            out.println("  <a href=\"/tibet/index.html\">Home</a> &gt; <a href=\"/tibet/reference/index.html\">Reference</a> &gt; Translation Tool");
+            out.println("  <a href=\"/thdl/index.html\">Home</a> &gt; <a href=\"/thdl/reference/index.html\">Reference</a> &gt; Translation Tool");
             out.println(" </div>");
             out.println("</div><!--END sub_banner-->");
             out.println("<div id=\"main\">");
