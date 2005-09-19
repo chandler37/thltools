@@ -1115,8 +1115,9 @@ public class EWTSTest extends TestCase {
     public void test__EWTS__32bit_unicode_escapes() {
         assert_EWTS_error("\\u00010000"); // TODO(dchandler): make it work
         just_ewts2uni_test("\\uF0010000",
-                           "[#ERROR ERROR TODO(DLC)[EWTS->Tibetan]: this character is illegal in EWTS: \\]\u0f68\u0f74[#ERROR ERROR TODO(DLC)[EWTS->Tibetan]: this character is illegal in EWTS: F]\u0f20\u0f20\u0f21\u0f20\u0f20\u0f20\u0f20"); // TODO(dchandler): make it work.  Until you can, TODO(DLC)[EWTS->Tibetan]: make the following work:
-        if (RUN_FAILING_TESTS) assert_EWTS_error("\\uF0010000");  // TODO(DLC)[EWTS->Tibetan]: error subsystem is hosed
+                           "[#ERROR 116: Found an illegal character, '\\', with ordinal (in decimal) 92.]\u0f68\u0f74[#ERROR 116: Found an illegal character, 'F', with ordinal (in decimal) 70.]\u0f20\u0f20\u0f21\u0f20\u0f20\u0f20\u0f20");
+        // TODO(DLC)[EWTS->Tibetan]: make the following work:
+        assert_EWTS_error("\\uF0010000");
         if (RUN_FAILING_TESTS) {
         just_ewts2uni_test("\\ucafe0000",
                            "[#ERROR Sorry, we don't yet support Unicode escape sequences above 0x0000FFFF!  File a bug.]");
