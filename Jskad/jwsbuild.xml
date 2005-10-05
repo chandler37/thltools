@@ -103,8 +103,8 @@
     <unwar src="${dist}/java-web-start/${my.app}-web-start.war"
            dest="${dist}/java-web-start/">
       <patternset>
-        <include name="${my.app}*.jar"/>
         <exclude name="**/*"/>
+        <include name="${my.app}*.jar"/>
       </patternset>
     </unwar>
   </target>
