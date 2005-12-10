@@ -42,7 +42,7 @@ class PocketWhichDictionaryFrame extends WhichDictionaryFrame
 
         availDictsOnline.add("Public");
         
-        availDictsOnline.add("Private");        
+        //availDictsOnline.add("Private");        
         
         p.add(availDictsOnline, BorderLayout.EAST);
         this.add(p);
@@ -91,7 +91,7 @@ class PocketWhichDictionaryFrame extends WhichDictionaryFrame
 		else if (obj == browse)
 		{
     		fd = new FileDialog(owner, "Select dictionary to open", FileDialog.LOAD);
-		    fd.show();
+		    fd.setVisible(true);
 		    fileName = fd.getFile();
 		    if (fileName!= null)
 		    {
@@ -143,7 +143,7 @@ class PocketWhichDictionaryFrame extends WhichDictionaryFrame
 	            if (availDictsOnline!=null)  availDictsOnline.setEnabled(false);
 	            ok.setEnabled(!localDict.getText().equals(""));
 	            response = localDict.getText();
-	            dictType = 2;
+	            dictType = dictTypes.length-1;
 	        }
 	    }
 	    else if (obj instanceof Choice)

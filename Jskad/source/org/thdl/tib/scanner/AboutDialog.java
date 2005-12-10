@@ -18,6 +18,7 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.scanner;
 
+import java.io.*;
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Checkbox;
@@ -42,8 +43,36 @@ import org.thdl.util.ThdlOptions;
 public class AboutDialog extends Dialog implements ActionListener, WindowListener
 {
    	public static String windowAboutOption = "thdl.scanner.omit.about.window";
+   	public static String aboutDocument = "org/thdl/tib/scanner/about.txt"; 
     private Checkbox chkOmitNextTime;
     private Button close;
+    
+    public String getAboutText()
+    {
+    	BufferedReader input;
+    	input = new BufferedReader(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(aboutDocument)));
+        
+        String line;
+        StringBuffer text;
+    	text = new StringBuffer(TibetanScanner.version);
+    	text.append("\n\n");
+    	text.append(TibetanScanner.copyrightUnicode);
+    	text.append('\n');
+        try
+        {
+	        while ((line=input.readLine())!=null)
+	        {
+	        	text.append('\n');
+	        	text.append(line);
+	        }
+        }
+        catch (IOException ioe)
+        {
+        	ioe.printStackTrace();
+        	return "";
+        }
+        return text.toString();
+    }
     
     public AboutDialog(Frame parent, boolean pocketpc)
     {
@@ -56,7 +85,7 @@ public class AboutDialog extends Dialog implements ActionListener, WindowListene
         p.add(close, BorderLayout.EAST);
         add(p, BorderLayout.NORTH);
         close.addActionListener(this);
-        TextArea ta = new TextArea(TibetanScanner.aboutUnicode,0,0,TextArea.SCROLLBARS_VERTICAL_ONLY);
+        TextArea ta = new TextArea(getAboutText(),0,0,TextArea.SCROLLBARS_VERTICAL_ONLY);
         ta.setEditable(false);
         addWindowListener(this);
         add(ta, BorderLayout.CENTER);

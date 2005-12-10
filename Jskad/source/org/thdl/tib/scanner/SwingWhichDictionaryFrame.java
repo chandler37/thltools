@@ -44,7 +44,9 @@ class SwingWhichDictionaryFrame extends WhichDictionaryFrame
         p.add(useOnline, BorderLayout.WEST);
 
         availDictsOnline.add("Public version");
-        availDictsOnline.add("Private version (only within UVa)");
+        
+        if (TibetanScanner.mode == TibetanScanner.DEBUG_MODE)
+        	availDictsOnline.add("Local version (development)");
         
         p.add(availDictsOnline, BorderLayout.EAST);
         this.add(p);
@@ -79,16 +81,13 @@ class SwingWhichDictionaryFrame extends WhichDictionaryFrame
     public void actionPerformed(ActionEvent e)	
     {
 		Object obj = e.getSource();
-		FileDialog fd;
-		String fileName;
-		int pos;
 		
 		if (obj == ok)
 		{
 		    if (response.equals(""))
 		    {
 		        if (cdw==null) cdw = new CreateDatabaseWizard(owner);
-		        cdw.show();
+		        cdw.setVisible(true);
 		        response = cdw.getResponse();
 		    }
 		    if (!response.equals("")) this.setVisible(false);
@@ -125,6 +124,8 @@ class SwingWhichDictionaryFrame extends WhichDictionaryFrame
 	public void itemStateChanged(ItemEvent e)
 	{
 	    Object obj = e.getSource();
+	    int dictNumber;
+	    
 	    if (obj instanceof Checkbox)
 	    {
 	        Checkbox chx = (Checkbox) obj;
@@ -135,8 +136,9 @@ class SwingWhichDictionaryFrame extends WhichDictionaryFrame
 	            browse.setEnabled(false);
 	            availDictsOnline.setEnabled(true);
 	            ok.setEnabled(true);
-	            dictType = availDictsOnline.getSelectedIndex();
-	            response = dictsOnline[dictType];
+	            dictNumber = availDictsOnline.getSelectedIndex();
+	            dictType = dictNumber + 1;
+	            response = dictsOnline[dictNumber];
 	        }
 	        else if (chx == useOffline)
 	        {
@@ -145,7 +147,7 @@ class SwingWhichDictionaryFrame extends WhichDictionaryFrame
 	            if (availDictsOnline!=null)  availDictsOnline.setEnabled(false);
 	            ok.setEnabled(!localDict.getText().equals(""));
 	            response = localDict.getText();
-	            dictType = 2;
+	            dictType = 0;
 	        }
 	        else if (chx == createNewDictDB)
 	        {
@@ -154,14 +156,15 @@ class SwingWhichDictionaryFrame extends WhichDictionaryFrame
 	            if (availDictsOnline!=null) availDictsOnline.setEnabled(false);
 	            ok.setEnabled(true);
 	            response="";
-	            dictType = 2;
+	            dictType = 0;
 	        }
 	    }
 	    else if (obj instanceof Choice)
 	    {
 	        Choice ch = (Choice) obj;
-	        dictType = ch.getSelectedIndex();
-	        response = dictsOnline[dictType];
+	        dictNumber = ch.getSelectedIndex();
+	        dictType = dictNumber + 1;
+	        response = dictsOnline[dictNumber];
 	    }
 	}
 

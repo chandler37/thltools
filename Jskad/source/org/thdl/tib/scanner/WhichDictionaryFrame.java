@@ -35,15 +35,23 @@ abstract class WhichDictionaryFrame extends Dialog implements ActionListener, It
         response="";
         
         // FIXME: values should not be hardwired
-        dictsOnline = new String[2];
-        dictsOnline[0] = "http://iris.lib.virginia.edu/tibetan/servlet/org.thdl.tib.scanner.RemoteScannerFilter";
-        dictsOnline[1] = "http://wyllie.lib.virginia.edu/tibetan/servlet/org.thdl.tib.scanner.RemoteScannerFilter";
+        if (TibetanScanner.mode == TibetanScanner.DEBUG_MODE)
+        {
+            dictsOnline = new String[2];
+        	dictsOnline[1] = "http://localhost:8080/tibetan/org.thdl.tib.scanner.RemoteScannerFilter";
+        	dictTypes = new String[3];
+        	dictTypes[2] = "development";
+        }
+        else
+        {
+        	dictsOnline = new String[1];
+            dictTypes = new String[2];        	
+        }
         
-        dictTypes = new String[3];        
-        dictTypes[0] = "public";
-        dictTypes[1] = "private";
-        dictTypes[2] = "local";
-        //dictsOnline[2] = "http://localhost:8080/tibetan/servlet/org.thdl.tib.scanner.RemoteScannerFilter";
+        dictsOnline[0] = "http://www.thdl.org/tibetan/servlet/org.thdl.tib.scanner.RemoteScannerFilter";
+        
+        dictTypes[0] = "local";
+        dictTypes[1] = "public";
         
         availDictsOnline = new Choice();
         //availDictsOnline.add("Local (only on my computer!)");
@@ -54,7 +62,7 @@ abstract class WhichDictionaryFrame extends Dialog implements ActionListener, It
         localDict = new Label();
         localDict.setEnabled(true);
         
-        dictType = 2;
+        dictType = 0;
 
         browse = new Button("Browse...");
         browse.setEnabled(true);

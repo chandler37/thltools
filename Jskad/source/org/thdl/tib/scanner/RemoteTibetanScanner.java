@@ -139,6 +139,7 @@ public class RemoteTibetanScanner extends TibetanScanner
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 			return null;
 		}
 	}

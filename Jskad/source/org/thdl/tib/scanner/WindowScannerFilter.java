@@ -52,6 +52,7 @@ public abstract class WindowScannerFilter implements WindowListener, FocusListen
     protected static String defaultFontSize = "thdl.default.roman.font.size";
     protected static String defaultInputRows = "thdl.scanner.input-pane.rows";
     protected static String defaultOutputRows = "thdl.scanner.output-pane.rows";
+	protected static String firstTimeOption = "thdl.scanner.first.time";
     
 	protected ScannerPanel sp;
 	protected MenuItem mnuExit, mnuCut, mnuCopy, mnuPaste, mnuDelete, mnuSelectAll, mnuAbout, mnuClear, mnuOpen, mnuPreferences, mnuSavePref, mnuTranslate;

@@ -54,7 +54,7 @@ public class OnLineScannerFilter extends HttpServlet
 	public OnLineScannerFilter() //throws Exception
 	{
 		rb = ResourceBundle.getBundle(propertyFile);
-                sl = new ScannerLogger();
+		sl = new ScannerLogger();
 	    
 		try
 		{
@@ -75,7 +75,7 @@ public class OnLineScannerFilter extends HttpServlet
     {
 		String answer, parrafo = null, checkboxName;
         
-        // if this line is included in the constructor, it works on the iris server but not on wyllie!
+        // if this line is included in the constructor, it works on the orion server but not on wyllie!
         ThdlOptions.setUserPreference("thdl.rely.on.system.tmw.fonts", true);	    
         ThdlOptions.setUserPreference("thdl.rely.on.system.tm.fonts", true);
         
@@ -98,12 +98,8 @@ public class OnLineScannerFilter extends HttpServlet
 		boolean checkedDicts[], allUnchecked, wantsTibetan, useTHDLBanner = (request.getParameter("thdlBanner")!=null);
 		// int percent=100;
 		
-		if (useTHDLBanner)
-		{
-		    out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">");
-		}
-		else out.println("<html>");
-		
+		out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">");
+		out.println("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
         out.println("<head>");
 		if (useTHDLBanner)
 		{
@@ -144,20 +140,7 @@ public class OnLineScannerFilter extends HttpServlet
         
 		if (useTHDLBanner)
 		{
-            out.println("<div id=\"banner\">");
-            out.println(" <a id=\"logo\" href=\"/thdl/index.html\"><img id=\"test\" alt=\"THDL Logo\" src=\"/thdl/images/logo.png\"/></a>");
-            out.println(" <h1>Tibetan and Himalayan Digital Library</h1>");
-            out.println("  <div id=\"menubar\">");
-            out.println(" <script type=\'text/javascript\'>function Go(){return}</script>");
-            out.println(" <script type=\'text/javascript\' src=\'/thdl/scripts/new/thdl_menu_config.js\'></script>");
-            out.println(" <script type=\'text/javascript\' src=\'/thdl/scripts/new/menu_new.js\'></script>");
-            out.println(" <script type=\'text/javascript\' src=\'/thdl/scripts/new/menu9_com.js\'></script>");
-            out.println(" <noscript><p>Your browser does not support javascript.</p></noscript>");
-            out.println(" <div id=\'MenuPos\' >Menu Loading... </div>");
-            
-            out.println(" </div><!--END menubar-->");
-            out.println("</div><!--END banner-->");
-
+            out.println("<script type=\"text/javascript\" src=\"/thdl/scripts/banner.js\"></script>");
             out.println("<div id=\"sub_banner\">");
             out.println("<div id=\"search\">");
             out.println("  <form method=\"get\" action=\"http://www.google.com/u/thdl\">");
@@ -258,7 +241,7 @@ public class OnLineScannerFilter extends HttpServlet
 //			out.println("  </tr>");
 		}
 		// fix for updates
-		else ds = new BitDictionarySource().getAllDictionaries();
+		else ds = BitDictionarySource.getAllDictionaries();
 //		out.println("</table>");
 		out.println("</p>");
         out.println("<table border=\"0\" width=\"100%\">");

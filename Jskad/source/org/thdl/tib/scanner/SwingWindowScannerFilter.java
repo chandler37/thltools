@@ -18,6 +18,7 @@ Contributor(s): ______________________________________.
 
 package org.thdl.tib.scanner;
 
+import java.io.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
@@ -39,7 +40,7 @@ import org.thdl.util.ThdlOptions;
     with their definitions. Works without Tibetan script in
     platforms that don't support Swing. Can access dictionaries stored
     locally or remotely. For example, to access the public dictionary database run the command:</p>
-    <pre>java -jar DictionarySearchStandalone.jar http://iris.lib.virginia.edu/tibetan/servlet/org.thdl.tib.scanner.RemoteScannerFilter</pre>
+    <pre>java -jar DictionarySearchStandalone.jar http://orion.lib.virginia.edu/tibetan/servlet/org.thdl.tib.scanner.RemoteScannerFilter</pre>
   <p>If the JRE you installed does not support <i> Swing</i> classes but supports
     <i>
     AWT</i> (as the JRE for handhelds), run the command: </p>
@@ -48,9 +49,7 @@ import org.thdl.util.ThdlOptions;
     @author Andr&eacute;s Montano Pellegrini
 */
 public class SwingWindowScannerFilter extends WindowScannerFilter
-{	
-	private static String firstTimeOption = "thdl.scanner.first.time";
-	
+{		
 	public SwingWindowScannerFilter()
 	{
 	    super();
@@ -64,7 +63,7 @@ public class SwingWindowScannerFilter extends WindowScannerFilter
 	protected WhichDictionaryFrame getWhichDictionaryFrame()
 	{
 		WhichDictionaryFrame wdf = new SwingWhichDictionaryFrame(mainWindow);
-		wdf.show();
+		wdf.setVisible(true);
 		return wdf;
 	}	
 	
@@ -185,14 +184,14 @@ public class SwingWindowScannerFilter extends WindowScannerFilter
 		mainWindow.setSize(d);
 		// mainWindow.setSize(240,320);
 		//else mainWindow.setSize(500,600);
-		mainWindow.show();
+		mainWindow.setVisible(true);
 		mainWindow.toFront();
 		sp.setFocusToInput();
 
 	    if (!ThdlOptions.getBooleanOption(AboutDialog.windowAboutOption))
 	    {
    	        diagAbout = new AboutDialog(mainWindow, false);
-	        diagAbout.show();
+	        diagAbout.setVisible(true);
 	        
 	        if (diagAbout.omitNextTime())
 	        {
@@ -216,23 +215,39 @@ public class SwingWindowScannerFilter extends WindowScannerFilter
 	
 	public static void main(String[] args)
 	{
-	    String response;
+	    String response, dictionaryName=null;
+	    PrintStream ps;	    
+	    try
+	    {
+	    	ps = new PrintStream(new FileOutputStream(System
+					.getProperty("user.home") + "/tt.log"));
+			System.setOut(ps);
+			System.setErr(ps);
+		} catch (FileNotFoundException fnfe) {
+		}
 	    
-		switch(args.length)
+		if (args.length==0)
 		{
-		    case 0:
-		    	new SwingWindowScannerFilter();
-		    	break;
-		    case 1:
-		    	new SwingWindowScannerFilter(args[0]);
-		    	break;
-		    case 2:
-		    	if (args[0].equals("-firsttime"))
+			new SwingWindowScannerFilter();
+		}
+		else
+		{
+			int current=0;
+			while(current<args.length)
+			{
+		    	if (args[current].equals("-firsttime"))
 		    	{
+		    		current++;
+		    		if (current==args.length)
+		    		{
+		    			System.out.println("Dictionary name expected after -firsttime option!");
+		    			printSyntax();
+		    			return;
+		    		}
 		    		response = ThdlOptions.getStringOption(firstTimeOption);
 		    		if (response==null || response.equals("") || !response.equals("no"))
 					{
-		    			ThdlOptions.setUserPreference(defOpenOption, args[1]);
+		    			ThdlOptions.setUserPreference(defOpenOption, args[current]);
 			            ThdlOptions.setUserPreference(dictOpenType, "local");
 			            ThdlOptions.setUserPreference(firstTimeOption, "no");
 			            try
@@ -242,19 +257,23 @@ public class SwingWindowScannerFilter extends WindowScannerFilter
 			            catch (Exception e)
 			            {
 			            }
-			            new SwingWindowScannerFilter(args[1]);
+			            dictionaryName = args[current];
 					}
-		    		else new SwingWindowScannerFilter();
-		    	}	
+		    		current++;
+		    	}
+		    	else if (args[current].equals("-debug"))
+		    	{
+		    		TibetanScanner.mode = TibetanScanner.DEBUG_MODE;
+		    		current++;
+		    	}
 		    	else
 		    	{
-				    System.out.println("Syntax error! Invalid option.");
-					printSyntax();
+		    		dictionaryName = args[current];
+		    		current++;
 		    	}
-		    	break;
-		    default:
-		    System.out.println("Syntax error!");
-			printSyntax();
+			}
+			if (dictionaryName==null) new SwingWindowScannerFilter();
+			else new SwingWindowScannerFilter(dictionaryName);
 		}
 	}
 	
@@ -270,7 +289,7 @@ public class SwingWindowScannerFilter extends WindowScannerFilter
 		if (clicked == mnuAbout)
 		{
 		    if (diagAbout==null) diagAbout = new AboutDialog(mainWindow, false);
-		    diagAbout.show();
+		    diagAbout.setVisible(true);
 	        ThdlOptions.setUserPreference(AboutDialog.windowAboutOption, diagAbout.omitNextTime());
 	        try
             { 

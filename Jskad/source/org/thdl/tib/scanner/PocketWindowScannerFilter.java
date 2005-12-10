@@ -34,6 +34,9 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 import org.thdl.util.ThdlOptions;
 
@@ -73,7 +76,7 @@ public class PocketWindowScannerFilter extends WindowScannerFilter
 	{
 		PocketWhichDictionaryFrame wdf = new PocketWhichDictionaryFrame(mainWindow);
 		wdf.setFont(WindowScannerFilter.getTHDLFont());
-		wdf.show();
+		wdf.setVisible(true);
 		return wdf;
 	}
 	
@@ -167,14 +170,14 @@ public class PocketWindowScannerFilter extends WindowScannerFilter
 		mainWindow.setSize(d);
 		// mainWindow.setSize(240,320);
 		//else mainWindow.setSize(500,600);
-		mainWindow.show();
+		mainWindow.setVisible(true);
 		mainWindow.toFront();
 
 	    if (!ThdlOptions.getBooleanOption(AboutDialog.windowAboutOption))
 	    {
 	        // hardwiring pocketpc
    	        diagAbout = new AboutDialog(mainWindow, true);
-	        diagAbout.show();
+	        diagAbout.setVisible(true);
 	        
 	        if (diagAbout.omitNextTime())
 	        {
@@ -190,9 +193,26 @@ public class PocketWindowScannerFilter extends WindowScannerFilter
 	    }
 	}
 	
+	public static void printSyntax()
+	{
+		System.out.println("Sintaxis: java PocketWindowScannerFilter [-firsttime] dict-file");
+		System.out.println(TibetanScanner.copyrightASCII);
+	}	
+	
 	public static void main(String[] args)
 	{
-	    String os;
+	    PrintStream ps;
+	    String response;
+	    
+	    try
+	    {
+	    	ps = new PrintStream(new FileOutputStream(System
+					.getProperty("user.home") + "/tt.log"));
+			System.setOut(ps);
+			System.setErr(ps);
+		} catch (FileNotFoundException fnfe) {
+		}
+		
 		switch(args.length)
 		{
 		    case 0:
@@ -202,10 +222,35 @@ public class PocketWindowScannerFilter extends WindowScannerFilter
 		    if (args[0]==null || args[0].trim().equals("")) new PocketWindowScannerFilter();
 		    else new PocketWindowScannerFilter(args[0]);
 		    break;
+		    case 2:
+	    	if (args[0].equals("-firsttime"))
+	    	{
+	    		response = ThdlOptions.getStringOption(firstTimeOption);
+	    		if (response==null || response.equals("") || !response.equals("no"))
+				{
+	    			ThdlOptions.setUserPreference(defOpenOption, args[1]);
+		            ThdlOptions.setUserPreference(dictOpenType, "local");
+		            ThdlOptions.setUserPreference(firstTimeOption, "no");
+		            try
+		            {
+		                ThdlOptions.saveUserPreferences();
+		            }
+		            catch (Exception e)
+		            {
+		            }
+		            new PocketWindowScannerFilter(args[1]);
+				}
+	    		else new PocketWindowScannerFilter();
+	    	}	
+	    	else
+	    	{
+			    System.out.println("Syntax error! Invalid option.");
+				printSyntax();
+	    	}
+		    break;
 		    default:
 		    System.out.println("Syntax error!");
-			System.out.println("Sintaxis: java PocketWindowScannerFilter arch-dict");
-			System.out.println(TibetanScanner.copyrightASCII);
+			printSyntax();
 		}
 	}
 
@@ -226,7 +271,7 @@ public class PocketWindowScannerFilter extends WindowScannerFilter
 		        diagAbout = new AboutDialog(mainWindow, true);
 		    }
 		    diagAbout.setFont(WindowScannerFilter.getTHDLFont());
-		    diagAbout.show();
+		    diagAbout.setVisible(true);
 	        ThdlOptions.setUserPreference(AboutDialog.windowAboutOption, diagAbout.omitNextTime());
 	        try
             { 
