@@ -7748,6 +7748,10 @@ M+NA
     }
 
     public void testACIPConversion() {
+        uhelp("NYTZ", "\u0f49\u0fa9", "None");
+        uhelp("NY+TZ", "\u0f49\u0fa9");
+        uhelp("NG,", "\u0f44\u0f0c\u0f0d");
+        uhelp("NGO,", "\u0f44\u0f7c\u0f0c\u0f0d");  // DLC chilton hates this... I E or O and we are non-breaking...
 
         uhelp("\\u0FFF", "[#ERROR 138: The Unicode escape '\u0fff' with ordinal (in decimal) 4095 is in the Tibetan range of Unicode (i.e., [U+0F00, U+0FFF]), but is a reserved code in that area.]");
 
