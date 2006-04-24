@@ -99,7 +99,7 @@ public class AcipToWylie
 		String linea;
 		while ((linea=in.readLine())!=null)
 		{
-			out.println(Manipulate.acipToWylie(linea));
+			out.println(BasicTibetanTranscriptionConverter.acipToWylie(linea));
 		}
 		out.flush();
 	}

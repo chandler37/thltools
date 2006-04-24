@@ -39,6 +39,7 @@ import org.thdl.tib.text.tshegbar.UnicodeUtils;
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlOptions;
 import org.thdl.util.Trie;
+import org.thdl.tib.scanner.BasicTibetanTranscriptionConverter;
 
 /**
 * Interfaces between Extended Wylie and the TibetanMachineWeb fonts.
@@ -2016,7 +2017,7 @@ private static String acipForGlyph(String hashKey) {
     else
         // else we are not be able to use it because it's not smart
         // about stacks (e.g., W+W)
-        return org.thdl.tib.scanner.Manipulate.wylieToAcip(hashKey);
+        return BasicTibetanTranscriptionConverter.wylieToAcip(hashKey);
 }
 
 /** Error that appears in a document when some TMW cannot be

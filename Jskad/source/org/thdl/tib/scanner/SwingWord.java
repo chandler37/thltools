@@ -20,9 +20,6 @@ Contributor(s): ______________________________________.
 	to store the dictionary. */
 package org.thdl.tib.scanner;
 
-//import org.thdl.tib.text.TibetanHTML;
-import org.thdl.tib.text.ttt.*;
-
 /** Tibetan word with its corresponding definitions.
 
     @author Andr&eacute;s Montano Pellegrini
@@ -62,7 +59,7 @@ public class SwingWord extends Word
 	        try
 	        {
 	            // localWord = TibetanHTML.getHTML(super.token + " ");
-	        	localWord = Manipulate.UnicodeString2NCR(EwtsToUnicodeForXslt.convertEwtsTo(super.token + " "));
+	        	localWord = BasicTibetanTranscriptionConverter.wylieToHTMLUnicode(super.token + " ");
 	        }
 	        catch (Exception e)
 	        {
@@ -92,7 +89,7 @@ public class SwingWord extends Word
             {
                 try
                 {
-                    result = Manipulate.UnicodeString2NCR(EwtsToUnicodeForXslt.convertEwtsTo(localWord + " "));
+                    result = BasicTibetanTranscriptionConverter.wylieToHTMLUnicode(localWord + " ");
                     className = " class = \"tib\"";
                 }
                 catch (Exception e)

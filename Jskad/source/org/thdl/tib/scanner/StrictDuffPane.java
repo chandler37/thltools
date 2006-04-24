@@ -142,11 +142,8 @@ public class StrictDuffPane extends DuffPane
 			if (pasteAsString)
 			{
 				String data = (String)contents.getTransferData(DataFlavor.stringFlavor);
-				if (Manipulate.guessIfUnicode(data))
-				{
-					StringBuffer errors = new StringBuffer();
-					data = Converter.convertToEwtsForComputers(data, errors);	
-				} else if (Manipulate.guessIfAcip(data)) data = Manipulate.acipToWylie(data);
+				if (Manipulate.guessIfUnicode(data)) data = BasicTibetanTranscriptionConverter.unicodeToWylie(data);	
+				else if (Manipulate.guessIfAcip(data)) data = BasicTibetanTranscriptionConverter.acipToWylie(data);
 				toTibetanMachineWeb(data, offset);            	
 			}
 			

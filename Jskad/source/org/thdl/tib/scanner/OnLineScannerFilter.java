@@ -317,8 +317,8 @@ public class OnLineScannerFilter extends HttpServlet
 			 }	*/
 			scanner.clearTokens();
 			in = Manipulate.NCR2UnicodeString(in);
-			if (Manipulate.guessIfUnicode(in)) in = Manipulate.unicodeToWylie(in);
-			else if (Manipulate.guessIfAcip(in)) in = Manipulate.acipToWylie(in);
+			if (Manipulate.guessIfUnicode(in)) in = BasicTibetanTranscriptionConverter.unicodeToWylie(in);
+			else if (Manipulate.guessIfAcip(in)) in = BasicTibetanTranscriptionConverter.acipToWylie(in);
 			scanner.scanBody(in);
 			scanner.finishUp();
 			printText(pw, tibetan);
