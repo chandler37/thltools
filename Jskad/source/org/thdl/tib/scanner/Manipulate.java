@@ -17,6 +17,10 @@ Contributor(s): ______________________________________.
 */
 package org.thdl.tib.scanner;
 
+import org.thdl.tib.text.*;
+import org.thdl.tib.text.reverter.*;
+
+
 /** Miscelaneous static methods for the manipulation of Tibetan text.
 	
     @author Andr&eacute;s Montano Pellegrini
@@ -24,7 +28,6 @@ package org.thdl.tib.scanner;
 
 public class Manipulate
 {
-
 	private static String endOfParagraphMarks = "/;|!:^@#$%=";
 	private static String bracketMarks = "<>(){}[]";
 	private static String endOfSyllableMarks = " _\t";
@@ -177,70 +180,7 @@ public class Manipulate
 	{
 	    ch = Character.toLowerCase(ch);
 	    return ch=='a' || ch=='e' || ch=='i' || ch=='o' || ch=='u';
-	}
-	
-	public static String wylieToAcip(String palabra)
-	{
-		// DLC FIXME: for unknown things, return null.
-		if (palabra.equals("@##")) return "#";
-		if (palabra.equals("@#")) return "*";
-		if (palabra.equals("!")) return "`";
-		if (palabra.equals("b+h")) return "BH";
-		if (palabra.equals("d+h")) return "DH";
-		if (palabra.equals("X")) return null;
-                if (palabra.equals("iA")) return null;
-                if (palabra.equals("ai")) return "EE";
-                if (palabra.equals("au")) return "OO";
-                if (palabra.equals("$")) return null;
-		if (palabra.startsWith("@") || palabra.startsWith("#"))
-			return null; // we can't convert this in isolation!  We need context.
-		char []caract;
-		int i, j, len;
-		String nuevaPalabra;
-		
-		caract = palabra.toCharArray();
-		len = palabra.length();
-		for (j=0; j<len; j++)
-		{
-			i = j;
-			/*ciclo:
-			while(true) // para manejar excepciones; que honda!
-			{
-			switch(caract[i])
-			{
-			case 'A': 
-			if (i>0)
-			{
-			i--;
-			break;
-			}
-			default:*/
-			if (Character.isLowerCase(caract[i]))
-				caract[i] = Character.toUpperCase(caract[i]);
-			else if (Character.isUpperCase(caract[i]))
-				caract[i] = Character.toLowerCase(caract[i]);
-			/*						break ciclo;
-			}
-			}*/
-		}
-		nuevaPalabra = new String(caract);
-		//			nuevaPalabra = palabra.toUpperCase();
-		
-		// ahora hacer los cambios de Michael Roach
-		
-		nuevaPalabra = replace(nuevaPalabra, "TSH", "TQQ");
-		nuevaPalabra = replace(nuevaPalabra, "TS", "TZ");
-		nuevaPalabra = replace(nuevaPalabra, "TQQ", "TS");
-		nuevaPalabra = replace(nuevaPalabra, "a", "'A");
-		nuevaPalabra = replace(nuevaPalabra, "i", "'I");
-		nuevaPalabra = replace(nuevaPalabra, "u", "'U");
-		nuevaPalabra = replace(nuevaPalabra, "-I", "i");
-		nuevaPalabra = replace(nuevaPalabra, "/", ",");
-		nuevaPalabra = replace(nuevaPalabra, "_", " ");
-		nuevaPalabra = replace(nuevaPalabra, "|", ";");
-		nuevaPalabra = fixWazur(nuevaPalabra);
-		return nuevaPalabra;
-	}
+	}	
 	
 	/** If more than half of the first letters among the first are 10 characters
 	    are uppercase assume its acip */
@@ -263,125 +203,30 @@ public class Manipulate
 	    else return (letters / upperCase < 2);
 	}
 	
-	public static String acipToWylie(String linea)
+	public static boolean isTibetanUnicodeCharacter(char ch)
 	{
-		char caract[], ch, chP, chN;
-		String nuevaLinea;
-		int i, len;
-		boolean open;
-		
-		caract = linea.toCharArray();
-		len = linea.length();
-		for (i=0; i<len; i++)
-		{
-			if (Character.isLowerCase(caract[i]))
-				caract[i] = Character.toUpperCase(caract[i]);
-			else if (Character.isUpperCase(caract[i]))
-				caract[i] = Character.toLowerCase(caract[i]);
-		}
-		nuevaLinea = new String(caract);
-		
-		/* ahora hacer los cambios de Michael Roach ts -> tsh, tz -> ts, v -> w,
-		TH -> Th, kSH, kaSH -> k+Sh, SH -> Sh, : -> H, dh -> d+h, gh -> g+h, bh -> b+h, dzh -> dz+h,
-	    aa -> a, a'a -> A, ai->i, aee ->ai, au->u, aoo->au, ae->e,
-		ao->o, ee->ai, oo->au, 'I->-I I->-i,  a'i->I, a'u->U, a'e->E, a'o->O,
-		a'i->I, a'u->U, a'e->E, a'o->O, ,->/, # -> @##, * -> @#, \ -> ?, ` -> !,
-		/-/ -> (-), ga-y -> g.y, g-y -> g.y, na-y -> n+y */
-		
-		nuevaLinea = replace(nuevaLinea, "ts", "tq");
-		nuevaLinea = replace(nuevaLinea, "tz", "ts");
-		nuevaLinea = replace(nuevaLinea, "tq", "tsh");
-		nuevaLinea = replace(nuevaLinea, "v", "w");
-		nuevaLinea = replace(nuevaLinea, "TH", "Th");
-		nuevaLinea = replace(nuevaLinea, "kSH", "k+Sh");
-		nuevaLinea = replace(nuevaLinea, "kaSH", "k+Sh");
-		nuevaLinea = replace(nuevaLinea, "SH", "Sh");
-		nuevaLinea = replace(nuevaLinea, ":", "H");
-		nuevaLinea = replace(nuevaLinea, "NH", "NaH");
-		nuevaLinea = replace(nuevaLinea, "dh", "d+h");
-		nuevaLinea = replace(nuevaLinea, "gh", "g+h");
-		nuevaLinea = replace(nuevaLinea, "bh", "b+h");
-		nuevaLinea = replace(nuevaLinea, "dzh", "dz+h");
-		nuevaLinea = replace(nuevaLinea, "aa", "a");
-		nuevaLinea = replace(nuevaLinea, "ai", "i");
-		nuevaLinea = replace(nuevaLinea, "aee", "ai");
-		nuevaLinea = replace(nuevaLinea, "au", "u");
-		nuevaLinea = replace(nuevaLinea, "aoo", "au");
-		nuevaLinea = replace(nuevaLinea, "ae", "e");
-		nuevaLinea = replace(nuevaLinea, "ao", "o");
-		nuevaLinea = replace(nuevaLinea, "ee", "ai");
-		nuevaLinea = replace(nuevaLinea, "oo", "au");
-		nuevaLinea = replace(nuevaLinea, "\'I", "\'q");
-		nuevaLinea = replace(nuevaLinea, "I", "-i");
-		nuevaLinea = replace(nuevaLinea, "\'q", "-I");
-		nuevaLinea = replace(nuevaLinea, "\\", "?");
-		nuevaLinea = replace(nuevaLinea, "`", "!");
-		nuevaLinea = replace(nuevaLinea, "ga-y", "g.y");
-		nuevaLinea = replace(nuevaLinea, "g-y", "g.y");
-		nuevaLinea = replace(nuevaLinea, "na-y", "n+y");
-
-		len = nuevaLinea.length();
-		for (i=0; i<len; i++)
-		{
-		    ch = nuevaLinea.charAt(i);
-		    switch(ch)
-		    {
-		        case '#':
-		          nuevaLinea = nuevaLinea.substring(0,i) + "@##" + nuevaLinea.substring(i+1);
-		          i+=3;
-		          len+=2;
-		        break;
-		        case '*':
-		          nuevaLinea = nuevaLinea.substring(0,i) + "@#" + nuevaLinea.substring(i+1);
-		          i+=2;
-		          len++;
-		        break;
-		        case '\'':
-		          if (i>0 && i<len-1)
-		          {
-		            chP = nuevaLinea.charAt(i-1);
-		            chN = nuevaLinea.charAt(i+1);
-		            if (isVowel(chN))
-		            {
-		                if (Character.isLetter(chP) && !isVowel(chP))
-		                {
-		                    nuevaLinea = nuevaLinea.substring(0, i) + Character.toUpperCase(chN) + nuevaLinea.substring(i+2);
-		                    len--;
-		                }
-		                else if (chP=='a' && (i==1 || i>1 && !Character.isLetter(nuevaLinea.charAt(i-2)) || chN == 'a' && (i+2==len || !Character.isLetter(nuevaLinea.charAt(i+2)))))
-		                {
-		                    nuevaLinea = nuevaLinea.substring(0,i-1) + Character.toUpperCase(chN) + nuevaLinea.substring(i+2);
-		                    len-=2;
-		                }
-		            }
-		          }
-		    }
-		}
-		
-		open = false;
-		for (i=0; i<len; i++)
-		{
-		    ch = nuevaLinea.charAt(i);
-		    if (ch=='/')
-		    {
-		        if (open)
-		        {
-		          nuevaLinea = nuevaLinea.substring(0, i) + ")" + nuevaLinea.substring(i+1);
-		          open = false;		            
-		        }
-
-		        else
-		        {
-		          nuevaLinea = nuevaLinea.substring(0, i) + "(" + nuevaLinea.substring(i+1);
-		          open = true;
-		        }
-		    }
-		}
-		nuevaLinea = replace(nuevaLinea, ",", "/");
-		
-		return nuevaLinea;
+		return ch>=0xF00 && ch<=0xFFF;
 	}
 	
+	public static boolean guessIfUnicode(String line)
+	{
+	    char ch;
+	    int letters=0, unicode=0, i, n;
+	    n = line.length();
+	    if (n>10) n = 10;
+	    for (i=0; i<n; i++)
+	    {
+	        ch = line.charAt(i);
+	        if (Character.isLetter(ch))
+	        {
+	            letters++;
+	            if (isTibetanUnicodeCharacter(ch)) unicode++;
+	        }
+	    }
+	    if (letters==0 || unicode==0) return false;
+	    else return (letters / unicode < 2);
+	}
+		
 	public static String fixWazur(String linea)
 	{
 		int i;
@@ -529,5 +374,275 @@ public class Manipulate
 				System.out.println(palabra + '\t' + definicion);
 		}
       if (psPalabras!=null) psPalabras.flush();
-	}*/	
+	}*/
+    
+	public static String acipToWylie(String acip)
+	{
+    	TibetanDocument tibDoc = new TibetanDocument();
+    	try
+    	{
+    		TibTextUtils.insertTibetanMachineWebForTranslit(false, acip, tibDoc, 0, false);
+    	}
+    	catch (InvalidTransliterationException e)
+    	{
+    		return null;
+    	}
+    	return tibDoc.getWylie(new boolean[] { false });
+		
+		/* char caract[], ch, chP, chN;
+		String nuevaLinea;
+		int i, len;
+		boolean open;
+		
+		caract = acip.toCharArray();
+		len = acip.length();
+		for (i=0; i<len; i++)
+		{
+			if (Character.isLowerCase(caract[i]))
+				caract[i] = Character.toUpperCase(caract[i]);
+			else if (Character.isUpperCase(caract[i]))
+				caract[i] = Character.toLowerCase(caract[i]);
+		}
+		nuevaLinea = new String(caract);
+		
+		/* ahora hacer los cambios de Michael Roach ts -> tsh, tz -> ts, v -> w,
+		TH -> Th, kSH, kaSH -> k+Sh, SH -> Sh, : -> H, dh -> d+h, gh -> g+h, bh -> b+h, dzh -> dz+h,
+	    aa -> a, a'a -> A, ai->i, aee ->ai, au->u, aoo->au, ae->e,
+		ao->o, ee->ai, oo->au, 'I->-I I->-i,  a'i->I, a'u->U, a'e->E, a'o->O,
+		a'i->I, a'u->U, a'e->E, a'o->O, ,->/, # -> @##, * -> @#, \ -> ?, ` -> !,
+		/-/ -> (-), ga-y -> g.y, g-y -> g.y, na-y -> n+y
+		
+		nuevaLinea = replace(nuevaLinea, "ts", "tq");
+		nuevaLinea = replace(nuevaLinea, "tz", "ts");
+		nuevaLinea = replace(nuevaLinea, "tq", "tsh");
+		nuevaLinea = replace(nuevaLinea, "v", "w");
+		nuevaLinea = replace(nuevaLinea, "TH", "Th");
+		nuevaLinea = replace(nuevaLinea, "kSH", "k+Sh");
+		nuevaLinea = replace(nuevaLinea, "kaSH", "k+Sh");
+		nuevaLinea = replace(nuevaLinea, "SH", "Sh");
+		nuevaLinea = replace(nuevaLinea, ":", "H");
+		nuevaLinea = replace(nuevaLinea, "NH", "NaH");
+		nuevaLinea = replace(nuevaLinea, "dh", "d+h");
+		nuevaLinea = replace(nuevaLinea, "gh", "g+h");
+		nuevaLinea = replace(nuevaLinea, "bh", "b+h");
+		nuevaLinea = replace(nuevaLinea, "dzh", "dz+h");
+		nuevaLinea = replace(nuevaLinea, "aa", "a");
+		nuevaLinea = replace(nuevaLinea, "ai", "i");
+		nuevaLinea = replace(nuevaLinea, "aee", "ai");
+		nuevaLinea = replace(nuevaLinea, "au", "u");
+		nuevaLinea = replace(nuevaLinea, "aoo", "au");
+		nuevaLinea = replace(nuevaLinea, "ae", "e");
+		nuevaLinea = replace(nuevaLinea, "ao", "o");
+		nuevaLinea = replace(nuevaLinea, "ee", "ai");
+		nuevaLinea = replace(nuevaLinea, "oo", "au");
+		nuevaLinea = replace(nuevaLinea, "\'I", "\'q");
+		nuevaLinea = replace(nuevaLinea, "I", "-i");
+		nuevaLinea = replace(nuevaLinea, "\'q", "-I");
+		nuevaLinea = replace(nuevaLinea, "\\", "?");
+		nuevaLinea = replace(nuevaLinea, "`", "!");
+		nuevaLinea = replace(nuevaLinea, "ga-y", "g.y");
+		nuevaLinea = replace(nuevaLinea, "g-y", "g.y");
+		nuevaLinea = replace(nuevaLinea, "na-y", "n+y");
+
+		len = nuevaLinea.length();
+		for (i=0; i<len; i++)
+		{
+		    ch = nuevaLinea.charAt(i);
+		    switch(ch)
+		    {
+		        case '#':
+		          nuevaLinea = nuevaLinea.substring(0,i) + "@##" + nuevaLinea.substring(i+1);
+		          i+=3;
+		          len+=2;
+		        break;
+		        case '*':
+		          nuevaLinea = nuevaLinea.substring(0,i) + "@#" + nuevaLinea.substring(i+1);
+		          i+=2;
+		          len++;
+		        break;
+		        case '\'':
+		          if (i>0 && i<len-1)
+		          {
+		            chP = nuevaLinea.charAt(i-1);
+		            chN = nuevaLinea.charAt(i+1);
+		            if (isVowel(chN))
+		            {
+		                if (Character.isLetter(chP) && !isVowel(chP))
+		                {
+		                    nuevaLinea = nuevaLinea.substring(0, i) + Character.toUpperCase(chN) + nuevaLinea.substring(i+2);
+		                    len--;
+		                }
+		                else if (chP=='a' && (i==1 || i>1 && !Character.isLetter(nuevaLinea.charAt(i-2)) || chN == 'a' && (i+2==len || !Character.isLetter(nuevaLinea.charAt(i+2)))))
+		                {
+		                    nuevaLinea = nuevaLinea.substring(0,i-1) + Character.toUpperCase(chN) + nuevaLinea.substring(i+2);
+		                    len-=2;
+		                }
+		            }
+		          }
+		    }
+		}
+		
+		open = false;
+		for (i=0; i<len; i++)
+		{
+		    ch = nuevaLinea.charAt(i);
+		    if (ch=='/')
+		    {
+		        if (open)
+		        {
+		          nuevaLinea = nuevaLinea.substring(0, i) + ")" + nuevaLinea.substring(i+1);
+		          open = false;		            
+		        }
+
+		        else
+		        {
+		          nuevaLinea = nuevaLinea.substring(0, i) + "(" + nuevaLinea.substring(i+1);
+		          open = true;
+		        }
+		    }
+		}
+		nuevaLinea = replace(nuevaLinea, ",", "/");
+		
+		return nuevaLinea; */
+	}
+	
+	public static String wylieToAcip(String wylie)
+	{
+		TibetanDocument tibDoc = new TibetanDocument();
+    	try
+    	{
+    		TibTextUtils.insertTibetanMachineWebForTranslit(false, wylie, tibDoc, 0, false);
+    	}
+    	catch (InvalidTransliterationException e)
+    	{
+    		return null;
+    	}
+    	return tibDoc.getACIP(new boolean[] { false });
+    	
+		/* DLC FIXME: for unknown things, return null.
+		if (wylie.equals("@##")) return "#";
+		if (wylie.equals("@#")) return "*";
+		if (wylie.equals("!")) return "`";
+		if (wylie.equals("b+h")) return "BH";
+		if (wylie.equals("d+h")) return "DH";
+		if (wylie.equals("X")) return null;
+                if (wylie.equals("iA")) return null;
+                if (wylie.equals("ai")) return "EE";
+                if (wylie.equals("au")) return "OO";
+                if (wylie.equals("$")) return null;
+		if (wylie.startsWith("@") || wylie.startsWith("#"))
+			return null; // we can't convert this in isolation!  We need context.
+		char []caract;
+		int i, j, len;
+		String nuevaPalabra;
+		
+		caract = wylie.toCharArray();
+		len = wylie.length();
+		for (j=0; j<len; j++)
+		{
+			i = j;
+			/*ciclo:
+			while(true) // para manejar excepciones; que honda!
+			{
+			switch(caract[i])
+			{
+			case 'A': 
+			if (i>0)
+			{
+			i--;
+			break;
+			}
+			default:
+			if (Character.isLowerCase(caract[i]))
+				caract[i] = Character.toUpperCase(caract[i]);
+			else if (Character.isUpperCase(caract[i]))
+				caract[i] = Character.toLowerCase(caract[i]);
+			/*						break ciclo;
+			}
+			}
+		}
+		nuevaPalabra = new String(caract);
+		//			nuevaPalabra = palabra.toUpperCase();
+		
+		// ahora hacer los cambios de Michael Roach
+		
+		nuevaPalabra = replace(nuevaPalabra, "TSH", "TQQ");
+		nuevaPalabra = replace(nuevaPalabra, "TS", "TZ");
+		nuevaPalabra = replace(nuevaPalabra, "TQQ", "TS");
+		nuevaPalabra = replace(nuevaPalabra, "a", "'A");
+		nuevaPalabra = replace(nuevaPalabra, "i", "'I");
+		nuevaPalabra = replace(nuevaPalabra, "u", "'U");
+		nuevaPalabra = replace(nuevaPalabra, "-I", "i");
+		nuevaPalabra = replace(nuevaPalabra, "/", ",");
+		nuevaPalabra = replace(nuevaPalabra, "_", " ");
+		nuevaPalabra = replace(nuevaPalabra, "|", ";");
+		nuevaPalabra = fixWazur(nuevaPalabra);
+		return nuevaPalabra; */
+	}	
+    
+    public static String unicodeToWylie(String unicode)
+    {
+    	String machineWylie;
+    	TibetanDocument tibDoc = new TibetanDocument();
+    	StringBuffer errors = new StringBuffer();
+    	
+    	machineWylie = Converter.convertToEwtsForComputers(unicode, errors);
+    	try
+    	{
+    		TibTextUtils.insertTibetanMachineWebForTranslit(true, machineWylie, tibDoc, 0, false);
+    	}
+    	catch (InvalidTransliterationException e)
+    	{
+    		return null;
+    	}
+    	return tibDoc.getWylie(new boolean[] { false });   	
+    }
+
+    /** From http://www.i18nfaq.com/2005/07/how-do-i-convert-ncr-format-to-java.html */
+    public static String NCR2UnicodeString(String str)
+    {
+         StringBuffer ostr = new StringBuffer();
+         int i1=0;
+         int i2=0;
+
+         while(i2<str.length())
+         {
+            i1 = str.indexOf("&#",i2);
+            if (i1 == -1 ) {
+                 ostr.append(str.substring(i2, str.length()));
+                 break ;
+            }
+            ostr.append(str.substring(i2, i1));
+            i2 = str.indexOf(";", i1);
+            if (i2 == -1 ) {
+                 ostr.append(str.substring(i1, str.length()));
+                 break ;
+            }
+
+            String tok = str.substring(i1+2, i2);
+            try {
+                 int radix = 10 ;
+                 if (tok.trim().charAt(0) == 'x') {
+                    radix = 16 ;
+                    tok = tok.substring(1,tok.length());
+                 }
+                 ostr.append((char) Integer.parseInt(tok, radix));
+            } catch (NumberFormatException exp) {
+                 ostr.append('?') ;
+            }
+            i2++ ;
+         }
+         return new String(ostr) ;
+    }
+    
+    public static String UnicodeString2NCR(String str)
+    {
+    	StringBuffer ncr = new StringBuffer();
+    	int i;
+    	for (i=0; i<str.length(); i++)
+    	{
+    		ncr.append("&#" + Integer.toString(str.charAt(i)) + ";");
+    	}
+    	return ncr.toString();
+    }
 }

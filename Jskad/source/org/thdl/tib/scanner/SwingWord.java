@@ -20,7 +20,8 @@ Contributor(s): ______________________________________.
 	to store the dictionary. */
 package org.thdl.tib.scanner;
 
-import org.thdl.tib.text.TibetanHTML;
+//import org.thdl.tib.text.TibetanHTML;
+import org.thdl.tib.text.ttt.*;
 
 /** Tibetan word with its corresponding definitions.
 
@@ -60,7 +61,8 @@ public class SwingWord extends Word
 	    {
 	        try
 	        {
-	            localWord = TibetanHTML.getHTML(super.token + " ");
+	            // localWord = TibetanHTML.getHTML(super.token + " ");
+	        	localWord = Manipulate.UnicodeString2NCR(EwtsToUnicodeForXslt.convertEwtsTo(super.token + " "));
 	        }
 	        catch (Exception e)
 	        {
@@ -82,6 +84,7 @@ public class SwingWord extends Word
 	public String getLink(boolean tibetan)
 	{
 	    String localWord, result=null;
+	    String className = "";
 
             if (wordSinDec==null) localWord = super.token;
             else localWord = wordSinDec;
@@ -89,7 +92,8 @@ public class SwingWord extends Word
             {
                 try
                 {
-                    result = TibetanHTML.getHTML(localWord + " ");
+                    result = Manipulate.UnicodeString2NCR(EwtsToUnicodeForXslt.convertEwtsTo(localWord + " "));
+                    className = " class = \"tib\"";
                 }
                 catch (Exception e)
                 {
@@ -101,6 +105,6 @@ public class SwingWord extends Word
             if (tibetan) result+= "</a>";
             else result+= "</a> ";
             return result;*/
-            return "<a href=\"#" + super.token + "\">" + result + "</a> ";
+            return "<a href=\"#" + super.token + "\"" + className + ">" + result + "</a> ";
 	}	
 }
