@@ -28,6 +28,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent ;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.BufferedWriter;
@@ -57,6 +59,10 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
+import javax.swing.JButton;
+import javax.swing.JToolBar;
+import javax.swing.JFrame;
+import javax.swing.JComponent;
 
 import org.thdl.tib.text.DuffCode;
 import org.thdl.tib.text.DuffData;
@@ -71,6 +77,17 @@ import org.thdl.util.StatusBar;
 import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlOptions;
 
+import javax.swing.text.Element;
+import org.thdl.tib.scanner.TibetanScanner ;
+import org.thdl.tib.scanner.Word ;
+import org.thdl.tib.text.Pronounciation;
+import org.thdl.tib.input.SettingsServiceProvider;
+import org.thdl.tib.input.DictionaryLoadState;
+import java.util.Observable ;
+import org.thdl.tib.input.GlobalResourceHolder ;
+import org.thdl.tib.input.SettingsChangeListener ;
+
+
 /**
 * Enables input of Tibetan text
 * using Tibetan Computer Company's free cross-platform TibetanMachineWeb fonts.
@@ -81,7 +98,9 @@ import org.thdl.util.ThdlOptions;
 * @author Edward Garrett, Tibetan and Himalayan Digital Library
 * @version 1.0
 */
-public class DuffPane extends TibetanPane implements FocusListener {
+public class DuffPane extends TibetanPane 
+                      implements FocusListener, SettingsServiceProvider 
+{
 /** 
 * The status bar to update with messages about the current input mode.
 * Are we expecting a vowel? a subscript? et cetera.
@@ -225,18 +244,88 @@ public class DuffPane extends TibetanPane implements FocusListener {
 
     private String romanFontFamily;
     private int romanFontSize;
-
-    protected Clipboard rtfBoard;
+    
+/**
+* The current dictionary information
+* @TODO these three fields should be one class
+*/
+    private boolean dictionaryEnabled = false ;
+    private boolean dictionaryLocal = false ;
+    private String dictionaryPath ;
     
     private Hashtable actions;
 
+    private Observable observableObj ;
+
+    protected Clipboard rtfBoard;
+
+/**
+* Range
+* 
+*/
+	class Range
+	{
+		int startPos ;
+		int endPos ;
+
+		public Range ()
+		{
+			startPos = 0 ;
+			endPos = 0 ;
+		}
+
+		public Range ( int start, int end )
+		{
+			setRange ( start, end ) ;			
+		}
+
+		public void setRange ( int start, int end )
+		{
+			startPos = start ;
+			endPos = end ;
+		}
+
+		int getStartPos ()
+		{
+			return startPos ;
+		}
+
+		int getEndPos ()
+		{
+			return endPos ;
+		}
+
+		boolean isValid ()
+		{
+			return ( startPos >= 0 && endPos >= 0 && startPos <= endPos ) ;
+		}
+	}
+
+/**
+ * the parent frame
+ */
+        protected JFrame mainFrame = null ;
+        protected DictionaryFrame dictFrame = null ;
+        protected Pronounciation pronounciation ;
+        protected JButton buttonToggleDict = null ;
+        protected JButton buttonLookupDict = null ;
 
     /** Initializes this object.  All constructors should call
         this. */
-    private void initialize(StatusBar sb,
+    private void initialize(Object frame,
+                            StatusBar sb,
                             TibetanKeyboard keyboard,
                             java.net.URL keyboardURL)
     {
+        observableObj = new Observable () ;
+
+	GlobalResourceHolder.setSettingsServiceProvider ( this ) ;
+        
+	if ( null != frame )
+	{
+    	    initDictionarySupport ( frame ) ;
+	}
+
         if (null != keyboard)
             TibetanMachineWeb.setKeyboard(keyboard);
         if (null != keyboardURL)
@@ -251,25 +340,47 @@ public class DuffPane extends TibetanPane implements FocusListener {
     /** Creates a new DuffPane that updates sb, if sb is not null,
         with messages about how the users' keypresses are being
         interpreted. */
+    public DuffPane(Object frame, StatusBar sb) {
+        super();
+        initialize(frame, sb, null, null);
+    }
+
+    public DuffPane(Object frame) {
+        super();
+        initialize(frame, null, null, null);
+    }
+
+    public DuffPane(Object frame, TibetanKeyboard keyboard) {
+        super();
+        initialize(frame, null, keyboard, null);
+    }
+
+    public DuffPane(Object frame, java.net.URL keyboardURL) {
+        super();
+        initialize(frame, null, null, keyboardURL);
+    }
+
+    
     public DuffPane(StatusBar sb) {
         super();
-        initialize(sb, null, null);
+        initialize(null, sb, null, null);
     }
 
     public DuffPane() {
         super();
-        initialize(null, null, null);
+        initialize(null, null, null, null);
     }
 
     public DuffPane(TibetanKeyboard keyboard) {
         super();
-        initialize(null, keyboard, null);
+        initialize(null, null, keyboard, null);
     }
 
     public DuffPane(java.net.URL keyboardURL) {
         super();
-        initialize(null, null, keyboardURL);
+        initialize(null, null, null, keyboardURL);
     }
+
 
     /** For testing purposes, it's useful to create a DuffPane and not
      *  hook it up to the UI. If this is true, this DuffPane will
@@ -333,6 +444,11 @@ public class DuffPane extends TibetanPane implements FocusListener {
         romanFontFamily = ThdlOptions.getStringOption("thdl.default.roman.font.face",
                                                       "Serif");
         romanFontSize = defaultRomanFontSize();
+
+        dictionaryEnabled = defaultDictionarySettingsEnabled () ;
+        dictionaryLocal = defaultDictionarySettingsLocal () ;
+        dictionaryPath = defaultDictionarySettingsPath () ;
+        onDictionarySettingsChanged () ;
 
         newDocument();
 
@@ -687,6 +803,82 @@ public class DuffPane extends TibetanPane implements FocusListener {
 */
     public String getRomanFontFamily() {
         return romanFontFamily;
+    }
+
+/**
+ *  //MP add comment
+ */
+    private static boolean defaultDictionarySettingsEnabled () {
+        return ThdlOptions.getBooleanOption("thdl.default.jskad.dictionary.enabled"
+                                            );
+    }
+
+/**
+ * //MP add comment
+ */
+    private static boolean  defaultDictionarySettingsLocal () {
+        return ThdlOptions.getBooleanOption("thdl.default.jskad.dictionary.local"
+                                            );
+    }
+
+/**
+ * //MP add comment
+ */
+    private static String defaultDictionarySettingsPath () {
+        return ThdlOptions.getStringOption("thdl.default.jskad.dictionary.path",
+                                            "/home/mamrotek/thdl/dict/free" );
+    }
+
+/**
+ * //MP add comment
+ */
+    public boolean getDictionarySettingsEnabled ()
+    {
+        return dictionaryEnabled ;
+    }
+
+    public boolean getDictionarySettingsLocal ()
+    {
+        return dictionaryLocal ;
+    }
+
+    public String getDictionarySettingsPath ()
+    {
+        return dictionaryPath ;
+    }
+
+/**
+ *
+ */
+    public void setByUserDictionarySettings ( boolean enabled, boolean local, String path )
+    {
+        ThdlOptions.setUserPreference("thdl.default.jskad.dictionary.enabled", enabled );
+        ThdlOptions.setUserPreference("thdl.default.jskad.dictionary.local", local );
+        ThdlOptions.setUserPreference("thdl.default.jskad.dictionary.path", path );
+        
+        setDictionarySettings ( enabled, local, path ) ;
+    }
+
+/**
+ *
+ */
+    public void setDictionarySettings ( boolean enabled, boolean local, String path )
+    {
+        dictionaryEnabled = enabled ;
+        dictionaryLocal = local ;
+        dictionaryPath = path ;
+
+        onDictionarySettingsChanged () ;
+    }
+
+    public int getDictionaryLoadState ()
+    {
+        return GlobalResourceHolder.getDictionaryLoadState () ;
+    }
+
+    public void waitForDictionary ()
+    {
+        GlobalResourceHolder.waitForDictionary () ;
     }
 
 /**
@@ -1763,7 +1955,256 @@ public void paste(int offset)
     }
 
 
+    public void onDictionarySettingsChanged ()
+    {
+		GlobalResourceHolder.getListener ().update ( getObservable (), 
+                (Object)new Integer ( SettingsChangeListener.DICTIONARY_SETTINGS ) ) ;
 
+		if ( null == buttonToggleDict || null == buttonLookupDict )
+			return ;
+
+		if ( GlobalResourceHolder.isDictionaryValid () &&
+             GlobalResourceHolder.isDictionaryEnabled () )
+		{
+			buttonToggleDict.setEnabled ( true ) ;
+			buttonLookupDict.setEnabled ( true ) ;
+		}
+		else
+		{
+			buttonToggleDict.setEnabled ( false ) ;
+			buttonLookupDict.setEnabled ( false ) ;
+		}
+
+    }
+    
+	protected void lookupDictionary ()
+	{
+		Range selection = new Range ( getSelectionStart (), getSelectionEnd () ) ;
+
+		try
+		{
+			adjustSelection ( selection ) ;
+		}
+		catch ( Exception e )
+		{
+			System.err.println ( e.toString () ) ;
+			return ;
+		}
+
+		showCurrentPhraseFromPosInfo ( selection ) ;
+    }
+
+	private void adjustSelection ( Range selection ) throws Exception
+	{
+		TibetanDocument doc = getTibDoc () ;
+		int startPos = selection.getStartPos () ;
+		int endPos = selection.getEndPos () ;
+
+		while ( true )
+		{
+			Element el = doc.getCharacterElement ( endPos ) ;
+			char code = doc.getText ( endPos, 1 ).charAt ( 0 ) ;
+			int fontNum = TibetanMachineWeb.getTMWFontNumber ( doc.getFont ( el.getAttributes () ).getName () ) ;// getFamily
+
+			if ( 0 == fontNum || TibetanMachineWeb.isTMWFontCharBreakable ( code ) )
+			{
+				endPos -- ;
+				break ;
+			}
+
+			if ( endPos >= doc.getLength () - 1 )
+				break ;
+
+			endPos ++ ;
+		}
+
+		if ( endPos < startPos )
+		{
+			startPos = endPos ;
+		}
+
+		//
+		// span left
+		//
+		while ( true )
+		{
+			Element el = doc.getCharacterElement ( startPos ) ;
+			char code = doc.getText ( startPos, 1 ).charAt ( 0 ) ;
+			int fontNum = TibetanMachineWeb.getTMWFontNumber ( doc.getFont ( el.getAttributes () ).getName () ) ;// getFamily
+			if ( 0 == fontNum || TibetanMachineWeb.isTMWFontCharBreakable ( code ) )
+			{
+				startPos++ ;
+				break ;
+			}
+
+			if ( startPos <= 0 )
+				break ;
+
+			startPos -- ;
+		}
+
+		selection.setRange ( startPos, endPos ) ;
+	}
+
+	protected void showCurrentPhraseFromPosInfo ( Range range )
+	{
+		String word = "" ;
+		TibetanDocument doc = getTibDoc () ;
+		int startPos = range.getStartPos () ;
+		int endPos = range.getEndPos () ;
+
+		//
+		// collect the text the good way
+		//
+		boolean [] noSuch = new boolean [] { false } ;
+		word = doc.getWylie ( startPos, endPos+1, noSuch ) ;
+		word = word.replaceAll ( "[\\/\\_\\*]", " " ) ;
+
+        //
+        // show dictionary data
+        //
+		if ( word.length () > 0 )
+		{
+			try
+			{
+				dictFrame.reset () ;
+				dictFrame.setOriginal ( word, doc, startPos, endPos ) ;
+				dictFrame.setPronounciation ( pronounciation.process ( word ) ) ;
+			}
+			catch ( Exception e )
+			{
+				// TODO
+			}
+        
+            TibetanScanner scanner = GlobalResourceHolder.getTibetanScanner () ;
+            if ( null != scanner )
+            {
+			    scanner.scanBody ( word ) ;
+			    scanner.finishUp () ;
+			    Word [] words = scanner.getWordArray () ;
+			    for ( int i = 0; i < words.length ; i++ )
+			    {            
+				    dictFrame.addDescription ( words [i].toString () ) ;
+			    }
+                
+			    scanner.clearTokens () ;
+
+                dictFrame.setVisible ( true ) ;
+                dictFrame.requestFocusInWindow () ;
+
+                dictFrame.gotoList () ;
+            }
+		}
+	}
+
+    private void initDictionarySupport ( Object frame )
+    {
+		if ( frame instanceof JFrame )
+			mainFrame = (JFrame)frame ;
+		else
+			mainFrame = null ;
+
+        try
+        {
+            pronounciation = new Pronounciation () ; 
+        }
+        catch ( Exception e )
+        {
+            System.err.println ( e.toString () ) ;
+            System.exit ( 1 ) ;
+        }
+
+		addKeyListener ( new KeyAdapter ()
+		                      {
+					               public void keyPressed ( KeyEvent ke )
+			                       {
+				                        if ( KeyEvent.VK_F12 == ke.getKeyCode () )
+				                        {
+					                         toggleDictionaryFrame () ;
+				                        }
+                                        else if ( KeyEvent.VK_F11 == ke.getKeyCode () )
+                                        {
+                                            lookupDictionary () ;
+                                        }
+			                       }
+		                     }
+					   ) ;
+    }
+
+	public void postInitialize ( JComponent parent )
+	{
+        //
+        // no main frame - do not init the dictionary frame
+        //
+        if ( null == mainFrame )
+            return ;
+	    
+		dictFrame = new DictionaryFrame ( mainFrame ) ;
+
+		JToolBar toolbar = null ;
+		
+		System.out.println ( parent.toString () ) ;
+		for ( int child = 0; child < parent.getComponentCount (); child++ )
+		{
+			if ( parent.getComponent ( child ) instanceof JToolBar )
+			{
+				toolbar = (JToolBar)parent.getComponent ( child ) ;
+				break ;
+			}																		 
+		}
+
+		if ( toolbar != null )
+		{
+			buttonToggleDict = new JButton ( "Tog. Dictionary F12" ) ;
+			buttonToggleDict.addMouseListener ( new MouseAdapter ()
+			{
+				public void mouseClicked ( MouseEvent e ) 
+				{
+					toggleDictionaryFrame () ;
+				}
+			} ) ;
+
+			toolbar.add ( buttonToggleDict ) ;
+            
+			buttonLookupDict = new JButton ( "Lookup F11" ) ;
+			buttonLookupDict.addMouseListener ( new MouseAdapter ()
+			{
+				public void mouseClicked ( MouseEvent e ) 
+				{
+					lookupDictionary () ;
+				}
+			} ) ;
+            
+			toolbar.add ( buttonLookupDict ) ;
+
+			buttonToggleDict.setEnabled ( GlobalResourceHolder.isDictionaryValid () && GlobalResourceHolder.isDictionaryEnabled () ) ;
+			buttonLookupDict.setEnabled ( GlobalResourceHolder.isDictionaryValid () && GlobalResourceHolder.isDictionaryEnabled () ) ;
+		}
+	}
+
+	protected void toggleDictionaryFrame ()
+	{
+		if ( dictFrame.isVisible () )
+			dictFrame.setVisible ( false ) ;
+		else
+		{
+			//
+			// if text selected, feed the dictionary frame
+			//
+
+			dictFrame.setVisible ( true ) ;
+		}
+	}
+
+    public Observable getObservable ()
+    {
+        return observableObj ;
+    }
+
+	protected void finalize ()
+	{
+		GlobalResourceHolder.removeSettingsServiceProvider ( this ) ;
+	}
 
 /** The JDK contains StringSelection, but we want to copy and paste
     RTF sometimes. Enter RTFSelection. */
@@ -1824,6 +2265,8 @@ class RTFSelection implements ClipboardOwner, Transferable {
         return false;
     }
 } // inner class DuffPane.RTFSelection
+
+
 
 } // class DuffPane
 

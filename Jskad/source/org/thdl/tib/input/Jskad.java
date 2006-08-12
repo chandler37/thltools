@@ -799,9 +799,9 @@ public class Jskad extends JPanel implements DocumentListener {
         /* Initialize dp before calling
            JskadKeyboard.activate(DuffPane) or dp.toggleLanguage(). */
         if (ThdlOptions.getBooleanOption(Jskad.enableKeypressStatusProp)) {
-            dp = new DuffPane(statusBar);
+            dp = new DuffPane(parentObject, statusBar);
         } else {
-            dp = new DuffPane();
+            dp = new DuffPane(parentObject);
         }
 
 
@@ -926,6 +926,8 @@ public class Jskad extends JPanel implements DocumentListener {
         add("Center", scrollingDuffPane);
         if (statusBar != null)
             add("South", statusBar);
+
+	dp.postInitialize ( this ) ;
     }
 
     private void newFile() {
@@ -1323,7 +1325,7 @@ public class Jskad extends JPanel implements DocumentListener {
         try {
             BufferedReader in = new BufferedReader(new FileReader(txt_fileChosen));
             // FIXME: why do we need a whole DuffPane to do this?
-            DuffPane dp2 = new DuffPane();
+            DuffPane dp2 = new DuffPane( parentObject );
 
             try {
                 String val = in.readLine();

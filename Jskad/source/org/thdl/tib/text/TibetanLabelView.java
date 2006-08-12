@@ -22,6 +22,10 @@ import javax.swing.text.Element;
 import javax.swing.text.LabelView;
 import javax.swing.text.Segment;
 import javax.swing.text.View;
+import java.awt.Font;
+import javax.swing.text.* ;
+
+import org.thdl.tib.input.GlobalResourceHolder ;
 
 /** A TibetanLabelView is a LabelView that has its own idea, informed
  *  by its knowledge of Tibetan, about where a good place to break
@@ -184,4 +188,55 @@ class TibetanLabelView extends LabelView {
         return this.getGlyphPainter().getBoundedPosition(this, startPos,
                                                          pos, len);
     }
+
+	/** When an element contains only diacritic chars, the default
+	 *  implementation will return 0.0 (since there is no base char to
+	 *  attach the diacritic(s) to. But the painting scheme will ignore
+	 *  all zero sized items. The point of the workaround below is just to 
+	 *  return any non-zero value so that the item doesn't get ignored.
+	 *  (Try typint oM in exteded-Wylie kbd mode to see the bug). */
+	public float getPreferredSpan ( int axis )
+	{
+		float span = super.getPreferredSpan ( axis ) ;
+
+		//
+		// the condition should be safe enough, we want an element that has at least one char
+		// but whose default span is zero.
+		//
+		if ( View.X_AXIS == axis && 0.0f == span && 
+			 ( getElement ().getEndOffset () - getElement ().getStartOffset () + 1 ) > 0 )
+		{
+			span = 1.0f ;
+		}
+
+		return span ;
+	}
+
+    /**
+     * getFont - we override the method so we can use local fonts
+     */
+	public Font getFont ()
+	{
+		String fontFamily = (String)getElement ().getAttributes ()
+                                  .getAttribute ( StyleConstants.FontFamily ) ;
+		int fontSize = ((Integer)(getElement ().getAttributes ()
+                                  .getAttribute ( StyleConstants.FontSize ))).intValue () ;
+
+		Font font = null ;
+
+		try
+		{
+			font = GlobalResourceHolder.getFont ( fontFamily, fontSize ) ;
+
+			if ( null == font )
+				font = super.getFont () ;
+		}
+		catch ( Exception e )
+		{
+			System.err.println ( "No font !" ) ;
+			font = super.getFont () ;
+		}
+
+		return font ;
+	}
 }
