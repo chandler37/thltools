@@ -17,6 +17,7 @@ import java.awt.event.ActionEvent ;
 import javax.swing.event.ListSelectionListener ;
 import javax.swing.event.ListSelectionEvent ;
 import java.util.concurrent.locks.ReentrantLock ;
+import java.text.StringCharacterIterator ;
 
 class DictionaryFrame extends JFrame implements ListSelectionListener
 {
@@ -317,6 +318,8 @@ class DictionaryFrame extends JFrame implements ListSelectionListener
 		// dictionary entry that precedes the first dash
 		//
 
+        text = handleSanskrit ( text ) ;
+
         listLock.lock () ;
 
         try
@@ -415,6 +418,112 @@ class DictionaryFrame extends JFrame implements ListSelectionListener
         entryList.setSelectedIndex ( 0 ) ;
     }
 
+    protected String handleSanskrit ( String inText )
+    {                 
+        String outText = "" ;
+        StringCharacterIterator it = new StringCharacterIterator ( inText ) ;
+
+        final int DEFAULT = 0 ;
+        final int INBRACES = 1 ;
+        final int INWORD = 2 ;
+
+        int state = DEFAULT ;
+        String word = "" ;
+        boolean wasBraces = false ;
+            
+        for ( char c = it.first (); c != StringCharacterIterator.DONE; c = it.next () )
+        {
+            switch ( state )
+            {
+                case DEFAULT:
+                    if ( Character.isLetter (c) )
+                    {
+                        word = String.valueOf (c) ;
+                        state = INWORD ;
+                    }
+                    else if ( '{' == c )
+                    {
+                        wasBraces = false ;
+                        state = INBRACES ;
+                    }
+                    else
+                    {
+                        wasBraces = false ;
+                        outText += c ;
+                    }
+                    break ;
+                    
+                case INBRACES:
+                    if ( '}' != c )
+                    {
+                        word += c ;
+                    }
+                    else
+                    {
+                        outText += "{" + word + "}" ;
+                        word = "" ;
+                        wasBraces = true ;
+                        state = DEFAULT ;
+                    }
+                    break ;
+                    
+                case INWORD:
+                    if ( Character.isLetter (c) )
+                    {
+                        word += c ;
+                    }
+                    else
+                    {
+                        outText += processSanskrit ( word, wasBraces ) + c ;
+                        word = "" ;                        
+                        state = DEFAULT ;
+                    }
+                    break ;
+            }
+        }
+        
+        
+        return outText ;
+    }
+
+    /**
+     *
+     */
+    protected boolean isLikelyToBeSanskrit ( String word )
+    {
+        if ( word.matches ( ".*[a-z][A-Z].*" ) )
+            return true ;
+
+        return false ;
+    }
+
+    /**
+     *
+     */
+    protected String processSanskrit ( String word, boolean forceSanskrit  )
+    {
+        //
+        //
+        //
+        if ( forceSanskrit || isLikelyToBeSanskrit ( word ) )
+        {
+            word = word.replaceAll ( "A", "a\u0305" ) ;
+            word = word.replaceAll ( "I", "i\u0305" ) ;
+            word = word.replaceAll ( "U", "u\u0305" ) ;
+            word = word.replaceAll ( "S", "s\u0323" ) ;
+            word = word.replaceAll ( "D", "d\u0323" ) ;
+            word = word.replaceAll ( "T", "t\u0323" ) ;
+            word = word.replaceAll ( "M", "m\u0307" ) ;
+            word = word.replaceAll ( "N", "n\u0307" ) ;
+            word = word.replaceAll ( "H", "h\u0323" ) ;
+            word = word.replaceAll ( "R", "r\u0323" ) ;
+            word = word.replaceAll ( "L", "l\u0323" ) ;
+            word = word.replaceAll ( "z", "s\u0301" ) ;
+        }
+
+        return word ;
+    }
+    
 	/**
 	 * unit test
 	 */
