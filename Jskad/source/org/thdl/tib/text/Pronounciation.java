@@ -26,7 +26,6 @@ public class Pronounciation
 	 */
 	static Enumeration getStandardEnumeration ()
 	{
-		//Vector<String> vec = new Vector<String> () ;
 		Vector vec = new Vector () ;
 
 		vec.add ( "THDL" ) ;
@@ -86,7 +85,7 @@ public class Pronounciation
 		private Pattern pattern ;
 
 		private static final String vowelSet = "aeiou" ;
-		private static final String consonantSet = "bBcCdDfghjklmnNpPrsStvwXzZ" ;
+		private static final String consonantSet = "bBcCdDfgGhjkKlmnNpPrsStTvwXzZ" ;
 
 		/**
 		 * constructior
