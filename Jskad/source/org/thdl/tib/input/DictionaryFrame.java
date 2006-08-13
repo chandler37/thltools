@@ -39,7 +39,8 @@ class DictionaryFrame extends JFrame implements ListSelectionListener
 
 	//
 	// entryList contains MyListElement-s instead of just String-s
-	// (we want a number to be associated with each element to store the position within description)
+	// (we want a number to be associated with each element to store 
+    // the position within description)
 	//
 	class MyListElement
 	{
@@ -113,7 +114,8 @@ class DictionaryFrame extends JFrame implements ListSelectionListener
 
         closeButton = new JButton ( "Close" ) ;
         closeButton.setMnemonic ( 'c' ) ;
-        closeButton.addActionListener ( new ActionListener () { public void actionPerformed ( ActionEvent e ) { closeWindow () ;  } } ) ;
+        closeButton.addActionListener ( new ActionListener () 
+                { public void actionPerformed ( ActionEvent e ) { closeWindow () ;  } } ) ;
 
 		original.setEditable ( false ) ;
 		pronounciation.setEditable ( false ) ;
@@ -220,7 +222,7 @@ class DictionaryFrame extends JFrame implements ListSelectionListener
 	}
 
     /**
-     *
+     * close the window
      */
     void closeWindow ()
     {
@@ -252,6 +254,8 @@ class DictionaryFrame extends JFrame implements ListSelectionListener
 
 	/**
 	 * isEmpty
+     * 
+     * @return true if the dict frame does not display any data
 	 */
 	public boolean isEmpty ()
 	{
@@ -261,9 +265,10 @@ class DictionaryFrame extends JFrame implements ListSelectionListener
 	/**
 	 * set the original
 	 * 
-	 * text - has the Wylie roman text
-	 * realDoc - ref to the actual document being edited
-	 * startPos, endPos - location of the text in the actual document being edited
+	 * @param text - has the Wylie roman text
+	 * @param realDoc - ref to the actual document being edited
+	 * @param startPos 
+     * @param endPos - location of the text in the actual document being edited
 	 */
 	public void setOriginal ( String text, DefaultStyledDocument realDoc, int startPos, int endPos )
 	{
@@ -310,6 +315,8 @@ class DictionaryFrame extends JFrame implements ListSelectionListener
 	
 	/**
 	 * add a dictionary entry
+     *
+     * @param text - description as retrieved form TibetanScanner derived objs
 	 */
 	public void addDescription ( String text )
 	{
@@ -412,25 +419,54 @@ class DictionaryFrame extends JFrame implements ListSelectionListener
         }        
 	}
 
+    /**
+     * gotoList
+     * force the focus to the entry list box
+     *
+     */
     public void gotoList ()
     {
         entryList.requestFocusInWindow () ;
         entryList.setSelectedIndex ( 0 ) ;
     }
 
+    /**
+     * handleSanskrit
+     * converts the dictionary entry text so that romanized Sanskrit leters are
+     * displayed correctly (long a vs A etc) 
+     * 
+     * @param inText - text as retrieved from TibetanScanner
+     * @return converted text
+     */
     protected String handleSanskrit ( String inText )
     {                 
         String outText = "" ;
         StringCharacterIterator it = new StringCharacterIterator ( inText ) ;
 
+        //
+        // we have three states
+        //
         final int DEFAULT = 0 ;
         final int INBRACES = 1 ;
         final int INWORD = 2 ;
 
+        //
+        // state is the current state
+        // word is the recently collected piece of text
+        // wasBraces is true if we are just after a {XX} sequence was encountered
+        //
         int state = DEFAULT ;
         String word = "" ;
         boolean wasBraces = false ;
             
+        //
+        // loop through the entire text, find whatever is likely to be a Sanskrit word
+        //
+        // the decision whether a word could be Sanskrit is based on two criteria:
+        // 1. if it appears immediately after a {XX} sequence it's assumed to be Sanskrit
+        // 2. otherwise if it contains a sequence of <lowercase><uppercase>
+        //    in which case uppercase is likely to be a letter that needs conversion
+        //    
         for ( char c = it.first (); c != StringCharacterIterator.DONE; c = it.next () )
         {
             switch ( state )
@@ -474,6 +510,9 @@ class DictionaryFrame extends JFrame implements ListSelectionListener
                     }
                     else
                     {
+                        //
+                        // looks like a Sanskrit word, let's convert it
+                        //                        
                         outText += processSanskrit ( word, wasBraces ) + c ;
                         word = "" ;                        
                         state = DEFAULT ;
@@ -487,7 +526,14 @@ class DictionaryFrame extends JFrame implements ListSelectionListener
     }
 
     /**
+     * isLikelyToBeSanskrit
      *
+     * the criterion is :
+     * the word contains a sequence of <lowercase><uppercase>
+     *  
+     * @param word
+     * @return true is word is likely to be Sanskrit
+     * 
      */
     protected boolean isLikelyToBeSanskrit ( String word )
     {
@@ -498,7 +544,11 @@ class DictionaryFrame extends JFrame implements ListSelectionListener
     }
 
     /**
+     * processSanskrit
      *
+     * @param word
+     * @param forceSanskrit
+     * @return converted word
      */
     protected String processSanskrit ( String word, boolean forceSanskrit  )
     {
