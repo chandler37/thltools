@@ -295,10 +295,12 @@ public class Jskad extends JPanel implements DocumentListener {
             fileChooser.addChoosableFileFilter(rtfFilter);
 
             fileMenu = new JMenu("File");
+            fileMenu.setMnemonic ( 'F' ) ;
             numItemsOnFileMenuBeforeRecentlyOpened = 0;
 
 
             JMenuItem newItem = new JMenuItem("New...");
+            newItem.setMnemonic ( 'N' ) ;
 //            newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,java.awt.Event.CTRL_MASK)); //Ctrl-n
             newItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
@@ -309,7 +311,8 @@ public class Jskad extends JPanel implements DocumentListener {
             fileMenu.add(newItem);
 
             JMenuItem openItem = new JMenuItem("Open...");
-//            openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,java.awt.Event.CTRL_MASK)); //Ctrl-o
+            openItem.setMnemonic ( 'o' ) ;
+            openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,java.awt.Event.CTRL_MASK)); //Ctrl-o
             openItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
                     openFile();
@@ -320,6 +323,7 @@ public class Jskad extends JPanel implements DocumentListener {
 
             if (parentObject instanceof JFrame) {
                 JMenuItem closeItem = new JMenuItem("Close");    
+                closeItem.setMnemonic ( 'c' ) ;
                 closeItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
                         if (numberOfTibsRTFOpen == 1) {
@@ -338,7 +342,8 @@ public class Jskad extends JPanel implements DocumentListener {
                 fileMenu.add(closeItem);
             }
             JMenuItem saveItem = new JMenuItem("Save");
-//            saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,java.awt.Event.CTRL_MASK)); //Ctrl-s
+            saveItem.setMnemonic ( 's' ) ;
+            saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,java.awt.Event.CTRL_MASK)); //Ctrl-s
             saveItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
                     if (fileName == null)
@@ -354,6 +359,7 @@ public class Jskad extends JPanel implements DocumentListener {
             fileMenu.add(saveItem);
 
             JMenuItem saveAsItem = new JMenuItem("Save as...");
+            saveAsItem.setMnemonic ( 'a' ) ;
             saveAsItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
                     saveAsFile("legacy rtf");
@@ -382,6 +388,7 @@ public class Jskad extends JPanel implements DocumentListener {
 
             if (parentObject instanceof JFrame) {
                 JMenuItem exitItem = new JMenuItem("Exit");    
+                exitItem.setMnemonic ( 'x' ) ;
                 exitItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
                         exitAction();
@@ -397,9 +404,11 @@ public class Jskad extends JPanel implements DocumentListener {
         }
 
         JMenu editMenu = new JMenu("Edit");
+        editMenu.setMnemonic ( 'E' ) ;
 
         if (parentObject instanceof JFrame || parentObject instanceof JInternalFrame) {
             JMenuItem cutItem = new JMenuItem("Cut");
+            cutItem.setMnemonic ( 'u' ) ;
             cutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,
                                                           java.awt.Event.CTRL_MASK)); //Ctrl-x
             cutItem.addActionListener(new ThdlActionListener() {
@@ -410,6 +419,7 @@ public class Jskad extends JPanel implements DocumentListener {
             editMenu.add(cutItem);
 
             JMenuItem copyItem = new JMenuItem("Copy");
+            copyItem.setMnemonic ( 'C' ) ;
             copyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
                                                            java.awt.Event.CTRL_MASK)); //Ctrl-c
             copyItem.addActionListener(new ThdlActionListener() {
@@ -420,6 +430,7 @@ public class Jskad extends JPanel implements DocumentListener {
             editMenu.add(copyItem);
 
             JMenuItem copyAsUnicodeItem = new JMenuItem("Copy as Unicode");
+            copyAsUnicodeItem.setMnemonic ( 'i' ) ;
             copyAsUnicodeItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
                     copyAsUnicodeSelection();
@@ -428,6 +439,7 @@ public class Jskad extends JPanel implements DocumentListener {
             editMenu.add(copyAsUnicodeItem);
 
             JMenuItem pasteItem = new JMenuItem("Paste");
+            pasteItem.setMnemonic ( 'P' ) ;
             pasteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
                                                             java.awt.Event.CTRL_MASK)); //Ctrl-v
             pasteItem.addActionListener(new ThdlActionListener() {
@@ -439,6 +451,7 @@ public class Jskad extends JPanel implements DocumentListener {
             editMenu.addSeparator();
 
             JMenuItem selectallItem = new JMenuItem("Select All");
+            selectallItem.setMnemonic ( 'A' ) ;
             selectallItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A,
                                                                 java.awt.Event.CTRL_MASK)); //Ctrl-a
             selectallItem.addActionListener(new ThdlActionListener() {
@@ -452,6 +465,9 @@ public class Jskad extends JPanel implements DocumentListener {
 
         {
             JMenuItem preferencesItem = new JMenuItem("Preferences");
+            preferencesItem.setMnemonic ( 'P' ) ;
+            preferencesItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E,
+                                                                java.awt.Event.CTRL_MASK)); //Ctrl-e
             preferencesItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
                         setPreferences();
@@ -463,6 +479,7 @@ public class Jskad extends JPanel implements DocumentListener {
 
         {
             JMenuItem preferencesItem = new JMenuItem("Save preferences to " + ThdlOptions.getUserPreferencesPath());
+            preferencesItem.setMnemonic ( 'S' ) ;
             preferencesItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
                         savePreferencesAction();
@@ -473,6 +490,7 @@ public class Jskad extends JPanel implements DocumentListener {
 
         {
             JMenuItem preferencesItem = new JMenuItem("Clear preferences");
+            preferencesItem.setMnemonic ( 'C' ) ;
             preferencesItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
                         clearPreferencesAction();
@@ -485,9 +503,12 @@ public class Jskad extends JPanel implements DocumentListener {
         menuBar.add(editMenu);
 
         JMenu toolsMenu = new JMenu("Tools");
+        toolsMenu.setMnemonic ( 'T' ) ;
 
         JMenu convertSelectionMenu = new JMenu("Convert Selection");
+        convertSelectionMenu.setMnemonic ( 'o' ) ;
         JMenuItem TMWWylieItem = new JMenuItem("Convert Tibetan Machine Web (non-Unicode) to Wylie");
+        TMWWylieItem.setMnemonic ( 'T' ) ;
         TMWWylieItem.addActionListener(new ThdlActionListener() {
             public void theRealActionPerformed(ActionEvent e) {
                 toTranslit(true);
@@ -497,6 +518,7 @@ public class Jskad extends JPanel implements DocumentListener {
         toolsMenu.add(convertSelectionMenu);
 
         JMenuItem TMWACIPItem = new JMenuItem("Convert Tibetan Machine Web (non-Unicode) to ACIP");
+        TMWACIPItem.setMnemonic ( 'W' ) ; 
         TMWACIPItem.addActionListener(new ThdlActionListener() {
             public void theRealActionPerformed(ActionEvent e) {
                 toTranslit(false);
@@ -505,6 +527,7 @@ public class Jskad extends JPanel implements DocumentListener {
         convertSelectionMenu.add(TMWACIPItem);
 
         JMenuItem wylieTMWItem = new JMenuItem("Convert Wylie to Tibetan Machine Web (non-Unicode) (no warnings)");
+        wylieTMWItem.setMnemonic ( 'M' ) ;
         wylieTMWItem.addActionListener(new ThdlActionListener() {
             public void theRealActionPerformed(ActionEvent e) {
                 toTibetan(false, false);
@@ -709,6 +732,7 @@ public class Jskad extends JPanel implements DocumentListener {
         menuBar.add(toolsMenu);
 
         JMenu helpMenu = new JMenu("Help");
+        helpMenu.setMnemonic ( 'H' ) ;
 
         {
             JMenuItem helpItem = new JMenuItem("Help...");
@@ -732,6 +756,7 @@ public class Jskad extends JPanel implements DocumentListener {
 
         {
             JMenuItem helpItem = new JMenuItem("Jskad on the Web...");
+            helpItem.setMnemonic ( 'J' ) ;
             helpItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
                         CalHTMLPane onlineHelpPane = new CalHTMLPane();
@@ -772,6 +797,7 @@ public class Jskad extends JPanel implements DocumentListener {
 
         {
             JMenuItem aboutItem = new JMenuItem("About...");
+            aboutItem.setMnemonic ( 'A' ) ;
             aboutItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
                         JOptionPane.showMessageDialog(Jskad.this,
