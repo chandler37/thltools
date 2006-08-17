@@ -42,8 +42,11 @@ import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.ButtonGroup;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 import java.beans.PropertyChangeListener ;
 import java.beans.PropertyChangeEvent ;
+import java.io.File;
 
 import org.thdl.tib.input.DictionaryLoadState ;
 
@@ -77,13 +80,10 @@ public class PreferenceWindow implements ActionListener, ItemListener
    		GraphicsEnvironment genv = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		String[] fontNames = genv.getAvailableFontFamilyNames();
 
-		// TODO
 		valDictionaryEnabled = dp.getDictionarySettingsEnabled () ;
 		valDictionaryLocal = dp.getDictionarySettingsLocal () ;
 		valDictionaryPath = dp.getDictionarySettingsPath () ;
 
-        //dp.getDictionarySettings ( valDictionaryEnabled, valDictionaryLocal, valDictionaryPath ) ;
-        
 
 		JPanel tibetanPanel;
 
@@ -338,7 +338,7 @@ public class PreferenceWindow implements ActionListener, ItemListener
 		}
 		else if ( e.getActionCommand() == "BrowseDictionaryPath" )
 		{
-			//TODO
+            browseDictionaryPath () ;			
 		}
 	}
 
@@ -365,8 +365,87 @@ public class PreferenceWindow implements ActionListener, ItemListener
 		dialog.show();
     }
 
+	private final String LOCAL_DICTIONARY_EXTENSION = ".dic" ;
+
+    protected void browseDictionaryPath ()
+    {
+        //
+        // TODO - JFileChooser takes long to instantiate, 
+        // put instance in GlobalResourceHolder and 
+        // init it in a separate thread (same with dictionary)
+        //
+        JFileChooser fc = new JFileChooser ()
+        {
+			public String getName ( File f )
+			{
+				if ( f.isDirectory () )
+					return super.getName ( f ) ;
+
+				String fileName = f.getName () ;
+				return fileName.substring ( 0, fileName.lastIndexOf ( LOCAL_DICTIONARY_EXTENSION ) ) ;
+			}
+        } ;
+
+		//
+		// a simple file filter that will make sure the remaining two files (other than the FILE.dic)
+		// are present.
+		//
+		FileFilter ff = new FileFilter ()
+		{
+			public boolean accept ( File f )
+			{
+				//
+				// a directory is always good
+				//
+				if ( f.isDirectory () )
+					return true ;
+
+				//
+				// the extension must be .dic
+				//
+				if ( ! f.getAbsolutePath ().endsWith ( LOCAL_DICTIONARY_EXTENSION ) )
+					return false ;
+
+				//
+				// we know the .dic file exists, we need to make sure the accompanying .wrd and .def
+				// exists too
+				//
+				String fileNameDic = f.getAbsolutePath () ;
+				String fileNameDef = fileNameDic.replace ( LOCAL_DICTIONARY_EXTENSION, ".def" ) ;
+				String fileNameWrd = fileNameDic.replace ( LOCAL_DICTIONARY_EXTENSION, ".wrd" ) ;
+				File fileDef = new File ( fileNameDef ) ;
+				File fileWrd = new File ( fileNameWrd ) ;
+
+				if ( ! fileDef.exists () )
+					return false ;
+
+				if ( ! fileWrd.exists () )
+					return false ;
+
+				return true ;
+			}
+
+			public String getDescription ()
+			{
+				return "Dictionary Files (*" + LOCAL_DICTIONARY_EXTENSION + ")" ;
+			}
+		};
+
+		fc.setAcceptAllFileFilterUsed ( false ) ;
+		fc.setFileFilter ( ff ) ;
+
+        fc.setCurrentDirectory ( new File ( valDictionaryPath ).getParentFile () ) ;
+        if ( JFileChooser.APPROVE_OPTION == fc.showOpenDialog ( pane ) )
+        {
+			String newDictionaryPath = fc.getSelectedFile ().toString () ;
+			valDictionaryPath = newDictionaryPath.substring ( 0, newDictionaryPath.lastIndexOf ( LOCAL_DICTIONARY_EXTENSION ) ) ; ;
+
+			updateDictionaryGui () ;
+        }
+    }
+
 	/**
-	 * 
+	 * validateInput
 	 */
 	protected boolean validateInput ()
 	{   		
@@ -419,7 +498,9 @@ public class PreferenceWindow implements ActionListener, ItemListener
 
 
     /**
-     *
+     * ask
+	 * 
+	 * shows a confirmation dialog
      */
     protected boolean ask ( String question )
     {
