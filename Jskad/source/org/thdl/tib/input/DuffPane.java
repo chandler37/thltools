@@ -2135,7 +2135,6 @@ public void paste(int offset)
 
 		JToolBar toolbar = null ;
 		
-		System.out.println ( parent.toString () ) ;
 		for ( int child = 0; child < parent.getComponentCount (); child++ )
 		{
 			if ( parent.getComponent ( child ) instanceof JToolBar )

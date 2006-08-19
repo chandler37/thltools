@@ -61,7 +61,6 @@ public class GlobalResourceHolder
 		{
 			if ( null == GlobalResourceHolder.settingsServiceProvider )
 				return ;
-
 			if ( DICTIONARY_SETTINGS == setting )
 			{			
 				//
@@ -188,7 +187,7 @@ public class GlobalResourceHolder
 			    System.err.println ( "TibetanScanner.loadDictionaryScanner () --> " + e.toString () ) ;
                 dictionaryLoadState = DictionaryLoadState.ERROR ;
 		    }
-        }
+        }		
 
 		return ts ;
 	}
