@@ -22,18 +22,18 @@ public class DictionarySettings
 
 	public DictionarySettings ( boolean valid, boolean enabled, boolean local, String pathOrUrl )
 	{
-		boolean dictionaryValid = valid ;
-		boolean dictionaryEnabled = enabled ;
-		boolean dictionaryLocal = local ;
-		String dictionaryPath = pathOrUrl ;
+		dictionaryValid = valid ;
+		dictionaryEnabled = enabled ;
+		dictionaryLocal = local ;
+		dictionaryPath = pathOrUrl ;
 	}
 
 	public DictionarySettings ( boolean enabled, boolean local, String pathOrUrl )
 	{
-		boolean dictionaryValid = true ;
-		boolean dictionaryEnabled = enabled ;
-		boolean dictionaryLocal = local ;
-		String dictionaryPath = pathOrUrl ;
+		dictionaryValid = true ;
+		dictionaryEnabled = enabled ;
+		dictionaryLocal = local ;
+		dictionaryPath = pathOrUrl ;
 	}
 
 	public boolean equal ( DictionarySettings ds )
