@@ -85,7 +85,6 @@ import org.thdl.tib.input.SettingsServiceProvider;
 import org.thdl.tib.input.DictionaryLoadState;
 import java.util.Observable ;
 import org.thdl.tib.input.GlobalResourceHolder ;
-import org.thdl.tib.input.SettingsChangeListener ;
 
 
 /**
@@ -1958,22 +1957,15 @@ public void paste(int offset)
     public void onDictionarySettingsChanged ()
     {
 		GlobalResourceHolder.getListener ().update ( getObservable (), 
-                (Object)new Integer ( SettingsChangeListener.DICTIONARY_SETTINGS ) ) ;
+                (Object)new Integer ( GlobalResourceHolder.Listener.DICTIONARY_SETTINGS ) ) ;
 
 		if ( null == buttonToggleDict || null == buttonLookupDict )
 			return ;
 
-		if ( GlobalResourceHolder.isDictionaryValid () &&
-             GlobalResourceHolder.isDictionaryEnabled () )
-		{
-			buttonToggleDict.setEnabled ( true ) ;
-			buttonLookupDict.setEnabled ( true ) ;
-		}
-		else
-		{
-			buttonToggleDict.setEnabled ( false ) ;
-			buttonLookupDict.setEnabled ( false ) ;
-		}
+		boolean enableDictionaryButtons = GlobalResourceHolder.getDictionarySettings ().isValid () && 
+										  GlobalResourceHolder.getDictionarySettings ().isEnabled () ;
+		buttonToggleDict.setEnabled ( enableDictionaryButtons ) ;
+		buttonLookupDict.setEnabled ( enableDictionaryButtons ) ;
 
     }
     
@@ -2177,8 +2169,10 @@ public void paste(int offset)
             
 			toolbar.add ( buttonLookupDict ) ;
 
-			buttonToggleDict.setEnabled ( GlobalResourceHolder.isDictionaryValid () && GlobalResourceHolder.isDictionaryEnabled () ) ;
-			buttonLookupDict.setEnabled ( GlobalResourceHolder.isDictionaryValid () && GlobalResourceHolder.isDictionaryEnabled () ) ;
+			boolean enableDictionaryButtons = GlobalResourceHolder.getDictionarySettings ().isValid () && 
+											  GlobalResourceHolder.getDictionarySettings ().isEnabled () ;
+			buttonToggleDict.setEnabled ( enableDictionaryButtons ) ;
+			buttonLookupDict.setEnabled ( enableDictionaryButtons ) ;
 		}
 	}
 

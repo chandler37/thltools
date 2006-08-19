@@ -10,9 +10,9 @@ import org.thdl.tib.scanner.LocalTibetanScanner ;
 import org.thdl.tib.scanner.RemoteTibetanScanner ;
 import org.thdl.tib.scanner.Word ;
 
-import org.thdl.tib.input.SettingsChangeListener ;
 import org.thdl.tib.input.SettingsServiceProvider ;
 import org.thdl.tib.input.DictionaryLoadState ;
+import org.thdl.tib.input.DictionarySettings ;
 
 import java.awt.GraphicsEnvironment ;
 import java.awt.Font ;
@@ -35,18 +35,16 @@ public class GlobalResourceHolder
 	private static TibetanScanner tibetanScanner = null ;
 	private static SettingsServiceProvider settingsServiceProvider ;
 
-	private static boolean dictionaryValid = false ;
-	private static boolean dictionaryEnabled = false ;
-	private static boolean dictionaryLocal = false ;
-	private static String dictionaryPath = "" ;
+	private static DictionarySettings dictionarySettings = null ;
     
     private static int dictionaryLoadState = DictionaryLoadState.UNDEFINED ;
     private static Object dictionaryLoadLock = null ;
 
-	//static class Listener implements SettingsChangeListener
 	static class Listener implements Observer
 	{
-        /**
+		public static final int DICTIONARY_SETTINGS = 1 ;
+
+		/**
          * update
          * 
          */
@@ -64,7 +62,7 @@ public class GlobalResourceHolder
 			if ( null == GlobalResourceHolder.settingsServiceProvider )
 				return ;
 
-			if ( SettingsChangeListener.DICTIONARY_SETTINGS == setting )
+			if ( DICTIONARY_SETTINGS == setting )
 			{			
 				//
 				// compare with the current settings
@@ -76,16 +74,13 @@ public class GlobalResourceHolder
 				String newDictionaryPath = GlobalResourceHolder.
                     settingsServiceProvider.getDictionarySettingsPath () ;
 
+				DictionarySettings newSettings = new DictionarySettings ( newDictionaryEnabled, 
+																		  newDictionaryLocal, 
+																		  newDictionaryPath ) ;
 
-				if ( newDictionaryEnabled != GlobalResourceHolder.dictionaryEnabled ||
-					 newDictionaryLocal != GlobalResourceHolder.dictionaryLocal ||
-					 ! newDictionaryPath.equals ( GlobalResourceHolder.dictionaryPath ) )
+				if ( ! newSettings.equal ( GlobalResourceHolder.dictionarySettings ) )
 				{
-					GlobalResourceHolder.dictionaryEnabled = newDictionaryEnabled ;
-					GlobalResourceHolder.dictionaryLocal = newDictionaryLocal ;
-					GlobalResourceHolder.dictionaryPath = newDictionaryPath ;
-
-
+					GlobalResourceHolder.dictionarySettings.set ( newSettings ) ;
 					GlobalResourceHolder.tibetanScanner = GlobalResourceHolder.loadDictionaryScanner () ;
 				}
 			}
@@ -96,7 +91,7 @@ public class GlobalResourceHolder
     
 	static
     {
-		listenerObj = new Listener () ;
+		listenerObj = new Listener () ;		
 
 		//
 		// we have no service provider until the client class is born
@@ -123,11 +118,7 @@ public class GlobalResourceHolder
         //
 		tibetanScanner = null ;
 
-		dictionaryValid = false ;
-		dictionaryEnabled = false ;
-		dictionaryLocal = false ;
-		dictionaryPath = "" ;
-
+		dictionarySettings = new DictionarySettings () ;
         dictionaryLoadLock = new Object () ;
     }
 
@@ -160,21 +151,18 @@ public class GlobalResourceHolder
         }
     }
 
-    
-
-	/*
+	/**
 	 * loadDictionaryScanner
 	 * 
 	 */
 	protected static TibetanScanner loadDictionaryScanner ()
-	{	
-		//return new LocalTibetanScanner ( "F:/tmp/free/free" ) ;		
+	{
 		TibetanScanner ts = null ;
 
-		if ( ! dictionaryEnabled )
+		if ( ! dictionarySettings.isEnabled () )
 			return null ;
 
-		dictionaryValid = false ;
+		dictionarySettings.setValid ( false ) ;
 
         synchronized ( dictionaryLoadLock )
         {
@@ -182,15 +170,15 @@ public class GlobalResourceHolder
 
 		    try
 		    {
-			    if ( dictionaryLocal )
+			    if ( dictionarySettings.isLocal () )
 			    {
-				    ts = new LocalTibetanScanner ( dictionaryPath ) ;			
-				    dictionaryValid = true ;
+				    ts = new LocalTibetanScanner ( dictionarySettings.getPathOrUrl () ) ;			
+				    dictionarySettings.setValid ( true ) ;
 			    }
 			    else
 			    {
-				    ts = new RemoteTibetanScanner ( dictionaryPath ) ;
-				    dictionaryValid = true ;
+				    ts = new RemoteTibetanScanner ( dictionarySettings.getPathOrUrl () ) ;
+				    dictionarySettings.setValid ( true ) ;
 			    }
 
                 dictionaryLoadState = DictionaryLoadState.READY ;
@@ -395,17 +383,8 @@ public class GlobalResourceHolder
 	/**
 	 * 
 	 */
-	public static boolean isDictionaryValid ()
+	public static DictionarySettings getDictionarySettings ()
 	{
-		return dictionaryValid ;
-	}
-    
-	/**
-	 * 
-	 */
-	public static boolean isDictionaryEnabled ()
-	{
-		return dictionaryEnabled ;
-	}
-    
+		return dictionarySettings ;
+	}    
 };
