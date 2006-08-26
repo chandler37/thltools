@@ -85,6 +85,10 @@ import org.thdl.tib.input.SettingsServiceProvider;
 import org.thdl.tib.input.DictionaryLoadState;
 import java.util.Observable ;
 import org.thdl.tib.input.GlobalResourceHolder ;
+import org.thdl.tib.dictionary.TextBody ;
+import org.thdl.tib.dictionary.SimpleTextBody ;
+import org.thdl.tib.dictionary.DictionaryEntries ;
+import org.thdl.tib.dictionary.DictionaryInterface ;
 
 
 /**
@@ -2048,45 +2052,19 @@ public void paste(int offset)
 		//
 		// collect the text the good way
 		//
+
 		boolean [] noSuch = new boolean [] { false } ;
 		word = doc.getWylie ( startPos, endPos+1, noSuch ) ;
-		word = word.replaceAll ( "[\\/\\_\\*]", " " ) ;
+		
+		TextBody tb = SimpleTextBody.fromWylie ( word ) ;
+		DictionaryInterface dict = GlobalResourceHolder.getDictionary () ;
+		DictionaryEntries entries = dict.lookup ( tb ) ;
 
-        //
-        // show dictionary data
-        //
-		if ( word.length () > 0 )
-		{
-			try
-			{
-				dictFrame.reset () ;
-				dictFrame.setOriginal ( word, doc, startPos, endPos ) ;
-				dictFrame.setPronounciation ( pronounciation.process ( word ) ) ;
-			}
-			catch ( Exception e )
-			{
-				// TODO
-			}
-        
-            TibetanScanner scanner = GlobalResourceHolder.getTibetanScanner () ;
-            if ( null != scanner )
-            {
-			    scanner.scanBody ( word ) ;
-			    scanner.finishUp () ;
-			    Word [] words = scanner.getWordArray () ;
-			    for ( int i = 0; i < words.length ; i++ )
-			    {            
-				    dictFrame.addDescription ( words [i].toString () ) ;
-			    }
-                
-			    scanner.clearTokens () ;
-
-                dictFrame.setVisible ( true ) ;
-                dictFrame.requestFocusInWindow () ;
-
-                dictFrame.gotoList () ;
-            }
-		}
+		dictFrame.reset () ;
+        dictFrame.setData ( entries, doc, startPos, endPos  ) ;
+		dictFrame.setVisible ( true ) ;
+		dictFrame.requestFocusInWindow () ;
+		dictFrame.gotoList () ;
 	}
 
     private void initDictionarySupport ( Object frame )

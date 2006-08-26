@@ -18,6 +18,13 @@ import javax.swing.event.ListSelectionListener ;
 import javax.swing.event.ListSelectionEvent ;
 import java.util.concurrent.locks.ReentrantLock ;
 import java.text.StringCharacterIterator ;
+import org.thdl.tib.dictionary.TextBody ;
+import org.thdl.tib.dictionary.DictionaryEntry ;
+import org.thdl.tib.dictionary.DictionaryEntries ;
+import org.thdl.tib.dictionary.DictionaryEntryDefinition ;
+import org.thdl.tib.dictionary.DictionaryEntryDefinitions ;
+import org.thdl.tib.dictionary.Phonetics ;
+import java.util.Iterator ;
 
 class DictionaryFrame extends JFrame implements ListSelectionListener
 {
@@ -270,7 +277,7 @@ class DictionaryFrame extends JFrame implements ListSelectionListener
 	 * @param startPos 
      * @param endPos - location of the text in the actual document being edited
 	 */
-	public void setOriginal ( String text, DefaultStyledDocument realDoc, int startPos, int endPos )
+	private void setOriginal ( String text, DefaultStyledDocument realDoc, int startPos, int endPos )
 	{
 		AbstractDocument doc = (AbstractDocument)original.getDocument () ;
 
@@ -305,7 +312,7 @@ class DictionaryFrame extends JFrame implements ListSelectionListener
 	/**
 	 * set the pronounciation field
 	 */
-	public void setPronounciation ( String text )
+	private void setPronounciation ( String text )
 	{
 		//
 		// set the pronounciation field
@@ -318,19 +325,19 @@ class DictionaryFrame extends JFrame implements ListSelectionListener
      *
      * @param text - description as retrieved form TibetanScanner derived objs
 	 */
-	public void addDescription ( String text )
+	private void addDescription ( String key, String desc )
 	{
 		//
 		// add the keyword to entryList. we assume the keyword is anything in the
 		// dictionary entry that precedes the first dash
 		//
 
-        text = handleSanskrit ( text ) ;
+		desc = handleSanskrit ( desc ) ;
 
-        listLock.lock () ;
+		listLock.lock () ;
 
-        try
-        {        
+		try
+		{        
 			Document doc = description.getDocument () ;
 
 			try
@@ -342,9 +349,8 @@ class DictionaryFrame extends JFrame implements ListSelectionListener
 					len = doc.getLength () ;
 				}
 
-				int dashIndex = text.indexOf ( "-" ) ;
-				String keyword = text.substring ( 0, dashIndex - 1 ) ;
-				String entry = text.substring ( dashIndex + 1 ) ;
+				String keyword = key ;
+				String entry = desc ;
 
 				//
 				// add keyword to the list box
@@ -358,7 +364,7 @@ class DictionaryFrame extends JFrame implements ListSelectionListener
 				//
 				// add entry to the list box
 				//
-				doc.insertString ( len, keyword, attrSet ) ;
+				doc.insertString ( len, keyword + "\n" , attrSet ) ;
 				len = doc.getLength () ;
 
 				StyleConstants.setBold ( attrSet, true ) ;
@@ -368,13 +374,12 @@ class DictionaryFrame extends JFrame implements ListSelectionListener
 			catch ( Exception e )
 			{
 			}
-        }
-        finally
-        {
-            listLock.unlock () ;
-        }
+		}
+		finally
+		{
+			listLock.unlock () ;
+		}
 	}
-
 	/**
 	 * called when entryList selection changes
 	 */
@@ -417,6 +422,50 @@ class DictionaryFrame extends JFrame implements ListSelectionListener
         {
             listLock.unlock () ;
         }        
+	}
+
+    /**
+     * setData
+     *
+     */
+    public void setData ( DictionaryEntries de, DefaultStyledDocument doc, int startPos, int endPos )
+    {
+        // TODO
+
+		String originalText = "" ;
+		String pronounciationText = "" ;
+
+		Iterator it = de.iterator () ;
+
+		while ( it.hasNext () )
+		{
+			DictionaryEntry entry = (DictionaryEntry)it.next () ;
+
+			if ( originalText.length () > 0 )
+				originalText += " " ;
+			if ( pronounciationText.length () > 0 )
+				pronounciationText += " " ;
+
+			originalText += entry.getKeyword ().getWylie () ;
+			pronounciationText += Phonetics.standardToLocalized ( Phonetics.THDL_ENGLISH, entry.getPhonetic () ) ;
+
+			String desc = entry.getKeyword () + "\n" ;
+
+			String defString = "" ;
+			DictionaryEntryDefinitions defs = entry.getDefinitions () ;
+			Iterator defIt = defs.iterator () ;
+			while ( defIt.hasNext () )
+			{
+				DictionaryEntryDefinition def = (DictionaryEntryDefinition) defIt.next () ;
+				defString += def.toString () ;
+				defString += "\n" ;
+			}
+
+			addDescription ( entry.getKeyword ().getWylie (), defString ) ;
+		}
+
+		setOriginal ( originalText, doc, startPos, endPos ) ;
+		setPronounciation ( pronounciationText ) ;
 	}
 
     /**
@@ -569,6 +618,7 @@ class DictionaryFrame extends JFrame implements ListSelectionListener
             word = word.replaceAll ( "R", "r\u0323" ) ;
             word = word.replaceAll ( "L", "l\u0323" ) ;
             word = word.replaceAll ( "z", "s\u0301" ) ;
+            word = word.replaceAll ( "G", "s\u0303" ) ;
         }
 
         return word ;

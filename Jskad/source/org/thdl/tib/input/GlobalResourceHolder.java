@@ -13,6 +13,8 @@ import org.thdl.tib.scanner.Word ;
 import org.thdl.tib.input.SettingsServiceProvider ;
 import org.thdl.tib.input.DictionaryLoadState ;
 import org.thdl.tib.input.DictionarySettings ;
+import org.thdl.tib.dictionary.DictionaryInterface ;
+import org.thdl.tib.dictionary.ScannerBasedDictionary ;
 
 import java.awt.GraphicsEnvironment ;
 import java.awt.Font ;
@@ -32,13 +34,14 @@ public class GlobalResourceHolder
 	private static Font baseTMWFont [] = null ;
 	private static Font derivedTMWFont [] = null ;
 	private static HashMap nameToNumber = null ;
-	private static TibetanScanner tibetanScanner = null ;
 	private static SettingsServiceProvider settingsServiceProvider ;
 
 	private static DictionarySettings dictionarySettings = null ;
     
     private static int dictionaryLoadState = DictionaryLoadState.UNDEFINED ;
     private static Object dictionaryLoadLock = null ;
+
+    private static DictionaryInterface dictionary = null ;
 
 	static class Listener implements Observer
 	{
@@ -80,7 +83,7 @@ public class GlobalResourceHolder
 				if ( ! newSettings.equal ( GlobalResourceHolder.dictionarySettings ) )
 				{
 					GlobalResourceHolder.dictionarySettings.set ( newSettings ) ;
-					GlobalResourceHolder.tibetanScanner = GlobalResourceHolder.loadDictionaryScanner () ;
+                    GlobalResourceHolder.dictionary = GlobalResourceHolder.loadDictionary () ;
 				}
 			}
 		}
@@ -115,8 +118,6 @@ public class GlobalResourceHolder
         //
         // initialize the dictionary stuff
         //
-		tibetanScanner = null ;
-
 		dictionarySettings = new DictionarySettings () ;
         dictionaryLoadLock = new Object () ;
     }
@@ -150,13 +151,22 @@ public class GlobalResourceHolder
         }
     }
 
-	/**
-	 * loadDictionaryScanner
-	 * 
-	 */
-	protected static TibetanScanner loadDictionaryScanner ()
-	{
-		TibetanScanner ts = null ;
+    /**
+     *
+     *
+     */
+    public static DictionaryInterface getDictionary ()
+    {
+        return dictionary ;
+    }
+
+    /**
+     * loadDictionary
+     *
+     */
+    protected static DictionaryInterface loadDictionary ()
+    {
+        DictionaryInterface d = null ;
 
 		if ( ! dictionarySettings.isEnabled () )
 			return null ;
@@ -171,12 +181,12 @@ public class GlobalResourceHolder
 		    {
 			    if ( dictionarySettings.isLocal () )
 			    {
-				    ts = new LocalTibetanScanner ( dictionarySettings.getPathOrUrl () ) ;			
+				    d = new ScannerBasedDictionary ( new LocalTibetanScanner ( dictionarySettings.getPathOrUrl () ) ) ;			
 				    dictionarySettings.setValid ( true ) ;
 			    }
 			    else
 			    {
-				    ts = new RemoteTibetanScanner ( dictionarySettings.getPathOrUrl () ) ;
+				    d = new ScannerBasedDictionary ( new RemoteTibetanScanner ( dictionarySettings.getPathOrUrl () ) ) ;
 				    dictionarySettings.setValid ( true ) ;
 			    }
 
@@ -189,8 +199,8 @@ public class GlobalResourceHolder
 		    }
         }		
 
-		return ts ;
-	}
+		return d ;
+    }
 
     /*
      * isTMWInstalled ()
@@ -348,16 +358,6 @@ public class GlobalResourceHolder
     public static boolean isUsingLocalFonts ()
     {
         return flagIsUsingLocalFonts ;
-    }
-
-    /*
-     * getTibetanScanner ()
-     *
-     * returns the dictionary scanner object or null
-     */
-    public static TibetanScanner getTibetanScanner ()
-    {
-        return tibetanScanner ;
     }
 
 	/**
