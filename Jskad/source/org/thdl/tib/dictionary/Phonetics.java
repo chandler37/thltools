@@ -43,7 +43,7 @@ public class Phonetics
 			in = in.replaceAll ( "T", "t" ) ;
 			in = in.replaceAll ( "X", "ts" ) ;
 			in = in.replaceAll ( "Q", "ts" ) ;
-			in = in.replaceAll ( "Z", "zh" ) ;
+			in = in.replaceAll ( "Z", "sh" ) ;
 			in = in.replaceAll ( "c", "ch" ) ;
 			in = in.replaceAll ( "C", "ch" ) ;
 		}
