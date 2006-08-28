@@ -20,6 +20,13 @@ package org.thdl.tib.text;
 
 import javax.swing.text.ViewFactory;
 import javax.swing.text.rtf.RTFEditorKit;
+import javax.swing.text.DefaultEditorKit ;
+import javax.swing.Action ;
+import javax.swing.text.TextAction ;
+import javax.swing.text.JTextComponent ;
+import javax.swing.text.BadLocationException ;
+import java.awt.event.ActionEvent ;
+import org.thdl.tib.text.TibetanMachineWeb ;
 
 /** An EditorKit that is cognizant of the line-wrapping rules for
  *  Tibetan text.  That is, this class knows about the tsheg and other
@@ -42,4 +49,139 @@ public class TibetanRTFEditorKit extends RTFEditorKit {
         }
         return f;
     }
+
+    class TmwNextWordAction extends TextAction
+    {
+        boolean selecting = false ;
+
+        public TmwNextWordAction ( String actionName, boolean select )
+        {
+            super ( actionName ) ;
+            selecting = select ;
+        }
+                    
+        public void actionPerformed ( ActionEvent e )
+		{
+            JTextComponent target = getTextComponent ( e ) ;
+			int offset = target.getCaretPosition () ;
+            offset = findNextBreakable ( target, offset ) ;
+            if ( -1 != offset )
+            {
+                if ( !selecting )
+                    target.setCaretPosition ( offset + 1 ) ;
+                else
+			        target.moveCaretPosition ( offset + 1 ) ;
+            }
+		}
+    }
+
+    class TmwPrevWordAction extends TextAction
+    {
+        boolean selecting = false ;
+
+        public TmwPrevWordAction ( String actionName, boolean select )
+        {
+            super ( actionName ) ;
+            selecting = select ;
+        }
+
+        public void actionPerformed ( ActionEvent e )
+        {
+            JTextComponent target = getTextComponent ( e ) ;
+			int offset = target.getCaretPosition () ;
+            offset = findPrevBreakable ( target, offset ) ;
+            if ( -1 != offset )
+            {
+                if ( !selecting )
+                    target.setCaretPosition ( offset ) ;
+                else
+			        target.moveCaretPosition ( offset ) ;
+            }		
+        }
+    }
+    
+    public Action [] getActions ()
+    {
+	    Action [] actions = super.getActions () ;
+	
+	    for ( int i = 0; i < actions.length; i++ )
+	    {
+            String actionName = (String)actions [i].getValue ( Action.NAME ) ;
+            boolean select = false ;
+
+	        if ( actionName.equals ( DefaultEditorKit.nextWordAction ) || 
+                 ( select = actionName.equals ( DefaultEditorKit.selectionNextWordAction ) ) )
+	        {
+                actions [i] = new TmwNextWordAction ( actionName, select ) ;
+	        }
+            else if ( actionName.equals ( DefaultEditorKit.previousWordAction ) || 
+                      ( select = actionName.equals ( DefaultEditorKit.selectionPreviousWordAction ) ) )
+            {
+		        actions [i] = new TmwPrevWordAction ( actionName, select ) ;
+            }
+	    }
+	
+	    return actions ;
+    }
+
+    private static int findNextBreakable ( JTextComponent target, int offset )
+    {
+        int lastOffset = target.getDocument ().getLength () - 1 ;
+        
+        try
+        {
+            char curChar ;
+            do
+            {
+                curChar = target.getText ( offset++, 1 ).charAt ( 0 ) ;
+            }
+            while ( TibetanMachineWeb.isTMWFontCharBreakable ( curChar ) && offset <= lastOffset ) ;
+            
+            while ( offset <= lastOffset )
+            {
+                curChar = target.getText ( offset, 1 ).charAt ( 0 ) ;
+                if ( TibetanMachineWeb.isTMWFontCharBreakable ( curChar ) )
+                    return offset ;
+
+                offset++ ;
+            }
+        }
+        catch ( BadLocationException e )
+        {
+            lastOffset = -1 ;
+        }
+
+        return lastOffset ;
+    }
+
+    private static int findPrevBreakable ( JTextComponent target, int offset )
+    {
+        int lastOffset = target.getDocument ().getLength () ;
+        
+        try
+        {
+            char curChar ;
+            do
+            {
+                curChar = target.getText ( offset--, 1 ).charAt ( 0 ) ;
+            }
+            while ( TibetanMachineWeb.isTMWFontCharBreakable ( curChar ) && offset >= 0 ) ;
+
+            while ( offset >= 0 )
+            {
+                curChar = target.getText ( offset, 1 ).charAt ( 0 ) ;
+                if ( TibetanMachineWeb.isTMWFontCharBreakable ( curChar ) )
+                    return offset ;
+
+                offset-- ;
+            }
+        }
+        catch ( BadLocationException e )
+        {
+            lastOffset = -1 ;
+        }
+
+        return lastOffset ;
+    }
 }
+
