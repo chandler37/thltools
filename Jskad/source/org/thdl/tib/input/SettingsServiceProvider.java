@@ -26,9 +26,12 @@ import java.util.Observable ;
 * @author Edward Garrett, Tibetan and Himalayan Digital Library */
 public interface SettingsServiceProvider 
 {
+    /*
 	boolean getDictionarySettingsEnabled () ;
 	boolean getDictionarySettingsLocal () ;
 	String getDictionarySettingsPath () ;
+    */
 
+    DictionarySettings getDictionarySettings () ;
     Observable getObservable () ;
 } // interface SettingsServiceProvider

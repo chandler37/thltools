@@ -14,10 +14,10 @@ public class DictionarySettings
 
 	public DictionarySettings ()
 	{
-		boolean dictionaryValid = false ;
-		boolean dictionaryEnabled = false ;
-		boolean dictionaryLocal = false ;
-		String dictionaryPath = "" ;
+		dictionaryValid = false ;
+		dictionaryEnabled = false ;
+		dictionaryLocal = false ;
+		dictionaryPath = "" ;
 	}
 
 	public DictionarySettings ( boolean valid, boolean enabled, boolean local, String pathOrUrl )
@@ -35,6 +35,14 @@ public class DictionarySettings
 		dictionaryLocal = local ;
 		dictionaryPath = pathOrUrl ;
 	}
+
+    public static DictionarySettings cloneDs  ( DictionarySettings ds )
+    {
+        return new DictionarySettings ( ds.dictionaryValid, 
+                                        ds.dictionaryEnabled,
+                                        ds.dictionaryLocal,
+                                        ds.dictionaryPath ) ;
+    }
 
 	public boolean equal ( DictionarySettings ds )
 	{

@@ -252,9 +252,10 @@ public class DuffPane extends TibetanPane
 * The current dictionary information
 * @TODO these three fields should be one class
 */
-    private boolean dictionaryEnabled = false ;
-    private boolean dictionaryLocal = false ;
-    private String dictionaryPath ;
+    //private boolean dictionaryEnabled = false ;
+    //private boolean dictionaryLocal = false ;
+    //private String dictionaryPath ;
+    private DictionarySettings dictionarySettings = null ;
     
     private Hashtable actions;
 
@@ -448,9 +449,9 @@ public class DuffPane extends TibetanPane
                                                       "Serif");
         romanFontSize = defaultRomanFontSize();
 
-        dictionaryEnabled = defaultDictionarySettingsEnabled () ;
-        dictionaryLocal = defaultDictionarySettingsLocal () ;
-        dictionaryPath = defaultDictionarySettingsPath () ;
+        dictionarySettings = new DictionarySettings ( defaultDictionarySettingsEnabled (),
+                                                      defaultDictionarySettingsLocal (),
+                                                      defaultDictionarySettingsPath () ) ;
         onDictionarySettingsChanged () ;
 
         newDocument();
@@ -835,19 +836,9 @@ public class DuffPane extends TibetanPane
 /**
  * //MP add comment
  */
-    public boolean getDictionarySettingsEnabled ()
+    public DictionarySettings getDictionarySettings ()
     {
-        return dictionaryEnabled ;
-    }
-
-    public boolean getDictionarySettingsLocal ()
-    {
-        return dictionaryLocal ;
-    }
-
-    public String getDictionarySettingsPath ()
-    {
-        return dictionaryPath ;
+        return dictionarySettings ;
     }
 
 /**
@@ -867,9 +858,9 @@ public class DuffPane extends TibetanPane
  */
     public void setDictionarySettings ( boolean enabled, boolean local, String path )
     {
-        dictionaryEnabled = enabled ;
-        dictionaryLocal = local ;
-        dictionaryPath = path ;
+        dictionarySettings.setEnabled ( enabled ) ;
+        dictionarySettings.setLocal ( local ) ;
+        dictionarySettings.setPathOrUrl ( path ) ;
 
         onDictionarySettingsChanged () ;
     }
@@ -1961,7 +1952,7 @@ public void paste(int offset)
     public void onDictionarySettingsChanged ()
     {
 		GlobalResourceHolder.getListener ().update ( getObservable (), 
-                (Object)new Integer ( GlobalResourceHolder.Listener.DICTIONARY_SETTINGS ) ) ;
+                dictionarySettings ) ;
 
 		if ( null == buttonToggleDict || null == buttonLookupDict )
 			return ;
@@ -2088,14 +2079,18 @@ public void paste(int offset)
 		                      {
 					               public void keyPressed ( KeyEvent ke )
 			                       {
-				                        if ( KeyEvent.VK_F12 == ke.getKeyCode () )
-				                        {
-					                         toggleDictionaryFrame () ;
-				                        }
-                                        else if ( KeyEvent.VK_F11 == ke.getKeyCode () )
-                                        {
-                                            lookupDictionary () ;
-                                        }
+                                       boolean dictEnabled = buttonLookupDict.isEnabled () &&
+                                                             buttonToggleDict.isEnabled () ;
+
+               
+				                       if ( dictEnabled && KeyEvent.VK_F12 == ke.getKeyCode () )
+				                       {
+					                        toggleDictionaryFrame () ;
+				                       }
+                                       else if ( dictEnabled && KeyEvent.VK_F11 == ke.getKeyCode () )
+                                       {
+                                           lookupDictionary () ;
+                                       }
 			                       }
 		                     }
 					   ) ;

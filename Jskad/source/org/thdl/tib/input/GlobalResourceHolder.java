@@ -53,32 +53,25 @@ public class GlobalResourceHolder
          */
         public void update ( Observable o, Object arg )
         {
-            onSettingsChange ( ((Integer)arg).intValue () ) ;
+            onSettingsChange ( arg ) ;
         }
         
 		/**
 		 * onSettingsChange
 		 * 
 		 */
-		public void onSettingsChange ( int setting )
+		public void onSettingsChange ( Object arg )
 		{
 			if ( null == GlobalResourceHolder.settingsServiceProvider )
 				return ;
-			if ( DICTIONARY_SETTINGS == setting )
+			if ( arg instanceof DictionarySettings )
 			{			
 				//
 				// compare with the current settings
 				//
-				boolean newDictionaryEnabled = GlobalResourceHolder.
-                    settingsServiceProvider.getDictionarySettingsEnabled () ;
-				boolean newDictionaryLocal = GlobalResourceHolder.
-                    settingsServiceProvider.getDictionarySettingsLocal () ;
-				String newDictionaryPath = GlobalResourceHolder.
-                    settingsServiceProvider.getDictionarySettingsPath () ;
-
-				DictionarySettings newSettings = new DictionarySettings ( newDictionaryEnabled, 
-																		  newDictionaryLocal, 
-																		  newDictionaryPath ) ;
+				DictionarySettings newSettings = 
+                    DictionarySettings.cloneDs ( GlobalResourceHolder.
+                    settingsServiceProvider.getDictionarySettings () ) ;
 
 				if ( ! newSettings.equal ( GlobalResourceHolder.dictionarySettings ) )
 				{

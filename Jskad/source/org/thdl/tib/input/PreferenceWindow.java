@@ -80,9 +80,10 @@ public class PreferenceWindow implements ActionListener, ItemListener
    		GraphicsEnvironment genv = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		String[] fontNames = genv.getAvailableFontFamilyNames();
 
-		valDictionaryEnabled = dp.getDictionarySettingsEnabled () ;
-		valDictionaryLocal = dp.getDictionarySettingsLocal () ;
-		valDictionaryPath = dp.getDictionarySettingsPath () ;
+        DictionarySettings ds = dp.getDictionarySettings () ;
+		valDictionaryEnabled = ds.isEnabled () ;
+		valDictionaryLocal = ds.isLocal () ;
+		valDictionaryPath = ds.getPathOrUrl () ;
 
 
 		JPanel tibetanPanel;
@@ -355,9 +356,10 @@ public class PreferenceWindow implements ActionListener, ItemListener
     /** This returns only when the user has closed the dialog */
     public void show()
     {
-		valDictionaryEnabled = dp.getDictionarySettingsEnabled () ;
-		valDictionaryLocal = dp.getDictionarySettingsLocal () ;
-		valDictionaryPath = dp.getDictionarySettingsPath () ;
+        DictionarySettings ds = dp.getDictionarySettings () ;
+		valDictionaryEnabled = ds.isEnabled () ;
+		valDictionaryLocal = ds.isLocal () ;
+		valDictionaryPath = ds.getPathOrUrl () ;
 		updateDictionaryGui () ;
         
         pane.setOptionType ( JOptionPane.OK_CANCEL_OPTION ) ;
