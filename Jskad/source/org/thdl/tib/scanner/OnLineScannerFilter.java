@@ -41,6 +41,7 @@ public class OnLineScannerFilter extends HttpServlet
 	private final static String propertyFile = "dictionary";
 	private final static String dictNameProperty = "onlinescannerfilter.dict-file-name";
 	private final static String otherLinksProperty = "onlinescannerfilter.links-to-other-stuff";
+	private final static String moreLinksProperty = "onlinescannerfilter.links-to-more-stuff";
 	private final static String clearStr = "Clear"; 
 	private final static String buttonStr = "button";
 	private final static String scriptStr = "script";
@@ -62,12 +63,12 @@ public class OnLineScannerFilter extends HttpServlet
 		}
 		catch (Exception e)
 		{
-			sl.writeLog("Crash\tOnLineScannerFilter");
+			sl.writeLog("1\t1");
 			sl.writeException(e);
 		}
 		
 		dictionaries = scanner.getDictionaryDescriptions();
-		sl.writeLog("Creation\tOnLineScannerFilter");
+		sl.writeLog("2\t1");
 	}
 	
 	synchronized public void doGet(HttpServletRequest request,
@@ -89,7 +90,7 @@ public class OnLineScannerFilter extends HttpServlet
 		}
 		catch (Exception e)
 		{
-			sl.writeLog("Crash\tOnLineScannerFilter");
+			sl.writeLog("1\t1");
 			sl.writeException(e);
 			return;
 		}
@@ -140,7 +141,7 @@ public class OnLineScannerFilter extends HttpServlet
 		
 		if (useTHDLBanner)
 		{
-			out.println("<script type=\"text/javascript\" src=\"/thdl/scripts/banner.js\"></script>");
+			out.println("<script type=\"text/javascript\" src=\"http://www.thdl.org/thdl/scripts/banner.js\"></script>");
 			out.println("<div id=\"sub_banner\">");
 			out.println("<div id=\"search\">");
 			out.println("  <form method=\"get\" action=\"http://www.google.com/u/thdl\">");
@@ -269,14 +270,22 @@ public class OnLineScannerFilter extends HttpServlet
 		
 		out.println("</textarea>");
 		out.println("</form>");
+		try
+		{
+			out.println(rb.getString(moreLinksProperty));
+		}
+		catch (MissingResourceException e)
+		{
+			// do nothing
+		}
 		
 		if (parrafo != null)
 		{
-			sl.writeLog("Translation\tOnLineScannerFilter");
+			sl.writeLog("4\t1");
 			if (ds!=null && !ds.isEmpty())
 				desglosar(parrafo, out, wantsTibetan);
 		}
-		else sl.writeLog("Invocation\tOnLineScannerFilter");
+		else sl.writeLog("3\t1");
 		
 		out.println(TibetanScanner.copyrightHTML);
 		if (useTHDLBanner) out.println("</div><!--END main-->");
@@ -386,7 +395,6 @@ public class OnLineScannerFilter extends HttpServlet
 		
 		if (words == null)
 			return;
-		
 		pw.println("<table border=\"1\" width=\"100%\">");
 		
 		for (j = 0; j < words.length; j++) {
@@ -438,7 +446,7 @@ public class OnLineScannerFilter extends HttpServlet
 					pw.println("  </tr>");
 				}
 			} catch (Exception e) {
-				sl.writeLog("Crash\tOnLineScannerFilter\t" + word.getWylie());
+				sl.writeLog("1\t1\t" + word.getWylie());
 				sl.writeException(e);
 			}
 			
@@ -450,7 +458,7 @@ public class OnLineScannerFilter extends HttpServlet
 	{
 		super.destroy();
 		sl.setUserIP(null);
-		sl.writeLog("Shutdown\tOnLineScannerFilter");
+		sl.writeLog("5\t1");
 		scanner.destroy();
 	}
 	

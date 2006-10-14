@@ -151,7 +151,7 @@ public class FileSyllableListTree implements SyllableListTree
 		        {
 		            // something is wrong
 		            ScannerLogger sl = new ScannerLogger();
-		            sl.writeLog("Crash\tFileSyllableListTree\t" + "size: " + fileSize + "; bytes: " + Integer.toHexString(pos));
+		            sl.writeLog("1\tFileSyllableListTree\t" + "size: " + fileSize + "; bytes: " + Integer.toHexString(pos));
 		            
 		            // try to open again, but not corrupting the file
 		            wordRaf = new RandomAccessFile(archivo + ".wrd", "r");

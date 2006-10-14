@@ -50,11 +50,11 @@ public class RemoteScannerFilter extends GenericServlet
 		}
 		catch (Exception e)
 		{
-		    sl.writeLog("Crash\tRemoteScannerFilter");
+		    sl.writeLog("1\t2");
 		    sl.writeException(e);
 		}		
 		ds = scanner.getDictionarySource();
-		sl.writeLog("Creation\tRemoteScannerFilter");
+		sl.writeLog("Creation\t2");
 	}
 
   	public void service(ServletRequest req, ServletResponse res) //throws ServletException, IOException
@@ -72,7 +72,7 @@ public class RemoteScannerFilter extends GenericServlet
 	    }
 		catch (Exception e)
 		{
-		    sl.writeLog("Crash\tRemoteScannerFilter");
+		    sl.writeLog("1\t2");
 		    sl.writeException(e);
 		    return;
 		}		
@@ -84,7 +84,7 @@ public class RemoteScannerFilter extends GenericServlet
   		{
   			if (dicts.equals("names"))
   			{
-  			    sl.writeLog("Invocation\tRemoteScannerFilter");
+  			    sl.writeLog("3\t2");
 				dicDescrip = scanner.getDictionaryDescriptions();
 				if (dicDescrip==null)
 				{
@@ -111,7 +111,7 @@ public class RemoteScannerFilter extends GenericServlet
   		}
 		catch (Exception e)
 		{
-		    sl.writeLog("Crash\tRemoteScannerFilter");
+		    sl.writeLog("1\t2");
 		    sl.writeException(e);
 		    return;
 		}		
@@ -120,7 +120,7 @@ public class RemoteScannerFilter extends GenericServlet
   		/*  FIXME: sometimes getDef raises a NullPointerException.
   		    In the meantime, I'll just keep it from crashing
   		*/
-  		sl.writeLog("Translation\tRemoteScannerFilter");
+  		sl.writeLog("4\t2");
   		
   		try
   		{
@@ -144,7 +144,7 @@ public class RemoteScannerFilter extends GenericServlet
 		}
 		catch (Exception e)
 		{
-		    sl.writeLog("Crash\tRemoteScannerFilter\t" + word.getWylie());
+		    sl.writeLog("1\t2\t" + word.getWylie());
 		    sl.writeException(e);
 		}
 
@@ -156,7 +156,7 @@ public class RemoteScannerFilter extends GenericServlet
 	{
 	    super.destroy();
 	    sl.setUserIP(null);
-	    sl.writeLog("Shutdown\tRemoteScannerFilter");
+	    sl.writeLog("5\t2");
 	    scanner.destroy();
 	}
 }
