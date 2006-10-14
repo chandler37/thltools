@@ -625,6 +625,9 @@ the jvm starting tomcat:
   <target name="tt-handheld-compile" depends="init"
           description="compiles the handheld Translation Tool" >
     <mkdir dir="${tthandheldbin}"/>
+    <antcall target="copy-about-dicts-for-tt-jarring">
+      <param name="my.bin" value="${tthandheldbin}"/>
+    </antcall>
     <antcall target="create-timestamp-source-code"/>
     <antcall target="our-internal-javac-task">
       <param name="target.jvm" value="1.4"/>
@@ -650,6 +653,9 @@ the jvm starting tomcat:
           description="compiles the applet + Java Web Start forms of the Translation Tool" >
     <mkdir dir="${ttappletjwsbin}"/>
     <antcall target="copy-tmw-fonts-to-bin-dir">
+      <param name="my.bin" value="${ttappletjwsbin}"/>
+    </antcall>
+    <antcall target="copy-about-dicts-for-tt-jarring">
       <param name="my.bin" value="${ttappletjwsbin}"/>
     </antcall>
     <antcall target="create-timestamp-source-code"/>
@@ -683,6 +689,9 @@ the jvm starting tomcat:
           description="compiles the servlet form of the Translation Tool if you've set the j2ee.sdk.home property correctly" >
     <mkdir dir="${ttservletbin}"/>
     <antcall target="copy-tmw-fonts-to-bin-dir">
+      <param name="my.bin" value="${ttservletbin}"/>
+    </antcall>
+    <antcall target="copy-about-dicts-for-tt-jarring">
       <param name="my.bin" value="${ttservletbin}"/>
     </antcall>
     <antcall target="create-timestamp-source-code"/>
@@ -1464,6 +1473,15 @@ public class ThdlVersion {
           description="Copies the class files for CalHTMLPane to the current build's bin/ directory.  The license does not require that we include CalHTMLPane's license in the JAR.">
     <copy todir="${my.bin}/calpa/html">
       <fileset dir="extensions/calpa/html"/>
+    </copy>
+  </target>
+
+  <target name="copy-about-dicts-for-tt-jarring"
+          description="Copies document containing the about information to be included in the translation tool jar.">
+    <copy todir="${my.bin}/org/thdl/tib/scanner">
+      <fileset dir="${source}/org/thdl/tib/scanner">
+        <include name="*.txt"/>
+      </fileset>
     </copy>
   </target>
 
