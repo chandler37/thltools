@@ -15,6 +15,7 @@ Pellegrini. All Rights Reserved.
 
 Contributor(s): ______________________________________.
 */
+
 package org.thdl.tib.scanner;
 
 import org.thdl.tib.text.InvalidTransliterationException;
@@ -22,6 +23,9 @@ import org.thdl.tib.text.TibTextUtils;
 import org.thdl.tib.text.TibetanDocument;
 import org.thdl.tib.text.reverter.Converter;
 import org.thdl.tib.text.ttt.EwtsToUnicodeForXslt;
+import org.thdl.util.*;
+import java.net.*;
+import java.io.*;
 
 /**
  * Wrap-up class for the various converters that the Translation Tool needs.
@@ -31,7 +35,16 @@ import org.thdl.tib.text.ttt.EwtsToUnicodeForXslt;
  * @author Andres Montano
  *
  */
-public class BasicTibetanTranscriptionConverter {
+public class BasicTibetanTranscriptionConverter
+{
+	private static BufferedReader in;
+	private static PrintWriter out;
+
+	private static int conversionType=0;
+	private static final int ACIP_TO_WYLIE=1;
+	private static final int WYLIE_TO_ACIP=2;
+	private static final int UNICODE_TO_WYLIE=3;
+	private static final int WYLIE_TO_UNICODE=4;
 	
 	/** Converts from the Acip transliteration scheme to EWTS.*/
 	public static String acipToWylie(String acip)
@@ -170,7 +183,7 @@ public class BasicTibetanTranscriptionConverter {
 		TibetanDocument tibDoc = new TibetanDocument();
     	try
     	{
-    		TibTextUtils.insertTibetanMachineWebForTranslit(false, wylie, tibDoc, 0, false);
+    		TibTextUtils.insertTibetanMachineWebForTranslit(true, wylie, tibDoc, 0, false);
     	}
     	catch (InvalidTransliterationException e)
     	{
@@ -275,4 +288,144 @@ public class BasicTibetanTranscriptionConverter {
     {
     	return unicodeToWylie(Manipulate.NCR2UnicodeString(unicode));
     }
+    
+    public static void printSyntax()
+    {
+    	System.out.println("Syntax: NewBasicTibetanTranscriptionConverter [-format format-of-files | [-fi format-of-input-file] [-fo format-of-output-file]] [-it acip | wylie | utf8] [-ot acip | wylie | utf8] input-file [output-file]");
+    }
+	
+	public BasicTibetanTranscriptionConverter(BufferedReader in, PrintWriter out)
+	{
+		BasicTibetanTranscriptionConverter.in = in;
+		BasicTibetanTranscriptionConverter.out = out;
+	}
+	
+	
+	public static void main (String[] args) throws Exception
+	{
+		PrintWriter out;
+		BufferedReader in=null;
+		int argNum = args.length, currentArg=0;
+		String option;
+		String formatIn = null, formatOut = null, inputTransSyst="wylie", outputTransSyst="wylie";
+		boolean file = false;
+		
+				
+		if (argNum<=currentArg)
+		{
+		    printSyntax();
+		    return;
+		}
+		
+		while (args[currentArg].charAt(0)=='-')
+		{
+		    option = args[currentArg++].substring(1);
+		    if (option.equals("format"))
+		    {
+		        formatIn = formatOut = args[currentArg];
+		    } else if (option.equals("fi"))
+		    {
+		        formatIn = args[currentArg];
+		    } else if (option.equals("fo"))
+		    {
+		        formatOut = args[currentArg];
+		    } else if (option.equals("it"))
+			{
+				inputTransSyst = args[currentArg];
+			} else if (option.equals("ot"))
+			{
+				outputTransSyst = args[currentArg];
+			}
+		    currentArg++;
+		}
+		
+		if (!inputTransSyst.equals(outputTransSyst))
+		{
+			if (inputTransSyst.equals("wylie"))
+			{
+				if (outputTransSyst.equals("acip")) conversionType = WYLIE_TO_ACIP;
+				else conversionType = WYLIE_TO_UNICODE; 
+			}
+			else if (inputTransSyst.equals("acip")) conversionType = ACIP_TO_WYLIE;
+			else conversionType = UNICODE_TO_WYLIE;
+		}
+		
+		switch (args.length-currentArg)
+		{
+		case 0: 
+		    if (formatIn != null)
+		    {
+		        System.out.println("Syntax error: input file name expected.");
+		        return;
+		    }
+            out = new PrintWriter(System.out);
+            in = new BufferedReader(new InputStreamReader(System.in));
+            break;
+		case 1: 
+		    if (formatOut != null)
+		    {
+		        System.out.println("Syntax error: output file name expected.");
+		        return;
+		    }
+		    out = new PrintWriter(System.out);
+		    file = true;
+		    break;
+		default:
+		    if (formatOut != null)
+                out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(args[currentArg + 1]), formatOut));
+            else
+                out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(args[currentArg + 1])));
+		    file = true;		
+		}
+   		if (file)
+		{
+		    in = getBufferedReader (args[currentArg], formatIn);
+		}
+		
+		new BasicTibetanTranscriptionConverter(in, out).run();
+	}
+	
+	
+	public void run() throws Exception
+	{
+		String linea, result;
+		
+		while ((linea=in.readLine())!=null)
+		{
+			switch(conversionType)
+			{
+			case ACIP_TO_WYLIE:
+				result = acipToWylie(linea); 
+			break;
+			case WYLIE_TO_ACIP: 
+				result = wylieToAcip(linea);
+			break;			
+			case UNICODE_TO_WYLIE: 
+				result = unicodeToWylie(linea);
+			break;
+			case WYLIE_TO_UNICODE: 
+				result = wylieToUnicode(linea);
+			break;
+			default: result = linea;
+			}
+			if (result!=null) out.println(result);
+		}
+		out.flush();
+	}
+	
+	public static BufferedReader getBufferedReader(String s, String format) throws Exception
+	{
+	    InputStream is;
+	    
+    	if (s.indexOf("http://") >= 0) 
+			is = new BufferedInputStream((new URL(s)).openStream());
+		else
+		    is = new FileInputStream(s);
+		    
+		if (format==null)
+		    return new BufferedReader(new InputStreamReader(is));
+		else
+		    return new BufferedReader(new InputStreamReader(is, format));			
+		
+	}
 }

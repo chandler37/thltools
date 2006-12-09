@@ -207,20 +207,16 @@ public class Manipulate
 	public static boolean guessIfUnicode(String line)
 	{
 	    char ch;
-	    int letters=0, unicode=0, i, n;
+	    int unicode=0, i, n;
 	    n = line.length();
 	    if (n>10) n = 10;
 	    for (i=0; i<n; i++)
 	    {
 	        ch = line.charAt(i);
-	        if (Character.isLetter(ch))
-	        {
-	            letters++;
-	            if (isTibetanUnicodeCharacter(ch)) unicode++;
-	        }
+	        if (isTibetanUnicodeCharacter(ch)) unicode++;
 	    }
-	    if (letters==0 || unicode==0) return false;
-	    else return (letters / unicode < 2);
+	    if (n==0 || unicode==0) return false;
+	    else return (n / unicode < 2);
 	}
 		
 	public static String fixWazur(String linea)
