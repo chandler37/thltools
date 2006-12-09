@@ -172,13 +172,17 @@ class GC {
             }
             if (isVowel(ch)) {
                 seenVowel = true;
+                if (lastEwts=="a")
+                {
+                	sb.deleteCharAt(sb.length()-1);
+                }
             }
             sb.append(ewts);
             lastEwts = ewts;
         }
-        if (UnicodeUtils.isNonSubjoinedConsonant(ch)
+        if ((UnicodeUtils.isNonSubjoinedConsonant(ch)
             || UnicodeUtils.isSubjoinedConsonant(ch)
-            || '\u0f39' == ch) {
+            || '\u0f39' == ch) && '\u0f68' != ch) {
             ThdlDebug.verify(!added_aVOWEL);
             sb.append(THDLWylieConstants.WYLIE_aVOWEL);
         }
