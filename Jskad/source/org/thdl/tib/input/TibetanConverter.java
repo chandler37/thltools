@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import javax.swing.text.SimpleAttributeSet;
@@ -43,6 +44,7 @@ import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlLazyException;
 import org.thdl.util.ThdlOptions;
 import org.thdl.util.ThdlVersion;
+import org.thdl.tib.scanner.*;
 
 /** TibetanConverter is a command-line utility for converting to and
  *  from Tibetan Machine Web (TMW).  It converts TMW to Wylie, ACIP,
@@ -329,9 +331,9 @@ public class TibetanConverter implements FontConverterConstants {
     static int reallyConvert(InputStream in, PrintStream out, String ct,
                              String warningLevel, boolean shortMessages,
                              boolean colors) {
-        if (UNI_TO_WYLIE_TEXT == ct) {
+        if (UNI_TO_WYLIE_TEXT == ct || WYLIE_TO_ACIP_TEXT == ct || ACIP_TO_WYLIE_TEXT == ct) {
             try {
-                String uniText;
+                /*String uniText;
                 {
                     // TODO(dchandler): use, here and elsewhere in the
                     // codebase,
@@ -355,7 +357,12 @@ public class TibetanConverter implements FontConverterConstants {
                 String ewtsText = Converter.convertToEwtsForComputers(uniText,
                                                                       errors);
                 // TODO(dchandler): is 51 the right choice?
-                return (errors.length() > 0) ? 51 : 0;
+                return (errors.length() > 0) ? 51 : 0;*/
+            	BasicTibetanTranscriptionConverter bc = null;
+            	if (UNI_TO_WYLIE_TEXT == ct) bc = new BasicTibetanTranscriptionConverter(new BufferedReader(new InputStreamReader(in, "UTF16")), new PrintWriter(out));
+            	else bc = new BasicTibetanTranscriptionConverter(new BufferedReader(new InputStreamReader(in)), new PrintWriter(out));
+            	bc.run(ct);
+            	return 0;
             } catch (IOException e) {
                 // TODO(dchandler): print it?  where to?
                 return 48;

@@ -238,12 +238,15 @@ class ConvertDialog extends JDialog
             || cmd.equals(BROWSENEW))
         {
             JButton src = (JButton)ae.getSource();
+            String choice = (String)choices.getSelectedItem();
             if (src == browseOld) {
-                jfc.setFileFilter((ACIP_TO_UNI_TEXT.equals((String)choices.getSelectedItem())
-                                   || WYLIE_TO_UNI_TEXT.equals((String)choices.getSelectedItem())
-                                   || UNI_TO_WYLIE_TEXT.equals((String)choices.getSelectedItem())
-                                   || ACIP_TO_TMW.equals((String)choices.getSelectedItem())
-                                   || WYLIE_TO_TMW.equals((String)choices.getSelectedItem()))
+                jfc.setFileFilter((ACIP_TO_UNI_TEXT.equals(choice)
+                                   || WYLIE_TO_UNI_TEXT.equals(choice)
+                                   || UNI_TO_WYLIE_TEXT.equals(choice)
+                                   || ACIP_TO_TMW.equals(choice)
+                                   || WYLIE_TO_TMW.equals(choice)
+                                   || ACIP_TO_WYLIE_TEXT.equals(choice)
+                                   || WYLIE_TO_ACIP_TEXT.equals(choice))
                                   ? textFileFilter : rtfFileFilter);
             } else {
                 jfc.setFileFilter((ACIP_TO_UNI_TEXT.equals((String)choices.getSelectedItem())
@@ -500,12 +503,12 @@ class ConvertDialog extends JDialog
                 newFileNamePrefix = suggested_WYLIE_prefix;
                 if (UNI_TO_WYLIE_TEXT == ct)
                     newFileNameExtension = ".TXT";
-            } else if (TMW_TO_WYLIE_TEXT == ct) {
+            } else if (TMW_TO_WYLIE_TEXT == ct || ACIP_TO_WYLIE_TEXT == ct) {
                 newFileNamePrefix = suggested_WYLIE_prefix;
                 newFileNameExtension = ".TXT";
             } else if (TMW_TO_ACIP == ct) {
                 newFileNamePrefix = suggested_ACIP_prefix;
-            } else if (TMW_TO_ACIP_TEXT == ct) {
+            } else if (TMW_TO_ACIP_TEXT == ct || WYLIE_TO_ACIP_TEXT == ct) {
                 newFileNamePrefix = suggested_ACIP_prefix;
                 newFileNameExtension = ".TXT";
             } else if (TMW_TO_UNI == ct || ACIP_TO_UNI_TEXT == ct

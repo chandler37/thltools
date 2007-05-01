@@ -23,6 +23,7 @@ import org.thdl.tib.text.TibTextUtils;
 import org.thdl.tib.text.TibetanDocument;
 import org.thdl.tib.text.reverter.Converter;
 import org.thdl.tib.text.ttt.EwtsToUnicodeForXslt;
+import org.thdl.tib.input.*;
 import org.thdl.util.*;
 import java.net.*;
 import java.io.*;
@@ -35,12 +36,12 @@ import java.io.*;
  * @author Andres Montano
  *
  */
-public class BasicTibetanTranscriptionConverter
+public class BasicTibetanTranscriptionConverter implements FontConverterConstants
 {
 	private static BufferedReader in;
 	private static PrintWriter out;
 
-	private static int conversionType=0;
+	//private static int conversionType=0;
 	private static final int ACIP_TO_WYLIE=1;
 	private static final int WYLIE_TO_ACIP=2;
 	private static final int UNICODE_TO_WYLIE=3;
@@ -81,39 +82,39 @@ public class BasicTibetanTranscriptionConverter
 	    aa -> a, a'a -> A, ai->i, aee ->ai, au->u, aoo->au, ae->e,
 		ao->o, ee->ai, oo->au, 'I->-I I->-i,  a'i->I, a'u->U, a'e->E, a'o->O,
 		a'i->I, a'u->U, a'e->E, a'o->O, ,->/, # -> @##, * -> @#, \ -> ?, ` -> !,
-		/-/ -> (-), ga-y -> g.y, g-y -> g.y, na-y -> n+y
+		/-/ -> (-), ga-y -> g.y, g-y -> g.y, na-y -> n+y */
 		
-		nuevaLinea = replace(nuevaLinea, "ts", "tq");
-		nuevaLinea = replace(nuevaLinea, "tz", "ts");
-		nuevaLinea = replace(nuevaLinea, "tq", "tsh");
-		nuevaLinea = replace(nuevaLinea, "v", "w");
-		nuevaLinea = replace(nuevaLinea, "TH", "Th");
-		nuevaLinea = replace(nuevaLinea, "kSH", "k+Sh");
-		nuevaLinea = replace(nuevaLinea, "kaSH", "k+Sh");
-		nuevaLinea = replace(nuevaLinea, "SH", "Sh");
-		nuevaLinea = replace(nuevaLinea, ":", "H");
-		nuevaLinea = replace(nuevaLinea, "NH", "NaH");
-		nuevaLinea = replace(nuevaLinea, "dh", "d+h");
-		nuevaLinea = replace(nuevaLinea, "gh", "g+h");
-		nuevaLinea = replace(nuevaLinea, "bh", "b+h");
-		nuevaLinea = replace(nuevaLinea, "dzh", "dz+h");
-		nuevaLinea = replace(nuevaLinea, "aa", "a");
-		nuevaLinea = replace(nuevaLinea, "ai", "i");
-		nuevaLinea = replace(nuevaLinea, "aee", "ai");
-		nuevaLinea = replace(nuevaLinea, "au", "u");
-		nuevaLinea = replace(nuevaLinea, "aoo", "au");
-		nuevaLinea = replace(nuevaLinea, "ae", "e");
-		nuevaLinea = replace(nuevaLinea, "ao", "o");
-		nuevaLinea = replace(nuevaLinea, "ee", "ai");
-		nuevaLinea = replace(nuevaLinea, "oo", "au");
-		nuevaLinea = replace(nuevaLinea, "\'I", "\'q");
-		nuevaLinea = replace(nuevaLinea, "I", "-i");
-		nuevaLinea = replace(nuevaLinea, "\'q", "-I");
-		nuevaLinea = replace(nuevaLinea, "\\", "?");
-		nuevaLinea = replace(nuevaLinea, "`", "!");
-		nuevaLinea = replace(nuevaLinea, "ga-y", "g.y");
-		nuevaLinea = replace(nuevaLinea, "g-y", "g.y");
-		nuevaLinea = replace(nuevaLinea, "na-y", "n+y");
+		/* nuevaLinea = Manipulate.replace(nuevaLinea, "ts", "tq");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "tz", "ts");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "tq", "tsh");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "v", "w");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "TH", "Th");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "kSH", "k+Sh");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "kaSH", "k+Sh");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "SH", "Sh");
+		nuevaLinea = Manipulate.replace(nuevaLinea, ":", "H");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "NH", "NaH");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "dh", "d+h");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "gh", "g+h");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "bh", "b+h");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "dzh", "dz+h");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "aa", "a");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "ai", "i");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "aee", "ai");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "au", "u");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "aoo", "au");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "ae", "e");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "ao", "o");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "ee", "ai");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "oo", "au");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "\'I", "\'q");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "I", "-i");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "\'q", "-I");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "\\", "?");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "`", "!");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "ga-y", "g.y");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "g-y", "g.y");
+		nuevaLinea = Manipulate.replace(nuevaLinea, "na-y", "n+y");
 
 		len = nuevaLinea.length();
 		for (i=0; i<len; i++)
@@ -136,9 +137,9 @@ public class BasicTibetanTranscriptionConverter
 		          {
 		            chP = nuevaLinea.charAt(i-1);
 		            chN = nuevaLinea.charAt(i+1);
-		            if (isVowel(chN))
+		            if (Manipulate.isVowel(chN))
 		            {
-		                if (Character.isLetter(chP) && !isVowel(chP))
+		                if (Character.isLetter(chP) && !Manipulate.isVowel(chP))
 		                {
 		                    nuevaLinea = nuevaLinea.substring(0, i) + Character.toUpperCase(chN) + nuevaLinea.substring(i+2);
 		                    len--;
@@ -172,7 +173,7 @@ public class BasicTibetanTranscriptionConverter
 		        }
 		    }
 		}
-		nuevaLinea = replace(nuevaLinea, ",", "/");
+		nuevaLinea = Manipulate.replace(nuevaLinea, ",", "/");
 		
 		return nuevaLinea; */
 	}
@@ -191,8 +192,8 @@ public class BasicTibetanTranscriptionConverter
     	}
     	return tibDoc.getACIP(new boolean[] { false });
     	
-		/* DLC FIXME: for unknown things, return null.
-		if (wylie.equals("@##")) return "#";
+		/* DLC FIXME: for unknown things, return null. */
+		/* if (wylie.equals("@##")) return "#";
 		if (wylie.equals("@#")) return "*";
 		if (wylie.equals("!")) return "`";
 		if (wylie.equals("b+h")) return "BH";
@@ -213,7 +214,7 @@ public class BasicTibetanTranscriptionConverter
 		for (j=0; j<len; j++)
 		{
 			i = j;
-			/*ciclo:
+			//ciclo:
 			while(true) // para manejar excepciones; que honda!
 			{
 			switch(caract[i])
@@ -229,7 +230,7 @@ public class BasicTibetanTranscriptionConverter
 				caract[i] = Character.toUpperCase(caract[i]);
 			else if (Character.isUpperCase(caract[i]))
 				caract[i] = Character.toLowerCase(caract[i]);
-			/*						break ciclo;
+			//						break ciclo;
 			}
 			}
 		}
@@ -238,18 +239,18 @@ public class BasicTibetanTranscriptionConverter
 		
 		// ahora hacer los cambios de Michael Roach
 		
-		nuevaPalabra = replace(nuevaPalabra, "TSH", "TQQ");
-		nuevaPalabra = replace(nuevaPalabra, "TS", "TZ");
-		nuevaPalabra = replace(nuevaPalabra, "TQQ", "TS");
-		nuevaPalabra = replace(nuevaPalabra, "a", "'A");
-		nuevaPalabra = replace(nuevaPalabra, "i", "'I");
-		nuevaPalabra = replace(nuevaPalabra, "u", "'U");
-		nuevaPalabra = replace(nuevaPalabra, "-I", "i");
-		nuevaPalabra = replace(nuevaPalabra, "/", ",");
-		nuevaPalabra = replace(nuevaPalabra, "_", " ");
-		nuevaPalabra = replace(nuevaPalabra, "|", ";");
-		nuevaPalabra = fixWazur(nuevaPalabra);
-		return nuevaPalabra; */
+		nuevaPalabra = Manipulate.replace(nuevaPalabra, "TSH", "TQQ");
+		nuevaPalabra = Manipulate.replace(nuevaPalabra, "TS", "TZ");
+		nuevaPalabra = Manipulate.replace(nuevaPalabra, "TQQ", "TS");
+		nuevaPalabra = Manipulate.replace(nuevaPalabra, "a", "'A");
+		nuevaPalabra = Manipulate.replace(nuevaPalabra, "i", "'I");
+		nuevaPalabra = Manipulate.replace(nuevaPalabra, "u", "'U");
+		nuevaPalabra = Manipulate.replace(nuevaPalabra, "-I", "i");
+		nuevaPalabra = Manipulate.replace(nuevaPalabra, "/", ",");
+		nuevaPalabra = Manipulate.replace(nuevaPalabra, "_", " ");
+		nuevaPalabra = Manipulate.replace(nuevaPalabra, "|", ";");
+		nuevaPalabra = Manipulate.fixWazur(nuevaPalabra);
+		return nuevaPalabra;*/
 	}	
     
 	/** Converts Tibetan Unicode to EWTS. */
@@ -291,7 +292,7 @@ public class BasicTibetanTranscriptionConverter
     
     public static void printSyntax()
     {
-    	System.out.println("Syntax: NewBasicTibetanTranscriptionConverter [-format format-of-files | [-fi format-of-input-file] [-fo format-of-output-file]] [-it acip | wylie | utf8] [-ot acip | wylie | utf8] input-file [output-file]");
+    	System.out.println("Syntax: BasicTibetanTranscriptionConverter [-format format-of-files | [-fi format-of-input-file] [-fo format-of-output-file]] [-it acip | wylie | UTF16] [-ot acip | wylie | UTF16] input-file [output-file]");
     }
 	
 	public BasicTibetanTranscriptionConverter(BufferedReader in, PrintWriter out)
@@ -309,7 +310,7 @@ public class BasicTibetanTranscriptionConverter
 		String option;
 		String formatIn = null, formatOut = null, inputTransSyst="wylie", outputTransSyst="wylie";
 		boolean file = false;
-		
+		int conversionType=0;
 				
 		if (argNum<=currentArg)
 		{
@@ -382,11 +383,26 @@ public class BasicTibetanTranscriptionConverter
 		    in = getBufferedReader (args[currentArg], formatIn);
 		}
 		
-		new BasicTibetanTranscriptionConverter(in, out).run();
+		new BasicTibetanTranscriptionConverter(in, out).run(conversionType);
 	}
 	
+	/**
+	 *  This method was added for compatibility's sake with the FontConverterConstants interfase.
+	 *  
+	 * @param conversionType
+	 * @throws IOException
+	 */
+	public void run(String conversionType) throws IOException
+	{
+		int conversionTypeInt=0;
+		if (conversionType==ACIP_TO_WYLIE_TEXT) conversionTypeInt = ACIP_TO_WYLIE;
+		if (conversionType==WYLIE_TO_ACIP_TEXT) conversionTypeInt = WYLIE_TO_ACIP;
+		if (conversionType==UNI_TO_WYLIE_TEXT) conversionTypeInt = UNICODE_TO_WYLIE;
+		if (conversionType==WYLIE_TO_UNI_TEXT) conversionTypeInt = WYLIE_TO_UNICODE;
+		run(conversionTypeInt);
+	}
 	
-	public void run() throws Exception
+	public void run(int conversionType) throws IOException
 	{
 		String linea, result;
 		

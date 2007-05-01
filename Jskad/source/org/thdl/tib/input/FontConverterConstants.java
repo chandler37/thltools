@@ -22,13 +22,15 @@ package org.thdl.tib.input;
 /** Constants used by ConvertDialog.
 
     @author Nathaniel Garson, Tibetan and Himalayan Digital Library */
-interface FontConverterConstants
+public interface FontConverterConstants
 {
-    final String UNI_TO_WYLIE_TEXT = "Unicode to Wylie (UTF-8 Text->Text)";
+    final String UNI_TO_WYLIE_TEXT = "Unicode to Wylie (UTF-16 Text->Text)";
     final String WYLIE_TO_UNI_TEXT = "Wylie to Unicode (Text->Text)";
     final String WYLIE_TO_TMW = "Wylie to TMW (Text->RTF)";
+    final String WYLIE_TO_ACIP_TEXT = "Wylie to ACIP (Text->Text)";    
     final String TMW_TO_SAME_TMW = "TMW to the same TMW (for testing only) (RTF->RTF)";
     final String ACIP_TO_UNI_TEXT = "ACIP to Unicode (Text->Text)";
+    final String ACIP_TO_WYLIE_TEXT = "ACIP to Wylie (Text->Text)";
     final String ACIP_TO_TMW = "ACIP to TMW (Text->RTF)";
     final String TMW_TO_ACIP = "TMW to ACIP (RTF->RTF)";
     final String TMW_TO_ACIP_TEXT = "TMW to ACIP (RTF->Text)";
@@ -45,7 +47,9 @@ interface FontConverterConstants
     final String[] CHOICES = new String[] {
         WYLIE_TO_UNI_TEXT,
         WYLIE_TO_TMW,
+        //WYLIE_TO_ACIP_TEXT,
         ACIP_TO_UNI_TEXT,
+        ACIP_TO_WYLIE_TEXT,
         ACIP_TO_TMW,
         TMW_TO_ACIP,
         TMW_TO_ACIP_TEXT,
@@ -54,6 +58,7 @@ interface FontConverterConstants
         TMW_TO_UNI,
         TMW_TO_WYLIE,
         TMW_TO_WYLIE_TEXT,
+    	UNI_TO_WYLIE_TEXT,
         FIND_SOME_NON_TMW,  // TODO(dchandler): should this be in DEBUG_CHOICES only?
         FIND_SOME_NON_TM,   // TODO(dchandler): should this be in DEBUG_CHOICES only?
         FIND_ALL_NON_TMW,   // TODO(dchandler): should this be in DEBUG_CHOICES only?
@@ -61,11 +66,11 @@ interface FontConverterConstants
     };
 
     final String[] DEBUG_CHOICES = new String[] {
-        UNI_TO_WYLIE_TEXT,
         TMW_TO_SAME_TMW,
         WYLIE_TO_UNI_TEXT,
         WYLIE_TO_TMW,
         ACIP_TO_UNI_TEXT,
+        ACIP_TO_WYLIE_TEXT,
         ACIP_TO_TMW,
         TMW_TO_ACIP,
         TMW_TO_ACIP_TEXT,
@@ -74,6 +79,7 @@ interface FontConverterConstants
         TMW_TO_UNI,
         TMW_TO_WYLIE,
         TMW_TO_WYLIE_TEXT,
+        UNI_TO_WYLIE_TEXT,
         FIND_SOME_NON_TMW,
         FIND_SOME_NON_TM,
         FIND_ALL_NON_TMW,
@@ -88,5 +94,4 @@ interface FontConverterConstants
 
     // String Constants
     public final String PROGRAM_TITLE = "THDL Tibetan Converters -- featuring Jskad Technology";
-
 }
