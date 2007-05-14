@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="thdl-concordancer" default="index-for-solr" basedir=".">
+
+    <import file="build.xml"/>
+    
+    <property name="lucene-thdl.bin" location="${bin}/lucene-thdl"/>
+    
+    <path id="lucene.classpath">
+		<fileset id="lucene.extensions" dir="${ext}/apache">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+    
+    <!-- concordance program -->
+	<target name="lucene-thdl-compile" depends="init">
+        <mkdir dir="${lucene-thdl.bin}"/>
+		<javac srcdir="${source}" destdir="${lucene-thdl.bin}" includes="org/thdl/lucene/**.java" debug="on">
+			<classpath refid="lucene.classpath"/>
+		</javac>
+	</target>
+    
+    <target name="lucene-thdl-jar" depends="lucene-thdl-compile">
+        <jar destfile="${vanillalib}/lucene-thdl.jar" basedir="${lucene-thdl.bin}/"/>
+    </target>
+    
+</project>
