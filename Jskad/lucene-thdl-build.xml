@@ -5,12 +5,27 @@
     <import file="build.xml"/>
     
     <property name="lucene-thdl.bin" location="${bin}/lucene-thdl"/>
+    <property name="archive" location="archive"/>
+    <property name="wylie" location="${archive}/wylie"/>
+    <property name="unicode" location="${archive}/unicode"/>
+    <property name="solr" location="${archive}/solr"/>
+    <property name="get.title.metadata" value="http://thdl.org/avarch/mediaflowcat/title_metadata.php"/>
+    <property name="url.to.transcripts" value="http://www.thdl.org/avarch/transcripts"/>
+    <property name="url.to.media.high" value="http://www.thdl.org/media/high"/>
+    <property name="url.to.media.low" value="http://www.thdl.org/media/low"/>
+    <property name="url.to.media.audio" value="http://www.thdl.org/media/audio"/>
     
     <path id="lucene.classpath">
 		<fileset id="lucene.extensions" dir="${ext}/apache">
 			<include name="*.jar"/>
 		</fileset>
 	</path>
+    
+    <!-- archive tasks -->
+    <target name="archive-get-metadata">
+        <mkdir dir="${archive}"/>
+        <get src="${get.title.metadata}" dest="${archive}/title_metadata.xml" verbose="on"/>
+    </target>
     
     <!-- concordance program -->
 	<target name="lucene-thdl-compile" depends="init">
