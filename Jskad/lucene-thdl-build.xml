@@ -21,11 +21,62 @@
 		</fileset>
 	</path>
     
+    <!--
+        <target name="segment-videos">
+        <fileset dir="${segmentation.instructions.dir}" id="segmentation.instructions">
+          <include name="**/*.xml"/>
+        </fileset>
+        <pathconvert pathsep=" " property="about.to.segment" refid="segmentation.instructions"/>
+		<java classname="fieldling.quicktime.MovieSegmenter" dir="${segmented.video.dir}" fork="yes">
+            <arg line="${about.to.segment}"/>
+			<classpath>
+				<pathelement location="${bin.dir}"/>
+				<path refid="classpath"/>
+			</classpath>
+		</java>
+    </target>
+    -->
+
+<!--
+    <target name="archive-get-transcripts" depends="archive-compile">
+		<java classname="org.thdl.archive.GetTranscripts" fork="yes">
+            <arg value="${archive.metadata.file}"/>
+            <arg value="${wylie.transcript.dir}"/>
+			<classpath>
+				<pathelement location="${bin.dir}"/>
+				<path refid="classpath"/>
+			</classpath>
+		</java>
+    </target>
+    
+    <target name="archive-transcripts-to-unicode">
+		<java classname="net.sf.saxon.Transform" fork="yes">
+            <arg value="-o"/>
+            <arg value="${unicode.transcript.dir}"/>
+            <arg value="${wylie.transcript.dir}"/>
+            <arg value="${stylesheet.dir}/qdToUnicode.xsl"/>
+			<classpath>
+				<pathelement location="${bin.dir}"/>
+				<path refid="classpath"/>
+			</classpath>
+		</java>
+    </target>
+    -->
+    
     <!-- archive tasks -->
     <target name="archive-get-metadata">
         <mkdir dir="${archive}"/>
         <get src="${get.title.metadata}" dest="${archive}/title_metadata.xml" verbose="on"/>
     </target>
+    
+    <!--
+    <filelist 
+    id="docfiles" 
+    dir="${doc.src}">
+    <file name="foo.xml"/>
+    <file name="bar.xml"/>
+</filelist>
+-->
     
     <!-- concordance program -->
 	<target name="lucene-thdl-compile" depends="init">
