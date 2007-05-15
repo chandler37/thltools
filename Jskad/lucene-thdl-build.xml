@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<project name="thdl-concordancer" default="index-for-solr" basedir=".">
+<project name="lucene-thdl" default="lucene-thdl-jar" basedir=".">
 
     <import file="build.xml"/>
     
@@ -9,6 +9,7 @@
     <property name="wylie" location="${archive}/wylie"/>
     <property name="unicode" location="${archive}/unicode"/>
     <property name="solr" location="${archive}/solr"/>
+    <property name="styles" location="${archive}/styles"/>
     <property name="get.title.metadata" value="http://thdl.org/avarch/mediaflowcat/title_metadata.php"/>
     <property name="url.to.transcripts" value="http://www.thdl.org/avarch/transcripts"/>
     <property name="url.to.media.high" value="http://www.thdl.org/media/high"/>
@@ -69,15 +70,24 @@
         <get src="${get.title.metadata}" dest="${archive}/title_metadata.xml" verbose="on"/>
     </target>
     
+    <target name="archive-get-transcripts">
+    	<xslt in="${archive}/title_metadata.xml" out="${archive}/titles_as_list.txt" style="${styles}/get-list-of-transcripts.xsl">
+		<param name="prefix" expression="${url.to.transcripts}/"/>
+	</xslt>
+    </target>
+ 
     <!--
     <filelist 
     id="docfiles" 
     dir="${doc.src}">
     <file name="foo.xml"/>
     <file name="bar.xml"/>
-</filelist>
+    </filelist>
+
+<filterreader classname="org.apache.tools.ant.filters.PrefixLines">
+  <param name="prefix" value="Foo"/>
+</filterreader>
 -->
-    
     <!-- concordance program -->
 	<target name="lucene-thdl-compile" depends="init">
         <mkdir dir="${lucene-thdl.bin}"/>
