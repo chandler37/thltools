@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <project name="lucene-thdl" default="lucene-thdl-jar" basedir=".">
-
     <import file="build.xml"/>
-    
+ 
+    	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+	  <classpath>
+	    <pathelement location="${ext}/to-be-installed-with-ant/ant-contrib.jar"/>
+	  </classpath>
+	</taskdef>   
+	
     <property name="lucene-thdl.bin" location="${bin}/lucene-thdl"/>
     <property name="archive" location="archive"/>
     <property name="wylie" location="${archive}/wylie"/>
@@ -71,9 +76,14 @@
     </target>
     
     <target name="archive-get-transcripts">
-    	<xslt in="${archive}/title_metadata.xml" out="${archive}/titles_as_list.txt" style="${styles}/get-list-of-transcripts.xsl">
-		<param name="prefix" expression="${url.to.transcripts}/"/>
-	</xslt>
+    	<mkdir dir="${wylie}"/>
+    	<xslt in="${archive}/title_metadata.xml" out="${archive}/titles_as_list.txt" style="${styles}/get-list-of-transcripts.xsl"/>
+	<loadfile property="transcript-list" srcFile="${archive}/titles_as_list.txt"/>
+	<foreach list="${transcript-list}" delimiter=" " param="filename" target="archive-get-one-transcript"/>
+    </target>
+    
+    <target name="archive-get-one-transcript">
+    	<get src="${url.to.transcripts}/${filename}" dest="${wylie}/${filename}"/>
     </target>
  
     <!--
