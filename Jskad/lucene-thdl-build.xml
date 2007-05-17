@@ -3,10 +3,10 @@
 <project name="lucene-thdl" default="lucene-thdl-jar" basedir=".">
     <import file="build.xml"/>
  
-    	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
-	  <classpath>
-	    <pathelement location="${ext}/to-be-installed-with-ant/ant-contrib.jar"/>
-	  </classpath>
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+        <classpath>
+            <pathelement location="${ext}/to-be-installed-with-ant/ant-contrib.jar"/>
+        </classpath>
 	</taskdef>   
 	
     <property name="lucene-thdl.bin" location="${bin}/lucene-thdl"/>
@@ -27,6 +27,12 @@
 		</fileset>
 	</path>
     
+    <path id="saxon.classpath">
+        <fileset id="saxon.extensions" dir="${ext}/saxon">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+    
     <!--
         <target name="segment-videos">
         <fileset dir="${segmentation.instructions.dir}" id="segmentation.instructions">
@@ -42,7 +48,46 @@
 		</java>
     </target>
     -->
+    
+    <!-- archive tasks -->
+    
+    <!-- FIXME: title_metadata.xml is not being retrieved as UTF-8!! -->
+    <target name="archive-get-metadata">
+        <mkdir dir="${archive}"/>
+        <get src="${get.title.metadata}" dest="${archive}/title_metadata.xml" verbose="on"/>
+    </target>
 
+    <target name="archive-get-list-of-transcripts">
+    	<mkdir dir="${wylie}"/>
+    	<xslt in="${archive}/title_metadata.xml" out="${archive}/titles_as_list.txt" style="${styles}/get-list-of-transcripts.xsl"/>
+    </target>
+
+    <target name="archive-get-transcripts">
+        <loadfile property="transcript-list" srcFile="${archive}/titles_as_list.txt"/> <!-- encoding="UTF-8" -->
+        <foreach list="${transcript-list}" delimiter=" " param="filename" target="archive-get-one-transcript"/>
+    </target>
+    
+    <target name="archive-get-one-transcript">
+    	<get src="${url.to.transcripts}/${filename}" dest="${wylie}/${filename}" ignoreerrors="true"/>
+    </target>
+
+    <target name="archive-transcripts-to-unicode">
+        <mkdir dir="${unicode}"/>
+        <antcall target="jskad-dist">
+          <param name="my.jar.suffix" value=""/>
+        </antcall>
+        <!-- why not use ant task for saxon?? -->
+		<java classname="net.sf.saxon.Transform" fork="yes">
+            <arg value="-o"/>
+            <arg value="${unicode}"/>
+            <arg value="${wylie}"/>
+            <arg value="${styles}/qdToUnicode.xsl"/>
+			<classpath>
+				<pathelement location="${vanillalib}/Jskad.jar"/>
+				<path refid="saxon.classpath"/>
+			</classpath>
+		</java>
+    </target>
 <!--
     
     <target name="archive-transcripts-to-unicode">
@@ -57,45 +102,7 @@
 			</classpath>
 		</java>
     </target>
-    -->
-    
-    <!-- archive tasks -->
-    
-    <!-- title_metadata.xml is not being retrieved as UTF-8. need to fix this. 
-        perhaps we don't need to decodeUTF the transcript file name???
-    -->
-    <target name="archive-get-metadata">
-        <mkdir dir="${archive}"/>
-        <get src="${get.title.metadata}" dest="${archive}/title_metadata.xml" verbose="on"/>
-    </target>
-
-    <target name="archive-get-list-of-transcripts">
-    	<mkdir dir="${wylie}"/>
-    	<xslt in="${archive}/title_metadata.xml" out="${archive}/titles_as_list.txt" style="${styles}/get-list-of-transcripts.xsl"/>
-    </target>
-
-    <!-- must delete following transcripts from titles_as_list.txt
-            02069_clip-21-husked-barle_00.xml
-            02116_nasal-congestion_00.xml
-            A_New_Script02.xml
-            
-            00007_06-dawa-and-purdrön_08.xml 
-         or, should put in protection against URLs that cannot be "got"
     -->    
-    <target name="archive-get-transcripts">
-        <loadfile property="transcript-list" srcFile="${archive}/titles_as_list.txt"/>
-        <!--<loadfile property="transcript-list" srcFile="${archive}/titles_as_list.txt" encoding="UTF-8"/>-->
-        <foreach list="${transcript-list}" delimiter=" " param="filename" target="archive-get-one-transcript"/>
-    </target>
-    
-    <!-- problem: destination filename should not be URLEncoded -->
-    <target name="archive-get-one-transcript">
-        <!--<urlencode property="file.location" value="00007_06-dawa-and-purdrön_08.xml" />
-        <get src="${url.to.transcripts}/${file.location}" dest="${wylie}/TEST.xml"/>-->
-    	<get src="${url.to.transcripts}/${filename}" dest="${wylie}/${filename}"/>
-    </target>
-
-    
     <!-- concordance program -->
 	<target name="lucene-thdl-compile" depends="init">
         <mkdir dir="${lucene-thdl.bin}"/>
