@@ -6,6 +6,7 @@
     xmlns:thdl="java:org.thdl.tib.text.ttt.EwtsToUnicodeForXslt"
     exclude-result-prefixes="thdl encoder" >
     
+    
     <xsl:import href="qdToUnicode.xsl"/>
     
 	<xsl:output method="xml" encoding="UTF-8" indent="yes" name="unicode.out"/>
