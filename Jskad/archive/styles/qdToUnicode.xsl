@@ -5,9 +5,7 @@
        xmlns:thdl="java:org.thdl.tib.text.ttt.EwtsToUnicodeForXslt"
        exclude-result-prefixes="thdl"
 	version="2.0">
-        
-      <!--  <xsl:param name="mediaref"/> -->
-        
+      
         <xsl:template match="/">
                 <xsl:apply-templates/>
         </xsl:template>

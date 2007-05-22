@@ -4,13 +4,13 @@
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:java="java" >
 	
-	<xsl:output method="text" encoding="utf-8"/>
+	<xsl:output method="text"/>
 	
 	<xsl:template match="/">
 		<xsl:apply-templates select="//transcript"/>
 	</xsl:template>
 	
 	<xsl:template match="transcript">
-		<xsl:value-of select="java:net.URLEncoder.encode(.,'UTF-8')"/><xsl:text> </xsl:text>
+        <xsl:value-of select="java:net.URLEncoder.encode(.,'UTF-8')"/><xsl:text> </xsl:text>
 	</xsl:template>
 </xsl:stylesheet>
