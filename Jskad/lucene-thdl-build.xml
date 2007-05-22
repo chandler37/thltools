@@ -33,76 +33,196 @@
         </fileset>
     </path>
     
-    <!--
-        <target name="segment-videos">
-        <fileset dir="${segmentation.instructions.dir}" id="segmentation.instructions">
-          <include name="**/*.xml"/>
-        </fileset>
-        <pathconvert pathsep=" " property="about.to.segment" refid="segmentation.instructions"/>
-		<java classname="fieldling.quicktime.MovieSegmenter" dir="${segmented.video.dir}" fork="yes">
-            <arg line="${about.to.segment}"/>
-			<classpath>
-				<pathelement location="${bin.dir}"/>
-				<path refid="classpath"/>
-			</classpath>
-		</java>
-    </target>
-    -->
     
     <!-- archive tasks -->
-    
-    <!-- FIXME: title_metadata.xml is not being retrieved as UTF-8!! -->
     <target name="archive-get-metadata">
         <mkdir dir="${archive}"/>
         <get src="${get.title.metadata}" dest="${archive}/title_metadata.xml" verbose="on"/>
     </target>
 
     <target name="archive-get-list-of-transcripts">
-    	<mkdir dir="${wylie}"/>
-    	<xslt in="${archive}/title_metadata.xml" out="${archive}/titles_as_list.txt" style="${styles}/get-list-of-transcripts.xsl"/>
+	<!--	<java classname="net.sf.saxon.Transform" fork="yes">
+            <arg value="-s"/>
+            <arg value="${archive}/title_metadata.xml"/>
+            <arg value="-o"/>
+            <arg value="${archive}/titles_as_list.txt"/>
+            <arg value="${styles}/get-list-of-transcripts.xsl"/>
+			<classpath>
+				<path refid="saxon.classpath"/>
+			</classpath>
+		</java>-->
+        <xslt in="${archive}/title_metadata.xml" out="${archive}/titles_as_list.txt" style="${styles}/get-list-of-transcripts.xsl"/>
+        <xslt in="${archive}/title_metadata.xml" out="${archive}/titles_as_list2.txt" style="${styles}/get-list-of-transcripts2.xsl"/>
     </target>
 
     <target name="archive-get-transcripts">
-        <loadfile property="transcript-list" srcFile="${archive}/titles_as_list.txt"/> <!-- encoding="UTF-8" -->
+    	<mkdir dir="${wylie}"/>
+        <loadfile property="transcript-list" srcFile="${archive}/titles_as_list2.txt"/> <!-- encoding="UTF-8" -->
         <foreach list="${transcript-list}" delimiter=" " param="filename" target="archive-get-one-transcript"/>
+        <!--<foreach list="${transcript-list}" delimiter=" " param="id.plus.filename" target="archive-get-one-transcript"/>-->
     </target>
     
     <target name="archive-get-one-transcript">
+        <!--<propertyregex property="filename" input="${id.plus.filename}" regexp=".+/(.+)" select="\1"/>-->
     	<get src="${url.to.transcripts}/${filename}" dest="${wylie}/${filename}" ignoreerrors="true"/>
     </target>
 
+    <target name="saxon-test">
+        <mkdir dir="${unicode}"/>
+		<java classname="net.sf.saxon.Transform" fork="yes">
+            <arg value="-s"/>
+            <arg value="${archive}/title_metadata.xml"/>
+            <arg value="${styles}/mergeMetadataAndData.xsl"/>
+            <arg value="transcript.location=http://www.thdl.org/avarch/transcripts/"/>
+            <arg value="transform.to.dir=${unicode}"/>
+			<classpath>
+				<path refid="saxon.classpath"/>
+                <pathelement location="${vanillalib}/Jskad.jar"/>
+			</classpath>
+		</java>
+    </target>
+    
     <target name="archive-transcripts-to-unicode">
         <mkdir dir="${unicode}"/>
         <antcall target="jskad-dist">
           <param name="my.jar.suffix" value=""/>
         </antcall>
-        <!-- why not use ant task for saxon?? -->
-		<java classname="net.sf.saxon.Transform" fork="yes">
-            <arg value="-o"/>
-            <arg value="${unicode}"/>
-            <arg value="${wylie}"/>
-            <arg value="${styles}/qdToUnicode.xsl"/>
-			<classpath>
-				<pathelement location="${vanillalib}/Jskad.jar"/>
-				<path refid="saxon.classpath"/>
-			</classpath>
-		</java>
+        <mkdir dir="${lucene-thdl.bin}"/>
+		<javac srcdir="${source}" destdir="${lucene-thdl.bin}" includes="org/thdl/util/ant/SaxonLiaison.java" debug="on"/>
+        <loadfile property="transcript-list" srcFile="${archive}/titles_as_list.txt"/> <!-- encoding="UTF-8" -->
+        <foreach list="${transcript-list}" delimiter=" " param="id.plus.filename" target="archive-one-transcript-to-unicode"/>
     </target>
-<!--
+        
+    <target name="archive-one-transcript-to-unicode">
+        <propertyregex property="title.id" input="${id.plus.filename}" regexp="(.+)/.+" select="\1"/>
+        <propertyregex property="filename" input="${id.plus.filename}" regexp=".+/(.+)" select="\1"/>
+        <!-- note: this processor is used to get around bug described here:
+            This class is a hack to work around Ant bug #41314: http://issues.apache.org/bugzilla/show_bug.cgi?id=41314
+            See Trevor's bike shed: http://www.vocaro.com/trevor/blog/2007/01/08/how-to-use-saxon-with-ant/
+        -->
+        <if>
+            <available file="${wylie}/${filename}" property="transcript.exists"/>
+            <then>
+                <xslt in="${wylie}/${filename}" out="${unicode}/${filename}" style="${styles}/qdToUnicode.xsl" processor="org.thdl.util.ant.SaxonLiaison">
+                    <param name="title.id" expression="${title.id}"/>
+                    <classpath>
+                        <pathelement location="${lucene-thdl.bin}"/>
+                        <pathelement location="${vanillalib}/Jskad.jar"/>
+                        <path refid="saxon.classpath"/>
+                    </classpath>
+                </xslt>
+            </then>
+        </if>
+    </target>
+
     
-    <target name="archive-transcripts-to-unicode">
-		<java classname="net.sf.saxon.Transform" fork="yes">
+    <!-- solr tasks -->
+    <target name="solr-prepare-transcripts">
+        
+    </target>
+    
+    
+    <!-- solr stuff -->
+ <!--   <target name="solr-1:clean-local" depends="clean">
+        <delete dir="${solarized.transcript.dir.prefinal}"/>
+        <delete dir="${solarized.transcript.dir.final}"/>
+        <mkdir dir="${solarized.transcript.dir.prefinal}"/>
+        <mkdir dir="${solarized.transcript.dir.final}"/>
+    </target>-->
+    
+  <!--  <target name="solr-2:prepare-documents" depends="init, dbxml-4:ngram-magic">-->
+        <!-- create xml data file used to assign tags to mono tsheg bars -->
+		<!--
+        <java classname="net.sf.saxon.Transform" fork="yes">
             <arg value="-o"/>
-            <arg value="${unicode.transcript.dir}"/>
-            <arg value="${wylie.transcript.dir}"/>
-            <arg value="${stylesheet.dir}/qdToUnicode.xsl"/>
+            <arg value="${build.dir}/tshegbartags.xml"/>
+            <arg value="${lexicon.dir}/lhasa-verbs.xml"/>
+            <arg value="${stylesheet.dir}/prepareTshegBarTagger.xsl"/>
 			<classpath>
 				<pathelement location="${bin.dir}"/>
 				<path refid="classpath"/>
 			</classpath>
 		</java>
+        -->
+        
+        <!-- create xml file used to assign synonyms to certain mono tsheg bars -->
+		<!--
+        <java classname="net.sf.saxon.Transform" fork="yes">
+            <arg value="-o"/>
+            <arg value="${build.dir}/synonyms.xml"/>
+            <arg value="${lexicon.dir}/lhasa-verbs.xml"/>
+            <arg value="${stylesheet.dir}/makeSynonymFile.xsl"/>
+			<classpath>
+				<pathelement location="${bin.dir}"/>
+				<path refid="classpath"/>
+			</classpath>
+		</java>
+        -->
+        
+  <!--      <loadfile property="xquery" srcfile="${stylesheet.dir}/solarizeTranscriptDatabase.xql" encoding="UTF-8"/>
+        <java classname="org.thdl.dbxml.QueryTools" fork="yes">
+            <arg value="${dbxml.environment.dir}"/>
+            <arg value="${dbxml.container}"/>
+            <arg value="${xquery}"/>
+            <arg value="${solarized.transcript.dir.prefinal}"/>
+			<classpath>
+				<pathelement location="${bin.dir}"/>
+				<path refid="classpath"/>
+			</classpath>
+            <jvmarg value="-Djava.library.path=${dbxml.lib}"/>
+        </java>-->
+        
+        <!-- insert whether or not media exists for segment -->
+  <!--      <java classname="net.sf.saxon.Transform" fork="yes">
+            <arg value="-o"/>
+            <arg value="${solarized.transcript.dir.final}"/>
+            <arg value="${solarized.transcript.dir.prefinal}"/>
+            <arg value="${stylesheet.dir}/movieInfoToSolrAdd.xsl"/>
+			<classpath>
+				<pathelement location="${bin.dir}"/>
+				<path refid="classpath"/>
+			</classpath>
+		</java>
+        
+        <copy todir="${solarized.transcript.dir.final}">
+            <fileset dir="." includes="*.sh"/>
+        </copy>
+    </target>-->
+ 
+    <!--
+    This is because the example schema.xml specifies a "uniqueKey" field called "id". 
+    Whenever you POST instructions to Solr to add a document with the same value for 
+    the uniqueKey as an existing document, it automaticaly replaces it for you. 
+    
+    However, for us, uniqueKeys combine the document id (which won't change) with
+    sentence ids (which may change), e.g. <field name="id">2291_d629e12</field>.
+    
+    So, to replace, we'll find XML document by name (document id) in dbxml database,
+    then get all sentence ids for that document, then combine docId_sentenceId and
+    remove/replace from lucene.
+    -->
+  <!--  
+    <target name="solr-3:commit-documents">
+        <exec executable="sh" dir="${solarized.transcript.dir.final}">
+            <arg value="post.sh"/>
+            <arg value="*.xml"/>
+        </exec>
     </target>
-    -->    
+    
+    <target name="solr-4:delete-documents" depends="solr-1:clean-local"> 
+        <exec executable="curl">
+            <arg value="${solr.update}"/>
+            <arg value="-data-binary"/> should have double dash at beginning
+            <arg value="&lt;delete&gt;&lt;query&gt;id:[* TO *]&lt;/query&gt;&lt;/delete&gt;"/>
+        </exec>
+        <exec executable="curl">
+            <arg value="${solr.update}"/>
+            <arg value="-data-binary"/> double dash again!
+            <arg value="&lt;commit/&gt;"/>
+        </exec>
+    </target>
+-->    
+    
     <!-- concordance program -->
 	<target name="lucene-thdl-compile" depends="init">
         <mkdir dir="${lucene-thdl.bin}"/>
