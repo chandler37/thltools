@@ -9,7 +9,7 @@
     
     <xsl:import href="qdToUnicode.xsl"/>
     
-	<xsl:output method="xml" encoding="UTF-8" indent="yes" name="unicode.out"/>
+	<xsl:output method="xml" encoding="UTF-8" indent="yes" name="unicode.transcript.with.metadata"/>
     
     <xsl:param name="transcript.location" select="''"/>
     <xsl:param name="transform.to.dir" select="''"/>
@@ -18,7 +18,7 @@
         <xsl:for-each select="//transcript">
             <xsl:variable name="filename" select="."/>
           <!--  <xsl:variable name="filename" select="encoder:encode(.,'UTF-8')"/> -->
-            <xsl:result-document href="{$transform.to.dir}/{$filename}" format="unicode.out">
+            <xsl:result-document href="{$filename}" format="unicode.transcript.with.metadata">
                 <xsl:element name="TITLE">
                     <xsl:attribute name="id">
                         <xsl:value-of select="../@id"/>

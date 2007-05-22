@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<!-- 
+    Some THDL titles are problematic:
+        *   691, A New Script, claims to have a transcript but there is no
+            transcript at the URL.
+        *   2069, Husked Barley, has a zero KB transcript.
+        *   2116, Nasal Congestion, also has a zero KB transcript.
+     Each of these is handled here as a title with metadata but no data,
+     just like any other title without a transcription.
+-->
+     
 <project name="lucene-thdl" default="lucene-thdl-jar" basedir=".">
     <import file="build.xml"/>
  
@@ -9,17 +19,16 @@
         </classpath>
 	</taskdef>   
 	
-    <property name="lucene-thdl.bin" location="${bin}/lucene-thdl"/>
-    <property name="archive" location="archive"/>
-    <property name="wylie" location="${archive}/wylie"/>
-    <property name="unicode" location="${archive}/unicode"/>
-    <property name="solr" location="${archive}/solr"/>
-    <property name="styles" location="${archive}/styles"/>
     <property name="get.title.metadata" value="http://thdl.org/avarch/mediaflowcat/title_metadata.php"/>
     <property name="url.to.transcripts" value="http://www.thdl.org/avarch/transcripts"/>
     <property name="url.to.media.high" value="http://www.thdl.org/media/high"/>
     <property name="url.to.media.low" value="http://www.thdl.org/media/low"/>
     <property name="url.to.media.audio" value="http://www.thdl.org/media/audio"/>
+    <property name="lucene-thdl.bin" location="${bin}/lucene-thdl"/>
+    <property name="archive" location="archive"/>
+    <property name="styles" location="${archive}/styles"/>
+    <property name="transcripts" location="${archive}/transcripts-with-metadata"/>
+    <property name="solr" location="${archive}/solr"/>
     
     <path id="lucene.classpath">
 		<fileset id="lucene.extensions" dir="${ext}/apache">
@@ -33,13 +42,44 @@
         </fileset>
     </path>
     
+    <target name="compile-and-jar-libraries">
+        <antcall target="jskad-dist">
+          <param name="my.jar.suffix" value=""/>
+        </antcall>
+    </target>
     
     <!-- archive tasks -->
     <target name="archive-get-metadata">
         <mkdir dir="${archive}"/>
         <get src="${get.title.metadata}" dest="${archive}/title_metadata.xml" verbose="on"/>
     </target>
+    
+    <!-- due to encoding issues, none of the transcripts with filenames that need to be url-encoded
+        are retrieved correctly by this task; for example the umlaut in title 00007 messes things
+        up FIX ME!! -->
+    <target name="archive-get-and-transform-data" depends="compile-and-jar-libraries">
+        <mkdir dir="${transcripts}"/>
+		<java classname="net.sf.saxon.Transform" fork="yes">
+            <arg value="-s"/>
+            <arg value="${archive}/title_metadata.xml"/>
+            <arg value="-o"/>
+            <arg value="${transcripts}/DUMMY_FOR_BASE_URI"/>
+            <arg value="${styles}/mergeMetadataAndData.xsl"/>
+            <arg value="transcript.location=${url.to.transcripts}/"/>
+			<classpath>
+				<path refid="saxon.classpath"/>
+                <pathelement location="${vanillalib}/Jskad.jar"/>
+			</classpath>
+		</java>
+    </target>
+    
+    <!-- solr tasks -->
+    <target name="solr-prepare-transcripts">
+        <mkdir dir="${solr}"/>
+        <xslt basedir="${transcripts}" destdir="${solr}" extension=".xml" style="${styles}/solarizeTranscript.xsl"/>
+    </target>
 
+    
     <target name="archive-get-list-of-transcripts">
 	<!--	<java classname="net.sf.saxon.Transform" fork="yes">
             <arg value="-s"/>
@@ -52,7 +92,6 @@
 			</classpath>
 		</java>-->
         <xslt in="${archive}/title_metadata.xml" out="${archive}/titles_as_list.txt" style="${styles}/get-list-of-transcripts.xsl"/>
-        <xslt in="${archive}/title_metadata.xml" out="${archive}/titles_as_list2.txt" style="${styles}/get-list-of-transcripts2.xsl"/>
     </target>
 
     <target name="archive-get-transcripts">
@@ -67,59 +106,6 @@
     	<get src="${url.to.transcripts}/${filename}" dest="${wylie}/${filename}" ignoreerrors="true"/>
     </target>
 
-    <target name="saxon-test">
-        <mkdir dir="${unicode}"/>
-		<java classname="net.sf.saxon.Transform" fork="yes">
-            <arg value="-s"/>
-            <arg value="${archive}/title_metadata.xml"/>
-            <arg value="${styles}/mergeMetadataAndData.xsl"/>
-            <arg value="transcript.location=http://www.thdl.org/avarch/transcripts/"/>
-            <arg value="transform.to.dir=${unicode}"/>
-			<classpath>
-				<path refid="saxon.classpath"/>
-                <pathelement location="${vanillalib}/Jskad.jar"/>
-			</classpath>
-		</java>
-    </target>
-    
-    <target name="archive-transcripts-to-unicode">
-        <mkdir dir="${unicode}"/>
-        <antcall target="jskad-dist">
-          <param name="my.jar.suffix" value=""/>
-        </antcall>
-        <mkdir dir="${lucene-thdl.bin}"/>
-		<javac srcdir="${source}" destdir="${lucene-thdl.bin}" includes="org/thdl/util/ant/SaxonLiaison.java" debug="on"/>
-        <loadfile property="transcript-list" srcFile="${archive}/titles_as_list.txt"/> <!-- encoding="UTF-8" -->
-        <foreach list="${transcript-list}" delimiter=" " param="id.plus.filename" target="archive-one-transcript-to-unicode"/>
-    </target>
-        
-    <target name="archive-one-transcript-to-unicode">
-        <propertyregex property="title.id" input="${id.plus.filename}" regexp="(.+)/.+" select="\1"/>
-        <propertyregex property="filename" input="${id.plus.filename}" regexp=".+/(.+)" select="\1"/>
-        <!-- note: this processor is used to get around bug described here:
-            This class is a hack to work around Ant bug #41314: http://issues.apache.org/bugzilla/show_bug.cgi?id=41314
-            See Trevor's bike shed: http://www.vocaro.com/trevor/blog/2007/01/08/how-to-use-saxon-with-ant/
-        -->
-        <if>
-            <available file="${wylie}/${filename}" property="transcript.exists"/>
-            <then>
-                <xslt in="${wylie}/${filename}" out="${unicode}/${filename}" style="${styles}/qdToUnicode.xsl" processor="org.thdl.util.ant.SaxonLiaison">
-                    <param name="title.id" expression="${title.id}"/>
-                    <classpath>
-                        <pathelement location="${lucene-thdl.bin}"/>
-                        <pathelement location="${vanillalib}/Jskad.jar"/>
-                        <path refid="saxon.classpath"/>
-                    </classpath>
-                </xslt>
-            </then>
-        </if>
-    </target>
-
-    
-    <!-- solr tasks -->
-    <target name="solr-prepare-transcripts">
-        
-    </target>
     
     
     <!-- solr stuff -->
