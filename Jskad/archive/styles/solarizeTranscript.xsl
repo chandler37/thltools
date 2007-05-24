@@ -6,7 +6,10 @@
     <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
     
     <xsl:param name="TITLE_TYPE" select="'AVDB_TITLE'"/>
+    <xsl:param name="VIDEO_TYPE" select="'VIDEO'"/>
     <xsl:param name="TRANSCRIPT_FRAGMENT_TYPE" select="'TRANSCRIPT_FRAGMENT'"/>
+    <xsl:param name="DURATION_PREFIX" select="'1970-01-01T'"/>
+    <xsl:param name="DURATION_SUFFIX" select="'Z'"/>
     
     <xsl:template match="/">
         <xsl:apply-templates select="TITLE"/>
@@ -28,17 +31,41 @@
         <xsl:param name="title.id" select="''"/>
         <doc>
             <field name="id"><xsl:value-of select="$title.id"/></field>
-            <field name="thdl_type"><xsl:value-of select="$TITLE_TYPE"/></field>
-            <field name="speechType"><xsl:value-of select="speechType"/></field>
-            <field name="language"><xsl:value-of select="language"/></field>
-            <field name="culturalRegion"><xsl:value-of select="culturalRegion"/></field>
+            <field name="thdlType_opt"><xsl:value-of select="$TITLE_TYPE"/></field>
+            <field name="speechType_opt"><xsl:value-of select="speechType"/></field>
+            <field name="language_lang"><xsl:value-of select="language"/></field>
+            <field name="administrativeLocation_opt"><xsl:value-of select="administrativeLocation"/></field>
+            <field name="culturalRegion_opt"><xsl:value-of select="culturalRegion"/></field>
             <field name="title_en"><xsl:value-of select="name"/></field>
             <field name="caption_en"><xsl:value-of select="caption"/></field>
-            <field name="speechType"><xsl:value-of select="speechType"/></field>
-            <field name="transcriptFilename"><xsl:value-of select="transcript"/></field>
-            <!-- make plan for videos; incl. caressing #s so that you can search for ranges -->
+            <!-- should we also include transcript and video ids? -->
+            <field name="transcript_filename"><xsl:value-of select="transcript"/></field>
+            <xsl:for-each select="video">
+                <xsl:choose>
+                    <xsl:when test="mediaDescription='Audio'">
+                        <field name="audio_size"><xsl:value-of select="size"/></field>
+                        <field name="audio_duration"><xsl:value-of select="concat($DURATION_PREFIX,duration,$DURATION_SUFFIX)"/></field>
+                        <field name="audio_filename"><xsl:value-of select="name"/></field>
+                    </xsl:when>
+                    <xsl:otherwise> <!-- must be video -->
+                        <xsl:choose>
+                            <xsl:when test="connectionSpeed='fast'">
+                                <field name="high_size"><xsl:value-of select="size"/></field>
+                                <field name="high_duration"><xsl:value-of select="concat($DURATION_PREFIX,duration,$DURATION_SUFFIX)"/></field>
+                                <field name="high_filename"><xsl:value-of select="name"/></field>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <field name="low_size"><xsl:value-of select="size"/></field>
+                                <field name="low_duration"><xsl:value-of select="concat($DURATION_PREFIX,duration,$DURATION_SUFFIX)"/></field>
+                                <field name="low_filename"><xsl:value-of select="name"/></field>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:for-each>
         </doc>
     </xsl:template>
+    
     
 <!-- Here's what a chunk of metadata looks like:
 
@@ -75,6 +102,7 @@
         <xsl:param name="title.id" select="''"/>
         <doc>
             <field name="id"><xsl:value-of select="concat($title.id, '_', @id)"/></field>
+            <field name="transcript_idref"><xsl:value-of select="$title.id"/></field>
             <field name="thdl_type"><xsl:value-of select="$TRANSCRIPT_FRAGMENT_TYPE"/></field>
             <field name="form_bo"><xsl:value-of select="FORM[@xml:lang='bo']"/></field>
             <field name="form_bo-Latn"><xsl:value-of select="FORM[@xml:lang='bo-Latn']"/></field>

@@ -79,6 +79,29 @@
         <xslt basedir="${transcripts}" destdir="${solr}" extension=".xml" style="${styles}/solarizeTranscript.xsl"/>
     </target>
 
+    <!--
+        SimplePostTool: version 1.2
+        This is a simple command line tool for POSTing raw XML to a Solr
+        port.  XML data can be read from files specified as commandline
+        args; as raw commandline arg strings; or via STDIN.
+        Examples:
+          java -Ddata=files -jar post.jar *.xml
+          java -Ddata=args  -jar post.jar '<delete><id>42</id></delete>'
+          java -Ddata=stdin -jar post.jar < hd.xml
+        Other options controlled by System Properties include the Solr
+        URL to POST to, and whether a commit should be executed.  These
+        are the defaults for all System Properties...
+          -Ddata=files
+          -Durl=http://localhost:8983/solr/update
+          -Dcommit=yes
+    -->
+    <target name="solr-post-and-commit-transcripts">
+		<java classname="net.sf.saxon.Transform" fork="yes">
+			<classpath>
+				<path refid="lucene.classpath"/>
+			</classpath>
+		</java>
+    </target>
     
     <target name="archive-get-list-of-transcripts">
 	<!--	<java classname="net.sf.saxon.Transform" fork="yes">

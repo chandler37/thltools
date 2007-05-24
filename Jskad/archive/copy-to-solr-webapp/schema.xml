@@ -182,8 +182,6 @@
    
    <!-- transcript documents -->
    <field name="id" type="string" indexed="true" stored="true"/>
-   <field name="thdl_type" type="string" indexed="true" stored="true"/>
-
 
    <!-- Dynamic field definitions.  If a field name is not found, dynamicFields
         will be used if the name matches any of the patterns.
@@ -216,6 +214,13 @@
    <!-- FIXME shouldn't be string!! suffix for any field containing Chinese language content -->
    <dynamicField name="*_zh" type="string" indexed="true" stored="true"/>
    
+   <dynamicField name="*_idref" type="string" indexed="true" stored="false"/>
+   <dynamicField name="*_opt" type="string" indexed="true" stored="true"/>
+   <dynamicField name="*_lang" type="string" indexed="true" stored="true"/>
+   <dynamicField name="*_size" type="sint" indexed="true" stored="true"/>
+   <dynamicField name="*_name" type="string" indexed="true" stored="true"/>
+   <dynamicField name="*_duration" type="date" indexed="true" stored="true"/>
+   <dynamicField name="*_filename" type="string" indexed="true" stored="true"/>
    
  </fields>
 
