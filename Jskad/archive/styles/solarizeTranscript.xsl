@@ -5,11 +5,7 @@
     
     <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
     
-    <xsl:param name="TITLE_TYPE" select="'AVDB_TITLE'"/>
-    <xsl:param name="VIDEO_TYPE" select="'VIDEO'"/>
-    <xsl:param name="TRANSCRIPT_FRAGMENT_TYPE" select="'TRANSCRIPT_FRAGMENT'"/>
-    <xsl:param name="DURATION_PREFIX" select="'1970-01-01T'"/>
-    <xsl:param name="DURATION_SUFFIX" select="'Z'"/>
+    <xsl:import href="solarizeConstantsForImport.xsl"/>
     
     <xsl:template match="/">
         <xsl:apply-templates select="TITLE"/>
@@ -23,49 +19,55 @@
             </xsl:apply-templates>
             <xsl:apply-templates select="TEXT/S">
                 <xsl:with-param name="title.id" select="$title.id"/>
+                <xsl:with-param name="belongs.to" select="METADATA/belongsTo"/>
             </xsl:apply-templates>
         </add>
     </xsl:template>
     
+    <!-- should we also include transcript and video ids? -->
     <xsl:template match="METADATA">
         <xsl:param name="title.id" select="''"/>
         <doc>
             <field name="id"><xsl:value-of select="$title.id"/></field>
-            <field name="thdlType_opt"><xsl:value-of select="$TITLE_TYPE"/></field>
-            <field name="speechType_opt"><xsl:value-of select="speechType"/></field>
+            <field name="thdlType_s"><xsl:value-of select="$TITLE_TYPE"/></field>
+            <field name="belongsTo_idlist"><xsl:value-of select="belongsTo"/></field>
+            <field name="speechType_s"><xsl:value-of select="speechType"/></field>
             <field name="language_lang"><xsl:value-of select="language"/></field>
-            <field name="administrativeLocation_opt"><xsl:value-of select="administrativeLocation"/></field>
-            <field name="culturalRegion_opt"><xsl:value-of select="culturalRegion"/></field>
+            <field name="administrativeLocation_s"><xsl:value-of select="administrativeLocation"/></field>
+            <field name="culturalRegion_s"><xsl:value-of select="culturalRegion"/></field>
             <field name="title_en"><xsl:value-of select="name"/></field>
             <field name="caption_en"><xsl:value-of select="caption"/></field>
-            <!-- should we also include transcript and video ids? -->
             <field name="transcript_filename"><xsl:value-of select="transcript"/></field>
-            <xsl:for-each select="video">
-                <xsl:choose>
-                    <xsl:when test="mediaDescription='Audio'">
-                        <field name="audio_size"><xsl:value-of select="size"/></field>
-                        <field name="audio_duration"><xsl:value-of select="concat($DURATION_PREFIX,duration,$DURATION_SUFFIX)"/></field>
-                        <field name="audio_filename"><xsl:value-of select="name"/></field>
-                    </xsl:when>
-                    <xsl:otherwise> <!-- must be video -->
-                        <xsl:choose>
-                            <xsl:when test="connectionSpeed='fast'">
-                                <field name="high_size"><xsl:value-of select="size"/></field>
-                                <field name="high_duration"><xsl:value-of select="concat($DURATION_PREFIX,duration,$DURATION_SUFFIX)"/></field>
-                                <field name="high_filename"><xsl:value-of select="name"/></field>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <field name="low_size"><xsl:value-of select="size"/></field>
-                                <field name="low_duration"><xsl:value-of select="concat($DURATION_PREFIX,duration,$DURATION_SUFFIX)"/></field>
-                                <field name="low_filename"><xsl:value-of select="name"/></field>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:for-each>
+            <xsl:variable name="video.ids">
+                <xsl:call-template name="getVideoList">
+                    <xsl:with-param name="metadata" select="."/>
+                </xsl:call-template>
+            </xsl:variable>
+            <xsl:if test="normalize-space($video.ids)">
+                <field name="videos_idlist"><xsl:value-of select="normalize-space($video.ids)"/></field>
+            </xsl:if>
         </doc>
+        <xsl:for-each select="video">
+            <doc>
+                <field name="id"><xsl:value-of select="concat(@id)"/></field>
+                <field name="title_idref"><xsl:value-of select="$title.id"/></field>
+                <field name="thdlType_s"><xsl:value-of select="$VIDEO_TYPE"/></field>
+                <field name="mediaType_s"><xsl:value-of select="mediaDescription"/></field>
+                <field name="connSpeed_s"><xsl:value-of select="connectionSpeed"/></field>
+                <field name="quality_s"><xsl:value-of select="quality"/></field>
+                <field name="size_i"><xsl:value-of select="size"/></field>
+                <field name="duration_dt"><xsl:value-of select="concat($DURATION_PREFIX,duration,$DURATION_SUFFIX)"/></field>
+                <field name="media_filename"><xsl:value-of select="name"/></field>
+            </doc>
+        </xsl:for-each>
     </xsl:template>
-    
+         
+    <xsl:template name="getVideoList">
+        <xsl:param name="metadata" select="''"/>
+        <xsl:for-each select="$metadata/video">
+            <xsl:value-of select="@id"/><xsl:text> </xsl:text>
+        </xsl:for-each>
+    </xsl:template>
     
 <!-- Here's what a chunk of metadata looks like:
 
@@ -100,19 +102,26 @@
 
     <xsl:template match="S">
         <xsl:param name="title.id" select="''"/>
+        <xsl:param name="belongs.to" select="''"/>
         <doc>
             <field name="id"><xsl:value-of select="concat($title.id, '_', @id)"/></field>
-            <field name="transcript_idref"><xsl:value-of select="$title.id"/></field>
-            <field name="thdl_type"><xsl:value-of select="$TRANSCRIPT_FRAGMENT_TYPE"/></field>
+            <field name="title_idref"><xsl:value-of select="$title.id"/></field>
+            <field name="thdlType_s"><xsl:value-of select="$TRANSCRIPT_FRAGMENT_TYPE"/></field>
+            <field name="belongsTo_idlist"><xsl:value-of select="$belongs.to"/></field>
             <field name="form_bo"><xsl:value-of select="FORM[@xml:lang='bo']"/></field>
             <field name="form_bo-Latn"><xsl:value-of select="FORM[@xml:lang='bo-Latn']"/></field>
-            <field name="transl_en"><xsl:value-of select="TRANSL[@xml:lang='en']"/></field>
-            <field name="transl_zh"><xsl:value-of select="TRANSL[@xml:lang='zh']"/></field>
-            <xsl:if test="AUDIO/@start">
-                <field name="start_f"><xsl:value-of select="AUDIO/@start"/></field>
+            <xsl:if test="TRANSL[@xml:lang='en']">
+                <field name="transl_en"><xsl:value-of select="TRANSL[@xml:lang='en']"/></field>
             </xsl:if>
-            <xsl:if test="AUDIO/@end">
-                <field name="end_f"><xsl:value-of select="AUDIO/@end"/></field>
+            <xsl:if test="TRANSL[@xml:lang='zh']">
+                <field name="transl_zh"><xsl:value-of select="TRANSL[@xml:lang='zh']"/></field>
+            </xsl:if>
+            <xsl:if test="string(AUDIO/@start)">
+                <field name="start_f"><xsl:value-of select="AUDIO/@start"/></field>
+                <xsl:if test="string(AUDIO/@end)">
+                    <field name="end_f"><xsl:value-of select="AUDIO/@end"/></field>
+                    <field name="duration_f"><xsl:value-of select="AUDIO/@end - AUDIO/@start"/></field>
+                </xsl:if>
             </xsl:if>
         </doc>
     </xsl:template>

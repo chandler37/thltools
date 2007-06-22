@@ -8,7 +8,7 @@
  http://wiki.apache.org/solr/SchemaXml
 -->
 
-<schema name="THDL" version="1.1">
+<schema name="THDL Archive" version="1.1">
   <!-- attribute "name" is the name of this schema and is only used for display purposes.
        Applications should change this to reflect the nature of the search collection.
        version="1.1" is Solr's version number for the schema syntax and semantics.  It should
@@ -158,8 +158,13 @@
     </fieldtype>
     
     <fieldtype name="text_wylie" class="solr.TextField">
-        <analyzer class="solr.WhitespaceTokenizerFactory"/>
+        <tokenizer class="solr.WhitespaceTokenizerFactory"/>
    <!--     <analyzer class="org.thdl.lucene.WylieTibetanAnalyzer"/> -->
+    </fieldtype>
+    
+    <fieldtype name="text_idlist" class="solr.TextField">
+        <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+     <!--   <filter class="org.thdl.lucene.NumberPadderFactory"/>  -->
     </fieldtype>
     
  </types>
@@ -183,6 +188,7 @@
    
    <!-- transcript documents -->
    <field name="id" type="string" indexed="true" stored="true"/>
+   <field name="form_bo" type="text_tibetan" indexed="true" stored="true"/> 
 
    <!-- Dynamic field definitions.  If a field name is not found, dynamicFields
         will be used if the name matches any of the patterns.
@@ -207,7 +213,7 @@
    <dynamicField name="*_bo" type="text_tibetan" indexed="true" stored="true"/>
    
    <!-- suffix for any field containing Tibetan transliterated into Wylie -->
-   <dynamicField name="*_bo-Latn"  type="text_wylie"  indexed="true" stored="true"/>
+   <dynamicField name="*_bo-Latn"  type="text_ws"  indexed="true" stored="true"/>
    
    <!-- suffix for any field containing English language content -->
    <dynamicField name="*_en" type="text_lu" indexed="true" stored="true"/>
@@ -216,11 +222,8 @@
    <dynamicField name="*_zh" type="string" indexed="true" stored="true"/>
    
    <dynamicField name="*_idref" type="string" indexed="true" stored="false"/>
-   <dynamicField name="*_opt" type="string" indexed="true" stored="true"/>
+   <dynamicField name="*_idlist" type="text_ws" indexed="true" stored="true"/>
    <dynamicField name="*_lang" type="string" indexed="true" stored="true"/>
-   <dynamicField name="*_size" type="sint" indexed="true" stored="true"/>
-   <dynamicField name="*_name" type="string" indexed="true" stored="true"/>
-   <dynamicField name="*_duration" type="date" indexed="true" stored="true"/>
    <dynamicField name="*_filename" type="string" indexed="true" stored="true"/>
    
  </fields>
