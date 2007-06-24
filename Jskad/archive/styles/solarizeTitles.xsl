@@ -28,7 +28,8 @@
     <xsl:template match="METADATA">
         <xsl:param name="title.id" select="''"/>
         <doc>
-            <field name="id"><xsl:value-of select="$title.id"/></field>
+            <field name="id"><xsl:value-of select="$title.id"/></field> <!-- has 't' prefix -->
+            <field name="numericRef"><xsl:value-of select="substring($title.id,2)"/></field> <!-- strips prefix for searching -->
             <field name="thdlType_s"><xsl:value-of select="$TITLE_TYPE"/></field>
             <field name="belongsTo_idlist"><xsl:value-of select="belongsTo"/></field>
             <field name="speechType_s"><xsl:value-of select="speechType"/></field>
@@ -49,7 +50,8 @@
         </doc>
         <xsl:for-each select="video">
             <doc>
-                <field name="id"><xsl:value-of select="concat(@id)"/></field>
+                <field name="id"><xsl:value-of select="@id"/></field> <!-- has 'v' prefix -->
+                <field name="numericRef"><xsl:value-of select="substring(@id,2)"/></field> <!-- strips prefix for searching -->
                 <field name="title_idref"><xsl:value-of select="$title.id"/></field>
                 <field name="thdlType_s"><xsl:value-of select="$VIDEO_TYPE"/></field>
                 <field name="mediaType_s"><xsl:value-of select="mediaDescription"/></field>
@@ -103,8 +105,10 @@
     <xsl:template match="S">
         <xsl:param name="title.id" select="''"/>
         <xsl:param name="belongs.to" select="''"/>
+        <xsl:variable name="s.id" select="concat($title.id, '_', @id)"/>
         <doc>
-            <field name="id"><xsl:value-of select="concat($title.id, '_', @id)"/></field>
+            <field name="id"><xsl:value-of select="$s.id"/></field> <!-- has 't' prefix -->
+            <field name="numericRef"><xsl:value-of select="substring($s.id,2)"/></field> <!-- strips prefix for searching -->
             <field name="title_idref"><xsl:value-of select="$title.id"/></field>
             <field name="thdlType_s"><xsl:value-of select="$TRANSCRIPT_FRAGMENT_TYPE"/></field>
             <field name="belongsTo_idlist"><xsl:value-of select="$belongs.to"/></field>

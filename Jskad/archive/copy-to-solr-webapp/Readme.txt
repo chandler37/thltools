@@ -2,14 +2,19 @@ The files in this directory must be copied to your solr webapp
 before you can use lucene-thdl-build.xml to post, commit, or 
 delete documents from your solr server.
 
-schema.xml & solrconfig.xml: 
-    Copy these files to your solr/conf directory,
-    replacing the existing files with these names
+First, run the task solr-prepare-for-copy-to-solr-webapp.
 
- 
-lucene-thdl.jar :
-    Create an up to date copy of this file by
-    running the task lucene-thdl-jar, then copy
-    to your solr/lib directory. If solr/lib does
+Then, copy files to SOLR as follows:
+
+*.xml: 
+    Copy to your solr/conf directory, replacing any
+    existing files..
+    
+*.xsl
+    Copy to the solr/conf/xslt directory.
+
+*.jar
+    Copy to your solr/lib directory. If solr/lib does
     not exist, then create it.
+
 

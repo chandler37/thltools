@@ -188,6 +188,7 @@
    
    <!-- transcript documents -->
    <field name="id" type="string" indexed="true" stored="true"/>
+   <field name="numericRef" type="string" indexed="true" stored="false"/>
    <field name="form_bo" type="text_tibetan" indexed="true" stored="true"/> 
 
    <!-- Dynamic field definitions.  If a field name is not found, dynamicFields
@@ -244,6 +245,6 @@
       A custom similarity may be specified here, but the default is fine
       for most applications.  -->
  <!-- <similarity class="org.apache.lucene.search.DefaultSimilarity"/> -->
-
+ 
 </schema>
 

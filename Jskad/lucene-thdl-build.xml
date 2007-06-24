@@ -100,7 +100,7 @@
     <!-- solr tasks -->
     <target name="solr-prepare-titles">
         <mkdir dir="${solr.titles}"/>
-        <xslt basedir="${transcripts}" includes="*.xml" destdir="${solr.titles}" extension=".xml" style="${styles}/solarizeTranscript.xsl"/>
+        <xslt basedir="${transcripts}" includes="*.xml" destdir="${solr.titles}" extension=".xml" style="${styles}/solarizeTitles.xsl"/>
     </target>
     
     <target name="solr-prepare-nontitles">
@@ -140,6 +140,10 @@
             <jvmarg value="-Durl=${url.to.solr.update}"/>
             <jvmarg value="-Dcommit=yes"/>
 		</java>
+    </target>
+    
+    <target name="solr-prepare-for-copy-to-solr-webapp" depends="lucene-thdl-jar">
+        <!--<copy file="${styles}/solarizeConstantsForImport.xsl" todir="${copy.to.solr.webapp}"/>-->
     </target>
         
         <!-- insert whether or not media exists for segment -->

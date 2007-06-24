@@ -17,7 +17,7 @@
 	<xsl:template match="/">
         <xsl:for-each select="//transcript">
             <xsl:variable name="filename" select="."/>
-            <xsl:result-document href="Transcript_{../@id}.xml" format="unicode.transcript.with.metadata">
+            <xsl:result-document href="{../@id}.xml" format="unicode.transcript.with.metadata">
                 <xsl:element name="TITLE">
                     <xsl:attribute name="id">
                         <xsl:value-of select="../@id"/>
