@@ -31,7 +31,7 @@
             <field name="id"><xsl:value-of select="$title.id"/></field> <!-- has 't' prefix -->
             <field name="numericRef"><xsl:value-of select="substring($title.id,2)"/></field> <!-- strips prefix for searching -->
             <field name="thdlType_s"><xsl:value-of select="$TITLE_TYPE"/></field>
-            <field name="belongsTo_idlist"><xsl:value-of select="belongsTo"/></field>
+            <field name="belongsTo_idlist"><xsl:value-of select="concat($title.id,' ',belongsTo)"/></field>
             <field name="speechType_s"><xsl:value-of select="speechType"/></field>
             <field name="language_lang"><xsl:value-of select="language"/></field>
             <field name="administrativeLocation_s"><xsl:value-of select="administrativeLocation"/></field>
@@ -109,9 +109,9 @@
         <doc>
             <field name="id"><xsl:value-of select="$s.id"/></field> <!-- has 't' prefix -->
             <field name="numericRef"><xsl:value-of select="substring($s.id,2)"/></field> <!-- strips prefix for searching -->
-            <field name="title_idref"><xsl:value-of select="$title.id"/></field>
+            <!-- <field name="title_idref"><xsl:value-of select="$title.id"/></field> -->
             <field name="thdlType_s"><xsl:value-of select="$TRANSCRIPT_FRAGMENT_TYPE"/></field>
-            <field name="belongsTo_idlist"><xsl:value-of select="$belongs.to"/></field>
+            <field name="belongsTo_idlist"><xsl:value-of select="concat($title.id,' ',$belongs.to)"/></field>
             <field name="form_bo"><xsl:value-of select="FORM[@xml:lang='bo']"/></field>
             <field name="form_bo-Latn"><xsl:value-of select="FORM[@xml:lang='bo-Latn']"/></field>
             <xsl:if test="TRANSL[@xml:lang='en']">
