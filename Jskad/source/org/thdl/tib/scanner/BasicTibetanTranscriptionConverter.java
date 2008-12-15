@@ -46,6 +46,7 @@ public class BasicTibetanTranscriptionConverter implements FontConverterConstant
 	private static final int WYLIE_TO_ACIP=2;
 	private static final int UNICODE_TO_WYLIE=3;
 	private static final int WYLIE_TO_UNICODE=4;
+	private static final int TIBETAN_UNICODE_RANGE[] = {3840, 4095};
 	
 	/** Converts from the Acip transliteration scheme to EWTS.*/
 	public static String acipToWylie(String acip)
@@ -251,25 +252,49 @@ public class BasicTibetanTranscriptionConverter implements FontConverterConstant
 		nuevaPalabra = Manipulate.replace(nuevaPalabra, "|", ";");
 		nuevaPalabra = Manipulate.fixWazur(nuevaPalabra);
 		return nuevaPalabra;*/
-	}	
+	}
+	
+	private static int getTibetanUnicodeStart(String unicode, int pos)
+	{
+		for(; pos < unicode.length(); pos++ ) if(unicode.codePointAt(pos)>=TIBETAN_UNICODE_RANGE[0] && unicode.codePointAt(pos)<=TIBETAN_UNICODE_RANGE[1]) return pos;
+		return -1;
+	}
+	
+	private static int getTibetanUnicodeEnd(String unicode, int pos)
+	{
+		for(; pos < unicode.length(); pos++ ) if(unicode.codePointAt(pos)<TIBETAN_UNICODE_RANGE[0] || unicode.codePointAt(pos)>TIBETAN_UNICODE_RANGE[1]) return pos;
+		return pos;
+	}
     
 	/** Converts Tibetan Unicode to EWTS. */
     public static String unicodeToWylie(String unicode)
     {
-    	String machineWylie;
-    	TibetanDocument tibDoc = new TibetanDocument();
-    	StringBuffer errors = new StringBuffer();
     	
-    	machineWylie = Converter.convertToEwtsForComputers(unicode, errors);
-    	try
+    	String machineWylie, startString, tibetanString, endString;
+    	TibetanDocument tibDoc;
+    	StringBuffer errors;
+    	int posStart=0, posEnd;
+    	while((posStart = getTibetanUnicodeStart(unicode, posStart))>=0)
     	{
-    		TibTextUtils.insertTibetanMachineWebForTranslit(true, machineWylie, tibDoc, 0, false);
+    		posEnd = getTibetanUnicodeEnd(unicode, posStart+1);
+    		startString = unicode.substring(0, posStart);
+    		tibetanString = unicode.substring(posStart, posEnd);
+    		endString = unicode.substring(posEnd);
+    		
+        	tibDoc = new TibetanDocument();
+        	errors = new StringBuffer();
+        	machineWylie = Converter.convertToEwtsForComputers(tibetanString, errors);
+        	try
+        	{
+        		TibTextUtils.insertTibetanMachineWebForTranslit(true, machineWylie, tibDoc, 0, false);
+        	}
+        	catch (InvalidTransliterationException e)
+        	{
+        		return null;
+        	}
+        	unicode = startString + tibDoc.getWylie(new boolean[] { false }) + endString;   	
     	}
-    	catch (InvalidTransliterationException e)
-    	{
-    		return null;
-    	}
-    	return tibDoc.getWylie(new boolean[] { false });   	
+    	return unicode;
     }
     
     /** Converts EWTS to Tibetan Unicode. */
@@ -424,9 +449,12 @@ public class BasicTibetanTranscriptionConverter implements FontConverterConstant
 			break;
 			default: result = linea;
 			}
-			if (result!=null) out.println(result);
+			if (result!=null)
+			{
+				out.println(result);
+				out.flush();
+			}
 		}
-		out.flush();
 	}
 	
 	public static BufferedReader getBufferedReader(String s, String format) throws Exception
