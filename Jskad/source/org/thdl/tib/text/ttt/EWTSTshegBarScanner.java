@@ -115,7 +115,7 @@ class EWTSTshegBarScanner extends TTshegBarScanner {
                    || (sb.charAt(i) >= '\u0fcf' && sb.charAt(i) <= '\u0fd1')
                    || (THDLWylieConstants.SAUVASTIKA == sb.charAt(i))
                    || (THDLWylieConstants.SWASTIKA == sb.charAt(i))
-                   || (" /;|!:=_@#$%<>(){}*&\r\n\t\u0f36\u0f38\u0f89\u0f8a\u0f8b".indexOf(sb.charAt(i))
+                   || (" /;|!:=_@#$%<>(){}*&\r\n\t\u0f36\u0f38\u0f89\u0f8a\u0f8b\u00a0".indexOf(sb.charAt(i))
                        >= 0)) {
           al.add(new TString("EWTS", sb.substring(i, i+1),
                              TString.TIBETAN_PUNCTUATION));

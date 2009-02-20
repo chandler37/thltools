@@ -40,6 +40,7 @@ import org.thdl.util.ThdlDebug;
 import org.thdl.util.ThdlOptions;
 import org.thdl.util.Trie;
 import org.thdl.tib.scanner.BasicTibetanTranscriptionConverter;
+import org.thdl.tib.scanner.Manipulate;
 
 /**
 * Interfaces between Extended Wylie and the TibetanMachineWeb fonts.
@@ -221,7 +222,7 @@ public class TibetanMachineWeb implements THDLWylieConstants {
     /** comma-delimited list of supported punctuation and
         miscellaneous characters: */
     private static final String others
-            = "_, ,/,|,!,:,;,@,#,$,%,(,),H,M,&,@#,?,=,{,},*,~X,X"; // FIXME: not yet supporting all these...
+            = "_, ,/,|,!,:,;,@,#,$,%,(,),H,M,&,@#,?,=,{,},\u00A0,~X,X"; // FIXME: not yet supporting all these...
 
     /** comma-delimited list of supported vowels: */
     private static final String vowels
@@ -760,7 +761,7 @@ public class TibetanMachineWeb implements THDLWylieConstants {
                                             + DELIMITER
                                             + " which means that no Wylie is assigned.  That isn't supported.");
                         if (hashOn) {
-                            tibHash.put(wylie, duffCodes);
+                            tibHash.put(Manipulate.unescape(wylie), duffCodes);
                         }
                         if (isTibetan) {
                             // Delete the dashes:
@@ -783,7 +784,7 @@ public class TibetanMachineWeb implements THDLWylieConstants {
                                             + " has a line with wylie " + wylie + " but no TMW; that's not allowed");
                         int font = duffCodes[TMW].getFontNum();
                         int code = duffCodes[TMW].getCharNum()-32;
-                        toHashKey[font][code] = wylie;
+                        toHashKey[font][code] = Manipulate.unescape(wylie);
                     }
                 }
             }

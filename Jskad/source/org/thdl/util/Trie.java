@@ -90,7 +90,7 @@ public class Trie
 {
 
     /** Size of the m_nextChar array.  */
-    public static final int ALPHA_SIZE = 128;
+    public static final int ALPHA_SIZE = 161;
 
     /** The root node of the tree.    */
     Node m_Root;

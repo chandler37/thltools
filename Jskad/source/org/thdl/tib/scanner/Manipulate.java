@@ -28,6 +28,7 @@ public class Manipulate
 	private static String bracketMarks = "<>(){}[]";
 	private static String endOfSyllableMarks = " _\t";
 	private static String allStopMarkers = endOfSyllableMarks + endOfParagraphMarks + bracketMarks;
+	private static final int TIBETAN_UNICODE_RANGE[] = {3840, 4095};
 
 	/* public static String[] parseFields (String s, char delimiter)
 	{
@@ -202,6 +203,18 @@ public class Manipulate
 	public static boolean isTibetanUnicodeCharacter(char ch)
 	{
 		return ch>=0xF00 && ch<=0xFFF;
+	}
+	
+	public static boolean isTibetanUnicodeLetter(char ch)
+	{
+		
+		return ch>=0xF40 && ch<=0xFBC || ch>=0xF00 && ch<=0xF03;
+	}
+	
+	public static boolean isTibetanUnicodeDigit(char ch)
+	{
+		
+		return ch>=0xF20 && ch<=0xF33;
 	}
 	
 	public static boolean guessIfUnicode(String line)
@@ -415,4 +428,36 @@ public class Manipulate
     	}
     	return ncr.toString();
     }
+    
+    public static String unescape(String s) {
+    	int i=0,len=s.length();
+    	char c;
+    	StringBuffer sb = new StringBuffer(len);
+    	while (i<len) {
+    		c = s.charAt(i++);
+    		if (c=='\\') {
+    			if (i<len) {
+    				c = s.charAt(i++);
+    				if (c=='u') {
+    					c = (char) Integer.parseInt(s.substring(i,i+4),16);
+    					i += 4;
+    				} // add other cases here as desired...
+    			}} // fall through: \ escapes itself, quotes any character but u
+    		sb.append(c);
+    	}
+    	return sb.toString();
+    }
+    
+	public static int getTibetanUnicodeStart(String unicode, int pos)
+	{
+		for(; pos < unicode.length(); pos++ ) if(unicode.codePointAt(pos)>=TIBETAN_UNICODE_RANGE[0] && unicode.codePointAt(pos)<=TIBETAN_UNICODE_RANGE[1]) return pos;
+		return -1;
+	}
+	
+	public static int getTibetanUnicodeEnd(String unicode, int pos)
+	{
+		for(; pos < unicode.length(); pos++ ) if(unicode.codePointAt(pos)<TIBETAN_UNICODE_RANGE[0] || unicode.codePointAt(pos)>TIBETAN_UNICODE_RANGE[1]) return pos;
+		return pos;
+	}
+
 }

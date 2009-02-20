@@ -46,7 +46,6 @@ public class BasicTibetanTranscriptionConverter implements FontConverterConstant
 	private static final int WYLIE_TO_ACIP=2;
 	private static final int UNICODE_TO_WYLIE=3;
 	private static final int WYLIE_TO_UNICODE=4;
-	private static final int TIBETAN_UNICODE_RANGE[] = {3840, 4095};
 	
 	/** Converts from the Acip transliteration scheme to EWTS.*/
 	public static String acipToWylie(String acip)
@@ -253,19 +252,7 @@ public class BasicTibetanTranscriptionConverter implements FontConverterConstant
 		nuevaPalabra = Manipulate.fixWazur(nuevaPalabra);
 		return nuevaPalabra;*/
 	}
-	
-	private static int getTibetanUnicodeStart(String unicode, int pos)
-	{
-		for(; pos < unicode.length(); pos++ ) if(unicode.codePointAt(pos)>=TIBETAN_UNICODE_RANGE[0] && unicode.codePointAt(pos)<=TIBETAN_UNICODE_RANGE[1]) return pos;
-		return -1;
-	}
-	
-	private static int getTibetanUnicodeEnd(String unicode, int pos)
-	{
-		for(; pos < unicode.length(); pos++ ) if(unicode.codePointAt(pos)<TIBETAN_UNICODE_RANGE[0] || unicode.codePointAt(pos)>TIBETAN_UNICODE_RANGE[1]) return pos;
-		return pos;
-	}
-    
+	    
 	/** Converts Tibetan Unicode to EWTS. */
     public static String unicodeToWylie(String unicode)
     {
@@ -274,9 +261,9 @@ public class BasicTibetanTranscriptionConverter implements FontConverterConstant
     	TibetanDocument tibDoc;
     	StringBuffer errors;
     	int posStart=0, posEnd;
-    	while((posStart = getTibetanUnicodeStart(unicode, posStart))>=0)
+    	while((posStart = Manipulate.getTibetanUnicodeStart(unicode, posStart))>=0)
     	{
-    		posEnd = getTibetanUnicodeEnd(unicode, posStart+1);
+    		posEnd = Manipulate.getTibetanUnicodeEnd(unicode, posStart+1);
     		startString = unicode.substring(0, posStart);
     		tibetanString = unicode.substring(posStart, posEnd);
     		endString = unicode.substring(posEnd);

@@ -85,7 +85,7 @@ public class UnicodeCodepointToThdlWylie {
         case '\u0F09': return "\\u0F09";
         case '\u0F0A': return "\\u0F0A";
         case '\u0F0B': return " ";
-        case '\u0F0C': return "*"; // DLC NOW: Jskad does not support this!
+        case '\u0F0C': return "\\u00A0"; // AMP: Non-break space. Does Jskad support this?
         case '\u0F0D': return "/";
         case '\u0F0E': return "//"; // DLC FIXME: this is kind of a hack-- the Unicode standard says the spacing for this construct is different than the spacing for "\u0F0D\u0F0D"
         case '\u0F0F': return ";";
