@@ -42,6 +42,7 @@ public class OnLineScannerFilter extends HttpServlet
 	private final static String dictNameProperty = "onlinescannerfilter.dict-file-name";
 	private final static String otherLinksProperty = "onlinescannerfilter.links-to-other-stuff";
 	private final static String moreLinksProperty = "onlinescannerfilter.links-to-more-stuff";
+	private final static String smallerLinksProperty = "onlinescannerfilter.links-to-smaller-stuff";
 	private final static String clearStr = "Clear"; 
 	private final static String buttonStr = "button";
 	private final static String scriptStr = "script";
@@ -54,6 +55,7 @@ public class OnLineScannerFilter extends HttpServlet
 	
 	public OnLineScannerFilter() //throws Exception
 	{
+		System.setProperty("java.awt.headless","true");
 		rb = ResourceBundle.getBundle(propertyFile);
 		sl = new ScannerLogger();
 		
@@ -75,7 +77,14 @@ public class OnLineScannerFilter extends HttpServlet
 			HttpServletResponse response) //throws IOException, ServletException
 	{
 		String answer, parrafo = null, checkboxName;
-		
+		try
+		{
+		  request.setCharacterEncoding("UTF8");
+		}
+		catch(Exception e)
+		{
+			// do nothing
+		}
 		// if this line is included in the constructor, it works on the orion server but not on wyllie!
 		ThdlOptions.setUserPreference("thdl.rely.on.system.tmw.fonts", true);	    
 		ThdlOptions.setUserPreference("thdl.rely.on.system.tm.fonts", true);
@@ -102,15 +111,18 @@ public class OnLineScannerFilter extends HttpServlet
 		out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">");
 		out.println("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
 		out.println("<head>");
+		out.println(" <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />");
 		if (useTHDLBanner)
 		{
-			out.println(" <title>Tibetan and Himalayan Digital Library - The Online Tibetan to English Translation/Dictionary Tool</title>");
-			out.println(" <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />");
+			out.println(" <title>Tibetan and Himalayan Digital Library - The Online Tibetan to English Dictionary and Translation Tool</title>");
 			out.println(" <script type=\"text/javascript\" src=\"http://www.thdl.org/scripts/thdl_scripts.js\"></script>");
 			out.println(" <link rel=\"stylesheet\" type=\"text/css\" href=\"http://www.thdl.org/style/thdl-styles.css\"/>");
 		}
 		else
-			out.println(" <title>The Online Tibetan to English Translation/Dictionary Tool</title>");
+		{
+			out.println(" <title>The Online Tibetan to English Dictionary and Translation Tool</title>");
+			out.println(" <link rel=\"stylesheet\" type=\"text/css\" href=\"stylesheets/base.css\"/>");
+		}
 		
 		out.println(" <meta name=\"keywords\" content=\"tibetan, english, dictionary, jim valby, rangjung yeshe, jeffrey hopkins, tsig mdzod chen mo, online, translation, scanner, parser, buddhism, language, processing, font, dharma, chos, tibet\">");
 		out.println(" <meta name=\"Description\" content=\"This Java tool takes Tibetan language passages and divides the passages up into their component phrases and words, and displays corresponding dictionary definitions.\">");
@@ -157,10 +169,7 @@ public class OnLineScannerFilter extends HttpServlet
 			out.println(" </div>");
 			out.println("</div><!--END sub_banner-->");
 			out.println("<div id=\"main\">");
-		}
-		
-		out.println("<h3 align=\"center\">The Online Tibetan to English Translation/Dictionary Tool</h3>");
-		
+		}		
 		try
 		{
 			out.println(rb.getString(otherLinksProperty));
@@ -180,18 +189,18 @@ public class OnLineScannerFilter extends HttpServlet
 		}
 		out.println("<table border=\"0\" width=\"100%\">");
 		out.println("  <tr>");
-		out.println("    <td width=\"25%\">");
-		out.println("      <p>Display results in:</td>");
-		out.println("    <td width=\"75%\">");
-		out.println("      <p><input type=\"radio\" value=\"" + tibetanStr + "\" ");
+		out.println("    <td width=\"18%\" align=\"left\"><strong>Display results in:</strong></td>");
+		out.println("    <td width=\"41%\" align=\"right\">");
+		out.println("      <input type=\"radio\" value=\"" + tibetanStr + "\" ");
 		if (wantsTibetan) out.println("checked ");
-		out.println("name=\"" + scriptStr + "\">Tibetan script (using <a href=\"http://www.thdl.org/xml/show.php?xml=/tools/tibfonts.xml&l=uva10928423419921\" target=\"_blank\">Tibetan Machine Uni font</a>)<br/>");
+		out.println("name=\"" + scriptStr + "\">Tibetan script (<a href=\"http://www.thlib.org/tools/#wiki=/access/wiki/site/26a34146-33a6-48ce-001e-f16ce7908a6a/tibetan%20machine%20uni.html\" target=\"_top\">Tibetan Machine Uni</a> font)</td>");
+		out.println("    <td width=\"16%\" align=\"left\">");		
 		out.println("      <input type=\"radio\" value=\"roman\" ");
 		if (!wantsTibetan) out.println("checked ");
 		out.println("name=\"" + scriptStr + "\">Roman script</td>");
-		out.println("  </tr>");
-		out.println("</table>");
-		
+		out.println("    <td width=\"25%\" align=\"right\">");
+		out.println("<a href=\"http://www.thlib.org/tools/#wiki=/access/wiki/site/c06fa8cf-c49c-4ebc-007f-482de5382105/tibetan%20translation%20tool.html\" target=\"_top\">Help & Offline Installation</a></td>");
+		out.println("  </tr>");		
 		if (dictionaries!=null)
 		{
 			int i;
@@ -200,7 +209,7 @@ public class OnLineScannerFilter extends HttpServlet
 			checkedDicts = new boolean[dictionaries.length];
 			/*			out.println("  <tr>");
 			 out.println("<td width=\""+ percent +"%\">Search in dictionaries:</td>");*/
-			out.println("<p>Search in dictionaries: ");
+			out.println("<tr><td colspan=\"4\"><strong>Search in dictionaries: </strong>");
 			allUnchecked=true;
 			for (i=0; i<dictionaries.length; i++)
 			{
@@ -239,22 +248,43 @@ public class OnLineScannerFilter extends HttpServlet
 					out.print(">" + DictionarySource.defTags[i] + "&nbsp;&nbsp;&nbsp;");				
 //				out.println(" + "</td>");
 			}
-//			out.println("  </tr>");
+			out.println("  </td></tr>");
 		}
 		// fix for updates
 		else ds = BitDictionarySource.getAllDictionaries();
 //		out.println("</table>");
-		out.println("</p>");
-		out.println("<table border=\"0\" width=\"100%\">");
+//		out.println("</p>");
+//		out.println("<table border=\"0\" width=\"100%\">");
 		out.println("  <tr>");
-		out.println("    <td width=\"35%\">");		
-		out.println("      <p><strong>Input text:</strong></p>");
-		out.println("    </td>");
-		out.println("    <td width=\"65%\">");
-		out.println("      <p> <input type=\"submit\" name=\"" + buttonStr + "\" value=\"Translate\"> <input type=\"submit\" name=\"" + buttonStr + "\" value=\"" + clearStr + "\"></p>");
-		out.println("    </td>");
+		out.println("    <td><strong>Input text:</strong></td>");		
+		out.println("    <td><input type=\"submit\" name=\"" + buttonStr + "\" value=\"Translate\"> <input type=\"submit\" name=\"" + buttonStr + "\" value=\"" + clearStr + "\"></td>");
+		out.println("    <td colspan\"2\">&nbsp;</td");
 		out.println("  </tr>");
 		out.println("</table>");
+		answer = request.getParameter(buttonStr);
+		String smallerLinks=null;
+		if (answer == null || answer != null && !answer.equals(clearStr))
+		{
+			parrafo = request.getParameter("parrafo");
+		}
+		if (parrafo==null)
+		{
+			try
+			{
+				smallerLinks = rb.getString(smallerLinksProperty);
+			}
+			catch (MissingResourceException e)
+			{
+				// do nothing
+			}
+
+		}
+		if (smallerLinks!=null)
+		{
+			out.println("<table width=\"100%\">");
+			out.println("<tr>");
+			out.println("<td>");
+		}
 		
 		out.print("<textarea rows=\"5\" name=\"parrafo\" cols=\"40\"");
 		if (wantsTibetan) out.print(" class=\"tib\""); 
@@ -262,28 +292,30 @@ public class OnLineScannerFilter extends HttpServlet
 		
 		// Paragraph should be empty if the user just clicked the clear button
 		answer = request.getParameter(buttonStr);
-		if (answer == null || answer != null && !answer.equals(clearStr))
+		if (parrafo!=null)
 		{
-			parrafo = request.getParameter("parrafo");
-			if (parrafo!=null) out.print(parrafo);            
-		}
-		
+			out.print(parrafo);            
+		}		
 		out.println("</textarea>");
-		out.println("</form>");
-		try
+		if (smallerLinks!=null)
 		{
-			out.println(rb.getString(moreLinksProperty));
-		}
-		catch (MissingResourceException e)
-		{
-			// do nothing
+			out.println("</td>");
+			out.println("<td>");
+			out.println(smallerLinks);
+			out.println("</td>");
+			out.println("</tr>");
+			out.println("</table>");
 		}
 		
+		out.println("</form>");
+
 		if (parrafo != null)
 		{
 			sl.writeLog("4\t1");
 			if (ds!=null && !ds.isEmpty())
+			{
 				desglosar(parrafo, out, wantsTibetan);
+			}
 		}
 		else sl.writeLog("3\t1");
 		
@@ -304,7 +336,7 @@ public class OnLineScannerFilter extends HttpServlet
 	{
 		//boolean hayMasLineas=true;
 		//int init = 0, fin;
-		//String linea;
+		String tmp;
 		Object words[];
 		
 		if (!in.equals(""))
@@ -331,6 +363,17 @@ public class OnLineScannerFilter extends HttpServlet
 			scanner.scanBody(in);
 			scanner.finishUp();
 			printText(pw, tibetan);
+			try
+			{
+				tmp = rb.getString(moreLinksProperty);
+				pw.println("<p>");
+				pw.println(tmp);
+				pw.println("</p>");
+			}
+			catch (MissingResourceException e)
+			{
+				// do nothing
+			}
 			printAllDefs(pw, tibetan);
 			scanner.clearTokens();			
 		}
@@ -393,8 +436,7 @@ public class OnLineScannerFilter extends HttpServlet
 		
 		words = scanner.getWordArray(false);
 		
-		if (words == null)
-			return;
+		if (words == null) return;
 		pw.println("<table border=\"1\" width=\"100%\">");
 		
 		for (j = 0; j < words.length; j++) {
