@@ -18,7 +18,6 @@ Contributor(s): ______________________________________.
 package org.thdl.tib.scanner;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ResourceBundle;
 
@@ -147,49 +146,54 @@ public class RemoteScannerFilter extends GenericServlet
 			break;
 			case JSON:
 				linea = req.getParameter("text");
-				linea = Manipulate.NCR2UnicodeString(linea);
-				if (Manipulate.guessIfUnicode(linea)) linea = BasicTibetanTranscriptionConverter.unicodeToWylie(linea);
-				else if (Manipulate.guessIfAcip(linea)) linea = BasicTibetanTranscriptionConverter.acipToWylie(linea);
-				scanner.scanLine(linea);
+				if (linea!=null)
+				{
+					linea = Manipulate.NCR2UnicodeString(linea);
+					if (Manipulate.guessIfUnicode(linea)) linea = BasicTibetanTranscriptionConverter.unicodeToWylie(linea);
+					else if (Manipulate.guessIfAcip(linea)) linea = BasicTibetanTranscriptionConverter.acipToWylie(linea);
+					scanner.scanLine(linea);
+				}
 			}
 			scanner.finishUp();
 			words = scanner.getWordArray();
-
-			for (i=0; i<words.length; i++)
+			if (words!=null)
 			{
-				linea = words[i].getDef();
-				if (linea == null) continue;
-				switch (format)
+				for (i=0; i<words.length; i++)
 				{
-				case INTERNAL:
-					out.println(words[i].getWylie());
-					out.println(linea);
-					out.println();
-					break;
-				case JSON:
-					out.println("\"" + BasicTibetanTranscriptionConverter.wylieToHTMLUnicode(words[i].token) + "\": [");
-					defs = words[i].getDefs();
-					dict_source = (ByteDictionarySource)defs.getDictionarySource();
-					k=0;
-					for (j=0; j<defs.def.length; j++)
+					linea = words[i].getDef();
+					if (linea == null) continue;
+					switch (format)
 					{
-						while (dict_source.isEmpty(k)) k++;
-						tag = dict_source.getTag(k);
-						k++;
-						out.println("\"" + tag + "\",");
-						out.print("\"" + Manipulate.toJSON(defs.def[j]) + "\"");
-						if (j==defs.def.length-1) out.println();
-						else out.println(",");
+					case INTERNAL:
+						out.println(words[i].getWylie());
+						out.println(linea);
+						out.println();
+						break;
+					case JSON:
+						out.println("\"" + BasicTibetanTranscriptionConverter.wylieToHTMLUnicode(words[i].token) + "\": [");
+						defs = words[i].getDefs();
+						dict_source = (ByteDictionarySource)defs.getDictionarySource();
+						k=0;
+						for (j=0; j<defs.def.length; j++)
+						{
+							while (dict_source.isEmpty(k)) k++;
+							tag = dict_source.getTag(k);
+							k++;
+							out.println("\"" + tag + "\",");
+							out.print("\"" + Manipulate.toJSON(defs.def[j]) + "\"");
+							if (j==defs.def.length-1) out.println();
+							else out.println(",");
+						}
+						out.print("]");
+						if (i<words.length-1) out.println(",");
 					}
-					out.print("]");
-					if (i<words.length-1) out.println(",");
-				}
+				}				
 			}
 			if (format==JSON) out.println("}});");
 		}
 		catch (Exception e)
 		{
-			sl.writeLog("1\t2\t" + word.getWylie());
+			if (word!=null) sl.writeLog("1\t2\t" + word.getWylie());
 			sl.writeException(e);
 		}
 
