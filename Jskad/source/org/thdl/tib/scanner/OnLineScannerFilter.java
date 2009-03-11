@@ -80,6 +80,7 @@ public class OnLineScannerFilter extends HttpServlet
 		try
 		{
 		  request.setCharacterEncoding("UTF8");
+		  response.setCharacterEncoding("UTF8");
 		}
 		catch(Exception e)
 		{

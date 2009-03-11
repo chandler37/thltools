@@ -68,6 +68,7 @@ public class RemoteScannerFilter extends GenericServlet
 		try
 		{
 		  req.setCharacterEncoding("UTF8");
+		  res.setCharacterEncoding("UTF8");
 		}
 		catch(Exception e)
 		{
