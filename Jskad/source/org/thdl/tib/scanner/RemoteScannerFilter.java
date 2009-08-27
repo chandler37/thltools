@@ -73,7 +73,7 @@ public class RemoteScannerFilter extends GenericServlet
 		{
 			// do nothing
 		}
-		String linea, dicts = req.getParameter("dicts"), dicDescrip[], jwf = req.getParameter("jwf"), tag;
+		String linea = null, dicts = req.getParameter("dicts"), dicDescrip[], jwf = req.getParameter("jwf"), tag;
 		Definitions defs;
 		ByteDictionarySource dict_source;
 		if (jwf!=null) format = JSON;
@@ -132,9 +132,9 @@ public class RemoteScannerFilter extends GenericServlet
 		{
 			out.println(jwf + "({\"words\":{");
 		}
+		scanner.clearTokens();
 		try
 		{
-			scanner.clearTokens();
 			switch (format)
 			{
 			case INTERNAL:
@@ -154,35 +154,48 @@ public class RemoteScannerFilter extends GenericServlet
 					scanner.scanLine(linea);
 				}
 			}
-			scanner.finishUp();
+		}
+		catch (Exception e)
+		{
+			if (linea!=null) sl.writeLog("1\t2\t" + linea);
+			sl.writeException(e);
+		}
+		scanner.finishUp();
+		try
+		{
 			words = scanner.getWordArray();
 			if (words!=null)
 			{
 				for (i=0; i<words.length; i++)
 				{
-					linea = words[i].getDef();
+					word = words[i];
+					linea = word.getDef();
 					if (linea == null) continue;
 					switch (format)
 					{
 					case INTERNAL:
-						out.println(words[i].getWylie());
+						out.println(word.getWylie());
 						out.println(linea);
 						out.println();
 						break;
 					case JSON:
-						out.println("\"" + BasicTibetanTranscriptionConverter.wylieToHTMLUnicode(words[i].token) + "\": [");
-						defs = words[i].getDefs();
+						defs = word.getDefs();
 						dict_source = (ByteDictionarySource)defs.getDictionarySource();
-						k=0;
-						for (j=0; j<defs.def.length; j++)
+						if(dict_source==null) out.println("\"" + word.token + "\": [");
+						else
 						{
-							while (dict_source.isEmpty(k)) k++;
-							tag = dict_source.getTag(k);
-							k++;
-							out.println("\"" + tag + "\",");
-							out.print("\"" + Manipulate.toJSON(defs.def[j]) + "\"");
-							if (j==defs.def.length-1) out.println();
-							else out.println(",");
+							out.println("\"" + BasicTibetanTranscriptionConverter.wylieToHTMLUnicode(word.token) + "\": [");
+							k=0;
+							for (j=0; j<defs.def.length; j++)
+							{
+								while (dict_source.isEmpty(k)) k++;
+								tag = dict_source.getTag(k);
+								k++;
+								out.println("\"" + tag + "\",");
+								out.print("\"" + Manipulate.toJSON(defs.def[j]) + "\"");
+								if (j==defs.def.length-1) out.println();
+								else out.println(",");
+							}							
 						}
 						out.print("]");
 						if (i<words.length-1) out.println(",");
@@ -196,7 +209,6 @@ public class RemoteScannerFilter extends GenericServlet
 			if (word!=null) sl.writeLog("1\t2\t" + word.getWylie());
 			sl.writeException(e);
 		}
-
 		scanner.clearTokens();
 		out.close();
 	}
