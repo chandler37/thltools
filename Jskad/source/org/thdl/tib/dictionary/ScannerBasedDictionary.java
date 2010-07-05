@@ -11,32 +11,32 @@ import org.thdl.tib.dictionary.SimpleDictionaryEntries ;
 
 public class ScannerBasedDictionary implements DictionaryInterface
 {
-	TibetanScanner scanner ;
+  TibetanScanner scanner ;
 
-    public ScannerBasedDictionary ( TibetanScanner ts )
+  public ScannerBasedDictionary ( TibetanScanner ts )
+  {
+    scanner = ts ;
+  }
+
+  public DictionaryEntries lookup ( TextBody tb )
+  {
+    DictionaryEntries entries = new SimpleDictionaryEntries () ;
+    //
+    // TibetanScanner expects romanized wylie for lookup
+    //
+    String input = tb.getRomanizedWylie () ;
+
+    scanner.scanBody ( input ) ;
+    scanner.finishUp () ;
+    Word [] words = scanner.getWordArray () ;
+    for ( int i = 0; i < words.length; i++ )
     {
-        scanner = ts ;
+      SimpleDictionaryEntry entry = SimpleDictionaryEntry.fromWord ( words [i] ) ;
+      entries.add ( entry ) ;
     }
 
-    public DictionaryEntries lookup ( TextBody tb )
-    {
-        DictionaryEntries entries = new SimpleDictionaryEntries () ;
-        //
-        // TibetanScanner expects romanized wylie for lookup
-        //
-		String input = tb.getRomanizedWylie () ;
-		
-        scanner.scanBody ( input ) ;
-        scanner.finishUp () ;
-        Word [] words = scanner.getWordArray () ;
-        for ( int i = 0; i < words.length; i++ )
-        {
-            SimpleDictionaryEntry entry = SimpleDictionaryEntry.fromWord ( words [i] ) ;
-            entries.add ( entry ) ;
-        }
+    scanner.clearTokens () ;
 
-        scanner.clearTokens () ;
-
-        return entries ;
-    }
+    return entries ;
+  }
 }

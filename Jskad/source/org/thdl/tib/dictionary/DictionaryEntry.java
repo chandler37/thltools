@@ -5,8 +5,8 @@ import org.thdl.tib.dictionary.DictionaryEntryDefinitions ;
 
 public interface DictionaryEntry
 {
-    public TextBody getKeyword () ;
-	public String getPhonetic () ;
-    public DictionaryEntryDefinitions getDefinitions () ;    
+  public TextBody getKeyword () ;
+  public String getPhonetic () ;
+  public DictionaryEntryDefinitions getDefinitions () ;
 }
 

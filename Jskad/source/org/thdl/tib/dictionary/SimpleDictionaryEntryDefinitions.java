@@ -9,41 +9,41 @@ import org.thdl.tib.dictionary.SimpleDictionaryEntryDefinition ;
 
 class SimpleDictionaryEntryDefinitions extends Vector implements DictionaryEntryDefinitions
 {
-    public static SimpleDictionaryEntryDefinitions fromDefinitions ( Definitions defs )
+  public static SimpleDictionaryEntryDefinitions fromDefinitions ( Definitions defs )
+  {
+    SimpleDictionaryEntryDefinitions sded = new SimpleDictionaryEntryDefinitions () ;
+    sded.populate ( defs ) ;
+
+    return sded ;
+  }
+
+  protected void populate ( Definitions defs )
+  {
+    DictionarySource source = defs.getDictionarySource () ;
+    String [] defArr = defs.def ;
+
+    int i,j;
+
+    if (FileSyllableListTree.versionNumber==2)
     {
-		SimpleDictionaryEntryDefinitions sded = new SimpleDictionaryEntryDefinitions () ;
-		sded.populate ( defs ) ;
-
-		return sded ;
+      this.add ( new SimpleDictionaryEntryDefinition ( "(" + source.getTag(0) + ") " + defArr[0] ) ) ;
+      for (i=1; i<defArr.length; i++)
+        this.add ( new SimpleDictionaryEntryDefinition ( "(" + source.getTag(i) + ") " + defArr[i] ) ) ;
     }
+    else
+    {
+      ByteDictionarySource sourceb = (ByteDictionarySource) source;
+      j=0;
+      while (sourceb.isEmpty(j)) j++;
 
-	protected void populate ( Definitions defs )
-	{
-		DictionarySource source = defs.getDictionarySource () ;
-		String [] defArr = defs.def ;
+      this.add ( new SimpleDictionaryEntryDefinition ( "(" + sourceb.getTag(j) + ") " + defArr[0] ) ) ;
+      for (i=1; i<defArr.length; i++)
+      {
+        j++;
+        while (sourceb.isEmpty(j)) j++;
 
-		int i,j;
-		
-		if (FileSyllableListTree.versionNumber==2)
-		{			
-			this.add ( new SimpleDictionaryEntryDefinition ( "(" + source.getTag(0) + ") " + defArr[0] ) ) ;
-			for (i=1; i<defArr.length; i++)
-				this.add ( new SimpleDictionaryEntryDefinition ( "(" + source.getTag(i) + ") " + defArr[i] ) ) ;
-		}
-		else
-		{
-			ByteDictionarySource sourceb = (ByteDictionarySource) source;
-			j=0;
-			while (sourceb.isEmpty(j)) j++;
-			
-			this.add ( new SimpleDictionaryEntryDefinition ( "(" + sourceb.getTag(j) + ") " + defArr[0] ) ) ;
-			for (i=1; i<defArr.length; i++)
-			{
-				j++;
-				while (sourceb.isEmpty(j)) j++;
-				
-				this.add ( new SimpleDictionaryEntryDefinition ( "(" + sourceb.getTag(j) + ") " + defArr[i] ) ) ;
-			}
-		}
-	}
+        this.add ( new SimpleDictionaryEntryDefinition ( "(" + sourceb.getTag(j) + ") " + defArr[i] ) ) ;
+      }
+    }
+  }
 }

@@ -4,39 +4,39 @@ import java.lang.String ;
 
 public interface TextBody
 {
-    /**
-     * setWylie
-     *
-     * populate TextBody based on romanized Wylie input string
-     */
-    void setWylie ( String in ) ;
-    
-    /**
-     * setUnicode
-     *
-     * populate TextBody based on Unicode input string
-     */
-    void setUnicode ( String in ) ;
+  /**
+   * setWylie
+   *
+   * populate TextBody based on romanized Wylie input string
+   */
+  void setWylie ( String in ) ;
 
-	/**
-	 * getRomanizedWylie
-	 *
-	 * populate TextBody based on romanized Wylie input string
-	 */
-	public String getRomanizedWylie () ;
+  /**
+   * setUnicode
+   *
+   * populate TextBody based on Unicode input string
+   */
+  void setUnicode ( String in ) ;
 
-	/**
-	 * getWylie
-	 *
-	 * populate TextBody based on Wylie input string
-	 */
-	public String getWylie () ;
+  /**
+   * getRomanizedWylie
+   *
+   * populate TextBody based on romanized Wylie input string
+   */
+  public String getRomanizedWylie () ;
 
-	/**
-	 * getUnicode
-	 *
-	 * populate TextBody based on Unicode input string
-	 */
-	public String getUnicode () ;
+  /**
+   * getWylie
+   *
+   * populate TextBody based on Wylie input string
+   */
+  public String getWylie () ;
+
+  /**
+   * getUnicode
+   *
+   * populate TextBody based on Unicode input string
+   */
+  public String getUnicode () ;
 }
 

@@ -5,6 +5,6 @@ import org.thdl.tib.dictionary.DictionaryEntries ;
 
 public interface DictionaryInterface
 {
-    DictionaryEntries lookup ( TextBody in ) ;
+  DictionaryEntries lookup ( TextBody in ) ;
 }
 

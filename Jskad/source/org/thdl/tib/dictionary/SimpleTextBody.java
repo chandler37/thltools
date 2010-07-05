@@ -4,99 +4,99 @@ import org.thdl.tib.dictionary.TextBody ;
 
 public class SimpleTextBody implements TextBody
 {
-    static final int UNDEFINED_TYPE = 0 ;
-    static final int WYLIE_TYPE = 1 ;
-    static final int UNICODE_TYPE = 2 ;
-    
-    protected int basicType = UNDEFINED_TYPE  ;
+  static final int UNDEFINED_TYPE = 0 ;
+  static final int WYLIE_TYPE = 1 ;
+  static final int UNICODE_TYPE = 2 ;
 
-    String unicode ;
-    String wylie ;
+  protected int basicType = UNDEFINED_TYPE  ;
 
-    SimpleTextBody ()
+  String unicode ;
+  String wylie ;
+
+  SimpleTextBody ()
+  {
+    unicode = "" ;
+    wylie = "" ;
+  }
+
+  public static TextBody fromWylie ( String in )
+  {
+    SimpleTextBody stb = new SimpleTextBody () ;
+    stb.setWylie ( in ) ;
+
+    return stb ;
+  }
+
+  public static TextBody fromUnicode ( String in )
+  {
+    SimpleTextBody stb = new SimpleTextBody () ;
+    stb.setUnicode ( in ) ;
+
+    return stb ;
+  }
+
+  public void setWylie ( String in )
+  {
+    wylie = in ;
+    basicType = WYLIE_TYPE ;
+  }
+
+  public void setUnicode ( String in )
+  {
+    unicode = in ;
+    basicType = UNICODE_TYPE ;
+  }
+
+  public String getRomanizedWylie ()
+  {
+    String ret = getWylie () ;
+
+    ret = ret.replaceAll ( "[\\/\\_\\*]", " " ) ;
+
+    return ret ;
+  }
+
+  public String getUnicode ()
+  {
+    if ( UNICODE_TYPE == basicType )
     {
-        unicode = "" ;
-        wylie = "" ;
+      return unicode ;
     }
-    
-    public static TextBody fromWylie ( String in )
+    else if ( WYLIE_TYPE == basicType )
     {
-        SimpleTextBody stb = new SimpleTextBody () ;
-        stb.setWylie ( in ) ;
-
-        return stb ;
+      return wylieToUnicode ( unicode ) ;
     }
-    
-    public static TextBody fromUnicode ( String in )
+    else
     {
-        SimpleTextBody stb = new SimpleTextBody () ;
-        stb.setUnicode ( in ) ;
-
-        return stb ;
+      return "" ;
     }
+  }
 
-    public void setWylie ( String in )
+  public String getWylie ()
+  {
+    if ( WYLIE_TYPE == basicType )
     {
-        wylie = in ;
-        basicType = WYLIE_TYPE ;
+      return wylie ;
     }
-
-	public void setUnicode ( String in )
+    else if ( UNICODE_TYPE == basicType )
     {
-        unicode = in ;
-        basicType = UNICODE_TYPE ;
+      return unicodeToWylie ( unicode ) ;
     }
+    else
+    {
+      return "" ;
+    }
+  }
 
-	public String getRomanizedWylie ()
-	{
-		String ret = getWylie () ;
+  protected static String unicodeToWylie ( String in )
+  {
+    return "<INVALID>" ;
+  }
 
-		ret = ret.replaceAll ( "[\\/\\_\\*]", " " ) ;
-
-		return ret ;
-	}
-
-	public String getUnicode ()
-	{
-		if ( UNICODE_TYPE == basicType )
-		{
-			return unicode ;
-		}
-		else if ( WYLIE_TYPE == basicType )
-		{
-			return wylieToUnicode ( unicode ) ;
-		}
-		else
-		{
-			return "" ;
-		}
-	}
-
-	public String getWylie ()
-	{
-		if ( WYLIE_TYPE == basicType )
-		{
-			return wylie ;
-		}
-		else if ( UNICODE_TYPE == basicType )
-		{
-			return unicodeToWylie ( unicode ) ;
-		}
-		else
-		{
-			return "" ;
-		}
-	}
-
-	protected static String unicodeToWylie ( String in )
-	{
-		return "<INVALID>" ;
-	}
-
-	protected static String wylieToUnicode ( String in )
-	{
-		return "<INVALID>" ;
-	}
+  protected static String wylieToUnicode ( String in )
+  {
+    return "<INVALID>" ;
+  }
 
 };
 
