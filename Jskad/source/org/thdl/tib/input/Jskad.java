@@ -301,7 +301,8 @@ public class Jskad extends JPanel implements DocumentListener {
 
             JMenuItem newItem = new JMenuItem("New...");
             newItem.setMnemonic ( 'N' ) ;
-//            newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,java.awt.Event.CTRL_MASK)); //Ctrl-n
+            newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, 
+                  java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); 
             newItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
                     newFile();
@@ -312,7 +313,8 @@ public class Jskad extends JPanel implements DocumentListener {
 
             JMenuItem openItem = new JMenuItem("Open...");
             openItem.setMnemonic ( 'o' ) ;
-            openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,java.awt.Event.CTRL_MASK)); //Ctrl-o
+            openItem.setAccelerator(KeyStroke.getKeyStroke (KeyEvent.VK_O, java.awt.Toolkit
+                        .getDefaultToolkit().getMenuShortcutKeyMask())); 
             openItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
                     openFile();
@@ -343,7 +345,7 @@ public class Jskad extends JPanel implements DocumentListener {
             }
             JMenuItem saveItem = new JMenuItem("Save");
             saveItem.setMnemonic ( 's' ) ;
-            saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,java.awt.Event.CTRL_MASK)); //Ctrl-s
+            saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); //Ctrl-s
             saveItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
                     if (fileName == null)
@@ -410,7 +412,7 @@ public class Jskad extends JPanel implements DocumentListener {
             JMenuItem cutItem = new JMenuItem("Cut");
             cutItem.setMnemonic ( 'u' ) ;
             cutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,
-                                                          java.awt.Event.CTRL_MASK)); //Ctrl-x
+                  java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
             cutItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
                     cutSelection();                    
@@ -421,7 +423,7 @@ public class Jskad extends JPanel implements DocumentListener {
             JMenuItem copyItem = new JMenuItem("Copy");
             copyItem.setMnemonic ( 'C' ) ;
             copyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
-                                                           java.awt.Event.CTRL_MASK)); //Ctrl-c
+                  java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
             copyItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
                     copySelection();
@@ -441,7 +443,7 @@ public class Jskad extends JPanel implements DocumentListener {
             JMenuItem pasteItem = new JMenuItem("Paste");
             pasteItem.setMnemonic ( 'P' ) ;
             pasteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
-                                                            java.awt.Event.CTRL_MASK)); //Ctrl-v
+                  java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
             pasteItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
                     pasteSelection();
@@ -453,7 +455,7 @@ public class Jskad extends JPanel implements DocumentListener {
             JMenuItem selectallItem = new JMenuItem("Select All");
             selectallItem.setMnemonic ( 'A' ) ;
             selectallItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A,
-                                                                java.awt.Event.CTRL_MASK)); //Ctrl-a
+                  java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
             selectallItem.addActionListener(new ThdlActionListener() {
                 public void theRealActionPerformed(ActionEvent e) {
                     dp.setSelectionStart(0);
@@ -467,7 +469,7 @@ public class Jskad extends JPanel implements DocumentListener {
             JMenuItem preferencesItem = new JMenuItem("Preferences");
             preferencesItem.setMnemonic ( 'P' ) ;
             preferencesItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E,
-                                                                java.awt.Event.CTRL_MASK)); //Ctrl-e
+                  java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
             preferencesItem.addActionListener(new ThdlActionListener() {
                     public void theRealActionPerformed(ActionEvent e) {
                         setPreferences();
