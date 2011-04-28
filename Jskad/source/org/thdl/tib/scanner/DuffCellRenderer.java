@@ -40,92 +40,11 @@ import org.thdl.util.ThdlDebug;
 	@see DictionaryTable
 */
 public class DuffCellRenderer extends DuffPane implements TableCellRenderer, Serializable
-{
-
-    protected static Border noFocusBorder = new EmptyBorder(1, 1, 1, 1); 
-    
-    // We need a place to store the color the DuffPane should be returned 
-    // to after its foreground and background colors have been set 
-    // to the selection background color. 
-    // These ivars will be made protected when their names are finalized. 
-    private Color unselectedForeground; 
-    private Color unselectedBackground;
-    
-    public DuffCellRenderer()
-    {
-        super();
-    	setOpaque(true);
-        setBorder(noFocusBorder);        
-    }
-    
-        /**
-     * Overrides <code>JComponent.setForeground</code> to assign
-     * the unselected-foreground color to the specified color.
-     * 
-     * @param c set the foreground color to this value
-     */
-    public void setForeground(Color c) {
-        super.setForeground(c); 
-        unselectedForeground = c; 
-    }
-    
-    /**
-     * Overrides <code>JComponent.setForeground</code> to assign
-     * the unselected-background color to the specified color.
-     *
-     * @param c set the background color to this value
-     */
-    public void setBackground(Color c) {
-        super.setBackground(c); 
-        unselectedBackground = c; 
-    }
-
-    /**
-     * Notification from the <code>UIManager</code> that the look and feel
-     * [L&F] has changed.
-     * Replaces the current UI object with the latest version from the 
-     * <code>UIManager</code>.
-     *
-     * @see JComponent#updateUI
-     */
-    public void updateUI() {
-        super.updateUI(); 
-	    setForeground(null);
-	    setBackground(null);
-    }    
-    
+{        
     public Component getTableCellRendererComponent(JTable table, Object value,
                           boolean isSelected, boolean hasFocus, int row, int column)
     {
-	    if (isSelected)
-	    {
-	        super.setForeground(table.getSelectionForeground());
-	        super.setBackground(table.getSelectionBackground());
-	    }
-	    else
-	    {
-	        super.setForeground((unselectedForeground != null) ? unselectedForeground : table.getForeground());
-	        super.setBackground((unselectedBackground != null) ? unselectedBackground : table.getBackground());
-	    }
-
-    	if (hasFocus) {
-	        setBorder( UIManager.getBorder("Table.focusCellHighlightBorder") );
-	        if (table.isCellEditable(row, column)) {
-	            super.setForeground( UIManager.getColor("Table.focusCellForeground") );
-	            super.setBackground( UIManager.getColor("Table.focusCellBackground") );
-    	    }
-	    } else {
-	        setBorder(noFocusBorder);
-	    }
-        
         setValue(value);
-
-        // ---- begin optimization to avoid painting background ----
-    	Color back = getBackground();
-	    boolean colorMatch = (back != null) && ( back.equals(table.getBackground()) ) && table.isOpaque();
-        setOpaque(!colorMatch);
-	    // ---- end optimization to aviod painting background ----
-        
         return this;
     }
 
