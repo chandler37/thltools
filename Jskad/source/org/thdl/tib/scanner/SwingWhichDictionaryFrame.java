@@ -4,7 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Checkbox;
 import java.awt.CheckboxGroup;
 import java.awt.Choice;
-import java.awt.FileDialog;
+// import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridLayout;
@@ -12,8 +12,13 @@ import java.awt.Label;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
+/* import java.awt.Cursor;
+import java.awt.FileDialog;
+import java.io.FilenameFilter;
+import java.io.File; */
 
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /** provides a friendly user interface when the command-line
     is not used for choosing a dictionary or connection to open.
@@ -21,7 +26,7 @@ import javax.swing.JFileChooser;
 class SwingWhichDictionaryFrame extends WhichDictionaryFrame
 {
     private CreateDatabaseWizard cdw;
-    private DictionaryFileFilter dicFilter;
+    // private DictionaryFileFilter dicFilter;
     private Checkbox createNewDictDB;
     
     public SwingWhichDictionaryFrame(Frame owner)
@@ -30,8 +35,8 @@ class SwingWhichDictionaryFrame extends WhichDictionaryFrame
         Panel p;
         CheckboxGroup cbg = new CheckboxGroup();
 
-        dicFilter = null;
-        
+        // dicFilter = null;
+	    // this.setBackground(Color.white);
         this.setLayout(new GridLayout(6, 1));
         
         this.setSize(400, 200);
@@ -99,20 +104,33 @@ class SwingWhichDictionaryFrame extends WhichDictionaryFrame
 		}
 		else if (obj == browse)
 		{
-		    if (dicFilter == null) dicFilter = new DictionaryFileFilter();
+			/* FileDialog fileDialog = new FileDialog(this, "Select dictionary to open", FileDialog.LOAD);
+			fileDialog.setFilenameFilter(new FilenameFilter() {
+				public boolean accept(File dir, String name) {
+					return name.toLowerCase().endsWith(".wrd"); 
+				}
+			});
+			fileDialog.setFile("*.wrd");
+            fileDialog.setVisible(true);
+            response = fileDialog.getFile();
+            if (response != null)
+            {
+		    if (dicFilter == null) dicFilter = new DictionaryFileFilter(); */
 		    JFileChooser fileChooser = new JFileChooser("Select dictionary to open");
-		    fileChooser.addChoosableFileFilter(dicFilter);
-		    /*setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
+		    FileNameExtensionFilter filter = new FileNameExtensionFilter("Binary tree dictionary (.wrd)", "wrd");
+		    fileChooser.setFileFilter(filter);
+		    /* fileChooser.addChoosableFileFilter(dicFilter);
+		    setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             if (fileChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION)
             {
                 setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                 return;
-            }*/
+            } */
             if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
             {
                 response = fileChooser.getSelectedFile().getPath();
                 response = response.substring(0, response.length()-4);
+                // response = fileDialog.getDirectory() + System.getProperty("file.separator") + response.substring(0, response.length()-4);
                 localDict.setText(response);
 		        ok.setEnabled(true);
             }

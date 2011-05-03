@@ -48,7 +48,7 @@ abstract class WhichDictionaryFrame extends Dialog implements ActionListener, It
             dictTypes = new String[2];        	
         }
         
-        dictsOnline[0] = "http://www.thdl.org/tibetan/servlet/org.thdl.tib.scanner.RemoteScannerFilter";
+        dictsOnline[0] = "http://ttt.thlib.org/org.thdl.tib.scanner.RemoteScannerFilter";
         
         dictTypes[0] = "local";
         dictTypes[1] = "public";

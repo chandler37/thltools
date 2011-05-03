@@ -80,7 +80,7 @@ public class SwingWindowScannerFilter extends WindowScannerFilter
 	    }
 	    else mainWindow.setVisible(false);
 		mainWindow.setLayout(new GridLayout(1,1));
-		mainWindow.setBackground(Color.white);
+		// mainWindow.setBackground(Color.white);
 		
 	    diagAbout = null;
 	    mnuAbout = null;
