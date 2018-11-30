@@ -7,4 +7,6 @@ This repository is not officially associated with THL. Contact them to see if th
 
 All the open source code from https://sourceforge.net/projects/thdltools/ is here. Committer dchandler is I, chandler37.
 
+One of the licenses involved is http://www.thlib.org/tools/thl-license.php which references the OPL here: http://www.thlib.org/tools/opl-license.php
+
 -chandler37
